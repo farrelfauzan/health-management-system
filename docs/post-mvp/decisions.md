@@ -152,3 +152,40 @@ Both were re-checked in the phase-closing security pass and stand as written.
 
 - **D-026 (network-denied renderer):** both halves of the posture are present in the deploying artefact and are now asserted in CI by `apps/api/src/common/pdf/renderer-isolation.spec.ts`. One gap is filed rather than closed — there is no production manifest to verify yet ([finding F-1](../security/renderer-isolation.md#findings)), which is a gate on pilot enablement.
 - **D-027 (password-protected delivery):** unchanged. Spot-checked as part of NFR-SEC-07: attachments are streamed server-side and link delivery sends a tokenised app URL, never a presigned bucket URL.
+
+## D-031: QuestionnaireResponse Is Not Required of This Clinic Yet (P10-T17 Spike)
+
+> **Numbering note:** D-030 is claimed by `P10-T09` (PR #260), which is open at the
+> time of writing. If that PR does not land, this entry renumbers to D-030.
+
+- **Status:** Accepted (spike outcome — no code)
+- **Decision:** **Do not build a questionnaire engine, and do not send `QuestionnaireResponse`, for this deployment.** The resource is real, its questionnaires are real, and they belong to a use case — **Skrining PTM** — that this clinic does not run and is not being asked to run. Revisit when the clinic starts a PTM screening programme, or when Kemenkes extends the obligation to klinik pratama.
+- **Why:** Three findings, in the order they settle the question.
+
+  **1. The IG's `QuestionnaireResponse` profile publishes no questionnaires.** The [SATUSEHAT FHIR R4 IG page](https://simplifier.net/guide/SATUSEHAT-FHIR-R4-Implementation-Guide/Home/FHIRProfiles/QuestionnaireResponse.page.md?version=current) is a structural definition only: no canonicals, no use cases, no statement about who must send it. On its own it obliges nobody.
+
+  **2. The questionnaires live in Skrining PTM, and they are named.** The [Skrining PTM interoperability page](https://satusehat.kemkes.go.id/platform/docs/id/interoperability/skrining-ptm/) names four canonicals under `https://fhir.kemkes.go.id/Questionnaire/`:
+
+  | Canonical | Questionnaire |
+  |---|---|
+  | `Q0013` | Faktor Risiko PTM |
+  | `Q0021` | Kuesioner PUMA (PPOK) |
+  | `Q0019` | Kuesioner Kanker Paru |
+  | `Q0020` | Kuesioner Kanker Kolorektal |
+
+  **3. The programme is aimed at Puskesmas.** Kemenkes's own rollout targets [300 Puskesmas for the Skrining PTM module](https://medium.com/@dtokemkes/300-puskesmas-ditargetkan-implementasi-modul-skrining-ptm-satusehat-09b708480819), with enablement aimed at SIMPUS vendors. The interoperability page addresses *"fasilitas pelayanan kesehatan"* generally and does not exclude a klinik pratama — but nothing found obliges one, and the rawat-jalan use case this system implements does not list the resource.
+
+  The decisive point is not the ambiguity in (3) but the shape of (2): these are **screening-programme instruments, not visit paperwork**. Sending `QuestionnaireResponse` means running the screening — recording PUMA scores, colorectal risk answers, PTM risk factors — which is a clinical service the clinic does not offer. A questionnaire engine built now would have nothing truthful to put in it.
+
+- **Consequence:** No ticket is filed for a questionnaire engine. `P10-T15` shipped Composition and ClinicalImpression and the rawat-jalan set is otherwise complete. If the clinic starts a PTM programme, the work is a **fixed form per canonical** — the four above are closed instruments with fixed items, so a handful of typed columns on a new `PtmScreening` record and one mapper is the honest shape (≈5 points). A **generic questionnaire engine** — Questionnaire storage, item trees, enableWhen, a renderer — is ≈13 points and buys nothing until there is a second, unrelated form. Build the fixed form.
+
+### Questions this spike could not close
+
+Recorded rather than guessed, because a spike that reports certainty it does not have is worse than one that reports a gap:
+
+- **Does POSTing a `QuestionnaireResponse` require the `Questionnaire` to be pre-registered on the platform, or is the canonical URL enough?** The Skrining PTM page shows canonical URLs in use and never says which. **This needs one real sandbox call**, which this environment has no credentials for. It does not change the decision — it changes the size of the follow-up if the decision is ever revisited.
+- **Whether a PTM screening reported to SATUSEHAT would double-report against BPJS PCare.** Moot here: this system implements no screening on either side. `bpjs-pcare` carries pendaftaran, kunjungan, obat and rujukan, and nothing screening-shaped, so there is no existing path to double up against.
+
+### Does anything we already collect map onto a required form?
+
+**No.** The CS channel (`PCS-T07`) collects a name and a phone number and nothing else — §5.3 forbids collecting more over an unauthenticated channel — so there is no pre-visit screening to promote into a `QuestionnaireResponse`. The FAQ corpus answers questions; it records no answers *from* patients.
