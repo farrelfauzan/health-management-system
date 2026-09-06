@@ -1096,3 +1096,43 @@ export type Notification = Prisma.NotificationModel
  * refuses it again if that check is ever bypassed.
  */
 export type OrganizationUnit = Prisma.OrganizationUnitModel
+/**
+ * Model DocumentType
+ * Master data for the documents module (P16-T39, FR-E5-31…39). Seeded rows
+ * carry `isSystem = true` and are refused for structural mutation exactly as
+ * seeded roles are (`rbac.service.ts`): their `code` and `behavior` are owned
+ * by `seed.sql` because code binds to them. Everything a clinic actually
+ * wants to change — the name, the approval policy, the ordering — stays
+ * editable on every row.
+ * 
+ * The approval policy lives here rather than in a second table: a policy
+ * about a type that is itself a row has no reason to be another row.
+ */
+export type DocumentType = Prisma.DocumentTypeModel
+/**
+ * Model DocumentTypeApprover
+ * Pre-fills the drafter's approver picker (FR-E5-38). Deliberately a default
+ * and not a rule: the drafter may remove anyone here and add anyone else.
+ * Both sides cascade — a default is bookkeeping about a type and a person,
+ * and means nothing once either is gone.
+ */
+export type DocumentTypeApprover = Prisma.DocumentTypeApproverModel
+/**
+ * Model ManagedDocument
+ * The registry row (P16-T28, FR-E5-01…05). It carries what the module
+ * lists, filters and searches on; the payload lives either inline
+ * (`contentHtml`, for a drafted document, sanitised on every write) or in
+ * object storage (`storageKey`, for an uploaded one) — never both, enforced
+ * by a CHECK in the migration.
+ * 
+ * `subjectTemplateId` / `subjectDocumentId` / `subjectInvoiceId` link a
+ * registry row to the thing it governs where one already exists — the
+ * `Invoice.encounterId` / `admissionId` pattern of nullable FKs with a
+ * CHECK allowing at most one, so a managed document can never point at two
+ * subjects and a real foreign key stops it outliving what it describes. The
+ * subject is also what the per-row access rule reads (FR-E5-04): a row
+ * governing a vault document is visible to that document's owner alone, a
+ * PATIENT_BILL to a holder of `invoice.read`. The module is a surface over
+ * those sources, never a bypass of their rules (§7.5.3).
+ */
+export type ManagedDocument = Prisma.ManagedDocumentModel

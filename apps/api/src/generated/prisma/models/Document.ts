@@ -443,6 +443,7 @@ export type DocumentWhereInput = {
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeListRelationFilter
   vaultShares?: Prisma.VaultDocumentShareListRelationFilter
   deliveries?: Prisma.DocumentDeliveryListRelationFilter
+  managedDocuments?: Prisma.ManagedDocumentListRelationFilter
 }
 
 export type DocumentOrderByWithRelationInput = {
@@ -487,6 +488,7 @@ export type DocumentOrderByWithRelationInput = {
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeOrderByRelationAggregateInput
   vaultShares?: Prisma.VaultDocumentShareOrderByRelationAggregateInput
   deliveries?: Prisma.DocumentDeliveryOrderByRelationAggregateInput
+  managedDocuments?: Prisma.ManagedDocumentOrderByRelationAggregateInput
 }
 
 export type DocumentWhereUniqueInput = Prisma.AtLeast<{
@@ -534,6 +536,7 @@ export type DocumentWhereUniqueInput = Prisma.AtLeast<{
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeListRelationFilter
   vaultShares?: Prisma.VaultDocumentShareListRelationFilter
   deliveries?: Prisma.DocumentDeliveryListRelationFilter
+  managedDocuments?: Prisma.ManagedDocumentListRelationFilter
 }, "id" | "storageKey">
 
 export type DocumentOrderByWithAggregationInput = {
@@ -648,6 +651,7 @@ export type DocumentCreateInput = {
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeCreateNestedManyWithoutDocumentInput
   vaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutDocumentInput
   deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutDocumentInput
+  managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutSubjectDocumentInput
 }
 
 export type DocumentUncheckedCreateInput = {
@@ -686,6 +690,7 @@ export type DocumentUncheckedCreateInput = {
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedCreateNestedManyWithoutDocumentInput
   vaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutDocumentInput
   deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutDocumentInput
+  managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutSubjectDocumentInput
 }
 
 export type DocumentUpdateInput = {
@@ -724,6 +729,7 @@ export type DocumentUpdateInput = {
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUpdateManyWithoutDocumentNestedInput
   vaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutDocumentNestedInput
   deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutDocumentNestedInput
+  managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutSubjectDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateInput = {
@@ -762,6 +768,7 @@ export type DocumentUncheckedUpdateInput = {
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedUpdateManyWithoutDocumentNestedInput
   vaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutDocumentNestedInput
   deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutDocumentNestedInput
+  managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutSubjectDocumentNestedInput
 }
 
 export type DocumentCreateManyInput = {
@@ -1328,6 +1335,22 @@ export type DocumentUncheckedUpdateManyWithoutAdmissionNestedInput = {
   deleteMany?: Prisma.DocumentScalarWhereInput | Prisma.DocumentScalarWhereInput[]
 }
 
+export type DocumentCreateNestedOneWithoutManagedDocumentsInput = {
+  create?: Prisma.XOR<Prisma.DocumentCreateWithoutManagedDocumentsInput, Prisma.DocumentUncheckedCreateWithoutManagedDocumentsInput>
+  connectOrCreate?: Prisma.DocumentCreateOrConnectWithoutManagedDocumentsInput
+  connect?: Prisma.DocumentWhereUniqueInput
+}
+
+export type DocumentUpdateOneWithoutManagedDocumentsNestedInput = {
+  create?: Prisma.XOR<Prisma.DocumentCreateWithoutManagedDocumentsInput, Prisma.DocumentUncheckedCreateWithoutManagedDocumentsInput>
+  connectOrCreate?: Prisma.DocumentCreateOrConnectWithoutManagedDocumentsInput
+  upsert?: Prisma.DocumentUpsertWithoutManagedDocumentsInput
+  disconnect?: Prisma.DocumentWhereInput | boolean
+  delete?: Prisma.DocumentWhereInput | boolean
+  connect?: Prisma.DocumentWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.DocumentUpdateToOneWithWhereWithoutManagedDocumentsInput, Prisma.DocumentUpdateWithoutManagedDocumentsInput>, Prisma.DocumentUncheckedUpdateWithoutManagedDocumentsInput>
+}
+
 export type DocumentCreateWithoutUploadedByInput = {
   id?: string
   ownerType: $Enums.DocumentOwnerType
@@ -1363,6 +1386,7 @@ export type DocumentCreateWithoutUploadedByInput = {
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeCreateNestedManyWithoutDocumentInput
   vaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutDocumentInput
   deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutDocumentInput
+  managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutSubjectDocumentInput
 }
 
 export type DocumentUncheckedCreateWithoutUploadedByInput = {
@@ -1400,6 +1424,7 @@ export type DocumentUncheckedCreateWithoutUploadedByInput = {
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedCreateNestedManyWithoutDocumentInput
   vaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutDocumentInput
   deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutDocumentInput
+  managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutSubjectDocumentInput
 }
 
 export type DocumentCreateOrConnectWithoutUploadedByInput = {
@@ -1447,6 +1472,7 @@ export type DocumentCreateWithoutOwnerInput = {
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeCreateNestedManyWithoutDocumentInput
   vaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutDocumentInput
   deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutDocumentInput
+  managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutSubjectDocumentInput
 }
 
 export type DocumentUncheckedCreateWithoutOwnerInput = {
@@ -1484,6 +1510,7 @@ export type DocumentUncheckedCreateWithoutOwnerInput = {
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedCreateNestedManyWithoutDocumentInput
   vaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutDocumentInput
   deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutDocumentInput
+  managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutSubjectDocumentInput
 }
 
 export type DocumentCreateOrConnectWithoutOwnerInput = {
@@ -1531,6 +1558,7 @@ export type DocumentCreateWithoutReleasedByInput = {
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeCreateNestedManyWithoutDocumentInput
   vaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutDocumentInput
   deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutDocumentInput
+  managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutSubjectDocumentInput
 }
 
 export type DocumentUncheckedCreateWithoutReleasedByInput = {
@@ -1568,6 +1596,7 @@ export type DocumentUncheckedCreateWithoutReleasedByInput = {
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedCreateNestedManyWithoutDocumentInput
   vaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutDocumentInput
   deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutDocumentInput
+  managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutSubjectDocumentInput
 }
 
 export type DocumentCreateOrConnectWithoutReleasedByInput = {
@@ -1700,6 +1729,7 @@ export type DocumentCreateWithoutPatientInput = {
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeCreateNestedManyWithoutDocumentInput
   vaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutDocumentInput
   deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutDocumentInput
+  managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutSubjectDocumentInput
 }
 
 export type DocumentUncheckedCreateWithoutPatientInput = {
@@ -1737,6 +1767,7 @@ export type DocumentUncheckedCreateWithoutPatientInput = {
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedCreateNestedManyWithoutDocumentInput
   vaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutDocumentInput
   deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutDocumentInput
+  managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutSubjectDocumentInput
 }
 
 export type DocumentCreateOrConnectWithoutPatientInput = {
@@ -1800,6 +1831,7 @@ export type DocumentCreateWithoutDeliveriesInput = {
   chunks?: Prisma.DocumentChunkCreateNestedManyWithoutDocumentInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeCreateNestedManyWithoutDocumentInput
   vaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutDocumentInput
+  managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutSubjectDocumentInput
 }
 
 export type DocumentUncheckedCreateWithoutDeliveriesInput = {
@@ -1837,6 +1869,7 @@ export type DocumentUncheckedCreateWithoutDeliveriesInput = {
   chunks?: Prisma.DocumentChunkUncheckedCreateNestedManyWithoutDocumentInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedCreateNestedManyWithoutDocumentInput
   vaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutDocumentInput
+  managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutSubjectDocumentInput
 }
 
 export type DocumentCreateOrConnectWithoutDeliveriesInput = {
@@ -1890,6 +1923,7 @@ export type DocumentUpdateWithoutDeliveriesInput = {
   chunks?: Prisma.DocumentChunkUpdateManyWithoutDocumentNestedInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUpdateManyWithoutDocumentNestedInput
   vaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutDocumentNestedInput
+  managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutSubjectDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateWithoutDeliveriesInput = {
@@ -1927,6 +1961,7 @@ export type DocumentUncheckedUpdateWithoutDeliveriesInput = {
   chunks?: Prisma.DocumentChunkUncheckedUpdateManyWithoutDocumentNestedInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedUpdateManyWithoutDocumentNestedInput
   vaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutDocumentNestedInput
+  managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutSubjectDocumentNestedInput
 }
 
 export type DocumentCreateWithoutEncounterInput = {
@@ -1964,6 +1999,7 @@ export type DocumentCreateWithoutEncounterInput = {
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeCreateNestedManyWithoutDocumentInput
   vaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutDocumentInput
   deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutDocumentInput
+  managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutSubjectDocumentInput
 }
 
 export type DocumentUncheckedCreateWithoutEncounterInput = {
@@ -2001,6 +2037,7 @@ export type DocumentUncheckedCreateWithoutEncounterInput = {
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedCreateNestedManyWithoutDocumentInput
   vaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutDocumentInput
   deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutDocumentInput
+  managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutSubjectDocumentInput
 }
 
 export type DocumentCreateOrConnectWithoutEncounterInput = {
@@ -2064,6 +2101,7 @@ export type DocumentCreateWithoutVaultExpiryNoticesInput = {
   chunks?: Prisma.DocumentChunkCreateNestedManyWithoutDocumentInput
   vaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutDocumentInput
   deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutDocumentInput
+  managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutSubjectDocumentInput
 }
 
 export type DocumentUncheckedCreateWithoutVaultExpiryNoticesInput = {
@@ -2101,6 +2139,7 @@ export type DocumentUncheckedCreateWithoutVaultExpiryNoticesInput = {
   chunks?: Prisma.DocumentChunkUncheckedCreateNestedManyWithoutDocumentInput
   vaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutDocumentInput
   deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutDocumentInput
+  managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutSubjectDocumentInput
 }
 
 export type DocumentCreateOrConnectWithoutVaultExpiryNoticesInput = {
@@ -2154,6 +2193,7 @@ export type DocumentUpdateWithoutVaultExpiryNoticesInput = {
   chunks?: Prisma.DocumentChunkUpdateManyWithoutDocumentNestedInput
   vaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutDocumentNestedInput
   deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutDocumentNestedInput
+  managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutSubjectDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateWithoutVaultExpiryNoticesInput = {
@@ -2191,6 +2231,7 @@ export type DocumentUncheckedUpdateWithoutVaultExpiryNoticesInput = {
   chunks?: Prisma.DocumentChunkUncheckedUpdateManyWithoutDocumentNestedInput
   vaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutDocumentNestedInput
   deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutDocumentNestedInput
+  managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutSubjectDocumentNestedInput
 }
 
 export type DocumentCreateWithoutVaultSharesInput = {
@@ -2228,6 +2269,7 @@ export type DocumentCreateWithoutVaultSharesInput = {
   chunks?: Prisma.DocumentChunkCreateNestedManyWithoutDocumentInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeCreateNestedManyWithoutDocumentInput
   deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutDocumentInput
+  managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutSubjectDocumentInput
 }
 
 export type DocumentUncheckedCreateWithoutVaultSharesInput = {
@@ -2265,6 +2307,7 @@ export type DocumentUncheckedCreateWithoutVaultSharesInput = {
   chunks?: Prisma.DocumentChunkUncheckedCreateNestedManyWithoutDocumentInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedCreateNestedManyWithoutDocumentInput
   deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutDocumentInput
+  managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutSubjectDocumentInput
 }
 
 export type DocumentCreateOrConnectWithoutVaultSharesInput = {
@@ -2318,6 +2361,7 @@ export type DocumentUpdateWithoutVaultSharesInput = {
   chunks?: Prisma.DocumentChunkUpdateManyWithoutDocumentNestedInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUpdateManyWithoutDocumentNestedInput
   deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutDocumentNestedInput
+  managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutSubjectDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateWithoutVaultSharesInput = {
@@ -2355,6 +2399,7 @@ export type DocumentUncheckedUpdateWithoutVaultSharesInput = {
   chunks?: Prisma.DocumentChunkUncheckedUpdateManyWithoutDocumentNestedInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedUpdateManyWithoutDocumentNestedInput
   deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutDocumentNestedInput
+  managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutSubjectDocumentNestedInput
 }
 
 export type DocumentCreateWithoutChunksInput = {
@@ -2392,6 +2437,7 @@ export type DocumentCreateWithoutChunksInput = {
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeCreateNestedManyWithoutDocumentInput
   vaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutDocumentInput
   deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutDocumentInput
+  managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutSubjectDocumentInput
 }
 
 export type DocumentUncheckedCreateWithoutChunksInput = {
@@ -2429,6 +2475,7 @@ export type DocumentUncheckedCreateWithoutChunksInput = {
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedCreateNestedManyWithoutDocumentInput
   vaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutDocumentInput
   deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutDocumentInput
+  managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutSubjectDocumentInput
 }
 
 export type DocumentCreateOrConnectWithoutChunksInput = {
@@ -2482,6 +2529,7 @@ export type DocumentUpdateWithoutChunksInput = {
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUpdateManyWithoutDocumentNestedInput
   vaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutDocumentNestedInput
   deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutDocumentNestedInput
+  managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutSubjectDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateWithoutChunksInput = {
@@ -2519,6 +2567,7 @@ export type DocumentUncheckedUpdateWithoutChunksInput = {
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedUpdateManyWithoutDocumentNestedInput
   vaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutDocumentNestedInput
   deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutDocumentNestedInput
+  managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutSubjectDocumentNestedInput
 }
 
 export type DocumentCreateWithoutAdmissionInput = {
@@ -2556,6 +2605,7 @@ export type DocumentCreateWithoutAdmissionInput = {
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeCreateNestedManyWithoutDocumentInput
   vaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutDocumentInput
   deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutDocumentInput
+  managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutSubjectDocumentInput
 }
 
 export type DocumentUncheckedCreateWithoutAdmissionInput = {
@@ -2593,6 +2643,7 @@ export type DocumentUncheckedCreateWithoutAdmissionInput = {
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedCreateNestedManyWithoutDocumentInput
   vaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutDocumentInput
   deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutDocumentInput
+  managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutSubjectDocumentInput
 }
 
 export type DocumentCreateOrConnectWithoutAdmissionInput = {
@@ -2619,6 +2670,174 @@ export type DocumentUpdateWithWhereUniqueWithoutAdmissionInput = {
 export type DocumentUpdateManyWithWhereWithoutAdmissionInput = {
   where: Prisma.DocumentScalarWhereInput
   data: Prisma.XOR<Prisma.DocumentUpdateManyMutationInput, Prisma.DocumentUncheckedUpdateManyWithoutAdmissionInput>
+}
+
+export type DocumentCreateWithoutManagedDocumentsInput = {
+  id?: string
+  ownerType: $Enums.DocumentOwnerType
+  purpose: $Enums.DocumentPurpose
+  title: string
+  storageKey: string
+  mimeType: string
+  sizeBytes: number
+  visibility?: $Enums.DocumentVisibility
+  language?: $Enums.DocumentLanguage
+  ingestStatus?: $Enums.DocumentIngestStatus
+  ingestError?: string | null
+  ingestedAt?: Date | string | null
+  category?: $Enums.DocumentCategory | null
+  documentDate?: Date | string | null
+  notes?: string | null
+  releasedToPatient?: boolean
+  releasedAt?: Date | string | null
+  deleteReason?: string | null
+  vaultCategory?: $Enums.VaultDocumentCategory | null
+  referenceNumber?: string | null
+  issuedAt?: Date | string | null
+  expiresAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  uploadedBy: Prisma.UserCreateNestedOneWithoutUploadedDocumentsInput
+  owner?: Prisma.UserCreateNestedOneWithoutOwnedDocumentsInput
+  patient?: Prisma.PatientProfileCreateNestedOneWithoutClinicalDocumentsInput
+  encounter?: Prisma.EncounterCreateNestedOneWithoutClinicalDocumentsInput
+  admission?: Prisma.AdmissionCreateNestedOneWithoutClinicalDocumentsInput
+  releasedBy?: Prisma.UserCreateNestedOneWithoutReleasedDocumentsInput
+  chunks?: Prisma.DocumentChunkCreateNestedManyWithoutDocumentInput
+  vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeCreateNestedManyWithoutDocumentInput
+  vaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutDocumentInput
+  deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutDocumentInput
+}
+
+export type DocumentUncheckedCreateWithoutManagedDocumentsInput = {
+  id?: string
+  ownerType: $Enums.DocumentOwnerType
+  ownerId?: string | null
+  purpose: $Enums.DocumentPurpose
+  title: string
+  storageKey: string
+  mimeType: string
+  sizeBytes: number
+  visibility?: $Enums.DocumentVisibility
+  language?: $Enums.DocumentLanguage
+  ingestStatus?: $Enums.DocumentIngestStatus
+  ingestError?: string | null
+  ingestedAt?: Date | string | null
+  uploadedById: string
+  patientId?: string | null
+  encounterId?: string | null
+  admissionId?: string | null
+  category?: $Enums.DocumentCategory | null
+  documentDate?: Date | string | null
+  notes?: string | null
+  releasedToPatient?: boolean
+  releasedAt?: Date | string | null
+  releasedById?: string | null
+  deleteReason?: string | null
+  vaultCategory?: $Enums.VaultDocumentCategory | null
+  referenceNumber?: string | null
+  issuedAt?: Date | string | null
+  expiresAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  chunks?: Prisma.DocumentChunkUncheckedCreateNestedManyWithoutDocumentInput
+  vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedCreateNestedManyWithoutDocumentInput
+  vaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutDocumentInput
+  deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutDocumentInput
+}
+
+export type DocumentCreateOrConnectWithoutManagedDocumentsInput = {
+  where: Prisma.DocumentWhereUniqueInput
+  create: Prisma.XOR<Prisma.DocumentCreateWithoutManagedDocumentsInput, Prisma.DocumentUncheckedCreateWithoutManagedDocumentsInput>
+}
+
+export type DocumentUpsertWithoutManagedDocumentsInput = {
+  update: Prisma.XOR<Prisma.DocumentUpdateWithoutManagedDocumentsInput, Prisma.DocumentUncheckedUpdateWithoutManagedDocumentsInput>
+  create: Prisma.XOR<Prisma.DocumentCreateWithoutManagedDocumentsInput, Prisma.DocumentUncheckedCreateWithoutManagedDocumentsInput>
+  where?: Prisma.DocumentWhereInput
+}
+
+export type DocumentUpdateToOneWithWhereWithoutManagedDocumentsInput = {
+  where?: Prisma.DocumentWhereInput
+  data: Prisma.XOR<Prisma.DocumentUpdateWithoutManagedDocumentsInput, Prisma.DocumentUncheckedUpdateWithoutManagedDocumentsInput>
+}
+
+export type DocumentUpdateWithoutManagedDocumentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  ownerType?: Prisma.EnumDocumentOwnerTypeFieldUpdateOperationsInput | $Enums.DocumentOwnerType
+  purpose?: Prisma.EnumDocumentPurposeFieldUpdateOperationsInput | $Enums.DocumentPurpose
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  storageKey?: Prisma.StringFieldUpdateOperationsInput | string
+  mimeType?: Prisma.StringFieldUpdateOperationsInput | string
+  sizeBytes?: Prisma.IntFieldUpdateOperationsInput | number
+  visibility?: Prisma.EnumDocumentVisibilityFieldUpdateOperationsInput | $Enums.DocumentVisibility
+  language?: Prisma.EnumDocumentLanguageFieldUpdateOperationsInput | $Enums.DocumentLanguage
+  ingestStatus?: Prisma.EnumDocumentIngestStatusFieldUpdateOperationsInput | $Enums.DocumentIngestStatus
+  ingestError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ingestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  category?: Prisma.NullableEnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory | null
+  documentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releasedToPatient?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vaultCategory?: Prisma.NullableEnumVaultDocumentCategoryFieldUpdateOperationsInput | $Enums.VaultDocumentCategory | null
+  referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  uploadedBy?: Prisma.UserUpdateOneRequiredWithoutUploadedDocumentsNestedInput
+  owner?: Prisma.UserUpdateOneWithoutOwnedDocumentsNestedInput
+  patient?: Prisma.PatientProfileUpdateOneWithoutClinicalDocumentsNestedInput
+  encounter?: Prisma.EncounterUpdateOneWithoutClinicalDocumentsNestedInput
+  admission?: Prisma.AdmissionUpdateOneWithoutClinicalDocumentsNestedInput
+  releasedBy?: Prisma.UserUpdateOneWithoutReleasedDocumentsNestedInput
+  chunks?: Prisma.DocumentChunkUpdateManyWithoutDocumentNestedInput
+  vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUpdateManyWithoutDocumentNestedInput
+  vaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutDocumentNestedInput
+  deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutDocumentNestedInput
+}
+
+export type DocumentUncheckedUpdateWithoutManagedDocumentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  ownerType?: Prisma.EnumDocumentOwnerTypeFieldUpdateOperationsInput | $Enums.DocumentOwnerType
+  ownerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  purpose?: Prisma.EnumDocumentPurposeFieldUpdateOperationsInput | $Enums.DocumentPurpose
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  storageKey?: Prisma.StringFieldUpdateOperationsInput | string
+  mimeType?: Prisma.StringFieldUpdateOperationsInput | string
+  sizeBytes?: Prisma.IntFieldUpdateOperationsInput | number
+  visibility?: Prisma.EnumDocumentVisibilityFieldUpdateOperationsInput | $Enums.DocumentVisibility
+  language?: Prisma.EnumDocumentLanguageFieldUpdateOperationsInput | $Enums.DocumentLanguage
+  ingestStatus?: Prisma.EnumDocumentIngestStatusFieldUpdateOperationsInput | $Enums.DocumentIngestStatus
+  ingestError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ingestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  uploadedById?: Prisma.StringFieldUpdateOperationsInput | string
+  patientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  encounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableEnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory | null
+  documentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releasedToPatient?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  releasedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vaultCategory?: Prisma.NullableEnumVaultDocumentCategoryFieldUpdateOperationsInput | $Enums.VaultDocumentCategory | null
+  referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  chunks?: Prisma.DocumentChunkUncheckedUpdateManyWithoutDocumentNestedInput
+  vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedUpdateManyWithoutDocumentNestedInput
+  vaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutDocumentNestedInput
+  deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentCreateManyUploadedByInput = {
@@ -2755,6 +2974,7 @@ export type DocumentUpdateWithoutUploadedByInput = {
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUpdateManyWithoutDocumentNestedInput
   vaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutDocumentNestedInput
   deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutDocumentNestedInput
+  managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutSubjectDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateWithoutUploadedByInput = {
@@ -2792,6 +3012,7 @@ export type DocumentUncheckedUpdateWithoutUploadedByInput = {
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedUpdateManyWithoutDocumentNestedInput
   vaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutDocumentNestedInput
   deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutDocumentNestedInput
+  managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutSubjectDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateManyWithoutUploadedByInput = {
@@ -2862,6 +3083,7 @@ export type DocumentUpdateWithoutOwnerInput = {
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUpdateManyWithoutDocumentNestedInput
   vaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutDocumentNestedInput
   deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutDocumentNestedInput
+  managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutSubjectDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateWithoutOwnerInput = {
@@ -2899,6 +3121,7 @@ export type DocumentUncheckedUpdateWithoutOwnerInput = {
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedUpdateManyWithoutDocumentNestedInput
   vaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutDocumentNestedInput
   deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutDocumentNestedInput
+  managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutSubjectDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateManyWithoutOwnerInput = {
@@ -2969,6 +3192,7 @@ export type DocumentUpdateWithoutReleasedByInput = {
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUpdateManyWithoutDocumentNestedInput
   vaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutDocumentNestedInput
   deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutDocumentNestedInput
+  managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutSubjectDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateWithoutReleasedByInput = {
@@ -3006,6 +3230,7 @@ export type DocumentUncheckedUpdateWithoutReleasedByInput = {
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedUpdateManyWithoutDocumentNestedInput
   vaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutDocumentNestedInput
   deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutDocumentNestedInput
+  managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutSubjectDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateManyWithoutReleasedByInput = {
@@ -3109,6 +3334,7 @@ export type DocumentUpdateWithoutPatientInput = {
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUpdateManyWithoutDocumentNestedInput
   vaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutDocumentNestedInput
   deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutDocumentNestedInput
+  managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutSubjectDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateWithoutPatientInput = {
@@ -3146,6 +3372,7 @@ export type DocumentUncheckedUpdateWithoutPatientInput = {
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedUpdateManyWithoutDocumentNestedInput
   vaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutDocumentNestedInput
   deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutDocumentNestedInput
+  managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutSubjectDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateManyWithoutPatientInput = {
@@ -3249,6 +3476,7 @@ export type DocumentUpdateWithoutEncounterInput = {
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUpdateManyWithoutDocumentNestedInput
   vaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutDocumentNestedInput
   deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutDocumentNestedInput
+  managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutSubjectDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateWithoutEncounterInput = {
@@ -3286,6 +3514,7 @@ export type DocumentUncheckedUpdateWithoutEncounterInput = {
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedUpdateManyWithoutDocumentNestedInput
   vaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutDocumentNestedInput
   deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutDocumentNestedInput
+  managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutSubjectDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateManyWithoutEncounterInput = {
@@ -3389,6 +3618,7 @@ export type DocumentUpdateWithoutAdmissionInput = {
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUpdateManyWithoutDocumentNestedInput
   vaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutDocumentNestedInput
   deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutDocumentNestedInput
+  managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutSubjectDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateWithoutAdmissionInput = {
@@ -3426,6 +3656,7 @@ export type DocumentUncheckedUpdateWithoutAdmissionInput = {
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedUpdateManyWithoutDocumentNestedInput
   vaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutDocumentNestedInput
   deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutDocumentNestedInput
+  managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutSubjectDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateManyWithoutAdmissionInput = {
@@ -3471,6 +3702,7 @@ export type DocumentCountOutputType = {
   vaultExpiryNotices: number
   vaultShares: number
   deliveries: number
+  managedDocuments: number
 }
 
 export type DocumentCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -3478,6 +3710,7 @@ export type DocumentCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensio
   vaultExpiryNotices?: boolean | DocumentCountOutputTypeCountVaultExpiryNoticesArgs
   vaultShares?: boolean | DocumentCountOutputTypeCountVaultSharesArgs
   deliveries?: boolean | DocumentCountOutputTypeCountDeliveriesArgs
+  managedDocuments?: boolean | DocumentCountOutputTypeCountManagedDocumentsArgs
 }
 
 /**
@@ -3516,6 +3749,13 @@ export type DocumentCountOutputTypeCountVaultSharesArgs<ExtArgs extends runtime.
  */
 export type DocumentCountOutputTypeCountDeliveriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.DocumentDeliveryWhereInput
+}
+
+/**
+ * DocumentCountOutputType without action
+ */
+export type DocumentCountOutputTypeCountManagedDocumentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ManagedDocumentWhereInput
 }
 
 
@@ -3561,6 +3801,7 @@ export type DocumentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   vaultExpiryNotices?: boolean | Prisma.Document$vaultExpiryNoticesArgs<ExtArgs>
   vaultShares?: boolean | Prisma.Document$vaultSharesArgs<ExtArgs>
   deliveries?: boolean | Prisma.Document$deliveriesArgs<ExtArgs>
+  managedDocuments?: boolean | Prisma.Document$managedDocumentsArgs<ExtArgs>
   _count?: boolean | Prisma.DocumentCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["document"]>
 
@@ -3690,6 +3931,7 @@ export type DocumentInclude<ExtArgs extends runtime.Types.Extensions.InternalArg
   vaultExpiryNotices?: boolean | Prisma.Document$vaultExpiryNoticesArgs<ExtArgs>
   vaultShares?: boolean | Prisma.Document$vaultSharesArgs<ExtArgs>
   deliveries?: boolean | Prisma.Document$deliveriesArgs<ExtArgs>
+  managedDocuments?: boolean | Prisma.Document$managedDocumentsArgs<ExtArgs>
   _count?: boolean | Prisma.DocumentCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type DocumentIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -3722,6 +3964,15 @@ export type $DocumentPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     vaultExpiryNotices: Prisma.$VaultDocumentExpiryNoticePayload<ExtArgs>[]
     vaultShares: Prisma.$VaultDocumentSharePayload<ExtArgs>[]
     deliveries: Prisma.$DocumentDeliveryPayload<ExtArgs>[]
+    /**
+     * One row per stored object. Confirming an upload is the only way a row
+     * is created, and a client that retries the confirm — or replays it —
+     * would otherwise attach a second document to the same file, so deleting
+     * "the" document would leave the other one still serving it. Keys are
+     * server-minted UUIDs and never reused, so this constrains nothing an
+     * honest flow does.
+     */
+    managedDocuments: Prisma.$ManagedDocumentPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -4190,6 +4441,7 @@ export interface Prisma__DocumentClient<T, Null = never, ExtArgs extends runtime
   vaultExpiryNotices<T extends Prisma.Document$vaultExpiryNoticesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Document$vaultExpiryNoticesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$VaultDocumentExpiryNoticePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   vaultShares<T extends Prisma.Document$vaultSharesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Document$vaultSharesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$VaultDocumentSharePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   deliveries<T extends Prisma.Document$deliveriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Document$deliveriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DocumentDeliveryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  managedDocuments<T extends Prisma.Document$managedDocumentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Document$managedDocumentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ManagedDocumentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4839,6 +5091,30 @@ export type Document$deliveriesArgs<ExtArgs extends runtime.Types.Extensions.Int
   take?: number
   skip?: number
   distinct?: Prisma.DocumentDeliveryScalarFieldEnum | Prisma.DocumentDeliveryScalarFieldEnum[]
+}
+
+/**
+ * Document.managedDocuments
+ */
+export type Document$managedDocumentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ManagedDocument
+   */
+  select?: Prisma.ManagedDocumentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ManagedDocument
+   */
+  omit?: Prisma.ManagedDocumentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ManagedDocumentInclude<ExtArgs> | null
+  where?: Prisma.ManagedDocumentWhereInput
+  orderBy?: Prisma.ManagedDocumentOrderByWithRelationInput | Prisma.ManagedDocumentOrderByWithRelationInput[]
+  cursor?: Prisma.ManagedDocumentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ManagedDocumentScalarFieldEnum | Prisma.ManagedDocumentScalarFieldEnum[]
 }
 
 /**

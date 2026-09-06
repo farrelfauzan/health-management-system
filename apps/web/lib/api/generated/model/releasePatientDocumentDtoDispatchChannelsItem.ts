@@ -6,8 +6,8 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type ReleasePatientDocumentDtoDispatchChannelsItem =
-  (typeof ReleasePatientDocumentDtoDispatchChannelsItem)[keyof typeof ReleasePatientDocumentDtoDispatchChannelsItem];
+export type ReleasePatientDocumentDtoDispatchChannelsItem = typeof ReleasePatientDocumentDtoDispatchChannelsItem[keyof typeof ReleasePatientDocumentDtoDispatchChannelsItem];
+
 
 export const ReleasePatientDocumentDtoDispatchChannelsItem = {
   WHATSAPP: 'WHATSAPP',

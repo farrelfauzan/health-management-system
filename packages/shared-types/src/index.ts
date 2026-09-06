@@ -108,3 +108,7 @@ export * from '#document-delivery/schemas';
 export * from '#document-delivery/contracts';
 export * from '#document-delivery/types';
 export * from '#document-delivery/opt-out-keyword';
+export * from '#managed-document/schemas';
+export * from '#managed-document/contracts';
+export * from '#managed-document/types';
+export * from '#managed-document/validate-against-type';

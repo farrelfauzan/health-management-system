@@ -16,6 +16,7 @@ export type ShellNavigationKey =
   | 'admissions'
   | 'pharmacy'
   | 'billing'
+  | 'documents'
   | 'advanced'
   | 'aiAssistant'
   | 'aiProviders'
@@ -139,6 +140,16 @@ export const ADMIN_NAV_SECTIONS: AdminNavSection[] = [
           { action: 'read', subject: 'ServiceTariff' },
           { action: 'read', subject: 'DocumentTemplate' },
         ],
+      },
+      {
+        // P16-T39. The documents module: types now, the registry and the
+        // approval workspace as E5 lands. One entry, gated on the registry
+        // read — the type list is its first tab.
+        href: '/admin/documents',
+        label: 'Documents',
+        labelKey: 'documents',
+        icon: 'folder_managed',
+        ability: { action: 'read', subject: 'ManagedDocument' },
       },
     ],
   },

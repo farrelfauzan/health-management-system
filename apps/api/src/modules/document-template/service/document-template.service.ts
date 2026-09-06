@@ -23,7 +23,7 @@ import { CurrentUser } from '../../../common/auth/current-user.type';
 import { DocumentTemplateRepository } from '../repository/document-template.repository';
 import { DocumentTemplateMapper } from './document-template.mapper';
 import { findUnknownTemplateTokens } from './find-unknown-template-tokens';
-import { sanitiseTemplateHtml } from './sanitise-template-html';
+import { sanitiseRichTextHtml } from '../../../common/html/sanitise-rich-text-html';
 
 const TEMPLATE_AUDIT_RESOURCE = 'document-template';
 
@@ -59,7 +59,7 @@ export class DocumentTemplateService {
       kind: input.kind,
       name: input.name,
       description: input.description,
-      contentHtml: sanitiseTemplateHtml(input.contentHtml),
+      contentHtml: sanitiseRichTextHtml(input.contentHtml),
       settings: input.settings,
       createdById: actor.sub,
     });
@@ -83,7 +83,7 @@ export class DocumentTemplateService {
       id,
       name: input.name,
       description: input.description,
-      contentHtml: input.contentHtml === undefined ? undefined : sanitiseTemplateHtml(input.contentHtml),
+      contentHtml: input.contentHtml === undefined ? undefined : sanitiseRichTextHtml(input.contentHtml),
       settings: input.settings,
     });
     await this.auditService.record({

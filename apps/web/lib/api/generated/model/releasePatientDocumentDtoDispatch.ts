@@ -9,8 +9,8 @@ import type { ReleasePatientDocumentDtoDispatchChannelsItem } from './releasePat
 
 export type ReleasePatientDocumentDtoDispatch = {
   /**
-   * @minItems 1
-   * @maxItems 2
-   */
+     * @minItems 1
+     * @maxItems 2
+     */
   channels: ReleasePatientDocumentDtoDispatchChannelsItem[];
 };

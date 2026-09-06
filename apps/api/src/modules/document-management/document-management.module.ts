@@ -141,6 +141,11 @@ import { UploadedDocumentGuardService } from './service/uploaded-document-guard.
     // (`P16-T41`): the count a super admin confirms and the end-of-window
     // purge, behind a service, so no other module reaches a vault repository.
     VaultOffboardingService,
+    // Exported for the documents registry (`P16-T36`): an uploaded agreement
+    // or consent passes the same confirm-time content gate as every other
+    // upload surface — magic bytes checked, images re-encoded — through this
+    // service, so the rule is stated once.
+    UploadedDocumentGuardService,
   ],
 })
 export class DocumentManagementModule {}

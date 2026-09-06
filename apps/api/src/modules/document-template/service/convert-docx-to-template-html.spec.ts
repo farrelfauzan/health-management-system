@@ -1,6 +1,6 @@
 import { buildDocxFixture } from '../../../../test/fixtures/build-docx-fixture';
 import { convertDocxToTemplateHtml } from './convert-docx-to-template-html';
-import { sanitiseTemplateHtml } from './sanitise-template-html';
+import { sanitiseRichTextHtml } from '../../../common/html/sanitise-rich-text-html';
 
 describe('convertDocxToTemplateHtml', () => {
   it('carries headings, emphasis, tables, placeholders and a re-encoded image into editor HTML', async () => {
@@ -15,7 +15,7 @@ describe('convertDocxToTemplateHtml', () => {
     });
 
     const actual = await convertDocxToTemplateHtml(content);
-    const sanitised = sanitiseTemplateHtml(actual.html);
+    const sanitised = sanitiseRichTextHtml(actual.html);
 
     expect(actual.html).toContain('<h1>Klinik Sehat Bersama</h1>');
     expect(actual.html).toContain('<strong>**Kuitansi pembayaran</strong>');

@@ -32989,6 +32989,1904 @@ paths:
         - bearer: []
       summary: Compare HFIS against HMS and report the disagreements
       tags: *a52
+  /api/v1/document-types:
+    get:
+      operationId: DocumentTypeController_listTypes_v1
+      parameters:
+        - name: includeInactive
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - "true"
+              - "false"
+      responses:
+        "200":
+          description: Every live type in the clinic’s order, each with its usage count
+            and default approvers (FR-E5-39). Deactivated types are omitted
+            unless `includeInactive=true` — the settings screen asks for them,
+            the new-document picker never does (FR-E5-36).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        code:
+                          type: string
+                        name:
+                          type: string
+                        description:
+                          type: string
+                        behavior:
+                          type: string
+                        isSystem:
+                          type: boolean
+                        isApprovalRequired:
+                          type: boolean
+                        allowSelfApproval:
+                          type: boolean
+                        requiredApprovals:
+                          type: integer
+                        requiresPatient:
+                          type: boolean
+                        requiresDoctor:
+                          type: boolean
+                        contentMode:
+                          type: string
+                        isActive:
+                          type: boolean
+                        sortOrder:
+                          type: integer
+                        documentCount:
+                          type: integer
+                        defaultApprovers:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                              email:
+                                type: string
+                            required:
+                              - id
+                              - email
+                        createdAt:
+                          type: string
+                        updatedAt:
+                          type: string
+                      required:
+                        - id
+                        - code
+                        - name
+                        - behavior
+                        - isSystem
+                        - isApprovalRequired
+                        - allowSelfApproval
+                        - requiredApprovals
+                        - requiresPatient
+                        - requiresDoctor
+                        - contentMode
+                        - isActive
+                        - sortOrder
+                        - documentCount
+                        - defaultApprovers
+                        - createdAt
+                        - updatedAt
+                required:
+                  - data
+                example:
+                  data:
+                    - id: c0a8012e-1b4f-4c7a-9d2e-3f5a6b7c8d90
+                      code: AGREEMENT_PATIENT_CLINIC
+                      name: Perjanjian pasien–klinik
+                      description: Kesepakatan antara pasien dan klinik — tanggung jawab biaya,
+                        persetujuan umum perawatan
+                      behavior: GENERIC
+                      isSystem: true
+                      isApprovalRequired: true
+                      allowSelfApproval: false
+                      requiredApprovals: 1
+                      requiresPatient: true
+                      requiresDoctor: false
+                      contentMode: EITHER
+                      isActive: true
+                      sortOrder: 10
+                      documentCount: 12
+                      defaultApprovers:
+                        - id: 4e1f9f0a-9a3f-4b58-b6b3-8d2f5a6c7e91
+                          email: direktur.medis@klinik.example
+                      createdAt: 2026-09-30T00:00:00.000Z
+                      updatedAt: 2026-09-30T00:00:00.000Z
+                    - id: d1b9123f-2c5a-4d8b-8e3f-4a6b7c8d9e01
+                      code: SURAT_KETERANGAN_SEHAT
+                      name: Surat Keterangan Sehat
+                      description: Surat keterangan sehat untuk keperluan administrasi
+                      behavior: GENERIC
+                      isSystem: false
+                      isApprovalRequired: false
+                      allowSelfApproval: false
+                      requiredApprovals: 1
+                      requiresPatient: true
+                      requiresDoctor: false
+                      contentMode: DRAFTED
+                      isActive: true
+                      sortOrder: 100
+                      documentCount: 0
+                      defaultApprovers: []
+                      createdAt: 2026-09-30T00:00:00.000Z
+                      updatedAt: 2026-09-30T00:00:00.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: List document types
+      tags: &a53
+        - Document Types
+    post:
+      operationId: DocumentTypeController_createType_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateDocumentTypeDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  name: Surat Keterangan Sehat
+                  description: Surat keterangan sehat untuk keperluan administrasi
+                  isApprovalRequired: false
+                  requiresPatient: true
+                  contentMode: DRAFTED
+                  sortOrder: 100
+      responses:
+        "201":
+          description: The new type, with `behavior = GENERIC` set by the server and
+            `code` generated from the name (a collision gets a numeric suffix).
+            A payload carrying `behavior`, `code` or `isSystem` is refused as a
+            validation error, never silently stripped (FR-E5-32).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      code:
+                        type: string
+                      name:
+                        type: string
+                      description:
+                        type: string
+                      behavior:
+                        type: string
+                      isSystem:
+                        type: boolean
+                      isApprovalRequired:
+                        type: boolean
+                      allowSelfApproval:
+                        type: boolean
+                      requiredApprovals:
+                        type: integer
+                      requiresPatient:
+                        type: boolean
+                      requiresDoctor:
+                        type: boolean
+                      contentMode:
+                        type: string
+                      isActive:
+                        type: boolean
+                      sortOrder:
+                        type: integer
+                      documentCount:
+                        type: integer
+                      defaultApprovers:
+                        type: array
+                        items: {}
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - code
+                      - name
+                      - behavior
+                      - isSystem
+                      - isApprovalRequired
+                      - allowSelfApproval
+                      - requiredApprovals
+                      - requiresPatient
+                      - requiresDoctor
+                      - contentMode
+                      - isActive
+                      - sortOrder
+                      - documentCount
+                      - defaultApprovers
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: d1b9123f-2c5a-4d8b-8e3f-4a6b7c8d9e01
+                    code: SURAT_KETERANGAN_SEHAT
+                    name: Surat Keterangan Sehat
+                    description: Surat keterangan sehat untuk keperluan administrasi
+                    behavior: GENERIC
+                    isSystem: false
+                    isApprovalRequired: false
+                    allowSelfApproval: false
+                    requiredApprovals: 1
+                    requiresPatient: true
+                    requiresDoctor: false
+                    contentMode: DRAFTED
+                    isActive: true
+                    sortOrder: 100
+                    documentCount: 0
+                    defaultApprovers: []
+                    createdAt: 2026-09-30T00:00:00.000Z
+                    updatedAt: 2026-09-30T00:00:00.000Z
+                  message: Document type created
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Create a clinic document type
+      tags: *a53
+  /api/v1/document-types/{id}:
+    patch:
+      operationId: DocumentTypeController_updateType_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateDocumentTypeDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  name: Templat kuitansi
+                  isApprovalRequired: true
+                  requiredApprovals: 1
+      responses:
+        "200":
+          description: The updated type. Name, description, approval policy, party flags,
+            content mode, ordering and the active flag are editable on every
+            row; `code` only on a clinic type (403 `DOCUMENT_TYPE_SYSTEM_ROW` on
+            a seeded one, FR-E5-33) and only to an unused value (409
+            `DOCUMENT_TYPE_CODE_TAKEN`). Any approval-policy change is audited;
+            enabling self-approval writes `SELF_APPROVAL_ENABLED` (NFR-AUD-03).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      code:
+                        type: string
+                      name:
+                        type: string
+                      description:
+                        type: string
+                      behavior:
+                        type: string
+                      isSystem:
+                        type: boolean
+                      isApprovalRequired:
+                        type: boolean
+                      allowSelfApproval:
+                        type: boolean
+                      requiredApprovals:
+                        type: integer
+                      requiresPatient:
+                        type: boolean
+                      requiresDoctor:
+                        type: boolean
+                      contentMode:
+                        type: string
+                      isActive:
+                        type: boolean
+                      sortOrder:
+                        type: integer
+                      documentCount:
+                        type: integer
+                      defaultApprovers:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            email:
+                              type: string
+                          required:
+                            - id
+                            - email
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - code
+                      - name
+                      - behavior
+                      - isSystem
+                      - isApprovalRequired
+                      - allowSelfApproval
+                      - requiredApprovals
+                      - requiresPatient
+                      - requiresDoctor
+                      - contentMode
+                      - isActive
+                      - sortOrder
+                      - documentCount
+                      - defaultApprovers
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: c0a8012e-1b4f-4c7a-9d2e-3f5a6b7c8d90
+                    code: AGREEMENT_PATIENT_CLINIC
+                    name: Perjanjian pasien–klinik
+                    description: Kesepakatan antara pasien dan klinik — tanggung jawab biaya,
+                      persetujuan umum perawatan
+                    behavior: GENERIC
+                    isSystem: true
+                    isApprovalRequired: true
+                    allowSelfApproval: false
+                    requiredApprovals: 1
+                    requiresPatient: true
+                    requiresDoctor: false
+                    contentMode: EITHER
+                    isActive: true
+                    sortOrder: 10
+                    documentCount: 12
+                    defaultApprovers:
+                      - id: 4e1f9f0a-9a3f-4b58-b6b3-8d2f5a6c7e91
+                        email: direktur.medis@klinik.example
+                    createdAt: 2026-09-30T00:00:00.000Z
+                    updatedAt: 2026-09-30T00:00:00.000Z
+                  message: Document type updated
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Document type not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Document type not found.
+      security:
+        - bearer: []
+      summary: Update a document type
+      tags: *a53
+    delete:
+      operationId: DocumentTypeController_deleteType_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Soft-deleted. Refused with 403 `DOCUMENT_TYPE_SYSTEM_ROW` on a
+            seeded type and with 409 `DOCUMENT_TYPE_IN_USE` — naming the count
+            in `error.details.documentCount` — while any document uses it;
+            deactivate instead (FR-E5-36). Documents never lose their type.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      deletedAt:
+                        type: string
+                    required:
+                      - id
+                      - deletedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: d1b9123f-2c5a-4d8b-8e3f-4a6b7c8d9e01
+                    deletedAt: 2026-09-30T04:15:00.000Z
+                  message: Document type deleted
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Document type not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Document type not found.
+      security:
+        - bearer: []
+      summary: Delete a clinic document type
+      tags: *a53
+  /api/v1/document-types/{id}/default-approvers:
+    put:
+      operationId: DocumentTypeController_setDefaultApprovers_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SetDocumentTypeDefaultApproversDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  approverIds:
+                    - 4e1f9f0a-9a3f-4b58-b6b3-8d2f5a6c7e91
+      responses:
+        "200":
+          description: The type with its new default set. A default pre-fills the
+            drafter’s picker and never routes anything (FR-E5-38). Every id must
+            be an active staff account — a patient can never be named — and 422
+            `DOCUMENT_TYPE_APPROVER_INVALID` lists the ids that failed.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      code:
+                        type: string
+                      name:
+                        type: string
+                      description:
+                        type: string
+                      behavior:
+                        type: string
+                      isSystem:
+                        type: boolean
+                      isApprovalRequired:
+                        type: boolean
+                      allowSelfApproval:
+                        type: boolean
+                      requiredApprovals:
+                        type: integer
+                      requiresPatient:
+                        type: boolean
+                      requiresDoctor:
+                        type: boolean
+                      contentMode:
+                        type: string
+                      isActive:
+                        type: boolean
+                      sortOrder:
+                        type: integer
+                      documentCount:
+                        type: integer
+                      defaultApprovers:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            email:
+                              type: string
+                          required:
+                            - id
+                            - email
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - code
+                      - name
+                      - behavior
+                      - isSystem
+                      - isApprovalRequired
+                      - allowSelfApproval
+                      - requiredApprovals
+                      - requiresPatient
+                      - requiresDoctor
+                      - contentMode
+                      - isActive
+                      - sortOrder
+                      - documentCount
+                      - defaultApprovers
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: c0a8012e-1b4f-4c7a-9d2e-3f5a6b7c8d90
+                    code: AGREEMENT_PATIENT_CLINIC
+                    name: Perjanjian pasien–klinik
+                    description: Kesepakatan antara pasien dan klinik — tanggung jawab biaya,
+                      persetujuan umum perawatan
+                    behavior: GENERIC
+                    isSystem: true
+                    isApprovalRequired: true
+                    allowSelfApproval: false
+                    requiredApprovals: 1
+                    requiresPatient: true
+                    requiresDoctor: false
+                    contentMode: EITHER
+                    isActive: true
+                    sortOrder: 10
+                    documentCount: 12
+                    defaultApprovers:
+                      - id: 4e1f9f0a-9a3f-4b58-b6b3-8d2f5a6c7e91
+                        email: direktur.medis@klinik.example
+                    createdAt: 2026-09-30T00:00:00.000Z
+                    updatedAt: 2026-09-30T00:00:00.000Z
+                  message: Default approvers updated
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Document type not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Document type not found.
+      security:
+        - bearer: []
+      summary: Replace the default approvers of a document type
+      tags: *a53
+  /api/v1/documents:
+    get:
+      operationId: ManagedDocumentController_listDocuments_v1
+      parameters:
+        - name: typeId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: status
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - DRAFT
+              - PENDING_APPROVAL
+              - ISSUED
+              - ARCHIVED
+        - name: draftedBy
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: approver
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: from
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: to
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: dateField
+          required: false
+          in: query
+          schema:
+            default: created
+            type: string
+            enum:
+              - created
+              - issued
+        - name: q
+          required: false
+          in: query
+          schema:
+            minLength: 1
+            maxLength: 120
+            type: string
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            exclusiveMinimum: false
+            default: 1
+            type: integer
+        - name: limit
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            exclusiveMaximum: false
+            exclusiveMinimum: false
+            default: 25
+            type: integer
+      responses:
+        "200":
+          description: Every managed document the caller is entitled to see, newest first,
+            filterable by type, status, drafter, approver and a date range on
+            created or issued, and searchable over title, document number and
+            party names (FR-E5-02/03). Rows governing another module’s document
+            — a patient bill, a template, a corpus or vault document — appear
+            only to a caller who could open them there; `meta.total` is counted
+            after that rule, so it never reveals a row the caller cannot see
+            (FR-E5-04).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            type:
+                              type: object
+                              properties:
+                                id:
+                                  type: string
+                                code:
+                                  type: string
+                                name:
+                                  type: string
+                                behavior:
+                                  type: string
+                                contentMode:
+                                  type: string
+                              required:
+                                - id
+                                - code
+                                - name
+                                - behavior
+                                - contentMode
+                            status:
+                              type: string
+                            title:
+                              type: string
+                            documentNumber:
+                              type: string
+                            hasContentHtml:
+                              type: boolean
+                            storageKey:
+                              nullable: true
+                            storageMimeType:
+                              nullable: true
+                            storageSizeBytes:
+                              nullable: true
+                            patient:
+                              type: object
+                              properties:
+                                id:
+                                  type: string
+                                fullName:
+                                  type: string
+                              required:
+                                - id
+                                - fullName
+                            doctor:
+                              nullable: true
+                            subject:
+                              nullable: true
+                            draftedBy:
+                              type: object
+                              properties:
+                                id:
+                                  type: string
+                                email:
+                                  type: string
+                              required:
+                                - id
+                                - email
+                            issuedAt:
+                              nullable: true
+                            createdAt:
+                              type: string
+                            updatedAt:
+                              type: string
+                          required:
+                            - id
+                            - type
+                            - status
+                            - title
+                            - documentNumber
+                            - hasContentHtml
+                            - storageKey
+                            - storageMimeType
+                            - storageSizeBytes
+                            - patient
+                            - doctor
+                            - subject
+                            - draftedBy
+                            - issuedAt
+                            - createdAt
+                            - updatedAt
+                      meta:
+                        type: object
+                        properties:
+                          page:
+                            type: integer
+                          limit:
+                            type: integer
+                          total:
+                            type: integer
+                        required:
+                          - page
+                          - limit
+                          - total
+                    required:
+                      - items
+                      - meta
+                required:
+                  - data
+                example:
+                  data:
+                    items:
+                      - id: e2c3d4f5-6a7b-4c8d-9e0f-1a2b3c4d5e6f
+                        type:
+                          id: c0a8012e-1b4f-4c7a-9d2e-3f5a6b7c8d90
+                          code: AGREEMENT_PATIENT_CLINIC
+                          name: Perjanjian pasien–klinik
+                          behavior: GENERIC
+                          contentMode: EITHER
+                        status: DRAFT
+                        title: Perjanjian tanggung jawab biaya — Rina Wulandari
+                        documentNumber: AGR/2026/0007
+                        hasContentHtml: true
+                        storageKey: null
+                        storageMimeType: null
+                        storageSizeBytes: null
+                        patient:
+                          id: 7b3f1c2e-9a4d-4e8f-b2c1-0d5e6f7a8b9c
+                          fullName: Rina Wulandari
+                        doctor: null
+                        subject: null
+                        draftedBy:
+                          id: 4e1f9f0a-9a3f-4b58-b6b3-8d2f5a6c7e91
+                          email: admin@klinik.example
+                        issuedAt: null
+                        createdAt: 2026-09-30T02:00:00.000Z
+                        updatedAt: 2026-09-30T02:05:00.000Z
+                    meta:
+                      page: 1
+                      limit: 25
+                      total: 1
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: List and search the documents registry
+      tags: &a54
+        - Documents
+    post:
+      operationId: ManagedDocumentController_createDocument_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateManagedDocumentDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  typeId: c0a8012e-1b4f-4c7a-9d2e-3f5a6b7c8d90
+                  title: Perjanjian tanggung jawab biaya — Rina Wulandari
+                  documentNumber: AGR/2026/0007
+                  contentHtml: <h1>Perjanjian</h1><p>Pasien menyatakan bertanggung jawab atas
+                    biaya perawatan.</p>
+                  patientId: 7b3f1c2e-9a4d-4e8f-b2c1-0d5e6f7a8b9c
+      responses:
+        "201":
+          description: "A new DRAFT of the named type. The type row decides the shape
+            (FR-E5-35): a patient or doctor it requires must be named and one it
+            does not require may not be, and the body must match its content
+            mode — 422 `MANAGED_DOCUMENT_TYPE_RULE` lists each broken rule in
+            `error.details.issues`. Drafted HTML is sanitised server-side before
+            it is stored; an uploaded body is recorded from the stored object
+            behind the storage key, which must be one this surface minted and
+            whose bytes must agree with the declared type (SJ-21). A payload
+            naming both `contentHtml` and `storageKey` is refused (400).
+            `status`, `issuedAt` and the subject links are the server’s and are
+            rejected if sent. A deactivated type answers 404 — it has left the
+            picker (FR-E5-36)."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      type:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          code:
+                            type: string
+                          name:
+                            type: string
+                          behavior:
+                            type: string
+                          contentMode:
+                            type: string
+                        required:
+                          - id
+                          - code
+                          - name
+                          - behavior
+                          - contentMode
+                      status:
+                        type: string
+                      title:
+                        type: string
+                      documentNumber:
+                        type: string
+                      hasContentHtml:
+                        type: boolean
+                      storageKey:
+                        nullable: true
+                      storageMimeType:
+                        nullable: true
+                      storageSizeBytes:
+                        nullable: true
+                      patient:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          fullName:
+                            type: string
+                        required:
+                          - id
+                          - fullName
+                      doctor:
+                        nullable: true
+                      subject:
+                        nullable: true
+                      draftedBy:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          email:
+                            type: string
+                        required:
+                          - id
+                          - email
+                      issuedAt:
+                        nullable: true
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                      contentHtml:
+                        type: string
+                    required:
+                      - id
+                      - type
+                      - status
+                      - title
+                      - documentNumber
+                      - hasContentHtml
+                      - storageKey
+                      - storageMimeType
+                      - storageSizeBytes
+                      - patient
+                      - doctor
+                      - subject
+                      - draftedBy
+                      - issuedAt
+                      - createdAt
+                      - updatedAt
+                      - contentHtml
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: e2c3d4f5-6a7b-4c8d-9e0f-1a2b3c4d5e6f
+                    type:
+                      id: c0a8012e-1b4f-4c7a-9d2e-3f5a6b7c8d90
+                      code: AGREEMENT_PATIENT_CLINIC
+                      name: Perjanjian pasien–klinik
+                      behavior: GENERIC
+                      contentMode: EITHER
+                    status: DRAFT
+                    title: Perjanjian tanggung jawab biaya — Rina Wulandari
+                    documentNumber: AGR/2026/0007
+                    hasContentHtml: true
+                    storageKey: null
+                    storageMimeType: null
+                    storageSizeBytes: null
+                    patient:
+                      id: 7b3f1c2e-9a4d-4e8f-b2c1-0d5e6f7a8b9c
+                      fullName: Rina Wulandari
+                    doctor: null
+                    subject: null
+                    draftedBy:
+                      id: 4e1f9f0a-9a3f-4b58-b6b3-8d2f5a6c7e91
+                      email: admin@klinik.example
+                    issuedAt: null
+                    createdAt: 2026-09-30T02:00:00.000Z
+                    updatedAt: 2026-09-30T02:05:00.000Z
+                    contentHtml: <h1>Perjanjian</h1><p>Pasien menyatakan bertanggung jawab atas
+                      biaya perawatan.</p>
+                  message: Document drafted
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Document type, patient or doctor not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Document type, patient or doctor not found.
+      security:
+        - bearer: []
+      summary: Draft a document in the registry
+      tags: *a54
+  /api/v1/documents/export:
+    get:
+      operationId: ManagedDocumentController_exportDocuments_v1
+      parameters:
+        - name: typeId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: status
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - DRAFT
+              - PENDING_APPROVAL
+              - ISSUED
+              - ARCHIVED
+        - name: draftedBy
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: approver
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: from
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: to
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: dateField
+          required: false
+          in: query
+          schema:
+            default: created
+            type: string
+            enum:
+              - created
+              - issued
+        - name: q
+          required: false
+          in: query
+          schema:
+            minLength: 1
+            maxLength: 120
+            type: string
+      responses:
+        "200":
+          description: The same filters as the list, as a CSV of metadata only — id, type,
+            title, number, status, parties, drafter and dates. Never a document
+            body and never a storage key (FR-E5-07). Audited as an explicit
+            export with the row count and the filters (NFR-PRIV-01). Capped at
+            5000 rows.
+      summary: Export the filtered registry as CSV
+      tags: *a54
+  /api/v1/documents/upload-url:
+    post:
+      operationId: ManagedDocumentController_createUploadUrl_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateManagedDocumentUploadUrlDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  mimeType: application/pdf
+                  sizeBytes: 184320
+      responses:
+        "200":
+          description: "A short-lived PUT URL for exactly one file of the declared type
+            and size, under a key this surface minted. Nothing is persisted:
+            pass the returned storageKey to POST /documents (or PATCH) to record
+            it, at which point the bytes are checked against the declared type
+            (SJ-21) and images are re-encoded. Send `requiredHeaders` verbatim
+            on the PUT."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      url:
+                        type: string
+                      storageKey:
+                        type: string
+                      expiresAt:
+                        type: string
+                      requiredHeaders:
+                        type: object
+                        properties:
+                          Content-Type:
+                            type: string
+                          Content-Length:
+                            type: string
+                        required:
+                          - Content-Type
+                          - Content-Length
+                    required:
+                      - url
+                      - storageKey
+                      - expiresAt
+                      - requiredHeaders
+                required:
+                  - data
+                example:
+                  data:
+                    url: https://example-bucket.s3.amazonaws.com/documents/managed/9f1c7c2e-3a52-4f0b-9e33-1c9a5f0a77b1.pdf?X-Amz-Signature=...
+                    storageKey: documents/managed/9f1c7c2e-3a52-4f0b-9e33-1c9a5f0a77b1.pdf
+                    expiresAt: 2026-09-30T02:05:00.000Z
+                    requiredHeaders:
+                      Content-Type: application/pdf
+                      Content-Length: "184320"
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Sign a browser-direct upload of a document’s body
+      tags: *a54
+  /api/v1/documents/{id}:
+    get:
+      operationId: ManagedDocumentController_getDocument_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The document with its drafted body, parties, type and drafter
+            (FR-E5-05). A row the caller is not entitled to see — somebody
+            else’s vault document, a patient bill without `invoice.read` —
+            reports as not found rather than forbidden, so the registry never
+            confirms what it will not show.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      type:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          code:
+                            type: string
+                          name:
+                            type: string
+                          behavior:
+                            type: string
+                          contentMode:
+                            type: string
+                        required:
+                          - id
+                          - code
+                          - name
+                          - behavior
+                          - contentMode
+                      status:
+                        type: string
+                      title:
+                        type: string
+                      documentNumber:
+                        type: string
+                      hasContentHtml:
+                        type: boolean
+                      storageKey:
+                        nullable: true
+                      storageMimeType:
+                        nullable: true
+                      storageSizeBytes:
+                        nullable: true
+                      patient:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          fullName:
+                            type: string
+                        required:
+                          - id
+                          - fullName
+                      doctor:
+                        nullable: true
+                      subject:
+                        nullable: true
+                      draftedBy:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          email:
+                            type: string
+                        required:
+                          - id
+                          - email
+                      issuedAt:
+                        nullable: true
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                      contentHtml:
+                        type: string
+                    required:
+                      - id
+                      - type
+                      - status
+                      - title
+                      - documentNumber
+                      - hasContentHtml
+                      - storageKey
+                      - storageMimeType
+                      - storageSizeBytes
+                      - patient
+                      - doctor
+                      - subject
+                      - draftedBy
+                      - issuedAt
+                      - createdAt
+                      - updatedAt
+                      - contentHtml
+                required:
+                  - data
+                example:
+                  data:
+                    id: e2c3d4f5-6a7b-4c8d-9e0f-1a2b3c4d5e6f
+                    type:
+                      id: c0a8012e-1b4f-4c7a-9d2e-3f5a6b7c8d90
+                      code: AGREEMENT_PATIENT_CLINIC
+                      name: Perjanjian pasien–klinik
+                      behavior: GENERIC
+                      contentMode: EITHER
+                    status: DRAFT
+                    title: Perjanjian tanggung jawab biaya — Rina Wulandari
+                    documentNumber: AGR/2026/0007
+                    hasContentHtml: true
+                    storageKey: null
+                    storageMimeType: null
+                    storageSizeBytes: null
+                    patient:
+                      id: 7b3f1c2e-9a4d-4e8f-b2c1-0d5e6f7a8b9c
+                      fullName: Rina Wulandari
+                    doctor: null
+                    subject: null
+                    draftedBy:
+                      id: 4e1f9f0a-9a3f-4b58-b6b3-8d2f5a6c7e91
+                      email: admin@klinik.example
+                    issuedAt: null
+                    createdAt: 2026-09-30T02:00:00.000Z
+                    updatedAt: 2026-09-30T02:05:00.000Z
+                    contentHtml: <h1>Perjanjian</h1><p>Pasien menyatakan bertanggung jawab atas
+                      biaya perawatan.</p>
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Document not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Document not found.
+      security:
+        - bearer: []
+      summary: Read one document
+      tags: *a54
+    patch:
+      operationId: ManagedDocumentController_updateDocument_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateManagedDocumentDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  title: Perjanjian tanggung jawab biaya — Rina Wulandari (rev. 2)
+                  contentHtml: <h1>Perjanjian</h1><p>Pasal 1. Pasien bertanggung jawab atas biaya
+                    perawatan.</p>
+      responses:
+        "200":
+          description: The updated document. Only a DRAFT can be edited (409
+            `MANAGED_DOCUMENT_NOT_EDITABLE` otherwise, and always for a
+            generated patient bill). Drafted HTML is sanitised on every write;
+            an edit that would leave the row both drafted and uploaded is
+            refused with 422 `MANAGED_DOCUMENT_CONTENT_CONFLICT` — clear one
+            before setting the other.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      type:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          code:
+                            type: string
+                          name:
+                            type: string
+                          behavior:
+                            type: string
+                          contentMode:
+                            type: string
+                        required:
+                          - id
+                          - code
+                          - name
+                          - behavior
+                          - contentMode
+                      status:
+                        type: string
+                      title:
+                        type: string
+                      documentNumber:
+                        type: string
+                      hasContentHtml:
+                        type: boolean
+                      storageKey:
+                        nullable: true
+                      storageMimeType:
+                        nullable: true
+                      storageSizeBytes:
+                        nullable: true
+                      patient:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          fullName:
+                            type: string
+                        required:
+                          - id
+                          - fullName
+                      doctor:
+                        nullable: true
+                      subject:
+                        nullable: true
+                      draftedBy:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          email:
+                            type: string
+                        required:
+                          - id
+                          - email
+                      issuedAt:
+                        nullable: true
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                      contentHtml:
+                        type: string
+                    required:
+                      - id
+                      - type
+                      - status
+                      - title
+                      - documentNumber
+                      - hasContentHtml
+                      - storageKey
+                      - storageMimeType
+                      - storageSizeBytes
+                      - patient
+                      - doctor
+                      - subject
+                      - draftedBy
+                      - issuedAt
+                      - createdAt
+                      - updatedAt
+                      - contentHtml
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: e2c3d4f5-6a7b-4c8d-9e0f-1a2b3c4d5e6f
+                    type:
+                      id: c0a8012e-1b4f-4c7a-9d2e-3f5a6b7c8d90
+                      code: AGREEMENT_PATIENT_CLINIC
+                      name: Perjanjian pasien–klinik
+                      behavior: GENERIC
+                      contentMode: EITHER
+                    status: DRAFT
+                    title: Perjanjian tanggung jawab biaya — Rina Wulandari
+                    documentNumber: AGR/2026/0007
+                    hasContentHtml: true
+                    storageKey: null
+                    storageMimeType: null
+                    storageSizeBytes: null
+                    patient:
+                      id: 7b3f1c2e-9a4d-4e8f-b2c1-0d5e6f7a8b9c
+                      fullName: Rina Wulandari
+                    doctor: null
+                    subject: null
+                    draftedBy:
+                      id: 4e1f9f0a-9a3f-4b58-b6b3-8d2f5a6c7e91
+                      email: admin@klinik.example
+                    issuedAt: null
+                    createdAt: 2026-09-30T02:00:00.000Z
+                    updatedAt: 2026-09-30T02:05:00.000Z
+                    contentHtml: <h1>Perjanjian</h1><p>Pasien menyatakan bertanggung jawab atas
+                      biaya perawatan.</p>
+                  message: Document updated
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Document not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Document not found.
+      security:
+        - bearer: []
+      summary: Edit a draft
+      tags: *a54
+  /api/v1/documents/{id}/download:
+    get:
+      operationId: ManagedDocumentController_getDownloadUrl_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "A signed URL valid for minutes, served as an attachment under the
+            validated stored content type — nothing renders in the app or API
+            origin (NFR-SEC-04). The download is audited before the URL is
+            returned; if the access cannot be recorded, no URL is issued. A
+            document drafted in the editor has no file: 409
+            `MANAGED_DOCUMENT_NOT_DOWNLOADABLE`."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      url:
+                        type: string
+                      expiresAt:
+                        type: string
+                    required:
+                      - url
+                      - expiresAt
+                required:
+                  - data
+                example:
+                  data:
+                    url: https://example-bucket.s3.amazonaws.com/documents/managed/9f1c7c2e-3a52-4f0b-9e33-1c9a5f0a77b1.pdf?X-Amz-Signature=...&response-content-disposition=attachment
+                    expiresAt: 2026-09-30T02:10:00.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Document not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Document not found.
+      security:
+        - bearer: []
+      summary: Mint a signed download URL for an uploaded document body
+      tags: *a54
+  /api/v1/documents/{id}/history:
+    get:
+      operationId: ManagedDocumentController_getHistory_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The document’s timestamps and every audit event recorded against
+            it, oldest first, each with the actor and its metadata (FR-E5-05).
+            Approval decisions and their reasons join this timeline under
+            P16-T29.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      documentId:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                      issuedAt:
+                        nullable: true
+                      entries:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            action:
+                              type: string
+                            actor:
+                              type: object
+                              properties:
+                                id:
+                                  type: string
+                                email:
+                                  type: string
+                              required:
+                                - id
+                                - email
+                            metadata:
+                              type: object
+                              properties:
+                                typeCode:
+                                  type: string
+                                contentKind:
+                                  type: string
+                              required:
+                                - typeCode
+                                - contentKind
+                            occurredAt:
+                              type: string
+                          required:
+                            - id
+                            - action
+                            - actor
+                            - metadata
+                            - occurredAt
+                    required:
+                      - documentId
+                      - createdAt
+                      - updatedAt
+                      - issuedAt
+                      - entries
+                required:
+                  - data
+                example:
+                  data:
+                    documentId: e2c3d4f5-6a7b-4c8d-9e0f-1a2b3c4d5e6f
+                    createdAt: 2026-09-30T02:00:00.000Z
+                    updatedAt: 2026-09-30T02:05:00.000Z
+                    issuedAt: null
+                    entries:
+                      - id: 0f1e2d3c-4b5a-4c6d-8e7f-9a0b1c2d3e4f
+                        action: CREATE
+                        actor:
+                          id: 4e1f9f0a-9a3f-4b58-b6b3-8d2f5a6c7e91
+                          email: admin@klinik.example
+                        metadata:
+                          typeCode: AGREEMENT_PATIENT_CLINIC
+                          contentKind: DRAFTED
+                        occurredAt: 2026-09-30T02:00:00.000Z
+                      - id: 1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d
+                        action: UPDATE
+                        actor:
+                          id: 4e1f9f0a-9a3f-4b58-b6b3-8d2f5a6c7e91
+                          email: admin@klinik.example
+                        metadata:
+                          changedFields:
+                            - contentHtml
+                            - title
+                        occurredAt: 2026-09-30T02:05:00.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Document not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Document not found.
+      security:
+        - bearer: []
+      summary: Read a document’s history
+      tags: *a54
   /api/v1/admin/features:
     get:
       operationId: FeatureAdminController_getEntitlements_v1
@@ -33067,7 +34965,7 @@ paths:
       security:
         - bearer: []
       summary: List every feature and whether this client has it
-      tags: &a53
+      tags: &a55
         - Feature Entitlements
   /api/v1/admin/features/{key}:
     put:
@@ -33184,7 +35082,7 @@ paths:
       security:
         - bearer: []
       summary: Switch a feature on or off for this client
-      tags: *a53
+      tags: *a55
   /api/v1/features/availability:
     get:
       operationId: FeatureAvailabilityController_getAvailability_v1
@@ -33307,7 +35205,7 @@ paths:
       security:
         - bearer: []
       summary: List active roles
-      tags: &a54
+      tags: &a56
         - RBAC
     post:
       operationId: RbacController_createRole_v1
@@ -33394,7 +35292,7 @@ paths:
       security:
         - bearer: []
       summary: Create a custom role
-      tags: *a54
+      tags: *a56
   /api/v1/rbac/permissions:
     get:
       operationId: RbacController_getPermissionCatalog_v1
@@ -33474,7 +35372,7 @@ paths:
       security:
         - bearer: []
       summary: List the permission catalog
-      tags: *a54
+      tags: *a56
   /api/v1/rbac/roles/{id}:
     get:
       operationId: RbacController_getRoleById_v1
@@ -33593,7 +35491,7 @@ paths:
       security:
         - bearer: []
       summary: Get a role with its permissions and member count
-      tags: *a54
+      tags: *a56
     patch:
       operationId: RbacController_updateRole_v1
       parameters:
@@ -33692,7 +35590,7 @@ paths:
       security:
         - bearer: []
       summary: Update a role name or description
-      tags: *a54
+      tags: *a56
     delete:
       operationId: RbacController_deleteRole_v1
       parameters:
@@ -33768,7 +35666,7 @@ paths:
       security:
         - bearer: []
       summary: Soft-delete a role
-      tags: *a54
+      tags: *a56
   /api/v1/rbac/roles/{id}/permissions:
     put:
       operationId: RbacController_setRolePermissions_v1
@@ -33914,7 +35812,7 @@ paths:
       security:
         - bearer: []
       summary: Replace the permission set attached to a role
-      tags: *a54
+      tags: *a56
   /api/v1/rbac/assign-role:
     post:
       operationId: RbacController_assignRole_v1
@@ -34006,7 +35904,7 @@ paths:
       security:
         - bearer: []
       summary: Assign a role to a user
-      tags: *a54
+      tags: *a56
   /api/v1/rbac/unassign-role:
     post:
       operationId: RbacController_unassignRole_v1
@@ -34098,7 +35996,7 @@ paths:
       security:
         - bearer: []
       summary: Unassign a role from a user
-      tags: *a54
+      tags: *a56
   /api/v1/health:
     get:
       operationId: HealthController_getHealth_v1
@@ -37073,6 +38971,185 @@ components:
         - environment
         - consId
         - kdProviderPpk
+    CreateDocumentTypeDto:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 120
+        description:
+          type: string
+          minLength: 1
+          maxLength: 500
+        isApprovalRequired:
+          type: boolean
+          default: false
+        allowSelfApproval:
+          type: boolean
+          default: false
+        requiredApprovals:
+          type: integer
+          minimum: 1
+          exclusiveMinimum: false
+          maximum: 5
+          exclusiveMaximum: false
+          default: 1
+        requiresPatient:
+          type: boolean
+          default: false
+        requiresDoctor:
+          type: boolean
+          default: false
+        contentMode:
+          type: string
+          enum:
+            - DRAFTED
+            - UPLOADED
+            - EITHER
+          default: EITHER
+        isActive:
+          type: boolean
+          default: true
+        sortOrder:
+          type: integer
+          minimum: 0
+          exclusiveMinimum: false
+          default: 0
+      required:
+        - name
+    UpdateDocumentTypeDto:
+      type: object
+      properties:
+        code:
+          type: string
+          pattern: ^[A-Z][A-Z0-9_]{1,63}$
+        name:
+          type: string
+          minLength: 1
+          maxLength: 120
+        description:
+          type: string
+          minLength: 1
+          maxLength: 500
+          nullable: true
+        isApprovalRequired:
+          type: boolean
+        allowSelfApproval:
+          type: boolean
+        requiredApprovals:
+          type: integer
+          minimum: 1
+          exclusiveMinimum: false
+          maximum: 5
+          exclusiveMaximum: false
+        requiresPatient:
+          type: boolean
+        requiresDoctor:
+          type: boolean
+        contentMode:
+          type: string
+          enum:
+            - DRAFTED
+            - UPLOADED
+            - EITHER
+        isActive:
+          type: boolean
+        sortOrder:
+          type: integer
+          minimum: 0
+          exclusiveMinimum: false
+    SetDocumentTypeDefaultApproversDto:
+      type: object
+      properties:
+        approverIds:
+          type: array
+          maxItems: 10
+          items:
+            type: string
+            format: uuid
+      required:
+        - approverIds
+    CreateManagedDocumentUploadUrlDto:
+      type: object
+      properties:
+        mimeType:
+          type: string
+          enum:
+            - application/pdf
+            - text/markdown
+            - text/plain
+            - image/jpeg
+            - image/png
+            - image/webp
+        sizeBytes:
+          type: integer
+          minimum: 0
+          exclusiveMinimum: true
+          maximum: 20971520
+          exclusiveMaximum: false
+      required:
+        - mimeType
+        - sizeBytes
+    CreateManagedDocumentDto:
+      type: object
+      properties:
+        typeId:
+          type: string
+          format: uuid
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        documentNumber:
+          type: string
+          minLength: 1
+          maxLength: 80
+        contentHtml:
+          type: string
+          maxLength: 500000
+        storageKey:
+          type: string
+          minLength: 1
+          maxLength: 512
+        patientId:
+          type: string
+          format: uuid
+        doctorId:
+          type: string
+          format: uuid
+      required:
+        - typeId
+        - title
+    UpdateManagedDocumentDto:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        documentNumber:
+          type: string
+          minLength: 1
+          maxLength: 80
+          nullable: true
+        contentHtml:
+          type: string
+          maxLength: 500000
+          nullable: true
+        storageKey:
+          type: string
+          minLength: 1
+          maxLength: 512
+          nullable: true
+        patientId:
+          type: string
+          format: uuid
+          nullable: true
+        doctorId:
+          type: string
+          format: uuid
+          nullable: true
     UpdateFeatureEntitlementDto:
       type: object
       properties:

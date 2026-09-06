@@ -110,6 +110,12 @@ export const ADMIN_PORTAL_ADMIN_RULES: AppRule[] = [
   { action: 'write', subject: 'VaultDocument' },
   { action: 'read', subject: 'DocumentTemplate' },
   { action: 'write', subject: 'DocumentTemplate' },
+  // P16-T39. Mirrors the two documents-module grants `seed.sql` gives ADMIN,
+  // so an admin whose session hint predates them still reaches Documents →
+  // Types rather than losing the entry to a silently narrower preset.
+  { action: 'read', subject: 'ManagedDocument' },
+  { action: 'write', subject: 'ManagedDocument' },
+  { action: 'write', subject: 'DocumentType' },
   { action: 'manage', subject: 'BpjsConfig' },
   { action: 'sync', subject: 'BpjsReference' },
   { action: 'read', subject: 'BpjsReference' },

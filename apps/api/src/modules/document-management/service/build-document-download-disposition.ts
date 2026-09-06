@@ -17,7 +17,9 @@ const FALLBACK_FILENAME_STEM = 'document';
  * the real title percent-encoded. Header injection is impossible in both
  * because neither emits a byte outside its encoding's safe set.
  */
-export function buildDocumentDownloadDisposition(record: DocumentRecord): string {
+export function buildDocumentDownloadDisposition(
+  record: Pick<DocumentRecord, 'title' | 'mimeType'>,
+): string {
   const extension = DOCUMENT_FILE_EXTENSION_BY_MIME_TYPE[
     record.mimeType as keyof typeof DOCUMENT_FILE_EXTENSION_BY_MIME_TYPE
   ];

@@ -99,6 +99,11 @@ const SUBJECT_BY_RESOURCE: Record<string, AppSubject> = {
   // `document-template.write:any` → resource `document-template`, action
   // `write`.
   'document-template': 'DocumentTemplate',
+  // P16-T39. Same hyphenated single-segment shape: `document-type.write:any`
+  // → resource `document-type`, action `write`; `managed-document.read:any`
+  // → resource `managed-document`, action `read`.
+  'document-type': 'DocumentType',
+  'managed-document': 'ManagedDocument',
   // Both scopes collapse to one subject here. `permissionToRule` drops the
   // `:own` / `:any` suffix, so this cannot distinguish an admin's clinic-corpus
   // grant from a clinician's personal one — and must not try to. It decides

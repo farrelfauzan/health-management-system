@@ -16,6 +16,21 @@ describe('resolveAppAbilityRules integration permissions', () => {
     expect(ability.can('delete', 'DocumentTemplate')).toBe(false);
   });
 
+  it('maps the documents-module keys to their own subjects', () => {
+    // P16-T39. `document-type.write` must not read as a template grant, and
+    // the registry read must not imply the type write.
+    const ability = buildAppAbility(
+      resolveAppAbilityRules({
+        permissions: ['document-type.write:any', 'managed-document.read:any'],
+      }),
+    );
+
+    expect(ability.can('write', 'DocumentType')).toBe(true);
+    expect(ability.can('read', 'ManagedDocument')).toBe(true);
+    expect(ability.can('write', 'ManagedDocument')).toBe(false);
+    expect(ability.can('write', 'DocumentTemplate')).toBe(false);
+  });
+
   it('maps pharmacy inventory permissions independently from medication catalog permissions', () => {
     const ability = buildAppAbility(
       resolveAppAbilityRules({
