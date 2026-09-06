@@ -114,6 +114,7 @@ describe('SATUSEHAT submission ops integration', () => {
           recordedAt: new Date('2026-07-27T09:05:00.000Z'),
         },
       ],
+      admission: null,
       procedures: [
         {
           procedureId: '8b9c0d1e-2f3a-4b5c-8d6e-7f8a9b0c1d2e',
