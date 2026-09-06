@@ -4,6 +4,18 @@
  * signed URL, or any patient-identifying string — the clinic corpus is
  * policy-bound to contain neither.
  */
+/**
+ * The default posture (`P16-T33`): `CLINIC_CORPUS_DOCUMENT` ships with
+ * approval off, so a clinic that never switches it on sees no registry row
+ * and no approval column (US-E5-06).
+ */
+const NO_APPROVAL_EXAMPLE = {
+  isApprovalRequired: false,
+  managedDocumentId: null,
+  status: null,
+  pendingRound: null,
+};
+
 export const DOCUMENT_MANAGEMENT_EXAMPLES = {
   uploadUrlRequest: {
     mimeType: 'application/pdf',
@@ -40,8 +52,35 @@ export const DOCUMENT_MANAGEMENT_EXAMPLES = {
     ingestedAt: null,
     chunkCount: 0,
     uploadedById: 'a3c9b2e1-4d5f-4a6b-8c7d-9e0f1a2b3c4d',
+    approval: NO_APPROVAL_EXAMPLE,
     createdAt: '2026-08-03T09:00:00.000Z',
     updatedAt: '2026-08-03T09:00:00.000Z',
+  },
+  pendingApprovalDocument: {
+    id: '2f6d1a4c-8b9e-4c1d-9a2f-5e7b3c0d8a11',
+    ownerType: 'CLINIC',
+    ownerId: null,
+    purpose: 'FAQ_KNOWLEDGE_BASE',
+    title: 'SOP Alur Pendaftaran Pasien BPJS',
+    mimeType: 'application/pdf',
+    sizeBytes: 184320,
+    visibility: 'BOTH',
+    language: 'ID',
+    // Stored, but not queued: the worker cannot see it and the retrieval
+    // predicate excludes it until the registry row reaches ISSUED.
+    ingestStatus: 'NOT_APPLICABLE',
+    ingestError: null,
+    ingestedAt: null,
+    chunkCount: 0,
+    uploadedById: 'a3c9b2e1-4d5f-4a6b-8c7d-9e0f1a2b3c4d',
+    approval: {
+      isApprovalRequired: true,
+      managedDocumentId: 'b81f3d02-6c4a-4e19-95d7-2a0e8c5f7b46',
+      status: 'DRAFT',
+      pendingRound: null,
+    },
+    createdAt: '2026-08-03T09:00:00.000Z',
+    updatedAt: '2026-09-06T11:00:00.000Z',
   },
   staffOnlyDocument: {
     id: '7c4e9b1d-2a3f-4b5c-8d6e-0f1a2b3c4d5e',
@@ -58,6 +97,7 @@ export const DOCUMENT_MANAGEMENT_EXAMPLES = {
     ingestedAt: '2026-08-03T09:02:00.000Z',
     chunkCount: 12,
     uploadedById: 'a3c9b2e1-4d5f-4a6b-8c7d-9e0f1a2b3c4d',
+    approval: NO_APPROVAL_EXAMPLE,
     createdAt: '2026-08-02T11:00:00.000Z',
     updatedAt: '2026-08-03T09:02:00.000Z',
   },

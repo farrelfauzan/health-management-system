@@ -200,6 +200,7 @@ export type DocumentApprovalDecisionWhereInput = {
   decidedAt?: Prisma.DateTimeFilter<"DocumentApprovalDecision"> | Date | string
   request?: Prisma.XOR<Prisma.DocumentApprovalRequestScalarRelationFilter, Prisma.DocumentApprovalRequestWhereInput>
   approver?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  releasedTemplateVersions?: Prisma.DocumentTemplateVersionListRelationFilter
 }
 
 export type DocumentApprovalDecisionOrderByWithRelationInput = {
@@ -211,6 +212,7 @@ export type DocumentApprovalDecisionOrderByWithRelationInput = {
   decidedAt?: Prisma.SortOrder
   request?: Prisma.DocumentApprovalRequestOrderByWithRelationInput
   approver?: Prisma.UserOrderByWithRelationInput
+  releasedTemplateVersions?: Prisma.DocumentTemplateVersionOrderByRelationAggregateInput
 }
 
 export type DocumentApprovalDecisionWhereUniqueInput = Prisma.AtLeast<{
@@ -226,6 +228,7 @@ export type DocumentApprovalDecisionWhereUniqueInput = Prisma.AtLeast<{
   decidedAt?: Prisma.DateTimeFilter<"DocumentApprovalDecision"> | Date | string
   request?: Prisma.XOR<Prisma.DocumentApprovalRequestScalarRelationFilter, Prisma.DocumentApprovalRequestWhereInput>
   approver?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  releasedTemplateVersions?: Prisma.DocumentTemplateVersionListRelationFilter
 }, "id" | "requestId_approverId">
 
 export type DocumentApprovalDecisionOrderByWithAggregationInput = {
@@ -259,6 +262,7 @@ export type DocumentApprovalDecisionCreateInput = {
   decidedAt?: Date | string
   request: Prisma.DocumentApprovalRequestCreateNestedOneWithoutDecisionsInput
   approver: Prisma.UserCreateNestedOneWithoutApprovalDecisionsInput
+  releasedTemplateVersions?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutApprovalDecisionInput
 }
 
 export type DocumentApprovalDecisionUncheckedCreateInput = {
@@ -268,6 +272,7 @@ export type DocumentApprovalDecisionUncheckedCreateInput = {
   isApproved: boolean
   reason?: string | null
   decidedAt?: Date | string
+  releasedTemplateVersions?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutApprovalDecisionInput
 }
 
 export type DocumentApprovalDecisionUpdateInput = {
@@ -277,6 +282,7 @@ export type DocumentApprovalDecisionUpdateInput = {
   decidedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   request?: Prisma.DocumentApprovalRequestUpdateOneRequiredWithoutDecisionsNestedInput
   approver?: Prisma.UserUpdateOneRequiredWithoutApprovalDecisionsNestedInput
+  releasedTemplateVersions?: Prisma.DocumentTemplateVersionUpdateManyWithoutApprovalDecisionNestedInput
 }
 
 export type DocumentApprovalDecisionUncheckedUpdateInput = {
@@ -286,6 +292,7 @@ export type DocumentApprovalDecisionUncheckedUpdateInput = {
   isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   decidedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  releasedTemplateVersions?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutApprovalDecisionNestedInput
 }
 
 export type DocumentApprovalDecisionCreateManyInput = {
@@ -321,6 +328,11 @@ export type DocumentApprovalDecisionListRelationFilter = {
 
 export type DocumentApprovalDecisionOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
+}
+
+export type DocumentApprovalDecisionNullableScalarRelationFilter = {
+  is?: Prisma.DocumentApprovalDecisionWhereInput | null
+  isNot?: Prisma.DocumentApprovalDecisionWhereInput | null
 }
 
 export type DocumentApprovalDecisionRequestIdApproverIdCompoundUniqueInput = {
@@ -397,6 +409,22 @@ export type DocumentApprovalDecisionUncheckedUpdateManyWithoutApproverNestedInpu
   deleteMany?: Prisma.DocumentApprovalDecisionScalarWhereInput | Prisma.DocumentApprovalDecisionScalarWhereInput[]
 }
 
+export type DocumentApprovalDecisionCreateNestedOneWithoutReleasedTemplateVersionsInput = {
+  create?: Prisma.XOR<Prisma.DocumentApprovalDecisionCreateWithoutReleasedTemplateVersionsInput, Prisma.DocumentApprovalDecisionUncheckedCreateWithoutReleasedTemplateVersionsInput>
+  connectOrCreate?: Prisma.DocumentApprovalDecisionCreateOrConnectWithoutReleasedTemplateVersionsInput
+  connect?: Prisma.DocumentApprovalDecisionWhereUniqueInput
+}
+
+export type DocumentApprovalDecisionUpdateOneWithoutReleasedTemplateVersionsNestedInput = {
+  create?: Prisma.XOR<Prisma.DocumentApprovalDecisionCreateWithoutReleasedTemplateVersionsInput, Prisma.DocumentApprovalDecisionUncheckedCreateWithoutReleasedTemplateVersionsInput>
+  connectOrCreate?: Prisma.DocumentApprovalDecisionCreateOrConnectWithoutReleasedTemplateVersionsInput
+  upsert?: Prisma.DocumentApprovalDecisionUpsertWithoutReleasedTemplateVersionsInput
+  disconnect?: Prisma.DocumentApprovalDecisionWhereInput | boolean
+  delete?: Prisma.DocumentApprovalDecisionWhereInput | boolean
+  connect?: Prisma.DocumentApprovalDecisionWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.DocumentApprovalDecisionUpdateToOneWithWhereWithoutReleasedTemplateVersionsInput, Prisma.DocumentApprovalDecisionUpdateWithoutReleasedTemplateVersionsInput>, Prisma.DocumentApprovalDecisionUncheckedUpdateWithoutReleasedTemplateVersionsInput>
+}
+
 export type DocumentApprovalDecisionCreateNestedManyWithoutRequestInput = {
   create?: Prisma.XOR<Prisma.DocumentApprovalDecisionCreateWithoutRequestInput, Prisma.DocumentApprovalDecisionUncheckedCreateWithoutRequestInput> | Prisma.DocumentApprovalDecisionCreateWithoutRequestInput[] | Prisma.DocumentApprovalDecisionUncheckedCreateWithoutRequestInput[]
   connectOrCreate?: Prisma.DocumentApprovalDecisionCreateOrConnectWithoutRequestInput | Prisma.DocumentApprovalDecisionCreateOrConnectWithoutRequestInput[]
@@ -445,6 +473,7 @@ export type DocumentApprovalDecisionCreateWithoutApproverInput = {
   reason?: string | null
   decidedAt?: Date | string
   request: Prisma.DocumentApprovalRequestCreateNestedOneWithoutDecisionsInput
+  releasedTemplateVersions?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutApprovalDecisionInput
 }
 
 export type DocumentApprovalDecisionUncheckedCreateWithoutApproverInput = {
@@ -453,6 +482,7 @@ export type DocumentApprovalDecisionUncheckedCreateWithoutApproverInput = {
   isApproved: boolean
   reason?: string | null
   decidedAt?: Date | string
+  releasedTemplateVersions?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutApprovalDecisionInput
 }
 
 export type DocumentApprovalDecisionCreateOrConnectWithoutApproverInput = {
@@ -493,12 +523,65 @@ export type DocumentApprovalDecisionScalarWhereInput = {
   decidedAt?: Prisma.DateTimeFilter<"DocumentApprovalDecision"> | Date | string
 }
 
+export type DocumentApprovalDecisionCreateWithoutReleasedTemplateVersionsInput = {
+  id?: string
+  isApproved: boolean
+  reason?: string | null
+  decidedAt?: Date | string
+  request: Prisma.DocumentApprovalRequestCreateNestedOneWithoutDecisionsInput
+  approver: Prisma.UserCreateNestedOneWithoutApprovalDecisionsInput
+}
+
+export type DocumentApprovalDecisionUncheckedCreateWithoutReleasedTemplateVersionsInput = {
+  id?: string
+  requestId: string
+  approverId: string
+  isApproved: boolean
+  reason?: string | null
+  decidedAt?: Date | string
+}
+
+export type DocumentApprovalDecisionCreateOrConnectWithoutReleasedTemplateVersionsInput = {
+  where: Prisma.DocumentApprovalDecisionWhereUniqueInput
+  create: Prisma.XOR<Prisma.DocumentApprovalDecisionCreateWithoutReleasedTemplateVersionsInput, Prisma.DocumentApprovalDecisionUncheckedCreateWithoutReleasedTemplateVersionsInput>
+}
+
+export type DocumentApprovalDecisionUpsertWithoutReleasedTemplateVersionsInput = {
+  update: Prisma.XOR<Prisma.DocumentApprovalDecisionUpdateWithoutReleasedTemplateVersionsInput, Prisma.DocumentApprovalDecisionUncheckedUpdateWithoutReleasedTemplateVersionsInput>
+  create: Prisma.XOR<Prisma.DocumentApprovalDecisionCreateWithoutReleasedTemplateVersionsInput, Prisma.DocumentApprovalDecisionUncheckedCreateWithoutReleasedTemplateVersionsInput>
+  where?: Prisma.DocumentApprovalDecisionWhereInput
+}
+
+export type DocumentApprovalDecisionUpdateToOneWithWhereWithoutReleasedTemplateVersionsInput = {
+  where?: Prisma.DocumentApprovalDecisionWhereInput
+  data: Prisma.XOR<Prisma.DocumentApprovalDecisionUpdateWithoutReleasedTemplateVersionsInput, Prisma.DocumentApprovalDecisionUncheckedUpdateWithoutReleasedTemplateVersionsInput>
+}
+
+export type DocumentApprovalDecisionUpdateWithoutReleasedTemplateVersionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decidedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  request?: Prisma.DocumentApprovalRequestUpdateOneRequiredWithoutDecisionsNestedInput
+  approver?: Prisma.UserUpdateOneRequiredWithoutApprovalDecisionsNestedInput
+}
+
+export type DocumentApprovalDecisionUncheckedUpdateWithoutReleasedTemplateVersionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  requestId?: Prisma.StringFieldUpdateOperationsInput | string
+  approverId?: Prisma.StringFieldUpdateOperationsInput | string
+  isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  decidedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type DocumentApprovalDecisionCreateWithoutRequestInput = {
   id?: string
   isApproved: boolean
   reason?: string | null
   decidedAt?: Date | string
   approver: Prisma.UserCreateNestedOneWithoutApprovalDecisionsInput
+  releasedTemplateVersions?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutApprovalDecisionInput
 }
 
 export type DocumentApprovalDecisionUncheckedCreateWithoutRequestInput = {
@@ -507,6 +590,7 @@ export type DocumentApprovalDecisionUncheckedCreateWithoutRequestInput = {
   isApproved: boolean
   reason?: string | null
   decidedAt?: Date | string
+  releasedTemplateVersions?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutApprovalDecisionInput
 }
 
 export type DocumentApprovalDecisionCreateOrConnectWithoutRequestInput = {
@@ -549,6 +633,7 @@ export type DocumentApprovalDecisionUpdateWithoutApproverInput = {
   reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   decidedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   request?: Prisma.DocumentApprovalRequestUpdateOneRequiredWithoutDecisionsNestedInput
+  releasedTemplateVersions?: Prisma.DocumentTemplateVersionUpdateManyWithoutApprovalDecisionNestedInput
 }
 
 export type DocumentApprovalDecisionUncheckedUpdateWithoutApproverInput = {
@@ -557,6 +642,7 @@ export type DocumentApprovalDecisionUncheckedUpdateWithoutApproverInput = {
   isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   decidedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  releasedTemplateVersions?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutApprovalDecisionNestedInput
 }
 
 export type DocumentApprovalDecisionUncheckedUpdateManyWithoutApproverInput = {
@@ -581,6 +667,7 @@ export type DocumentApprovalDecisionUpdateWithoutRequestInput = {
   reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   decidedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   approver?: Prisma.UserUpdateOneRequiredWithoutApprovalDecisionsNestedInput
+  releasedTemplateVersions?: Prisma.DocumentTemplateVersionUpdateManyWithoutApprovalDecisionNestedInput
 }
 
 export type DocumentApprovalDecisionUncheckedUpdateWithoutRequestInput = {
@@ -589,6 +676,7 @@ export type DocumentApprovalDecisionUncheckedUpdateWithoutRequestInput = {
   isApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   decidedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  releasedTemplateVersions?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutApprovalDecisionNestedInput
 }
 
 export type DocumentApprovalDecisionUncheckedUpdateManyWithoutRequestInput = {
@@ -600,6 +688,35 @@ export type DocumentApprovalDecisionUncheckedUpdateManyWithoutRequestInput = {
 }
 
 
+/**
+ * Count Type DocumentApprovalDecisionCountOutputType
+ */
+
+export type DocumentApprovalDecisionCountOutputType = {
+  releasedTemplateVersions: number
+}
+
+export type DocumentApprovalDecisionCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  releasedTemplateVersions?: boolean | DocumentApprovalDecisionCountOutputTypeCountReleasedTemplateVersionsArgs
+}
+
+/**
+ * DocumentApprovalDecisionCountOutputType without action
+ */
+export type DocumentApprovalDecisionCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the DocumentApprovalDecisionCountOutputType
+   */
+  select?: Prisma.DocumentApprovalDecisionCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * DocumentApprovalDecisionCountOutputType without action
+ */
+export type DocumentApprovalDecisionCountOutputTypeCountReleasedTemplateVersionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.DocumentTemplateVersionWhereInput
+}
+
 
 export type DocumentApprovalDecisionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -610,6 +727,8 @@ export type DocumentApprovalDecisionSelect<ExtArgs extends runtime.Types.Extensi
   decidedAt?: boolean
   request?: boolean | Prisma.DocumentApprovalRequestDefaultArgs<ExtArgs>
   approver?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  releasedTemplateVersions?: boolean | Prisma.DocumentApprovalDecision$releasedTemplateVersionsArgs<ExtArgs>
+  _count?: boolean | Prisma.DocumentApprovalDecisionCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["documentApprovalDecision"]>
 
 export type DocumentApprovalDecisionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -647,6 +766,8 @@ export type DocumentApprovalDecisionOmit<ExtArgs extends runtime.Types.Extension
 export type DocumentApprovalDecisionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   request?: boolean | Prisma.DocumentApprovalRequestDefaultArgs<ExtArgs>
   approver?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  releasedTemplateVersions?: boolean | Prisma.DocumentApprovalDecision$releasedTemplateVersionsArgs<ExtArgs>
+  _count?: boolean | Prisma.DocumentApprovalDecisionCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type DocumentApprovalDecisionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   request?: boolean | Prisma.DocumentApprovalRequestDefaultArgs<ExtArgs>
@@ -662,6 +783,12 @@ export type $DocumentApprovalDecisionPayload<ExtArgs extends runtime.Types.Exten
   objects: {
     request: Prisma.$DocumentApprovalRequestPayload<ExtArgs>
     approver: Prisma.$UserPayload<ExtArgs>
+    /**
+     * Versions this decision released (P16-T32). At most one in practice — a
+     * decision resolves one round on one document — but the relation is the
+     * back half of a nullable FK, so Prisma models it as a list.
+     */
+    releasedTemplateVersions: Prisma.$DocumentTemplateVersionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1066,6 +1193,7 @@ export interface Prisma__DocumentApprovalDecisionClient<T, Null = never, ExtArgs
   readonly [Symbol.toStringTag]: "PrismaPromise"
   request<T extends Prisma.DocumentApprovalRequestDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DocumentApprovalRequestDefaultArgs<ExtArgs>>): Prisma.Prisma__DocumentApprovalRequestClient<runtime.Types.Result.GetResult<Prisma.$DocumentApprovalRequestPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   approver<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  releasedTemplateVersions<T extends Prisma.DocumentApprovalDecision$releasedTemplateVersionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DocumentApprovalDecision$releasedTemplateVersionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DocumentTemplateVersionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1499,6 +1627,30 @@ export type DocumentApprovalDecisionDeleteManyArgs<ExtArgs extends runtime.Types
    * Limit how many DocumentApprovalDecisions to delete.
    */
   limit?: number
+}
+
+/**
+ * DocumentApprovalDecision.releasedTemplateVersions
+ */
+export type DocumentApprovalDecision$releasedTemplateVersionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the DocumentTemplateVersion
+   */
+  select?: Prisma.DocumentTemplateVersionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the DocumentTemplateVersion
+   */
+  omit?: Prisma.DocumentTemplateVersionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DocumentTemplateVersionInclude<ExtArgs> | null
+  where?: Prisma.DocumentTemplateVersionWhereInput
+  orderBy?: Prisma.DocumentTemplateVersionOrderByWithRelationInput | Prisma.DocumentTemplateVersionOrderByWithRelationInput[]
+  cursor?: Prisma.DocumentTemplateVersionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.DocumentTemplateVersionScalarFieldEnum | Prisma.DocumentTemplateVersionScalarFieldEnum[]
 }
 
 /**

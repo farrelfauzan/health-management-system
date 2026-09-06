@@ -26,8 +26,10 @@ import {
   ManagedDocumentRecord,
   ManagedDocumentShape,
   ManagedDocumentStatusValue,
+  ManagedDocumentSubjectRef,
   ManagedDocumentTypeRules,
   ManagedDocumentUploadUrlView,
+  SyncGovernedDocumentPayload,
   UpdateManagedDocumentInput,
   validateManagedDocumentAgainstType,
 } from '@hms/shared-types';
@@ -107,6 +109,44 @@ export class ManagedDocumentService {
     private readonly uploadedDocumentGuardService: UploadedDocumentGuardService,
     private readonly auditService: AuditService,
   ) {}
+
+  /** The first mirror of a subject: a DRAFT nobody has submitted yet. */
+  private async createGovernedDocument(
+    typeId: string,
+    payload: SyncGovernedDocumentPayload,
+    actor: CurrentUser,
+  ): Promise<ManagedDocumentRecord> {
+    const record = await this.managedDocumentRepository.createDocument({
+      typeId,
+      status: 'DRAFT',
+      title: payload.title,
+      documentNumber: null,
+      contentHtml: payload.contentHtml ?? null,
+      storageKey: payload.storageKey ?? null,
+      storageMimeType: payload.storageMimeType ?? null,
+      storageSizeBytes: payload.storageSizeBytes ?? null,
+      patientId: null,
+      doctorId: null,
+      subjectTemplateId: payload.subject.kind === 'TEMPLATE' ? payload.subject.id : null,
+      subjectDocumentId: payload.subject.kind === 'STORE_DOCUMENT' ? payload.subject.id : null,
+      subjectInvoiceId: null,
+      draftedById: actor.sub,
+      issuedAt: null,
+    });
+    await this.auditService.record({
+      action: AuditAction.CREATE,
+      resource: MANAGED_DOCUMENT_AUDIT_RESOURCE,
+      resourceId: record.id,
+      actorUserId: actor.sub,
+      patientId: null,
+      metadata: {
+        typeCode: record.type.code,
+        subjectKind: payload.subject.kind,
+        subjectId: payload.subject.id,
+      },
+    });
+    return record;
+  }
 
   async listDocuments(
     query: ListManagedDocumentsQueryInput,
@@ -216,6 +256,112 @@ export class ManagedDocumentService {
       metadata: { typeCode: record.type.code, contentKind: describeContent(record) },
     });
     return toManagedDocumentDetailView(record);
+  }
+
+  /**
+   * Keeps the registry row that governs another module's artefact in step
+   * with it (`P16-T32`/`P16-T33`).
+   *
+   * The registry is where a template or a corpus document is *reviewed*, so
+   * the row has to hold what the subject currently says — a submission
+   * freezes the registry row, and an approver who was shown a stale mirror
+   * would be approving something nobody wrote.
+   *
+   * Three rules, and each of them is the point of the method:
+   *
+   *   * **An edit voids an open round** (FR-E5-15), through the same path a
+   *     registry edit takes. The approvers are told; the round does not end
+   *     silently.
+   *   * **An edit after release returns the row to `DRAFT`.** An `ISSUED`
+   *     row means "this is what the clinic released"; the moment the working
+   *     copy moves on, that is no longer true of the working copy, and the
+   *     next release needs a round of its own.
+   *   * **Nothing here creates a round or issues anything.** Whether
+   *     approval is needed is the type's business, and it is read where the
+   *     subject is published, not here.
+   */
+  async syncGovernedDocument(
+    payload: SyncGovernedDocumentPayload,
+    actor: CurrentUser,
+  ): Promise<ManagedDocumentRecord> {
+    const type = await this.documentTypeService.findTypeByCode(payload.typeCode);
+    if (type === null) {
+      throw new NotFoundException(`Document type ${payload.typeCode} is not configured`);
+    }
+    const existing = await this.managedDocumentRepository.findBySubject(payload.subject);
+    if (existing === null) {
+      return this.createGovernedDocument(type.id, payload, actor);
+    }
+    if (!hasGovernedContentChanged(existing, payload)) {
+      return existing;
+    }
+    await this.approvalService.supersedeOpenRounds(existing, actor);
+    const record = await this.managedDocumentRepository.updateDocument({
+      id: existing.id,
+      title: payload.title,
+      contentHtml: payload.contentHtml,
+      storageKey: payload.storageKey,
+      storageMimeType: payload.storageMimeType,
+      storageSizeBytes: payload.storageSizeBytes,
+    });
+    if (record.status !== 'DRAFT') {
+      return this.managedDocumentRepository.transitionDocument({
+        id: record.id,
+        status: 'DRAFT',
+        issuedAt: null,
+      });
+    }
+    return record;
+  }
+
+  /**
+   * Takes a governed row back out of `ISSUED` because the artefact it
+   * released is no longer what the clinic decided on (`P16-T33`, FR-E5-20).
+   *
+   * Its own method rather than a branch of {@link syncGovernedDocument},
+   * because nothing about the *content* changed: a corpus document's
+   * visibility is not part of what a submission freezes, and yet it is the
+   * field that decides who the assistant may quote the document to. The row
+   * leaves `ISSUED` — and with it the retrieval candidate set — before
+   * anyone is asked to look at it again.
+   */
+  async returnGovernedDocumentToDraft(
+    document: ManagedDocumentRecord,
+    actor: CurrentUser,
+  ): Promise<ManagedDocumentRecord> {
+    await this.approvalService.supersedeOpenRounds(document, actor);
+    const record = await this.managedDocumentRepository.transitionDocument({
+      id: document.id,
+      status: 'DRAFT',
+      issuedAt: null,
+    });
+    await this.auditService.record({
+      action: AuditAction.UPDATE,
+      resource: MANAGED_DOCUMENT_AUDIT_RESOURCE,
+      resourceId: document.id,
+      actorUserId: actor.sub,
+      patientId: null,
+      metadata: { typeCode: record.type.code, event: 'REAPPROVAL_REQUIRED' },
+    });
+    return record;
+  }
+
+  /**
+   * The registry row for a subject, when it has one. Read by the owning
+   * module so its own screens can show the approval state of the thing they
+   * are editing without inventing a second copy of it.
+   */
+  async findGovernedDocument(
+    subject: ManagedDocumentSubjectRef,
+  ): Promise<ManagedDocumentRecord | null> {
+    return this.managedDocumentRepository.findBySubject(subject);
+  }
+
+  /** {@link findGovernedDocument} for a whole page of store documents. */
+  async findGovernedDocuments(
+    subjectDocumentIds: readonly string[],
+  ): Promise<Map<string, ManagedDocumentRecord>> {
+    return this.managedDocumentRepository.findBySubjectDocumentIds(subjectDocumentIds);
   }
 
   async updateDocument(
@@ -533,4 +679,28 @@ function buildExportFileName(): string {
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+/**
+ * Whether a subject's mirror is out of date. Compared field by field rather
+ * than written unconditionally, because writing voids an open approval round
+ * — a template opened and closed without an edit must not cost its approvers
+ * a round.
+ */
+function hasGovernedContentChanged(
+  existing: ManagedDocumentRecord,
+  payload: SyncGovernedDocumentPayload,
+): boolean {
+  return (
+    existing.title !== payload.title ||
+    isChanged(existing.contentHtml, payload.contentHtml) ||
+    isChanged(existing.storageKey, payload.storageKey) ||
+    isChanged(existing.storageMimeType, payload.storageMimeType) ||
+    isChanged(existing.storageSizeBytes, payload.storageSizeBytes)
+  );
+}
+
+/** An omitted field is "leave it alone", never "set it to null". */
+function isChanged<T>(current: T | null, next: T | null | undefined): boolean {
+  return next !== undefined && next !== current;
 }

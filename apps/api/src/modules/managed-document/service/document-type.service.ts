@@ -303,6 +303,20 @@ export class DocumentTypeService {
     }
     return record;
   }
+
+  /**
+   * The system type a behaviour is bound to, by `code` (`P16-T32`/`P16-T33`).
+   *
+   * Resolved by code and never by name: the seed owns `code` and `behavior`
+   * and leaves the name to the clinic (FR-E5-33), so a clinic that renamed
+   * "Templat faktur" must not thereby switch off its own publish gate. Null
+   * rather than a throw when the row is missing — a seed that has not run yet
+   * means no policy, which is the same answer as a policy that is off, and
+   * failing the caller would take invoicing down over master data.
+   */
+  async findTypeByCode(code: string): Promise<DocumentTypeRecord | null> {
+    return this.documentTypeRepository.findByCode(code);
+  }
 }
 
 const DEFAULT_APPROVAL_POLICY: DocumentTypeApprovalPolicy = {

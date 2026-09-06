@@ -223,3 +223,33 @@ export type ManagedDocumentHistoryEntryRecord = {
   metadata: unknown;
   occurredAt: Date;
 };
+
+/**
+ * What a registry row is *about*, when it governs something another module
+ * owns (`P16-T32`/`P16-T33`). The registry points at store rows through
+ * nullable subject keys; it never absorbs them (§7.5.3), and this is the
+ * shape of that pointer as a caller supplies it.
+ */
+export type ManagedDocumentSubjectRef =
+  | { kind: 'TEMPLATE'; id: string }
+  | { kind: 'STORE_DOCUMENT'; id: string };
+
+/**
+ * The upsert an owning module performs to keep its subject's registry row in
+ * step (`P16-T32`/`P16-T33`).
+ *
+ * `typeCode` rather than `typeId` because the caller knows which system type
+ * its documents are, and codes are the stable half of a type row. Content is
+ * mirrored so a submission has something to freeze: an approver reviews the
+ * registry row, so the registry row has to hold what the subject currently
+ * says.
+ */
+export type SyncGovernedDocumentPayload = {
+  typeCode: string;
+  subject: ManagedDocumentSubjectRef;
+  title: string;
+  contentHtml?: string | null;
+  storageKey?: string | null;
+  storageMimeType?: string | null;
+  storageSizeBytes?: number | null;
+};

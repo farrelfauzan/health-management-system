@@ -113,6 +113,18 @@ describe('DocumentApprovalService', () => {
   const managedDocumentRepositoryMock = {
     findVisibleById: jest.fn(),
     transitionDocument: jest.fn(),
+    // The direct-issue path runs the type's behaviour inside the transition's
+    // own transaction (`P16-T32`), so the double has to invoke the callback —
+    // a mock that swallowed it would let a broken behaviour pass.
+    issueDocument: jest.fn(
+      async (payload: {
+        id: string;
+        issuedAt: Date;
+        onIssued: (tx: unknown) => Promise<void>;
+      }) => {
+        await payload.onIssued({});
+      },
+    ),
   };
   const accessServiceMock = { resolveContext: jest.fn() };
   const documentTypeServiceMock = { findTypeOrThrow: jest.fn() };
@@ -205,7 +217,7 @@ describe('DocumentApprovalService', () => {
   describe('issue', () => {
     it('refuses the direct issue when the type requires approval (FR-E5-11)', async () => {
       await expect(service.issue(DOCUMENT_ID, DRAFTER)).rejects.toBeInstanceOf(ConflictException);
-      expect(managedDocumentRepositoryMock.transitionDocument).not.toHaveBeenCalled();
+      expect(managedDocumentRepositoryMock.issueDocument).not.toHaveBeenCalled();
     });
 
     it('issues directly when the type requires no approval (FR-E5-12)', async () => {
@@ -217,9 +229,9 @@ describe('DocumentApprovalService', () => {
 
       await service.issue(DOCUMENT_ID, DRAFTER);
 
-      const actualCall = managedDocumentRepositoryMock.transitionDocument.mock.calls[0][0];
-      expect(actualCall.status).toBe('ISSUED');
-      expect(actualCall.issuedAt).toBeInstanceOf(Date);
+      const actualCall = managedDocumentRepositoryMock.issueDocument.mock.calls[0]?.[0];
+      expect(actualCall?.id).toBe(DOCUMENT_ID);
+      expect(actualCall?.issuedAt).toBeInstanceOf(Date);
     });
 
     it('refuses to issue a type whose behaviour is not wired up yet', async () => {
@@ -234,7 +246,7 @@ describe('DocumentApprovalService', () => {
       );
 
       await expect(service.issue(DOCUMENT_ID, DRAFTER)).rejects.toBeInstanceOf(ConflictException);
-      expect(managedDocumentRepositoryMock.transitionDocument).not.toHaveBeenCalled();
+      expect(managedDocumentRepositoryMock.issueDocument).not.toHaveBeenCalled();
     });
   });
 
@@ -320,6 +332,46 @@ describe('DocumentApprovalService', () => {
       await service.approve(ROUND_ID, APPROVER);
 
       expect(notificationServiceMock.announce).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('bulkApprove (FR-E5-23)', () => {
+    beforeEach(() => {
+      approvalRepositoryMock.findRequestById.mockResolvedValue(buildRound());
+      approvalRepositoryMock.claimDecision.mockResolvedValue({
+        isResolved: true,
+        approvalCount: 1,
+        decisionId: 'decision-1',
+      });
+    });
+
+    it('records a decision per request and counts them', async () => {
+      const actual = await service.bulkApprove({ requestIds: ['round-1', 'round-2'] }, APPROVER);
+
+      expect(actual.approvedCount).toBe(2);
+      expect(actual.failedCount).toBe(0);
+      expect(approvalRepositoryMock.claimDecision).toHaveBeenCalledTimes(2);
+    });
+
+    it('fails one ineligible item alone and leaves the rest standing', async () => {
+      approvalRepositoryMock.findRequestById
+        .mockResolvedValueOnce(buildRound())
+        .mockResolvedValueOnce(buildRound({ approvers: [] }));
+
+      const actual = await service.bulkApprove({ requestIds: ['round-1', 'round-2'] }, APPROVER);
+
+      expect(actual.approvedCount).toBe(1);
+      expect(actual.items[1]?.isApproved).toBe(false);
+      expect(actual.items[1]?.error?.code).toBe('DOCUMENT_APPROVAL_NOT_AN_APPROVER');
+    });
+
+    it('reports the loser of a race as a failure rather than throwing the batch away', async () => {
+      approvalRepositoryMock.claimDecision.mockResolvedValueOnce(null);
+
+      const actual = await service.bulkApprove({ requestIds: ['round-1'] }, APPROVER);
+
+      expect(actual.failedCount).toBe(1);
+      expect(actual.items[0]?.error?.code).toBe('DOCUMENT_APPROVAL_ALREADY_DECIDED');
     });
   });
 

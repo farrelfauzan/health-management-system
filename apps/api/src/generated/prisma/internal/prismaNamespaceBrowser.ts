@@ -954,7 +954,8 @@ export const DocumentTemplateVersionScalarFieldEnum = {
   contentHtml: 'contentHtml',
   settings: 'settings',
   publishedById: 'publishedById',
-  publishedAt: 'publishedAt'
+  publishedAt: 'publishedAt',
+  approvalDecisionId: 'approvalDecisionId'
 } as const
 
 export type DocumentTemplateVersionScalarFieldEnum = (typeof DocumentTemplateVersionScalarFieldEnum)[keyof typeof DocumentTemplateVersionScalarFieldEnum]

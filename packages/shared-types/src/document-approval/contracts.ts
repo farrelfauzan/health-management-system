@@ -105,3 +105,24 @@ export type DocumentApprovalPendingCountView = {
   pending: number;
   overdue: number;
 };
+
+/**
+ * One line of a bulk approval's result (FR-E5-23).
+ *
+ * Every item reports for itself. A batch is not a transaction: an approver
+ * clearing a backlog must not have twenty good decisions rolled back because
+ * the twenty-first named a round somebody else had already decided, and they
+ * must not be left guessing which one failed either.
+ */
+export type DocumentBulkApprovalItemView = {
+  requestId: string;
+  isApproved: boolean;
+  /** The refusal, verbatim from the single-approve path that produced it. */
+  error: { code: string; message: string } | null;
+};
+
+export type DocumentBulkApprovalView = {
+  approvedCount: number;
+  failedCount: number;
+  items: DocumentBulkApprovalItemView[];
+};
