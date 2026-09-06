@@ -172,6 +172,14 @@ export class SatusehatSubmissionService {
       arrivedAt: bundleData.arrivedAt,
       startedAt: bundleData.startedAt,
       endedAt,
+      ...(bundleData.admission
+        ? {
+            admission: {
+              admittedAt: bundleData.admission.admittedAt,
+              dischargedAt: bundleData.admission.dischargedAt,
+            },
+          }
+        : {}),
       conditionReferences: conditionEntries.map((entry, index) => ({
         reference: entry.fullUrl,
         rank: index + 1,

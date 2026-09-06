@@ -125,6 +125,7 @@ describe('SATUSEHAT submission ops integration', () => {
         },
       ],
       retractedReportedAllergyCount: 0,
+      admission: null,
       procedures: [
         {
           procedureId: '8b9c0d1e-2f3a-4b5c-8d6e-7f8a9b0c1d2e',

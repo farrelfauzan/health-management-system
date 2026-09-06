@@ -85,6 +85,7 @@ function buildBundleData(overrides: Record<string, unknown> = {}) {
       temperatureCelsius: null,
       oxygenSaturation: null,
     },
+    admission: null,
     procedures: [],
     unreportedAllergies: [],
     retractedReportedAllergyCount: 0,
@@ -514,6 +515,36 @@ describe('SatusehatSubmissionService', () => {
     expect(dispenseResource.performer[0]?.actor.reference).toBe('Organization/10000004');
     expect(dispenseResource.whenHandedOver).toBe('2026-07-28T02:30:00.000Z');
     expect(dispenseResource.substitution.wasSubstituted).toBe(false);
+  });
+
+  it('reports an admitted visit as IMP over the admission period', async () => {
+    submissionRepositoryMock.findBundleData.mockResolvedValue(
+      buildBundleData({
+        diagnoses: [],
+        latestVitalSigns: null,
+        admission: {
+          admissionId: 'adm-1',
+          admittedAt: new Date('2026-07-28T02:30:00.000Z'),
+          dischargedAt: new Date('2026-07-30T04:00:00.000Z'),
+        },
+      }),
+    );
+    httpClientMock.sendRequest.mockResolvedValue({ entry: [] });
+    const service = buildService();
+
+    await service.processSubmission(buildSubmission());
+
+    const bundle = (httpClientMock.sendRequest.mock.calls[0]?.[0] as {
+      body: SatusehatFhirTransactionBundle;
+    }).body;
+    const encounterResource = bundle.entry[0]?.resource as {
+      class: { code: string };
+      period: { start: string; end: string };
+      hospitalization?: unknown;
+    };
+    expect(encounterResource.class.code).toBe('IMP');
+    expect(encounterResource.period.end).toBe('2026-07-30T04:00:00.000Z');
+    expect(encounterResource.hospitalization).toBeDefined();
   });
 
   it('appends unreported allergies and writes the returned ids back after a 201', async () => {

@@ -185,6 +185,87 @@ describe('SatusehatFhirMapper', () => {
     });
   });
 
+  describe('mapEncounter for an inpatient stay', () => {
+    const admittedAt = new Date('2026-07-28T02:30:00.000Z');
+    const dischargedAt = new Date('2026-07-30T04:00:00.000Z');
+
+    it('reports class IMP over the admission period with a hospitalization element', () => {
+      const actualEncounter = mapper.mapEncounter({
+        ...buildEncounterInput(),
+        admission: { admittedAt, dischargedAt },
+      });
+
+      expect(actualEncounter.class).toEqual({
+        system: 'http://terminology.hl7.org/CodeSystem/v3-ActCode',
+        code: 'IMP',
+        display: 'inpatient encounter',
+      });
+      expect(actualEncounter.period).toEqual({
+        start: '2026-07-28T01:30:00.000Z',
+        end: '2026-07-30T04:00:00.000Z',
+      });
+      expect(actualEncounter.hospitalization).toEqual({
+        dischargeDisposition: {
+          coding: [
+            {
+              system: 'http://terminology.hl7.org/CodeSystem/discharge-disposition',
+              code: 'home',
+              display: 'Home',
+            },
+          ],
+        },
+      });
+    });
+
+    it('runs in-progress from admission to discharge', () => {
+      const actualEncounter = mapper.mapEncounter({
+        ...buildEncounterInput(),
+        admission: { admittedAt, dischargedAt },
+      });
+
+      expect(actualEncounter.statusHistory).toEqual([
+        {
+          status: 'arrived',
+          period: { start: '2026-07-28T01:30:00.000Z', end: '2026-07-28T02:30:00.000Z' },
+        },
+        {
+          status: 'in-progress',
+          period: { start: '2026-07-28T02:30:00.000Z', end: '2026-07-30T04:00:00.000Z' },
+        },
+        {
+          status: 'finished',
+          period: { start: '2026-07-30T04:00:00.000Z', end: '2026-07-30T04:00:00.000Z' },
+        },
+      ]);
+    });
+
+    it('clamps an admission stamped before the encounter opened', () => {
+      const actualEncounter = mapper.mapEncounter({
+        ...buildEncounterInput(),
+        admission: { admittedAt: new Date('2026-07-28T00:00:00.000Z'), dischargedAt },
+      });
+
+      expect(actualEncounter.statusHistory[1]?.period.start).toBe('2026-07-28T02:00:00.000Z');
+    });
+
+    it('clamps a discharge stamped before the encounter opened', () => {
+      const actualEncounter = mapper.mapEncounter({
+        ...buildEncounterInput(),
+        admission: { admittedAt, dischargedAt: new Date('2026-07-27T00:00:00.000Z') },
+      });
+
+      expect(actualEncounter.period.end).toBe('2026-07-28T02:00:00.000Z');
+    });
+
+    it('leaves an outpatient visit ambulatory with no hospitalization element', () => {
+      const actualEncounter = mapper.mapEncounter(buildEncounterInput());
+
+      expect(actualEncounter.class.code).toBe('AMB');
+      expect(actualEncounter.hospitalization).toBeUndefined();
+      expect(actualEncounter.period.end).toBe('2026-07-28T02:20:00.000Z');
+    });
+  });
+
   describe('mapDiagnosisToCondition', () => {
     it('maps a diagnosis snapshot to an encounter-diagnosis Condition', () => {
       const actualCondition = mapper.mapDiagnosisToCondition({

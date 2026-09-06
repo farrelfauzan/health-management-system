@@ -9,6 +9,8 @@ import {
   SatusehatEncounterMapInput,
   SatusehatEncounterStatusHistoryEntry,
   SatusehatFhirAllergyIntolerance,
+  SatusehatFhirEncounterHospitalization,
+  SatusehatFhirCoding,
   SatusehatFhirCondition,
   SatusehatFhirEncounter,
   SatusehatFhirMedication,
@@ -43,6 +45,8 @@ const CONDITION_CLINICAL_SYSTEM = 'http://terminology.hl7.org/CodeSystem/conditi
 const CONDITION_CATEGORY_SYSTEM = 'http://terminology.hl7.org/CodeSystem/condition-category';
 const DIAGNOSIS_ROLE_SYSTEM = 'http://terminology.hl7.org/CodeSystem/diagnosis-role';
 const OBSERVATION_CATEGORY_SYSTEM = 'http://terminology.hl7.org/CodeSystem/observation-category';
+const DISCHARGE_DISPOSITION_SYSTEM =
+  'http://terminology.hl7.org/CodeSystem/discharge-disposition';
 const KFA_SYSTEM = 'http://sys-ids.kemkes.go.id/kfa';
 const MEDICATION_IDENTIFIER_SYSTEM_PREFIX = 'http://sys-ids.kemkes.go.id/medication';
 const PRESCRIPTION_IDENTIFIER_SYSTEM_PREFIX = 'http://sys-ids.kemkes.go.id/prescription';
@@ -96,6 +100,12 @@ export class SatusehatFhirMapper {
    * Maps a finished encounter to a SATUSEHAT Encounter. The mandated
    * arrived/in-progress/finished status history is derived from the
    * registration check-in and the encounter open/close timestamps.
+   *
+   * An encounter attached to an inpatient stay is reported as `IMP` over the
+   * admission's own period, with a `hospitalization` element (P10-T09). An
+   * outpatient visit stays `AMB` over the encounter's period. `EMER` is
+   * deliberately absent: nothing in the registration types records an
+   * emergency visit, and guessing one from a time of day would be a fiction.
    */
   mapEncounter(input: SatusehatEncounterMapInput): SatusehatFhirEncounter {
     const organizationId = this.requireConfigValue(
@@ -116,7 +126,7 @@ export class SatusehatFhirMapper {
         },
       ],
       status: 'finished',
-      class: { system: ACT_ENCOUNTER_CODE_SYSTEM, code: 'AMB', display: 'ambulatory' },
+      class: this.buildEncounterClass(input),
       subject: this.buildReference(`Patient/${input.patientIhsNumber}`, input.patientName),
       participant: [
         {
@@ -133,7 +143,7 @@ export class SatusehatFhirMapper {
       ],
       period: {
         start: this.toFhirInstant(this.resolveArrivedAt(input)),
-        end: this.toFhirInstant(input.endedAt),
+        end: this.toFhirInstant(this.resolveEndedAt(input)),
       },
       location: [
         {
@@ -144,6 +154,7 @@ export class SatusehatFhirMapper {
         },
       ],
       statusHistory: this.buildStatusHistory(input),
+      ...this.buildHospitalization(input),
       ...this.buildEncounterDiagnosis(input),
       serviceProvider: { reference: `Organization/${organizationId}` },
     };
@@ -459,27 +470,88 @@ export class SatusehatFhirMapper {
     };
   }
 
+  private buildEncounterClass(input: SatusehatEncounterMapInput): SatusehatFhirCoding {
+    return input.admission
+      ? { system: ACT_ENCOUNTER_CODE_SYSTEM, code: 'IMP', display: 'inpatient encounter' }
+      : { system: ACT_ENCOUNTER_CODE_SYSTEM, code: 'AMB', display: 'ambulatory' };
+  }
+
+  /**
+   * The clinic records no discharge disposition, so every inpatient stay is
+   * reported as discharged home. That is the truthful default for a klinik
+   * pratama — a stay that ends any other way is a transfer the clinic arranges
+   * outside this system — and inventing a column for it belongs to whichever
+   * ticket actually gives staff somewhere to record it.
+   */
+  private buildHospitalization(
+    input: SatusehatEncounterMapInput,
+  ): Pick<SatusehatFhirEncounter, 'hospitalization'> | Record<string, never> {
+    if (!input.admission) {
+      return {};
+    }
+    const hospitalization: SatusehatFhirEncounterHospitalization = {
+      dischargeDisposition: {
+        coding: [{ system: DISCHARGE_DISPOSITION_SYSTEM, code: 'home', display: 'Home' }],
+      },
+    };
+    return { hospitalization };
+  }
+
+  /**
+   * For an inpatient stay the visit ends at discharge, not when the doctor
+   * closed the note — a late-finished chart would otherwise report an episode
+   * that ended before the patient left the bed.
+   */
+  private resolveEndedAt(input: SatusehatEncounterMapInput): Date {
+    if (!input.admission) {
+      return input.endedAt;
+    }
+    return input.admission.dischargedAt.getTime() < input.startedAt.getTime()
+      ? input.startedAt
+      : input.admission.dischargedAt;
+  }
+
+  /**
+   * An inpatient stay's `in-progress` runs from admission to discharge — the
+   * bed, not the consultation, is what the platform is being told about.
+   */
   private buildStatusHistory(
     input: SatusehatEncounterMapInput,
   ): SatusehatEncounterStatusHistoryEntry[] {
     const arrivedAt = this.resolveArrivedAt(input);
+    const inProgressFrom = this.resolveInProgressFrom(input);
+    const endedAt = this.resolveEndedAt(input);
     return [
       {
         status: 'arrived',
-        period: { start: this.toFhirInstant(arrivedAt), end: this.toFhirInstant(input.startedAt) },
+        period: { start: this.toFhirInstant(arrivedAt), end: this.toFhirInstant(inProgressFrom) },
       },
       {
         status: 'in-progress',
         period: {
-          start: this.toFhirInstant(input.startedAt),
-          end: this.toFhirInstant(input.endedAt),
+          start: this.toFhirInstant(inProgressFrom),
+          end: this.toFhirInstant(endedAt),
         },
       },
       {
         status: 'finished',
-        period: { start: this.toFhirInstant(input.endedAt), end: this.toFhirInstant(input.endedAt) },
+        period: { start: this.toFhirInstant(endedAt), end: this.toFhirInstant(endedAt) },
       },
     ];
+  }
+
+  /**
+   * Clamped the same way check-in is: an admission stamped before the
+   * encounter opened (backfilled paperwork, clock skew) would invert the
+   * `arrived` period, which the platform rejects.
+   */
+  private resolveInProgressFrom(input: SatusehatEncounterMapInput): Date {
+    if (!input.admission) {
+      return input.startedAt;
+    }
+    return input.admission.admittedAt.getTime() < input.startedAt.getTime()
+      ? input.startedAt
+      : input.admission.admittedAt;
   }
 
   private buildEncounterDiagnosis(
