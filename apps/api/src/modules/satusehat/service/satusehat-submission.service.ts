@@ -1,10 +1,13 @@
 import { randomUUID } from 'node:crypto';
 
 import {
+  SatusehatSubmissionAllergy,
   SatusehatSubmissionBundleData,
   SatusehatSubmissionMedication,
+  SatusehatSubmissionImmunization,
   SatusehatSubmissionProcedure,
   SatusehatSubmissionRecord,
+  SaveAllergyIhsIdPayload,
 } from '@hms/shared-types';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -12,6 +15,7 @@ import { ConfigService } from '@nestjs/config';
 import { AuditService } from '../../../common/audit/audit.service';
 import { SatusehatFhirMapper } from '../../../common/satusehat/satusehat-fhir.mapper';
 import {
+  SatusehatCompositionSectionInput,
   SatusehatCreatedResourceLocation,
   SatusehatFhirBundleEntry,
   SatusehatFhirTransactionBundle,
@@ -87,11 +91,13 @@ export class SatusehatSubmissionService {
     }
     const patientIhsNumber = await this.resolvePatientIhsNumber(bundleData);
     const practitionerIhsNumber = await this.resolvePractitionerIhsNumber(bundleData);
+    const allergyFullUrls = new Map<string, string>();
     const bundle = this.buildTransactionBundle(
       bundleData,
       bundleData.endedAt,
       patientIhsNumber,
       practitionerIhsNumber,
+      allergyFullUrls,
     );
     const response = await this.httpClient.sendRequest<SatusehatTransactionResponse>({
       method: 'POST',
@@ -99,6 +105,7 @@ export class SatusehatSubmissionService {
       body: bundle,
     });
     const createdResources = this.extractCreatedResources(bundle, response);
+    await this.saveAllergyIhsIds(allergyFullUrls, createdResources);
     const encounterEntry = bundle.entry.find((entry) => entry.request.url === 'Encounter');
     return encounterEntry ? (createdResources.get(encounterEntry.fullUrl)?.id ?? null) : null;
   }
@@ -108,6 +115,7 @@ export class SatusehatSubmissionService {
     endedAt: Date,
     patientIhsNumber: string,
     practitionerIhsNumber: string,
+    allergyFullUrls: Map<string, string>,
   ): SatusehatFhirTransactionBundle {
     const encounterFullUrl = `urn:uuid:${randomUUID()}`;
     const conditionEntries: SatusehatFhirBundleEntry[] = this.sortDiagnoses(bundleData).map(
@@ -127,6 +135,19 @@ export class SatusehatSubmissionService {
     const procedureEntries = this.buildProcedureEntries(
       bundleData,
       endedAt,
+      encounterFullUrl,
+      patientIhsNumber,
+      practitionerIhsNumber,
+    );
+    const allergyEntries = this.buildAllergyEntries(
+      bundleData,
+      encounterFullUrl,
+      patientIhsNumber,
+      practitionerIhsNumber,
+      allergyFullUrls,
+    );
+    const immunizationEntries = this.buildImmunizationEntries(
+      bundleData,
       encounterFullUrl,
       patientIhsNumber,
       practitionerIhsNumber,
@@ -160,10 +181,38 @@ export class SatusehatSubmissionService {
       arrivedAt: bundleData.arrivedAt,
       startedAt: bundleData.startedAt,
       endedAt,
+      ...(bundleData.admission
+        ? {
+            admission: {
+              admittedAt: bundleData.admission.admittedAt,
+              dischargedAt: bundleData.admission.dischargedAt,
+            },
+          }
+        : {}),
       conditionReferences: conditionEntries.map((entry, index) => ({
         reference: entry.fullUrl,
         rank: index + 1,
       })),
+    });
+    const clinicalImpressionEntry = this.buildClinicalImpressionEntry(
+      bundleData,
+      endedAt,
+      encounterFullUrl,
+      patientIhsNumber,
+      practitionerIhsNumber,
+      conditionEntries,
+    );
+    const compositionEntry = this.buildCompositionEntry({
+      bundleData,
+      endedAt,
+      encounterFullUrl,
+      patientIhsNumber,
+      practitionerIhsNumber,
+      conditionEntries,
+      procedureEntries,
+      observationEntries,
+      medicationEntries,
+      immunizationEntries,
     });
     return {
       resourceType: 'Bundle',
@@ -172,10 +221,146 @@ export class SatusehatSubmissionService {
         { fullUrl: encounterFullUrl, resource: encounterResource, request: { method: 'POST', url: 'Encounter' } },
         ...conditionEntries,
         ...procedureEntries,
+        ...allergyEntries,
         ...observationEntries,
         ...medicationEntries,
+        ...immunizationEntries,
+        ...clinicalImpressionEntry,
+        ...compositionEntry,
       ],
     };
+  }
+
+  /**
+   * Builds the Composition — the *resume medis*, one document per episode —
+   * from the SOAP narrative and the entries already in the bundle. It is
+   * appended last because it references all of them.
+   *
+   * A section is emitted only when it has narrative or entries: an encounter
+   * with no procedures gets no "Tindakan" section rather than an empty one,
+   * which would assert the question was asked and answered with nothing. An
+   * encounter with nothing at all produces no Composition — a document with no
+   * sections is not a medical resume.
+   */
+  private buildCompositionEntry(context: {
+    bundleData: SatusehatSubmissionBundleData;
+    endedAt: Date;
+    encounterFullUrl: string;
+    patientIhsNumber: string;
+    practitionerIhsNumber: string;
+    conditionEntries: readonly SatusehatFhirBundleEntry[];
+    procedureEntries: readonly SatusehatFhirBundleEntry[];
+    observationEntries: readonly SatusehatFhirBundleEntry[];
+    medicationEntries: readonly SatusehatFhirBundleEntry[];
+    immunizationEntries: readonly SatusehatFhirBundleEntry[];
+  }): SatusehatFhirBundleEntry[] {
+    const { bundleData } = context;
+    const sections: SatusehatCompositionSectionInput[] = [
+      {
+        title: 'Anamnesis',
+        loincCode: '10164-2',
+        loincDisplay: 'History of present illness Narrative',
+        narrative: bundleData.soapNote.subjective ?? undefined,
+      },
+      {
+        title: 'Pemeriksaan',
+        loincCode: '29545-1',
+        loincDisplay: 'Physical findings Narrative',
+        narrative: bundleData.soapNote.objective ?? undefined,
+        entryReferences: context.observationEntries.map((entry) => entry.fullUrl),
+      },
+      {
+        title: 'Diagnosis',
+        loincCode: '29308-4',
+        loincDisplay: 'Diagnosis',
+        narrative: bundleData.soapNote.assessment ?? undefined,
+        entryReferences: context.conditionEntries.map((entry) => entry.fullUrl),
+      },
+      {
+        title: 'Tindakan',
+        loincCode: '29554-3',
+        loincDisplay: 'Procedure Narrative',
+        entryReferences: context.procedureEntries.map((entry) => entry.fullUrl),
+      },
+      {
+        title: 'Terapi',
+        loincCode: '10160-0',
+        loincDisplay: 'History of Medication use Narrative',
+        entryReferences: context.medicationEntries
+          .filter((entry) => entry.request.url === 'MedicationRequest')
+          .map((entry) => entry.fullUrl),
+      },
+      {
+        title: 'Imunisasi',
+        loincCode: '11369-6',
+        loincDisplay: 'History of Immunization Narrative',
+        entryReferences: context.immunizationEntries.map((entry) => entry.fullUrl),
+      },
+      {
+        title: 'Rencana',
+        loincCode: '18776-5',
+        loincDisplay: 'Plan of care note',
+        narrative: bundleData.soapNote.plan ?? undefined,
+      },
+    ];
+    const composition = this.fhirMapper.mapComposition({
+      encounterId: bundleData.encounterId,
+      patientIhsNumber: context.patientIhsNumber,
+      patientName: bundleData.patientName,
+      practitionerIhsNumber: context.practitionerIhsNumber,
+      practitionerName: bundleData.doctorName,
+      encounterReference: context.encounterFullUrl,
+      endedAt: context.endedAt,
+      sections,
+    });
+    if (composition.section.length === 0) {
+      return [];
+    }
+    return [
+      {
+        fullUrl: `urn:uuid:${randomUUID()}`,
+        resource: composition,
+        request: { method: 'POST', url: 'Composition' },
+      },
+    ];
+  }
+
+  /**
+   * The assessment narrative and the prognosis, as a ClinicalImpression beside
+   * the Composition. Skipped entirely when neither was recorded — an
+   * impression with no summary, no finding and no prognosis says nothing.
+   */
+  private buildClinicalImpressionEntry(
+    bundleData: SatusehatSubmissionBundleData,
+    endedAt: Date,
+    encounterFullUrl: string,
+    patientIhsNumber: string,
+    practitionerIhsNumber: string,
+    conditionEntries: readonly SatusehatFhirBundleEntry[],
+  ): SatusehatFhirBundleEntry[] {
+    const summary = bundleData.soapNote.assessment?.trim() ?? '';
+    const { prognosis } = bundleData.soapNote;
+    if (summary === '' && prognosis === null && conditionEntries.length === 0) {
+      return [];
+    }
+    return [
+      {
+        fullUrl: `urn:uuid:${randomUUID()}`,
+        resource: this.fhirMapper.mapClinicalImpression({
+          encounterId: bundleData.encounterId,
+          patientIhsNumber,
+          patientName: bundleData.patientName,
+          practitionerIhsNumber,
+          practitionerName: bundleData.doctorName,
+          encounterReference: encounterFullUrl,
+          endedAt,
+          ...(summary === '' ? {} : { summary }),
+          findingReferences: conditionEntries.map((entry) => entry.fullUrl),
+          ...(prognosis === null ? {} : { prognosis }),
+        }),
+        request: { method: 'POST', url: 'ClinicalImpression' },
+      },
+    ];
   }
 
   /**
@@ -227,6 +412,159 @@ export class SatusehatSubmissionService {
       .join(', ');
     this.logger.warn(
       `SATUSEHAT procedure mapping gap: skipped ${skippedProcedures.length} procedure(s) without an ICD-9-CM code: ${described}`,
+    );
+  }
+
+  /**
+   * Appends the patient's not-yet-reported active allergies to this encounter's
+   * bundle. Allergies are patient-scoped while the outbox is keyed by
+   * encounter, which is why they had never been reported at all; riding
+   * whichever visit comes next, then recording the returned id and never
+   * sending the row again, is the cheapest thing that gets a penicillin
+   * reaction into the national record without a second outbox.
+   *
+   * `recorder` is the attending doctor only when the row was written during
+   * this visit. An allergy taken down years ago by somebody else would
+   * otherwise be attributed to whoever happened to see the patient today.
+   */
+  private buildAllergyEntries(
+    bundleData: SatusehatSubmissionBundleData,
+    encounterFullUrl: string,
+    patientIhsNumber: string,
+    practitionerIhsNumber: string,
+    allergyFullUrls: Map<string, string>,
+  ): SatusehatFhirBundleEntry[] {
+    this.reportRetractedAllergyGap(bundleData.retractedReportedAllergyCount);
+    return bundleData.unreportedAllergies.map((allergy) => {
+      const fullUrl = `urn:uuid:${randomUUID()}`;
+      allergyFullUrls.set(fullUrl, allergy.allergyId);
+      return {
+        fullUrl,
+        resource: this.fhirMapper.mapAllergyToAllergyIntolerance({
+          allergyId: allergy.allergyId,
+          substance: allergy.substance,
+          reaction: allergy.reaction ?? undefined,
+          severity: allergy.severity,
+          patientIhsNumber,
+          patientName: bundleData.patientName,
+          encounterReference: encounterFullUrl,
+          recordedAt: allergy.recordedAt,
+          ...(this.wasRecordedDuringEncounter(allergy, bundleData)
+            ? {
+                recorderIhsNumber: practitionerIhsNumber,
+                recorderName: bundleData.doctorName,
+              }
+            : {}),
+        }),
+        request: { method: 'POST', url: 'AllergyIntolerance' },
+      };
+    });
+  }
+
+  /**
+   * Retracting an allergy on the platform needs an `entered-in-error` update
+   * this adapter does not do yet. Logging the count leaves the divergence
+   * visible instead of silent — no identifying detail, the same discipline as
+   * the medication gap report.
+   */
+  private reportRetractedAllergyGap(retractedCount: number): void {
+    if (retractedCount === 0) {
+      return;
+    }
+    this.logger.warn(
+      `SATUSEHAT allergy retraction gap: ${retractedCount} reported allergy(ies) were deleted locally and remain active on the platform`,
+    );
+  }
+
+  private wasRecordedDuringEncounter(
+    allergy: SatusehatSubmissionAllergy,
+    bundleData: SatusehatSubmissionBundleData,
+  ): boolean {
+    if (bundleData.endedAt === null) {
+      return false;
+    }
+    const recordedAt = allergy.recordedAt.getTime();
+    return (
+      recordedAt >= bundleData.startedAt.getTime() && recordedAt <= bundleData.endedAt.getTime()
+    );
+  }
+
+  /**
+   * An allergy whose entry the platform did not confirm keeps its null id and
+   * is offered again on the next encounter. Two workers submitting concurrent
+   * encounters for the same patient can both include the same unreported
+   * allergy: the row lease (SJ-76) makes that rare, and the worst case is one
+   * duplicate resource on the platform rather than a silently unreported
+   * allergy — which is the right way round.
+   */
+  private async saveAllergyIhsIds(
+    allergyFullUrls: ReadonlyMap<string, string>,
+    createdResources: ReadonlyMap<string, SatusehatCreatedResourceLocation>,
+  ): Promise<void> {
+    const payloads: SaveAllergyIhsIdPayload[] = [];
+    for (const [fullUrl, allergyId] of allergyFullUrls) {
+      const created = createdResources.get(fullUrl);
+      if (created !== undefined) {
+        payloads.push({ allergyId, satusehatAllergyId: created.id });
+      }
+    }
+    await this.submissionRepository.saveAllergyIhsIds(payloads);
+  }
+
+  /**
+   * Builds one Immunization entry per KFA-coded vaccination on the visit.
+   *
+   * A vaccine whose catalog row has no KFA code is skipped and named in the
+   * gap report — the platform only accepts KFA-coded products, and the fix is
+   * the catalog, not a guessed code. The vaccination stays in the local record
+   * either way, which is the point of recording it structurally at all.
+   */
+  private buildImmunizationEntries(
+    bundleData: SatusehatSubmissionBundleData,
+    encounterFullUrl: string,
+    patientIhsNumber: string,
+    practitionerIhsNumber: string,
+  ): SatusehatFhirBundleEntry[] {
+    const skipped = bundleData.immunizations.filter(
+      (immunization) => immunization.kfaCode === null,
+    );
+    this.reportImmunizationGaps(skipped);
+    return bundleData.immunizations
+      .filter(
+        (immunization): immunization is SatusehatSubmissionImmunization & { kfaCode: string } =>
+          immunization.kfaCode !== null,
+      )
+      .map((immunization) => ({
+        fullUrl: `urn:uuid:${randomUUID()}`,
+        resource: this.fhirMapper.mapImmunization({
+          immunizationId: immunization.immunizationId,
+          kfaCode: immunization.kfaCode,
+          vaccineName: immunization.vaccineName,
+          patientIhsNumber,
+          patientName: bundleData.patientName,
+          encounterReference: encounterFullUrl,
+          occurredAt: immunization.occurredAt,
+          lotNumber: immunization.lotNumber ?? undefined,
+          expirationDate: immunization.expirationDate ?? undefined,
+          doseNumber: immunization.doseNumber ?? undefined,
+          route: immunization.route ?? undefined,
+          site: immunization.site ?? undefined,
+          performerIhsNumber: practitionerIhsNumber,
+          performerName: bundleData.doctorName,
+          notes: immunization.notes ?? undefined,
+        }),
+        request: { method: 'POST', url: 'Immunization' },
+      }));
+  }
+
+  private reportImmunizationGaps(
+    skippedImmunizations: readonly SatusehatSubmissionImmunization[],
+  ): void {
+    if (skippedImmunizations.length === 0) {
+      return;
+    }
+    this.logger.warn(
+      `SATUSEHAT immunization mapping gap: skipped ${skippedImmunizations.length} vaccination(s) whose vaccine has no KFA code`,
     );
   }
 

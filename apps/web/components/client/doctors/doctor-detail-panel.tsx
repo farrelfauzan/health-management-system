@@ -19,9 +19,10 @@ import { useDoctorDetail } from '#lib/doctors/use-doctor-detail';
 
 type DoctorDetailPanelProps = {
   doctorId: string;
+  isSatusehatEnabled: boolean;
 };
 
-export function DoctorDetailPanel({ doctorId }: DoctorDetailPanelProps) {
+export function DoctorDetailPanel({ doctorId, isSatusehatEnabled }: DoctorDetailPanelProps) {
   const t = useTranslations('clinical');
   const detailQuery = useDoctorDetail(doctorId);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState<boolean>(false);
@@ -72,7 +73,7 @@ export function DoctorDetailPanel({ doctorId }: DoctorDetailPanelProps) {
       <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">
         <div className="space-y-6">
           <DoctorProfileCard doctor={doctor} />
-          <DoctorIdentifiersCard doctor={doctor} />
+          <DoctorIdentifiersCard doctor={doctor} isSatusehatEnabled={isSatusehatEnabled} />
           <DoctorEducationsCard educations={doctor.educations} />
         </div>
         <div className="space-y-6">

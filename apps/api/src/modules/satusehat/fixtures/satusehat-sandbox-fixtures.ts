@@ -58,6 +58,14 @@ export const SATUSEHAT_SANDBOX_FIXTURES = {
       {
         response: {
           status: '201 Created',
+          location: 'https://api-satusehat-stg.dto.kemkes.go.id/fhir-r4/v1/AllergyIntolerance/5b1c2d3e-4f5a-4b6c-8d7e-9f0a1b2c3d4f/_history/1',
+          etag: 'W/"1"',
+          lastModified: '2026-07-28T09:05:01.000+00:00',
+        },
+      },
+      {
+        response: {
+          status: '201 Created',
           location: 'https://api-satusehat-stg.dto.kemkes.go.id/fhir-r4/v1/Observation/6c2d3e4f-5a6b-4c7d-9e8f-0a1b2c3d4e5f/_history/1',
           etag: 'W/"1"',
           lastModified: '2026-07-28T09:05:01.000+00:00',
@@ -83,6 +91,22 @@ export const SATUSEHAT_SANDBOX_FIXTURES = {
         response: {
           status: '201 Created',
           location: 'https://api-satusehat-stg.dto.kemkes.go.id/fhir-r4/v1/MedicationDispense/9f5a6b7c-8d9e-4fa0-b1c2-3d4e5f6a7b8c/_history/1',
+          etag: 'W/"1"',
+          lastModified: '2026-07-28T09:05:01.000+00:00',
+        },
+      },
+      {
+        response: {
+          status: '201 Created',
+          location: 'https://api-satusehat-stg.dto.kemkes.go.id/fhir-r4/v1/ClinicalImpression/1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d/_history/1',
+          etag: 'W/"1"',
+          lastModified: '2026-07-28T09:05:01.000+00:00',
+        },
+      },
+      {
+        response: {
+          status: '201 Created',
+          location: 'https://api-satusehat-stg.dto.kemkes.go.id/fhir-r4/v1/Composition/2b3c4d5e-6f7a-4b8c-9d0e-1f2a3b4c5d6e/_history/1',
           etag: 'W/"1"',
           lastModified: '2026-07-28T09:05:01.000+00:00',
         },

@@ -29,6 +29,7 @@ const ENCOUNTER = {
   vitalSigns: [],
   diagnoses: [],
   procedures: [],
+  immunizations: [],
   prescriptions: [],
 } satisfies EncounterDetail;
 

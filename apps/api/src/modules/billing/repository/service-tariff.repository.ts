@@ -108,6 +108,25 @@ export class ServiceTariffRepository {
     return rows.map((row) => this.toServiceTariffRecord(row));
   }
 
+  /**
+   * Tariffs matched by their own `code`, which is how a vaccination is priced
+   * (P10-T16): a vaccine has no ICD-9-CM code, so the clinic prices it by
+   * giving a tariff the same code as the catalog row. Deliberately not
+   * restricted to one category — a clinic that files its vaccine tariffs under
+   * PROCEDURE rather than OTHER is not wrong, and refusing to find them would
+   * turn a naming preference into an unpriced line.
+   */
+  async findActiveTariffsByCodes(codes: string[]): Promise<ServiceTariffRecord[]> {
+    if (codes.length === 0) {
+      return [];
+    }
+    const rows = await this.prisma.findManyActive(this.prisma.serviceTariff, {
+      where: { code: { in: codes }, isActive: true },
+      include: SERVICE_TARIFF_INCLUDE,
+    });
+    return rows.map((row) => this.toServiceTariffRecord(row));
+  }
+
   async createServiceTariff(
     payload: CreateServiceTariffRecordPayload,
   ): Promise<ServiceTariffRecord> {
