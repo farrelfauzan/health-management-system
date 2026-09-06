@@ -3,12 +3,16 @@ import {
   ListSatusehatSubmissionsParams,
   MarkSubmissionFailedPayload,
   MarkSubmissionRetryPayload,
+  SatusehatSubmissionAllergy,
   SatusehatSubmissionBundleData,
   SatusehatSubmissionDispenseItem,
   SatusehatSubmissionMedication,
+  SatusehatSubmissionAdmission,
   SatusehatSubmissionPage,
   SatusehatSubmissionPrescription,
+  SatusehatSubmissionProcedure,
   SatusehatSubmissionRecord,
+  SaveAllergyIhsIdPayload,
 } from '@hms/shared-types';
 import { Injectable } from '@nestjs/common';
 
@@ -45,6 +49,31 @@ type MedicationRow = {
   kfaCode: string | null;
   name: string;
   unit: string | null;
+};
+
+/**
+ * The query behind this row deliberately fetches two disjoint sets in one
+ * pass: allergies not yet reported (live, no IHS id), which are what the
+ * bundle appends, and allergies reported then retracted (deleted, with an IHS
+ * id), which are only counted so the divergence from the platform is logged.
+ */
+type AllergyRow = {
+  id: string;
+  substance: string;
+  reaction: string | null;
+  severity: 'MILD' | 'MODERATE' | 'SEVERE';
+  satusehatAllergyId: string | null;
+  deletedAt: Date | null;
+  createdAt: Date;
+};
+
+type ProcedureRow = {
+  id: string;
+  icd9cmCodeId: string | null;
+  code: string;
+  display: string;
+  performedAt: Date;
+  notes: string | null;
 };
 
 type PrescriptionRow = {
@@ -158,13 +187,68 @@ export class SatusehatSubmissionRepository {
       include: {
         registration: { select: { checkedInAt: true } },
         patient: {
-          select: { id: true, fullName: true, satusehatPatientIdCiphertext: true },
+          select: {
+            id: true,
+            fullName: true,
+            satusehatPatientIdCiphertext: true,
+            allergies: {
+              where: {
+                OR: [
+                  { deletedAt: null, satusehatAllergyId: null },
+                  { deletedAt: { not: null }, satusehatAllergyId: { not: null } },
+                ],
+              },
+              orderBy: { createdAt: 'asc' },
+              select: {
+                id: true,
+                substance: true,
+                reaction: true,
+                severity: true,
+                satusehatAllergyId: true,
+                deletedAt: true,
+                createdAt: true,
+              },
+            },
+          },
         },
         doctor: { select: { id: true, fullName: true, satusehatPractitionerId: true } },
         diagnoses: {
           where: { deletedAt: null },
           orderBy: { recordedAt: 'asc' },
           select: { code: true, display: true, type: true, recordedAt: true },
+        },
+        admissions: {
+          where: { deletedAt: null, status: 'DISCHARGED', dischargedAt: { not: null } },
+          orderBy: { admittedAt: 'desc' },
+          take: 1,
+          select: { id: true, admittedAt: true, dischargedAt: true },
+        },
+        immunizations: {
+          where: { deletedAt: null },
+          orderBy: { occurredAt: 'asc' },
+          select: {
+            id: true,
+            occurredAt: true,
+            lotNumber: true,
+            expirationDate: true,
+            doseNumber: true,
+            route: true,
+            site: true,
+            notes: true,
+            medication: { select: { name: true, kfaCode: true } },
+          },
+        },
+        procedures: {
+          where: { deletedAt: null },
+          orderBy: { performedAt: 'asc' },
+          select: {
+            id: true,
+            icd9cmCodeId: true,
+            code: true,
+            display: true,
+            performedAt: true,
+            notes: true,
+          },
         },
         vitalSigns: {
           where: { deletedAt: null },
@@ -223,7 +307,38 @@ export class SatusehatSubmissionRepository {
       arrivedAt: encounter.registration.checkedInAt ?? encounter.startedAt,
       startedAt: encounter.startedAt,
       endedAt: encounter.endedAt,
+      soapNote: {
+        subjective: encounter.subjective,
+        objective: encounter.objective,
+        assessment: encounter.assessment,
+        plan: encounter.plan,
+        prognosis: encounter.prognosis,
+      },
+      admission: this.toSubmissionAdmission(encounter.admissions[0]),
       diagnoses: encounter.diagnoses,
+      procedures: encounter.procedures.map((procedure) => this.toSubmissionProcedure(procedure)),
+      immunizations: encounter.immunizations.map((immunization) => ({
+        immunizationId: immunization.id,
+        kfaCode: immunization.medication.kfaCode,
+        vaccineName: immunization.medication.name,
+        occurredAt: immunization.occurredAt,
+        lotNumber: immunization.lotNumber,
+        // Date-only on the wire: an expiry is a calendar fact, and an instant
+        // would put a timezone on something that does not have one.
+        expirationDate: immunization.expirationDate
+          ? immunization.expirationDate.toISOString().slice(0, 10)
+          : null,
+        doseNumber: immunization.doseNumber,
+        route: immunization.route,
+        site: immunization.site,
+        notes: immunization.notes,
+      })),
+      unreportedAllergies: encounter.patient.allergies
+        .filter((allergy) => allergy.deletedAt === null)
+        .map((allergy) => this.toSubmissionAllergy(allergy)),
+      retractedReportedAllergyCount: encounter.patient.allergies.filter(
+        (allergy) => allergy.deletedAt !== null,
+      ).length,
       latestVitalSigns: latestVitals
         ? {
             recordedAt: latestVitals.recordedAt,
@@ -243,6 +358,56 @@ export class SatusehatSubmissionRepository {
       dispenseItems: encounter.prescriptions.flatMap((prescription) =>
         this.toSubmissionDispenseItems(prescription),
       ),
+    };
+  }
+
+  /**
+   * `recordedAt` is the row's `createdAt`: the record has no separate
+   * "recorded on" column, and the moment the clinic wrote the allergy down is
+   * exactly what `AllergyIntolerance.recordedDate` means.
+   */
+  private toSubmissionAllergy(allergy: AllergyRow): SatusehatSubmissionAllergy {
+    return {
+      allergyId: allergy.id,
+      substance: allergy.substance,
+      reaction: allergy.reaction,
+      severity: allergy.severity,
+      recordedAt: allergy.createdAt,
+    };
+  }
+
+  /**
+   * Only a discharged stay is reported as inpatient. An admission still open
+   * has no episode end to report, and a cancelled one is a stay that never
+   * happened — both leave the visit ambulatory (P10-T09).
+   */
+  private toSubmissionAdmission(
+    admission: { id: string; admittedAt: Date; dischargedAt: Date | null } | undefined,
+  ): SatusehatSubmissionAdmission | null {
+    if (admission === undefined || admission.dischargedAt === null) {
+      return null;
+    }
+    return {
+      admissionId: admission.id,
+      admittedAt: admission.admittedAt,
+      dischargedAt: admission.dischargedAt,
+    };
+  }
+
+  /**
+   * A procedure without an `icd9cmCodeId` was typed as free text; the code
+   * column then holds whatever the doctor wrote, which is not an ICD-9-CM
+   * code. The flag lets the submission service skip and gap-report it instead
+   * of sending an unrecognised coding (P10-T07).
+   */
+  private toSubmissionProcedure(procedure: ProcedureRow): SatusehatSubmissionProcedure {
+    return {
+      procedureId: procedure.id,
+      code: procedure.code,
+      display: procedure.display,
+      isCoded: procedure.icd9cmCodeId !== null,
+      performedAt: procedure.performedAt,
+      notes: procedure.notes,
     };
   }
 
@@ -285,6 +450,27 @@ export class SatusehatSubmissionRepository {
       name: medication.name,
       unit: medication.unit,
     };
+  }
+
+  /**
+   * Writes back the IHS ids the platform assigned to newly reported allergies.
+   * Called only after the transaction bundle succeeded — a write-back on a
+   * failed submission would permanently silence an allergy that never reached
+   * the platform, which is the one failure mode worth being careful about
+   * here (P10-T08).
+   */
+  async saveAllergyIhsIds(payloads: readonly SaveAllergyIhsIdPayload[]): Promise<void> {
+    if (payloads.length === 0) {
+      return;
+    }
+    await this.prisma.executeTransaction(async (tx) => {
+      for (const payload of payloads) {
+        await tx.patientAllergy.update({
+          where: { id: payload.allergyId },
+          data: { satusehatAllergyId: payload.satusehatAllergyId },
+        });
+      }
+    });
   }
 
   async markSubmitted(id: string, satusehatEncounterId: string | null): Promise<void> {

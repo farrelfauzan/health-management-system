@@ -220,6 +220,7 @@ describe('Billing integration', () => {
       status: 'FINISHED',
       patientId,
       procedures: [],
+      immunizations: [],
     });
     billingRepositoryMock.findLiveInvoiceByEncounterId.mockResolvedValue(null);
     billingRepositoryMock.findDispensedItemsByEncounterId.mockResolvedValue([
@@ -253,6 +254,7 @@ describe('Billing integration', () => {
       status: 'IN_PROGRESS',
       patientId,
       procedures: [],
+      immunizations: [],
     });
 
     const response = await request(app.getHttpServer())

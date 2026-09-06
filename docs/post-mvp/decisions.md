@@ -153,10 +153,17 @@ Both were re-checked in the phase-closing security pass and stand as written.
 - **D-026 (network-denied renderer):** both halves of the posture are present in the deploying artefact and are now asserted in CI by `apps/api/src/common/pdf/renderer-isolation.spec.ts`. One gap is filed rather than closed — there is no production manifest to verify yet ([finding F-1](../security/renderer-isolation.md#findings)), which is a gate on pilot enablement.
 - **D-027 (password-protected delivery):** unchanged. Spot-checked as part of NFR-SEC-07: attachments are streamed server-side and link delivery sends a tokenised app URL, never a presigned bucket URL.
 
+
+## D-030: An Inpatient Encounter Is Reported at Discharge, Not at Close (P10-T09)
+
+- **Status:** Accepted
+- **Decision:** The SATUSEHAT outbox has **two producers**. An encounter with no admission, or with one already discharged or cancelled, enqueues at the FINISHED close in `EncounterRepository.closeEncounter` as before. An encounter whose patient is **still admitted** enqueues nothing there; the row is written inside `AdmissionFlowRepository.dischargeAdmission` instead, in that transaction. The Encounter is then reported with `class: IMP`, a `period` running check-in to discharge, an `in-progress` status-history entry spanning admission to discharge, and a `hospitalization` element.
+- **Why:** `mapEncounter` hard-coded `class: AMB`. With admissions live, an admitted patient's visit was reported as ambulatory — not a failed submission but a **wrong** one, which no monitor will ever flag. The IG's rawat-inap use case requires `IMP`, the stay's period and a `hospitalization` element, and none of those are known while the patient is still in a bed. Sending at close would mean either reporting an episode that has not ended or issuing a correction later; moving the enqueue to the event that actually ends the episode avoids both. Writing another module's table is the same trade the close path already makes, for the same reason: the outbox guarantee is that the event and its queue entry commit or roll back together, and an after-commit enqueue reintroduces the silent-miss window the outbox exists to remove.
+- **Consequence:** Two orderings exist and both are safe. Close-then-discharge enqueues at discharge; discharge-then-close (the doctor who finishes the chart late) enqueues at close, which by then sees a discharged admission and reports `IMP` normally. The discharge-side insert is an upsert on the unique `encounter_id`, so neither ordering can queue a visit twice. A cancelled admission is a stay that never happened and leaves the visit ambulatory. `dischargeDisposition` is sent as `home` for every stay: the clinic records no disposition anywhere, and a column for it belongs to whichever ticket gives staff somewhere to enter one — not to a mapper that would be inventing the value. Ward-level Locations stay out of scope: only the facility `Location` is registered on the platform, so `location` is unchanged. `EMER` also stays out until a registration type records an emergency visit; deriving one from a timestamp would be a fiction.
+
 ## D-031: QuestionnaireResponse Is Not Required of This Clinic Yet (P10-T17 Spike)
 
-> **Numbering note:** D-030 is claimed by `P10-T09` (PR #260), which is open at the
-> time of writing. If that PR does not land, this entry renumbers to D-030.
+> **Numbering note:** D-030 is claimed by `P10-T09` (PR #260), which has since landed.
 
 - **Status:** Accepted (spike outcome — no code)
 - **Decision:** **Do not build a questionnaire engine, and do not send `QuestionnaireResponse`, for this deployment.** The resource is real, its questionnaires are real, and they belong to a use case — **Skrining PTM** — that this clinic does not run and is not being asked to run. Revisit when the clinic starts a PTM screening programme, or when Kemenkes extends the obligation to klinik pratama.

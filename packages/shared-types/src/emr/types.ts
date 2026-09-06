@@ -1,4 +1,10 @@
-import type { DiagnosisTypeValue, EncounterStatusValue } from '#emr/schemas';
+import type {
+  DiagnosisTypeValue,
+  EncounterPrognosisValue,
+  EncounterStatusValue,
+  ImmunizationRouteValue,
+  ImmunizationSiteValue,
+} from '#emr/schemas';
 import type { PrescriptionStatusValue } from '#pharmacy-flow/schemas';
 import type { RegistrationStatusValue } from '#registration-flow/schemas';
 
@@ -13,6 +19,12 @@ export type SoapNote = {
   objective: string | null;
   assessment: string | null;
   plan: string | null;
+  /**
+   * The doctor's outlook for the episode (P10-T15). Part of the note rather
+   * than a field of its own because it is recorded in the same form and
+   * cleared the same way, and null means nobody recorded one — never "bonam".
+   */
+  prognosis: EncounterPrognosisValue | null;
 };
 
 export type EncounterRecord = SoapNote & {
@@ -203,6 +215,7 @@ export type EncounterDetailRecord = EncounterRecord & {
   vitalSigns: VitalSignsRecord[];
   diagnoses: DiagnosisRecord[];
   procedures: ProcedureRecord[];
+  immunizations: ImmunizationRecord[];
   prescriptions: EncounterPrescriptionRecord[];
 };
 
@@ -240,4 +253,44 @@ export type UpsertBpjsReferralRecordPayload = {
   estimatedReferralDate: Date;
   notes: string | null;
   recordedById: string;
+};
+
+/**
+ * One recorded vaccination as the repository returns it (P10-T16). The vaccine
+ * name and KFA code ride along because every reader needs them — the history
+ * row to render, the bundle builder to decide whether the row is reportable at
+ * all.
+ */
+export type ImmunizationRecord = {
+  id: string;
+  encounterId: string;
+  patientId: string;
+  medicationId: string;
+  medicationName: string;
+  kfaCode: string | null;
+  occurredAt: Date;
+  lotNumber: string | null;
+  expirationDate: Date | null;
+  doseNumber: number | null;
+  route: ImmunizationRouteValue | null;
+  site: ImmunizationSiteValue | null;
+  performedById: string | null;
+  performedByName: string | null;
+  notes: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type CreateImmunizationRecordPayload = {
+  encounterId: string;
+  patientId: string;
+  medicationId: string;
+  occurredAt?: Date;
+  lotNumber?: string;
+  expirationDate?: Date;
+  doseNumber?: number;
+  route?: ImmunizationRouteValue;
+  site?: ImmunizationSiteValue;
+  performedById?: string;
+  notes?: string;
 };

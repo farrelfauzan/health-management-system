@@ -30,6 +30,7 @@ describe('pharmacy inventory dialogs', () => {
           stockQty: 250,
           reorderLevel: 50,
           needsReorder: false,
+    isVaccine: false,
           createdAt: '2026-07-01T00:00:00.000Z',
           updatedAt: '2026-07-01T00:00:00.000Z',
         }}

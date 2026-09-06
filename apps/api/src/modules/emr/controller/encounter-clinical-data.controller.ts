@@ -21,6 +21,7 @@ import { ApiEndpoint } from '../../../common/openapi/api-endpoint.decorator';
 import { BPJS_PCARE_EXAMPLES } from '../../../common/openapi/bpjs-pcare-examples';
 import { PHASE_THREE_EXAMPLES } from '../../../common/openapi/phase-three-examples';
 import { AddDiagnosisDto } from '../dto/add-diagnosis.dto';
+import { AddImmunizationDto } from '../dto/add-immunization.dto';
 import { AddProcedureDto } from '../dto/add-procedure.dto';
 import { RecordVitalSignsDto } from '../dto/record-vital-signs.dto';
 import { UpsertBpjsReferralDto } from '../dto/upsert-bpjs-referral.dto';
@@ -190,6 +191,75 @@ export class EncounterClinicalDataController {
 
     return {
       message: 'Procedure retracted',
+    };
+  }
+
+  @Post('immunizations')
+  @HttpCode(201)
+  @Auth([{ action: 'write', subject: 'Encounter' }])
+  @Audited({
+    resource: 'encounter-immunization',
+    action: AuditAction.CREATE,
+    idParam: 'encounterId',
+  })
+  @ApiEndpoint({
+    summary: 'Record a vaccination',
+    responseDescription:
+      'The vaccination was recorded against the encounter. Only a catalog row flagged as a vaccine may be named; one without a KFA code is recorded locally and skipped in the SATUSEHAT bundle.',
+    responseExample: {
+      data: PHASE_THREE_EXAMPLES.encounter.immunization,
+      message: 'Immunization recorded',
+    },
+    requestType: AddImmunizationDto,
+    requestExample: PHASE_THREE_EXAMPLES.encounter.immunizationRequest,
+    successStatus: 201,
+    notFoundDescription: 'Encounter not found.',
+  })
+  async addImmunization(
+    @Param('encounterId', new ParseUUIDPipe()) encounterId: string,
+    @Body() payload: AddImmunizationDto,
+    @AuthUser() currentUser?: CurrentUser,
+  ) {
+    const actor = this.assertAuthenticated(currentUser);
+    const immunization = await this.encounterClinicalDataService.addImmunization(
+      encounterId,
+      payload,
+      actor,
+    );
+
+    return {
+      data: immunization,
+      message: 'Immunization recorded',
+    };
+  }
+
+  @Delete('immunizations/:immunizationId')
+  @Auth([{ action: 'write', subject: 'Encounter' }])
+  @Audited({
+    resource: 'encounter-immunization',
+    action: AuditAction.DELETE,
+    idParam: 'immunizationId',
+  })
+  @ApiEndpoint({
+    summary: 'Retract a vaccination',
+    responseDescription: 'The immunisation is soft-deleted and stays auditable.',
+    responseExample: { message: 'Immunization retracted' },
+    notFoundDescription: 'Immunization not found on this encounter.',
+  })
+  async removeImmunization(
+    @Param('encounterId', new ParseUUIDPipe()) encounterId: string,
+    @Param('immunizationId', new ParseUUIDPipe()) immunizationId: string,
+    @AuthUser() currentUser?: CurrentUser,
+  ) {
+    const actor = this.assertAuthenticated(currentUser);
+    await this.encounterClinicalDataService.removeImmunization(
+      encounterId,
+      immunizationId,
+      actor,
+    );
+
+    return {
+      message: 'Immunization retracted',
     };
   }
 

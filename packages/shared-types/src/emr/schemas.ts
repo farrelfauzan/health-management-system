@@ -136,12 +136,20 @@ export const openEncounterSchema = z.object({
  * they filled in by mistake, and optional so a PATCH touches only what it
  * names — omitting `plan` must not erase it.
  */
+export const encounterPrognosisSchema = z.enum([
+  'BONAM',
+  'DUBIA_AD_BONAM',
+  'DUBIA_AD_MALAM',
+  'MALAM',
+]);
+
 export const updateEncounterSoapSchema = z
   .object({
     subjective: z.string().trim().max(MAX_SOAP_LENGTH).nullable().optional(),
     objective: z.string().trim().max(MAX_SOAP_LENGTH).nullable().optional(),
     assessment: z.string().trim().max(MAX_SOAP_LENGTH).nullable().optional(),
     plan: z.string().trim().max(MAX_SOAP_LENGTH).nullable().optional(),
+    prognosis: encounterPrognosisSchema.nullable().optional(),
   })
   .refine((payload) => Object.keys(payload).length > 0, {
     message: 'At least one SOAP field must be provided',
@@ -208,6 +216,38 @@ export const addProcedureSchema = z
     path: ['icd9cmCodeId'],
   });
 
+export const immunizationRouteSchema = z.enum(['IM', 'SC', 'ID', 'ORAL', 'NASAL']);
+
+export const immunizationSiteSchema = z.enum([
+  'LEFT_ARM',
+  'RIGHT_ARM',
+  'LEFT_THIGH',
+  'RIGHT_THIGH',
+  'OTHER',
+]);
+
+/**
+ * One vaccination given during the visit (P10-T16).
+ *
+ * `medicationId` names a row in the medication catalog flagged `isVaccine`:
+ * vaccines are KFA products, so they live where the other products live and
+ * the flag is what filters the picker. Lot, expiry and dose are optional
+ * because a nurse recording a vaccination from a card may not have all three,
+ * and a record with two of them is worth more than no record — the SATUSEHAT
+ * mapper omits what is absent rather than inventing it.
+ */
+export const addImmunizationSchema = z.object({
+  medicationId: z.string().uuid(),
+  occurredAt: z.string().datetime().optional(),
+  lotNumber: z.string().trim().min(1).max(MAX_CODE_LENGTH).optional(),
+  expirationDate: z.string().date().optional(),
+  doseNumber: z.number().int().min(1).max(20).optional(),
+  route: immunizationRouteSchema.optional(),
+  site: immunizationSiteSchema.optional(),
+  performedById: z.string().uuid().optional(),
+  notes: z.string().trim().min(1).max(MAX_NOTES_LENGTH).optional(),
+});
+
 export const listEncountersQuerySchema = z
   .object({
     page: z.coerce.number().int().min(1).default(1),
@@ -250,7 +290,13 @@ export const upsertBpjsReferralSchema = z
     },
   );
 
+export type ImmunizationRouteValue = z.infer<typeof immunizationRouteSchema>;
+export type ImmunizationSiteValue = z.infer<typeof immunizationSiteSchema>;
+export type AddImmunizationInput = z.infer<typeof addImmunizationSchema>;
+
 export type OpenEncounterInput = z.infer<typeof openEncounterSchema>;
+export type EncounterPrognosisValue = z.infer<typeof encounterPrognosisSchema>;
+
 export type UpdateEncounterSoapInput = z.infer<typeof updateEncounterSoapSchema>;
 export type RecordVitalSignsInput = z.infer<typeof recordVitalSignsSchema>;
 export type AddDiagnosisInput = z.infer<typeof addDiagnosisSchema>;

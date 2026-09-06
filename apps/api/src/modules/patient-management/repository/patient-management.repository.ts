@@ -47,6 +47,7 @@ const PATIENT_RECORD_SELECT = {
   nikLast4: true,
   bpjsNumberLast4: true,
   satusehatPatientIdCiphertext: true,
+  satusehatPatientIdLast4: true,
   email: true,
   bloodType: true,
   rhesusFactor: true,

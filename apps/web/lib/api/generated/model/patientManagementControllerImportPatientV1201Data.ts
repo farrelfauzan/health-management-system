@@ -20,6 +20,7 @@ export type PatientManagementControllerImportPatientV1201Data = {
   nikMasked: string;
   bpjsNumberMasked: string;
   hasSatusehatPatientId: boolean;
+  satusehatPatientIdMasked?: string;
   email: string;
   bloodType: string;
   rhesusFactor: string;

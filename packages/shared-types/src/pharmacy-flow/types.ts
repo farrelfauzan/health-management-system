@@ -53,8 +53,19 @@ export type MedicationRecord = {
   category: MedicationCategoryValue | null;
   stockQty: number;
   reorderLevel: number;
+  isVaccine: boolean;
   createdAt: Date;
   updatedAt: Date;
+};
+
+/**
+ * The minimum another module needs to decide whether a catalog row may be
+ * recorded as a vaccination, and whether it will be reportable (P10-T16).
+ */
+export type VaccineCatalogEntry = {
+  id: string;
+  name: string;
+  kfaCode: string | null;
 };
 
 export type CreateMedicationRecordPayload = {
@@ -66,6 +77,7 @@ export type CreateMedicationRecordPayload = {
   unit?: MedicationUnitValue;
   category?: MedicationCategoryValue;
   reorderLevel: number;
+  isVaccine?: boolean;
 };
 
 export type UpdateMedicationRecordPayload = {
@@ -77,6 +89,7 @@ export type UpdateMedicationRecordPayload = {
   unit?: MedicationUnitValue | null;
   category?: MedicationCategoryValue | null;
   reorderLevel?: number;
+  isVaccine?: boolean;
 };
 
 export type MedicationStockRecord = {

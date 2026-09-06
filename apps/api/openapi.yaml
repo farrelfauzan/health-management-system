@@ -8497,6 +8497,8 @@ paths:
                           type: string
                         hasSatusehatPatientId:
                           type: boolean
+                        satusehatPatientIdMasked:
+                          type: string
                         email:
                           type: string
                         bloodType:
@@ -8607,6 +8609,7 @@ paths:
                       nikMasked: ••••••••0001
                       bpjsNumberMasked: ••••••••7890
                       hasSatusehatPatientId: false
+                      satusehatPatientIdMasked: ••••5538
                       email: aisha.rahman@example.com
                       bloodType: O
                       rhesusFactor: POSITIVE
@@ -8728,6 +8731,8 @@ paths:
                         type: string
                       hasSatusehatPatientId:
                         type: boolean
+                      satusehatPatientIdMasked:
+                        type: string
                       email:
                         type: string
                       bloodType:
@@ -8811,6 +8816,7 @@ paths:
                     nikMasked: ••••••••0001
                     bpjsNumberMasked: ••••••••7890
                     hasSatusehatPatientId: false
+                    satusehatPatientIdMasked: ••••5538
                     email: aisha.rahman@example.com
                     bloodType: O
                     rhesusFactor: POSITIVE
@@ -8905,6 +8911,8 @@ paths:
                         type: string
                       hasSatusehatPatientId:
                         type: boolean
+                      satusehatPatientIdMasked:
+                        type: string
                       email:
                         type: string
                       bloodType:
@@ -9020,6 +9028,7 @@ paths:
                     nikMasked: ••••••••0001
                     bpjsNumberMasked: ••••••••7890
                     hasSatusehatPatientId: false
+                    satusehatPatientIdMasked: ••••5538
                     email: aisha.rahman@example.com
                     bloodType: O
                     rhesusFactor: POSITIVE
@@ -9138,6 +9147,8 @@ paths:
                         type: string
                       hasSatusehatPatientId:
                         type: boolean
+                      satusehatPatientIdMasked:
+                        type: string
                       email:
                         type: string
                       bloodType:
@@ -9221,6 +9232,7 @@ paths:
                     nikMasked: ••••••••0001
                     bpjsNumberMasked: ••••••••7890
                     hasSatusehatPatientId: false
+                    satusehatPatientIdMasked: ••••5538
                     email: aisha.rahman@example.com
                     bloodType: O
                     rhesusFactor: POSITIVE
@@ -9337,6 +9349,8 @@ paths:
                         type: string
                       hasSatusehatPatientId:
                         type: boolean
+                      satusehatPatientIdMasked:
+                        type: string
                       email:
                         type: string
                       bloodType:
@@ -9420,6 +9434,7 @@ paths:
                     nikMasked: ••••••••0001
                     bpjsNumberMasked: ••••••••7890
                     hasSatusehatPatientId: false
+                    satusehatPatientIdMasked: ••••5538
                     email: aisha.rahman@example.com
                     bloodType: O
                     rhesusFactor: POSITIVE
@@ -33412,6 +33427,60 @@ paths:
                             - recordedById
                             - createdAt
                             - updatedAt
+                      immunizations:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            encounterId:
+                              type: string
+                            patientId:
+                              type: string
+                            medicationId:
+                              type: string
+                            medicationName:
+                              type: string
+                            kfaCode:
+                              type: string
+                            occurredAt:
+                              type: string
+                            lotNumber:
+                              type: string
+                            expirationDate:
+                              type: string
+                            doseNumber:
+                              type: integer
+                            route:
+                              type: string
+                            site:
+                              type: string
+                            performedById:
+                              type: string
+                            performedByName:
+                              type: string
+                            createdAt:
+                              type: string
+                            updatedAt:
+                              type: string
+                          required:
+                            - id
+                            - encounterId
+                            - patientId
+                            - medicationId
+                            - medicationName
+                            - kfaCode
+                            - occurredAt
+                            - lotNumber
+                            - expirationDate
+                            - doseNumber
+                            - route
+                            - site
+                            - performedById
+                            - performedByName
+                            - createdAt
+                            - updatedAt
                       prescriptions:
                         type: array
                         items:
@@ -33449,6 +33518,7 @@ paths:
                       - vitalSigns
                       - diagnoses
                       - procedures
+                      - immunizations
                       - prescriptions
                 required:
                   - data
@@ -33511,6 +33581,23 @@ paths:
                         display: Respiratory medication administered by nebulizer
                         performedAt: 2026-07-20T08:00:00.000Z
                         recordedById: 33333333-3333-4333-8333-333333333333
+                        createdAt: 2026-07-20T08:00:00.000Z
+                        updatedAt: 2026-07-20T08:00:00.000Z
+                    immunizations:
+                      - id: aaaaaaa5-aaaa-4aaa-8aaa-aaaaaaaaaaaa
+                        encounterId: aaaaaaa1-aaaa-4aaa-8aaa-aaaaaaaaaaaa
+                        patientId: 11111111-1111-4111-8111-111111111111
+                        medicationId: 66666666-6666-4666-8666-666666666666
+                        medicationName: Vaksin DPT-HB-Hib
+                        kfaCode: "93000123"
+                        occurredAt: 2026-07-20T08:00:00.000Z
+                        lotNumber: LOT-DPT-2026-04
+                        expirationDate: 2027-04-30
+                        doseNumber: 3
+                        route: IM
+                        site: LEFT_THIGH
+                        performedById: 22222222-2222-4222-8222-222222222222
+                        performedByName: dr. Sari Wulandari
                         createdAt: 2026-07-20T08:00:00.000Z
                         updatedAt: 2026-07-20T08:00:00.000Z
                     prescriptions:
@@ -34584,6 +34671,216 @@ paths:
         - bearer: []
       summary: Retract a procedure
       tags: *a48
+  /api/v1/encounters/{encounterId}/immunizations:
+    post:
+      operationId: EncounterClinicalDataController_addImmunization_v1
+      parameters:
+        - name: encounterId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddImmunizationDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  medicationId: 66666666-6666-4666-8666-666666666666
+                  lotNumber: LOT-DPT-2026-04
+                  expirationDate: 2027-04-30
+                  doseNumber: 3
+                  route: IM
+                  site: LEFT_THIGH
+      responses:
+        "201":
+          description: The vaccination was recorded against the encounter. Only a catalog
+            row flagged as a vaccine may be named; one without a KFA code is
+            recorded locally and skipped in the SATUSEHAT bundle.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      encounterId:
+                        type: string
+                      patientId:
+                        type: string
+                      medicationId:
+                        type: string
+                      medicationName:
+                        type: string
+                      kfaCode:
+                        type: string
+                      occurredAt:
+                        type: string
+                      lotNumber:
+                        type: string
+                      expirationDate:
+                        type: string
+                      doseNumber:
+                        type: integer
+                      route:
+                        type: string
+                      site:
+                        type: string
+                      performedById:
+                        type: string
+                      performedByName:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - encounterId
+                      - patientId
+                      - medicationId
+                      - medicationName
+                      - kfaCode
+                      - occurredAt
+                      - lotNumber
+                      - expirationDate
+                      - doseNumber
+                      - route
+                      - site
+                      - performedById
+                      - performedByName
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: aaaaaaa5-aaaa-4aaa-8aaa-aaaaaaaaaaaa
+                    encounterId: aaaaaaa1-aaaa-4aaa-8aaa-aaaaaaaaaaaa
+                    patientId: 11111111-1111-4111-8111-111111111111
+                    medicationId: 66666666-6666-4666-8666-666666666666
+                    medicationName: Vaksin DPT-HB-Hib
+                    kfaCode: "93000123"
+                    occurredAt: 2026-07-20T08:00:00.000Z
+                    lotNumber: LOT-DPT-2026-04
+                    expirationDate: 2027-04-30
+                    doseNumber: 3
+                    route: IM
+                    site: LEFT_THIGH
+                    performedById: 22222222-2222-4222-8222-222222222222
+                    performedByName: dr. Sari Wulandari
+                    createdAt: 2026-07-20T08:00:00.000Z
+                    updatedAt: 2026-07-20T08:00:00.000Z
+                  message: Immunization recorded
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Encounter not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Encounter not found.
+      security:
+        - bearer: []
+      summary: Record a vaccination
+      tags: *a48
+  /api/v1/encounters/{encounterId}/immunizations/{immunizationId}:
+    delete:
+      operationId: EncounterClinicalDataController_removeImmunization_v1
+      parameters:
+        - name: encounterId
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: immunizationId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The immunisation is soft-deleted and stays auditable.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+                example:
+                  message: Immunization retracted
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Immunization not found on this encounter.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Immunization not found on this encounter.
+      security:
+        - bearer: []
+      summary: Retract a vaccination
+      tags: *a48
   /api/v1/encounters/{encounterId}/bpjs-referral:
     put:
       operationId: EncounterClinicalDataController_saveBpjsReferral_v1
@@ -34853,6 +35150,120 @@ paths:
         - bearer: []
       summary: Retract the encounter’s BPJS rujukan
       tags: *a48
+  /api/v1/patients/{patientId}/immunizations:
+    get:
+      operationId: PatientImmunizationController_listPatientImmunizations_v1
+      parameters:
+        - name: patientId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Every recorded vaccination, most recent first.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        encounterId:
+                          type: string
+                        patientId:
+                          type: string
+                        medicationId:
+                          type: string
+                        medicationName:
+                          type: string
+                        kfaCode:
+                          type: string
+                        occurredAt:
+                          type: string
+                        lotNumber:
+                          type: string
+                        expirationDate:
+                          type: string
+                        doseNumber:
+                          type: integer
+                        route:
+                          type: string
+                        site:
+                          type: string
+                        performedById:
+                          type: string
+                        performedByName:
+                          type: string
+                        createdAt:
+                          type: string
+                        updatedAt:
+                          type: string
+                      required:
+                        - id
+                        - encounterId
+                        - patientId
+                        - medicationId
+                        - medicationName
+                        - kfaCode
+                        - occurredAt
+                        - lotNumber
+                        - expirationDate
+                        - doseNumber
+                        - route
+                        - site
+                        - performedById
+                        - performedByName
+                        - createdAt
+                        - updatedAt
+                required:
+                  - data
+                example:
+                  data:
+                    - id: aaaaaaa5-aaaa-4aaa-8aaa-aaaaaaaaaaaa
+                      encounterId: aaaaaaa1-aaaa-4aaa-8aaa-aaaaaaaaaaaa
+                      patientId: 11111111-1111-4111-8111-111111111111
+                      medicationId: 66666666-6666-4666-8666-666666666666
+                      medicationName: Vaksin DPT-HB-Hib
+                      kfaCode: "93000123"
+                      occurredAt: 2026-07-20T08:00:00.000Z
+                      lotNumber: LOT-DPT-2026-04
+                      expirationDate: 2027-04-30
+                      doseNumber: 3
+                      route: IM
+                      site: LEFT_THIGH
+                      performedById: 22222222-2222-4222-8222-222222222222
+                      performedByName: dr. Sari Wulandari
+                      createdAt: 2026-07-20T08:00:00.000Z
+                      updatedAt: 2026-07-20T08:00:00.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Read a patient's immunisation history
+      tags:
+        - Encounters
   /api/v1/satusehat/patients/{patientId}/link:
     post:
       operationId: SatusehatLinkController_linkPatient_v1
@@ -40964,6 +41375,8 @@ components:
           maximum: 1000000
           exclusiveMaximum: false
           default: 0
+        isVaccine:
+          type: boolean
       required:
         - code
         - name
@@ -41033,6 +41446,8 @@ components:
           exclusiveMinimum: false
           maximum: 1000000
           exclusiveMaximum: false
+        isVaccine:
+          type: boolean
     CreatePrescriptionDto:
       type: object
       properties:
@@ -41493,6 +41908,14 @@ components:
           type: string
           maxLength: 5000
           nullable: true
+        prognosis:
+          type: string
+          enum:
+            - BONAM
+            - DUBIA_AD_BONAM
+            - DUBIA_AD_MALAM
+            - MALAM
+          nullable: true
     RecordVitalSignsDto:
       type: object
       properties:
@@ -41596,6 +42019,52 @@ components:
         performedAt:
           type: string
           format: date-time
+    AddImmunizationDto:
+      type: object
+      properties:
+        medicationId:
+          type: string
+          format: uuid
+        occurredAt:
+          type: string
+          format: date-time
+        lotNumber:
+          type: string
+          minLength: 1
+          maxLength: 16
+        expirationDate:
+          type: string
+        doseNumber:
+          type: integer
+          minimum: 1
+          exclusiveMinimum: false
+          maximum: 20
+          exclusiveMaximum: false
+        route:
+          type: string
+          enum:
+            - IM
+            - SC
+            - ID
+            - ORAL
+            - NASAL
+        site:
+          type: string
+          enum:
+            - LEFT_ARM
+            - RIGHT_ARM
+            - LEFT_THIGH
+            - RIGHT_THIGH
+            - OTHER
+        performedById:
+          type: string
+          format: uuid
+        notes:
+          type: string
+          minLength: 1
+          maxLength: 1000
+      required:
+        - medicationId
     UpsertBpjsReferralDto:
       type: object
       properties:

@@ -46,4 +46,5 @@ export interface UpdateMedicationDto {
      * @maximum 1000000
      */
   reorderLevel?: number;
+  isVaccine?: boolean;
 }
