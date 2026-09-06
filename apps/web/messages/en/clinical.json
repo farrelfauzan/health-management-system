@@ -379,6 +379,16 @@
             "unknown": "Failed: {code}"
           }
         }
+      },
+      "linkToSatusehat": "Link to SATUSEHAT",
+      "linking": "Linking...",
+      "linkSuccess": "Patient linked to SATUSEHAT.",
+      "linkErrors": {
+        "missingNik": "NIK is not on file yet. Add it before linking.",
+        "notFound": "This NIK is not in SATUSEHAT — check the number.",
+        "ambiguous": "More than one SATUSEHAT match — verify the patient in the portal first.",
+        "notConfigured": "The SATUSEHAT integration is not configured yet.",
+        "unreachable": "SATUSEHAT could not be reached. Try again."
       }
     },
     "privacyNotice": {
@@ -633,7 +643,17 @@
       "attention": "{count, plural, one {# needs attention} other {# need attention}}",
       "licenseRequired": "No license recorded. A practicing doctor needs an STR and a SIP for each practice location.",
       "addEducation": "Add Education",
-      "identifiersError": "Unable to reveal practitioner identifiers."
+      "identifiersError": "Unable to reveal practitioner identifiers.",
+      "linkToSatusehat": "Link to SATUSEHAT",
+      "linking": "Linking...",
+      "linkSuccess": "Doctor linked to SATUSEHAT.",
+      "linkErrors": {
+        "missingNik": "NIK is not on file yet. Add it before linking.",
+        "notFound": "This NIK is not in SATUSEHAT — check the number.",
+        "ambiguous": "More than one SATUSEHAT match — verify the practitioner in the portal first.",
+        "notConfigured": "The SATUSEHAT integration is not configured yet.",
+        "unreachable": "SATUSEHAT could not be reached. Try again."
+      }
     },
     "portal": {
       "documents": {

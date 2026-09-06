@@ -30,9 +30,13 @@ import { usePatientDetail } from '#lib/patients/use-patient-detail';
 
 type PatientDetailPanelProps = {
   patientId: string;
+  isSatusehatEnabled: boolean;
 };
 
-export function PatientDetailPanel({ patientId }: PatientDetailPanelProps) {
+export function PatientDetailPanel({
+  patientId,
+  isSatusehatEnabled,
+}: PatientDetailPanelProps) {
   const t = useTranslations('clinical');
   const ability = useAbility();
   // Visibility only. The tab hides for a role without the grant; the API's
@@ -94,7 +98,10 @@ export function PatientDetailPanel({ patientId }: PatientDetailPanelProps) {
           <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">
             <div className="space-y-6">
               <PatientDemographicsCard patient={patient} />
-              <PatientIdentifiersCard patient={patient} />
+              <PatientIdentifiersCard
+                patient={patient}
+                isSatusehatEnabled={isSatusehatEnabled}
+              />
             </div>
             <div className="space-y-6">
               <PatientAllergiesCard allergies={patient.allergies} />

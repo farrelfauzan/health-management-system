@@ -379,6 +379,16 @@
             "unknown": "Gagal: {code}"
           }
         }
+      },
+      "linkToSatusehat": "Tautkan ke SATUSEHAT",
+      "linking": "Menautkan...",
+      "linkSuccess": "Pasien tertaut ke SATUSEHAT.",
+      "linkErrors": {
+        "missingNik": "NIK belum diisi. Lengkapi dulu sebelum menautkan.",
+        "notFound": "NIK tidak ditemukan di SATUSEHAT — periksa nomornya.",
+        "ambiguous": "Lebih dari satu kecocokan — verifikasi pasien di portal SATUSEHAT dulu.",
+        "notConfigured": "Integrasi SATUSEHAT belum dikonfigurasi.",
+        "unreachable": "SATUSEHAT tidak dapat dihubungi. Coba lagi."
       }
     },
     "privacyNotice": {
@@ -633,7 +643,17 @@
       "attention": "{count} perlu perhatian",
       "licenseRequired": "Belum ada izin yang dicatat. Dokter yang berpraktik memerlukan STR dan SIP untuk setiap lokasi praktik.",
       "addEducation": "Tambah Pendidikan",
-      "identifiersError": "Identitas tenaga medis gagal ditampilkan."
+      "identifiersError": "Identitas tenaga medis gagal ditampilkan.",
+      "linkToSatusehat": "Tautkan ke SATUSEHAT",
+      "linking": "Menautkan...",
+      "linkSuccess": "Dokter tertaut ke SATUSEHAT.",
+      "linkErrors": {
+        "missingNik": "NIK belum diisi. Lengkapi dulu sebelum menautkan.",
+        "notFound": "NIK tidak ditemukan di SATUSEHAT — periksa nomornya.",
+        "ambiguous": "Lebih dari satu kecocokan — verifikasi tenaga medis di portal SATUSEHAT dulu.",
+        "notConfigured": "Integrasi SATUSEHAT belum dikonfigurasi.",
+        "unreachable": "SATUSEHAT tidak dapat dihubungi. Coba lagi."
+      }
     },
     "portal": {
       "documents": {
