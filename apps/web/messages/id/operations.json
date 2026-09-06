@@ -1059,6 +1059,104 @@
           "deleted": "Jenis dokumen dihapus.",
           "error": "Jenis dokumen tidak dapat dihapus."
         }
+      },
+      "registryTab": "Registri",
+      "registry": {
+        "description": "Semua dokumen yang disusun, disetujui, dan diterbitkan klinik. Baris yang tidak berhak Anda lihat tidak ada di sini — dan tidak dihitung.",
+        "new": "Dokumen baru",
+        "search": "Cari",
+        "searchPlaceholder": "Judul, nomor, atau nama pihak…",
+        "loadError": "Dokumen tidak dapat dimuat",
+        "loadErrorDescription": "Terjadi kesalahan saat mengambil registri. Sistem akan mencoba lagi otomatis.",
+        "empty": "Belum ada dokumen",
+        "emptyDescription": "Susun dokumen pertama, atau unggah salinan yang sudah ditandatangani.",
+        "emptyFiltered": "Tidak ada dokumen yang cocok dengan pencarian ini.",
+        "total": "{count, plural, =0 {Tidak ada dokumen} one {# dokumen} other {# dokumen}}",
+        "columns": {
+          "title": "Dokumen",
+          "type": "Jenis",
+          "parties": "Pihak",
+          "status": "Status",
+          "draftedBy": "Disusun oleh",
+          "created": "Dibuat",
+          "issued": "Diterbitkan",
+          "actions": "Aksi"
+        },
+        "statuses": {
+          "DRAFT": "Draf",
+          "PENDING_APPROVAL": "Menunggu persetujuan",
+          "ISSUED": "Diterbitkan",
+          "ARCHIVED": "Diarsipkan"
+        },
+        "bodyKinds": {
+          "drafted": "Disusun",
+          "uploaded": "Berkas diunggah"
+        },
+        "notIssued": "—",
+        "noParties": "—",
+        "actions": {
+          "download": "Unduh berkas",
+          "downloadError": "Berkas ini tidak dapat diunduh."
+        }
+      },
+      "form": {
+        "title": "Dokumen baru",
+        "description": "Pilih jenis — formulir dibentuk dari apa yang diminta jenis tersebut.",
+        "type": "Jenis",
+        "typePlaceholder": "Pilih jenis",
+        "typesLoading": "Memuat jenis…",
+        "typesError": "Jenis dokumen tidak dapat dimuat.",
+        "documentTitle": "Judul",
+        "documentTitlePlaceholder": "mis. Perjanjian tanggung jawab biaya — Rina",
+        "documentNumber": "Nomor dokumen (opsional)",
+        "documentNumberPlaceholder": "mis. AGR/2026/0007",
+        "parties": {
+          "patient": "Pasien",
+          "patientPlaceholder": "Cari pasien…",
+          "patientSearchPlaceholder": "Ketik minimal 2 karakter",
+          "patientEmpty": "Tidak ada pasien yang cocok",
+          "doctor": "Dokter",
+          "doctorPlaceholder": "Pilih dokter",
+          "doctorSearchPlaceholder": "Cari dokter…",
+          "doctorEmpty": "Tidak ada dokter yang cocok"
+        },
+        "content": {
+          "label": "Isi",
+          "choice": "Bagaimana dokumen ini masuk?",
+          "draft": "Tulis di sini",
+          "upload": "Unggah salinan bertanda tangan",
+          "editorHint": "Disusun di editor. Disanitasi di server setiap kali disimpan.",
+          "fileLabel": "Berkas",
+          "fileHint": "PDF, JPEG, PNG, atau WebP, maksimal 20 MB. Diunduh sebagai lampiran; tidak ada yang ditampilkan langsung.",
+          "fileSelected": "{name} ({size})",
+          "removeFile": "Hapus berkas"
+        },
+        "issues": {
+          "PATIENT_REQUIRED": "Jenis ini memerlukan pasien.",
+          "DOCTOR_REQUIRED": "Jenis ini memerlukan dokter.",
+          "PATIENT_NOT_ALLOWED": "Jenis ini tidak menyebut pasien.",
+          "DOCTOR_NOT_ALLOWED": "Jenis ini tidak menyebut dokter.",
+          "CONTENT_MUST_BE_DRAFTED": "Jenis ini disusun di editor, bukan diunggah.",
+          "CONTENT_MUST_BE_UPLOADED": "Jenis ini memerlukan berkas yang diunggah.",
+          "CONTENT_BOTH": "Tulis atau unggah — jangan keduanya."
+        },
+        "errors": {
+          "typeRequired": "Pilih jenis.",
+          "titleRequired": "Beri judul dokumen.",
+          "fileRequired": "Pilih berkas untuk diunggah.",
+          "sign": "Unggahan tidak dapat dimulai. Coba lagi.",
+          "put": "Penyimpanan tidak menerima berkas. Coba lagi.",
+          "save": "Dokumen tidak dapat disimpan."
+        },
+        "progress": {
+          "preparing": "Menyiapkan…",
+          "uploading": "Mengunggah {percent}%",
+          "scanning": "Memeriksa berkas…",
+          "complete": "Tercatat"
+        },
+        "submit": "Buat dokumen",
+        "submitting": "Menyimpan…",
+        "created": "Dokumen disusun."
       }
     }
   },

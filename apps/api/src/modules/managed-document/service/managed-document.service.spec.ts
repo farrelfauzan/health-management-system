@@ -15,6 +15,7 @@ import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
 import { ObjectStorageService } from '../../../common/storage/object-storage.service';
 import { AuditAction } from '../../../generated/prisma/client';
+import { UploadedDocumentGuardService } from '../../document-management/service/uploaded-document-guard.service';
 import { ManagedDocumentRepository } from '../repository/managed-document.repository';
 import { DocumentTypeService } from './document-type.service';
 import { ManagedDocumentAccessService } from './managed-document-access.service';
@@ -104,7 +105,8 @@ describe('ManagedDocumentService', () => {
   };
   const accessServiceMock = { resolveContext: jest.fn() };
   const documentTypeServiceMock = { findActiveTypeOrThrow: jest.fn() };
-  const objectStorageMock = { headObject: jest.fn() };
+  const objectStorageMock = { headObject: jest.fn(), getSignedUrl: jest.fn() };
+  const uploadGuardMock = { guardUploadedDocument: jest.fn() };
   const auditServiceMock = { record: jest.fn(), recordOrThrow: jest.fn() };
 
   const service = new ManagedDocumentService(
@@ -112,6 +114,7 @@ describe('ManagedDocumentService', () => {
     accessServiceMock as unknown as ManagedDocumentAccessService,
     documentTypeServiceMock as unknown as DocumentTypeService,
     objectStorageMock as unknown as ObjectStorageService,
+    uploadGuardMock as unknown as UploadedDocumentGuardService,
     auditServiceMock as unknown as AuditService,
   );
 
@@ -125,6 +128,7 @@ describe('ManagedDocumentService', () => {
     repositoryMock.updateDocument.mockImplementation(async (payload) => buildRecord(payload));
     repositoryMock.findPatientById.mockResolvedValue({ id: 'patient-1' });
     repositoryMock.findDoctorById.mockResolvedValue({ id: 'doctor-1' });
+    uploadGuardMock.guardUploadedDocument.mockImplementation(async () => ({ sizeBytes: 2048 }));
   });
 
   describe('createDocument', () => {
@@ -167,7 +171,7 @@ describe('ManagedDocumentService', () => {
     it('records an uploaded body from the stored object, and refuses a foreign key', async () => {
       objectStorageMock.headObject.mockResolvedValue({
         key: MANAGED_KEY,
-        sizeBytes: 2048,
+        sizeBytes: 4096,
         contentType: 'application/pdf',
       });
 
@@ -184,6 +188,8 @@ describe('ManagedDocumentService', () => {
         ACTOR,
       );
 
+      // The size on the row is the guard's, not the head's: an image is
+      // re-encoded in place, so the stored object's length changes.
       expect(repositoryMock.createDocument).toHaveBeenCalledWith(
         expect.objectContaining({
           contentHtml: null,
@@ -192,10 +198,79 @@ describe('ManagedDocumentService', () => {
           storageSizeBytes: 2048,
         }),
       );
+      expect(uploadGuardMock.guardUploadedDocument).toHaveBeenCalledWith({
+        storageKey: MANAGED_KEY,
+        declaredMimeType: 'application/pdf',
+        actorUserId: 'user-1',
+      });
       await expect(foreignKey).rejects.toBeInstanceOf(BadRequestException);
     });
 
+    it('refuses a stored object whose type the store does not accept', async () => {
+      objectStorageMock.headObject.mockResolvedValue({
+        key: MANAGED_KEY,
+        sizeBytes: 10,
+        contentType: 'application/x-msdownload',
+      });
+
+      await expect(
+        service.createDocument({ typeId: 'type-1', title: 'exe', storageKey: MANAGED_KEY }, ACTOR),
+      ).rejects.toBeInstanceOf(BadRequestException);
+      expect(uploadGuardMock.guardUploadedDocument).not.toHaveBeenCalled();
+    });
+
+    it('enforces the type’s party rules: required, and not allowed (FR-E5-35)', async () => {
+      documentTypeServiceMock.findActiveTypeOrThrow.mockResolvedValue(
+        buildType({ requiresPatient: true, requiresDoctor: true }),
+      );
+      const missingDoctor = await service
+        .createDocument({ typeId: 'type-1', title: 'x', patientId: 'patient-1' }, ACTOR)
+        .catch((err: unknown) => err);
+
+      documentTypeServiceMock.findActiveTypeOrThrow.mockResolvedValue(buildType());
+      const policyWithPatient = await service
+        .createDocument({ typeId: 'type-1', title: 'x', patientId: 'patient-1' }, ACTOR)
+        .catch((err: unknown) => err);
+
+      expect(missingDoctor).toBeInstanceOf(UnprocessableEntityException);
+      expect((missingDoctor as UnprocessableEntityException).getResponse()).toMatchObject({
+        code: 'MANAGED_DOCUMENT_TYPE_RULE',
+        errors: { issues: [{ code: 'DOCTOR_REQUIRED', field: 'doctorId' }] },
+      });
+      expect((policyWithPatient as UnprocessableEntityException).getResponse()).toMatchObject({
+        errors: { issues: [{ code: 'PATIENT_NOT_ALLOWED', field: 'patientId' }] },
+      });
+      expect(repositoryMock.createDocument).not.toHaveBeenCalled();
+    });
+
+    it('enforces the content mode: DRAFTED refuses a file, UPLOADED demands one', async () => {
+      documentTypeServiceMock.findActiveTypeOrThrow.mockResolvedValue(
+        buildType({ contentMode: 'DRAFTED' }),
+      );
+      const draftedWithFile = await service
+        .createDocument({ typeId: 'type-1', title: 'x', storageKey: MANAGED_KEY }, ACTOR)
+        .catch((err: unknown) => err);
+
+      documentTypeServiceMock.findActiveTypeOrThrow.mockResolvedValue(
+        buildType({ contentMode: 'UPLOADED' }),
+      );
+      const uploadedWithoutFile = await service
+        .createDocument({ typeId: 'type-1', title: 'x', contentHtml: '<p>x</p>' }, ACTOR)
+        .catch((err: unknown) => err);
+
+      expect((draftedWithFile as UnprocessableEntityException).getResponse()).toMatchObject({
+        errors: { issues: [{ code: 'CONTENT_MUST_BE_DRAFTED', field: 'storageKey' }] },
+      });
+      expect((uploadedWithoutFile as UnprocessableEntityException).getResponse()).toMatchObject({
+        errors: { issues: [{ code: 'CONTENT_MUST_BE_UPLOADED', field: 'storageKey' }] },
+      });
+      expect(repositoryMock.createDocument).not.toHaveBeenCalled();
+    });
+
     it('answers 404 for a patient or doctor that does not exist', async () => {
+      documentTypeServiceMock.findActiveTypeOrThrow.mockResolvedValue(
+        buildType({ requiresPatient: true }),
+      );
       repositoryMock.findPatientById.mockResolvedValue(null);
 
       await expect(
@@ -244,7 +319,8 @@ describe('ManagedDocumentService', () => {
           contentHtml: null,
           storageKey: MANAGED_KEY,
           storageMimeType: 'image/png',
-          storageSizeBytes: 512,
+          // The guard's size, not the head's: the PNG was re-encoded in place.
+          storageSizeBytes: 2048,
         }),
       );
     });
@@ -267,6 +343,25 @@ describe('ManagedDocumentService', () => {
           metadata: { changedFields: ['contentHtml', 'title'] },
         }),
       );
+    });
+
+    it('applies the type rules to the result of an edit, not the request alone', async () => {
+      repositoryMock.findVisibleById.mockResolvedValue(
+        buildRecord({
+          type: { ...buildRecord().type, requiresPatient: true },
+          patient: { id: 'patient-1', fullName: 'Rina' },
+        }),
+      );
+
+      const actualError = await service
+        .updateDocument('doc-1', { patientId: null }, ACTOR)
+        .catch((err: unknown) => err);
+
+      expect((actualError as UnprocessableEntityException).getResponse()).toMatchObject({
+        code: 'MANAGED_DOCUMENT_TYPE_RULE',
+        errors: { issues: [{ code: 'PATIENT_REQUIRED', field: 'patientId' }] },
+      });
+      expect(repositoryMock.updateDocument).not.toHaveBeenCalled();
     });
 
     it('reports a row outside the caller’s reach as not found', async () => {
@@ -324,6 +419,49 @@ describe('ManagedDocumentService', () => {
           metadata: expect.objectContaining({ rowCount: 1 }),
         }),
       );
+    });
+  });
+
+  describe('getDownloadUrl', () => {
+    it('signs an attachment download and audits it first', async () => {
+      repositoryMock.findVisibleById.mockResolvedValue(
+        buildRecord({
+          contentHtml: null,
+          storageKey: MANAGED_KEY,
+          storageMimeType: 'application/pdf',
+          storageSizeBytes: 2048,
+        }),
+      );
+      objectStorageMock.getSignedUrl.mockResolvedValue({
+        url: 'https://storage.test/get',
+        expiresAt: '2026-09-30T02:10:00.000Z',
+      });
+
+      const actual = await service.getDownloadUrl('doc-1', ACTOR);
+
+      expect(objectStorageMock.getSignedUrl).toHaveBeenCalledWith({
+        key: MANAGED_KEY,
+        responseContentDisposition: expect.stringMatching(
+          /^attachment; filename="Surat pengantar\.pdf"/,
+        ),
+        responseContentType: 'application/pdf',
+      });
+      expect(auditServiceMock.recordOrThrow).toHaveBeenCalledWith(
+        expect.objectContaining({
+          action: AuditAction.READ,
+          metadata: expect.objectContaining({ event: 'DOWNLOAD' }),
+        }),
+      );
+      expect(actual.url).toBe('https://storage.test/get');
+    });
+
+    it('refuses a drafted document, which has no file', async () => {
+      repositoryMock.findVisibleById.mockResolvedValue(buildRecord());
+
+      await expect(service.getDownloadUrl('doc-1', ACTOR)).rejects.toBeInstanceOf(
+        ConflictException,
+      );
+      expect(objectStorageMock.getSignedUrl).not.toHaveBeenCalled();
     });
   });
 

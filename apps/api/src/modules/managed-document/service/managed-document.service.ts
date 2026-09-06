@@ -8,18 +8,28 @@ import {
 
 import {
   CreateManagedDocumentInput,
+  CreateManagedDocumentUploadUrlInput,
+  DOCUMENT_FILE_EXTENSION_BY_MIME_TYPE,
+  DOCUMENT_UPLOAD_MIME_TYPES,
+  DocumentUploadMimeTypeValue,
   ExportManagedDocumentsQueryInput,
   ListManagedDocumentsQueryInput,
   MANAGED_DOCUMENT_CONTENT_CONFLICT_ERROR_CODE,
   MANAGED_DOCUMENT_EXPORT_MAX_ROWS,
   MANAGED_DOCUMENT_NOT_EDITABLE_ERROR_CODE,
+  MANAGED_DOCUMENT_TYPE_RULE_ERROR_CODE,
   ManagedDocumentAccessContext,
   ManagedDocumentDetailView,
+  ManagedDocumentDownloadView,
   ManagedDocumentHistoryView,
   ManagedDocumentListView,
   ManagedDocumentRecord,
+  ManagedDocumentShape,
   ManagedDocumentStatusValue,
+  ManagedDocumentTypeRules,
+  ManagedDocumentUploadUrlView,
   UpdateManagedDocumentInput,
+  validateManagedDocumentAgainstType,
 } from '@hms/shared-types';
 
 import { AuditService } from '../../../common/audit/audit.service';
@@ -27,11 +37,14 @@ import { CurrentUser } from '../../../common/auth/current-user.type';
 import { sanitiseRichTextHtml } from '../../../common/html/sanitise-rich-text-html';
 import { ObjectStorageService } from '../../../common/storage/object-storage.service';
 import { AuditAction } from '../../../generated/prisma/client';
+import { buildDocumentDownloadDisposition } from '../../document-management/service/build-document-download-disposition';
+import { UploadedDocumentGuardService } from '../../document-management/service/uploaded-document-guard.service';
 import { ManagedDocumentRepository } from '../repository/managed-document.repository';
 import { buildManagedDocumentCsv } from './build-managed-document-csv';
 import { DocumentTypeService } from './document-type.service';
 import { isManagedDocumentStorageKey } from './is-managed-document-storage-key';
 import { ManagedDocumentAccessService } from './managed-document-access.service';
+import { MANAGED_DOCUMENT_STORAGE_KEY_PREFIX } from './managed-document-storage-key-prefix';
 import { toManagedDocumentDetailView, toManagedDocumentView } from './to-managed-document-view';
 
 const MANAGED_DOCUMENT_AUDIT_RESOURCE = 'managed-document';
@@ -39,24 +52,32 @@ const MANAGED_DOCUMENT_AUDIT_RESOURCE = 'managed-document';
 /** The only state a drafter may edit in (§7.5.10). */
 const EDITABLE_STATUSES: readonly ManagedDocumentStatusValue[] = ['DRAFT'];
 
+export const MANAGED_DOCUMENT_NOT_DOWNLOADABLE_ERROR_CODE = 'MANAGED_DOCUMENT_NOT_DOWNLOADABLE';
+
 type StoredContent = { storageKey: string; storageMimeType: string; storageSizeBytes: number };
 
 export type ManagedDocumentExport = { fileName: string; csv: string };
 
 /**
- * The documents registry (`P16-T28`, FR-E5-01…05, FR-E5-07).
+ * The documents registry (`P16-T28`, FR-E5-01…05, FR-E5-07) and the shape
+ * rules a type imposes on its documents (`P16-T36`, FR-E5-35).
  *
- * Three rules are load-bearing:
+ * Four rules are load-bearing:
  *
  *   * **Every read goes through the per-row source rule** (FR-E5-04). The
  *     access context is resolved once per request and handed to the
  *     repository, which folds it into the query; a row outside the caller's
  *     reach is absent from the list, absent from the count, and a 404 on
  *     the detail — never a 403 that confirms it exists.
+ *   * **The type row decides the document's shape.** `requiresPatient` /
+ *     `requiresDoctor` and `contentMode` are enforced on every create and
+ *     edit through {@link validateManagedDocumentAgainstType} — the same
+ *     function the web form builds itself from — with a 422 naming each
+ *     broken rule and its field.
  *   * **Drafted content is sanitised on every write** (NFR-SEC-01), with
- *     the same allowlist sanitiser the template editor uses. A document is
- *     drafted or uploaded, never both — the DTO refuses it, and this service
- *     refuses it again on an edit that would combine the two.
+ *     the same allowlist sanitiser the template editor uses. An uploaded
+ *     body passes the store's confirm-time content gate before a row may
+ *     point at it. A document is drafted or uploaded, never both.
  *   * **The status and the subject links are the service's.** A request
  *     creates a DRAFT with no subject; `PATIENT_BILL` rows and the links
  *     that make a row answer to another module's rule are written by that
@@ -69,6 +90,7 @@ export class ManagedDocumentService {
     private readonly accessService: ManagedDocumentAccessService,
     private readonly documentTypeService: DocumentTypeService,
     private readonly objectStorageService: ObjectStorageService,
+    private readonly uploadedDocumentGuardService: UploadedDocumentGuardService,
     private readonly auditService: AuditService,
   ) {}
 
@@ -94,13 +116,44 @@ export class ManagedDocumentService {
     return toManagedDocumentDetailView(await this.findVisibleOrThrow(id, access));
   }
 
+  /**
+   * Signs a browser-direct upload of a document's body (`P16-T36`). Nothing
+   * is persisted: the key is minted here and proven again at record time,
+   * and an object nobody records is a staged file a sweep can remove.
+   */
+  async createUploadUrl(
+    input: CreateManagedDocumentUploadUrlInput,
+  ): Promise<ManagedDocumentUploadUrlView> {
+    const storageKey = this.objectStorageService.generateObjectKey({
+      keyPrefix: MANAGED_DOCUMENT_STORAGE_KEY_PREFIX,
+      fileExtension: DOCUMENT_FILE_EXTENSION_BY_MIME_TYPE[input.mimeType],
+    });
+    const signed = await this.objectStorageService.getSignedUploadUrl({
+      key: storageKey,
+      contentType: input.mimeType,
+      contentLengthBytes: input.sizeBytes,
+    });
+    return {
+      url: signed.url,
+      storageKey: signed.key,
+      expiresAt: signed.expiresAt,
+      requiredHeaders: signed.requiredHeaders,
+    };
+  }
+
   async createDocument(
     input: CreateManagedDocumentInput,
     actor: CurrentUser,
   ): Promise<ManagedDocumentDetailView> {
     const type = await this.documentTypeService.findActiveTypeOrThrow(input.typeId);
+    assertMatchesType(type, {
+      patientId: input.patientId ?? null,
+      doctorId: input.doctorId ?? null,
+      hasContentHtml: input.contentHtml !== undefined || input.storageKey === undefined,
+      hasStorageKey: input.storageKey !== undefined,
+    });
     await this.assertPartiesExist(input.patientId ?? null, input.doctorId ?? null);
-    const stored = await this.resolveStoredContent(input.storageKey ?? null);
+    const stored = await this.resolveStoredContent(input.storageKey ?? null, actor);
     const record = await this.managedDocumentRepository.createDocument({
       typeId: type.id,
       status: 'DRAFT',
@@ -138,8 +191,9 @@ export class ManagedDocumentService {
     const existing = await this.findVisibleOrThrow(id, access);
     assertEditable(existing);
     assertContentStaysExclusive(existing, input);
+    assertMatchesType(existing.type, resolveNextShape(existing, input));
     await this.assertPartiesExist(input.patientId ?? null, input.doctorId ?? null);
-    const stored = await this.resolveStoredContent(input.storageKey ?? null);
+    const stored = await this.resolveStoredContent(input.storageKey ?? null, actor);
     const record = await this.managedDocumentRepository.updateDocument({
       id,
       title: input.title,
@@ -169,6 +223,39 @@ export class ManagedDocumentService {
       metadata: { changedFields: listChangedFields(input) },
     });
     return toManagedDocumentDetailView(record);
+  }
+
+  /**
+   * A signed download of an uploaded body (`P16-T36`, NFR-SEC-04): served
+   * as an attachment under the validated stored type, never rendered in the
+   * app origin. Audited before the URL is issued; no record, no URL.
+   */
+  async getDownloadUrl(id: string, actor: CurrentUser): Promise<ManagedDocumentDownloadView> {
+    const access = await this.accessService.resolveContext(actor);
+    const record = await this.findVisibleOrThrow(id, access);
+    if (record.storageKey === null || record.storageMimeType === null) {
+      throw new ConflictException({
+        message: 'This document was drafted in the editor and has no file to download',
+        code: MANAGED_DOCUMENT_NOT_DOWNLOADABLE_ERROR_CODE,
+      });
+    }
+    const signedUrl = await this.objectStorageService.getSignedUrl({
+      key: record.storageKey,
+      responseContentDisposition: buildDocumentDownloadDisposition({
+        title: record.title,
+        mimeType: record.storageMimeType,
+      }),
+      responseContentType: record.storageMimeType,
+    });
+    await this.auditService.recordOrThrow({
+      action: AuditAction.READ,
+      resource: MANAGED_DOCUMENT_AUDIT_RESOURCE,
+      resourceId: record.id,
+      actorUserId: actor.sub,
+      patientId: record.patient?.id ?? null,
+      metadata: { event: 'DOWNLOAD', typeCode: record.type.code, mimeType: record.storageMimeType },
+    });
+    return { url: signedUrl.url, expiresAt: signedUrl.expiresAt };
   }
 
   async getHistory(id: string, actor: CurrentUser): Promise<ManagedDocumentHistoryView> {
@@ -244,11 +331,14 @@ export class ManagedDocumentService {
 
   /**
    * An uploaded body is recorded from the stored object, never from the
-   * request: the key must be one this module minted, and the type and size
-   * are read back from the bucket. The content gate that inspects the bytes
-   * themselves sits in front of this under `P16-T36`'s upload flow.
+   * request: the key must be one this module minted, the bytes must agree
+   * with the type they were signed under (SJ-21 — a forged file is deleted
+   * and audited), and the type and size are read back from the bucket.
    */
-  private async resolveStoredContent(storageKey: string | null): Promise<StoredContent | null> {
+  private async resolveStoredContent(
+    storageKey: string | null,
+    actor: CurrentUser,
+  ): Promise<StoredContent | null> {
     if (storageKey === null) {
       return null;
     }
@@ -256,14 +346,13 @@ export class ManagedDocumentService {
       throw new BadRequestException('Storage key was not issued for a registry document upload');
     }
     const stored = await this.objectStorageService.headObject({ key: storageKey });
-    if (stored.contentType === undefined || stored.contentType === null) {
-      throw new BadRequestException('The uploaded object carries no content type');
-    }
-    return {
+    const mimeType = resolveStoredMimeType(stored.contentType);
+    const guarded = await this.uploadedDocumentGuardService.guardUploadedDocument({
       storageKey,
-      storageMimeType: stored.contentType,
-      storageSizeBytes: stored.sizeBytes,
-    };
+      declaredMimeType: mimeType,
+      actorUserId: actor.sub,
+    });
+    return { storageKey, storageMimeType: mimeType, storageSizeBytes: guarded.sizeBytes };
   }
 }
 
@@ -280,6 +369,34 @@ function resolveDraftedContent(
     return null;
   }
   return sanitiseRichTextHtml(contentHtml ?? '');
+}
+
+/** FR-E5-35: the party and content rules the type row declares, as a 422 naming each. */
+function assertMatchesType(rules: ManagedDocumentTypeRules, shape: ManagedDocumentShape): void {
+  const issues = validateManagedDocumentAgainstType(rules, shape);
+  if (issues.length === 0) {
+    return;
+  }
+  throw new UnprocessableEntityException({
+    message: 'This document does not match the rules of its type',
+    code: MANAGED_DOCUMENT_TYPE_RULE_ERROR_CODE,
+    errors: { issues },
+  });
+}
+
+/** What the row would look like after the edit — the rules apply to the result. */
+function resolveNextShape(
+  existing: ManagedDocumentRecord,
+  input: UpdateManagedDocumentInput,
+): ManagedDocumentShape {
+  const nextHtml = input.contentHtml === undefined ? existing.contentHtml : input.contentHtml;
+  const nextKey = input.storageKey === undefined ? existing.storageKey : input.storageKey;
+  return {
+    patientId: input.patientId === undefined ? (existing.patient?.id ?? null) : input.patientId,
+    doctorId: input.doctorId === undefined ? (existing.doctor?.id ?? null) : input.doctorId,
+    hasContentHtml: nextHtml !== null,
+    hasStorageKey: nextKey !== null,
+  };
 }
 
 function assertEditable(record: ManagedDocumentRecord): void {
@@ -312,6 +429,15 @@ function assertContentStaysExclusive(
       code: MANAGED_DOCUMENT_CONTENT_CONFLICT_ERROR_CODE,
     });
   }
+}
+
+/** The stored object's type must be one the store accepts — the signed declaration, read back. */
+function resolveStoredMimeType(contentType: string | undefined): DocumentUploadMimeTypeValue {
+  const accepted = DOCUMENT_UPLOAD_MIME_TYPES.find((mimeType) => mimeType === contentType);
+  if (accepted === undefined) {
+    throw new BadRequestException('Uploaded file is not an accepted document type');
+  }
+  return accepted;
 }
 
 function buildFilterParams(

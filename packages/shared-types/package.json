@@ -99,6 +99,7 @@
     "#managed-document/schemas": "./src/managed-document/schemas.ts",
     "#managed-document/contracts": "./src/managed-document/contracts.ts",
     "#managed-document/types": "./src/managed-document/types.ts",
+    "#managed-document/validate-against-type": "./src/managed-document/validate-against-type.ts",
     "#document-delivery/schemas": "./src/document-delivery/schemas.ts",
     "#document-delivery/contracts": "./src/document-delivery/contracts.ts",
     "#document-delivery/types": "./src/document-delivery/types.ts",

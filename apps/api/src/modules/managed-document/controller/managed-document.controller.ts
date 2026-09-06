@@ -22,12 +22,15 @@ import { ApiEndpoint } from '../../../common/openapi/api-endpoint.decorator';
 import { MANAGED_DOCUMENT_EXAMPLES } from '../../../common/openapi/managed-document-examples';
 import { AuditAction } from '../../../generated/prisma/client';
 import { CreateManagedDocumentDto } from '../dto/create-managed-document.dto';
+import { CreateManagedDocumentUploadUrlDto } from '../dto/create-managed-document-upload-url.dto';
 import { ExportManagedDocumentsQueryDto } from '../dto/export-managed-documents-query.dto';
 import { ListManagedDocumentsQueryDto } from '../dto/list-managed-documents-query.dto';
 import { UpdateManagedDocumentDto } from '../dto/update-managed-document.dto';
 import { ManagedDocumentService } from '../service/managed-document.service';
 
 const CREATED_STATUS = 201;
+
+const OK_STATUS = 200;
 
 const MANAGED_DOCUMENT_AUDIT_RESOURCE = 'managed-document';
 
@@ -91,13 +94,28 @@ export class ManagedDocumentController {
     response.end(exported.csv);
   }
 
+  @Post('upload-url')
+  @HttpCode(OK_STATUS)
+  @Auth([{ action: 'write', subject: 'ManagedDocument' }])
+  @ApiEndpoint({
+    summary: 'Sign a browser-direct upload of a document’s body',
+    responseDescription:
+      'A short-lived PUT URL for exactly one file of the declared type and size, under a key this surface minted. Nothing is persisted: pass the returned storageKey to POST /documents (or PATCH) to record it, at which point the bytes are checked against the declared type (SJ-21) and images are re-encoded. Send `requiredHeaders` verbatim on the PUT.',
+    responseExample: { data: MANAGED_DOCUMENT_EXAMPLES.uploadUrl },
+    requestType: CreateManagedDocumentUploadUrlDto,
+    requestExample: MANAGED_DOCUMENT_EXAMPLES.uploadUrlRequest,
+  })
+  async createUploadUrl(@Body() payload: CreateManagedDocumentUploadUrlDto) {
+    return { data: await this.managedDocumentService.createUploadUrl(payload) };
+  }
+
   @Post()
   @HttpCode(CREATED_STATUS)
   @Auth([{ action: 'write', subject: 'ManagedDocument' }])
   @ApiEndpoint({
     summary: 'Draft a document in the registry',
     responseDescription:
-      'A new DRAFT of the named type. Drafted HTML is sanitised server-side before it is stored; an uploaded body is recorded from the stored object behind the storage key, which must be one this surface minted. A payload naming both `contentHtml` and `storageKey` is refused (400). `status`, `issuedAt` and the subject links are the server’s and are rejected if sent. A deactivated type answers 404 — it has left the picker (FR-E5-36).',
+      'A new DRAFT of the named type. The type row decides the shape (FR-E5-35): a patient or doctor it requires must be named and one it does not require may not be, and the body must match its content mode — 422 `MANAGED_DOCUMENT_TYPE_RULE` lists each broken rule in `error.details.issues`. Drafted HTML is sanitised server-side before it is stored; an uploaded body is recorded from the stored object behind the storage key, which must be one this surface minted and whose bytes must agree with the declared type (SJ-21). A payload naming both `contentHtml` and `storageKey` is refused (400). `status`, `issuedAt` and the subject links are the server’s and are rejected if sent. A deactivated type answers 404 — it has left the picker (FR-E5-36).',
     responseExample: {
       data: MANAGED_DOCUMENT_EXAMPLES.detailView,
       message: 'Document drafted',
@@ -156,6 +174,23 @@ export class ManagedDocumentController {
     const actor = this.assertAuthenticated(currentUser);
     const data = await this.managedDocumentService.updateDocument(id, payload, actor);
     return { data, message: 'Document updated' };
+  }
+
+  @Get(':id/download')
+  @Auth([{ action: 'read', subject: 'ManagedDocument' }])
+  @ApiEndpoint({
+    summary: 'Mint a signed download URL for an uploaded document body',
+    responseDescription:
+      'A signed URL valid for minutes, served as an attachment under the validated stored content type — nothing renders in the app or API origin (NFR-SEC-04). The download is audited before the URL is returned; if the access cannot be recorded, no URL is issued. A document drafted in the editor has no file: 409 `MANAGED_DOCUMENT_NOT_DOWNLOADABLE`.',
+    responseExample: { data: MANAGED_DOCUMENT_EXAMPLES.download },
+    notFoundDescription: 'Document not found.',
+  })
+  async getDownloadUrl(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @AuthUser() currentUser?: CurrentUser,
+  ) {
+    const actor = this.assertAuthenticated(currentUser);
+    return { data: await this.managedDocumentService.getDownloadUrl(id, actor) };
   }
 
   @Get(':id/history')

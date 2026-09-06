@@ -1,5 +1,10 @@
 import { z } from 'zod';
 
+import {
+  DOCUMENT_MAX_UPLOAD_SIZE_BYTES,
+  documentUploadMimeTypeSchema,
+} from '#document-management/schemas';
+
 /**
  * What a document type's issue step does (`P16-T39`, §7.5.2.1). Mirrors the
  * Prisma `DocumentTypeBehavior` enum. Bounded even though types are
@@ -328,3 +333,26 @@ export const MANAGED_DOCUMENT_EXPORT_MAX_ROWS = 5_000;
 export const MANAGED_DOCUMENT_CONTENT_CONFLICT_ERROR_CODE = 'MANAGED_DOCUMENT_CONTENT_CONFLICT';
 
 export const MANAGED_DOCUMENT_NOT_EDITABLE_ERROR_CODE = 'MANAGED_DOCUMENT_NOT_EDITABLE';
+
+/**
+ * A document that breaks its type's party or content rules (`P16-T36`,
+ * FR-E5-35) is refused with this code; `error.details.issues` lists each
+ * broken rule with the field it belongs to.
+ */
+export const MANAGED_DOCUMENT_TYPE_RULE_ERROR_CODE = 'MANAGED_DOCUMENT_TYPE_RULE';
+
+/**
+ * Sign a browser-direct upload of a registry document's body (`P16-T36`).
+ * The same store allowlist and cap as every other upload surface — a signed
+ * agreement is a PDF or a photograph of one.
+ */
+export const createManagedDocumentUploadUrlSchema = z
+  .object({
+    mimeType: documentUploadMimeTypeSchema,
+    sizeBytes: z.coerce.number().int().positive().max(DOCUMENT_MAX_UPLOAD_SIZE_BYTES),
+  })
+  .strict();
+
+export type CreateManagedDocumentUploadUrlInput = z.infer<
+  typeof createManagedDocumentUploadUrlSchema
+>;

@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 
 import { StorageModule } from '../../common/storage/storage.module';
 import { AuthModule } from '../auth/auth.module';
+import { DocumentManagementModule } from '../document-management/document-management.module';
 import { DocumentTypeController } from './controller/document-type.controller';
 import { ManagedDocumentController } from './controller/managed-document.controller';
 import { DocumentTypeRepository } from './repository/document-type.repository';
@@ -33,10 +34,12 @@ import { ManagedDocumentService } from './service/managed-document.service';
  * `AuthModule` is imported for `AuthRepository`: the global guard proves the
  * actor may use the registry, and only a re-read of their grants can say
  * which other modules' rows they may see through it. `StorageModule` for
- * the uploaded body's metadata, read back from the object at record time.
+ * signing uploads and downloads; `DocumentManagementModule` for the
+ * confirm-time content gate (`P16-T36`) an uploaded body passes before a
+ * row may point at it.
  */
 @Module({
-  imports: [AuthModule, StorageModule],
+  imports: [AuthModule, StorageModule, DocumentManagementModule],
   controllers: [DocumentTypeController, ManagedDocumentController],
   providers: [
     DocumentTypeRepository,

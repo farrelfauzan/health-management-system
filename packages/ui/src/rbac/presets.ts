@@ -114,6 +114,7 @@ export const ADMIN_PORTAL_ADMIN_RULES: AppRule[] = [
   // so an admin whose session hint predates them still reaches Documents →
   // Types rather than losing the entry to a silently narrower preset.
   { action: 'read', subject: 'ManagedDocument' },
+  { action: 'write', subject: 'ManagedDocument' },
   { action: 'write', subject: 'DocumentType' },
   { action: 'manage', subject: 'BpjsConfig' },
   { action: 'sync', subject: 'BpjsReference' },

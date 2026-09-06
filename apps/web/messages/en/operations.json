@@ -1059,6 +1059,104 @@
           "deleted": "Document type deleted.",
           "error": "Unable to delete the document type."
         }
+      },
+      "registryTab": "Registry",
+      "registry": {
+        "description": "Every document the clinic drafts, approves and issues. Rows you are not entitled to see are not here — and not counted.",
+        "new": "New document",
+        "search": "Search",
+        "searchPlaceholder": "Title, number or party name…",
+        "loadError": "Unable to load documents",
+        "loadErrorDescription": "Something went wrong while fetching the registry. It retries automatically.",
+        "empty": "No documents yet",
+        "emptyDescription": "Draft the first one, or upload a signed copy.",
+        "emptyFiltered": "No documents match this search.",
+        "total": "{count, plural, =0 {No documents} one {# document} other {# documents}}",
+        "columns": {
+          "title": "Document",
+          "type": "Type",
+          "parties": "Parties",
+          "status": "Status",
+          "draftedBy": "Drafted by",
+          "created": "Created",
+          "issued": "Issued",
+          "actions": "Actions"
+        },
+        "statuses": {
+          "DRAFT": "Draft",
+          "PENDING_APPROVAL": "Awaiting approval",
+          "ISSUED": "Issued",
+          "ARCHIVED": "Archived"
+        },
+        "bodyKinds": {
+          "drafted": "Drafted",
+          "uploaded": "Uploaded file"
+        },
+        "notIssued": "—",
+        "noParties": "—",
+        "actions": {
+          "download": "Download file",
+          "downloadError": "Unable to download this file."
+        }
+      },
+      "form": {
+        "title": "New document",
+        "description": "Pick a type — the form is built from what that type requires.",
+        "type": "Type",
+        "typePlaceholder": "Choose a type",
+        "typesLoading": "Loading types…",
+        "typesError": "Unable to load document types.",
+        "documentTitle": "Title",
+        "documentTitlePlaceholder": "e.g. Perjanjian tanggung jawab biaya — Rina",
+        "documentNumber": "Document number (optional)",
+        "documentNumberPlaceholder": "e.g. AGR/2026/0007",
+        "parties": {
+          "patient": "Patient",
+          "patientPlaceholder": "Search a patient…",
+          "patientSearchPlaceholder": "Type at least 2 characters",
+          "patientEmpty": "No matching patient",
+          "doctor": "Doctor",
+          "doctorPlaceholder": "Choose a doctor",
+          "doctorSearchPlaceholder": "Search a doctor…",
+          "doctorEmpty": "No matching doctor"
+        },
+        "content": {
+          "label": "Content",
+          "choice": "How does this document come in?",
+          "draft": "Write it here",
+          "upload": "Upload a signed copy",
+          "editorHint": "Drafted in the editor. Sanitised server-side on every save.",
+          "fileLabel": "File",
+          "fileHint": "PDF, JPEG, PNG or WebP, up to 20 MB. Downloads as an attachment; nothing renders inline.",
+          "fileSelected": "{name} ({size})",
+          "removeFile": "Remove file"
+        },
+        "issues": {
+          "PATIENT_REQUIRED": "This type requires a patient.",
+          "DOCTOR_REQUIRED": "This type requires a doctor.",
+          "PATIENT_NOT_ALLOWED": "This type does not name a patient.",
+          "DOCTOR_NOT_ALLOWED": "This type does not name a doctor.",
+          "CONTENT_MUST_BE_DRAFTED": "This type is drafted in the editor, not uploaded.",
+          "CONTENT_MUST_BE_UPLOADED": "This type needs an uploaded file.",
+          "CONTENT_BOTH": "Write it or upload it — not both."
+        },
+        "errors": {
+          "typeRequired": "Choose a type.",
+          "titleRequired": "Give the document a title.",
+          "fileRequired": "Pick a file to upload.",
+          "sign": "The upload could not start. Try again.",
+          "put": "Storage did not accept the file. Try again.",
+          "save": "Unable to save the document."
+        },
+        "progress": {
+          "preparing": "Preparing…",
+          "uploading": "Uploading {percent}%",
+          "scanning": "Checking the file…",
+          "complete": "Recorded"
+        },
+        "submit": "Create document",
+        "submitting": "Saving…",
+        "created": "Document drafted."
       }
     }
   },

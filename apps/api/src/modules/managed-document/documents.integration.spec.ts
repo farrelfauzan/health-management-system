@@ -23,6 +23,11 @@ import { ManagedDocumentRepository } from './repository/managed-document.reposit
 
 const DOCUMENTS_PATH = '/api/v1/v1/documents';
 const TYPE_ID = '00000000-0000-4000-8000-00000000aaaa';
+const AGREEMENT_TYPE_ID = '00000000-0000-4000-8000-00000000aaab';
+const POLICY_TYPE_ID = '00000000-0000-4000-8000-00000000aaac';
+const UPLOAD_ONLY_TYPE_ID = '00000000-0000-4000-8000-00000000aaad';
+const PATIENT_ID = '00000000-0000-4000-8000-00000000eee1';
+const DOCTOR_ID = '00000000-0000-4000-8000-00000000eee2';
 const OWNER_USER_ID = '00000000-0000-4000-8000-00000000000a';
 const OTHER_USER_ID = '00000000-0000-4000-8000-00000000000b';
 
@@ -128,12 +133,12 @@ class InMemoryManagedDocumentRepository {
     return [];
   }
 
-  async findPatientById(): Promise<null> {
-    return null;
+  async findPatientById(id: string): Promise<{ id: string } | null> {
+    return id === PATIENT_ID ? { id } : null;
   }
 
-  async findDoctorById(): Promise<null> {
-    return null;
+  async findDoctorById(id: string): Promise<{ id: string } | null> {
+    return id === DOCTOR_ID ? { id } : null;
   }
 
   private buildRecord(
@@ -201,7 +206,14 @@ describe('Documents registry integration', () => {
   const authRepositoryMock = { findUserById: jest.fn(), findUserByEmail: jest.fn() };
   const auditServiceMock = { record: jest.fn(), recordOrThrow: jest.fn() };
   const prismaServiceMock = { $connect: jest.fn(), $disconnect: jest.fn() };
-  const objectStorageMock = { headObject: jest.fn() };
+  const objectStorageMock = {
+    headObject: jest.fn(),
+    getObject: jest.fn(),
+    generateObjectKey: jest.fn(),
+    getSignedUploadUrl: jest.fn(),
+    getSignedUrl: jest.fn(),
+    deleteObject: jest.fn(),
+  };
   const activeType: DocumentTypeRecord = {
     id: TYPE_ID,
     code: 'LETTER',
@@ -222,8 +234,25 @@ describe('Documents registry integration', () => {
     createdAt: new Date(),
     updatedAt: new Date(),
   };
+  const typeCatalog: Record<string, DocumentTypeRecord> = {
+    [TYPE_ID]: activeType,
+    [AGREEMENT_TYPE_ID]: {
+      ...activeType,
+      id: AGREEMENT_TYPE_ID,
+      code: 'AGREEMENT_PATIENT_DOCTOR',
+      requiresPatient: true,
+      requiresDoctor: true,
+    },
+    [POLICY_TYPE_ID]: { ...activeType, id: POLICY_TYPE_ID, code: 'CLINIC_POLICY_SOP' },
+    [UPLOAD_ONLY_TYPE_ID]: {
+      ...activeType,
+      id: UPLOAD_ONLY_TYPE_ID,
+      code: 'CLINIC_CORPUS_DOCUMENT',
+      contentMode: 'UPLOADED',
+    },
+  };
   const documentTypeRepositoryMock = {
-    findById: jest.fn(async (id: string) => (id === TYPE_ID ? activeType : null)),
+    findById: jest.fn(async (id: string) => typeCatalog[id] ?? null),
   };
 
   function buildToken(sub: string): Promise<string> {
@@ -406,6 +435,89 @@ describe('Documents registry integration', () => {
     expect(listed.body.data.items).toHaveLength(1);
     expect(listed.body.data.items[0]).not.toHaveProperty('contentHtml');
     expect(listed.body.data.items[0].hasContentHtml).toBe(true);
+  });
+
+  it('enforces the party and content rules of the type (FR-E5-35)', async () => {
+    mockActor(OTHER_USER_ID, [REGISTRY_READ, REGISTRY_WRITE]);
+    const token = await buildToken(OTHER_USER_ID);
+    const post = (body: Record<string, unknown>) =>
+      request(app.getHttpServer())
+        .post(DOCUMENTS_PATH)
+        .set('Authorization', `Bearer ${token}`)
+        .send(body);
+
+    const agreementWithoutDoctor = await post({
+      typeId: AGREEMENT_TYPE_ID,
+      title: 'agreement',
+      patientId: PATIENT_ID,
+    });
+    const agreementComplete = await post({
+      typeId: AGREEMENT_TYPE_ID,
+      title: 'agreement',
+      patientId: PATIENT_ID,
+      doctorId: DOCTOR_ID,
+      contentHtml: '<p>Setuju</p>',
+    });
+    const policyWithPatient = await post({
+      typeId: POLICY_TYPE_ID,
+      title: 'policy',
+      patientId: PATIENT_ID,
+    });
+    const uploadOnlyDrafted = await post({
+      typeId: UPLOAD_ONLY_TYPE_ID,
+      title: 'corpus',
+      contentHtml: '<p>x</p>',
+    });
+
+    expect(agreementWithoutDoctor.status).toBe(422);
+    expect(agreementWithoutDoctor.body.error).toMatchObject({
+      code: 'MANAGED_DOCUMENT_TYPE_RULE',
+      details: { issues: [{ code: 'DOCTOR_REQUIRED', field: 'doctorId' }] },
+    });
+    expect(agreementComplete.status).toBe(201);
+    expect(agreementComplete.body.data).toMatchObject({ hasContentHtml: true, storageKey: null });
+    expect(policyWithPatient.status).toBe(422);
+    expect(policyWithPatient.body.error.details.issues).toEqual([
+      { code: 'PATIENT_NOT_ALLOWED', field: 'patientId' },
+    ]);
+    expect(uploadOnlyDrafted.status).toBe(422);
+    expect(uploadOnlyDrafted.body.error.details.issues).toEqual([
+      { code: 'CONTENT_MUST_BE_UPLOADED', field: 'storageKey' },
+    ]);
+  });
+
+  it('mints an upload URL under the registry prefix and refuses a foreign key at record time', async () => {
+    mockActor(OTHER_USER_ID, [REGISTRY_READ, REGISTRY_WRITE]);
+    const token = await buildToken(OTHER_USER_ID);
+    objectStorageMock.generateObjectKey.mockReturnValue(
+      'documents/managed/9f1c7c2e-3a52-4f0b-9e33-1c9a5f0a77b1.pdf',
+    );
+    objectStorageMock.getSignedUploadUrl.mockResolvedValue({
+      url: 'https://storage.test/put',
+      key: 'documents/managed/9f1c7c2e-3a52-4f0b-9e33-1c9a5f0a77b1.pdf',
+      expiresAt: '2026-09-30T02:05:00.000Z',
+      requiredHeaders: { 'Content-Type': 'application/pdf' },
+    });
+
+    const signed = await request(app.getHttpServer())
+      .post(`${DOCUMENTS_PATH}/upload-url`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ mimeType: 'application/pdf', sizeBytes: 1024 });
+    const foreign = await request(app.getHttpServer())
+      .post(DOCUMENTS_PATH)
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        typeId: TYPE_ID,
+        title: 'scan',
+        storageKey: 'documents/patient/9f1c7c2e-3a52-4f0b-9e33-1c9a5f0a77b1.pdf',
+      });
+
+    expect(signed.status).toBe(200);
+    expect(signed.body.data.storageKey).toMatch(/^documents\/managed\//);
+    expect(objectStorageMock.getSignedUploadUrl).toHaveBeenCalledWith(
+      expect.objectContaining({ contentType: 'application/pdf', contentLengthBytes: 1024 }),
+    );
+    expect(foreign.status).toBe(400);
   });
 
   it('exports the visible rows as CSV with metadata only', async () => {
