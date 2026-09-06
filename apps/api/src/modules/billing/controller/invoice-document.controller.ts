@@ -2,6 +2,7 @@ import { Controller, Get, HttpCode, Param, ParseUUIDPipe, Post } from '@nestjs/c
 import { ApiTags } from '@nestjs/swagger';
 
 import { Auth } from '../../../common/authorization/auth.decorator';
+import { RequireFeature } from '../../../common/authorization/require-feature.decorator';
 import { ApiEndpoint } from '../../../common/openapi/api-endpoint.decorator';
 import { INVOICE_DOCUMENT_EXAMPLES } from '../../../common/openapi/invoice-document-examples';
 import { InvoiceDocumentService } from '../service/invoice-document.service';
@@ -12,6 +13,7 @@ import { InvoiceDocumentService } from '../service/invoice-document.service';
  * resource with a separate reach.
  */
 @ApiTags('Invoices')
+@RequireFeature('invoice-documents')
 @Controller({
   version: '1',
   path: 'invoices',

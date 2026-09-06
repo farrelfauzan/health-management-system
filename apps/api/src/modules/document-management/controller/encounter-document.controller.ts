@@ -19,7 +19,7 @@ import { PatientDocumentService } from '../service/patient-document.service';
  * patient whose file is being read.
  */
 @ApiTags('Document Management')
-@RequireFeature('document-management')
+@RequireFeature('patient-documents')
 @Controller({
   version: '1',
   path: 'encounters/:encounterId/documents',

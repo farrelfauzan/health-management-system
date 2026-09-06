@@ -211,6 +211,54 @@ To close this section, someone with access to the target deployment supplies:
 | Hosting region | | |
 | Date checked / by whom | | |
 
+## 5b. Delivery processors — WhatsApp and email (P16-T21, NFR-PRIV-06)
+
+Phase 16 added a **third** class of external recipient, and it is not an AI
+vendor: a document delivered to a patient leaves the building over WhatsApp or
+email. It belongs in this inventory for the same reason the embedding vendor
+did — the ticket that created it was not the ticket that wrote the processor
+list, and an unlisted processor is the failure mode this document exists to
+prevent.
+
+| | ❸ WhatsApp bridge | ❹ SMTP relay |
+|---|---|---|
+| What it is | A self-hosted bridge (`GOWA` or `WAHA`) paired to the clinic's own WhatsApp number, on the compose network with no published port | Whatever `SMTP_*` names in the target deployment |
+| What crosses | The message body, the recipient's phone number, and the **attachment**: a password-protected PDF (D-027) | The message body, the recipient's address, and the same attachment |
+| Who it reaches | WhatsApp/Meta, as the transport for any WhatsApp message | The relay operator, then the recipient's mail provider |
+| Patient data in it | Recipient identifier; the PDF contains the bill or the clinical document. The **message body names the password scheme, never the value** (FR-E4-08) | Same |
+| Controller instrument | **Unknown — same gap shape as G1/G2** | **Unknown** |
+
+### What contains this today
+
+- The attachment is **AES-256 encrypted before it leaves the system** (D-027),
+  so the transport carries ciphertext plus a scheme hint. That is the right
+  control for misdelivery — a mistyped digit — and explicitly **not** a
+  control against a determined attacker, because the default password is the
+  patient's date of birth and that is not a secret.
+- Delivery requires recorded **consent** (`P16-T24`) and a verified number,
+  enforced in the service rather than the UI.
+- `destination_masked` is the only destination the delivery row keeps; there
+  is no column holding a full phone number or address to leak.
+- Bucket URLs never ride in a message body (NFR-SEC-07): attachments are
+  streamed server-side, and link delivery sends a tokenised app URL that
+  mints its presign only when redeemed.
+
+### New gaps
+
+- **G6 — WhatsApp is a processor and the privacy notice must say so.** Meta
+  transports every WhatsApp message; a patient who consented to "receiving
+  their bill" has not thereby been told which company carries it. **The
+  privacy notice must name WhatsApp delivery before production enablement**,
+  and the §10 pilot go/no-go treats this as a blocker.
+- **G7 — no instrument with the SMTP relay** for the target deployment, same
+  shape as G1.
+- **G8 — the bridge image floats on `:latest`**
+  ([F-3](renderer-isolation.md#f-3--the-whatsapp-bridge-image-floats-on-latest--medium)).
+  A container that can send as the clinic should not change under a
+  `docker compose pull` nobody reviewed.
+
+G6 is the one that gates a pilot. G7 and G8 are backlog.
+
 ## 6. Legal mapping and gap list — OPEN
 
 Blocked on a named compliance owner (ticket Prerequisites: hospital DPO, which

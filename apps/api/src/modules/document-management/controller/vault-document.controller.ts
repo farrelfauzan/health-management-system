@@ -48,7 +48,7 @@ const VAULT_DOCUMENT_AUDIT_RESOURCE = 'vault-document';
  * to the AI provider. Nothing here ever is.
  */
 @ApiTags('Document Management')
-@RequireFeature('document-management')
+@RequireFeature('doctor-credentials')
 @Controller({
   version: '1',
   path: 'me/vault-documents',

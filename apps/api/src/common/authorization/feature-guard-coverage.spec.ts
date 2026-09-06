@@ -23,16 +23,32 @@ import { REQUIRE_FEATURE_KEY } from './require-feature.decorator';
 const GATED_CONTROLLERS: Readonly<Record<string, FeatureKey>> = {
   AiProviderController: 'ai-chatbot',
   ChatController: 'ai-chatbot',
+  // `document-management` keeps what it started as: the shared clinic corpus
+  // and the personal knowledge bases the assistant retrieves from. `P16-T21`
+  // split the Phase-16 epics out from under it, because a clinic buys a
+  // patient's clinical file and a doctor's credential drawer separately from
+  // a chatbot corpus, and §10 pilots them separately too.
   DocumentAdminController: 'document-management',
   PersonalDocumentController: 'document-management',
-  PatientDocumentController: 'document-management',
-  PatientDocumentDetailController: 'document-management',
-  EncounterDocumentController: 'document-management',
-  PortalDocumentController: 'document-management',
-  VaultDocumentController: 'document-management',
-  VaultDocumentShareController: 'document-management',
-  VaultShareRecipientController: 'document-management',
-  SharedWithMeDocumentController: 'document-management',
+  // E1 — the rendered bill and the layouts behind it.
+  DocumentTemplateController: 'invoice-documents',
+  DocumentTemplateVariableController: 'invoice-documents',
+  InvoiceDocumentController: 'invoice-documents',
+  // E2 — the patient's clinical file, and the portal that releases it.
+  PatientDocumentController: 'patient-documents',
+  PatientDocumentDetailController: 'patient-documents',
+  EncounterDocumentController: 'patient-documents',
+  PortalDocumentController: 'patient-documents',
+  // E3 — the doctor's own drawer. The only document feature with no clinic
+  // reader at all, so the entitlement is an administrator's only lever.
+  VaultDocumentController: 'doctor-credentials',
+  VaultDocumentShareController: 'doctor-credentials',
+  VaultShareRecipientController: 'doctor-credentials',
+  SharedWithMeDocumentController: 'doctor-credentials',
+  // E4 — sending a bill out of the building.
+  InvoiceDeliveryController: 'invoice-delivery',
+  DeliveryActionController: 'invoice-delivery',
+  PatientDeliveryConsentController: 'invoice-delivery',
   BpjsEligibilityController: 'bpjs-pcare',
   BpjsMappingController: 'bpjs-pcare',
   BpjsPcareConfigController: 'bpjs-pcare',
@@ -79,6 +95,13 @@ const NEVER_GATED_CONTROLLERS: readonly string[] = [
   // clinic itself, not a module the clinic bought.
   'OrganizationUnitController',
   'OrganizationUnitMemberController',
+  // P16-T21, §10.6. A patient holding a link the clinic already sent them
+  // must not lose the bill because the clinic stopped *sending* new ones.
+  // Withdrawing outstanding links is a second, deliberate step — revoking
+  // them — and folding it into the entitlement would make the rollback
+  // silently wider than the operator asked for. The token itself is the
+  // authorisation here, and it is still checked, rate-limited and revocable.
+  'DeliveryLinkPublicController',
 ];
 
 /**
@@ -176,6 +199,47 @@ describe('Feature guard coverage', () => {
       .map(([route]) => route)
       .sort();
     expect(exemptRoutes).toEqual([...FEATURE_INDEPENDENT_ROUTES].sort());
+  });
+
+  /**
+   * `P16-T21` §4's acceptance criterion, structurally: with the five keys off,
+   * no Phase-16 surface is reachable by any role.
+   *
+   * Named controller by controller rather than by module, because "the
+   * documents module" is not the unit an entitlement sells — three of the five
+   * epics live inside `document-management` and are sold apart from it.
+   */
+  it('gates every Phase-16 epic surface behind one of the five keys', () => {
+    const PHASE_16_CONTROLLERS: readonly string[] = [
+      'DocumentTemplateController',
+      'DocumentTemplateVariableController',
+      'InvoiceDocumentController',
+      'PatientDocumentController',
+      'PatientDocumentDetailController',
+      'EncounterDocumentController',
+      'PortalDocumentController',
+      'VaultDocumentController',
+      'VaultDocumentShareController',
+      'VaultShareRecipientController',
+      'SharedWithMeDocumentController',
+      'InvoiceDeliveryController',
+      'DeliveryActionController',
+      'PatientDeliveryConsentController',
+      'DocumentApprovalController',
+    ];
+    const PHASE_16_KEYS: readonly FeatureKey[] = [
+      'invoice-documents',
+      'patient-documents',
+      'doctor-credentials',
+      'invoice-delivery',
+      'document-approval',
+    ];
+
+    const ungated = PHASE_16_CONTROLLERS.filter((name) => {
+      const key = controllerFeatureKeys.get(name);
+      return key === undefined || key === null || !PHASE_16_KEYS.includes(key);
+    });
+    expect(ungated).toEqual([]);
   });
 
   it('exempts nothing on an ungated controller, where the exemption would be dead', () => {

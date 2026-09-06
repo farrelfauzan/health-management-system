@@ -16,6 +16,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { AuthUser } from '../../../common/auth/auth-user.decorator';
 import { CurrentUser } from '../../../common/auth/current-user.type';
 import { Auth } from '../../../common/authorization/auth.decorator';
+import { RequireFeature } from '../../../common/authorization/require-feature.decorator';
 import { ApiEndpoint } from '../../../common/openapi/api-endpoint.decorator';
 import { DOCUMENT_TEMPLATE_EXAMPLES } from '../../../common/openapi/document-template-examples';
 import { CreateDocumentTemplateDto } from '../dto/create-document-template.dto';
@@ -28,6 +29,7 @@ import { DocumentTemplatePreviewService } from '../service/document-template-pre
 import { DocumentTemplateService } from '../service/document-template.service';
 
 @ApiTags('Document Templates')
+@RequireFeature('invoice-documents')
 @Controller({
   version: '1',
   path: 'document-templates',

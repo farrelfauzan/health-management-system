@@ -37,7 +37,7 @@ export const MAX_DOCUMENT_APPROVAL_REASON_LENGTH = 1_000;
  * Submit a document for approval (FR-E5-09/10).
  *
  * The drafter names *who* approves this document and *when it is due*, at the
- * moment they know what it is (D-028). There is no approver registry and no
+ * moment they know what it is (D-029). There is no approver registry and no
  * per-division routing table to consult: any staff account may be named, and
  * the service refuses a panel containing a `PATIENT`.
  *

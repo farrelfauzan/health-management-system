@@ -37,7 +37,7 @@ import { VaultDocumentShareService } from '../service/vault-document-share.servi
  * see.
  */
 @ApiTags('Document Management')
-@RequireFeature('document-management')
+@RequireFeature('doctor-credentials')
 @Controller({
   version: '1',
   path: 'me/vault-documents',

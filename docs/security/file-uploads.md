@@ -106,6 +106,30 @@ plus:
    rendering (e.g. an image preview), it must come from a dedicated
    user-content origin (post-SJ-1), never the app or API origin.
 
+## Phase-16 review sign-off (P16-T21 §1, NFR-SEC-02)
+
+Re-checked at the close of Phase 16. The condition SJ-21 attached to image
+types — **they return only in the same change as the re-encode** — held on
+both occasions it was tested (`P16-T02` clinic logo, `P16-T03` document
+store), and it still binds the next image-bearing surface.
+
+Two surfaces were added after those sections were written, and neither
+weakened the standard:
+
+| Surface | Ticket | Posture |
+| --- | --- | --- |
+| Managed-document bodies (`/api/v1/documents/upload-url`, `:id` confirm) | `P16-T28`/`T36` | Reuses `UploadedDocumentGuardService` wholesale — same allowlist, same magic-byte gate, same image re-encode, same delete-before-reject. The registry adds a prefix check (`isManagedDocumentStorageKey`) so a confirm naming another feature's object is refused rather than becoming a registry row with a signed download URL |
+| Clinic-corpus documents behind approval | `P16-T33` | No change to the upload path. Approval gates *ingestion*, not storage: the bytes land and pass every check above, and the file simply does not enter the retrieval corpus until a second person signs off |
+
+**SVG remains absent from every upload allowlist.** The one place an SVG can
+reach a renderer is as a `data:image/svg+xml` source inside authored template
+HTML, which is a reviewed and separate decision — see
+[`document-html-sanitiser.md`](document-html-sanitiser.md#inline-svg-referenced-from-img-survives).
+
+One open finding from the phase pass touches this surface: signed-URL minting
+is not rate-limited per user (NFR-SEC-05,
+[F-2](renderer-isolation.md#f-2--upload-and-download-url-minting-is-not-rate-limited--medium)).
+
 ## Accepted risks — decisions, not defaults
 
 - **No antivirus scanning.** The ticket's ClamAV sidecar assumes bytes flow
