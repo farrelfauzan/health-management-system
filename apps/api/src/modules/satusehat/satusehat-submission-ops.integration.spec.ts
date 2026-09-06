@@ -47,6 +47,7 @@ describe('SATUSEHAT submission ops integration', () => {
     findSubmissionPage: jest.fn(),
     requeueSubmission: jest.fn(),
     findBundleData: jest.fn(),
+    saveAllergyIhsIds: jest.fn(),
     markSubmitted: jest.fn(),
     scheduleRetry: jest.fn(),
     markFailed: jest.fn(),
@@ -121,6 +122,17 @@ describe('SATUSEHAT submission ops integration', () => {
         plan: 'Kontrol 3 hari',
         prognosis: 'BONAM',
       },
+      unreportedAllergies: [
+        {
+          allergyId: '9c0d1e2f-3a4b-4c5d-8e6f-7a8b9c0d1e2f',
+          substance: 'Amoksisilin',
+          reaction: 'Ruam',
+          severity: 'SEVERE',
+          recordedAt: new Date('2026-07-27T09:05:00.000Z'),
+        },
+      ],
+      retractedReportedAllergyCount: 0,
+      admission: null,
       procedures: [
         {
           procedureId: '8b9c0d1e-2f3a-4b5c-8d6e-7f8a9b0c1d2e',
@@ -469,6 +481,7 @@ describe('SATUSEHAT submission ops integration', () => {
         'Encounter',
         'Condition',
         'Procedure',
+        'AllergyIntolerance',
         'Observation',
         'ClinicalImpression',
         'Composition',

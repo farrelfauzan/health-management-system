@@ -1280,14 +1280,19 @@ model DocumentDeliveryLink {
 /// Free-text substance plus a severity grade. Deliberately uncoded for now —
 /// allergen and reaction move to coded terminology in the EMR phase.
 model PatientAllergy {
-  id        String          @id @default(uuid()) @db.Uuid
-  patientId String          @map("patient_id") @db.Uuid
-  substance String
-  reaction  String?
-  severity  AllergySeverity
-  createdAt DateTime        @default(now()) @map("created_at")
-  updatedAt DateTime        @updatedAt @map("updated_at")
-  deletedAt DateTime?       @map("deleted_at")
+  id                 String          @id @default(uuid()) @db.Uuid
+  patientId          String          @map("patient_id") @db.Uuid
+  substance          String
+  reaction           String?
+  severity           AllergySeverity
+  /// IHS id returned by SATUSEHAT on first successful submission (P10-T08).
+  /// Non-null = reported, and never sent again; null = not yet reported. The
+  /// allergy rides whichever encounter bundle happens to be next, because the
+  /// fact is patient-scoped while the outbox is keyed by encounter.
+  satusehatAllergyId String?         @map("satusehat_allergy_id")
+  createdAt          DateTime        @default(now()) @map("created_at")
+  updatedAt          DateTime        @updatedAt @map("updated_at")
+  deletedAt          DateTime?       @map("deleted_at")
 
   patient PatientProfile @relation(fields: [patientId], references: [id], onDelete: Restrict)
 

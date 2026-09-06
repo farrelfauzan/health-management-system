@@ -56,6 +56,10 @@ export type SatusehatFhirEncounterDiagnosis = {
   rank: number;
 };
 
+export type SatusehatFhirEncounterHospitalization = {
+  dischargeDisposition: SatusehatFhirCodeableConcept;
+};
+
 export type SatusehatFhirEncounter = {
   resourceType: 'Encounter';
   identifier: SatusehatFhirIdentifier[];
@@ -69,6 +73,7 @@ export type SatusehatFhirEncounter = {
   period: SatusehatFhirPeriod;
   location: Array<{ location: SatusehatFhirReference }>;
   statusHistory: SatusehatEncounterStatusHistoryEntry[];
+  hospitalization?: SatusehatFhirEncounterHospitalization;
   diagnosis?: SatusehatFhirEncounterDiagnosis[];
   serviceProvider: SatusehatFhirReference;
 };
@@ -99,6 +104,24 @@ export type SatusehatFhirProcedure = {
   note?: SatusehatFhirAnnotation[];
 };
 
+export type SatusehatFhirAllergyReaction = {
+  description: string;
+};
+
+export type SatusehatFhirAllergyIntolerance = {
+  resourceType: 'AllergyIntolerance';
+  identifier: SatusehatFhirIdentifier[];
+  clinicalStatus: SatusehatFhirCodeableConcept;
+  verificationStatus: SatusehatFhirCodeableConcept;
+  code: SatusehatFhirCodeableConceptWithText;
+  criticality: 'low' | 'high';
+  patient: SatusehatFhirReference;
+  encounter?: SatusehatFhirReference;
+  recordedDate: string;
+  recorder?: SatusehatFhirReference;
+  reaction?: SatusehatFhirAllergyReaction[];
+};
+
 export type SatusehatFhirObservation = {
   resourceType: 'Observation';
   status: 'final';
@@ -111,6 +134,17 @@ export type SatusehatFhirObservation = {
   valueQuantity: SatusehatFhirQuantity;
 };
 
+/**
+ * The inpatient stay an encounter belongs to, when it has one. Its presence is
+ * what makes the visit `IMP` rather than `AMB`, and its timestamps bound the
+ * reported period — the episode ends at discharge, not when the doctor closed
+ * the note.
+ */
+export type SatusehatEncounterAdmission = {
+  admittedAt: Date;
+  dischargedAt: Date;
+};
+
 export type SatusehatEncounterMapInput = {
   encounterId: string;
   patientIhsNumber: string;
@@ -120,6 +154,7 @@ export type SatusehatEncounterMapInput = {
   arrivedAt: Date;
   startedAt: Date;
   endedAt: Date;
+  admission?: SatusehatEncounterAdmission;
   conditionReferences?: ReadonlyArray<{ reference: string; rank: number }>;
 };
 
@@ -151,6 +186,25 @@ export type SatusehatProcedureMapInput = {
   encounterStartedAt: Date;
   encounterEndedAt: Date;
   notes?: string;
+};
+
+/**
+ * Input for one recorded allergy. `recorderIhsNumber` is supplied only when
+ * the row was written during this encounter's window — naming the attending
+ * doctor as recorder of an allergy somebody else took down years ago would put
+ * a false attribution in the national record.
+ */
+export type SatusehatAllergyMapInput = {
+  allergyId: string;
+  substance: string;
+  reaction?: string;
+  severity: 'MILD' | 'MODERATE' | 'SEVERE';
+  patientIhsNumber: string;
+  patientName?: string;
+  encounterReference?: string;
+  recordedAt: Date;
+  recorderIhsNumber?: string;
+  recorderName?: string;
 };
 
 export type SatusehatVitalSignsMapInput = {
@@ -305,6 +359,7 @@ export type SatusehatFhirBundleEntry = {
     | SatusehatFhirEncounter
     | SatusehatFhirCondition
     | SatusehatFhirProcedure
+    | SatusehatFhirAllergyIntolerance
     | SatusehatFhirObservation
     | SatusehatFhirComposition
     | SatusehatFhirClinicalImpression

@@ -10,6 +10,7 @@ import {
 import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from '../../../common/prisma/prisma.service';
+import { PrismaTransactionClient } from '../../../common/prisma/prisma.types';
 import { Prisma } from '../../../generated/prisma/client';
 import { AdmissionConflictError } from './admission-conflict.error';
 
@@ -176,6 +177,16 @@ export class AdmissionFlowRepository {
     }
   }
 
+  /**
+   * Discharge also writes the SATUSEHAT outbox row for the source encounter
+   * when the doctor already closed it (P10-T09). Writing another module's
+   * table here is deliberate, for the same reason `closeEncounter` writes this
+   * one: the outbox guarantee is that the event and its queue entry commit or
+   * roll back together, and for an inpatient stay the event that ends the
+   * reportable episode is the discharge, not the note. An encounter still
+   * IN_PROGRESS enqueues at its own close instead, which by then finds a
+   * discharged admission and proceeds normally.
+   */
   async dischargeAdmission(payload: DischargeAdmissionRecordPayload): Promise<AdmissionRecord> {
     const admission = await this.prisma.executeTransaction(async (tx) => {
       await tx.bedAssignment.update({
@@ -195,6 +206,7 @@ export class AdmissionFlowRepository {
         where: { id: updated.patientId },
         data: { status: 'DISCHARGED' },
       });
+      await this.enqueueSatusehatEncounter(tx, updated.sourceEncounterId);
       return tx.admission.findUniqueOrThrow({
         where: { id: payload.admissionId },
         include: ADMISSION_INCLUDE,
@@ -202,6 +214,33 @@ export class AdmissionFlowRepository {
     });
 
     return this.toAdmissionRecord(admission);
+  }
+
+  /**
+   * Idempotent by the outbox row's unique encounter id: a stay admitted from
+   * an encounter that was somehow already enqueued (a discharge reversed and
+   * repeated, a cancelled admission re-created) must not queue the visit
+   * twice.
+   */
+  private async enqueueSatusehatEncounter(
+    tx: PrismaTransactionClient,
+    sourceEncounterId: string | null,
+  ): Promise<void> {
+    if (sourceEncounterId === null) {
+      return;
+    }
+    const encounter = await tx.encounter.findUnique({
+      where: { id: sourceEncounterId },
+      select: { status: true },
+    });
+    if (encounter?.status !== 'FINISHED') {
+      return;
+    }
+    await tx.satusehatSubmission.upsert({
+      where: { encounterId: sourceEncounterId },
+      create: { encounterId: sourceEncounterId },
+      update: {},
+    });
   }
 
   /**
