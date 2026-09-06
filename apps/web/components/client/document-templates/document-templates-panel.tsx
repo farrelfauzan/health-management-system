@@ -24,7 +24,12 @@ const TEMPLATE_KIND = 'INVOICE';
  * in place, and the editor reads its template from the same list query so a
  * save is reflected without a second fetch — the API has no by-id route.
  */
-export function DocumentTemplatesPanel() {
+type DocumentTemplatesPanelProps = {
+  /** Passed to the editor's approval half (`P16-T32`); unused while the policy is off. */
+  currentUserId: string | null;
+};
+
+export function DocumentTemplatesPanel({ currentUserId }: DocumentTemplatesPanelProps) {
   const t = useTranslations('operations.billing.templates');
   const ability = useAbility();
   const queryClient = useQueryClient();
@@ -55,6 +60,7 @@ export function DocumentTemplatesPanel() {
         key={selectedTemplate.id}
         template={selectedTemplate}
         canWrite={canWrite}
+        currentUserId={currentUserId}
         onBack={() => setSelectedTemplateId(null)}
       />
     );

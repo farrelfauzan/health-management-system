@@ -30,7 +30,14 @@ function buildTemplate(overrides: Partial<DocumentTemplateView> = {}): DocumentT
       marginMm: { top: 10, right: 10, bottom: 10, left: 10 },
       itemsColumns: ['item.no'],
     },
-    createdAt: '2026-09-01T00:00:00.000Z',
+    // Policy off — the default posture, so the editor draws no approval chrome.
+  approval: {
+    isApprovalRequired: false,
+    managedDocumentId: null,
+    status: null,
+    pendingRound: null,
+  },
+  createdAt: '2026-09-01T00:00:00.000Z',
     updatedAt: '2026-09-01T00:00:00.000Z',
     ...overrides,
   };

@@ -29,6 +29,7 @@ import type {
   DocumentTemplateControllerImportTemplateV1200,
   DocumentTemplateControllerListTemplatesV1200,
   DocumentTemplateControllerListTemplatesV1Params,
+  DocumentTemplateControllerPreviewTemplateSubmissionV1200,
   DocumentTemplateControllerPreviewTemplateV1200,
   DocumentTemplateControllerPublishTemplateV1200,
   DocumentTemplateControllerSetDefaultTemplateV1200,
@@ -715,6 +716,98 @@ export function useDocumentTemplateControllerPreviewTemplateV1<TData = Awaited<R
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getDocumentTemplateControllerPreviewTemplateV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Render a template's open submission and diff it against the published version
+ */
+export const documentTemplateControllerPreviewTemplateSubmissionV1 = (
+    id: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<DocumentTemplateControllerPreviewTemplateSubmissionV1200>(
+      {url: `/api/v1/document-templates/${id}/approval-preview`, method: 'POST', signal
+    },
+      );
+    }
+
+
+
+
+export const getDocumentTemplateControllerPreviewTemplateSubmissionV1QueryKey = (id: string,) => {
+    return [
+    'POST', `/api/v1/document-templates/${id}/approval-preview`
+    ] as const;
+    }
+
+
+export const getDocumentTemplateControllerPreviewTemplateSubmissionV1QueryOptions = <TData = Awaited<ReturnType<typeof documentTemplateControllerPreviewTemplateSubmissionV1>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerPreviewTemplateSubmissionV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getDocumentTemplateControllerPreviewTemplateSubmissionV1QueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof documentTemplateControllerPreviewTemplateSubmissionV1>>> = ({ signal }) => documentTemplateControllerPreviewTemplateSubmissionV1(id, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerPreviewTemplateSubmissionV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type DocumentTemplateControllerPreviewTemplateSubmissionV1QueryResult = NonNullable<Awaited<ReturnType<typeof documentTemplateControllerPreviewTemplateSubmissionV1>>>
+export type DocumentTemplateControllerPreviewTemplateSubmissionV1QueryError = unknown
+
+
+export function useDocumentTemplateControllerPreviewTemplateSubmissionV1<TData = Awaited<ReturnType<typeof documentTemplateControllerPreviewTemplateSubmissionV1>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerPreviewTemplateSubmissionV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof documentTemplateControllerPreviewTemplateSubmissionV1>>,
+          TError,
+          Awaited<ReturnType<typeof documentTemplateControllerPreviewTemplateSubmissionV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDocumentTemplateControllerPreviewTemplateSubmissionV1<TData = Awaited<ReturnType<typeof documentTemplateControllerPreviewTemplateSubmissionV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerPreviewTemplateSubmissionV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof documentTemplateControllerPreviewTemplateSubmissionV1>>,
+          TError,
+          Awaited<ReturnType<typeof documentTemplateControllerPreviewTemplateSubmissionV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDocumentTemplateControllerPreviewTemplateSubmissionV1<TData = Awaited<ReturnType<typeof documentTemplateControllerPreviewTemplateSubmissionV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerPreviewTemplateSubmissionV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Render a template's open submission and diff it against the published version
+ */
+
+export function useDocumentTemplateControllerPreviewTemplateSubmissionV1<TData = Awaited<ReturnType<typeof documentTemplateControllerPreviewTemplateSubmissionV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentTemplateControllerPreviewTemplateSubmissionV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getDocumentTemplateControllerPreviewTemplateSubmissionV1QueryOptions(id,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

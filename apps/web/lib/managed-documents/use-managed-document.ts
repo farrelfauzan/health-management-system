@@ -18,6 +18,10 @@ export function useManagedDocument(documentId: string) {
     queryKey: getManagedDocumentControllerGetDocumentV1QueryKey(documentId),
     queryFn: (signal) => managedDocumentControllerGetDocumentV1(documentId, signal),
     errorMessage: 'Failed to load the document',
+    // `P16-T32`: the template editor asks for the registry row governing a
+    // template, and there is none until the clinic switches the policy on.
+    // An empty id is "nothing to fetch", not a request to make and fail.
+    enabled: documentId !== '',
   });
 
   return { ...query, document: query.data };

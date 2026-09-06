@@ -5,6 +5,7 @@
  * Health Management System API
  * OpenAPI spec version: 1.0.0
  */
+import type { DocumentAdminControllerUpdateDocumentV1200DataApproval } from './documentAdminControllerUpdateDocumentV1200DataApproval';
 
 export type DocumentAdminControllerUpdateDocumentV1200Data = {
   id: string;
@@ -21,6 +22,7 @@ export type DocumentAdminControllerUpdateDocumentV1200Data = {
   ingestedAt: string;
   chunkCount: number;
   uploadedById: string;
+  approval: DocumentAdminControllerUpdateDocumentV1200DataApproval;
   createdAt: string;
   updatedAt: string;
 };

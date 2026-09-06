@@ -7,6 +7,7 @@ import { DocumentApprovalPanel } from '#components/client/document-approvals/doc
 import { DocumentApprovalThread } from '#components/client/document-approvals/document-approval-thread';
 import { ManagedDocumentBody } from '#components/client/managed-documents/managed-document-body';
 import { ManagedDocumentHeader } from '#components/client/managed-documents/managed-document-header';
+import { TemplateSubmissionReview } from '#components/client/document-templates/template-submission-review';
 import { PageHeader } from '#components/shared/page-header';
 import { useManagedDocument } from '#lib/managed-documents/use-managed-document';
 import { useManagedDocumentHistory } from '#lib/managed-documents/use-managed-document-history';
@@ -64,6 +65,15 @@ export function ManagedDocumentWorkspace({
         canWrite={ability.can('write', 'ManagedDocument')}
         isApprovalEnabled={isApprovalEnabled}
       />
+      {/*
+        A template's body is a layout, not prose, so the registry's own body
+        panel says little about it. `P16-T32` puts the review an approver
+        actually needs here instead: the frozen submission rendered, and a
+        diff against the version invoices render from today (FR-E5-21/22).
+      */}
+      {isApprovalEnabled && document.subject?.kind === 'TEMPLATE' ? (
+        <TemplateSubmissionReview templateId={document.subject.templateId} />
+      ) : null}
       <ManagedDocumentBody document={document} />
       {isApprovalEnabled ? (
         <DocumentApprovalThread rounds={historyQuery.rounds} isPending={historyQuery.isPending} />

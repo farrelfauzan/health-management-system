@@ -9,7 +9,16 @@ import { ServiceTariffsPanel } from '#components/client/billing/service-tariffs-
 import { DocumentTemplatesPanel } from '#components/client/document-templates/document-templates-panel';
 import { PageHeader } from '#components/shared/page-header';
 
-export function BillingWorkspace() {
+type BillingWorkspaceProps = {
+  /**
+   * Who is looking. Only the template approval half reads it (`P16-T32`),
+   * to say "you are the only approver" before the API refuses the submission
+   * for the same reason (FR-E5-14).
+   */
+  currentUserId: string | null;
+};
+
+export function BillingWorkspace({ currentUserId }: BillingWorkspaceProps) {
   const t = useTranslations('operations.billing');
   const ability = useAbility();
   const canReadInvoices = ability.can('read', 'Invoice');
@@ -53,7 +62,7 @@ export function BillingWorkspace() {
         ) : null}
         {canReadTemplates ? (
           <TabsContent value="templates">
-            <DocumentTemplatesPanel />
+            <DocumentTemplatesPanel currentUserId={currentUserId} />
           </TabsContent>
         ) : null}
       </Tabs>
