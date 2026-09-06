@@ -137,7 +137,10 @@ export const ModelName = {
   OrganizationUnit: 'OrganizationUnit',
   DocumentType: 'DocumentType',
   DocumentTypeApprover: 'DocumentTypeApprover',
-  ManagedDocument: 'ManagedDocument'
+  ManagedDocument: 'ManagedDocument',
+  DocumentApprovalRequest: 'DocumentApprovalRequest',
+  DocumentApprovalApprover: 'DocumentApprovalApprover',
+  DocumentApprovalDecision: 'DocumentApprovalDecision'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1616,6 +1619,45 @@ export const ManagedDocumentScalarFieldEnum = {
 } as const
 
 export type ManagedDocumentScalarFieldEnum = (typeof ManagedDocumentScalarFieldEnum)[keyof typeof ManagedDocumentScalarFieldEnum]
+
+
+export const DocumentApprovalRequestScalarFieldEnum = {
+  id: 'id',
+  documentId: 'documentId',
+  frozenPayload: 'frozenPayload',
+  status: 'status',
+  submittedById: 'submittedById',
+  submittedAt: 'submittedAt',
+  dueAt: 'dueAt',
+  resolvedAt: 'resolvedAt',
+  dueSoonNotifiedAt: 'dueSoonNotifiedAt',
+  overdueNotifiedAt: 'overdueNotifiedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DocumentApprovalRequestScalarFieldEnum = (typeof DocumentApprovalRequestScalarFieldEnum)[keyof typeof DocumentApprovalRequestScalarFieldEnum]
+
+
+export const DocumentApprovalApproverScalarFieldEnum = {
+  id: 'id',
+  requestId: 'requestId',
+  approverId: 'approverId'
+} as const
+
+export type DocumentApprovalApproverScalarFieldEnum = (typeof DocumentApprovalApproverScalarFieldEnum)[keyof typeof DocumentApprovalApproverScalarFieldEnum]
+
+
+export const DocumentApprovalDecisionScalarFieldEnum = {
+  id: 'id',
+  requestId: 'requestId',
+  approverId: 'approverId',
+  isApproved: 'isApproved',
+  reason: 'reason',
+  decidedAt: 'decidedAt'
+} as const
+
+export type DocumentApprovalDecisionScalarFieldEnum = (typeof DocumentApprovalDecisionScalarFieldEnum)[keyof typeof DocumentApprovalDecisionScalarFieldEnum]
 
 
 export const SortOrder = {

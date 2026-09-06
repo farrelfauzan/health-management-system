@@ -90,6 +90,15 @@ export type ManagedDocumentRecord = {
     requiresPatient: boolean;
     requiresDoctor: boolean;
     isActive: boolean;
+    /**
+     * The approval policy, denormalised onto every registry read (`P16-T29`).
+     * Off the same row, so it costs nothing — and every lifecycle decision
+     * the service makes reads it, so fetching the type separately would put
+     * a second query in front of every submit and every issue.
+     */
+    isApprovalRequired: boolean;
+    allowSelfApproval: boolean;
+    requiredApprovals: number;
   };
   status: ManagedDocumentStatusValue;
   title: string;
@@ -137,7 +146,14 @@ export type ListManagedDocumentsParams = {
   typeId?: string;
   status?: ManagedDocumentStatusValue;
   draftedById?: string;
-  approverId?: string;
+  /**
+   * Document ids with an open round naming the filtered approver (`P16-T29`).
+   * Resolved by the approval repository and handed down as ids rather than
+   * joined here, so the registry's `where` stays a function of its own
+   * tables — and an empty array narrows to nothing, which is what a saved
+   * "awaiting me" view must do when nothing is waiting.
+   */
+  awaitingApprovalDocumentIds?: string[];
   from?: Date;
   to?: Date;
   dateField: ManagedDocumentDateFieldValue;
@@ -172,6 +188,19 @@ export type CreateManagedDocumentRecordPayload = {
   subjectInvoiceId: string | null;
   draftedById: string;
   issuedAt: Date | null;
+};
+
+/**
+ * A lifecycle transition (`P16-T29`). Separate from the content update
+ * because the two answer to different rules: an edit is refused outside
+ * DRAFT, while a transition is the only thing that may move the row out of
+ * it. `issuedAt` travels with the status so a document can never be ISSUED
+ * without a date, or dated without being issued.
+ */
+export type TransitionManagedDocumentPayload = {
+  id: string;
+  status: ManagedDocumentStatusValue;
+  issuedAt?: Date | null;
 };
 
 export type UpdateManagedDocumentRecordPayload = {

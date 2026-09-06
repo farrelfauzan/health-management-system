@@ -6,6 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { ManagedDocumentControllerGetHistoryV1200DataEntriesItem } from './managedDocumentControllerGetHistoryV1200DataEntriesItem';
+import type { ManagedDocumentControllerGetHistoryV1200DataRoundsItem } from './managedDocumentControllerGetHistoryV1200DataRoundsItem';
 
 export type ManagedDocumentControllerGetHistoryV1200Data = {
   documentId: string;
@@ -13,4 +14,5 @@ export type ManagedDocumentControllerGetHistoryV1200Data = {
   updatedAt: string;
   issuedAt: unknown | null;
   entries: ManagedDocumentControllerGetHistoryV1200DataEntriesItem[];
+  rounds: ManagedDocumentControllerGetHistoryV1200DataRoundsItem[];
 };

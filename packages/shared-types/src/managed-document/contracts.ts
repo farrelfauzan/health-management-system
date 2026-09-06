@@ -1,3 +1,5 @@
+import type { DocumentApprovalRoundView } from '#document-approval/contracts';
+import type { DocumentApprovalStatusValue } from '#document-approval/schemas';
 import type {
   DocumentContentModeValue,
   DocumentTypeBehaviorValue,
@@ -79,9 +81,32 @@ export type ManagedDocumentSubjectView =
   | null;
 
 /**
+ * The open round on a registry row, flattened for the list (`P16-T29`,
+ * FR-E5-27). Present only while a round is open — a resolved round belongs
+ * to the history thread, not to a table cell.
+ *
+ * `isOverdue` is computed from `dueAt` at read time, never stored. A
+ * deadline changes nothing about a round's state (FR-E5-28), so there is no
+ * transition to persist: the row is still `PENDING` and still actionable,
+ * and overdue is a fact about the clock rather than about the row.
+ */
+export type ManagedDocumentApprovalSummaryView = {
+  roundId: string;
+  status: DocumentApprovalStatusValue;
+  dueAt: string | null;
+  isOverdue: boolean;
+  submittedAt: string;
+  approverCount: number;
+  approvalCount: number;
+  requiredApprovals: number;
+  /** Nobody left who may decide — the workspace prompts the drafter to re-name. */
+  hasNoEligibleApprover: boolean;
+};
+
+/**
  * One registry row (`P16-T28`, FR-E5-01). `contentHtml` is absent from the
  * list and present on the detail — a list is metadata, and the detail is
- * where content is read (FR-E5-05). Approval fields arrive with `P16-T29`.
+ * where content is read (FR-E5-05).
  */
 export type ManagedDocumentView = {
   id: string;
@@ -97,6 +122,8 @@ export type ManagedDocumentView = {
   doctor: ManagedDocumentPartyView | null;
   subject: ManagedDocumentSubjectView;
   draftedBy: ManagedDocumentDrafterView;
+  /** The open round, or null. See {@link ManagedDocumentApprovalSummaryView}. */
+  approval: ManagedDocumentApprovalSummaryView | null;
   issuedAt: string | null;
   createdAt: string;
   updatedAt: string;
@@ -104,6 +131,19 @@ export type ManagedDocumentView = {
 
 export type ManagedDocumentDetailView = ManagedDocumentView & {
   contentHtml: string | null;
+  /**
+   * Whether this document's *type* requires approval before it may be
+   * issued (FR-E5-11/12). On the row rather than left to the client to
+   * fetch from the type list, because the whole approval half of the
+   * workspace — the approver picker, the banner, the badge — is absent when
+   * this is false (US-E5-06), and a screen that had to wait for a second
+   * request would flash it.
+   */
+  isApprovalRequired: boolean;
+  allowSelfApproval: boolean;
+  requiredApprovals: number;
+  /** Pre-fills the drafter's approver picker (FR-E5-38). */
+  defaultApprovers: ManagedDocumentDrafterView[];
 };
 
 export type ManagedDocumentListMeta = {
@@ -136,6 +176,13 @@ export type ManagedDocumentHistoryView = {
   updatedAt: string;
   issuedAt: string | null;
   entries: ManagedDocumentHistoryEntryView[];
+  /**
+   * Every round this document has been through, newest first, each with the
+   * panel it named and the decisions recorded against it (`P16-T30`,
+   * FR-E5-05). A rejected round keeps its reason here forever — that is the
+   * half of the thread the drafter comes back for (US-E5-03).
+   */
+  rounds: DocumentApprovalRoundView[];
 };
 
 /** One signed, browser-direct PUT for a registry document's body (`P16-T36`). */

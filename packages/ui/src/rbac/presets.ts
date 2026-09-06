@@ -116,6 +116,10 @@ export const ADMIN_PORTAL_ADMIN_RULES: AppRule[] = [
   { action: 'read', subject: 'ManagedDocument' },
   { action: 'write', subject: 'ManagedDocument' },
   { action: 'write', subject: 'DocumentType' },
+  // P16-T29. Mirrors the decide grant `seed.sql` gives ADMIN. Without this
+  // line an admin whose session hint predates the key gets the approval queue
+  // and no approve/reject controls on it.
+  { action: 'decide', subject: 'DocumentApproval' },
   { action: 'manage', subject: 'BpjsConfig' },
   { action: 'sync', subject: 'BpjsReference' },
   { action: 'read', subject: 'BpjsReference' },

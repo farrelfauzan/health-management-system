@@ -1116,7 +1116,29 @@
         "noParties": "—",
         "actions": {
           "download": "Unduh berkas",
-          "downloadError": "Berkas ini tidak dapat diunduh."
+          "downloadError": "Berkas ini tidak dapat diunduh.",
+          "export": "Ekspor CSV",
+          "exportError": "Tidak dapat mengekspor daftar dokumen."
+        },
+        "overdue": "Terlambat",
+        "filters": {
+          "type": "Jenis",
+          "anyType": "Semua jenis",
+          "status": "Status",
+          "anyStatus": "Semua status",
+          "dateField": "Tanggal",
+          "dateFields": {
+            "created": "Dibuat",
+            "issued": "Diterbitkan"
+          },
+          "from": "Dari",
+          "to": "Sampai"
+        },
+        "savedFilters": {
+          "all": "Semua dokumen",
+          "awaitingMe": "Menunggu persetujuan saya",
+          "myDrafts": "Draf saya",
+          "issued": "Sudah diterbitkan"
         }
       },
       "form": {
@@ -1177,6 +1199,112 @@
         "submit": "Buat dokumen",
         "submitting": "Menyimpan…",
         "created": "Dokumen disusun."
+      },
+      "approvalsTab": "Persetujuan",
+      "approvals": {
+        "badge": {
+          "label": "{count, plural, other {# dokumen menunggu persetujuan Anda}}"
+        },
+        "panel": {
+          "title": "Persetujuan",
+          "notSubmitted": "Belum diajukan untuk persetujuan.",
+          "progress": "{approved} dari {required} persetujuan",
+          "noApprovalNeeded": "Jenis dokumen ini tidak memerlukan persetujuan — dapat langsung diterbitkan.",
+          "overdue": "Terlambat",
+          "dueAt": "Tenggat {date}",
+          "noEligibleApprover": "Tidak ada lagi penyetuju yang dapat memutuskan permintaan ini. Tarik permintaannya dan tunjuk orang lain."
+        },
+        "picker": {
+          "label": "Penyetuju",
+          "placeholder": "Pilih siapa yang menyetujui dokumen ini",
+          "searchPlaceholder": "Cari staf berdasarkan email",
+          "empty": "Tidak ada staf yang cocok",
+          "loadError": "Tidak dapat memuat daftar staf",
+          "remove": "Hapus {email}"
+        },
+        "submit": {
+          "action": "Ajukan persetujuan",
+          "title": "Ajukan persetujuan",
+          "description": "Tunjuk siapa yang menyetujui dokumen ini dan, jika perlu, tenggatnya. Pengajuan membekukan isi dan daftar penyetuju.",
+          "dueAt": "Tenggat (opsional)",
+          "dueAtHint": "Tenggat mengirim pengingat dan menandai dokumen terlambat. Tenggat tidak pernah menyetujui atau menolak apa pun dengan sendirinya.",
+          "selfApprovalOnly": "Anda satu-satunya penyetuju, dan jenis dokumen ini tidak mengizinkan pembuat menyetujui dokumennya sendiri. Tunjuk orang lain.",
+          "submit": "Ajukan",
+          "submitted": "Dokumen diajukan untuk persetujuan.",
+          "error": "Tidak dapat mengajukan dokumen ini untuk persetujuan."
+        },
+        "approve": {
+          "action": "Setujui",
+          "approved": "Dokumen disetujui dan diterbitkan.",
+          "error": "Tidak dapat menyetujui dokumen ini."
+        },
+        "reject": {
+          "action": "Tolak",
+          "title": "Tolak dokumen ini",
+          "description": "Pembuat dokumen melihat alasan Anda, dan alasan itu tersimpan dalam riwayat dokumen.",
+          "reason": "Alasan",
+          "reasonPlaceholder": "Apa yang harus diubah sebelum dokumen ini dapat disetujui?",
+          "reasonHint": "Wajib diisi. “Ditolak” tanpa penjelasan tidak memberi tahu apa pun kepada pembuatnya.",
+          "submit": "Tolak",
+          "rejected": "Dokumen ditolak dan dikembalikan ke draf.",
+          "error": "Tidak dapat menolak dokumen ini."
+        },
+        "withdraw": {
+          "action": "Tarik",
+          "withdrawn": "Permintaan persetujuan ditarik.",
+          "error": "Tidak dapat menarik permintaan persetujuan ini."
+        },
+        "issue": {
+          "action": "Terbitkan",
+          "issued": "Dokumen diterbitkan.",
+          "error": "Tidak dapat menerbitkan dokumen ini."
+        },
+        "queue": {
+          "description": "Semua dokumen yang menunggu persetujuan Anda, yang paling mendesak lebih dulu.",
+          "overdueOnly": "Hanya yang terlambat",
+          "overdue": "Terlambat",
+          "noDueDate": "Tanpa tenggat",
+          "empty": "Tidak ada yang menunggu Anda",
+          "emptyDescription": "Dokumen yang menunjuk Anda sebagai penyetuju akan muncul di sini.",
+          "loadError": "Tidak dapat memuat daftar persetujuan",
+          "loadErrorDescription": "Terjadi kesalahan saat mengambil antrean. Sistem mencoba lagi otomatis.",
+          "notAnApprover": "Anda bukan penyetuju",
+          "notAnApproverDescription": "Menyetujui dokumen memerlukan izin persetujuan dokumen.",
+          "columns": {
+            "document": "Dokumen",
+            "type": "Jenis",
+            "drafter": "Dibuat oleh",
+            "dueAt": "Tenggat",
+            "age": "Menunggu sejak"
+          }
+        },
+        "thread": {
+          "loading": "Memuat riwayat persetujuan…",
+          "empty": "Dokumen ini belum pernah melalui persetujuan.",
+          "submittedBy": "Diajukan oleh {email} pada {date}",
+          "approvers": "Penyetuju: {emails}",
+          "dueAt": "tenggat {date}",
+          "noDecisions": "Belum ada keputusan.",
+          "approvedBy": "Disetujui oleh {email} pada {date}",
+          "rejectedBy": "Ditolak oleh {email} pada {date}",
+          "overdue": "Terlambat",
+          "statuses": {
+            "PENDING": "Menunggu",
+            "APPROVED": "Disetujui",
+            "REJECTED": "Ditolak",
+            "WITHDRAWN": "Ditarik",
+            "SUPERSEDED": "Dibatalkan karena berubah"
+          }
+        }
+      },
+      "workspace": {
+        "breadcrumb": "Dokumen",
+        "loading": "Memuat dokumen…",
+        "loadError": "Dokumen ini tidak dapat dimuat. Mungkin tidak ada, atau bukan dokumen yang boleh Anda buka.",
+        "issuedAt": "Diterbitkan",
+        "notIssued": "Belum diterbitkan",
+        "uploadedBody": "Dokumen ini diunggah sebagai berkas.",
+        "emptyBody": "Dokumen ini belum memiliki isi."
       }
     }
   },

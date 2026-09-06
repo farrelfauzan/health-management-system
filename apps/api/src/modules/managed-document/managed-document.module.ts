@@ -1,12 +1,21 @@
 import { Module } from '@nestjs/common';
 
+import { MailModule } from '../../common/mail/mail.module';
 import { StorageModule } from '../../common/storage/storage.module';
 import { AuthModule } from '../auth/auth.module';
+import { BillingModule } from '../billing/billing.module';
 import { DocumentManagementModule } from '../document-management/document-management.module';
+import { NotificationModule } from '../notification/notification.module';
+import { DocumentApprovalController } from './controller/document-approval.controller';
 import { DocumentTypeController } from './controller/document-type.controller';
 import { ManagedDocumentController } from './controller/managed-document.controller';
+import { DocumentApprovalRepository } from './repository/document-approval.repository';
 import { DocumentTypeRepository } from './repository/document-type.repository';
 import { ManagedDocumentRepository } from './repository/managed-document.repository';
+import { DocumentApprovalDeadlineWorker } from './service/document-approval-deadline.worker';
+import { DocumentApprovalNotificationService } from './service/document-approval-notification.service';
+import { DocumentApprovalService } from './service/document-approval.service';
+import { DocumentIssueBehaviorService } from './service/document-issue-behavior.service';
 import { DocumentTypeService } from './service/document-type.service';
 import { ManagedDocumentAccessService } from './service/managed-document-access.service';
 import { ManagedDocumentService } from './service/managed-document.service';
@@ -22,7 +31,13 @@ import { ManagedDocumentService } from './service/managed-document.service';
  * (`ManagedDocument`): list, search, draft, edit, history and CSV export,
  * with the per-row source rule that makes the module a surface over other
  * modules' documents and never a bypass of their access rules (FR-E5-04).
- * `P16-T29` adds the approval engine.
+ * `P16-T29` adds the approval engine: rounds with a drafter-named panel and
+ * a deadline, a frozen payload, and the `document-approval.decide:any` key
+ * that is deliberately not part of the write grant (§7.5.9). `P16-T30` adds
+ * the notifications either side of a decision and the deadline sweep, which
+ * is why this module now imports `NotificationModule` for the bell feed,
+ * `MailModule` for the second channel, and `BillingModule` for the clinic
+ * profile every outbound message is sent under (FR-E5-30).
  *
  * Its own module rather than a corner of `document-management`, because the
  * two answer different questions: that module is the *store* — bytes,
@@ -39,14 +54,26 @@ import { ManagedDocumentService } from './service/managed-document.service';
  * row may point at it.
  */
 @Module({
-  imports: [AuthModule, StorageModule, DocumentManagementModule],
-  controllers: [DocumentTypeController, ManagedDocumentController],
+  imports: [
+    AuthModule,
+    StorageModule,
+    DocumentManagementModule,
+    NotificationModule,
+    MailModule,
+    BillingModule,
+  ],
+  controllers: [DocumentTypeController, ManagedDocumentController, DocumentApprovalController],
   providers: [
     DocumentTypeRepository,
     DocumentTypeService,
     ManagedDocumentRepository,
     ManagedDocumentAccessService,
     ManagedDocumentService,
+    DocumentApprovalRepository,
+    DocumentIssueBehaviorService,
+    DocumentApprovalNotificationService,
+    DocumentApprovalService,
+    DocumentApprovalDeadlineWorker,
   ],
   // Exported for the modules that will register their own rows here —
   // billing writes a PATIENT_BILL at invoice issue, templates and the corpus

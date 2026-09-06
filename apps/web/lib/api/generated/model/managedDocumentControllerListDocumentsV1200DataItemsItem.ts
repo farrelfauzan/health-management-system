@@ -23,6 +23,7 @@ export type ManagedDocumentControllerListDocumentsV1200DataItemsItem = {
   doctor: unknown | null;
   subject: unknown | null;
   draftedBy: ManagedDocumentControllerListDocumentsV1200DataItemsItemDraftedBy;
+  approval: unknown | null;
   issuedAt: unknown | null;
   createdAt: string;
   updatedAt: string;

@@ -349,6 +349,7 @@ export type ManagedDocumentWhereInput = {
   subjectTemplate?: Prisma.XOR<Prisma.DocumentTemplateNullableScalarRelationFilter, Prisma.DocumentTemplateWhereInput> | null
   subjectDocument?: Prisma.XOR<Prisma.DocumentNullableScalarRelationFilter, Prisma.DocumentWhereInput> | null
   subjectInvoice?: Prisma.XOR<Prisma.InvoiceNullableScalarRelationFilter, Prisma.InvoiceWhereInput> | null
+  approvalRequests?: Prisma.DocumentApprovalRequestListRelationFilter
 }
 
 export type ManagedDocumentOrderByWithRelationInput = {
@@ -378,6 +379,7 @@ export type ManagedDocumentOrderByWithRelationInput = {
   subjectTemplate?: Prisma.DocumentTemplateOrderByWithRelationInput
   subjectDocument?: Prisma.DocumentOrderByWithRelationInput
   subjectInvoice?: Prisma.InvoiceOrderByWithRelationInput
+  approvalRequests?: Prisma.DocumentApprovalRequestOrderByRelationAggregateInput
 }
 
 export type ManagedDocumentWhereUniqueInput = Prisma.AtLeast<{
@@ -410,6 +412,7 @@ export type ManagedDocumentWhereUniqueInput = Prisma.AtLeast<{
   subjectTemplate?: Prisma.XOR<Prisma.DocumentTemplateNullableScalarRelationFilter, Prisma.DocumentTemplateWhereInput> | null
   subjectDocument?: Prisma.XOR<Prisma.DocumentNullableScalarRelationFilter, Prisma.DocumentWhereInput> | null
   subjectInvoice?: Prisma.XOR<Prisma.InvoiceNullableScalarRelationFilter, Prisma.InvoiceWhereInput> | null
+  approvalRequests?: Prisma.DocumentApprovalRequestListRelationFilter
 }, "id">
 
 export type ManagedDocumentOrderByWithAggregationInput = {
@@ -484,6 +487,7 @@ export type ManagedDocumentCreateInput = {
   subjectTemplate?: Prisma.DocumentTemplateCreateNestedOneWithoutManagedDocumentsInput
   subjectDocument?: Prisma.DocumentCreateNestedOneWithoutManagedDocumentsInput
   subjectInvoice?: Prisma.InvoiceCreateNestedOneWithoutManagedDocumentsInput
+  approvalRequests?: Prisma.DocumentApprovalRequestCreateNestedManyWithoutDocumentInput
 }
 
 export type ManagedDocumentUncheckedCreateInput = {
@@ -506,6 +510,7 @@ export type ManagedDocumentUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  approvalRequests?: Prisma.DocumentApprovalRequestUncheckedCreateNestedManyWithoutDocumentInput
 }
 
 export type ManagedDocumentUpdateInput = {
@@ -528,6 +533,7 @@ export type ManagedDocumentUpdateInput = {
   subjectTemplate?: Prisma.DocumentTemplateUpdateOneWithoutManagedDocumentsNestedInput
   subjectDocument?: Prisma.DocumentUpdateOneWithoutManagedDocumentsNestedInput
   subjectInvoice?: Prisma.InvoiceUpdateOneWithoutManagedDocumentsNestedInput
+  approvalRequests?: Prisma.DocumentApprovalRequestUpdateManyWithoutDocumentNestedInput
 }
 
 export type ManagedDocumentUncheckedUpdateInput = {
@@ -550,6 +556,7 @@ export type ManagedDocumentUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  approvalRequests?: Prisma.DocumentApprovalRequestUncheckedUpdateManyWithoutDocumentNestedInput
 }
 
 export type ManagedDocumentCreateManyInput = {
@@ -693,6 +700,11 @@ export type ManagedDocumentMinOrderByAggregateInput = {
 
 export type ManagedDocumentSumOrderByAggregateInput = {
   storageSizeBytes?: Prisma.SortOrder
+}
+
+export type ManagedDocumentScalarRelationFilter = {
+  is?: Prisma.ManagedDocumentWhereInput
+  isNot?: Prisma.ManagedDocumentWhereInput
 }
 
 export type ManagedDocumentCreateNestedManyWithoutDraftedByInput = {
@@ -993,6 +1005,20 @@ export type EnumManagedDocumentStatusFieldUpdateOperationsInput = {
   set?: $Enums.ManagedDocumentStatus
 }
 
+export type ManagedDocumentCreateNestedOneWithoutApprovalRequestsInput = {
+  create?: Prisma.XOR<Prisma.ManagedDocumentCreateWithoutApprovalRequestsInput, Prisma.ManagedDocumentUncheckedCreateWithoutApprovalRequestsInput>
+  connectOrCreate?: Prisma.ManagedDocumentCreateOrConnectWithoutApprovalRequestsInput
+  connect?: Prisma.ManagedDocumentWhereUniqueInput
+}
+
+export type ManagedDocumentUpdateOneRequiredWithoutApprovalRequestsNestedInput = {
+  create?: Prisma.XOR<Prisma.ManagedDocumentCreateWithoutApprovalRequestsInput, Prisma.ManagedDocumentUncheckedCreateWithoutApprovalRequestsInput>
+  connectOrCreate?: Prisma.ManagedDocumentCreateOrConnectWithoutApprovalRequestsInput
+  upsert?: Prisma.ManagedDocumentUpsertWithoutApprovalRequestsInput
+  connect?: Prisma.ManagedDocumentWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ManagedDocumentUpdateToOneWithWhereWithoutApprovalRequestsInput, Prisma.ManagedDocumentUpdateWithoutApprovalRequestsInput>, Prisma.ManagedDocumentUncheckedUpdateWithoutApprovalRequestsInput>
+}
+
 export type ManagedDocumentCreateWithoutDraftedByInput = {
   id?: string
   status?: $Enums.ManagedDocumentStatus
@@ -1012,6 +1038,7 @@ export type ManagedDocumentCreateWithoutDraftedByInput = {
   subjectTemplate?: Prisma.DocumentTemplateCreateNestedOneWithoutManagedDocumentsInput
   subjectDocument?: Prisma.DocumentCreateNestedOneWithoutManagedDocumentsInput
   subjectInvoice?: Prisma.InvoiceCreateNestedOneWithoutManagedDocumentsInput
+  approvalRequests?: Prisma.DocumentApprovalRequestCreateNestedManyWithoutDocumentInput
 }
 
 export type ManagedDocumentUncheckedCreateWithoutDraftedByInput = {
@@ -1033,6 +1060,7 @@ export type ManagedDocumentUncheckedCreateWithoutDraftedByInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  approvalRequests?: Prisma.DocumentApprovalRequestUncheckedCreateNestedManyWithoutDocumentInput
 }
 
 export type ManagedDocumentCreateOrConnectWithoutDraftedByInput = {
@@ -1105,6 +1133,7 @@ export type ManagedDocumentCreateWithoutPatientInput = {
   subjectTemplate?: Prisma.DocumentTemplateCreateNestedOneWithoutManagedDocumentsInput
   subjectDocument?: Prisma.DocumentCreateNestedOneWithoutManagedDocumentsInput
   subjectInvoice?: Prisma.InvoiceCreateNestedOneWithoutManagedDocumentsInput
+  approvalRequests?: Prisma.DocumentApprovalRequestCreateNestedManyWithoutDocumentInput
 }
 
 export type ManagedDocumentUncheckedCreateWithoutPatientInput = {
@@ -1126,6 +1155,7 @@ export type ManagedDocumentUncheckedCreateWithoutPatientInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  approvalRequests?: Prisma.DocumentApprovalRequestUncheckedCreateNestedManyWithoutDocumentInput
 }
 
 export type ManagedDocumentCreateOrConnectWithoutPatientInput = {
@@ -1173,6 +1203,7 @@ export type ManagedDocumentCreateWithoutDoctorInput = {
   subjectTemplate?: Prisma.DocumentTemplateCreateNestedOneWithoutManagedDocumentsInput
   subjectDocument?: Prisma.DocumentCreateNestedOneWithoutManagedDocumentsInput
   subjectInvoice?: Prisma.InvoiceCreateNestedOneWithoutManagedDocumentsInput
+  approvalRequests?: Prisma.DocumentApprovalRequestCreateNestedManyWithoutDocumentInput
 }
 
 export type ManagedDocumentUncheckedCreateWithoutDoctorInput = {
@@ -1194,6 +1225,7 @@ export type ManagedDocumentUncheckedCreateWithoutDoctorInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  approvalRequests?: Prisma.DocumentApprovalRequestUncheckedCreateNestedManyWithoutDocumentInput
 }
 
 export type ManagedDocumentCreateOrConnectWithoutDoctorInput = {
@@ -1241,6 +1273,7 @@ export type ManagedDocumentCreateWithoutSubjectInvoiceInput = {
   draftedBy: Prisma.UserCreateNestedOneWithoutDraftedManagedDocumentsInput
   subjectTemplate?: Prisma.DocumentTemplateCreateNestedOneWithoutManagedDocumentsInput
   subjectDocument?: Prisma.DocumentCreateNestedOneWithoutManagedDocumentsInput
+  approvalRequests?: Prisma.DocumentApprovalRequestCreateNestedManyWithoutDocumentInput
 }
 
 export type ManagedDocumentUncheckedCreateWithoutSubjectInvoiceInput = {
@@ -1262,6 +1295,7 @@ export type ManagedDocumentUncheckedCreateWithoutSubjectInvoiceInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  approvalRequests?: Prisma.DocumentApprovalRequestUncheckedCreateNestedManyWithoutDocumentInput
 }
 
 export type ManagedDocumentCreateOrConnectWithoutSubjectInvoiceInput = {
@@ -1309,6 +1343,7 @@ export type ManagedDocumentCreateWithoutSubjectTemplateInput = {
   draftedBy: Prisma.UserCreateNestedOneWithoutDraftedManagedDocumentsInput
   subjectDocument?: Prisma.DocumentCreateNestedOneWithoutManagedDocumentsInput
   subjectInvoice?: Prisma.InvoiceCreateNestedOneWithoutManagedDocumentsInput
+  approvalRequests?: Prisma.DocumentApprovalRequestCreateNestedManyWithoutDocumentInput
 }
 
 export type ManagedDocumentUncheckedCreateWithoutSubjectTemplateInput = {
@@ -1330,6 +1365,7 @@ export type ManagedDocumentUncheckedCreateWithoutSubjectTemplateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  approvalRequests?: Prisma.DocumentApprovalRequestUncheckedCreateNestedManyWithoutDocumentInput
 }
 
 export type ManagedDocumentCreateOrConnectWithoutSubjectTemplateInput = {
@@ -1377,6 +1413,7 @@ export type ManagedDocumentCreateWithoutSubjectDocumentInput = {
   draftedBy: Prisma.UserCreateNestedOneWithoutDraftedManagedDocumentsInput
   subjectTemplate?: Prisma.DocumentTemplateCreateNestedOneWithoutManagedDocumentsInput
   subjectInvoice?: Prisma.InvoiceCreateNestedOneWithoutManagedDocumentsInput
+  approvalRequests?: Prisma.DocumentApprovalRequestCreateNestedManyWithoutDocumentInput
 }
 
 export type ManagedDocumentUncheckedCreateWithoutSubjectDocumentInput = {
@@ -1398,6 +1435,7 @@ export type ManagedDocumentUncheckedCreateWithoutSubjectDocumentInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  approvalRequests?: Prisma.DocumentApprovalRequestUncheckedCreateNestedManyWithoutDocumentInput
 }
 
 export type ManagedDocumentCreateOrConnectWithoutSubjectDocumentInput = {
@@ -1445,6 +1483,7 @@ export type ManagedDocumentCreateWithoutTypeInput = {
   subjectTemplate?: Prisma.DocumentTemplateCreateNestedOneWithoutManagedDocumentsInput
   subjectDocument?: Prisma.DocumentCreateNestedOneWithoutManagedDocumentsInput
   subjectInvoice?: Prisma.InvoiceCreateNestedOneWithoutManagedDocumentsInput
+  approvalRequests?: Prisma.DocumentApprovalRequestCreateNestedManyWithoutDocumentInput
 }
 
 export type ManagedDocumentUncheckedCreateWithoutTypeInput = {
@@ -1466,6 +1505,7 @@ export type ManagedDocumentUncheckedCreateWithoutTypeInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  approvalRequests?: Prisma.DocumentApprovalRequestUncheckedCreateNestedManyWithoutDocumentInput
 }
 
 export type ManagedDocumentCreateOrConnectWithoutTypeInput = {
@@ -1492,6 +1532,110 @@ export type ManagedDocumentUpdateWithWhereUniqueWithoutTypeInput = {
 export type ManagedDocumentUpdateManyWithWhereWithoutTypeInput = {
   where: Prisma.ManagedDocumentScalarWhereInput
   data: Prisma.XOR<Prisma.ManagedDocumentUpdateManyMutationInput, Prisma.ManagedDocumentUncheckedUpdateManyWithoutTypeInput>
+}
+
+export type ManagedDocumentCreateWithoutApprovalRequestsInput = {
+  id?: string
+  status?: $Enums.ManagedDocumentStatus
+  title: string
+  documentNumber?: string | null
+  contentHtml?: string | null
+  storageKey?: string | null
+  storageMimeType?: string | null
+  storageSizeBytes?: number | null
+  issuedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  type: Prisma.DocumentTypeCreateNestedOneWithoutDocumentsInput
+  patient?: Prisma.PatientProfileCreateNestedOneWithoutManagedDocumentsInput
+  doctor?: Prisma.DoctorProfileCreateNestedOneWithoutManagedDocumentsInput
+  draftedBy: Prisma.UserCreateNestedOneWithoutDraftedManagedDocumentsInput
+  subjectTemplate?: Prisma.DocumentTemplateCreateNestedOneWithoutManagedDocumentsInput
+  subjectDocument?: Prisma.DocumentCreateNestedOneWithoutManagedDocumentsInput
+  subjectInvoice?: Prisma.InvoiceCreateNestedOneWithoutManagedDocumentsInput
+}
+
+export type ManagedDocumentUncheckedCreateWithoutApprovalRequestsInput = {
+  id?: string
+  typeId: string
+  status?: $Enums.ManagedDocumentStatus
+  title: string
+  documentNumber?: string | null
+  contentHtml?: string | null
+  storageKey?: string | null
+  storageMimeType?: string | null
+  storageSizeBytes?: number | null
+  patientId?: string | null
+  doctorId?: string | null
+  subjectTemplateId?: string | null
+  subjectDocumentId?: string | null
+  subjectInvoiceId?: string | null
+  draftedById: string
+  issuedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+}
+
+export type ManagedDocumentCreateOrConnectWithoutApprovalRequestsInput = {
+  where: Prisma.ManagedDocumentWhereUniqueInput
+  create: Prisma.XOR<Prisma.ManagedDocumentCreateWithoutApprovalRequestsInput, Prisma.ManagedDocumentUncheckedCreateWithoutApprovalRequestsInput>
+}
+
+export type ManagedDocumentUpsertWithoutApprovalRequestsInput = {
+  update: Prisma.XOR<Prisma.ManagedDocumentUpdateWithoutApprovalRequestsInput, Prisma.ManagedDocumentUncheckedUpdateWithoutApprovalRequestsInput>
+  create: Prisma.XOR<Prisma.ManagedDocumentCreateWithoutApprovalRequestsInput, Prisma.ManagedDocumentUncheckedCreateWithoutApprovalRequestsInput>
+  where?: Prisma.ManagedDocumentWhereInput
+}
+
+export type ManagedDocumentUpdateToOneWithWhereWithoutApprovalRequestsInput = {
+  where?: Prisma.ManagedDocumentWhereInput
+  data: Prisma.XOR<Prisma.ManagedDocumentUpdateWithoutApprovalRequestsInput, Prisma.ManagedDocumentUncheckedUpdateWithoutApprovalRequestsInput>
+}
+
+export type ManagedDocumentUpdateWithoutApprovalRequestsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumManagedDocumentStatusFieldUpdateOperationsInput | $Enums.ManagedDocumentStatus
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  documentNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contentHtml?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  storageKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  storageMimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  storageSizeBytes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  type?: Prisma.DocumentTypeUpdateOneRequiredWithoutDocumentsNestedInput
+  patient?: Prisma.PatientProfileUpdateOneWithoutManagedDocumentsNestedInput
+  doctor?: Prisma.DoctorProfileUpdateOneWithoutManagedDocumentsNestedInput
+  draftedBy?: Prisma.UserUpdateOneRequiredWithoutDraftedManagedDocumentsNestedInput
+  subjectTemplate?: Prisma.DocumentTemplateUpdateOneWithoutManagedDocumentsNestedInput
+  subjectDocument?: Prisma.DocumentUpdateOneWithoutManagedDocumentsNestedInput
+  subjectInvoice?: Prisma.InvoiceUpdateOneWithoutManagedDocumentsNestedInput
+}
+
+export type ManagedDocumentUncheckedUpdateWithoutApprovalRequestsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  typeId?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumManagedDocumentStatusFieldUpdateOperationsInput | $Enums.ManagedDocumentStatus
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  documentNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contentHtml?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  storageKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  storageMimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  storageSizeBytes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  patientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  doctorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subjectTemplateId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subjectDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subjectInvoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  draftedById?: Prisma.StringFieldUpdateOperationsInput | string
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type ManagedDocumentCreateManyDraftedByInput = {
@@ -1534,6 +1678,7 @@ export type ManagedDocumentUpdateWithoutDraftedByInput = {
   subjectTemplate?: Prisma.DocumentTemplateUpdateOneWithoutManagedDocumentsNestedInput
   subjectDocument?: Prisma.DocumentUpdateOneWithoutManagedDocumentsNestedInput
   subjectInvoice?: Prisma.InvoiceUpdateOneWithoutManagedDocumentsNestedInput
+  approvalRequests?: Prisma.DocumentApprovalRequestUpdateManyWithoutDocumentNestedInput
 }
 
 export type ManagedDocumentUncheckedUpdateWithoutDraftedByInput = {
@@ -1555,6 +1700,7 @@ export type ManagedDocumentUncheckedUpdateWithoutDraftedByInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  approvalRequests?: Prisma.DocumentApprovalRequestUncheckedUpdateManyWithoutDocumentNestedInput
 }
 
 export type ManagedDocumentUncheckedUpdateManyWithoutDraftedByInput = {
@@ -1618,6 +1764,7 @@ export type ManagedDocumentUpdateWithoutPatientInput = {
   subjectTemplate?: Prisma.DocumentTemplateUpdateOneWithoutManagedDocumentsNestedInput
   subjectDocument?: Prisma.DocumentUpdateOneWithoutManagedDocumentsNestedInput
   subjectInvoice?: Prisma.InvoiceUpdateOneWithoutManagedDocumentsNestedInput
+  approvalRequests?: Prisma.DocumentApprovalRequestUpdateManyWithoutDocumentNestedInput
 }
 
 export type ManagedDocumentUncheckedUpdateWithoutPatientInput = {
@@ -1639,6 +1786,7 @@ export type ManagedDocumentUncheckedUpdateWithoutPatientInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  approvalRequests?: Prisma.DocumentApprovalRequestUncheckedUpdateManyWithoutDocumentNestedInput
 }
 
 export type ManagedDocumentUncheckedUpdateManyWithoutPatientInput = {
@@ -1702,6 +1850,7 @@ export type ManagedDocumentUpdateWithoutDoctorInput = {
   subjectTemplate?: Prisma.DocumentTemplateUpdateOneWithoutManagedDocumentsNestedInput
   subjectDocument?: Prisma.DocumentUpdateOneWithoutManagedDocumentsNestedInput
   subjectInvoice?: Prisma.InvoiceUpdateOneWithoutManagedDocumentsNestedInput
+  approvalRequests?: Prisma.DocumentApprovalRequestUpdateManyWithoutDocumentNestedInput
 }
 
 export type ManagedDocumentUncheckedUpdateWithoutDoctorInput = {
@@ -1723,6 +1872,7 @@ export type ManagedDocumentUncheckedUpdateWithoutDoctorInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  approvalRequests?: Prisma.DocumentApprovalRequestUncheckedUpdateManyWithoutDocumentNestedInput
 }
 
 export type ManagedDocumentUncheckedUpdateManyWithoutDoctorInput = {
@@ -1786,6 +1936,7 @@ export type ManagedDocumentUpdateWithoutSubjectInvoiceInput = {
   draftedBy?: Prisma.UserUpdateOneRequiredWithoutDraftedManagedDocumentsNestedInput
   subjectTemplate?: Prisma.DocumentTemplateUpdateOneWithoutManagedDocumentsNestedInput
   subjectDocument?: Prisma.DocumentUpdateOneWithoutManagedDocumentsNestedInput
+  approvalRequests?: Prisma.DocumentApprovalRequestUpdateManyWithoutDocumentNestedInput
 }
 
 export type ManagedDocumentUncheckedUpdateWithoutSubjectInvoiceInput = {
@@ -1807,6 +1958,7 @@ export type ManagedDocumentUncheckedUpdateWithoutSubjectInvoiceInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  approvalRequests?: Prisma.DocumentApprovalRequestUncheckedUpdateManyWithoutDocumentNestedInput
 }
 
 export type ManagedDocumentUncheckedUpdateManyWithoutSubjectInvoiceInput = {
@@ -1870,6 +2022,7 @@ export type ManagedDocumentUpdateWithoutSubjectTemplateInput = {
   draftedBy?: Prisma.UserUpdateOneRequiredWithoutDraftedManagedDocumentsNestedInput
   subjectDocument?: Prisma.DocumentUpdateOneWithoutManagedDocumentsNestedInput
   subjectInvoice?: Prisma.InvoiceUpdateOneWithoutManagedDocumentsNestedInput
+  approvalRequests?: Prisma.DocumentApprovalRequestUpdateManyWithoutDocumentNestedInput
 }
 
 export type ManagedDocumentUncheckedUpdateWithoutSubjectTemplateInput = {
@@ -1891,6 +2044,7 @@ export type ManagedDocumentUncheckedUpdateWithoutSubjectTemplateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  approvalRequests?: Prisma.DocumentApprovalRequestUncheckedUpdateManyWithoutDocumentNestedInput
 }
 
 export type ManagedDocumentUncheckedUpdateManyWithoutSubjectTemplateInput = {
@@ -1954,6 +2108,7 @@ export type ManagedDocumentUpdateWithoutSubjectDocumentInput = {
   draftedBy?: Prisma.UserUpdateOneRequiredWithoutDraftedManagedDocumentsNestedInput
   subjectTemplate?: Prisma.DocumentTemplateUpdateOneWithoutManagedDocumentsNestedInput
   subjectInvoice?: Prisma.InvoiceUpdateOneWithoutManagedDocumentsNestedInput
+  approvalRequests?: Prisma.DocumentApprovalRequestUpdateManyWithoutDocumentNestedInput
 }
 
 export type ManagedDocumentUncheckedUpdateWithoutSubjectDocumentInput = {
@@ -1975,6 +2130,7 @@ export type ManagedDocumentUncheckedUpdateWithoutSubjectDocumentInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  approvalRequests?: Prisma.DocumentApprovalRequestUncheckedUpdateManyWithoutDocumentNestedInput
 }
 
 export type ManagedDocumentUncheckedUpdateManyWithoutSubjectDocumentInput = {
@@ -2038,6 +2194,7 @@ export type ManagedDocumentUpdateWithoutTypeInput = {
   subjectTemplate?: Prisma.DocumentTemplateUpdateOneWithoutManagedDocumentsNestedInput
   subjectDocument?: Prisma.DocumentUpdateOneWithoutManagedDocumentsNestedInput
   subjectInvoice?: Prisma.InvoiceUpdateOneWithoutManagedDocumentsNestedInput
+  approvalRequests?: Prisma.DocumentApprovalRequestUpdateManyWithoutDocumentNestedInput
 }
 
 export type ManagedDocumentUncheckedUpdateWithoutTypeInput = {
@@ -2059,6 +2216,7 @@ export type ManagedDocumentUncheckedUpdateWithoutTypeInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  approvalRequests?: Prisma.DocumentApprovalRequestUncheckedUpdateManyWithoutDocumentNestedInput
 }
 
 export type ManagedDocumentUncheckedUpdateManyWithoutTypeInput = {
@@ -2082,6 +2240,35 @@ export type ManagedDocumentUncheckedUpdateManyWithoutTypeInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
+
+/**
+ * Count Type ManagedDocumentCountOutputType
+ */
+
+export type ManagedDocumentCountOutputType = {
+  approvalRequests: number
+}
+
+export type ManagedDocumentCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  approvalRequests?: boolean | ManagedDocumentCountOutputTypeCountApprovalRequestsArgs
+}
+
+/**
+ * ManagedDocumentCountOutputType without action
+ */
+export type ManagedDocumentCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ManagedDocumentCountOutputType
+   */
+  select?: Prisma.ManagedDocumentCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * ManagedDocumentCountOutputType without action
+ */
+export type ManagedDocumentCountOutputTypeCountApprovalRequestsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.DocumentApprovalRequestWhereInput
+}
 
 
 export type ManagedDocumentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -2111,6 +2298,8 @@ export type ManagedDocumentSelect<ExtArgs extends runtime.Types.Extensions.Inter
   subjectTemplate?: boolean | Prisma.ManagedDocument$subjectTemplateArgs<ExtArgs>
   subjectDocument?: boolean | Prisma.ManagedDocument$subjectDocumentArgs<ExtArgs>
   subjectInvoice?: boolean | Prisma.ManagedDocument$subjectInvoiceArgs<ExtArgs>
+  approvalRequests?: boolean | Prisma.ManagedDocument$approvalRequestsArgs<ExtArgs>
+  _count?: boolean | Prisma.ManagedDocumentCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["managedDocument"]>
 
 export type ManagedDocumentSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -2202,6 +2391,8 @@ export type ManagedDocumentInclude<ExtArgs extends runtime.Types.Extensions.Inte
   subjectTemplate?: boolean | Prisma.ManagedDocument$subjectTemplateArgs<ExtArgs>
   subjectDocument?: boolean | Prisma.ManagedDocument$subjectDocumentArgs<ExtArgs>
   subjectInvoice?: boolean | Prisma.ManagedDocument$subjectInvoiceArgs<ExtArgs>
+  approvalRequests?: boolean | Prisma.ManagedDocument$approvalRequestsArgs<ExtArgs>
+  _count?: boolean | Prisma.ManagedDocumentCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ManagedDocumentIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   type?: boolean | Prisma.DocumentTypeDefaultArgs<ExtArgs>
@@ -2239,6 +2430,11 @@ export type $ManagedDocumentPayload<ExtArgs extends runtime.Types.Extensions.Int
     subjectTemplate: Prisma.$DocumentTemplatePayload<ExtArgs> | null
     subjectDocument: Prisma.$DocumentPayload<ExtArgs> | null
     subjectInvoice: Prisma.$InvoicePayload<ExtArgs> | null
+    /**
+     * The registry's own query shapes: list by type and status, sort by date,
+     * and find a patient's agreements.
+     */
+    approvalRequests: Prisma.$DocumentApprovalRequestPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2676,6 +2872,7 @@ export interface Prisma__ManagedDocumentClient<T, Null = never, ExtArgs extends 
   subjectTemplate<T extends Prisma.ManagedDocument$subjectTemplateArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ManagedDocument$subjectTemplateArgs<ExtArgs>>): Prisma.Prisma__DocumentTemplateClient<runtime.Types.Result.GetResult<Prisma.$DocumentTemplatePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   subjectDocument<T extends Prisma.ManagedDocument$subjectDocumentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ManagedDocument$subjectDocumentArgs<ExtArgs>>): Prisma.Prisma__DocumentClient<runtime.Types.Result.GetResult<Prisma.$DocumentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   subjectInvoice<T extends Prisma.ManagedDocument$subjectInvoiceArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ManagedDocument$subjectInvoiceArgs<ExtArgs>>): Prisma.Prisma__InvoiceClient<runtime.Types.Result.GetResult<Prisma.$InvoicePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  approvalRequests<T extends Prisma.ManagedDocument$approvalRequestsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ManagedDocument$approvalRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DocumentApprovalRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3217,6 +3414,30 @@ export type ManagedDocument$subjectInvoiceArgs<ExtArgs extends runtime.Types.Ext
    */
   include?: Prisma.InvoiceInclude<ExtArgs> | null
   where?: Prisma.InvoiceWhereInput
+}
+
+/**
+ * ManagedDocument.approvalRequests
+ */
+export type ManagedDocument$approvalRequestsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the DocumentApprovalRequest
+   */
+  select?: Prisma.DocumentApprovalRequestSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the DocumentApprovalRequest
+   */
+  omit?: Prisma.DocumentApprovalRequestOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DocumentApprovalRequestInclude<ExtArgs> | null
+  where?: Prisma.DocumentApprovalRequestWhereInput
+  orderBy?: Prisma.DocumentApprovalRequestOrderByWithRelationInput | Prisma.DocumentApprovalRequestOrderByWithRelationInput[]
+  cursor?: Prisma.DocumentApprovalRequestWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.DocumentApprovalRequestScalarFieldEnum | Prisma.DocumentApprovalRequestScalarFieldEnum[]
 }
 
 /**

@@ -290,7 +290,13 @@ export class DocumentTypeService {
     }
   }
 
-  private async findTypeOrThrow(id: string): Promise<DocumentTypeRecord> {
+  /**
+   * One type row by id, or 404. Public since `P16-T29`: the registry detail
+   * and the approval workspace both need the type's approval policy and its
+   * default approvers, and a second copy of that lookup would be a second
+   * thing that could disagree with this one about a deactivated row.
+   */
+  async findTypeOrThrow(id: string): Promise<DocumentTypeRecord> {
     const record = await this.documentTypeRepository.findById(id);
     if (record === null) {
       throw new NotFoundException('Document type not found');

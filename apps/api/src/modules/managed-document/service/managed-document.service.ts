@@ -41,16 +41,29 @@ import { buildDocumentDownloadDisposition } from '../../document-management/serv
 import { UploadedDocumentGuardService } from '../../document-management/service/uploaded-document-guard.service';
 import { ManagedDocumentRepository } from '../repository/managed-document.repository';
 import { buildManagedDocumentCsv } from './build-managed-document-csv';
+import { DocumentApprovalService } from './document-approval.service';
 import { DocumentTypeService } from './document-type.service';
 import { isManagedDocumentStorageKey } from './is-managed-document-storage-key';
 import { ManagedDocumentAccessService } from './managed-document-access.service';
 import { MANAGED_DOCUMENT_STORAGE_KEY_PREFIX } from './managed-document-storage-key-prefix';
+import {
+  toDocumentApprovalRoundView,
+  toManagedDocumentApprovalSummaryView,
+} from './to-document-approval-view';
 import { toManagedDocumentDetailView, toManagedDocumentView } from './to-managed-document-view';
 
 const MANAGED_DOCUMENT_AUDIT_RESOURCE = 'managed-document';
 
-/** The only state a drafter may edit in (§7.5.10). */
-const EDITABLE_STATUSES: readonly ManagedDocumentStatusValue[] = ['DRAFT'];
+/**
+ * The states a drafter may edit in (§7.5.10).
+ *
+ * `PENDING_APPROVAL` is here rather than refused because FR-E5-15 says what
+ * an edit under review *does* — it voids the round — and refusing the edit
+ * instead would leave the drafter's only route "withdraw, edit, resubmit",
+ * which is the same three writes with a worse name. `ISSUED` and `ARCHIVED`
+ * are absent: an issued document is a record of what the clinic handed out.
+ */
+const EDITABLE_STATUSES: readonly ManagedDocumentStatusValue[] = ['DRAFT', 'PENDING_APPROVAL'];
 
 export const MANAGED_DOCUMENT_NOT_DOWNLOADABLE_ERROR_CODE = 'MANAGED_DOCUMENT_NOT_DOWNLOADABLE';
 
@@ -89,6 +102,7 @@ export class ManagedDocumentService {
     private readonly managedDocumentRepository: ManagedDocumentRepository,
     private readonly accessService: ManagedDocumentAccessService,
     private readonly documentTypeService: DocumentTypeService,
+    private readonly approvalService: DocumentApprovalService,
     private readonly objectStorageService: ObjectStorageService,
     private readonly uploadedDocumentGuardService: UploadedDocumentGuardService,
     private readonly auditService: AuditService,
@@ -101,19 +115,41 @@ export class ManagedDocumentService {
     const access = await this.accessService.resolveContext(actor);
     const page = await this.managedDocumentRepository.listDocuments({
       access,
-      ...buildFilterParams(query),
+      ...(await this.buildFilterParams(query)),
       page: query.page,
       limit: query.limit,
     });
+    // One query for the whole page's open rounds (`P16-T29`), not one per
+    // row: the overdue flag is on every row of the registry (FR-E5-27), so a
+    // per-row lookup would be a query per document on every list call.
+    const rounds = await this.approvalService.findOpenRounds(page.items.map((item) => item.id));
+    const now = new Date();
     return {
-      items: page.items.map(toManagedDocumentView),
+      items: page.items.map((item) => {
+        const round = rounds.get(item.id);
+        return toManagedDocumentView(
+          item,
+          round === undefined
+            ? null
+            : toManagedDocumentApprovalSummaryView(round, item.type.requiredApprovals, now),
+        );
+      }),
       meta: { page: query.page, limit: query.limit, total: page.total },
     };
   }
 
   async getDocument(id: string, actor: CurrentUser): Promise<ManagedDocumentDetailView> {
     const access = await this.accessService.resolveContext(actor);
-    return toManagedDocumentDetailView(await this.findVisibleOrThrow(id, access));
+    const record = await this.findVisibleOrThrow(id, access);
+    const round = await this.approvalService.findOpenRound(id);
+    const type = await this.documentTypeService.findTypeOrThrow(record.typeId);
+    return toManagedDocumentDetailView(
+      record,
+      round === null
+        ? null
+        : toManagedDocumentApprovalSummaryView(round, record.type.requiredApprovals, new Date()),
+      { defaultApprovers: type.defaultApprovers },
+    );
   }
 
   /**
@@ -194,6 +230,13 @@ export class ManagedDocumentService {
     assertMatchesType(existing.type, resolveNextShape(existing, input));
     await this.assertPartiesExist(input.patientId ?? null, input.doctorId ?? null);
     const stored = await this.resolveStoredContent(input.storageKey ?? null, actor);
+    // FR-E5-15, and deliberately after every check above: an edit while a
+    // round is open voids the round, and an edit that was going to be
+    // refused anyway must not void anything. Once the write is certain to
+    // happen, the approvers were reviewing something that no longer exists,
+    // so the round is superseded, the document returns to DRAFT and they are
+    // told.
+    await this.approvalService.supersedeOpenRounds(existing, actor);
     const record = await this.managedDocumentRepository.updateDocument({
       id,
       title: input.title,
@@ -262,6 +305,8 @@ export class ManagedDocumentService {
     const access = await this.accessService.resolveContext(actor);
     const record = await this.findVisibleOrThrow(id, access);
     const entries = await this.managedDocumentRepository.listHistory(id);
+    const rounds = await this.approvalService.listRounds(id);
+    const now = new Date();
     return {
       documentId: record.id,
       createdAt: record.createdAt.toISOString(),
@@ -274,6 +319,9 @@ export class ManagedDocumentService {
         metadata: isRecord(entry.metadata) ? entry.metadata : null,
         occurredAt: entry.occurredAt.toISOString(),
       })),
+      rounds: rounds.map((round) =>
+        toDocumentApprovalRoundView(round, record.type.requiredApprovals, now),
+      ),
     };
   }
 
@@ -287,17 +335,42 @@ export class ManagedDocumentService {
     actor: CurrentUser,
   ): Promise<ManagedDocumentExport> {
     const access = await this.accessService.resolveContext(actor);
+    const filters = await this.buildFilterParams(query);
     const records = await this.managedDocumentRepository.listDocumentsForExport(
-      { access, ...buildFilterParams(query) },
+      { access, ...filters },
       MANAGED_DOCUMENT_EXPORT_MAX_ROWS,
     );
     await this.auditService.recordOrThrow({
       action: AuditAction.EXPORT,
       resource: MANAGED_DOCUMENT_AUDIT_RESOURCE,
       actorUserId: actor.sub,
-      metadata: { rowCount: records.length, filters: buildFilterParams(query) },
+      metadata: { rowCount: records.length, filters: { ...query } },
     });
     return { fileName: buildExportFileName(), csv: buildManagedDocumentCsv(records) };
+  }
+
+  /**
+   * The list and export filters, with the approver one resolved to document
+   * ids (`P16-T29`). It is the only filter that cannot be a predicate on
+   * `managed_documents` — "awaiting this person" is a fact about an open
+   * round — so it is answered first and handed down as ids.
+   */
+  private async buildFilterParams(
+    query: ExportManagedDocumentsQueryInput,
+  ): Promise<Omit<Parameters<ManagedDocumentRepository['listDocuments']>[0], 'access' | 'page' | 'limit'>> {
+    return {
+      typeId: query.typeId,
+      status: query.status,
+      draftedById: query.draftedBy,
+      awaitingApprovalDocumentIds:
+        query.approver === undefined
+          ? undefined
+          : await this.approvalService.findDocumentIdsAwaitingApprover(query.approver),
+      from: query.from === undefined ? undefined : new Date(`${query.from}T00:00:00.000Z`),
+      to: query.to === undefined ? undefined : new Date(`${query.to}T23:59:59.999Z`),
+      dateField: query.dateField,
+      search: query.q,
+    };
   }
 
   private async findVisibleOrThrow(
@@ -405,7 +478,7 @@ function assertEditable(record: ManagedDocumentRecord): void {
       message:
         record.type.behavior === 'PATIENT_BILL'
           ? 'A generated patient bill is never edited in the registry'
-          : 'Only a draft can be edited',
+          : 'Only a draft or a document under review can be edited',
       code: MANAGED_DOCUMENT_NOT_EDITABLE_ERROR_CODE,
       errors: { status: record.status },
     });
@@ -438,21 +511,6 @@ function resolveStoredMimeType(contentType: string | undefined): DocumentUploadM
     throw new BadRequestException('Uploaded file is not an accepted document type');
   }
   return accepted;
-}
-
-function buildFilterParams(
-  query: ExportManagedDocumentsQueryInput,
-): Omit<Parameters<ManagedDocumentRepository['listDocuments']>[0], 'access' | 'page' | 'limit'> {
-  return {
-    typeId: query.typeId,
-    status: query.status,
-    draftedById: query.draftedBy,
-    approverId: query.approver,
-    from: query.from === undefined ? undefined : new Date(`${query.from}T00:00:00.000Z`),
-    to: query.to === undefined ? undefined : new Date(`${query.to}T23:59:59.999Z`),
-    dateField: query.dateField,
-    search: query.q,
-  };
 }
 
 function describeContent(record: ManagedDocumentRecord): 'DRAFTED' | 'UPLOADED' | 'EMPTY' {

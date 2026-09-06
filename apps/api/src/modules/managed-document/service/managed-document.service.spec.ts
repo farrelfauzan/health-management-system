@@ -17,6 +17,7 @@ import { ObjectStorageService } from '../../../common/storage/object-storage.ser
 import { AuditAction } from '../../../generated/prisma/client';
 import { UploadedDocumentGuardService } from '../../document-management/service/uploaded-document-guard.service';
 import { ManagedDocumentRepository } from '../repository/managed-document.repository';
+import { DocumentApprovalService } from './document-approval.service';
 import { DocumentTypeService } from './document-type.service';
 import { ManagedDocumentAccessService } from './managed-document-access.service';
 import { ManagedDocumentService } from './managed-document.service';
@@ -69,6 +70,9 @@ function buildRecord(overrides: Partial<ManagedDocumentRecord> = {}): ManagedDoc
       contentMode: 'EITHER',
       requiresPatient: false,
       requiresDoctor: false,
+      isApprovalRequired: false,
+      allowSelfApproval: false,
+      requiredApprovals: 1,
       isActive: true,
     },
     status: 'DRAFT',
@@ -104,7 +108,19 @@ describe('ManagedDocumentService', () => {
     findDoctorById: jest.fn(),
   };
   const accessServiceMock = { resolveContext: jest.fn() };
-  const documentTypeServiceMock = { findActiveTypeOrThrow: jest.fn() };
+  const documentTypeServiceMock = {
+    findActiveTypeOrThrow: jest.fn(),
+    findTypeOrThrow: jest.fn(),
+  };
+  // The registry only ever asks the approval service read-side questions and
+  // one write: superseding an open round when a draft under review is edited.
+  const approvalServiceMock = {
+    findOpenRound: jest.fn(),
+    findOpenRounds: jest.fn(),
+    listRounds: jest.fn(),
+    findDocumentIdsAwaitingApprover: jest.fn(),
+    supersedeOpenRounds: jest.fn(),
+  };
   const objectStorageMock = { headObject: jest.fn(), getSignedUrl: jest.fn() };
   const uploadGuardMock = { guardUploadedDocument: jest.fn() };
   const auditServiceMock = { record: jest.fn(), recordOrThrow: jest.fn() };
@@ -113,6 +129,7 @@ describe('ManagedDocumentService', () => {
     repositoryMock as unknown as ManagedDocumentRepository,
     accessServiceMock as unknown as ManagedDocumentAccessService,
     documentTypeServiceMock as unknown as DocumentTypeService,
+    approvalServiceMock as unknown as DocumentApprovalService,
     objectStorageMock as unknown as ObjectStorageService,
     uploadGuardMock as unknown as UploadedDocumentGuardService,
     auditServiceMock as unknown as AuditService,
@@ -122,6 +139,15 @@ describe('ManagedDocumentService', () => {
     jest.clearAllMocks();
     accessServiceMock.resolveContext.mockResolvedValue(ACCESS);
     documentTypeServiceMock.findActiveTypeOrThrow.mockResolvedValue(buildType());
+    documentTypeServiceMock.findTypeOrThrow.mockResolvedValue({
+      ...buildType(),
+      defaultApprovers: [],
+    });
+    approvalServiceMock.findOpenRound.mockResolvedValue(null);
+    approvalServiceMock.findOpenRounds.mockResolvedValue(new Map());
+    approvalServiceMock.listRounds.mockResolvedValue([]);
+    approvalServiceMock.findDocumentIdsAwaitingApprover.mockResolvedValue([]);
+    approvalServiceMock.supersedeOpenRounds.mockResolvedValue(false);
     repositoryMock.createDocument.mockImplementation(async (payload) =>
       buildRecord({ ...payload, id: 'doc-new', patient: null, doctor: null }),
     );
@@ -228,6 +254,15 @@ describe('ManagedDocumentService', () => {
         .catch((err: unknown) => err);
 
       documentTypeServiceMock.findActiveTypeOrThrow.mockResolvedValue(buildType());
+    documentTypeServiceMock.findTypeOrThrow.mockResolvedValue({
+      ...buildType(),
+      defaultApprovers: [],
+    });
+    approvalServiceMock.findOpenRound.mockResolvedValue(null);
+    approvalServiceMock.findOpenRounds.mockResolvedValue(new Map());
+    approvalServiceMock.listRounds.mockResolvedValue([]);
+    approvalServiceMock.findDocumentIdsAwaitingApprover.mockResolvedValue([]);
+    approvalServiceMock.supersedeOpenRounds.mockResolvedValue(false);
       const policyWithPatient = await service
         .createDocument({ typeId: 'type-1', title: 'x', patientId: 'patient-1' }, ACTOR)
         .catch((err: unknown) => err);

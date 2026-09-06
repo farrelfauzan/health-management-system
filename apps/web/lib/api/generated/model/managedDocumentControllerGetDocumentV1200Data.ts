@@ -5,6 +5,7 @@
  * Health Management System API
  * OpenAPI spec version: 1.0.0
  */
+import type { ManagedDocumentControllerGetDocumentV1200DataDefaultApproversItem } from './managedDocumentControllerGetDocumentV1200DataDefaultApproversItem';
 import type { ManagedDocumentControllerGetDocumentV1200DataDraftedBy } from './managedDocumentControllerGetDocumentV1200DataDraftedBy';
 import type { ManagedDocumentControllerGetDocumentV1200DataPatient } from './managedDocumentControllerGetDocumentV1200DataPatient';
 import type { ManagedDocumentControllerGetDocumentV1200DataType } from './managedDocumentControllerGetDocumentV1200DataType';
@@ -23,8 +24,13 @@ export type ManagedDocumentControllerGetDocumentV1200Data = {
   doctor: unknown | null;
   subject: unknown | null;
   draftedBy: ManagedDocumentControllerGetDocumentV1200DataDraftedBy;
+  approval: unknown | null;
   issuedAt: unknown | null;
   createdAt: string;
   updatedAt: string;
   contentHtml: string;
+  isApprovalRequired: boolean;
+  allowSelfApproval: boolean;
+  requiredApprovals: number;
+  defaultApprovers: ManagedDocumentControllerGetDocumentV1200DataDefaultApproversItem[];
 };

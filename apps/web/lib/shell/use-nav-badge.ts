@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl';
 
 import { useOptionalAiAssistant } from '#lib/ai-assistant/ai-assistant-context';
 import { useConversationHandoffSummary } from '#lib/conversations/use-conversation-handoff-summary';
+import { useDocumentApprovalPendingCount } from '#lib/document-approvals/use-document-approval-pending-count';
 import type { ShellNavBadgeKey } from '#lib/shell/nav-items';
 
 export type NavBadge = {
@@ -29,8 +30,13 @@ export type NavBadge = {
 export function useNavBadge(badgeKey: ShellNavBadgeKey | undefined): NavBadge | null {
   const t = useTranslations('aiAssistant.unread');
   const conversationT = useTranslations('conversations.badge');
+  const approvalT = useTranslations('operations.documents.approvals.badge');
   const assistant = useOptionalAiAssistant();
   const { summary } = useConversationHandoffSummary(badgeKey === 'conversationHandoff');
+  // Same `enabled` discipline as the handoff query above: every nav item calls
+  // this hook, so the flag is what stops each of them opening its own poll for
+  // a count only the Documents entry displays.
+  const approvals = useDocumentApprovalPendingCount(badgeKey === 'documentApprovals');
 
   if (badgeKey === 'conversationHandoff') {
     const waitingCount = summary?.needsHumanCount ?? 0;
@@ -43,6 +49,18 @@ export function useNavBadge(badgeKey: ShellNavBadgeKey | undefined): NavBadge | 
     return {
       count: waitingCount,
       label: conversationT('label', { count: waitingCount }),
+    };
+  }
+  if (badgeKey === 'documentApprovals') {
+    // `pending`, not `overdue`: an overdue round is a subset of what is
+    // waiting, and badging only the late ones would read as "nothing to do"
+    // above a queue with plenty in it.
+    if (approvals.pending === 0) {
+      return null;
+    }
+    return {
+      count: approvals.pending,
+      label: approvalT('label', { count: approvals.pending }),
     };
   }
   if (badgeKey !== 'aiAssistantUnread' || assistant === null || assistant.unreadCount === 0) {
