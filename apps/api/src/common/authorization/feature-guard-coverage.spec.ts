@@ -74,6 +74,11 @@ const GATED_CONTROLLERS: Readonly<Record<string, FeatureKey>> = {
   // deliberately absent: with approval switched off the clinic still lists,
   // searches and exports its documents, and issues them directly (FR-E5-12).
   DocumentApprovalController: 'document-approval',
+  // P18-T01. The whole module, catalog included: a clinic without the
+  // laboratory feature has no lab screens at all, and a catalog it cannot
+  // order from is not worth showing.
+  LabTestController: 'laboratory',
+  LabPanelController: 'laboratory',
 };
 
 /**

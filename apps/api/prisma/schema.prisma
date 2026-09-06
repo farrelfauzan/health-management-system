@@ -556,6 +556,10 @@ enum ServiceTariffCategory {
   CONSULTATION
   PROCEDURE
   ACCOMMODATION
+  /// Laboratory tests and panels (P18-T01). A category of its own rather than
+  /// PROCEDURE: a lab line is priced from the catalog, not from an ICD-9-CM
+  /// code, and the two reconcile separately on the invoice.
+  LAB
   OTHER
 }
 
@@ -571,6 +575,7 @@ enum InvoiceItemType {
   PROCEDURE
   MEDICATION
   ACCOMMODATION
+  LAB
   OTHER
 }
 
@@ -2236,6 +2241,8 @@ model ServiceTariff {
 
   roomClass    RoomClass?    @relation(fields: [roomClassId], references: [id], onDelete: Restrict)
   invoiceItems InvoiceItem[]
+  labTests     LabTest[]
+  labPanels    LabPanel[]
 
   @@index([category])
   @@index([isActive])
@@ -4369,6 +4376,152 @@ model DocumentApprovalDecision {
   @@unique([requestId, approverId])
   @@index([approverId])
   @@map("document_approval_decisions")
+}
+
+/// How a lab result is recorded, which decides what the entry form shows and
+/// how a value is flagged (P18-T01). NUMERIC compares against a reference
+/// range; TEXT is a free narrative with no range at all; CODED picks from a
+/// closed list, so "Positif" is a value rather than prose.
+enum LabResultType {
+  NUMERIC
+  TEXT
+  CODED
+
+  @@map("lab_result_type")
+}
+
+/// What is collected. Drives the specimen label and the collection worklist
+/// (P18-T03), and maps to the SATUSEHAT Specimen type (P18-T09).
+enum LabSpecimenType {
+  WHOLE_BLOOD
+  SERUM
+  PLASMA
+  URINE
+  STOOL
+  SPUTUM
+  SWAB
+  OTHER
+
+  @@map("lab_specimen_type")
+}
+
+/// One orderable laboratory test.
+///
+/// Modelled on the `ServiceTariff` + `Icd10Code` split the repo already uses:
+/// the code lives here, the price lives in `ServiceTariff` (category LAB) and
+/// is referenced. That keeps a price change from touching the coded catalog,
+/// and lets a test exist before anyone has decided what to charge for it.
+model LabTest {
+  id           String          @id @default(uuid()) @db.Uuid
+  /// Local code the clinic uses on its own forms, e.g. HB, GDS.
+  code         String          @unique
+  name         String
+  /// Nullable on purpose, and the same rule KFA follows for medications: a
+  /// test without a LOINC code is usable locally and simply not reported to
+  /// SATUSEHAT, rather than reported under a guessed code.
+  loincCode    String?         @map("loinc_code")
+  loincDisplay String?         @map("loinc_display")
+  specimenType LabSpecimenType @map("specimen_type")
+  resultType   LabResultType   @map("result_type")
+  /// UCUM unit for NUMERIC tests. Null for TEXT and CODED, where a unit would
+  /// be meaningless.
+  unit         String?
+  /// Decimal places a NUMERIC result is recorded and displayed to.
+  decimals     Int             @default(0)
+  /// The closed list a CODED result is picked from, e.g. ["Negatif","Positif"].
+  /// Empty for every other result type.
+  codedOptions String[]        @default([]) @map("coded_options")
+  isActive     Boolean         @default(true) @map("is_active")
+  /// Price, when one has been set. Nullable because a test is orderable before
+  /// it is priced; an unpriced test becomes a visible invoice gap (P18-T06)
+  /// rather than a silent zero.
+  serviceTariffId String?      @map("service_tariff_id") @db.Uuid
+  createdAt    DateTime        @default(now()) @map("created_at")
+  updatedAt    DateTime        @updatedAt @map("updated_at")
+  deletedAt    DateTime?       @map("deleted_at")
+
+  serviceTariff   ServiceTariff?      @relation(fields: [serviceTariffId], references: [id], onDelete: SetNull)
+  referenceRanges LabReferenceRange[]
+  panelMembers    LabPanelMember[]
+
+  @@index([isActive])
+  @@index([serviceTariffId])
+  @@index([deletedAt])
+  @@map("lab_tests")
+}
+
+/// One sex- and age-banded normal range for a test.
+///
+/// Snapshotted onto the result at entry time (P18-T04) rather than read back
+/// later: a range edited in 2027 must not re-flag a 2026 result, because the
+/// flag records what was abnormal *by the standard in force when it was
+/// measured*.
+///
+/// Age bands are in days so a neonatal band (0–28 days) and an adult band are
+/// the same kind of row. A band with both bounds null applies to every age,
+/// which is what almost every adult range is.
+model LabReferenceRange {
+  id           String     @id @default(uuid()) @db.Uuid
+  labTestId    String     @map("lab_test_id") @db.Uuid
+  /// Null means the range applies to any sex.
+  sex          PatientSex?
+  ageMinDays   Int?       @map("age_min_days")
+  ageMaxDays   Int?       @map("age_max_days")
+  low          Decimal?   @db.Decimal(12, 4)
+  high         Decimal?   @db.Decimal(12, 4)
+  /// Outside these, a result is a critical value the lab must telephone
+  /// (P18-T04). Null when the test has no critical threshold.
+  criticalLow  Decimal?   @map("critical_low") @db.Decimal(12, 4)
+  criticalHigh Decimal?   @map("critical_high") @db.Decimal(12, 4)
+  /// The normal value for a TEXT or CODED test, e.g. "Negatif".
+  textNormal   String?    @map("text_normal")
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+
+  labTest LabTest @relation(fields: [labTestId], references: [id], onDelete: Cascade)
+
+  @@index([labTestId])
+  @@map("lab_reference_ranges")
+}
+
+/// A named group of tests ordered together — darah rutin, profil lipid.
+///
+/// A panel carries its own tariff so it can be priced once rather than as the
+/// sum of its members, which is how clinics actually sell them (P18-T06).
+model LabPanel {
+  id              String    @id @default(uuid()) @db.Uuid
+  code            String    @unique
+  name            String
+  isActive        Boolean   @default(true) @map("is_active")
+  serviceTariffId String?   @map("service_tariff_id") @db.Uuid
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+  deletedAt       DateTime? @map("deleted_at")
+
+  serviceTariff ServiceTariff?   @relation(fields: [serviceTariffId], references: [id], onDelete: SetNull)
+  members       LabPanelMember[]
+
+  @@index([isActive])
+  @@index([serviceTariffId])
+  @@index([deletedAt])
+  @@map("lab_panels")
+}
+
+/// Membership, with the order the tests appear on the report. No soft delete:
+/// removing a test from a panel is a change to the panel, not a historical
+/// fact worth keeping — what was actually ordered lives on the order rows.
+model LabPanelMember {
+  panelId   String   @map("panel_id") @db.Uuid
+  labTestId String   @map("lab_test_id") @db.Uuid
+  sortOrder Int      @map("sort_order")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  panel   LabPanel @relation(fields: [panelId], references: [id], onDelete: Cascade)
+  labTest LabTest  @relation(fields: [labTestId], references: [id], onDelete: Restrict)
+
+  @@id([panelId, labTestId])
+  @@index([labTestId])
+  @@map("lab_panel_members")
 }
 
 /// One vaccination given during a visit.

@@ -9,6 +9,10 @@ export const SERVICE_TARIFF_CATEGORIES = [
   'CONSULTATION',
   'PROCEDURE',
   'ACCOMMODATION',
+  // P18-T01. Its own category rather than a kind of PROCEDURE: a lab line is
+  // priced from the laboratory catalog, not from an ICD-9-CM code, and the
+  // two reconcile separately on the invoice.
+  'LAB',
   'OTHER',
 ] as const;
 
@@ -43,6 +47,7 @@ export const INVOICE_ITEM_TYPES = [
   'PROCEDURE',
   'MEDICATION',
   'ACCOMMODATION',
+  'LAB',
   'OTHER',
 ] as const;
 

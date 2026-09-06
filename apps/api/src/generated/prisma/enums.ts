@@ -475,6 +475,7 @@ export const ServiceTariffCategory = {
   CONSULTATION: 'CONSULTATION',
   PROCEDURE: 'PROCEDURE',
   ACCOMMODATION: 'ACCOMMODATION',
+  LAB: 'LAB',
   OTHER: 'OTHER'
 } as const
 
@@ -496,6 +497,7 @@ export const InvoiceItemType = {
   PROCEDURE: 'PROCEDURE',
   MEDICATION: 'MEDICATION',
   ACCOMMODATION: 'ACCOMMODATION',
+  LAB: 'LAB',
   OTHER: 'OTHER'
 } as const
 
@@ -830,3 +832,26 @@ export const DocumentApprovalStatus = {
 } as const
 
 export type DocumentApprovalStatus = (typeof DocumentApprovalStatus)[keyof typeof DocumentApprovalStatus]
+
+
+export const LabResultType = {
+  NUMERIC: 'NUMERIC',
+  TEXT: 'TEXT',
+  CODED: 'CODED'
+} as const
+
+export type LabResultType = (typeof LabResultType)[keyof typeof LabResultType]
+
+
+export const LabSpecimenType = {
+  WHOLE_BLOOD: 'WHOLE_BLOOD',
+  SERUM: 'SERUM',
+  PLASMA: 'PLASMA',
+  URINE: 'URINE',
+  STOOL: 'STOOL',
+  SPUTUM: 'SPUTUM',
+  SWAB: 'SWAB',
+  OTHER: 'OTHER'
+} as const
+
+export type LabSpecimenType = (typeof LabSpecimenType)[keyof typeof LabSpecimenType]

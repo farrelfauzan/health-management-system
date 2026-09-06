@@ -1333,6 +1333,54 @@
         "uploadedBody": "This document was uploaded as a file.",
         "emptyBody": "This document has no content yet."
       }
+    },
+    "laboratory": {
+      "title": "Laboratory Catalog",
+      "description": "What the clinic can test for, what each result means, and which tests are sold together.",
+      "tabs": {
+        "tests": "Tests",
+        "panels": "Panels"
+      },
+      "columns": {
+        "code": "Code",
+        "name": "Test",
+        "specimen": "Specimen",
+        "result": "Result",
+        "referenceRange": "Reference range",
+        "price": "Price",
+        "status": "Status",
+        "members": "Members"
+      },
+      "searchLabel": "Search the laboratory catalog",
+      "searchPlaceholder": "Search by code or name",
+      "noLoinc": "No LOINC code — not reported to SATUSEHAT",
+      "noReferenceRange": "No reference range",
+      "unpriced": "Not priced",
+      "active": "Active",
+      "inactive": "Inactive",
+      "loading": "Loading the catalog...",
+      "loadError": "Unable to load the laboratory catalog.",
+      "noTests": "No tests match this search.",
+      "noPanels": "No panels match this search.",
+      "specimenTypes": {
+        "WHOLE_BLOOD": "Whole blood",
+        "SERUM": "Serum",
+        "PLASMA": "Plasma",
+        "URINE": "Urine",
+        "STOOL": "Stool",
+        "SPUTUM": "Sputum",
+        "SWAB": "Swab",
+        "OTHER": "Other"
+      },
+      "resultTypes": {
+        "NUMERIC": "Numeric",
+        "TEXT": "Text",
+        "CODED": "Coded"
+      },
+      "sexes": {
+        "MALE": "M",
+        "FEMALE": "F"
+      }
     }
   },
   "channelArrivals": {

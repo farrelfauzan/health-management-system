@@ -73,6 +73,11 @@ export const ADMIN_PORTAL_ADMIN_RULES: AppRule[] = [
   { action: 'cancel', subject: 'Admission' },
   { action: 'read', subject: 'ServiceTariff' },
   { action: 'write', subject: 'ServiceTariff' },
+  // P18-T01. `seed.sql` gives ADMIN both lab-catalog keys; an admin whose
+  // session hint predates them still sees the catalog screen rather than
+  // losing it to the preset.
+  { action: 'read', subject: 'LabTest' },
+  { action: 'write', subject: 'LabTest' },
   { action: 'read', subject: 'Invoice' },
   { action: 'write', subject: 'Invoice' },
   // P16-T25. `seed.sql` gives ADMIN the deliver key; an admin whose hint

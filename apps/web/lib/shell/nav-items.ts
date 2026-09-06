@@ -16,6 +16,7 @@ export type ShellNavigationKey =
   | 'admissions'
   | 'pharmacy'
   | 'billing'
+  | 'laboratory'
   | 'documents'
   | 'advanced'
   | 'aiAssistant'
@@ -147,6 +148,16 @@ export const ADMIN_NAV_SECTIONS: AdminNavSection[] = [
           { action: 'read', subject: 'ServiceTariff' },
           { action: 'read', subject: 'DocumentTemplate' },
         ],
+      },
+      {
+        // P18-T01. The catalog is the whole laboratory surface for now; the
+        // worklist joins it at /admin/laboratory in P18-T08, which is why the
+        // feature owns both hrefs already.
+        href: '/admin/settings/laboratory',
+        label: 'Laboratory',
+        labelKey: 'laboratory',
+        icon: 'biotech',
+        ability: { action: 'read', subject: 'LabTest' },
       },
       {
         // P16-T39/T31. The documents module: the registry, the approval

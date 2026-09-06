@@ -85,6 +85,7 @@ const SUBJECT_BY_RESOURCE: Record<string, AppSubject> = {
   // whose stays come back.
   admission: 'Admission',
   'service-tariff': 'ServiceTariff',
+  'lab-test': 'LabTest',
   invoice: 'Invoice',
   payment: 'Payment',
   'chat.session': 'ChatSession',

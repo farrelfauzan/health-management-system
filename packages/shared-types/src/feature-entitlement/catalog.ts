@@ -129,6 +129,12 @@ export const FEATURE_CATALOG: readonly FeatureCatalogEntry[] = [
     description: 'The WhatsApp and Telegram inbox, and booking by chat.',
     navHrefs: ['/admin/conversations'],
   },
+  {
+    key: 'laboratory',
+    name: 'Laboratory',
+    description: 'Lab catalog, ordering, specimens, results and lab reports.',
+    navHrefs: ['/admin/laboratory', '/admin/settings/laboratory'],
+  },
 ];
 
 /**

@@ -13,5 +13,6 @@ export const CreateServiceTariffDtoCategory = {
   CONSULTATION: 'CONSULTATION',
   PROCEDURE: 'PROCEDURE',
   ACCOMMODATION: 'ACCOMMODATION',
+  LAB: 'LAB',
   OTHER: 'OTHER',
 } as const;
