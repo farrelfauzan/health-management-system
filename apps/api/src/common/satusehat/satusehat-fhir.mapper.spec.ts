@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { SatusehatFhirMapper } from './satusehat-fhir.mapper';
 import { SatusehatError } from './satusehat.error';
 import {
+  SatusehatAllergyMapInput,
   SatusehatCompositionSectionInput,
   SatusehatProcedureMapInput,
   SatusehatVitalSignsMapInput,
@@ -182,6 +183,87 @@ describe('SatusehatFhirMapper', () => {
       expect(actualError).toBeInstanceOf(SatusehatError);
       expect((actualError as SatusehatError).code).toBe('SATUSEHAT_NOT_CONFIGURED');
       expect((actualError as SatusehatError).message).toContain('SATUSEHAT_LOCATION_ID');
+    });
+  });
+
+  describe('mapEncounter for an inpatient stay', () => {
+    const admittedAt = new Date('2026-07-28T02:30:00.000Z');
+    const dischargedAt = new Date('2026-07-30T04:00:00.000Z');
+
+    it('reports class IMP over the admission period with a hospitalization element', () => {
+      const actualEncounter = mapper.mapEncounter({
+        ...buildEncounterInput(),
+        admission: { admittedAt, dischargedAt },
+      });
+
+      expect(actualEncounter.class).toEqual({
+        system: 'http://terminology.hl7.org/CodeSystem/v3-ActCode',
+        code: 'IMP',
+        display: 'inpatient encounter',
+      });
+      expect(actualEncounter.period).toEqual({
+        start: '2026-07-28T01:30:00.000Z',
+        end: '2026-07-30T04:00:00.000Z',
+      });
+      expect(actualEncounter.hospitalization).toEqual({
+        dischargeDisposition: {
+          coding: [
+            {
+              system: 'http://terminology.hl7.org/CodeSystem/discharge-disposition',
+              code: 'home',
+              display: 'Home',
+            },
+          ],
+        },
+      });
+    });
+
+    it('runs in-progress from admission to discharge', () => {
+      const actualEncounter = mapper.mapEncounter({
+        ...buildEncounterInput(),
+        admission: { admittedAt, dischargedAt },
+      });
+
+      expect(actualEncounter.statusHistory).toEqual([
+        {
+          status: 'arrived',
+          period: { start: '2026-07-28T01:30:00.000Z', end: '2026-07-28T02:30:00.000Z' },
+        },
+        {
+          status: 'in-progress',
+          period: { start: '2026-07-28T02:30:00.000Z', end: '2026-07-30T04:00:00.000Z' },
+        },
+        {
+          status: 'finished',
+          period: { start: '2026-07-30T04:00:00.000Z', end: '2026-07-30T04:00:00.000Z' },
+        },
+      ]);
+    });
+
+    it('clamps an admission stamped before the encounter opened', () => {
+      const actualEncounter = mapper.mapEncounter({
+        ...buildEncounterInput(),
+        admission: { admittedAt: new Date('2026-07-28T00:00:00.000Z'), dischargedAt },
+      });
+
+      expect(actualEncounter.statusHistory[1]?.period.start).toBe('2026-07-28T02:00:00.000Z');
+    });
+
+    it('clamps a discharge stamped before the encounter opened', () => {
+      const actualEncounter = mapper.mapEncounter({
+        ...buildEncounterInput(),
+        admission: { admittedAt, dischargedAt: new Date('2026-07-27T00:00:00.000Z') },
+      });
+
+      expect(actualEncounter.period.end).toBe('2026-07-28T02:00:00.000Z');
+    });
+
+    it('leaves an outpatient visit ambulatory with no hospitalization element', () => {
+      const actualEncounter = mapper.mapEncounter(buildEncounterInput());
+
+      expect(actualEncounter.class.code).toBe('AMB');
+      expect(actualEncounter.hospitalization).toBeUndefined();
+      expect(actualEncounter.period.end).toBe('2026-07-28T02:20:00.000Z');
     });
   });
 
@@ -440,6 +522,98 @@ describe('SatusehatFhirMapper', () => {
       const actualImmunization = mapper.mapImmunization(buildImmunizationInput({ route }));
 
       expect(actualImmunization.route?.coding[0]?.code).toBe(expectedCode);
+    });
+  });
+
+  describe('mapAllergyToAllergyIntolerance', () => {
+    function buildAllergyInput(overrides: Partial<SatusehatAllergyMapInput> = {}) {
+      return {
+        allergyId: '9d2e1a3b-5c4f-4e6a-8b7c-0d1e2f3a4b5c',
+        substance: 'Amoksisilin',
+        reaction: 'Ruam dan gatal seluruh badan',
+        severity: 'SEVERE' as const,
+        patientIhsNumber: 'P02478375538',
+        patientName: 'Budi Santoso',
+        encounterReference: 'urn:uuid:encounter-entry',
+        recordedAt: startedAt,
+        recorderIhsNumber: 'N10000001',
+        recorderName: 'dr. Sari Wulandari',
+        ...overrides,
+      };
+    }
+
+    it('maps a recorded allergy to a confirmed, active AllergyIntolerance', () => {
+      const actualAllergy = mapper.mapAllergyToAllergyIntolerance(buildAllergyInput());
+
+      expect(actualAllergy).toEqual({
+        resourceType: 'AllergyIntolerance',
+        identifier: [
+          {
+            system: 'http://sys-ids.kemkes.go.id/allergy/10000004',
+            use: 'official',
+            value: '9d2e1a3b-5c4f-4e6a-8b7c-0d1e2f3a4b5c',
+          },
+        ],
+        clinicalStatus: {
+          coding: [
+            {
+              system: 'http://terminology.hl7.org/CodeSystem/allergyintolerance-clinical',
+              code: 'active',
+              display: 'Active',
+            },
+          ],
+        },
+        verificationStatus: {
+          coding: [
+            {
+              system: 'http://terminology.hl7.org/CodeSystem/allergyintolerance-verification',
+              code: 'confirmed',
+              display: 'Confirmed',
+            },
+          ],
+        },
+        code: { text: 'Amoksisilin' },
+        criticality: 'high',
+        patient: { reference: 'Patient/P02478375538', display: 'Budi Santoso' },
+        encounter: { reference: 'urn:uuid:encounter-entry' },
+        recordedDate: '2026-07-28T02:00:00.000Z',
+        recorder: { reference: 'Practitioner/N10000001', display: 'dr. Sari Wulandari' },
+        reaction: [{ description: 'Ruam dan gatal seluruh badan' }],
+      });
+    });
+
+    it('sends the substance as text with no coding — a guessed allergen code is worse than none', () => {
+      const actualAllergy = mapper.mapAllergyToAllergyIntolerance(buildAllergyInput());
+
+      expect(actualAllergy.code.coding).toBeUndefined();
+    });
+
+    it.each([
+      ['SEVERE' as const, 'high' as const],
+      ['MODERATE' as const, 'low' as const],
+      ['MILD' as const, 'low' as const],
+    ])('maps severity %s to criticality %s', (severity, expectedCriticality) => {
+      const actualAllergy = mapper.mapAllergyToAllergyIntolerance(
+        buildAllergyInput({ severity }),
+      );
+
+      expect(actualAllergy.criticality).toBe(expectedCriticality);
+    });
+
+    it('omits the reaction element when none was recorded', () => {
+      const actualAllergy = mapper.mapAllergyToAllergyIntolerance(
+        buildAllergyInput({ reaction: undefined }),
+      );
+
+      expect(actualAllergy.reaction).toBeUndefined();
+    });
+
+    it('omits the recorder when the row predates this encounter', () => {
+      const actualAllergy = mapper.mapAllergyToAllergyIntolerance(
+        buildAllergyInput({ recorderIhsNumber: undefined }),
+      );
+
+      expect(actualAllergy.recorder).toBeUndefined();
     });
   });
 

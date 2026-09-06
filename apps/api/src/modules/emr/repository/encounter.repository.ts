@@ -346,7 +346,7 @@ export class EncounterRepository {
         },
       });
       if (payload.status === 'FINISHED') {
-        await tx.satusehatSubmission.create({ data: { encounterId: payload.id } });
+        await this.enqueueSatusehatEncounter(tx, payload.id);
         await this.enqueueBpjsKunjungan(tx, payload.registrationId);
       }
       if (payload.status === 'CANCELLED') {
@@ -361,6 +361,33 @@ export class EncounterRepository {
         include: ENCOUNTER_LIST_INCLUDE,
       });
     });
+  }
+
+  /**
+   * An encounter whose patient is still in a bed has not ended as an episode,
+   * whatever the note says: the SATUSEHAT Encounter for an inpatient stay
+   * reports `class: IMP` over admission-to-discharge (P10-T09), and neither
+   * the class nor the period is known until the patient leaves. For those, the
+   * outbox row is written inside the discharge transaction instead — the same
+   * transactional-outbox guarantee, attached to the event that actually ends
+   * the episode.
+   *
+   * A cancelled admission is a stay that never happened, so it does not hold
+   * the row back; nor does an already-discharged one, which is the doctor who
+   * finished the paperwork late and can enqueue here as usual.
+   */
+  private async enqueueSatusehatEncounter(
+    tx: PrismaTransactionClient,
+    encounterId: string,
+  ): Promise<void> {
+    const openAdmission = await tx.admission.findFirst({
+      where: { sourceEncounterId: encounterId, deletedAt: null, status: 'ADMITTED' },
+      select: { id: true },
+    });
+    if (openAdmission) {
+      return;
+    }
+    await tx.satusehatSubmission.create({ data: { encounterId } });
   }
 
   private async enqueueBpjsKunjungan(

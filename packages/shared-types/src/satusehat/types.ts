@@ -109,6 +109,20 @@ export type SatusehatSubmissionProcedure = {
 };
 
 /**
+ * One recorded allergy that has not reached SATUSEHAT yet. Patient-scoped
+ * rather than encounter-scoped: the value of an allergy is entirely
+ * cross-facility, so each row is appended to whichever encounter bundle
+ * happens to be next and then never sent again (P10-T08).
+ */
+export type SatusehatSubmissionAllergy = {
+  allergyId: string;
+  substance: string;
+  reaction: string | null;
+  severity: 'MILD' | 'MODERATE' | 'SEVERE';
+  recordedAt: Date;
+};
+
+/**
  * One vaccination on the visit. `kfaCode` is null when the catalog row is
  * uncoded, which is what makes the row unreportable — recorded locally,
  * skipped in the bundle, named in the gap log (P10-T16).
@@ -136,6 +150,19 @@ export type SatusehatSubmissionDispenseItem = {
 };
 
 /**
+ * The inpatient stay this encounter belongs to, when it has one, loaded with
+ * the encounter so the bundle can report `class: IMP` over the admission's own
+ * period (P10-T09). Null for an ordinary outpatient visit, and for an
+ * admission that was cancelled — a stay that never happened is not an
+ * inpatient episode.
+ */
+export type SatusehatSubmissionAdmission = {
+  admissionId: string;
+  admittedAt: Date;
+  dischargedAt: Date;
+};
+
+/**
  * Everything the submission worker needs to rebuild one encounter bundle at
  * send time. IHS numbers are null when the profile is not linked yet — the
  * worker then attempts an automatic NIK lookup before failing the submission.
@@ -158,12 +185,30 @@ export type SatusehatSubmissionBundleData = {
    * from the document rather than sent blank.
    */
   soapNote: SatusehatSubmissionSoapNote;
+  admission: SatusehatSubmissionAdmission | null;
   diagnoses: readonly SatusehatSubmissionDiagnosis[];
   procedures: readonly SatusehatSubmissionProcedure[];
   immunizations: readonly SatusehatSubmissionImmunization[];
+  unreportedAllergies: readonly SatusehatSubmissionAllergy[];
+  /**
+   * Allergies that were reported to SATUSEHAT and have since been retracted
+   * locally. Retracting one on the platform needs an `entered-in-error` update
+   * the adapter does not do yet (P10-T08), so the count is carried purely to
+   * be logged — the divergence is visible rather than silent.
+   */
+  retractedReportedAllergyCount: number;
   latestVitalSigns: SatusehatSubmissionVitalSigns | null;
   prescriptions: readonly SatusehatSubmissionPrescription[];
   dispenseItems: readonly SatusehatSubmissionDispenseItem[];
+};
+
+/**
+ * One allergy row and the IHS id the platform assigned it, written back after
+ * a successful transaction so the allergy is never reported twice (P10-T08).
+ */
+export type SaveAllergyIhsIdPayload = {
+  allergyId: string;
+  satusehatAllergyId: string;
 };
 
 export type MarkSubmissionRetryPayload = {
