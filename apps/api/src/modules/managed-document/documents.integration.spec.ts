@@ -175,6 +175,33 @@ class InMemoryManagedDocumentRepository {
     return next;
   }
 
+  /**
+   * The direct-issue path with its behaviour attached (`P16-T32`/`P16-T33`).
+   * The fake invokes `onIssued` rather than ignoring it: a double that
+   * swallowed the callback would let a broken behaviour pass this spec.
+   */
+  async issueDocument(payload: {
+    id: string;
+    issuedAt: Date;
+    onIssued: (tx: unknown) => Promise<void>;
+  }): Promise<ManagedDocumentRecord> {
+    const record = await this.transitionDocument({
+      id: payload.id,
+      status: 'ISSUED',
+      issuedAt: payload.issuedAt,
+    });
+    await payload.onIssued({});
+    return record;
+  }
+
+  async findBySubject(): Promise<ManagedDocumentRecord | null> {
+    return null;
+  }
+
+  async findBySubjectDocumentIds(): Promise<Map<string, ManagedDocumentRecord>> {
+    return new Map();
+  }
+
   private buildRecord(
     payload: CreateManagedDocumentRecordPayload & Partial<ManagedDocumentRecord>,
   ): ManagedDocumentRecord {
@@ -358,13 +385,15 @@ class InMemoryDocumentApprovalRepository {
     reason: string | null;
     requiredApprovals: number;
     frozenContent: { documentId: string; contentHtml: string | null; title: string };
-  }): Promise<{ isResolved: boolean; approvalCount: number } | null> {
+    onIssued?: (tx: unknown, decisionId: string) => Promise<void>;
+  }): Promise<{ isResolved: boolean; approvalCount: number; decisionId: string } | null> {
     const round = this.rounds.get(params.requestId);
     if (round === undefined || round.status !== 'PENDING') {
       return null;
     }
+    const decisionId = `decision-${round.decisions.length + 1}`;
     round.decisions.push({
-      id: `decision-${round.decisions.length + 1}`,
+      id: decisionId,
       approverId: params.approverId,
       approverEmail: `${params.approverId}@hms.local`,
       isApproved: params.isApproved,
@@ -375,7 +404,7 @@ class InMemoryDocumentApprovalRepository {
       round.status = 'REJECTED';
       round.resolvedAt = new Date();
       await this.registry.transitionDocument({ id: round.documentId, status: 'DRAFT' });
-      return { isResolved: true, approvalCount: 0 };
+      return { isResolved: true, approvalCount: 0, decisionId };
     }
     const approvalCount = round.decisions.filter((decision) => decision.isApproved).length;
     const isResolved = approvalCount >= params.requiredApprovals;
@@ -392,8 +421,11 @@ class InMemoryDocumentApprovalRepository {
         status: 'ISSUED',
         issuedAt: new Date(),
       });
+      // Same reason the registry fake invokes it: the behaviour is the half
+      // of the issue this spec exists to cover.
+      await params.onIssued?.({}, decisionId);
     }
-    return { isResolved, approvalCount };
+    return { isResolved, approvalCount, decisionId };
   }
 
   async resolveWithoutDecision(

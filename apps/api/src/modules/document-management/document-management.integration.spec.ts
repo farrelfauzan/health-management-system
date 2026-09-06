@@ -109,6 +109,23 @@ describe('Document management integration', () => {
     featureEntitlement: {
       findMany: jest.fn(() => Promise.resolve([])),
     },
+    // P16-T33, and the same reason as the note above: every clinic-corpus
+    // write now reads the `CLINIC_CORPUS_DOCUMENT` approval policy and looks
+    // for the registry row governing the document, so both delegates have to
+    // exist here or the route answers 500.
+    //
+    // No type row and no registry row is the **policy-off** posture, which is
+    // the default a clinic starts from: the confirm queues the document for
+    // ingestion exactly as it did before approval existed, which is what the
+    // rest of this suite asserts.
+    documentType: {
+      findFirst: jest.fn(() => Promise.resolve(null)),
+    },
+    managedDocument: {
+      findFirst: jest.fn(() => Promise.resolve(null)),
+      findMany: jest.fn(() => Promise.resolve([])),
+      count: jest.fn(() => Promise.resolve(0)),
+    },
     $connect: jest.fn(),
     $disconnect: jest.fn(),
     $transaction: jest.fn((run: (tx: unknown) => unknown): unknown =>
