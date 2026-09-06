@@ -202,6 +202,16 @@ export type RecordPaymentRecordPayload = {
   cashierId: string;
 };
 
+export type AddInvoiceItemRecordPayload = {
+  invoiceId: string;
+  item: CreateInvoiceItemPayload;
+};
+
+export type RemoveInvoiceItemRecordPayload = {
+  invoiceId: string;
+  itemId: string;
+};
+
 export type VoidInvoiceRecordPayload = {
   id: string;
   voidedAt: Date;

@@ -485,6 +485,24 @@
         },
         "actionError": "Pengiriman tidak dapat diperbarui.",
         "cancelDialog": "Batal"
+      },
+      "lines": {
+        "title": "Tambah baris",
+        "hint": "Untuk tarif yang tidak bisa dicocokkan otomatis — tanpa kode ICD-9-CM, atau biaya lainnya.",
+        "tariffPlaceholder": "Pilih tarif",
+        "searchTariff": "Cari nama, kode, atau ICD-9-CM...",
+        "noTariff": "Tidak ada tarif aktif yang cocok.",
+        "quantity": "Jumlah",
+        "add": "Tambah baris",
+        "adding": "Menambahkan...",
+        "remove": "Hapus",
+        "removing": "Menghapus...",
+        "removeFor": "Hapus {description}",
+        "empty": "Belum ada baris. Tambahkan tarif di bawah.",
+        "pickTariff": "Pilih tarif yang akan ditambahkan.",
+        "invalidQuantity": "Jumlah harus bilangan bulat minimal 1.",
+        "addError": "Baris tidak dapat ditambahkan. Silakan coba lagi.",
+        "removeError": "Baris tidak dapat dihapus. Silakan coba lagi."
       }
     },
     "integrations": {

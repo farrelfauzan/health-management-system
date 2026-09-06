@@ -485,6 +485,24 @@
         },
         "actionError": "The delivery could not be updated.",
         "cancelDialog": "Cancel"
+      },
+      "lines": {
+        "title": "Add a line",
+        "hint": "For tariffs generation cannot match on its own — one without an ICD-9-CM code, or another charge.",
+        "tariffPlaceholder": "Pick a tariff",
+        "searchTariff": "Search by name, code, or ICD-9-CM...",
+        "noTariff": "No active tariff matches.",
+        "quantity": "Quantity",
+        "add": "Add line",
+        "adding": "Adding...",
+        "remove": "Remove",
+        "removing": "Removing...",
+        "removeFor": "Remove {description}",
+        "empty": "No lines yet. Add a tariff below.",
+        "pickTariff": "Pick the tariff to add.",
+        "invalidQuantity": "Quantity must be a whole number of at least 1.",
+        "addError": "Unable to add the line. Please try again.",
+        "removeError": "Unable to remove the line. Please try again."
       }
     },
     "integrations": {

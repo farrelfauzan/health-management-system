@@ -14,6 +14,7 @@ import {
 } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { AddInvoiceItemForm } from '#components/client/billing/add-invoice-item-form';
 import { InvoiceDeliverySection } from '#components/client/billing/invoice-delivery-section';
 import { InvoiceDocumentActions } from '#components/client/billing/invoice-document-actions';
 import { InvoiceItemsList } from '#components/client/billing/invoice-items-list';
@@ -21,7 +22,10 @@ import { InvoicePaymentSummary } from '#components/client/billing/invoice-paymen
 import { RecordPaymentForm } from '#components/client/billing/record-payment-form';
 import { VoidInvoiceForm } from '#components/client/billing/void-invoice-form';
 import { StatusBadge } from '#components/shared/status-badge';
-import { invoiceControllerIssueInvoiceV1 } from '#lib/api/generated/invoices/invoices';
+import {
+  invoiceControllerIssueInvoiceV1,
+  invoiceControllerRemoveInvoiceItemV1,
+} from '#lib/api/generated/invoices/invoices';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { parseApiSuccess } from '#lib/api/response';
 import { invalidateBillingQueries } from '#lib/billing/invalidate-billing-queries';
@@ -43,9 +47,28 @@ export function InvoiceDetailDialog({ invoiceId, open, onOpenChange }: InvoiceDe
   const issueMutation = useMutation({
     mutationFn: () => invoiceControllerIssueInvoiceV1(invoiceId),
   });
+  const [removingItemId, setRemovingItemId] = useState<string | null>(null);
+  const removeItemMutation = useMutation({
+    mutationFn: (itemId: string) => invoiceControllerRemoveInvoiceItemV1(invoiceId, itemId),
+  });
   const invoice = invoiceQuery.invoice;
   const canWriteInvoice = ability.can('write', 'Invoice');
   const canTakePayment = ability.can('write', 'Payment');
+  const canEditLines = invoice?.status === 'DRAFT' && canWriteInvoice;
+
+  async function handleRemoveItem(itemId: string): Promise<void> {
+    setActionError(null);
+    setRemovingItemId(itemId);
+    try {
+      const response = await removeItemMutation.mutateAsync(itemId);
+      parseApiSuccess<InvoiceDetail>(response, t('billing.lines.removeError'));
+      await invalidateBillingQueries(queryClient);
+    } catch (error) {
+      setActionError(notifyApiError(error, t('billing.lines.removeError')));
+    } finally {
+      setRemovingItemId(null);
+    }
+  }
 
   async function handleIssue(): Promise<void> {
     setActionError(null);
@@ -93,7 +116,14 @@ export function InvoiceDetailDialog({ invoiceId, open, onOpenChange }: InvoiceDe
               ) : null}
             </div>
 
-            <InvoiceItemsList items={invoice.items} totalAmount={invoice.totalAmount} />
+            <InvoiceItemsList
+              items={invoice.items}
+              totalAmount={invoice.totalAmount}
+              onRemoveItem={canEditLines ? (itemId) => void handleRemoveItem(itemId) : undefined}
+              removingItemId={removingItemId}
+            />
+
+            {canEditLines ? <AddInvoiceItemForm invoice={invoice} /> : null}
 
             {invoice.payment ? <InvoicePaymentSummary payment={invoice.payment} /> : null}
 

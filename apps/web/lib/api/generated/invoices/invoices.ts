@@ -21,13 +21,16 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  AddInvoiceItemDto,
   GenerateInvoiceDto,
+  InvoiceControllerAddInvoiceItemV1200,
   InvoiceControllerGenerateInvoiceV1201,
   InvoiceControllerGetInvoiceByIdV1200,
   InvoiceControllerIssueInvoiceV1200,
   InvoiceControllerListInvoicesV1200,
   InvoiceControllerListInvoicesV1Params,
   InvoiceControllerRecordPaymentV1200,
+  InvoiceControllerRemoveInvoiceItemV1200,
   InvoiceControllerVoidInvoiceV1200,
   InvoiceDocumentControllerDownloadDocumentV1200,
   InvoiceDocumentControllerGetDocumentV1200,
@@ -324,6 +327,206 @@ export function useInvoiceControllerGetInvoiceByIdV1<TData = Awaited<ReturnType<
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getInvoiceControllerGetInvoiceByIdV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Add a tariff line to a draft invoice
+ */
+export const invoiceControllerAddInvoiceItemV1 = (
+    id: string,
+    addInvoiceItemDto: AddInvoiceItemDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<InvoiceControllerAddInvoiceItemV1200>(
+      {url: `/api/v1/invoices/${id}/items`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: addInvoiceItemDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getInvoiceControllerAddInvoiceItemV1QueryKey = (id: string,
+    addInvoiceItemDto?: AddInvoiceItemDto,) => {
+    return [
+    'POST', `/api/v1/invoices/${id}/items`, addInvoiceItemDto
+    ] as const;
+    }
+
+
+export const getInvoiceControllerAddInvoiceItemV1QueryOptions = <TData = Awaited<ReturnType<typeof invoiceControllerAddInvoiceItemV1>>, TError = unknown>(id: string,
+    addInvoiceItemDto: AddInvoiceItemDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof invoiceControllerAddInvoiceItemV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getInvoiceControllerAddInvoiceItemV1QueryKey(id,addInvoiceItemDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof invoiceControllerAddInvoiceItemV1>>> = ({ signal }) => invoiceControllerAddInvoiceItemV1(id,addInvoiceItemDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof invoiceControllerAddInvoiceItemV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type InvoiceControllerAddInvoiceItemV1QueryResult = NonNullable<Awaited<ReturnType<typeof invoiceControllerAddInvoiceItemV1>>>
+export type InvoiceControllerAddInvoiceItemV1QueryError = unknown
+
+
+export function useInvoiceControllerAddInvoiceItemV1<TData = Awaited<ReturnType<typeof invoiceControllerAddInvoiceItemV1>>, TError = unknown>(
+ id: string,
+    addInvoiceItemDto: AddInvoiceItemDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof invoiceControllerAddInvoiceItemV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof invoiceControllerAddInvoiceItemV1>>,
+          TError,
+          Awaited<ReturnType<typeof invoiceControllerAddInvoiceItemV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useInvoiceControllerAddInvoiceItemV1<TData = Awaited<ReturnType<typeof invoiceControllerAddInvoiceItemV1>>, TError = unknown>(
+ id: string,
+    addInvoiceItemDto: AddInvoiceItemDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof invoiceControllerAddInvoiceItemV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof invoiceControllerAddInvoiceItemV1>>,
+          TError,
+          Awaited<ReturnType<typeof invoiceControllerAddInvoiceItemV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useInvoiceControllerAddInvoiceItemV1<TData = Awaited<ReturnType<typeof invoiceControllerAddInvoiceItemV1>>, TError = unknown>(
+ id: string,
+    addInvoiceItemDto: AddInvoiceItemDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof invoiceControllerAddInvoiceItemV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Add a tariff line to a draft invoice
+ */
+
+export function useInvoiceControllerAddInvoiceItemV1<TData = Awaited<ReturnType<typeof invoiceControllerAddInvoiceItemV1>>, TError = unknown>(
+ id: string,
+    addInvoiceItemDto: AddInvoiceItemDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof invoiceControllerAddInvoiceItemV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getInvoiceControllerAddInvoiceItemV1QueryOptions(id,addInvoiceItemDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Remove a line from a draft invoice
+ */
+export const invoiceControllerRemoveInvoiceItemV1 = (
+    id: string,
+    itemId: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<InvoiceControllerRemoveInvoiceItemV1200>(
+      {url: `/api/v1/invoices/${id}/items/${itemId}`, method: 'DELETE', signal
+    },
+      );
+    }
+
+
+
+
+export const getInvoiceControllerRemoveInvoiceItemV1QueryKey = (id: string,
+    itemId: string,) => {
+    return [
+    'DELETE', `/api/v1/invoices/${id}/items/${itemId}`
+    ] as const;
+    }
+
+
+export const getInvoiceControllerRemoveInvoiceItemV1QueryOptions = <TData = Awaited<ReturnType<typeof invoiceControllerRemoveInvoiceItemV1>>, TError = unknown>(id: string,
+    itemId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof invoiceControllerRemoveInvoiceItemV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getInvoiceControllerRemoveInvoiceItemV1QueryKey(id,itemId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof invoiceControllerRemoveInvoiceItemV1>>> = ({ signal }) => invoiceControllerRemoveInvoiceItemV1(id,itemId, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined && itemId !== null && itemId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof invoiceControllerRemoveInvoiceItemV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type InvoiceControllerRemoveInvoiceItemV1QueryResult = NonNullable<Awaited<ReturnType<typeof invoiceControllerRemoveInvoiceItemV1>>>
+export type InvoiceControllerRemoveInvoiceItemV1QueryError = unknown
+
+
+export function useInvoiceControllerRemoveInvoiceItemV1<TData = Awaited<ReturnType<typeof invoiceControllerRemoveInvoiceItemV1>>, TError = unknown>(
+ id: string,
+    itemId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof invoiceControllerRemoveInvoiceItemV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof invoiceControllerRemoveInvoiceItemV1>>,
+          TError,
+          Awaited<ReturnType<typeof invoiceControllerRemoveInvoiceItemV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useInvoiceControllerRemoveInvoiceItemV1<TData = Awaited<ReturnType<typeof invoiceControllerRemoveInvoiceItemV1>>, TError = unknown>(
+ id: string,
+    itemId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof invoiceControllerRemoveInvoiceItemV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof invoiceControllerRemoveInvoiceItemV1>>,
+          TError,
+          Awaited<ReturnType<typeof invoiceControllerRemoveInvoiceItemV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useInvoiceControllerRemoveInvoiceItemV1<TData = Awaited<ReturnType<typeof invoiceControllerRemoveInvoiceItemV1>>, TError = unknown>(
+ id: string,
+    itemId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof invoiceControllerRemoveInvoiceItemV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Remove a line from a draft invoice
+ */
+
+export function useInvoiceControllerRemoveInvoiceItemV1<TData = Awaited<ReturnType<typeof invoiceControllerRemoveInvoiceItemV1>>, TError = unknown>(
+ id: string,
+    itemId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof invoiceControllerRemoveInvoiceItemV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getInvoiceControllerRemoveInvoiceItemV1QueryOptions(id,itemId,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

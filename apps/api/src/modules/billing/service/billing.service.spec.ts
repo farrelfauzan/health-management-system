@@ -2,6 +2,7 @@ import { BadRequestException, ConflictException, NotFoundException } from '@nest
 import { ConfigService } from '@nestjs/config';
 
 import { AuditService } from '../../../common/audit/audit.service';
+import { AddInvoiceItemDto } from '../dto/add-invoice-item.dto';
 import { GenerateInvoiceDto } from '../dto/generate-invoice.dto';
 import { RecordPaymentDto } from '../dto/record-payment.dto';
 import { VoidInvoiceDto } from '../dto/void-invoice.dto';
@@ -23,6 +24,8 @@ describe('BillingService', () => {
     issueInvoice: jest.fn(),
     recordPayment: jest.fn(),
     voidInvoice: jest.fn(),
+    addInvoiceItem: jest.fn(),
+    removeInvoiceItem: jest.fn(),
   };
 
   const serviceTariffRepositoryMock = {
@@ -94,7 +97,12 @@ describe('BillingService', () => {
     updatedAt: timestamp,
   };
 
-  const patientRecord = { id: patientId, mrn: '00000001', fullName: 'Aisha Rahman', ownerUserId: null };
+  const patientRecord = {
+    id: patientId,
+    mrn: '00000001',
+    fullName: 'Aisha Rahman',
+    ownerUserId: null,
+  };
 
   const invoiceRecord = {
     id: invoiceId,
@@ -134,9 +142,7 @@ describe('BillingService', () => {
     serviceTariffRepositoryMock.findActiveConsultationTariffs.mockResolvedValue([
       consultationTariff,
     ]);
-    serviceTariffRepositoryMock.findActiveTariffsByIcd9cmCodes.mockResolvedValue([
-      procedureTariff,
-    ]);
+    serviceTariffRepositoryMock.findActiveTariffsByIcd9cmCodes.mockResolvedValue([procedureTariff]);
   });
 
   describe('generateInvoice', () => {
@@ -318,7 +324,11 @@ describe('BillingService', () => {
       });
 
       await expect(
-        service.recordPayment(invoiceId, { method: 'CASH', amount: 100000 } as RecordPaymentDto, cashierUser),
+        service.recordPayment(
+          invoiceId,
+          { method: 'CASH', amount: 100000 } as RecordPaymentDto,
+          cashierUser,
+        ),
       ).rejects.toBeInstanceOf(BadRequestException);
       expect(billingRepositoryMock.recordPayment).not.toHaveBeenCalled();
     });
@@ -378,6 +388,178 @@ describe('BillingService', () => {
         service.voidInvoice(invoiceId, inputPayload, cashierUser),
       ).rejects.toBeInstanceOf(ConflictException);
       expect(auditServiceMock.record).not.toHaveBeenCalled();
+    });
+  });
+  describe('addInvoiceItem', () => {
+    const unmappedTariffId = '9d2e4f60-7b8c-4c9d-a0e1-4f5a6b7c8d9e';
+    const unmappedTariff = {
+      ...procedureTariff,
+      id: unmappedTariffId,
+      code: 'TIND-JAHIT-LUKA',
+      name: 'Jahit Luka Ringan',
+      icd9cmCode: null,
+      price: 75000,
+    };
+    const inputPayload = { serviceTariffId: unmappedTariffId, quantity: 2 } as AddInvoiceItemDto;
+
+    it('attaches an active tariff with no ICD-9-CM mapping to a DRAFT invoice and audits it', async () => {
+      billingRepositoryMock.findInvoiceWithRelationsById.mockResolvedValue(
+        invoiceWithRelationsRecord,
+      );
+      serviceTariffRepositoryMock.findServiceTariffById.mockResolvedValue(unmappedTariff);
+      billingRepositoryMock.addInvoiceItem.mockResolvedValue({
+        ...invoiceDetailRecord,
+        totalAmount: invoiceDetailRecord.totalAmount + 150000,
+      });
+
+      const actualResult = await service.addInvoiceItem(invoiceId, inputPayload, cashierUser);
+
+      expect(billingRepositoryMock.addInvoiceItem).toHaveBeenCalledWith({
+        invoiceId,
+        item: {
+          itemType: 'PROCEDURE',
+          serviceTariffId: unmappedTariffId,
+          description: 'Jahit Luka Ringan',
+          quantity: 2,
+          unitPrice: 75000,
+          amount: 150000,
+        },
+      });
+      expect(actualResult.totalAmount).toBe(invoiceDetailRecord.totalAmount + 150000);
+      expect(auditServiceMock.record).toHaveBeenCalledWith(
+        expect.objectContaining({
+          action: 'INVOICE_ITEM_ADDED',
+          resource: 'Invoice',
+          resourceId: invoiceId,
+          actorUserId: cashierUser.sub,
+          metadata: {
+            serviceTariffId: unmappedTariffId,
+            tariffCode: 'TIND-JAHIT-LUKA',
+            quantity: 2,
+          },
+        }),
+      );
+    });
+
+    it('types an OTHER tariff line by its category', async () => {
+      billingRepositoryMock.findInvoiceWithRelationsById.mockResolvedValue(
+        invoiceWithRelationsRecord,
+      );
+      serviceTariffRepositoryMock.findServiceTariffById.mockResolvedValue({
+        ...unmappedTariff,
+        category: 'OTHER',
+      });
+      billingRepositoryMock.addInvoiceItem.mockResolvedValue(invoiceDetailRecord);
+
+      await service.addInvoiceItem(invoiceId, inputPayload, cashierUser);
+
+      expect(billingRepositoryMock.addInvoiceItem).toHaveBeenCalledWith(
+        expect.objectContaining({ item: expect.objectContaining({ itemType: 'OTHER' }) }),
+      );
+    });
+
+    it('rejects an inactive tariff', async () => {
+      billingRepositoryMock.findInvoiceWithRelationsById.mockResolvedValue(
+        invoiceWithRelationsRecord,
+      );
+      serviceTariffRepositoryMock.findServiceTariffById.mockResolvedValue({
+        ...unmappedTariff,
+        isActive: false,
+      });
+
+      await expect(
+        service.addInvoiceItem(invoiceId, inputPayload, cashierUser),
+      ).rejects.toBeInstanceOf(BadRequestException);
+      expect(billingRepositoryMock.addInvoiceItem).not.toHaveBeenCalled();
+    });
+
+    it('refuses to add a line once the invoice is ISSUED', async () => {
+      billingRepositoryMock.findInvoiceWithRelationsById.mockResolvedValue({
+        ...invoiceWithRelationsRecord,
+        status: 'ISSUED',
+      });
+
+      await expect(
+        service.addInvoiceItem(invoiceId, inputPayload, cashierUser),
+      ).rejects.toBeInstanceOf(ConflictException);
+      expect(serviceTariffRepositoryMock.findServiceTariffById).not.toHaveBeenCalled();
+      expect(auditServiceMock.record).not.toHaveBeenCalled();
+    });
+
+    it('returns 404 for an unknown invoice', async () => {
+      billingRepositoryMock.findInvoiceWithRelationsById.mockResolvedValue(null);
+
+      await expect(
+        service.addInvoiceItem(invoiceId, inputPayload, cashierUser),
+      ).rejects.toBeInstanceOf(NotFoundException);
+    });
+  });
+
+  describe('removeInvoiceItem', () => {
+    const existingItemId = '1b2c3d4e-5f60-4718-8a9b-0c1d2e3f4a5b';
+    const invoiceWithLine = {
+      ...invoiceDetailRecord,
+      items: [
+        {
+          id: existingItemId,
+          invoiceId,
+          itemType: 'PROCEDURE' as const,
+          serviceTariffId: procedureTariffId,
+          medicationId: null,
+          description: 'Injeksi Antibiotik',
+          quantity: 1,
+          unitPrice: 35000,
+          amount: 35000,
+          createdAt: timestamp,
+          updatedAt: timestamp,
+        },
+      ],
+    };
+
+    it('removes a line from a DRAFT invoice and audits it', async () => {
+      billingRepositoryMock.findInvoiceDetailById.mockResolvedValue(invoiceWithLine);
+      billingRepositoryMock.removeInvoiceItem.mockResolvedValue({
+        ...invoiceDetailRecord,
+        items: [],
+        totalAmount: 0,
+      });
+
+      const actualResult = await service.removeInvoiceItem(invoiceId, existingItemId, cashierUser);
+
+      expect(billingRepositoryMock.removeInvoiceItem).toHaveBeenCalledWith({
+        invoiceId,
+        itemId: existingItemId,
+      });
+      expect(actualResult.totalAmount).toBe(0);
+      expect(auditServiceMock.record).toHaveBeenCalledWith(
+        expect.objectContaining({
+          action: 'INVOICE_ITEM_REMOVED',
+          resourceId: invoiceId,
+          actorUserId: cashierUser.sub,
+          metadata: expect.objectContaining({ itemId: existingItemId }),
+        }),
+      );
+    });
+
+    it('returns 404 for a line that is not on the invoice', async () => {
+      billingRepositoryMock.findInvoiceDetailById.mockResolvedValue(invoiceWithLine);
+
+      await expect(
+        service.removeInvoiceItem(invoiceId, 'c0ffee00-0000-4000-8000-000000000000', cashierUser),
+      ).rejects.toBeInstanceOf(NotFoundException);
+      expect(billingRepositoryMock.removeInvoiceItem).not.toHaveBeenCalled();
+    });
+
+    it('refuses to remove a line once the invoice is PAID', async () => {
+      billingRepositoryMock.findInvoiceDetailById.mockResolvedValue({
+        ...invoiceWithLine,
+        status: 'PAID',
+      });
+
+      await expect(
+        service.removeInvoiceItem(invoiceId, existingItemId, cashierUser),
+      ).rejects.toBeInstanceOf(ConflictException);
+      expect(billingRepositoryMock.removeInvoiceItem).not.toHaveBeenCalled();
     });
   });
 });

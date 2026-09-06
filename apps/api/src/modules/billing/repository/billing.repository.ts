@@ -1,4 +1,5 @@
 import {
+  AddInvoiceItemRecordPayload,
   BillingDispensedItemRecord,
   BillingSourceEncounterRecord,
   CashierReportDayRange,
@@ -11,12 +12,14 @@ import {
   ListInvoicesParams,
   PaymentRecord,
   RecordPaymentRecordPayload,
+  RemoveInvoiceItemRecordPayload,
   VoidInvoiceRecordPayload,
 } from '@hms/shared-types';
 import { Injectable } from '@nestjs/common';
 
 import { Prisma } from '../../../generated/prisma/client';
 import { PrismaService } from '../../../common/prisma/prisma.service';
+import { PrismaTransactionClient } from '../../../common/prisma/prisma.types';
 import { InvoiceNumberAllocatorRepository } from './invoice-number-allocator.repository';
 
 const INVOICE_PATIENT_SELECT = {
@@ -53,9 +56,7 @@ export class BillingRepository {
     private readonly invoiceNumberAllocator: InvoiceNumberAllocatorRepository,
   ) {}
 
-  async findEncounterForBilling(
-    encounterId: string,
-  ): Promise<BillingSourceEncounterRecord | null> {
+  async findEncounterForBilling(encounterId: string): Promise<BillingSourceEncounterRecord | null> {
     return this.prisma.findFirstActive(this.prisma.encounter, {
       where: { id: encounterId },
       select: {
@@ -244,6 +245,38 @@ export class BillingRepository {
     });
   }
 
+  /**
+   * A hand-added line and the total it changes commit together: the stored
+   * total is what the cashier is asked to repeat on payment, so it can never
+   * disagree with the lines beneath it.
+   */
+  async addInvoiceItem(payload: AddInvoiceItemRecordPayload): Promise<InvoiceDetailRecord> {
+    return this.prisma.executeTransaction(async (tx) => {
+      await tx.invoiceItem.create({
+        data: {
+          invoiceId: payload.invoiceId,
+          itemType: payload.item.itemType,
+          serviceTariffId: payload.item.serviceTariffId,
+          medicationId: payload.item.medicationId,
+          description: payload.item.description,
+          quantity: payload.item.quantity,
+          unitPrice: payload.item.unitPrice,
+          amount: payload.item.amount,
+        },
+      });
+      return this.updateInvoiceTotalFromItems(tx, payload.invoiceId);
+    });
+  }
+
+  async removeInvoiceItem(payload: RemoveInvoiceItemRecordPayload): Promise<InvoiceDetailRecord> {
+    return this.prisma.executeTransaction(async (tx) => {
+      await tx.invoiceItem.delete({
+        where: { id: payload.itemId, invoiceId: payload.invoiceId },
+      });
+      return this.updateInvoiceTotalFromItems(tx, payload.invoiceId);
+    });
+  }
+
   async voidInvoice(payload: VoidInvoiceRecordPayload): Promise<InvoiceDetailRecord> {
     const updated = await this.prisma.invoice.update({
       where: { id: payload.id },
@@ -303,6 +336,22 @@ export class BillingRepository {
   }
 
   /** `createdTo` names a whole clinic day, so the bound is the next midnight. */
+  private async updateInvoiceTotalFromItems(
+    tx: PrismaTransactionClient,
+    invoiceId: string,
+  ): Promise<InvoiceDetailRecord> {
+    const aggregate = await tx.invoiceItem.aggregate({
+      where: { invoiceId },
+      _sum: { amount: true },
+    });
+    const updated = await tx.invoice.update({
+      where: { id: invoiceId },
+      data: { totalAmount: aggregate._sum.amount ?? 0 },
+      include: INVOICE_DETAIL_INCLUDE,
+    });
+    return this.toInvoiceDetailRecord(updated);
+  }
+
   private toExclusiveDayEnd(createdTo: Date): Date {
     const exclusiveEnd = new Date(createdTo);
     exclusiveEnd.setUTCDate(exclusiveEnd.getUTCDate() + 1);
