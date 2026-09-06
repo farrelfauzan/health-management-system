@@ -32,6 +32,7 @@ describe('BillingService', () => {
     findServiceTariffById: jest.fn(),
     findActiveConsultationTariffs: jest.fn(),
     findActiveTariffsByIcd9cmCodes: jest.fn(),
+    findActiveTariffsByCodes: jest.fn(),
   };
 
   const auditServiceMock = {
@@ -71,6 +72,7 @@ describe('BillingService', () => {
       { id: 'procedure-1', code: '99.21', display: 'Injection of antibiotic' },
       { id: 'procedure-2', code: '99.21', display: 'Injection of antibiotic' },
     ],
+    immunizations: [],
   };
 
   const consultationTariff = {

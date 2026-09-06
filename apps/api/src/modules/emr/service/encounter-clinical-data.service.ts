@@ -1,8 +1,10 @@
 import {
   BpjsReferralResponse,
   DiagnosisResponse,
+  EncounterWithRelationsRecord,
   Icd9cmCode,
   Icd10Code,
+  ImmunizationResponse,
   ProcedureResponse,
   VitalSignsResponse,
 } from '@hms/shared-types';
@@ -12,6 +14,8 @@ import { CurrentUser } from '../../../common/auth/current-user.type';
 import { Icd9cmCodeService } from '../../terminology/service/icd9cm-code.service';
 import { Icd10CodeService } from '../../terminology/service/icd10-code.service';
 import { AddDiagnosisDto } from '../dto/add-diagnosis.dto';
+import { PharmacyFlowService } from '../../pharmacy-flow/service/pharmacy-flow.service';
+import { AddImmunizationDto } from '../dto/add-immunization.dto';
 import { AddProcedureDto } from '../dto/add-procedure.dto';
 import { RecordVitalSignsDto } from '../dto/record-vital-signs.dto';
 import { UpsertBpjsReferralDto } from '../dto/upsert-bpjs-referral.dto';
@@ -43,6 +47,7 @@ export class EncounterClinicalDataService {
     private readonly encounterMapper: EncounterMapper,
     private readonly icd10CodeService: Icd10CodeService,
     private readonly icd9cmCodeService: Icd9cmCodeService,
+    private readonly pharmacyFlowService: PharmacyFlowService,
   ) {}
 
   /**
@@ -200,6 +205,66 @@ export class EncounterClinicalDataService {
   }
 
   /**
+   * Records one vaccination against the visit (P10-T16).
+   *
+   * The catalog row must be flagged `isVaccine`: recording paracetamol as an
+   * immunisation would put a nonsense `Immunization` in the national record,
+   * and the flag is the only thing that distinguishes a vaccine from any other
+   * KFA product. A vaccine without a KFA code is still recorded — the clinic
+   * gave it, and the local history is the point — it is simply skipped in the
+   * bundle and named in the gap log.
+   */
+  async addImmunization(
+    encounterId: string,
+    payload: AddImmunizationDto,
+    currentUser: CurrentUser,
+  ): Promise<ImmunizationResponse> {
+    const encounter = await this.assertWritableEncounter(encounterId, currentUser);
+    const vaccine = await this.pharmacyFlowService.findActiveVaccineById(payload.medicationId);
+    if (!vaccine) {
+      throw new BadRequestException('Medication not found, inactive, or not marked as a vaccine');
+    }
+    const created = await this.encounterRepository.createImmunization({
+      encounterId,
+      patientId: encounter.patientId,
+      medicationId: payload.medicationId,
+      occurredAt: payload.occurredAt ? new Date(payload.occurredAt) : undefined,
+      lotNumber: payload.lotNumber,
+      expirationDate: payload.expirationDate ? new Date(payload.expirationDate) : undefined,
+      doseNumber: payload.doseNumber,
+      route: payload.route,
+      site: payload.site,
+      // Defaults to the attending doctor: in a klinik pratama the person who
+      // records the vaccination is almost always the one who gave it, and a
+      // performer nobody named is worth less than the obvious one.
+      performedById: payload.performedById ?? encounter.doctorId,
+      notes: payload.notes,
+    });
+
+    return this.encounterMapper.toImmunizationResponse(created);
+  }
+
+  async removeImmunization(
+    encounterId: string,
+    immunizationId: string,
+    currentUser: CurrentUser,
+  ): Promise<void> {
+    await this.assertWritableEncounter(encounterId, currentUser);
+    const immunization = await this.encounterRepository.findImmunizationById(immunizationId);
+
+    if (!immunization || immunization.encounterId !== encounterId) {
+      throw new NotFoundException('Immunization not found');
+    }
+
+    await this.encounterRepository.softDeleteImmunization(immunizationId);
+  }
+
+  async listPatientImmunizations(patientId: string): Promise<ImmunizationResponse[]> {
+    const records = await this.encounterRepository.listImmunizationsByPatient(patientId);
+    return records.map((record) => this.encounterMapper.toImmunizationResponse(record));
+  }
+
+  /**
    * When a catalog row is named, its code and title are snapshotted from the
    * catalog rather than from the request: a client can otherwise sign a display
    * that disagrees with the code it claims to be.
@@ -244,7 +309,15 @@ export class EncounterClinicalDataService {
     return { code: payload.code, display: payload.display };
   }
 
-  private async assertWritableEncounter(id: string, currentUser: CurrentUser): Promise<void> {
+  /**
+   * Returns the encounter it just checked, so a caller that needs a fact from
+   * it — the patient a vaccination belongs to, the doctor who gave it — does
+   * not read the same row twice.
+   */
+  private async assertWritableEncounter(
+    id: string,
+    currentUser: CurrentUser,
+  ): Promise<EncounterWithRelationsRecord> {
     const scope = await this.encounterAccessService.resolveScopeOrThrow(currentUser, 'write');
     const encounter = await this.encounterRepository.findEncounterWithRelationsById(id);
 
@@ -254,5 +327,6 @@ export class EncounterClinicalDataService {
 
     this.encounterAccessService.assertCanWriteEncounter({ encounter, scope, currentUser });
     this.encounterAccessService.assertEncounterOpen(encounter);
+    return encounter;
   }
 }

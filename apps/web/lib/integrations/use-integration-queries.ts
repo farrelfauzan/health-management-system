@@ -35,6 +35,14 @@ import {
 import type { SatusehatSubmissionControllerListSubmissionsV1Params } from '#lib/api/generated/model/satusehatSubmissionControllerListSubmissionsV1Params';
 import { useApiQuery } from '#lib/api/use-api-query';
 
+/**
+ * How often the submission monitors re-read their outbox lists. Matched to the
+ * workers' own cadence (`SATUSEHAT_WORKER_POLL_INTERVAL_MS` /
+ * `BPJS_WORKER_POLL_INTERVAL_MS`, both 15 s): polling faster only adds traffic,
+ * polling slower leaves an admin watching a retry in front of a stale table.
+ */
+export const INTEGRATION_MONITOR_POLL_INTERVAL_MS = 15_000;
+
 export function useBpjsConfig(enabled = true) {
   return useApiQuery<BpjsPcareConfigView>({
     queryKey: getBpjsPcareConfigControllerGetConfigV1QueryKey(),
@@ -87,15 +95,27 @@ export function useBpjsReferenceCatalog(
   });
 }
 
+/**
+ * `isPollingPaused` is set while a retry mutation is in flight for this list.
+ * The retry endpoint answers with the settled row and the mutation invalidates
+ * on success; a poll landing in between would paint the pre-retry state over
+ * it and flash. Pausing the interval is not the same as disabling the query —
+ * the rows stay on screen throughout.
+ */
 export function useBpjsSubmissions(
   params: BpjsSubmissionControllerListSubmissionsV1Params,
   enabled = true,
+  isPollingPaused = false,
 ) {
   const query = useApiQuery<BpjsSubmissionView[]>({
     queryKey: getBpjsSubmissionControllerListSubmissionsV1QueryKey(params),
     queryFn: (signal) => bpjsSubmissionControllerListSubmissionsV1(params, signal),
     errorMessage: 'Unable to load BPJS PCare submissions.',
     enabled,
+    options: {
+      refetchInterval: isPollingPaused ? false : INTEGRATION_MONITOR_POLL_INTERVAL_MS,
+      refetchIntervalInBackground: false,
+    },
   });
   return { ...query, submissions: query.data ?? [] };
 }
@@ -103,12 +123,17 @@ export function useBpjsSubmissions(
 export function useSatusehatSubmissions(
   params: SatusehatSubmissionControllerListSubmissionsV1Params,
   enabled = true,
+  isPollingPaused = false,
 ) {
   const query = useApiQuery<SatusehatSubmissionView[]>({
     queryKey: getSatusehatSubmissionControllerListSubmissionsV1QueryKey(params),
     queryFn: (signal) => satusehatSubmissionControllerListSubmissionsV1(params, signal),
     errorMessage: 'Unable to load SATUSEHAT submissions.',
     enabled,
+    options: {
+      refetchInterval: isPollingPaused ? false : INTEGRATION_MONITOR_POLL_INTERVAL_MS,
+      refetchIntervalInBackground: false,
+    },
   });
   return { ...query, submissions: query.data ?? [] };
 }
