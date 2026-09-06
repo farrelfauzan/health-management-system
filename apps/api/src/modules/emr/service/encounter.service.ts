@@ -208,6 +208,7 @@ export class EncounterService {
       ...(payload.objective !== undefined ? { objective: payload.objective } : {}),
       ...(payload.assessment !== undefined ? { assessment: payload.assessment } : {}),
       ...(payload.plan !== undefined ? { plan: payload.plan } : {}),
+      ...(payload.prognosis !== undefined ? { prognosis: payload.prognosis } : {}),
     };
   }
 

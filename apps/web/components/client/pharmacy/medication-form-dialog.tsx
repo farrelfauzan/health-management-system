@@ -11,6 +11,7 @@ import {
 } from '@hms/shared-types';
 import {
   Button,
+  Checkbox,
   Dialog,
   DialogContent,
   DialogDescription,
@@ -63,6 +64,7 @@ export function MedicationFormDialog({
     medication?.category ?? 'OBAT_BEBAS',
   );
   const [reorderLevel, setReorderLevel] = useState(String(medication?.reorderLevel ?? 0));
+  const [isVaccine, setIsVaccine] = useState<boolean>(medication?.isVaccine ?? false);
   const [error, setError] = useState<string | null>(null);
   const saveMutation = useMutation({
     mutationFn: (payload: CreateMedicationDto | UpdateMedicationDto) =>
@@ -89,6 +91,7 @@ export function MedicationFormDialog({
       unit,
       category,
       reorderLevel: level,
+      isVaccine,
     } satisfies CreateMedicationDto | UpdateMedicationDto;
 
     try {
@@ -120,6 +123,10 @@ export function MedicationFormDialog({
             <label className="space-y-1.5 text-sm">{t('unit')}<Select value={unit} onValueChange={(value) => setUnit(value as MedicationUnitValue)}><SelectTrigger className="w-full"><SelectValue /></SelectTrigger><SelectContent>{MEDICATION_UNITS.map((value) => <SelectItem key={value} value={value}>{formatStatusLabel(value, locale)}</SelectItem>)}</SelectContent></Select></label>
             <label className="space-y-1.5 text-sm">{t('category')}<Select value={category} onValueChange={(value) => setCategory(value as MedicationCategoryValue)}><SelectTrigger className="w-full"><SelectValue /></SelectTrigger><SelectContent>{MEDICATION_CATEGORIES.map((value) => <SelectItem key={value} value={value}>{formatStatusLabel(value, locale)}</SelectItem>)}</SelectContent></Select></label>
             <label className="space-y-1.5 text-sm sm:col-span-2">{t('reorderLevel')}<Input type="number" min="0" max="1000000" value={reorderLevel} onChange={(event) => setReorderLevel(event.target.value)} /></label>
+            {/* P10-T16. The flag is what filters the immunisation picker on
+                the encounter: a catalog row nobody marks here cannot be
+                recorded as a vaccination at all. */}
+            <label className="flex items-center gap-2 text-sm sm:col-span-2"><Checkbox checked={isVaccine} onCheckedChange={(value) => setIsVaccine(value === true)} />{t('isVaccine')}</label>
           </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>{t('cancel')}</Button>

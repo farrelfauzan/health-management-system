@@ -1,17 +1,31 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
+import { escapeXhtml } from './escape-xhtml';
 import { SatusehatError } from './satusehat.error';
 import { resolveSatusehatConfig } from './satusehat.config';
 import {
+  SatusehatAllergyMapInput,
+  SatusehatClinicalImpressionMapInput,
+  SatusehatClinicalImpressionPrognosis,
+  SatusehatCompositionMapInput,
+  SatusehatCompositionSectionInput,
   SatusehatConditionMapInput,
   SatusehatEncounterMapInput,
   SatusehatEncounterStatusHistoryEntry,
+  SatusehatFhirAllergyIntolerance,
+  SatusehatFhirClinicalImpression,
+  SatusehatFhirComposition,
+  SatusehatFhirCompositionSection,
+  SatusehatFhirEncounterHospitalization,
+  SatusehatFhirCoding,
   SatusehatFhirCondition,
+  SatusehatFhirImmunization,
   SatusehatFhirEncounter,
   SatusehatFhirMedication,
   SatusehatFhirMedicationDispense,
   SatusehatFhirMedicationRequest,
+  SatusehatImmunizationMapInput,
   SatusehatFhirObservation,
   SatusehatFhirProcedure,
   SatusehatFhirReference,
@@ -29,6 +43,64 @@ const ENCOUNTER_IDENTIFIER_SYSTEM_PREFIX = 'http://sys-ids.kemkes.go.id/encounte
 const ICD10_SYSTEM = 'http://hl7.org/fhir/sid/icd-10';
 const ICD9CM_SYSTEM = 'http://hl7.org/fhir/sid/icd-9-cm';
 const PROCEDURE_IDENTIFIER_SYSTEM_PREFIX = 'http://sys-ids.kemkes.go.id/procedure';
+const ALLERGY_IDENTIFIER_SYSTEM_PREFIX = 'http://sys-ids.kemkes.go.id/allergy';
+const ALLERGY_CLINICAL_SYSTEM =
+  'http://terminology.hl7.org/CodeSystem/allergyintolerance-clinical';
+const ALLERGY_VERIFICATION_SYSTEM =
+  'http://terminology.hl7.org/CodeSystem/allergyintolerance-verification';
+const COMPOSITION_IDENTIFIER_SYSTEM_PREFIX = 'http://sys-ids.kemkes.go.id/composition';
+const CLINICAL_IMPRESSION_IDENTIFIER_SYSTEM_PREFIX =
+  'http://sys-ids.kemkes.go.id/clinicalimpression';
+const SNOMED_SYSTEM = 'http://snomed.info/sct';
+const COMPOSITION_TYPE_LOINC_CODE = '18842-5';
+const COMPOSITION_TYPE_LOINC_DISPLAY = 'Discharge summary';
+const COMPOSITION_CATEGORY_LOINC_CODE = '34117-2';
+const COMPOSITION_CATEGORY_LOINC_DISPLAY = 'History and physical note';
+const COMPOSITION_TITLE = 'Resume Medis Rawat Jalan';
+const XHTML_NAMESPACE = 'http://www.w3.org/1999/xhtml';
+const IMMUNIZATION_IDENTIFIER_SYSTEM_PREFIX = 'http://sys-ids.kemkes.go.id/immunization';
+const ACT_SITE_SYSTEM = 'http://terminology.hl7.org/CodeSystem/v3-ActSite';
+const ROUTE_OF_ADMINISTRATION_SYSTEM =
+  'http://terminology.hl7.org/CodeSystem/v3-RouteOfAdministration';
+
+/**
+ * The HL7 v3 route codes for the five routes a klinik pratama actually uses.
+ * Held here rather than in the database for the same reason the vital-sign
+ * LOINC table is: a coding correction should be an adapter change, not a
+ * migration.
+ */
+const IMMUNIZATION_ROUTE_CODES: Readonly<Record<string, { code: string; display: string }>> = {
+  IM: { code: 'IM', display: 'Injection, intramuscular' },
+  SC: { code: 'SQ', display: 'Injection, subcutaneous' },
+  ID: { code: 'IDINJ', display: 'Injection, intradermal' },
+  ORAL: { code: 'PO', display: 'Swallow, oral' },
+  NASAL: { code: 'NASINHL', display: 'Inhalation, nasal' },
+};
+
+const IMMUNIZATION_SITE_CODES: Readonly<Record<string, { code: string; display: string }>> = {
+  LEFT_ARM: { code: 'LA', display: 'Left arm' },
+  RIGHT_ARM: { code: 'RA', display: 'Right arm' },
+  LEFT_THIGH: { code: 'LT', display: 'Left thigh' },
+  RIGHT_THIGH: { code: 'RT', display: 'Right thigh' },
+  // No v3 code for "somewhere else": sending one would be inventing a site.
+  OTHER: { code: '', display: '' },
+};
+
+/**
+ * The three SNOMED prognosis grades the four recorded Latin terms map onto.
+ * DUBIA_AD_MALAM and MALAM share `poor` — SNOMED offers no fourth grade — so
+ * the recorded term is echoed in `text`, keeping the distinction the doctor
+ * made visible even where the coding cannot carry it.
+ */
+const PROGNOSIS_SNOMED_CODES: Readonly<
+  Record<SatusehatClinicalImpressionPrognosis, { code: string; display: string }>
+> = {
+  BONAM: { code: '170968001', display: 'Prognosis good' },
+  DUBIA_AD_BONAM: { code: '170969009', display: 'Prognosis fair' },
+  DUBIA_AD_MALAM: { code: '170970005', display: 'Prognosis poor' },
+  MALAM: { code: '170970005', display: 'Prognosis poor' },
+};
+
 const LOINC_SYSTEM = 'http://loinc.org';
 const UCUM_SYSTEM = 'http://unitsofmeasure.org';
 const ACT_ENCOUNTER_CODE_SYSTEM = 'http://terminology.hl7.org/CodeSystem/v3-ActCode';
@@ -37,6 +109,8 @@ const CONDITION_CLINICAL_SYSTEM = 'http://terminology.hl7.org/CodeSystem/conditi
 const CONDITION_CATEGORY_SYSTEM = 'http://terminology.hl7.org/CodeSystem/condition-category';
 const DIAGNOSIS_ROLE_SYSTEM = 'http://terminology.hl7.org/CodeSystem/diagnosis-role';
 const OBSERVATION_CATEGORY_SYSTEM = 'http://terminology.hl7.org/CodeSystem/observation-category';
+const DISCHARGE_DISPOSITION_SYSTEM =
+  'http://terminology.hl7.org/CodeSystem/discharge-disposition';
 const KFA_SYSTEM = 'http://sys-ids.kemkes.go.id/kfa';
 const MEDICATION_IDENTIFIER_SYSTEM_PREFIX = 'http://sys-ids.kemkes.go.id/medication';
 const PRESCRIPTION_IDENTIFIER_SYSTEM_PREFIX = 'http://sys-ids.kemkes.go.id/prescription';
@@ -90,6 +164,12 @@ export class SatusehatFhirMapper {
    * Maps a finished encounter to a SATUSEHAT Encounter. The mandated
    * arrived/in-progress/finished status history is derived from the
    * registration check-in and the encounter open/close timestamps.
+   *
+   * An encounter attached to an inpatient stay is reported as `IMP` over the
+   * admission's own period, with a `hospitalization` element (P10-T09). An
+   * outpatient visit stays `AMB` over the encounter's period. `EMER` is
+   * deliberately absent: nothing in the registration types records an
+   * emergency visit, and guessing one from a time of day would be a fiction.
    */
   mapEncounter(input: SatusehatEncounterMapInput): SatusehatFhirEncounter {
     const organizationId = this.requireConfigValue(
@@ -110,7 +190,7 @@ export class SatusehatFhirMapper {
         },
       ],
       status: 'finished',
-      class: { system: ACT_ENCOUNTER_CODE_SYSTEM, code: 'AMB', display: 'ambulatory' },
+      class: this.buildEncounterClass(input),
       subject: this.buildReference(`Patient/${input.patientIhsNumber}`, input.patientName),
       participant: [
         {
@@ -127,7 +207,7 @@ export class SatusehatFhirMapper {
       ],
       period: {
         start: this.toFhirInstant(this.resolveArrivedAt(input)),
-        end: this.toFhirInstant(input.endedAt),
+        end: this.toFhirInstant(this.resolveEndedAt(input)),
       },
       location: [
         {
@@ -138,6 +218,7 @@ export class SatusehatFhirMapper {
         },
       ],
       statusHistory: this.buildStatusHistory(input),
+      ...this.buildHospitalization(input),
       ...this.buildEncounterDiagnosis(input),
       serviceProvider: { reference: `Organization/${organizationId}` },
     };
@@ -219,6 +300,279 @@ export class SatusehatFhirMapper {
             ],
           }
         : {}),
+      ...(input.notes && input.notes.trim() !== '' ? { note: [{ text: input.notes }] } : {}),
+    };
+  }
+
+  /**
+   * Maps one recorded allergy to a SATUSEHAT AllergyIntolerance.
+   *
+   * The coding is **text-first**: `substance` is free text in the record, FHIR
+   * permits `code.text` with no coding, and the IG only *prefers* SNOMED CT.
+   * Emitting `text` is therefore truthful where guessing a SNOMED code from
+   * prose would not be — a wrong allergen code is worse than an uncoded one,
+   * because the next clinic would act on it.
+   *
+   * `category` (food / medication / environment) is omitted: the row does not
+   * record it, and a keyword heuristic over free text would be inventing
+   * clinical classification. `verificationStatus` is `confirmed` because a
+   * clinician wrote the row down; nothing in the system records an unverified
+   * allergy.
+   */
+  mapAllergyToAllergyIntolerance(
+    input: SatusehatAllergyMapInput,
+  ): SatusehatFhirAllergyIntolerance {
+    const organizationId = this.requireConfigValue(
+      this.satusehatConfig.organizationId,
+      'SATUSEHAT_ORGANIZATION_ID',
+    );
+    return {
+      resourceType: 'AllergyIntolerance',
+      identifier: [
+        {
+          system: `${ALLERGY_IDENTIFIER_SYSTEM_PREFIX}/${organizationId}`,
+          use: 'official',
+          value: input.allergyId,
+        },
+      ],
+      clinicalStatus: {
+        coding: [{ system: ALLERGY_CLINICAL_SYSTEM, code: 'active', display: 'Active' }],
+      },
+      verificationStatus: {
+        coding: [{ system: ALLERGY_VERIFICATION_SYSTEM, code: 'confirmed', display: 'Confirmed' }],
+      },
+      code: { text: input.substance },
+      criticality: input.severity === 'SEVERE' ? 'high' : 'low',
+      patient: this.buildReference(`Patient/${input.patientIhsNumber}`, input.patientName),
+      ...(input.encounterReference ? { encounter: { reference: input.encounterReference } } : {}),
+      recordedDate: this.toFhirInstant(input.recordedAt),
+      ...(input.recorderIhsNumber
+        ? {
+            recorder: this.buildReference(
+              `Practitioner/${input.recorderIhsNumber}`,
+              input.recorderName,
+            ),
+          }
+        : {}),
+      ...(input.reaction && input.reaction.trim() !== ''
+        ? { reaction: [{ description: input.reaction }] }
+        : {}),
+    };
+  }
+
+  /**
+   * Maps the closed encounter to a Composition — the *resume medis*, one
+   * document per episode, which is also what PMK 24/2022 obliges the clinic to
+   * hold. It is appended last in the bundle because it references everything
+   * else.
+   *
+   * Every section's narrative is XHTML built through {@link escapeXhtml}: this
+   * is the first place free clinician text leaves the system as markup, and a
+   * plan typed with angle brackets must arrive as literal characters, not as
+   * tags. Sections with neither narrative nor entries are dropped rather than
+   * sent blank — an empty "Tindakan" section would assert that the question was
+   * asked and answered with nothing.
+   */
+  mapComposition(input: SatusehatCompositionMapInput): SatusehatFhirComposition {
+    const organizationId = this.requireConfigValue(
+      this.satusehatConfig.organizationId,
+      'SATUSEHAT_ORGANIZATION_ID',
+    );
+    return {
+      resourceType: 'Composition',
+      identifier: [
+        {
+          system: `${COMPOSITION_IDENTIFIER_SYSTEM_PREFIX}/${organizationId}`,
+          use: 'official',
+          value: input.encounterId,
+        },
+      ],
+      status: 'final',
+      type: {
+        coding: [
+          {
+            system: LOINC_SYSTEM,
+            code: COMPOSITION_TYPE_LOINC_CODE,
+            display: COMPOSITION_TYPE_LOINC_DISPLAY,
+          },
+        ],
+      },
+      category: [
+        {
+          coding: [
+            {
+              system: LOINC_SYSTEM,
+              code: COMPOSITION_CATEGORY_LOINC_CODE,
+              display: COMPOSITION_CATEGORY_LOINC_DISPLAY,
+            },
+          ],
+        },
+      ],
+      subject: this.buildReference(`Patient/${input.patientIhsNumber}`, input.patientName),
+      encounter: { reference: input.encounterReference },
+      date: this.toFhirInstant(input.endedAt),
+      author: [
+        this.buildReference(
+          `Practitioner/${input.practitionerIhsNumber}`,
+          input.practitionerName,
+        ),
+      ],
+      title: COMPOSITION_TITLE,
+      custodian: { reference: `Organization/${organizationId}` },
+      section: input.sections.flatMap((section) => this.buildCompositionSection(section)),
+    };
+  }
+
+  /**
+   * Maps the assessment narrative and prognosis to a ClinicalImpression, which
+   * sits beside the Composition in the IG's rawat-jalan set. `finding` points
+   * at the same Condition entries the Composition's diagnosis section lists —
+   * the impression is what the doctor concluded, the Conditions are what they
+   * coded.
+   */
+  mapClinicalImpression(
+    input: SatusehatClinicalImpressionMapInput,
+  ): SatusehatFhirClinicalImpression {
+    const organizationId = this.requireConfigValue(
+      this.satusehatConfig.organizationId,
+      'SATUSEHAT_ORGANIZATION_ID',
+    );
+    const findingReferences = input.findingReferences ?? [];
+    return {
+      resourceType: 'ClinicalImpression',
+      identifier: [
+        {
+          system: `${CLINICAL_IMPRESSION_IDENTIFIER_SYSTEM_PREFIX}/${organizationId}`,
+          use: 'official',
+          value: input.encounterId,
+        },
+      ],
+      status: 'completed',
+      subject: this.buildReference(`Patient/${input.patientIhsNumber}`, input.patientName),
+      encounter: { reference: input.encounterReference },
+      effectiveDateTime: this.toFhirInstant(input.endedAt),
+      assessor: this.buildReference(
+        `Practitioner/${input.practitionerIhsNumber}`,
+        input.practitionerName,
+      ),
+      ...(input.summary && input.summary.trim() !== '' ? { summary: input.summary } : {}),
+      ...(findingReferences.length > 0
+        ? {
+            finding: findingReferences.map((reference) => ({
+              itemReference: { reference },
+            })),
+          }
+        : {}),
+      ...(input.prognosis ? { prognosisCodeableConcept: [this.buildPrognosis(input.prognosis)] } : {}),
+    };
+  }
+
+  private buildPrognosis(prognosis: SatusehatClinicalImpressionPrognosis) {
+    const snomed = PROGNOSIS_SNOMED_CODES[prognosis];
+    return {
+      coding: [{ system: SNOMED_SYSTEM, code: snomed.code, display: snomed.display }],
+      text: prognosis,
+    };
+  }
+
+  private buildCompositionSection(
+    section: SatusehatCompositionSectionInput,
+  ): SatusehatFhirCompositionSection[] {
+    const entryReferences = section.entryReferences ?? [];
+    const narrative = section.narrative?.trim() ?? '';
+    if (narrative === '' && entryReferences.length === 0) {
+      return [];
+    }
+    return [
+      {
+        title: section.title,
+        ...(section.loincCode
+          ? {
+              code: {
+                coding: [
+                  {
+                    system: LOINC_SYSTEM,
+                    code: section.loincCode,
+                    ...(section.loincDisplay ? { display: section.loincDisplay } : {}),
+                  },
+                ],
+              },
+            }
+          : {}),
+        ...(narrative === ''
+          ? {}
+          : {
+              text: {
+                status: 'generated' as const,
+                div: `<div xmlns="${XHTML_NAMESPACE}"><p>${escapeXhtml(narrative)}</p></div>`,
+              },
+            }),
+        ...(entryReferences.length > 0
+          ? { entry: entryReferences.map((reference) => ({ reference })) }
+          : {}),
+      },
+    ];
+  }
+
+  /**
+   * Maps one recorded vaccination to a SATUSEHAT Immunization.
+   *
+   * The vaccine code is KFA, like every other medication the platform accepts,
+   * so callers must skip a vaccine whose catalog row has no `kfaCode` and
+   * report the gap — the vaccination stays in the local record either way.
+   *
+   * Lot, expiry, dose, route and site are all omitted when absent rather than
+   * defaulted. A nurse copying a vaccination off a patient's card may have
+   * only two of the five, and a record with two true facts is worth more than
+   * one with five where three are invented. `site: OTHER` has no v3 code at
+   * all, so it is omitted for the same reason.
+   */
+  mapImmunization(input: SatusehatImmunizationMapInput): SatusehatFhirImmunization {
+    const organizationId = this.requireConfigValue(
+      this.satusehatConfig.organizationId,
+      'SATUSEHAT_ORGANIZATION_ID',
+    );
+    const route = input.route ? IMMUNIZATION_ROUTE_CODES[input.route] : undefined;
+    const site = input.site ? IMMUNIZATION_SITE_CODES[input.site] : undefined;
+    return {
+      resourceType: 'Immunization',
+      identifier: [
+        {
+          system: `${IMMUNIZATION_IDENTIFIER_SYSTEM_PREFIX}/${organizationId}`,
+          use: 'official',
+          value: input.immunizationId,
+        },
+      ],
+      status: 'completed',
+      vaccineCode: {
+        coding: [{ system: KFA_SYSTEM, code: input.kfaCode, display: input.vaccineName }],
+      },
+      patient: this.buildReference(`Patient/${input.patientIhsNumber}`, input.patientName),
+      encounter: { reference: input.encounterReference },
+      occurrenceDateTime: this.toFhirInstant(input.occurredAt),
+      ...(input.lotNumber ? { lotNumber: input.lotNumber } : {}),
+      ...(input.expirationDate ? { expirationDate: input.expirationDate } : {}),
+      ...(site && site.code
+        ? { site: { coding: [{ system: ACT_SITE_SYSTEM, ...site }] } }
+        : {}),
+      ...(route
+        ? { route: { coding: [{ system: ROUTE_OF_ADMINISTRATION_SYSTEM, ...route }] } }
+        : {}),
+      ...(input.performerIhsNumber
+        ? {
+            performer: [
+              {
+                actor: this.buildReference(
+                  `Practitioner/${input.performerIhsNumber}`,
+                  input.performerName,
+                ),
+              },
+            ],
+          }
+        : {}),
+      ...(input.doseNumber === undefined
+        ? {}
+        : { protocolApplied: [{ doseNumberPositiveInt: input.doseNumber }] }),
       ...(input.notes && input.notes.trim() !== '' ? { note: [{ text: input.notes }] } : {}),
     };
   }
@@ -451,27 +805,88 @@ export class SatusehatFhirMapper {
     };
   }
 
+  private buildEncounterClass(input: SatusehatEncounterMapInput): SatusehatFhirCoding {
+    return input.admission
+      ? { system: ACT_ENCOUNTER_CODE_SYSTEM, code: 'IMP', display: 'inpatient encounter' }
+      : { system: ACT_ENCOUNTER_CODE_SYSTEM, code: 'AMB', display: 'ambulatory' };
+  }
+
+  /**
+   * The clinic records no discharge disposition, so every inpatient stay is
+   * reported as discharged home. That is the truthful default for a klinik
+   * pratama — a stay that ends any other way is a transfer the clinic arranges
+   * outside this system — and inventing a column for it belongs to whichever
+   * ticket actually gives staff somewhere to record it.
+   */
+  private buildHospitalization(
+    input: SatusehatEncounterMapInput,
+  ): Pick<SatusehatFhirEncounter, 'hospitalization'> | Record<string, never> {
+    if (!input.admission) {
+      return {};
+    }
+    const hospitalization: SatusehatFhirEncounterHospitalization = {
+      dischargeDisposition: {
+        coding: [{ system: DISCHARGE_DISPOSITION_SYSTEM, code: 'home', display: 'Home' }],
+      },
+    };
+    return { hospitalization };
+  }
+
+  /**
+   * For an inpatient stay the visit ends at discharge, not when the doctor
+   * closed the note — a late-finished chart would otherwise report an episode
+   * that ended before the patient left the bed.
+   */
+  private resolveEndedAt(input: SatusehatEncounterMapInput): Date {
+    if (!input.admission) {
+      return input.endedAt;
+    }
+    return input.admission.dischargedAt.getTime() < input.startedAt.getTime()
+      ? input.startedAt
+      : input.admission.dischargedAt;
+  }
+
+  /**
+   * An inpatient stay's `in-progress` runs from admission to discharge — the
+   * bed, not the consultation, is what the platform is being told about.
+   */
   private buildStatusHistory(
     input: SatusehatEncounterMapInput,
   ): SatusehatEncounterStatusHistoryEntry[] {
     const arrivedAt = this.resolveArrivedAt(input);
+    const inProgressFrom = this.resolveInProgressFrom(input);
+    const endedAt = this.resolveEndedAt(input);
     return [
       {
         status: 'arrived',
-        period: { start: this.toFhirInstant(arrivedAt), end: this.toFhirInstant(input.startedAt) },
+        period: { start: this.toFhirInstant(arrivedAt), end: this.toFhirInstant(inProgressFrom) },
       },
       {
         status: 'in-progress',
         period: {
-          start: this.toFhirInstant(input.startedAt),
-          end: this.toFhirInstant(input.endedAt),
+          start: this.toFhirInstant(inProgressFrom),
+          end: this.toFhirInstant(endedAt),
         },
       },
       {
         status: 'finished',
-        period: { start: this.toFhirInstant(input.endedAt), end: this.toFhirInstant(input.endedAt) },
+        period: { start: this.toFhirInstant(endedAt), end: this.toFhirInstant(endedAt) },
       },
     ];
+  }
+
+  /**
+   * Clamped the same way check-in is: an admission stamped before the
+   * encounter opened (backfilled paperwork, clock skew) would invert the
+   * `arrived` period, which the platform rejects.
+   */
+  private resolveInProgressFrom(input: SatusehatEncounterMapInput): Date {
+    if (!input.admission) {
+      return input.startedAt;
+    }
+    return input.admission.admittedAt.getTime() < input.startedAt.getTime()
+      ? input.startedAt
+      : input.admission.admittedAt;
   }
 
   private buildEncounterDiagnosis(

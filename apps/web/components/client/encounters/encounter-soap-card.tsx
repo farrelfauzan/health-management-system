@@ -2,7 +2,11 @@
 
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import type { EncounterDetail, UpdateEncounterSoapInput } from '@hms/shared-types';
+import type {
+  EncounterDetail,
+  EncounterPrognosisValue,
+  UpdateEncounterSoapInput,
+} from '@hms/shared-types';
 import { Button, Card, CardContent, CardHeader, CardTitle, Textarea } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
@@ -11,6 +15,7 @@ import { notifyApiError } from '#lib/api/notify-api-error';
 import { parseApiSuccess } from '#lib/api/response';
 import { invalidateEncounterQueries } from '#lib/encounters/invalidate-encounter-queries';
 import { SOAP_SECTIONS } from '#lib/encounters/soap-sections';
+import { EncounterPrognosisSelect } from '#components/client/encounters/encounter-prognosis-select';
 
 type SoapValues = Record<(typeof SOAP_SECTIONS)[number]['key'], string>;
 
@@ -28,6 +33,9 @@ export function EncounterSoapCard({ encounter, isEditable }: EncounterSoapCardPr
     assessment: encounter.assessment ?? '',
     plan: encounter.plan ?? '',
   });
+  const [prognosis, setPrognosis] = useState<EncounterPrognosisValue | null>(
+    encounter.prognosis ?? null,
+  );
   const [actionError, setActionError] = useState<string | null>(null);
   const [isSaved, setIsSaved] = useState<boolean>(false);
   const saveMutation = useMutation({
@@ -49,6 +57,7 @@ export function EncounterSoapCard({ encounter, isEditable }: EncounterSoapCardPr
       objective: values.objective.trim() || null,
       assessment: values.assessment.trim() || null,
       plan: values.plan.trim() || null,
+      prognosis,
     };
 
     try {
@@ -117,6 +126,14 @@ export function EncounterSoapCard({ encounter, isEditable }: EncounterSoapCardPr
             )}
           </div>
         ))}
+        <EncounterPrognosisSelect
+          value={prognosis}
+          isEditable={isEditable}
+          onChange={(selected) => {
+            setPrognosis(selected);
+            setIsSaved(false);
+          }}
+        />
       </CardContent>
     </Card>
   );

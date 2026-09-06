@@ -57,7 +57,7 @@ export class BillingRepository {
   ) {}
 
   async findEncounterForBilling(encounterId: string): Promise<BillingSourceEncounterRecord | null> {
-    return this.prisma.findFirstActive(this.prisma.encounter, {
+    const encounter = await this.prisma.findFirstActive(this.prisma.encounter, {
       where: { id: encounterId },
       select: {
         id: true,
@@ -68,8 +68,24 @@ export class BillingRepository {
           select: { id: true, code: true, display: true },
           orderBy: { performedAt: 'asc' as const },
         },
+        immunizations: {
+          where: { deletedAt: null },
+          select: { id: true, medication: { select: { code: true, name: true } } },
+          orderBy: { occurredAt: 'asc' as const },
+        },
       },
     });
+    if (!encounter) {
+      return null;
+    }
+    return {
+      ...encounter,
+      immunizations: encounter.immunizations.map((immunization) => ({
+        id: immunization.id,
+        medicationCode: immunization.medication.code,
+        medicationName: immunization.medication.name,
+      })),
+    };
   }
 
   /**

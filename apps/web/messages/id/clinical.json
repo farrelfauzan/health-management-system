@@ -379,7 +379,19 @@
             "unknown": "Gagal: {code}"
           }
         }
-      }
+      },
+      "linkToSatusehat": "Tautkan ke SATUSEHAT",
+      "linking": "Menautkan...",
+      "linkSuccess": "Pasien tertaut ke SATUSEHAT.",
+      "linkErrors": {
+        "missingNik": "NIK belum diisi. Lengkapi dulu sebelum menautkan.",
+        "notFound": "NIK tidak ditemukan di SATUSEHAT — periksa nomornya.",
+        "ambiguous": "Lebih dari satu kecocokan — verifikasi pasien di portal SATUSEHAT dulu.",
+        "notConfigured": "Integrasi SATUSEHAT belum dikonfigurasi.",
+        "unreachable": "SATUSEHAT tidak dapat dihubungi. Coba lagi."
+      },
+      "noImmunizations": "Belum ada imunisasi tercatat untuk pasien ini.",
+      "loadingImmunizations": "Memuat riwayat imunisasi..."
     },
     "privacyNotice": {
       "title": "Pemberitahuan Privasi Pasien",
@@ -633,7 +645,17 @@
       "attention": "{count} perlu perhatian",
       "licenseRequired": "Belum ada izin yang dicatat. Dokter yang berpraktik memerlukan STR dan SIP untuk setiap lokasi praktik.",
       "addEducation": "Tambah Pendidikan",
-      "identifiersError": "Identitas tenaga medis gagal ditampilkan."
+      "identifiersError": "Identitas tenaga medis gagal ditampilkan.",
+      "linkToSatusehat": "Tautkan ke SATUSEHAT",
+      "linking": "Menautkan...",
+      "linkSuccess": "Dokter tertaut ke SATUSEHAT.",
+      "linkErrors": {
+        "missingNik": "NIK belum diisi. Lengkapi dulu sebelum menautkan.",
+        "notFound": "NIK tidak ditemukan di SATUSEHAT — periksa nomornya.",
+        "ambiguous": "Lebih dari satu kecocokan — verifikasi tenaga medis di portal SATUSEHAT dulu.",
+        "notConfigured": "Integrasi SATUSEHAT belum dikonfigurasi.",
+        "unreachable": "SATUSEHAT tidak dapat dihubungi. Coba lagi."
+      }
     },
     "portal": {
       "documents": {
@@ -784,7 +806,14 @@
         "assessment": "Asesmen",
         "assessmentPlaceholder": "Kesan klinis. Diagnosis berkode dicatat secara terpisah.",
         "plan": "Rencana",
-        "planPlaceholder": "Terapi, resep, tindak lanjut, dan rencana rujukan."
+        "planPlaceholder": "Terapi, resep, tindak lanjut, dan rencana rujukan.",
+        "prognosis": "Prognosis",
+        "prognosisOptions": {
+          "BONAM": "Bonam (baik)",
+          "DUBIA_AD_BONAM": "Dubia ad bonam (ragu, cenderung baik)",
+          "DUBIA_AD_MALAM": "Dubia ad malam (ragu, cenderung buruk)",
+          "MALAM": "Malam (buruk)"
+        }
       },
       "diagnosis": {
         "title": "Diagnosis (ICD-10)",
@@ -888,6 +917,39 @@
           "title": "Batalkan kunjungan ini?",
           "description": "Gunakan hanya untuk kunjungan yang dibuka karena kesalahan. Rekam dan pendaftaran ditarik tetapi tetap dapat diaudit; pasien harus mendaftar kembali.",
           "pending": "Membatalkan..."
+        }
+      },
+      "immunization": {
+        "title": "Imunisasi",
+        "empty": "Belum ada imunisasi pada kunjungan ini.",
+        "add": "Catat imunisasi",
+        "addError": "Imunisasi tidak dapat dicatat. Coba lagi.",
+        "retract": "Tarik catatan {vaccine}",
+        "retractError": "Imunisasi ini tidak dapat ditarik.",
+        "pick": "Pilih vaksin yang diberikan.",
+        "vaccine": "Vaksin",
+        "vaccinePlaceholder": "Pilih vaksin",
+        "noVaccines": "Belum ada item katalog yang ditandai sebagai vaksin. Tandai dulu di katalog obat.",
+        "lotNumber": "Nomor batch",
+        "expirationDate": "Kedaluwarsa",
+        "doseNumber": "Dosis ke-",
+        "dose": "Dosis ke-{number}",
+        "route": "Rute",
+        "site": "Lokasi",
+        "noKfa": "Tanpa kode KFA — tercatat di sini, tidak dilaporkan ke SATUSEHAT.",
+        "routes": {
+          "IM": "Intramuskular",
+          "SC": "Subkutan",
+          "ID": "Intradermal",
+          "ORAL": "Oral",
+          "NASAL": "Nasal"
+        },
+        "sites": {
+          "LEFT_ARM": "Lengan kiri",
+          "RIGHT_ARM": "Lengan kanan",
+          "LEFT_THIGH": "Paha kiri",
+          "RIGHT_THIGH": "Paha kanan",
+          "OTHER": "Lainnya"
         }
       }
     }

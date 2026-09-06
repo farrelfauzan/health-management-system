@@ -112,6 +112,24 @@ export function IntegrationSubmissionMonitor() {
   const [type, setType] = useState<'ALL' | BpjsSubmissionTypeValue>('ALL');
   const [month, setMonth] = useState(currentMonth);
 
+  const retryMutation = useMutation({
+    mutationFn: async (row: MonitorRow) => {
+      if (provider === 'bpjs') {
+        await bpjsSubmissionControllerRetrySubmissionV1(row.id);
+        return;
+      }
+      await satusehatSubmissionControllerRetrySubmissionV1(row.id);
+    },
+    onSuccess: async () => {
+      const queryKey =
+        provider === 'bpjs'
+          ? getBpjsSubmissionControllerListSubmissionsV1QueryKey()
+          : getSatusehatSubmissionControllerListSubmissionsV1QueryKey();
+      await queryClient.invalidateQueries({ queryKey: [queryKey[0]] });
+      toast.success('Submission queued for retry.');
+    },
+    onError: (error) => notifyApiError(error, t('retryError')),
+  });
   const bpjsQuery = useBpjsSubmissions(
     {
       page: 1,
@@ -120,6 +138,7 @@ export function IntegrationSubmissionMonitor() {
       type: type === 'ALL' ? undefined : type,
     },
     canReadBpjs && provider === 'bpjs',
+    retryMutation.isPending,
   );
   const satusehatQuery = useSatusehatSubmissions(
     {
@@ -128,6 +147,7 @@ export function IntegrationSubmissionMonitor() {
       status: status === 'ALL' ? undefined : status,
     },
     canReadSatusehat && provider === 'satusehat',
+    retryMutation.isPending,
   );
   const reportQuery = useBpjsMonthlyReport(month, canReadBpjs && provider === 'bpjs');
 
@@ -155,25 +175,6 @@ export function IntegrationSubmissionMonitor() {
       lastAttemptAt: submission.lastAttemptAt,
     }));
   }, [bpjsQuery.submissions, provider, satusehatQuery.submissions]);
-
-  const retryMutation = useMutation({
-    mutationFn: async (row: MonitorRow) => {
-      if (provider === 'bpjs') {
-        await bpjsSubmissionControllerRetrySubmissionV1(row.id);
-        return;
-      }
-      await satusehatSubmissionControllerRetrySubmissionV1(row.id);
-    },
-    onSuccess: async () => {
-      const queryKey =
-        provider === 'bpjs'
-          ? getBpjsSubmissionControllerListSubmissionsV1QueryKey()
-          : getSatusehatSubmissionControllerListSubmissionsV1QueryKey();
-      await queryClient.invalidateQueries({ queryKey: [queryKey[0]] });
-      toast.success('Submission queued for retry.');
-    },
-    onError: (error) => notifyApiError(error, t('retryError')),
-  });
 
   const activeQuery = provider === 'bpjs' ? bpjsQuery : satusehatQuery;
   const canRetry =
@@ -252,6 +253,15 @@ export function IntegrationSubmissionMonitor() {
               <Icon name="refresh" size={17} />
               Refresh
             </Button>
+            {activeQuery.dataUpdatedAt > 0 ? (
+              <p className="self-center text-xs text-slate-500">
+                {t('lastUpdated', {
+                  time: format.dateTime(new Date(activeQuery.dataUpdatedAt), {
+                    timeStyle: 'medium',
+                  }),
+                })}
+              </p>
+            ) : null}
           </div>
 
           {activeQuery.isError ? (

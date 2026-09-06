@@ -107,7 +107,10 @@
     "#document-delivery/schemas": "./src/document-delivery/schemas.ts",
     "#document-delivery/contracts": "./src/document-delivery/contracts.ts",
     "#document-delivery/types": "./src/document-delivery/types.ts",
-    "#document-delivery/opt-out-keyword": "./src/document-delivery/opt-out-keyword.ts"
+    "#document-delivery/opt-out-keyword": "./src/document-delivery/opt-out-keyword.ts",
+    "#laboratory/schemas": "./src/laboratory/schemas.ts",
+    "#laboratory/contracts": "./src/laboratory/contracts.ts",
+    "#laboratory/types": "./src/laboratory/types.ts"
   },
   "main": "./dist/index.cjs",
   "types": "./src/index.ts",

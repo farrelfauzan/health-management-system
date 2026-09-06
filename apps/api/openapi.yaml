@@ -8497,6 +8497,8 @@ paths:
                           type: string
                         hasSatusehatPatientId:
                           type: boolean
+                        satusehatPatientIdMasked:
+                          type: string
                         email:
                           type: string
                         bloodType:
@@ -8607,6 +8609,7 @@ paths:
                       nikMasked: ••••••••0001
                       bpjsNumberMasked: ••••••••7890
                       hasSatusehatPatientId: false
+                      satusehatPatientIdMasked: ••••5538
                       email: aisha.rahman@example.com
                       bloodType: O
                       rhesusFactor: POSITIVE
@@ -8728,6 +8731,8 @@ paths:
                         type: string
                       hasSatusehatPatientId:
                         type: boolean
+                      satusehatPatientIdMasked:
+                        type: string
                       email:
                         type: string
                       bloodType:
@@ -8811,6 +8816,7 @@ paths:
                     nikMasked: ••••••••0001
                     bpjsNumberMasked: ••••••••7890
                     hasSatusehatPatientId: false
+                    satusehatPatientIdMasked: ••••5538
                     email: aisha.rahman@example.com
                     bloodType: O
                     rhesusFactor: POSITIVE
@@ -8905,6 +8911,8 @@ paths:
                         type: string
                       hasSatusehatPatientId:
                         type: boolean
+                      satusehatPatientIdMasked:
+                        type: string
                       email:
                         type: string
                       bloodType:
@@ -9020,6 +9028,7 @@ paths:
                     nikMasked: ••••••••0001
                     bpjsNumberMasked: ••••••••7890
                     hasSatusehatPatientId: false
+                    satusehatPatientIdMasked: ••••5538
                     email: aisha.rahman@example.com
                     bloodType: O
                     rhesusFactor: POSITIVE
@@ -9138,6 +9147,8 @@ paths:
                         type: string
                       hasSatusehatPatientId:
                         type: boolean
+                      satusehatPatientIdMasked:
+                        type: string
                       email:
                         type: string
                       bloodType:
@@ -9221,6 +9232,7 @@ paths:
                     nikMasked: ••••••••0001
                     bpjsNumberMasked: ••••••••7890
                     hasSatusehatPatientId: false
+                    satusehatPatientIdMasked: ••••5538
                     email: aisha.rahman@example.com
                     bloodType: O
                     rhesusFactor: POSITIVE
@@ -9337,6 +9349,8 @@ paths:
                         type: string
                       hasSatusehatPatientId:
                         type: boolean
+                      satusehatPatientIdMasked:
+                        type: string
                       email:
                         type: string
                       bloodType:
@@ -9420,6 +9434,7 @@ paths:
                     nikMasked: ••••••••0001
                     bpjsNumberMasked: ••••••••7890
                     hasSatusehatPatientId: false
+                    satusehatPatientIdMasked: ••••5538
                     email: aisha.rahman@example.com
                     bloodType: O
                     rhesusFactor: POSITIVE
@@ -9659,6 +9674,7 @@ paths:
               - CONSULTATION
               - PROCEDURE
               - ACCOMMODATION
+              - LAB
               - OTHER
         - name: isActive
           required: false
@@ -33412,6 +33428,60 @@ paths:
                             - recordedById
                             - createdAt
                             - updatedAt
+                      immunizations:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            encounterId:
+                              type: string
+                            patientId:
+                              type: string
+                            medicationId:
+                              type: string
+                            medicationName:
+                              type: string
+                            kfaCode:
+                              type: string
+                            occurredAt:
+                              type: string
+                            lotNumber:
+                              type: string
+                            expirationDate:
+                              type: string
+                            doseNumber:
+                              type: integer
+                            route:
+                              type: string
+                            site:
+                              type: string
+                            performedById:
+                              type: string
+                            performedByName:
+                              type: string
+                            createdAt:
+                              type: string
+                            updatedAt:
+                              type: string
+                          required:
+                            - id
+                            - encounterId
+                            - patientId
+                            - medicationId
+                            - medicationName
+                            - kfaCode
+                            - occurredAt
+                            - lotNumber
+                            - expirationDate
+                            - doseNumber
+                            - route
+                            - site
+                            - performedById
+                            - performedByName
+                            - createdAt
+                            - updatedAt
                       prescriptions:
                         type: array
                         items:
@@ -33449,6 +33519,7 @@ paths:
                       - vitalSigns
                       - diagnoses
                       - procedures
+                      - immunizations
                       - prescriptions
                 required:
                   - data
@@ -33511,6 +33582,23 @@ paths:
                         display: Respiratory medication administered by nebulizer
                         performedAt: 2026-07-20T08:00:00.000Z
                         recordedById: 33333333-3333-4333-8333-333333333333
+                        createdAt: 2026-07-20T08:00:00.000Z
+                        updatedAt: 2026-07-20T08:00:00.000Z
+                    immunizations:
+                      - id: aaaaaaa5-aaaa-4aaa-8aaa-aaaaaaaaaaaa
+                        encounterId: aaaaaaa1-aaaa-4aaa-8aaa-aaaaaaaaaaaa
+                        patientId: 11111111-1111-4111-8111-111111111111
+                        medicationId: 66666666-6666-4666-8666-666666666666
+                        medicationName: Vaksin DPT-HB-Hib
+                        kfaCode: "93000123"
+                        occurredAt: 2026-07-20T08:00:00.000Z
+                        lotNumber: LOT-DPT-2026-04
+                        expirationDate: 2027-04-30
+                        doseNumber: 3
+                        route: IM
+                        site: LEFT_THIGH
+                        performedById: 22222222-2222-4222-8222-222222222222
+                        performedByName: dr. Sari Wulandari
                         createdAt: 2026-07-20T08:00:00.000Z
                         updatedAt: 2026-07-20T08:00:00.000Z
                     prescriptions:
@@ -34584,6 +34672,216 @@ paths:
         - bearer: []
       summary: Retract a procedure
       tags: *a48
+  /api/v1/encounters/{encounterId}/immunizations:
+    post:
+      operationId: EncounterClinicalDataController_addImmunization_v1
+      parameters:
+        - name: encounterId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddImmunizationDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  medicationId: 66666666-6666-4666-8666-666666666666
+                  lotNumber: LOT-DPT-2026-04
+                  expirationDate: 2027-04-30
+                  doseNumber: 3
+                  route: IM
+                  site: LEFT_THIGH
+      responses:
+        "201":
+          description: The vaccination was recorded against the encounter. Only a catalog
+            row flagged as a vaccine may be named; one without a KFA code is
+            recorded locally and skipped in the SATUSEHAT bundle.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      encounterId:
+                        type: string
+                      patientId:
+                        type: string
+                      medicationId:
+                        type: string
+                      medicationName:
+                        type: string
+                      kfaCode:
+                        type: string
+                      occurredAt:
+                        type: string
+                      lotNumber:
+                        type: string
+                      expirationDate:
+                        type: string
+                      doseNumber:
+                        type: integer
+                      route:
+                        type: string
+                      site:
+                        type: string
+                      performedById:
+                        type: string
+                      performedByName:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - encounterId
+                      - patientId
+                      - medicationId
+                      - medicationName
+                      - kfaCode
+                      - occurredAt
+                      - lotNumber
+                      - expirationDate
+                      - doseNumber
+                      - route
+                      - site
+                      - performedById
+                      - performedByName
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: aaaaaaa5-aaaa-4aaa-8aaa-aaaaaaaaaaaa
+                    encounterId: aaaaaaa1-aaaa-4aaa-8aaa-aaaaaaaaaaaa
+                    patientId: 11111111-1111-4111-8111-111111111111
+                    medicationId: 66666666-6666-4666-8666-666666666666
+                    medicationName: Vaksin DPT-HB-Hib
+                    kfaCode: "93000123"
+                    occurredAt: 2026-07-20T08:00:00.000Z
+                    lotNumber: LOT-DPT-2026-04
+                    expirationDate: 2027-04-30
+                    doseNumber: 3
+                    route: IM
+                    site: LEFT_THIGH
+                    performedById: 22222222-2222-4222-8222-222222222222
+                    performedByName: dr. Sari Wulandari
+                    createdAt: 2026-07-20T08:00:00.000Z
+                    updatedAt: 2026-07-20T08:00:00.000Z
+                  message: Immunization recorded
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Encounter not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Encounter not found.
+      security:
+        - bearer: []
+      summary: Record a vaccination
+      tags: *a48
+  /api/v1/encounters/{encounterId}/immunizations/{immunizationId}:
+    delete:
+      operationId: EncounterClinicalDataController_removeImmunization_v1
+      parameters:
+        - name: encounterId
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: immunizationId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The immunisation is soft-deleted and stays auditable.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+                example:
+                  message: Immunization retracted
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Immunization not found on this encounter.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Immunization not found on this encounter.
+      security:
+        - bearer: []
+      summary: Retract a vaccination
+      tags: *a48
   /api/v1/encounters/{encounterId}/bpjs-referral:
     put:
       operationId: EncounterClinicalDataController_saveBpjsReferral_v1
@@ -34853,6 +35151,1205 @@ paths:
         - bearer: []
       summary: Retract the encounter’s BPJS rujukan
       tags: *a48
+  /api/v1/patients/{patientId}/immunizations:
+    get:
+      operationId: PatientImmunizationController_listPatientImmunizations_v1
+      parameters:
+        - name: patientId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Every recorded vaccination, most recent first.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        encounterId:
+                          type: string
+                        patientId:
+                          type: string
+                        medicationId:
+                          type: string
+                        medicationName:
+                          type: string
+                        kfaCode:
+                          type: string
+                        occurredAt:
+                          type: string
+                        lotNumber:
+                          type: string
+                        expirationDate:
+                          type: string
+                        doseNumber:
+                          type: integer
+                        route:
+                          type: string
+                        site:
+                          type: string
+                        performedById:
+                          type: string
+                        performedByName:
+                          type: string
+                        createdAt:
+                          type: string
+                        updatedAt:
+                          type: string
+                      required:
+                        - id
+                        - encounterId
+                        - patientId
+                        - medicationId
+                        - medicationName
+                        - kfaCode
+                        - occurredAt
+                        - lotNumber
+                        - expirationDate
+                        - doseNumber
+                        - route
+                        - site
+                        - performedById
+                        - performedByName
+                        - createdAt
+                        - updatedAt
+                required:
+                  - data
+                example:
+                  data:
+                    - id: aaaaaaa5-aaaa-4aaa-8aaa-aaaaaaaaaaaa
+                      encounterId: aaaaaaa1-aaaa-4aaa-8aaa-aaaaaaaaaaaa
+                      patientId: 11111111-1111-4111-8111-111111111111
+                      medicationId: 66666666-6666-4666-8666-666666666666
+                      medicationName: Vaksin DPT-HB-Hib
+                      kfaCode: "93000123"
+                      occurredAt: 2026-07-20T08:00:00.000Z
+                      lotNumber: LOT-DPT-2026-04
+                      expirationDate: 2027-04-30
+                      doseNumber: 3
+                      route: IM
+                      site: LEFT_THIGH
+                      performedById: 22222222-2222-4222-8222-222222222222
+                      performedByName: dr. Sari Wulandari
+                      createdAt: 2026-07-20T08:00:00.000Z
+                      updatedAt: 2026-07-20T08:00:00.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Read a patient's immunisation history
+      tags:
+        - Encounters
+  /api/v1/lab-tests:
+    get:
+      operationId: LabTestController_listLabTests_v1
+      parameters:
+        - name: search
+          required: false
+          in: query
+          schema:
+            minLength: 1
+            maxLength: 200
+            type: string
+        - name: active
+          required: false
+          in: query
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: The catalog, code order, with each test’s reference ranges and
+            current price.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        code:
+                          type: string
+                        name:
+                          type: string
+                        loincCode:
+                          type: string
+                        loincDisplay:
+                          type: string
+                        specimenType:
+                          type: string
+                        resultType:
+                          type: string
+                        unit:
+                          type: string
+                        decimals:
+                          type: integer
+                        codedOptions:
+                          type: array
+                          items: {}
+                        isActive:
+                          type: boolean
+                        serviceTariffId:
+                          type: string
+                        price:
+                          type: integer
+                        referenceRanges:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                              sex:
+                                type: string
+                              low:
+                                type: number
+                              high:
+                                type: number
+                              criticalLow:
+                                type: integer
+                              criticalHigh:
+                                type: integer
+                            required:
+                              - id
+                              - sex
+                              - low
+                              - high
+                              - criticalLow
+                              - criticalHigh
+                        createdAt:
+                          type: string
+                        updatedAt:
+                          type: string
+                      required:
+                        - id
+                        - code
+                        - name
+                        - loincCode
+                        - loincDisplay
+                        - specimenType
+                        - resultType
+                        - unit
+                        - decimals
+                        - codedOptions
+                        - isActive
+                        - serviceTariffId
+                        - price
+                        - referenceRanges
+                        - createdAt
+                        - updatedAt
+                required:
+                  - data
+                example:
+                  data:
+                    - id: aaaaaaaa-1111-4111-8111-aaaaaaaaaaaa
+                      code: HB
+                      name: Hemoglobin
+                      loincCode: 718-7
+                      loincDisplay: Hemoglobin [Mass/volume] in Blood
+                      specimenType: WHOLE_BLOOD
+                      resultType: NUMERIC
+                      unit: g/dL
+                      decimals: 1
+                      codedOptions: []
+                      isActive: true
+                      serviceTariffId: cccccccc-3333-4333-8333-cccccccccccc
+                      price: 35000
+                      referenceRanges:
+                        - id: dddddddd-4444-4444-8444-dddddddddddd
+                          sex: MALE
+                          low: 13.2
+                          high: 17.3
+                          criticalLow: 7
+                          criticalHigh: 20
+                      createdAt: 2026-07-20T08:00:00.000Z
+                      updatedAt: 2026-07-20T08:00:00.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: List laboratory tests
+      tags: &a49
+        - Laboratory Catalog
+    post:
+      operationId: LabTestController_createLabTest_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateLabTestDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  code: HB
+                  name: Hemoglobin
+                  loincCode: 718-7
+                  loincDisplay: Hemoglobin [Mass/volume] in Blood
+                  specimenType: WHOLE_BLOOD
+                  resultType: NUMERIC
+                  unit: g/dL
+                  decimals: 1
+                  serviceTariffId: cccccccc-3333-4333-8333-cccccccccccc
+      responses:
+        "201":
+          description: The test was added to the catalog.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      code:
+                        type: string
+                      name:
+                        type: string
+                      loincCode:
+                        type: string
+                      loincDisplay:
+                        type: string
+                      specimenType:
+                        type: string
+                      resultType:
+                        type: string
+                      unit:
+                        type: string
+                      decimals:
+                        type: integer
+                      codedOptions:
+                        type: array
+                        items: {}
+                      isActive:
+                        type: boolean
+                      serviceTariffId:
+                        type: string
+                      price:
+                        type: integer
+                      referenceRanges:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            sex:
+                              type: string
+                            low:
+                              type: number
+                            high:
+                              type: number
+                            criticalLow:
+                              type: integer
+                            criticalHigh:
+                              type: integer
+                          required:
+                            - id
+                            - sex
+                            - low
+                            - high
+                            - criticalLow
+                            - criticalHigh
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - code
+                      - name
+                      - loincCode
+                      - loincDisplay
+                      - specimenType
+                      - resultType
+                      - unit
+                      - decimals
+                      - codedOptions
+                      - isActive
+                      - serviceTariffId
+                      - price
+                      - referenceRanges
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: aaaaaaaa-1111-4111-8111-aaaaaaaaaaaa
+                    code: HB
+                    name: Hemoglobin
+                    loincCode: 718-7
+                    loincDisplay: Hemoglobin [Mass/volume] in Blood
+                    specimenType: WHOLE_BLOOD
+                    resultType: NUMERIC
+                    unit: g/dL
+                    decimals: 1
+                    codedOptions: []
+                    isActive: true
+                    serviceTariffId: cccccccc-3333-4333-8333-cccccccccccc
+                    price: 35000
+                    referenceRanges:
+                      - id: dddddddd-4444-4444-8444-dddddddddddd
+                        sex: MALE
+                        low: 13.2
+                        high: 17.3
+                        criticalLow: 7
+                        criticalHigh: 20
+                    createdAt: 2026-07-20T08:00:00.000Z
+                    updatedAt: 2026-07-20T08:00:00.000Z
+                  message: Lab test created
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Create a laboratory test
+      tags: *a49
+  /api/v1/lab-tests/{id}:
+    patch:
+      operationId: LabTestController_updateLabTest_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateLabTestDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  name: Hemoglobin (Hb)
+                  isActive: true
+      responses:
+        "200":
+          description: The catalog row was updated. Results already entered keep their
+            snapshot.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      code:
+                        type: string
+                      name:
+                        type: string
+                      loincCode:
+                        type: string
+                      loincDisplay:
+                        type: string
+                      specimenType:
+                        type: string
+                      resultType:
+                        type: string
+                      unit:
+                        type: string
+                      decimals:
+                        type: integer
+                      codedOptions:
+                        type: array
+                        items: {}
+                      isActive:
+                        type: boolean
+                      serviceTariffId:
+                        type: string
+                      price:
+                        type: integer
+                      referenceRanges:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            sex:
+                              type: string
+                            low:
+                              type: number
+                            high:
+                              type: number
+                            criticalLow:
+                              type: integer
+                            criticalHigh:
+                              type: integer
+                          required:
+                            - id
+                            - sex
+                            - low
+                            - high
+                            - criticalLow
+                            - criticalHigh
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - code
+                      - name
+                      - loincCode
+                      - loincDisplay
+                      - specimenType
+                      - resultType
+                      - unit
+                      - decimals
+                      - codedOptions
+                      - isActive
+                      - serviceTariffId
+                      - price
+                      - referenceRanges
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: aaaaaaaa-1111-4111-8111-aaaaaaaaaaaa
+                    code: HB
+                    name: Hemoglobin
+                    loincCode: 718-7
+                    loincDisplay: Hemoglobin [Mass/volume] in Blood
+                    specimenType: WHOLE_BLOOD
+                    resultType: NUMERIC
+                    unit: g/dL
+                    decimals: 1
+                    codedOptions: []
+                    isActive: true
+                    serviceTariffId: cccccccc-3333-4333-8333-cccccccccccc
+                    price: 35000
+                    referenceRanges:
+                      - id: dddddddd-4444-4444-8444-dddddddddddd
+                        sex: MALE
+                        low: 13.2
+                        high: 17.3
+                        criticalLow: 7
+                        criticalHigh: 20
+                    createdAt: 2026-07-20T08:00:00.000Z
+                    updatedAt: 2026-07-20T08:00:00.000Z
+                  message: Lab test updated
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Lab test not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Lab test not found.
+      security:
+        - bearer: []
+      summary: Update a laboratory test
+      tags: *a49
+  /api/v1/lab-tests/{id}/reference-ranges:
+    put:
+      operationId: LabTestController_replaceReferenceRanges_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReplaceLabReferenceRangesDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  ranges:
+                    - sex: MALE
+                      low: 13.2
+                      high: 17.3
+                      criticalLow: 7
+                      criticalHigh: 20
+                    - sex: FEMALE
+                      low: 11.7
+                      high: 15.5
+                      criticalLow: 7
+                      criticalHigh: 20
+      responses:
+        "200":
+          description: The whole set was replaced. PUT rather than PATCH because the
+            ranges together define “normal” — editing them one at a time leaves
+            windows where two bands overlap or none applies.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      code:
+                        type: string
+                      name:
+                        type: string
+                      loincCode:
+                        type: string
+                      loincDisplay:
+                        type: string
+                      specimenType:
+                        type: string
+                      resultType:
+                        type: string
+                      unit:
+                        type: string
+                      decimals:
+                        type: integer
+                      codedOptions:
+                        type: array
+                        items: {}
+                      isActive:
+                        type: boolean
+                      serviceTariffId:
+                        type: string
+                      price:
+                        type: integer
+                      referenceRanges:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            sex:
+                              type: string
+                            low:
+                              type: number
+                            high:
+                              type: number
+                            criticalLow:
+                              type: integer
+                            criticalHigh:
+                              type: integer
+                          required:
+                            - id
+                            - sex
+                            - low
+                            - high
+                            - criticalLow
+                            - criticalHigh
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - code
+                      - name
+                      - loincCode
+                      - loincDisplay
+                      - specimenType
+                      - resultType
+                      - unit
+                      - decimals
+                      - codedOptions
+                      - isActive
+                      - serviceTariffId
+                      - price
+                      - referenceRanges
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: aaaaaaaa-1111-4111-8111-aaaaaaaaaaaa
+                    code: HB
+                    name: Hemoglobin
+                    loincCode: 718-7
+                    loincDisplay: Hemoglobin [Mass/volume] in Blood
+                    specimenType: WHOLE_BLOOD
+                    resultType: NUMERIC
+                    unit: g/dL
+                    decimals: 1
+                    codedOptions: []
+                    isActive: true
+                    serviceTariffId: cccccccc-3333-4333-8333-cccccccccccc
+                    price: 35000
+                    referenceRanges:
+                      - id: dddddddd-4444-4444-8444-dddddddddddd
+                        sex: MALE
+                        low: 13.2
+                        high: 17.3
+                        criticalLow: 7
+                        criticalHigh: 20
+                    createdAt: 2026-07-20T08:00:00.000Z
+                    updatedAt: 2026-07-20T08:00:00.000Z
+                  message: Reference ranges replaced
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Lab test not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Lab test not found.
+      security:
+        - bearer: []
+      summary: Replace a test’s reference ranges
+      tags: *a49
+  /api/v1/lab-panels:
+    get:
+      operationId: LabPanelController_listLabPanels_v1
+      parameters:
+        - name: search
+          required: false
+          in: query
+          schema:
+            minLength: 1
+            maxLength: 200
+            type: string
+        - name: active
+          required: false
+          in: query
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: Panels with their members in report order.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        code:
+                          type: string
+                        name:
+                          type: string
+                        isActive:
+                          type: boolean
+                        serviceTariffId:
+                          type: string
+                        price:
+                          type: integer
+                        members:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              labTestId:
+                                type: string
+                              code:
+                                type: string
+                              name:
+                                type: string
+                              specimenType:
+                                type: string
+                              resultType:
+                                type: string
+                              sortOrder:
+                                type: integer
+                            required:
+                              - labTestId
+                              - code
+                              - name
+                              - specimenType
+                              - resultType
+                              - sortOrder
+                        createdAt:
+                          type: string
+                        updatedAt:
+                          type: string
+                      required:
+                        - id
+                        - code
+                        - name
+                        - isActive
+                        - serviceTariffId
+                        - price
+                        - members
+                        - createdAt
+                        - updatedAt
+                required:
+                  - data
+                example:
+                  data:
+                    - id: bbbbbbbb-2222-4222-8222-bbbbbbbbbbbb
+                      code: DARAH-RUTIN
+                      name: Darah Rutin
+                      isActive: true
+                      serviceTariffId: cccccccc-3333-4333-8333-cccccccccccc
+                      price: 120000
+                      members:
+                        - labTestId: aaaaaaaa-1111-4111-8111-aaaaaaaaaaaa
+                          code: HB
+                          name: Hemoglobin
+                          specimenType: WHOLE_BLOOD
+                          resultType: NUMERIC
+                          sortOrder: 1
+                      createdAt: 2026-07-20T08:00:00.000Z
+                      updatedAt: 2026-07-20T08:00:00.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: List laboratory panels
+      tags: &a50
+        - Laboratory Catalog
+    post:
+      operationId: LabPanelController_createLabPanel_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateLabPanelDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  code: DARAH-RUTIN
+                  name: Darah Rutin
+                  serviceTariffId: cccccccc-3333-4333-8333-cccccccccccc
+                  labTestIds:
+                    - aaaaaaaa-1111-4111-8111-aaaaaaaaaaaa
+      responses:
+        "201":
+          description: The panel was created with its members in the order given.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      code:
+                        type: string
+                      name:
+                        type: string
+                      isActive:
+                        type: boolean
+                      serviceTariffId:
+                        type: string
+                      price:
+                        type: integer
+                      members:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            labTestId:
+                              type: string
+                            code:
+                              type: string
+                            name:
+                              type: string
+                            specimenType:
+                              type: string
+                            resultType:
+                              type: string
+                            sortOrder:
+                              type: integer
+                          required:
+                            - labTestId
+                            - code
+                            - name
+                            - specimenType
+                            - resultType
+                            - sortOrder
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - code
+                      - name
+                      - isActive
+                      - serviceTariffId
+                      - price
+                      - members
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: bbbbbbbb-2222-4222-8222-bbbbbbbbbbbb
+                    code: DARAH-RUTIN
+                    name: Darah Rutin
+                    isActive: true
+                    serviceTariffId: cccccccc-3333-4333-8333-cccccccccccc
+                    price: 120000
+                    members:
+                      - labTestId: aaaaaaaa-1111-4111-8111-aaaaaaaaaaaa
+                        code: HB
+                        name: Hemoglobin
+                        specimenType: WHOLE_BLOOD
+                        resultType: NUMERIC
+                        sortOrder: 1
+                    createdAt: 2026-07-20T08:00:00.000Z
+                    updatedAt: 2026-07-20T08:00:00.000Z
+                  message: Lab panel created
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: One or more lab tests in this panel do not exist.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: One or more lab tests in this panel do not exist.
+      security:
+        - bearer: []
+      summary: Create a laboratory panel
+      tags: *a50
+  /api/v1/lab-panels/{id}:
+    patch:
+      operationId: LabPanelController_updateLabPanel_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateLabPanelDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  name: Darah Rutin (CBC)
+      responses:
+        "200":
+          description: The panel was updated. Naming members replaces the whole list — the
+            list and its order are the panel.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      code:
+                        type: string
+                      name:
+                        type: string
+                      isActive:
+                        type: boolean
+                      serviceTariffId:
+                        type: string
+                      price:
+                        type: integer
+                      members:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            labTestId:
+                              type: string
+                            code:
+                              type: string
+                            name:
+                              type: string
+                            specimenType:
+                              type: string
+                            resultType:
+                              type: string
+                            sortOrder:
+                              type: integer
+                          required:
+                            - labTestId
+                            - code
+                            - name
+                            - specimenType
+                            - resultType
+                            - sortOrder
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - code
+                      - name
+                      - isActive
+                      - serviceTariffId
+                      - price
+                      - members
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: bbbbbbbb-2222-4222-8222-bbbbbbbbbbbb
+                    code: DARAH-RUTIN
+                    name: Darah Rutin
+                    isActive: true
+                    serviceTariffId: cccccccc-3333-4333-8333-cccccccccccc
+                    price: 120000
+                    members:
+                      - labTestId: aaaaaaaa-1111-4111-8111-aaaaaaaaaaaa
+                        code: HB
+                        name: Hemoglobin
+                        specimenType: WHOLE_BLOOD
+                        resultType: NUMERIC
+                        sortOrder: 1
+                    createdAt: 2026-07-20T08:00:00.000Z
+                    updatedAt: 2026-07-20T08:00:00.000Z
+                  message: Lab panel updated
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Lab panel not found, or a named lab test does not exist.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Lab panel not found, or a named lab test does not exist.
+      security:
+        - bearer: []
+      summary: Update a laboratory panel
+      tags: *a50
   /api/v1/satusehat/patients/{patientId}/link:
     post:
       operationId: SatusehatLinkController_linkPatient_v1
@@ -34922,7 +36419,7 @@ paths:
       security:
         - bearer: []
       summary: Link a patient to their SATUSEHAT IHS number
-      tags: &a49
+      tags: &a51
         - SATUSEHAT
   /api/v1/satusehat/doctors/{doctorId}/link:
     post:
@@ -34993,7 +36490,7 @@ paths:
       security:
         - bearer: []
       summary: Link a doctor to their SATUSEHAT IHS practitioner number
-      tags: *a49
+      tags: *a51
   /api/v1/satusehat/submissions:
     get:
       operationId: SatusehatSubmissionController_listSubmissions_v1
@@ -35134,7 +36631,7 @@ paths:
       security:
         - bearer: []
       summary: List SATUSEHAT submission outbox entries
-      tags: &a50
+      tags: &a52
         - SATUSEHAT
   /api/v1/satusehat/submissions/{id}/retry:
     post:
@@ -35243,7 +36740,7 @@ paths:
       security:
         - bearer: []
       summary: Retry a failed SATUSEHAT submission
-      tags: *a50
+      tags: *a52
   /api/v1/bpjs/config:
     get:
       operationId: BpjsPcareConfigController_getConfig_v1
@@ -35357,7 +36854,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS PCare bridging configuration
-      tags: &a51
+      tags: &a53
         - BPJS PCare
     put:
       operationId: BpjsPcareConfigController_upsertConfig_v1
@@ -35495,7 +36992,7 @@ paths:
       security:
         - bearer: []
       summary: Create or replace the BPJS PCare bridging configuration
-      tags: *a51
+      tags: *a53
     delete:
       operationId: BpjsPcareConfigController_deleteConfig_v1
       parameters: []
@@ -35554,7 +37051,7 @@ paths:
       security:
         - bearer: []
       summary: Delete the BPJS PCare bridging configuration
-      tags: *a51
+      tags: *a53
   /api/v1/bpjs/config/test-connection:
     post:
       operationId: BpjsPcareConfigController_testConnection_v1
@@ -35620,7 +37117,7 @@ paths:
       security:
         - bearer: []
       summary: Test the stored BPJS PCare credentials
-      tags: *a51
+      tags: *a53
   /api/v1/bpjs/reference/sync:
     post:
       operationId: BpjsReferenceController_syncCatalogs_v1
@@ -35708,7 +37205,7 @@ paths:
       security:
         - bearer: []
       summary: Sync the enumerable BPJS PCare reference catalogs
-      tags: &a52
+      tags: &a54
         - BPJS PCare
   /api/v1/bpjs/reference/status:
     get:
@@ -35775,7 +37272,7 @@ paths:
       security:
         - bearer: []
       summary: Read per-catalog BPJS reference sync status
-      tags: *a52
+      tags: *a54
   /api/v1/bpjs/reference/{catalog}:
     get:
       operationId: BpjsReferenceController_searchCatalog_v1
@@ -35869,7 +37366,7 @@ paths:
       security:
         - bearer: []
       summary: Search a synced BPJS reference catalog locally
-      tags: *a52
+      tags: *a54
   /api/v1/bpjs/reference/{catalog}/search:
     post:
       operationId: BpjsReferenceController_searchCatalogRemote_v1
@@ -35975,7 +37472,7 @@ paths:
       security:
         - bearer: []
       summary: Search a keyword-only BPJS catalog live and cache the results
-      tags: *a52
+      tags: *a54
   /api/v1/bpjs/mappings:
     get:
       operationId: BpjsMappingController_getOverview_v1
@@ -36063,7 +37560,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS mapping overview
-      tags: &a53
+      tags: &a55
         - BPJS PCare
   /api/v1/bpjs/mappings/doctors/{doctorId}:
     put:
@@ -36157,7 +37654,7 @@ paths:
       security:
         - bearer: []
       summary: Set or clear a doctor’s BPJS kdDokter mapping
-      tags: *a53
+      tags: *a55
   /api/v1/bpjs/mappings/specialties/{specialtyId}:
     put:
       operationId: BpjsMappingController_setSpecialtyMapping_v1
@@ -36246,7 +37743,7 @@ paths:
       security:
         - bearer: []
       summary: Set or clear a specialty’s BPJS kdPoli mapping
-      tags: *a53
+      tags: *a55
   /api/v1/bpjs/mappings/medications/{medicationId}:
     put:
       operationId: BpjsMappingController_setMedicationMapping_v1
@@ -36340,7 +37837,7 @@ paths:
       security:
         - bearer: []
       summary: Link or unlink a medication’s DPHO code
-      tags: *a53
+      tags: *a55
   /api/v1/bpjs/eligibility/patients/{patientId}/check:
     post:
       operationId: BpjsEligibilityController_checkEligibility_v1
@@ -36640,7 +38137,7 @@ paths:
       security:
         - bearer: []
       summary: List BPJS PCare submission outbox entries
-      tags: &a54
+      tags: &a56
         - BPJS PCare
   /api/v1/bpjs/submissions/{id}/retry:
     post:
@@ -36749,7 +38246,7 @@ paths:
       security:
         - bearer: []
       summary: Retry a failed BPJS PCare submission
-      tags: *a54
+      tags: *a56
   /api/v1/bpjs/reports/monthly:
     get:
       operationId: BpjsReportController_getMonthlyReport_v1
@@ -36996,7 +38493,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS Antrean Online bridging configuration
-      tags: &a55
+      tags: &a57
         - BPJS Antrean
     put:
       operationId: BpjsAntreanConfigController_upsertConfig_v1
@@ -37137,7 +38634,7 @@ paths:
       security:
         - bearer: []
       summary: Create or replace the BPJS Antrean Online bridging configuration
-      tags: *a55
+      tags: *a57
     delete:
       operationId: BpjsAntreanConfigController_deleteConfig_v1
       parameters: []
@@ -37196,7 +38693,7 @@ paths:
       security:
         - bearer: []
       summary: Delete the BPJS Antrean Online bridging configuration
-      tags: *a55
+      tags: *a57
   /api/v1/bpjs/antrean/config/test-connection:
     post:
       operationId: BpjsAntreanConfigController_testConnection_v1
@@ -37262,7 +38759,7 @@ paths:
       security:
         - bearer: []
       summary: Test the stored BPJS Antrean credentials
-      tags: *a55
+      tags: *a57
   /api/v1/bpjs/antrean/inbound-readiness:
     get:
       operationId: BpjsAntreanConfigController_getInboundReadiness_v1
@@ -37332,7 +38829,7 @@ paths:
       security:
         - bearer: []
       summary: Report whether the inbound Antrean web services can serve BPJS
-      tags: *a55
+      tags: *a57
   /api/v1/bpjs/antrean/hfis-reconciliation:
     get:
       operationId: BpjsAntreanConfigController_getHfisReconciliation_v1
@@ -37434,7 +38931,7 @@ paths:
       security:
         - bearer: []
       summary: Compare HFIS against HMS and report the disagreements
-      tags: *a55
+      tags: *a57
   /api/v1/admin/features:
     get:
       operationId: FeatureAdminController_getEntitlements_v1
@@ -37513,7 +39010,7 @@ paths:
       security:
         - bearer: []
       summary: List every feature and whether this client has it
-      tags: &a56
+      tags: &a58
         - Feature Entitlements
   /api/v1/admin/features/{key}:
     put:
@@ -37630,7 +39127,7 @@ paths:
       security:
         - bearer: []
       summary: Switch a feature on or off for this client
-      tags: *a56
+      tags: *a58
   /api/v1/features/availability:
     get:
       operationId: FeatureAvailabilityController_getAvailability_v1
@@ -37753,7 +39250,7 @@ paths:
       security:
         - bearer: []
       summary: List active roles
-      tags: &a57
+      tags: &a59
         - RBAC
     post:
       operationId: RbacController_createRole_v1
@@ -37840,7 +39337,7 @@ paths:
       security:
         - bearer: []
       summary: Create a custom role
-      tags: *a57
+      tags: *a59
   /api/v1/rbac/permissions:
     get:
       operationId: RbacController_getPermissionCatalog_v1
@@ -37920,7 +39417,7 @@ paths:
       security:
         - bearer: []
       summary: List the permission catalog
-      tags: *a57
+      tags: *a59
   /api/v1/rbac/roles/{id}:
     get:
       operationId: RbacController_getRoleById_v1
@@ -38039,7 +39536,7 @@ paths:
       security:
         - bearer: []
       summary: Get a role with its permissions and member count
-      tags: *a57
+      tags: *a59
     patch:
       operationId: RbacController_updateRole_v1
       parameters:
@@ -38138,7 +39635,7 @@ paths:
       security:
         - bearer: []
       summary: Update a role name or description
-      tags: *a57
+      tags: *a59
     delete:
       operationId: RbacController_deleteRole_v1
       parameters:
@@ -38214,7 +39711,7 @@ paths:
       security:
         - bearer: []
       summary: Soft-delete a role
-      tags: *a57
+      tags: *a59
   /api/v1/rbac/roles/{id}/permissions:
     put:
       operationId: RbacController_setRolePermissions_v1
@@ -38360,7 +39857,7 @@ paths:
       security:
         - bearer: []
       summary: Replace the permission set attached to a role
-      tags: *a57
+      tags: *a59
   /api/v1/rbac/assign-role:
     post:
       operationId: RbacController_assignRole_v1
@@ -38452,7 +39949,7 @@ paths:
       security:
         - bearer: []
       summary: Assign a role to a user
-      tags: *a57
+      tags: *a59
   /api/v1/rbac/unassign-role:
     post:
       operationId: RbacController_unassignRole_v1
@@ -38544,7 +40041,7 @@ paths:
       security:
         - bearer: []
       summary: Unassign a role from a user
-      tags: *a57
+      tags: *a59
   /api/v1/health:
     get:
       operationId: HealthController_getHealth_v1
@@ -39605,6 +41102,7 @@ components:
             - CONSULTATION
             - PROCEDURE
             - ACCOMMODATION
+            - LAB
             - OTHER
         icd9cmCode:
           type: string
@@ -39640,6 +41138,7 @@ components:
             - CONSULTATION
             - PROCEDURE
             - ACCOMMODATION
+            - LAB
             - OTHER
         icd9cmCode:
           type: string
@@ -40964,6 +42463,8 @@ components:
           maximum: 1000000
           exclusiveMaximum: false
           default: 0
+        isVaccine:
+          type: boolean
       required:
         - code
         - name
@@ -41033,6 +42534,8 @@ components:
           exclusiveMinimum: false
           maximum: 1000000
           exclusiveMaximum: false
+        isVaccine:
+          type: boolean
     CreatePrescriptionDto:
       type: object
       properties:
@@ -41536,6 +43039,14 @@ components:
           type: string
           maxLength: 5000
           nullable: true
+        prognosis:
+          type: string
+          enum:
+            - BONAM
+            - DUBIA_AD_BONAM
+            - DUBIA_AD_MALAM
+            - MALAM
+          nullable: true
     RecordVitalSignsDto:
       type: object
       properties:
@@ -41639,6 +43150,52 @@ components:
         performedAt:
           type: string
           format: date-time
+    AddImmunizationDto:
+      type: object
+      properties:
+        medicationId:
+          type: string
+          format: uuid
+        occurredAt:
+          type: string
+          format: date-time
+        lotNumber:
+          type: string
+          minLength: 1
+          maxLength: 16
+        expirationDate:
+          type: string
+        doseNumber:
+          type: integer
+          minimum: 1
+          exclusiveMinimum: false
+          maximum: 20
+          exclusiveMaximum: false
+        route:
+          type: string
+          enum:
+            - IM
+            - SC
+            - ID
+            - ORAL
+            - NASAL
+        site:
+          type: string
+          enum:
+            - LEFT_ARM
+            - RIGHT_ARM
+            - LEFT_THIGH
+            - RIGHT_THIGH
+            - OTHER
+        performedById:
+          type: string
+          format: uuid
+        notes:
+          type: string
+          minLength: 1
+          maxLength: 1000
+      required:
+        - medicationId
     UpsertBpjsReferralDto:
       type: object
       properties:
@@ -41668,6 +43225,235 @@ components:
       required:
         - destinationProviderCode
         - estimatedReferralDate
+    CreateLabTestDto:
+      type: object
+      properties:
+        code:
+          type: string
+          minLength: 1
+          maxLength: 32
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        loincCode:
+          type: string
+          minLength: 1
+          maxLength: 32
+          nullable: true
+        loincDisplay:
+          type: string
+          minLength: 1
+          maxLength: 200
+          nullable: true
+        specimenType:
+          type: string
+          enum:
+            - WHOLE_BLOOD
+            - SERUM
+            - PLASMA
+            - URINE
+            - STOOL
+            - SPUTUM
+            - SWAB
+            - OTHER
+        resultType:
+          type: string
+          enum:
+            - NUMERIC
+            - TEXT
+            - CODED
+        unit:
+          type: string
+          minLength: 1
+          maxLength: 32
+          nullable: true
+        decimals:
+          type: integer
+          minimum: 0
+          exclusiveMinimum: false
+          maximum: 6
+          exclusiveMaximum: false
+        codedOptions:
+          type: array
+          maxItems: 20
+          items:
+            type: string
+            minLength: 1
+            maxLength: 200
+        isActive:
+          type: boolean
+        serviceTariffId:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+        - code
+        - name
+        - specimenType
+        - resultType
+    UpdateLabTestDto:
+      type: object
+      properties:
+        code:
+          type: string
+          minLength: 1
+          maxLength: 32
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        loincCode:
+          type: string
+          minLength: 1
+          maxLength: 32
+          nullable: true
+        loincDisplay:
+          type: string
+          minLength: 1
+          maxLength: 200
+          nullable: true
+        specimenType:
+          type: string
+          enum:
+            - WHOLE_BLOOD
+            - SERUM
+            - PLASMA
+            - URINE
+            - STOOL
+            - SPUTUM
+            - SWAB
+            - OTHER
+        resultType:
+          type: string
+          enum:
+            - NUMERIC
+            - TEXT
+            - CODED
+        unit:
+          type: string
+          minLength: 1
+          maxLength: 32
+          nullable: true
+        decimals:
+          type: integer
+          minimum: 0
+          exclusiveMinimum: false
+          maximum: 6
+          exclusiveMaximum: false
+        codedOptions:
+          type: array
+          maxItems: 20
+          items:
+            type: string
+            minLength: 1
+            maxLength: 200
+        isActive:
+          type: boolean
+        serviceTariffId:
+          type: string
+          format: uuid
+          nullable: true
+    ReplaceLabReferenceRangesDto:
+      type: object
+      properties:
+        ranges:
+          type: array
+          maxItems: 50
+          items:
+            type: object
+            properties:
+              sex:
+                type: string
+                enum:
+                  - MALE
+                  - FEMALE
+                nullable: true
+              ageMinDays:
+                type: integer
+                minimum: 0
+                exclusiveMinimum: false
+                maximum: 36500
+                exclusiveMaximum: false
+                nullable: true
+              ageMaxDays:
+                type: integer
+                minimum: 0
+                exclusiveMinimum: false
+                maximum: 36500
+                exclusiveMaximum: false
+                nullable: true
+              low:
+                type: number
+                nullable: true
+              high:
+                type: number
+                nullable: true
+              criticalLow:
+                type: number
+                nullable: true
+              criticalHigh:
+                type: number
+                nullable: true
+              textNormal:
+                type: string
+                minLength: 1
+                maxLength: 200
+                nullable: true
+      required:
+        - ranges
+    CreateLabPanelDto:
+      type: object
+      properties:
+        code:
+          type: string
+          minLength: 1
+          maxLength: 32
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        isActive:
+          type: boolean
+        serviceTariffId:
+          type: string
+          format: uuid
+          nullable: true
+        labTestIds:
+          type: array
+          minItems: 1
+          maxItems: 50
+          items:
+            type: string
+            format: uuid
+      required:
+        - code
+        - name
+        - labTestIds
+    UpdateLabPanelDto:
+      type: object
+      properties:
+        code:
+          type: string
+          minLength: 1
+          maxLength: 32
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        isActive:
+          type: boolean
+        serviceTariffId:
+          type: string
+          format: uuid
+          nullable: true
+        labTestIds:
+          type: array
+          minItems: 1
+          maxItems: 50
+          items:
+            type: string
+            format: uuid
     UpsertBpjsPcareConfigDto:
       type: object
       properties:

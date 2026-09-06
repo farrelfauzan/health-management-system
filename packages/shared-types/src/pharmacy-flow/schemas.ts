@@ -127,6 +127,8 @@ export const createMedicationSchema = z.object({
   unit: medicationUnitSchema.optional(),
   category: medicationCategorySchema.optional(),
   reorderLevel: medicationReorderLevelSchema.optional().default(0),
+  /** P10-T16. Whether this row is a vaccine, which is what filters the immunisation picker. */
+  isVaccine: z.boolean().optional(),
 }).strict();
 
 export const updateMedicationSchema = z
@@ -139,6 +141,7 @@ export const updateMedicationSchema = z
     unit: medicationUnitSchema.nullable().optional(),
     category: medicationCategorySchema.nullable().optional(),
     reorderLevel: medicationReorderLevelSchema.optional(),
+    isVaccine: z.boolean().optional(),
   })
   .strict()
   .refine((payload) => Object.values(payload).some((value) => value !== undefined), {

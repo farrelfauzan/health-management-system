@@ -194,6 +194,7 @@ describe('EncounterService', () => {
         vitalSigns: [],
         diagnoses: [],
         procedures: [],
+        immunizations: [],
         prescriptions: [],
       });
 
@@ -252,6 +253,7 @@ describe('EncounterService', () => {
         ],
         diagnoses: [],
         procedures: [],
+        immunizations: [],
         prescriptions: [],
       });
 

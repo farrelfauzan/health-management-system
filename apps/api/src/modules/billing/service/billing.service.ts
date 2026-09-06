@@ -69,6 +69,7 @@ const ITEM_TYPE_BY_TARIFF_CATEGORY: Readonly<
   CONSULTATION: 'CONSULTATION',
   PROCEDURE: 'PROCEDURE',
   ACCOMMODATION: 'ACCOMMODATION',
+  LAB: 'LAB',
   OTHER: 'OTHER',
 };
 
@@ -314,6 +315,9 @@ export class BillingService {
     const procedures = await this.collectProcedureItems(encounter);
     items.push(...procedures.items);
     gaps.push(...procedures.gaps);
+    const immunizations = await this.collectImmunizationItems(encounter);
+    items.push(...immunizations.items);
+    gaps.push(...immunizations.gaps);
     const medications = this.collectMedicationItems(dispensedItems);
     const compounds = await this.collectCompoundItems(dispensedItems);
     items.push(...compounds.items);
@@ -386,6 +390,52 @@ export class BillingService {
       if (!tariff) {
         gaps.push({
           reason: 'NO_TARIFF_FOR_PROCEDURE',
+          code,
+          description: grouped.display,
+        });
+        continue;
+      }
+      items.push(this.buildTariffItem(tariff, 'PROCEDURE', grouped.quantity));
+    }
+    return { items, gaps };
+  }
+
+  /**
+   * A vaccination is a billable act, not a dispensed product: the vaccine
+   * never crosses the pharmacy counter, so the medication collector below
+   * would never see it. It is priced from a tariff sharing the vaccine's
+   * catalog code — the same shape as a procedure priced by its ICD-9-CM code —
+   * and an unpriced one is a visible gap rather than a free injection.
+   *
+   * Repeated doses of the same vaccine on one visit collapse into one line
+   * with a quantity, as repeated procedures do.
+   */
+  private async collectImmunizationItems(
+    encounter: BillingSourceEncounterRecord,
+  ): Promise<CollectedItems> {
+    const items: CreateInvoiceItemPayload[] = [];
+    const gaps: InvoiceGenerationGap[] = [];
+    if (encounter.immunizations.length === 0) {
+      // Most visits vaccinate nobody; there is nothing to look up.
+      return { items, gaps };
+    }
+    const quantityByCode = new Map<string, { quantity: number; display: string }>();
+    for (const immunization of encounter.immunizations) {
+      const existing = quantityByCode.get(immunization.medicationCode);
+      quantityByCode.set(immunization.medicationCode, {
+        quantity: (existing?.quantity ?? 0) + 1,
+        display: immunization.medicationName,
+      });
+    }
+    const tariffs = await this.serviceTariffRepository.findActiveTariffsByCodes([
+      ...quantityByCode.keys(),
+    ]);
+    const tariffByCode = new Map(tariffs.map((tariff) => [tariff.code, tariff]));
+    for (const [code, grouped] of quantityByCode) {
+      const tariff = tariffByCode.get(code);
+      if (!tariff) {
+        gaps.push({
+          reason: 'NO_TARIFF_FOR_IMMUNIZATION',
           code,
           description: grouped.display,
         });

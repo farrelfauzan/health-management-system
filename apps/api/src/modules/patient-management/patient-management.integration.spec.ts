@@ -23,6 +23,10 @@ const SPEC_PRIVACY_NOTICE = {
   provenance: 'FRONT_DESK',
 } as const;
 
+type AuditLogWrite = {
+  data: { action: string; metadata?: { fields?: string[] } };
+};
+
 describe('PatientManagement integration', () => {
   let app: INestApplication;
   let jwtService: JwtService;
@@ -424,6 +428,35 @@ describe('PatientManagement integration', () => {
       expect(response.status).toBe(200);
       expect(response.body.data.nik).toBe('3201015205900001');
       expect(response.body.data.bpjsNumber).toBeUndefined();
+    });
+
+    it('reveals the IHS number alongside the NIK under one audit row naming both', async () => {
+      const token = await signTokenWith([
+        { action: 'read-identifier', resource: 'Patient', scope: 'ANY' },
+      ]);
+
+      patientRepositoryMock.findPatientIdentifiers.mockResolvedValue({
+        nik: '3201015205900001',
+        bpjsNumber: null,
+        satusehatPatientId: 'P02478375538',
+      });
+
+      const response = await request(app.getHttpServer())
+        .get('/api/v1/v1/patients/f746de50-6b45-4351-9bb6-45aeb3f671f9/identifiers')
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.data.satusehatPatientId).toBe('P02478375538');
+      const unmaskWrites = prismaServiceMock.auditLog.create.mock.calls.filter(
+        ([write]) => (write as AuditLogWrite).data.action === 'PATIENT_IDENTIFIER_UNMASKED',
+      );
+      expect(unmaskWrites).toHaveLength(1);
+      expect((unmaskWrites[0]?.[0] as AuditLogWrite).data.metadata?.fields).toEqual(
+        expect.arrayContaining(['nik', 'satusehatPatientId']),
+      );
+      // The trail says which identifiers were revealed, never what they were.
+      expect(JSON.stringify(unmaskWrites)).not.toContain('P02478375538');
+      expect(JSON.stringify(unmaskWrites)).not.toContain('3201015205900001');
     });
   });
 

@@ -11,6 +11,7 @@ import {
   PrescriptionScopeActor,
   resolvePrescriptionStatusAfterDispense,
   UpdateMedicationRecordPayload,
+  VaccineCatalogEntry,
 } from '@hms/shared-types';
 import { ConflictException, Injectable } from '@nestjs/common';
 
@@ -287,6 +288,19 @@ export class PharmacyFlowRepository {
       include: this.availableStockInclude(inventoryDate),
     });
     return medication ? this.withComputedStock(medication) : null;
+  }
+
+  /**
+   * Only a live row flagged `isVaccine` qualifies. Recording paracetamol as an
+   * immunisation would put a nonsense `Immunization` in the national record,
+   * and the flag is the only thing that separates a vaccine from any other KFA
+   * product in this catalog (P10-T16).
+   */
+  async findActiveVaccineById(id: string): Promise<VaccineCatalogEntry | null> {
+    return this.prisma.findFirstActive(this.prisma.medication, {
+      where: { id, isVaccine: true },
+      select: { id: true, name: true, kfaCode: true },
+    });
   }
 
   async findMedicationByCode(code: string) {

@@ -31,6 +31,7 @@ export type PatientAllergyMinAggregateOutputType = {
   substance: string | null
   reaction: string | null
   severity: $Enums.AllergySeverity | null
+  satusehatAllergyId: string | null
   createdAt: Date | null
   updatedAt: Date | null
   deletedAt: Date | null
@@ -42,6 +43,7 @@ export type PatientAllergyMaxAggregateOutputType = {
   substance: string | null
   reaction: string | null
   severity: $Enums.AllergySeverity | null
+  satusehatAllergyId: string | null
   createdAt: Date | null
   updatedAt: Date | null
   deletedAt: Date | null
@@ -53,6 +55,7 @@ export type PatientAllergyCountAggregateOutputType = {
   substance: number
   reaction: number
   severity: number
+  satusehatAllergyId: number
   createdAt: number
   updatedAt: number
   deletedAt: number
@@ -66,6 +69,7 @@ export type PatientAllergyMinAggregateInputType = {
   substance?: true
   reaction?: true
   severity?: true
+  satusehatAllergyId?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -77,6 +81,7 @@ export type PatientAllergyMaxAggregateInputType = {
   substance?: true
   reaction?: true
   severity?: true
+  satusehatAllergyId?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -88,6 +93,7 @@ export type PatientAllergyCountAggregateInputType = {
   substance?: true
   reaction?: true
   severity?: true
+  satusehatAllergyId?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -172,6 +178,7 @@ export type PatientAllergyGroupByOutputType = {
   substance: string
   reaction: string | null
   severity: $Enums.AllergySeverity
+  satusehatAllergyId: string | null
   createdAt: Date
   updatedAt: Date
   deletedAt: Date | null
@@ -204,6 +211,7 @@ export type PatientAllergyWhereInput = {
   substance?: Prisma.StringFilter<"PatientAllergy"> | string
   reaction?: Prisma.StringNullableFilter<"PatientAllergy"> | string | null
   severity?: Prisma.EnumAllergySeverityFilter<"PatientAllergy"> | $Enums.AllergySeverity
+  satusehatAllergyId?: Prisma.StringNullableFilter<"PatientAllergy"> | string | null
   createdAt?: Prisma.DateTimeFilter<"PatientAllergy"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"PatientAllergy"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"PatientAllergy"> | Date | string | null
@@ -216,6 +224,7 @@ export type PatientAllergyOrderByWithRelationInput = {
   substance?: Prisma.SortOrder
   reaction?: Prisma.SortOrderInput | Prisma.SortOrder
   severity?: Prisma.SortOrder
+  satusehatAllergyId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -231,6 +240,7 @@ export type PatientAllergyWhereUniqueInput = Prisma.AtLeast<{
   substance?: Prisma.StringFilter<"PatientAllergy"> | string
   reaction?: Prisma.StringNullableFilter<"PatientAllergy"> | string | null
   severity?: Prisma.EnumAllergySeverityFilter<"PatientAllergy"> | $Enums.AllergySeverity
+  satusehatAllergyId?: Prisma.StringNullableFilter<"PatientAllergy"> | string | null
   createdAt?: Prisma.DateTimeFilter<"PatientAllergy"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"PatientAllergy"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"PatientAllergy"> | Date | string | null
@@ -243,6 +253,7 @@ export type PatientAllergyOrderByWithAggregationInput = {
   substance?: Prisma.SortOrder
   reaction?: Prisma.SortOrderInput | Prisma.SortOrder
   severity?: Prisma.SortOrder
+  satusehatAllergyId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -260,6 +271,7 @@ export type PatientAllergyScalarWhereWithAggregatesInput = {
   substance?: Prisma.StringWithAggregatesFilter<"PatientAllergy"> | string
   reaction?: Prisma.StringNullableWithAggregatesFilter<"PatientAllergy"> | string | null
   severity?: Prisma.EnumAllergySeverityWithAggregatesFilter<"PatientAllergy"> | $Enums.AllergySeverity
+  satusehatAllergyId?: Prisma.StringNullableWithAggregatesFilter<"PatientAllergy"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"PatientAllergy"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"PatientAllergy"> | Date | string
   deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"PatientAllergy"> | Date | string | null
@@ -270,6 +282,7 @@ export type PatientAllergyCreateInput = {
   substance: string
   reaction?: string | null
   severity: $Enums.AllergySeverity
+  satusehatAllergyId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -282,6 +295,7 @@ export type PatientAllergyUncheckedCreateInput = {
   substance: string
   reaction?: string | null
   severity: $Enums.AllergySeverity
+  satusehatAllergyId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -292,6 +306,7 @@ export type PatientAllergyUpdateInput = {
   substance?: Prisma.StringFieldUpdateOperationsInput | string
   reaction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   severity?: Prisma.EnumAllergySeverityFieldUpdateOperationsInput | $Enums.AllergySeverity
+  satusehatAllergyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -304,6 +319,7 @@ export type PatientAllergyUncheckedUpdateInput = {
   substance?: Prisma.StringFieldUpdateOperationsInput | string
   reaction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   severity?: Prisma.EnumAllergySeverityFieldUpdateOperationsInput | $Enums.AllergySeverity
+  satusehatAllergyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -315,6 +331,7 @@ export type PatientAllergyCreateManyInput = {
   substance: string
   reaction?: string | null
   severity: $Enums.AllergySeverity
+  satusehatAllergyId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -325,6 +342,7 @@ export type PatientAllergyUpdateManyMutationInput = {
   substance?: Prisma.StringFieldUpdateOperationsInput | string
   reaction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   severity?: Prisma.EnumAllergySeverityFieldUpdateOperationsInput | $Enums.AllergySeverity
+  satusehatAllergyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -336,6 +354,7 @@ export type PatientAllergyUncheckedUpdateManyInput = {
   substance?: Prisma.StringFieldUpdateOperationsInput | string
   reaction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   severity?: Prisma.EnumAllergySeverityFieldUpdateOperationsInput | $Enums.AllergySeverity
+  satusehatAllergyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -357,6 +376,7 @@ export type PatientAllergyCountOrderByAggregateInput = {
   substance?: Prisma.SortOrder
   reaction?: Prisma.SortOrder
   severity?: Prisma.SortOrder
+  satusehatAllergyId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -368,6 +388,7 @@ export type PatientAllergyMaxOrderByAggregateInput = {
   substance?: Prisma.SortOrder
   reaction?: Prisma.SortOrder
   severity?: Prisma.SortOrder
+  satusehatAllergyId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -379,6 +400,7 @@ export type PatientAllergyMinOrderByAggregateInput = {
   substance?: Prisma.SortOrder
   reaction?: Prisma.SortOrder
   severity?: Prisma.SortOrder
+  satusehatAllergyId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -435,6 +457,7 @@ export type PatientAllergyCreateWithoutPatientInput = {
   substance: string
   reaction?: string | null
   severity: $Enums.AllergySeverity
+  satusehatAllergyId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -445,6 +468,7 @@ export type PatientAllergyUncheckedCreateWithoutPatientInput = {
   substance: string
   reaction?: string | null
   severity: $Enums.AllergySeverity
+  satusehatAllergyId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -485,6 +509,7 @@ export type PatientAllergyScalarWhereInput = {
   substance?: Prisma.StringFilter<"PatientAllergy"> | string
   reaction?: Prisma.StringNullableFilter<"PatientAllergy"> | string | null
   severity?: Prisma.EnumAllergySeverityFilter<"PatientAllergy"> | $Enums.AllergySeverity
+  satusehatAllergyId?: Prisma.StringNullableFilter<"PatientAllergy"> | string | null
   createdAt?: Prisma.DateTimeFilter<"PatientAllergy"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"PatientAllergy"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"PatientAllergy"> | Date | string | null
@@ -495,6 +520,7 @@ export type PatientAllergyCreateManyPatientInput = {
   substance: string
   reaction?: string | null
   severity: $Enums.AllergySeverity
+  satusehatAllergyId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -505,6 +531,7 @@ export type PatientAllergyUpdateWithoutPatientInput = {
   substance?: Prisma.StringFieldUpdateOperationsInput | string
   reaction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   severity?: Prisma.EnumAllergySeverityFieldUpdateOperationsInput | $Enums.AllergySeverity
+  satusehatAllergyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -515,6 +542,7 @@ export type PatientAllergyUncheckedUpdateWithoutPatientInput = {
   substance?: Prisma.StringFieldUpdateOperationsInput | string
   reaction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   severity?: Prisma.EnumAllergySeverityFieldUpdateOperationsInput | $Enums.AllergySeverity
+  satusehatAllergyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -525,6 +553,7 @@ export type PatientAllergyUncheckedUpdateManyWithoutPatientInput = {
   substance?: Prisma.StringFieldUpdateOperationsInput | string
   reaction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   severity?: Prisma.EnumAllergySeverityFieldUpdateOperationsInput | $Enums.AllergySeverity
+  satusehatAllergyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -538,6 +567,7 @@ export type PatientAllergySelect<ExtArgs extends runtime.Types.Extensions.Intern
   substance?: boolean
   reaction?: boolean
   severity?: boolean
+  satusehatAllergyId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
@@ -550,6 +580,7 @@ export type PatientAllergySelectCreateManyAndReturn<ExtArgs extends runtime.Type
   substance?: boolean
   reaction?: boolean
   severity?: boolean
+  satusehatAllergyId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
@@ -562,6 +593,7 @@ export type PatientAllergySelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   substance?: boolean
   reaction?: boolean
   severity?: boolean
+  satusehatAllergyId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
@@ -574,12 +606,13 @@ export type PatientAllergySelectScalar = {
   substance?: boolean
   reaction?: boolean
   severity?: boolean
+  satusehatAllergyId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
 }
 
-export type PatientAllergyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "patientId" | "substance" | "reaction" | "severity" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["patientAllergy"]>
+export type PatientAllergyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "patientId" | "substance" | "reaction" | "severity" | "satusehatAllergyId" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["patientAllergy"]>
 export type PatientAllergyInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   patient?: boolean | Prisma.PatientProfileDefaultArgs<ExtArgs>
 }
@@ -601,6 +634,13 @@ export type $PatientAllergyPayload<ExtArgs extends runtime.Types.Extensions.Inte
     substance: string
     reaction: string | null
     severity: $Enums.AllergySeverity
+    /**
+     * IHS id returned by SATUSEHAT on first successful submission (P10-T08).
+     * Non-null = reported, and never sent again; null = not yet reported. The
+     * allergy rides whichever encounter bundle happens to be next, because the
+     * fact is patient-scoped while the outbox is keyed by encounter.
+     */
+    satusehatAllergyId: string | null
     createdAt: Date
     updatedAt: Date
     deletedAt: Date | null
@@ -1033,6 +1073,7 @@ export interface PatientAllergyFieldRefs {
   readonly substance: Prisma.FieldRef<"PatientAllergy", 'String'>
   readonly reaction: Prisma.FieldRef<"PatientAllergy", 'String'>
   readonly severity: Prisma.FieldRef<"PatientAllergy", 'AllergySeverity'>
+  readonly satusehatAllergyId: Prisma.FieldRef<"PatientAllergy", 'String'>
   readonly createdAt: Prisma.FieldRef<"PatientAllergy", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"PatientAllergy", 'DateTime'>
   readonly deletedAt: Prisma.FieldRef<"PatientAllergy", 'DateTime'>

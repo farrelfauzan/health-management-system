@@ -18,4 +18,6 @@ export const INVOICE_GENERATION_GAP_MESSAGES: Record<InvoiceGenerationGapReason,
     'One ingredient of this compound has no price, so the whole compound was left off — a half-priced racikan reads as a real number. Price the named ingredient and regenerate.',
   NO_COMPOUNDING_FEE_TARIFF:
     'The compound was priced from its ingredients, but there is no active JASA-RACIK tariff, so the compounding fee was not billed. Add one under Tariffs and reissue.',
+  NO_TARIFF_FOR_IMMUNIZATION:
+    'This vaccination has no matching tariff. Add a tariff whose code matches the vaccine’s catalog code and regenerate, or add the line by hand from the draft invoice.',
 };

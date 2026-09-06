@@ -26,7 +26,8 @@ export type SatusehatErrorCode =
   | 'SATUSEHAT_TIMEOUT'
   | 'SATUSEHAT_UNAVAILABLE'
   | 'SATUSEHAT_CIRCUIT_OPEN'
-  | 'SATUSEHAT_REQUEST_REJECTED';
+  | 'SATUSEHAT_REQUEST_REJECTED'
+  | 'SATUSEHAT_AMBIGUOUS_MATCH';
 
 export type SatusehatHttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
@@ -57,5 +58,6 @@ export type SatusehatSearchBundleEntry = {
 };
 
 export type SatusehatSearchBundle = {
+  readonly total?: unknown;
   readonly entry?: readonly SatusehatSearchBundleEntry[];
 };

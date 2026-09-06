@@ -2,9 +2,11 @@ import { BadRequestException, ConflictException, NotFoundException } from '@nest
 
 import { AuditContextService } from '../../../common/audit/audit-context.service';
 import { AuthRepository } from '../../auth/repository/auth.repository';
+import { PharmacyFlowService } from '../../pharmacy-flow/service/pharmacy-flow.service';
 import { Icd9cmCodeService } from '../../terminology/service/icd9cm-code.service';
 import { Icd10CodeService } from '../../terminology/service/icd10-code.service';
 import { AddDiagnosisDto } from '../dto/add-diagnosis.dto';
+import { AddImmunizationDto } from '../dto/add-immunization.dto';
 import { AddProcedureDto } from '../dto/add-procedure.dto';
 import { RecordVitalSignsDto } from '../dto/record-vital-signs.dto';
 import { EncounterRepository } from '../repository/encounter.repository';
@@ -31,6 +33,9 @@ function buildActor(
 describe('EncounterClinicalDataService', () => {
   const encounterRepositoryMock = {
     findEncounterWithRelationsById: jest.fn(),
+    createImmunization: jest.fn(),
+    findImmunizationById: jest.fn(),
+    softDeleteImmunization: jest.fn(),
     findActiveDoctorByOwnerUserId: jest.fn(),
     findActiveDoctorPatientAssignment: jest.fn(),
     createVitalSigns: jest.fn(),
@@ -46,6 +51,9 @@ describe('EncounterClinicalDataService', () => {
   const icd10CodeServiceMock = {
     findActiveIcd10CodeById: jest.fn(),
   } as unknown as Icd10CodeService;
+  const pharmacyFlowServiceMock = {
+    findActiveVaccineById: jest.fn(),
+  } as unknown as PharmacyFlowService;
   const icd9cmCodeServiceMock = {
     findActiveIcd9cmCodeById: jest.fn(),
   } as unknown as Icd9cmCodeService;
@@ -56,6 +64,7 @@ describe('EncounterClinicalDataService', () => {
     new EncounterMapper(),
     icd10CodeServiceMock,
     icd9cmCodeServiceMock,
+    pharmacyFlowServiceMock,
   );
 
   const currentUser = { sub: '4e8580c4-9e80-44ff-9f8f-8c8f9d8d90f8', email: 'admin@hms.local' };
@@ -63,6 +72,31 @@ describe('EncounterClinicalDataService', () => {
   const icd10CodeId = 'ffffffff-ffff-4fff-8fff-ffffffffffff';
   const icd9cmCodeId = 'ffffffff-ffff-4fff-8fff-fffffffffff9';
   const timestamp = new Date('2026-07-20T08:00:00.000Z');
+  const patientId = '38a3f0f1-51d3-4f68-9d54-1f6a1de1a002';
+  const doctorId = '7c1f2f0a-2f4b-4d6a-9d0a-9c4e1f0b9c11';
+
+  function buildImmunizationRecord(overrides: Record<string, unknown> = {}) {
+    return {
+      id: 'imm-1',
+      encounterId,
+      patientId,
+      medicationId: '9a8b7c6d-5e4f-4a3b-8c2d-1e0f9a8b7c6d',
+      medicationName: 'Vaksin DPT-HB-Hib',
+      kfaCode: '93000123',
+      occurredAt: timestamp,
+      lotNumber: null,
+      expirationDate: null,
+      doseNumber: 3,
+      route: null,
+      site: null,
+      performedById: doctorId,
+      performedByName: 'dr. Sari Wulandari',
+      notes: null,
+      createdAt: timestamp,
+      updatedAt: timestamp,
+      ...overrides,
+    };
+  }
 
   const openEncounter = {
     id: encounterId,
@@ -305,6 +339,100 @@ describe('EncounterClinicalDataService', () => {
       await service.removeProcedure(encounterId, 'procedure-1', currentUser);
 
       expect(encounterRepositoryMock.softDeleteProcedure).toHaveBeenCalledWith('procedure-1');
+    });
+  });
+  describe('immunizations', () => {
+    const vaccineId = '9a8b7c6d-5e4f-4a3b-8c2d-1e0f9a8b7c6d';
+
+    beforeEach(() => {
+      (encounterRepositoryMock.findEncounterWithRelationsById as jest.Mock).mockResolvedValue(openEncounter);
+      (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
+        buildActor([{ action: 'write', resource: 'Encounter', scope: 'ANY' }]),
+      );
+    });
+
+    it('records a vaccination against the encounter’s own patient', async () => {
+      (pharmacyFlowServiceMock.findActiveVaccineById as jest.Mock).mockResolvedValue({
+        id: vaccineId,
+        name: 'Vaksin DPT-HB-Hib',
+        kfaCode: '93000123',
+      });
+      (encounterRepositoryMock.createImmunization as jest.Mock).mockResolvedValue(buildImmunizationRecord());
+
+      await service.addImmunization(
+        encounterId,
+        { medicationId: vaccineId, doseNumber: 3 } as AddImmunizationDto,
+        currentUser,
+      );
+
+      expect(encounterRepositoryMock.createImmunization as jest.Mock).toHaveBeenCalledWith(
+        expect.objectContaining({ encounterId, patientId, medicationId: vaccineId, doseNumber: 3 }),
+      );
+    });
+
+    it('defaults the performer to the attending doctor', async () => {
+      (pharmacyFlowServiceMock.findActiveVaccineById as jest.Mock).mockResolvedValue({
+        id: vaccineId,
+        name: 'Vaksin DPT-HB-Hib',
+        kfaCode: '93000123',
+      });
+      (encounterRepositoryMock.createImmunization as jest.Mock).mockResolvedValue(buildImmunizationRecord());
+
+      await service.addImmunization(
+        encounterId,
+        { medicationId: vaccineId } as AddImmunizationDto,
+        currentUser,
+      );
+
+      expect(encounterRepositoryMock.createImmunization as jest.Mock).toHaveBeenCalledWith(
+        expect.objectContaining({ performedById: doctorId }),
+      );
+    });
+
+    it('refuses a catalog row that is not flagged as a vaccine', async () => {
+      // Recording paracetamol as an immunisation would put a nonsense
+      // Immunization in the national record.
+      (pharmacyFlowServiceMock.findActiveVaccineById as jest.Mock).mockResolvedValue(null);
+
+      await expect(
+        service.addImmunization(
+          encounterId,
+          { medicationId: vaccineId } as AddImmunizationDto,
+          currentUser,
+        ),
+      ).rejects.toBeInstanceOf(BadRequestException);
+      expect(encounterRepositoryMock.createImmunization as jest.Mock).not.toHaveBeenCalled();
+    });
+
+    it('records a vaccine with no KFA code — the clinic still gave it', async () => {
+      (pharmacyFlowServiceMock.findActiveVaccineById as jest.Mock).mockResolvedValue({
+        id: vaccineId,
+        name: 'Vaksin lokal',
+        kfaCode: null,
+      });
+      (encounterRepositoryMock.createImmunization as jest.Mock).mockResolvedValue(
+        buildImmunizationRecord({ kfaCode: null }),
+      );
+
+      const actual = await service.addImmunization(
+        encounterId,
+        { medicationId: vaccineId } as AddImmunizationDto,
+        currentUser,
+      );
+
+      expect(actual.kfaCode).toBeUndefined();
+      expect(encounterRepositoryMock.createImmunization as jest.Mock).toHaveBeenCalled();
+    });
+
+    it('refuses to retract an immunisation that belongs to another encounter', async () => {
+      (encounterRepositoryMock.findImmunizationById as jest.Mock).mockResolvedValue(
+        buildImmunizationRecord({ encounterId: 'another-encounter' }),
+      );
+
+      await expect(
+        service.removeImmunization(encounterId, 'imm-1', currentUser),
+      ).rejects.toBeInstanceOf(NotFoundException);
+      expect(encounterRepositoryMock.softDeleteImmunization as jest.Mock).not.toHaveBeenCalled();
     });
   });
 });

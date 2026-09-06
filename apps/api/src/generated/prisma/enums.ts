@@ -62,6 +62,9 @@ export const AuditAction = {
   SATUSEHAT_PATIENT_LINKED: 'SATUSEHAT_PATIENT_LINKED',
   SATUSEHAT_DOCTOR_LINKED: 'SATUSEHAT_DOCTOR_LINKED',
   SATUSEHAT_SUBMISSION_RETRIED: 'SATUSEHAT_SUBMISSION_RETRIED',
+  SATUSEHAT_LINK_AMBIGUOUS: 'SATUSEHAT_LINK_AMBIGUOUS',
+  IMMUNIZATION_RECORDED: 'IMMUNIZATION_RECORDED',
+  IMMUNIZATION_REMOVED: 'IMMUNIZATION_REMOVED',
   BPJS_CONFIG_CREATED: 'BPJS_CONFIG_CREATED',
   BPJS_CONFIG_UPDATED: 'BPJS_CONFIG_UPDATED',
   BPJS_CONFIG_DELETED: 'BPJS_CONFIG_DELETED',
@@ -269,6 +272,38 @@ export const CompoundPreparation = {
 export type CompoundPreparation = (typeof CompoundPreparation)[keyof typeof CompoundPreparation]
 
 
+export const EncounterPrognosis = {
+  BONAM: 'BONAM',
+  DUBIA_AD_BONAM: 'DUBIA_AD_BONAM',
+  DUBIA_AD_MALAM: 'DUBIA_AD_MALAM',
+  MALAM: 'MALAM'
+} as const
+
+export type EncounterPrognosis = (typeof EncounterPrognosis)[keyof typeof EncounterPrognosis]
+
+
+export const ImmunizationRoute = {
+  IM: 'IM',
+  SC: 'SC',
+  ID: 'ID',
+  ORAL: 'ORAL',
+  NASAL: 'NASAL'
+} as const
+
+export type ImmunizationRoute = (typeof ImmunizationRoute)[keyof typeof ImmunizationRoute]
+
+
+export const ImmunizationSite = {
+  LEFT_ARM: 'LEFT_ARM',
+  RIGHT_ARM: 'RIGHT_ARM',
+  LEFT_THIGH: 'LEFT_THIGH',
+  RIGHT_THIGH: 'RIGHT_THIGH',
+  OTHER: 'OTHER'
+} as const
+
+export type ImmunizationSite = (typeof ImmunizationSite)[keyof typeof ImmunizationSite]
+
+
 export const AllergySeverity = {
   MILD: 'MILD',
   MODERATE: 'MODERATE',
@@ -451,6 +486,7 @@ export const ServiceTariffCategory = {
   CONSULTATION: 'CONSULTATION',
   PROCEDURE: 'PROCEDURE',
   ACCOMMODATION: 'ACCOMMODATION',
+  LAB: 'LAB',
   OTHER: 'OTHER'
 } as const
 
@@ -472,6 +508,7 @@ export const InvoiceItemType = {
   PROCEDURE: 'PROCEDURE',
   MEDICATION: 'MEDICATION',
   ACCOMMODATION: 'ACCOMMODATION',
+  LAB: 'LAB',
   OTHER: 'OTHER'
 } as const
 
@@ -806,3 +843,26 @@ export const DocumentApprovalStatus = {
 } as const
 
 export type DocumentApprovalStatus = (typeof DocumentApprovalStatus)[keyof typeof DocumentApprovalStatus]
+
+
+export const LabResultType = {
+  NUMERIC: 'NUMERIC',
+  TEXT: 'TEXT',
+  CODED: 'CODED'
+} as const
+
+export type LabResultType = (typeof LabResultType)[keyof typeof LabResultType]
+
+
+export const LabSpecimenType = {
+  WHOLE_BLOOD: 'WHOLE_BLOOD',
+  SERUM: 'SERUM',
+  PLASMA: 'PLASMA',
+  URINE: 'URINE',
+  STOOL: 'STOOL',
+  SPUTUM: 'SPUTUM',
+  SWAB: 'SWAB',
+  OTHER: 'OTHER'
+} as const
+
+export type LabSpecimenType = (typeof LabSpecimenType)[keyof typeof LabSpecimenType]

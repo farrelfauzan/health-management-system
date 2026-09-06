@@ -17,12 +17,15 @@ describe('Feature catalog', () => {
   const seedSql = readFileSync(join(__dirname, '../../../prisma/seed.sql'), 'utf8');
 
   function readSeededFeatureKeys(): string[] {
-    const block = /AS seed_feature_entitlements\(feature_key\)/.exec(seedSql);
+    const block = /AS seed_feature_entitlements\(feature_key, is_enabled\)/.exec(seedSql);
     expect(block).not.toBeNull();
     const insertStart = seedSql.lastIndexOf('INSERT INTO "feature_entitlements"');
     expect(insertStart).toBeGreaterThan(-1);
     const insertBlock = seedSql.slice(insertStart, block?.index);
-    return Array.from(insertBlock.matchAll(/\('([a-z0-9-]+)'\)/g), (match) => match[1] ?? '');
+    return Array.from(
+      insertBlock.matchAll(/\('([a-z0-9-]+)', (?:TRUE|FALSE)\)/g),
+      (match) => match[1] ?? '',
+    );
   }
 
   it('gives every entry a kebab-case key, a name, and a description', () => {
