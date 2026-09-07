@@ -39,10 +39,15 @@ export default async function DoctorLayout({ children }: DoctorLayoutProps) {
   // so it is dropped by name. The launcher goes too — the assistant is not
   // one of the things they can still do.
   const offboarding = resolveOffboardingSession(claims, 'doctor');
-  const sections = filterNavSections(buildAppAbility(rules), DOCTOR_NAV_SECTIONS, [
+  const excludedNavHrefs = [
     ...(offboarding ? ['/doctor/dashboard'] : []),
     ...resolveDisabledNavHrefs(claims),
-  ]);
+  ];
+  const sections = filterNavSections(
+    buildAppAbility(rules),
+    DOCTOR_NAV_SECTIONS,
+    excludedNavHrefs,
+  );
   const isChatEnabled = offboarding === null && isFeatureEnabled(claims, 'ai-chatbot');
   const profile = resolveShellProfile(claims);
 
@@ -53,7 +58,7 @@ export default async function DoctorLayout({ children }: DoctorLayoutProps) {
         <SidebarProvider style={SIDEBAR_STYLE}>
           <AppSidebar sections={sections} homeHref="/doctor/dashboard" />
           <SidebarInset className="min-w-0">
-            <TopBar profile={profile} />
+            <TopBar profile={profile} excludedNavHrefs={excludedNavHrefs} />
             {offboarding ? (
               <OffboardingBanner
                 deadline={offboarding.deadline}

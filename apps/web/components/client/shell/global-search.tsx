@@ -26,7 +26,18 @@ const SEARCH_DEBOUNCE_MS = 250;
 const MAC_SHORTCUT_HINT = '⌘K';
 const DEFAULT_SHORTCUT_HINT = 'Ctrl+K';
 
-export function GlobalSearch() {
+type GlobalSearchProps = {
+  /**
+   * The nav routes the shell has already dropped — a feature this client did
+   * not buy (IMP-9), and the dashboard a pharmacist-only or offboarding user
+   * has no entry for. The palette must exclude exactly what the sidebar
+   * excludes: an entry offered here and hidden there is a link that only
+   * bounces off the page's own gate back to the dashboard.
+   */
+  excludedHrefs?: readonly string[];
+};
+
+export function GlobalSearch({ excludedHrefs = [] }: GlobalSearchProps) {
   const router = useRouter();
   const pathname = usePathname();
   const ability = useAbility();
@@ -79,6 +90,7 @@ export function GlobalSearch() {
     const sections = filterNavSections(
       ability,
       isDoctorPortal ? DOCTOR_NAV_SECTIONS : ADMIN_NAV_SECTIONS,
+      excludedHrefs,
     );
     const items = sections.flatMap((section) =>
       section.items.map((item) => ({
@@ -93,7 +105,7 @@ export function GlobalSearch() {
     }
     const lowered = trimmedQuery.toLowerCase();
     return items.filter((item) => item.title.toLowerCase().includes(lowered));
-  }, [ability, isDoctorPortal, navigationT, trimmedQuery]);
+  }, [ability, excludedHrefs, isDoctorPortal, navigationT, trimmedQuery]);
   const patientItems: GlobalSearchGroupItem[] = results.patients.map((patient) => ({
     key: `patient-${patient.id}`,
     title: patient.fullName,

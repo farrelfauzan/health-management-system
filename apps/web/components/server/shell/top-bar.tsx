@@ -10,14 +10,16 @@ import type { ShellProfile } from '#lib/shell/shell-profile';
 
 type TopBarProps = {
   profile: ShellProfile;
+  /** Forwarded to the palette so it hides exactly what the sidebar hides. */
+  excludedNavHrefs?: readonly string[];
 };
 
-export async function TopBar({ profile }: TopBarProps) {
+export async function TopBar({ profile, excludedNavHrefs = [] }: TopBarProps) {
   const t = await getTranslations('authShell.shell.topBar');
   return (
     <header className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-6 border-b bg-card px-8 shadow-sm">
       <SidebarTrigger className="md:hidden" />
-      <GlobalSearch />
+      <GlobalSearch excludedHrefs={excludedNavHrefs} />
       <div className="ml-auto flex items-center gap-2">
         <AiAssistantTopBarLink label={t('openAiAssistant')} />
         <NotificationsMenu />
