@@ -135,7 +135,9 @@ export const AuditAction = {
   LAB_SPECIMEN_RECEIVED: 'LAB_SPECIMEN_RECEIVED',
   LAB_SPECIMEN_REJECTED: 'LAB_SPECIMEN_REJECTED',
   LAB_ORDER_DISPOSITION_CHANGED: 'LAB_ORDER_DISPOSITION_CHANGED',
-  PRESCRIPTION_DISPOSITION_CHANGED: 'PRESCRIPTION_DISPOSITION_CHANGED'
+  PRESCRIPTION_DISPOSITION_CHANGED: 'PRESCRIPTION_DISPOSITION_CHANGED',
+  LAB_REQUEST_PRINTED: 'LAB_REQUEST_PRINTED',
+  PRESCRIPTION_PRINTED: 'PRESCRIPTION_PRINTED'
 } as const
 
 export type AuditAction = (typeof AuditAction)[keyof typeof AuditAction]
@@ -533,7 +535,9 @@ export type PaymentMethod = (typeof PaymentMethod)[keyof typeof PaymentMethod]
 
 
 export const DocumentTemplateKind = {
-  INVOICE: 'INVOICE'
+  INVOICE: 'INVOICE',
+  LAB_REQUEST: 'LAB_REQUEST',
+  PRESCRIPTION: 'PRESCRIPTION'
 } as const
 
 export type DocumentTemplateKind = (typeof DocumentTemplateKind)[keyof typeof DocumentTemplateKind]

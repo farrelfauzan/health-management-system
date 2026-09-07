@@ -1,6 +1,7 @@
 import {
   Actor,
   ActorScopeResolution,
+  ClinicalRequestDocumentView,
   ExpiryReportResponse,
   getCalendarDateInTimeZone,
   DispenseRecordDetailRecord,
@@ -25,6 +26,9 @@ import { ConfigService } from '@nestjs/config';
 
 import { CurrentUser } from '../../../common/auth/current-user.type';
 import { AuthRepository } from '../../auth/repository/auth.repository';
+import { ClinicProfileService } from '../../billing/service/clinic-profile.service';
+import { ClinicalRequestDocumentService } from '../../clinical-request-document/service/clinical-request-document.service';
+import { buildPrescriptionContext } from './build-prescription-context';
 import { CreateDispenseDto } from '../dto/create-dispense.dto';
 import { CreateMedicationDto } from '../dto/create-medication.dto';
 import { CreatePrescriptionDto } from '../dto/create-prescription.dto';
@@ -44,6 +48,8 @@ export class PharmacyFlowService {
   constructor(
     private readonly pharmacyFlowRepository: PharmacyFlowRepository,
     private readonly authRepository: AuthRepository,
+    private readonly clinicProfileService: ClinicProfileService,
+    private readonly clinicalRequestDocumentService: ClinicalRequestDocumentService,
     configService: ConfigService,
   ) {
     this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? 'Asia/Jakarta';
@@ -227,6 +233,64 @@ export class PharmacyFlowService {
     });
 
     return this.toPrescriptionResponse(created);
+  }
+
+  /**
+   * Renders the resep the patient carries to an apotek (P18-T12), and files it
+   * as a clinical document on the visit.
+   *
+   * The pharmacy counterpart of the surat pengantar, and the reason the
+   * printed-resep-only case works at all: a patient who intends to buy the
+   * medicine outside now leaves with paper, and P18-T11 records that intent so
+   * nobody later reads the undispensed prescription as pharmacy backlog.
+   *
+   * Printing is not a state change — the prescription stays ISSUED, and a
+   * reprint replaces the stored file rather than filing a second copy.
+   */
+  async printPrescriptionDocument(
+    id: string,
+    currentUser: CurrentUser,
+  ): Promise<ClinicalRequestDocumentView> {
+    const actor = await this.getActorOrThrow(currentUser);
+    const readScope = this.resolveScope(actor, 'Prescription', 'read');
+
+    if (!readScope.hasAny && !readScope.hasOwn) {
+      throw new ForbiddenException('You are not allowed to read prescriptions');
+    }
+    const prescription = await this.pharmacyFlowRepository.findPrescriptionDetailById(id);
+
+    if (!prescription) {
+      throw new NotFoundException('Prescription not found');
+    }
+    if (!readScope.hasAny) {
+      this.assertParticipant(prescription, currentUser);
+    }
+    const context = buildPrescriptionContext({
+      prescription,
+      patientDateOfBirth: prescription.patient.dateOfBirth,
+      patientSex: prescription.patient.sex,
+      clinic: await this.clinicProfileService.getProfile(),
+      clinicLogoDataUri: null,
+    });
+
+    return this.clinicalRequestDocumentService.renderAndFile(context, currentUser.sub);
+  }
+
+  /**
+   * Under OWN scope the people who may print are the two the resep is between:
+   * the patient it is for and the doctor who signed it.
+   */
+  private assertParticipant(
+    prescription: PrescriptionDetailRecord,
+    currentUser: CurrentUser,
+  ): void {
+    const isParticipant =
+      prescription.patient.ownerUserId === currentUser.sub ||
+      prescription.doctor.ownerUserId === currentUser.sub;
+
+    if (!isParticipant) {
+      throw new ForbiddenException('You are not allowed to read this prescription');
+    }
   }
 
   async createDispense(payload: CreateDispenseDto, currentUser: CurrentUser) {

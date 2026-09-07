@@ -122,3 +122,27 @@ export type DocumentTemplateImportView = {
   contentHtml: string;
   warnings: DocumentTemplateImportWarning[];
 };
+
+/**
+ * One row of a printed clinical request's repeating block (`P18-T12`) —
+ * a requested test, or a prescribed medication. Values are already formatted
+ * for print: the resolver does the formatting so the HTML builder only places
+ * strings, exactly as the invoice renderer works.
+ */
+export type ClinicalRequestLine = Readonly<Record<string, string>>;
+
+/**
+ * A rendered clinical request, as its own route answers.
+ *
+ * `documentId` is an ordinary patient clinical file — the letter lands in the
+ * patient's document list like anything else filed on the visit, and is
+ * downloaded through the same signed-URL route. No second store.
+ */
+export type ClinicalRequestDocumentView = {
+  documentId: string;
+  kind: 'LAB_REQUEST' | 'PRESCRIPTION';
+  title: string;
+  /** Bumped on every reprint, so "which copy is this" is answerable. */
+  printCount: number;
+  renderedAt: string;
+};

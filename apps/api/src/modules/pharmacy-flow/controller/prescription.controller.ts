@@ -1,4 +1,14 @@
-import { Body, Controller, Get, HttpCode, Post, Query, UnauthorizedException } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Param,
+  ParseUUIDPipe,
+  Post,
+  Query,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
 import { AuthUser } from '../../../common/auth/auth-user.decorator';
@@ -80,6 +90,33 @@ export class PrescriptionController {
     return {
       data: prescription,
       message: 'Prescription created',
+    };
+  }
+
+  @Post(':id/document')
+  @HttpCode(200)
+  @Auth([{ action: 'read', subject: 'Prescription' }])
+  // SJ-4: printing reads the patient's record, so the access row is written
+  // whatever the business event says. `PRESCRIPTION_PRINTED` rides on top of
+  // it, the way `INVOICE_VOIDED` does.
+  @Audited({ resource: 'prescription-document', action: AuditAction.READ })
+  @ApiEndpoint({
+    summary: 'Print the resep for a prescription',
+    responseDescription:
+      'Renders the prescription as the paper the patient carries to an apotek — the clinic’s own or an outside one — and files it as a clinical document on the visit. A compound prints under its compound name rather than its ingredients: the apotek dispenses the puyer, and listing six substances where the doctor wrote one preparation invites somebody to hand over six. Reprinting replaces the stored file rather than filing a second copy, and every print is audited. Printing is not a state change.',
+    responseExample: { data: PHASE_THREE_EXAMPLES.pharmacy.prescriptionDocument },
+    notFoundDescription: 'Prescription not found.',
+  })
+  async printPrescriptionDocument(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @AuthUser() currentUser?: CurrentUser,
+  ) {
+    if (!currentUser?.sub) {
+      throw new UnauthorizedException('Missing authenticated user');
+    }
+
+    return {
+      data: await this.pharmacyFlowService.printPrescriptionDocument(id, currentUser),
     };
   }
 }

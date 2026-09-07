@@ -29,6 +29,7 @@ import type {
   LabOrderControllerGetLabOrderByIdV1200,
   LabOrderControllerListLabOrdersV1200,
   LabOrderControllerListLabOrdersV1Params,
+  LabOrderControllerPrintRequestLetterV1200,
   LabOrderControllerUpdateDispositionV1200,
   LabWorklistControllerListWorklistV1200,
   LabWorklistControllerListWorklistV1Params,
@@ -624,6 +625,98 @@ export function useLabOrderControllerUpdateDispositionV1<TData = Awaited<ReturnT
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getLabOrderControllerUpdateDispositionV1QueryOptions(id,updateLabOrderDispositionDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Print the surat pengantar for a laboratory order
+ */
+export const labOrderControllerPrintRequestLetterV1 = (
+    id: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<LabOrderControllerPrintRequestLetterV1200>(
+      {url: `/api/v1/lab-orders/${id}/request-document`, method: 'POST', signal
+    },
+      );
+    }
+
+
+
+
+export const getLabOrderControllerPrintRequestLetterV1QueryKey = (id: string,) => {
+    return [
+    'POST', `/api/v1/lab-orders/${id}/request-document`
+    ] as const;
+    }
+
+
+export const getLabOrderControllerPrintRequestLetterV1QueryOptions = <TData = Awaited<ReturnType<typeof labOrderControllerPrintRequestLetterV1>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof labOrderControllerPrintRequestLetterV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getLabOrderControllerPrintRequestLetterV1QueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof labOrderControllerPrintRequestLetterV1>>> = ({ signal }) => labOrderControllerPrintRequestLetterV1(id, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof labOrderControllerPrintRequestLetterV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type LabOrderControllerPrintRequestLetterV1QueryResult = NonNullable<Awaited<ReturnType<typeof labOrderControllerPrintRequestLetterV1>>>
+export type LabOrderControllerPrintRequestLetterV1QueryError = unknown
+
+
+export function useLabOrderControllerPrintRequestLetterV1<TData = Awaited<ReturnType<typeof labOrderControllerPrintRequestLetterV1>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof labOrderControllerPrintRequestLetterV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof labOrderControllerPrintRequestLetterV1>>,
+          TError,
+          Awaited<ReturnType<typeof labOrderControllerPrintRequestLetterV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useLabOrderControllerPrintRequestLetterV1<TData = Awaited<ReturnType<typeof labOrderControllerPrintRequestLetterV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof labOrderControllerPrintRequestLetterV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof labOrderControllerPrintRequestLetterV1>>,
+          TError,
+          Awaited<ReturnType<typeof labOrderControllerPrintRequestLetterV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useLabOrderControllerPrintRequestLetterV1<TData = Awaited<ReturnType<typeof labOrderControllerPrintRequestLetterV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof labOrderControllerPrintRequestLetterV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Print the surat pengantar for a laboratory order
+ */
+
+export function useLabOrderControllerPrintRequestLetterV1<TData = Awaited<ReturnType<typeof labOrderControllerPrintRequestLetterV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof labOrderControllerPrintRequestLetterV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getLabOrderControllerPrintRequestLetterV1QueryOptions(id,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

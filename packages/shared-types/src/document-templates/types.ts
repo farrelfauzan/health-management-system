@@ -78,3 +78,25 @@ export type ConvertedDocxTemplate = {
 export type DocxContentValidationResult =
   | { readonly isAccepted: true }
   | { readonly isAccepted: false; readonly reason: string };
+
+/**
+ * Everything a printed clinical request needs, gathered by the module that
+ * owns the record (`P18-T12`).
+ *
+ * The renderer takes this rather than a lab order or a prescription: it must
+ * not know what either of those is, or it becomes a second place where the
+ * rules about them live. The caller formats; this is already print-ready.
+ */
+export type ClinicalRequestRenderContext = {
+  kind: 'LAB_REQUEST' | 'PRESCRIPTION';
+  /** The clinical record being printed — a lab order id, or a prescription id. */
+  subjectId: string;
+  patientId: string;
+  encounterId: string | null;
+  /** Filed as the document's title, and shown in the patient's file list. */
+  title: string;
+  /** Scalar tokens, keyed by the registry token they fill. */
+  values: Readonly<Record<string, string>>;
+  /** The repeating block: requested tests, or prescribed medications. */
+  lines: readonly Readonly<Record<string, string>>[];
+};

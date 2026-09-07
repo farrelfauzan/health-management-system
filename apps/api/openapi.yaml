@@ -12129,6 +12129,8 @@ paths:
             type: string
             enum:
               - INVOICE
+              - LAB_REQUEST
+              - PRESCRIPTION
       responses:
         "200":
           description: Every live template of the kind, default first, each with its
@@ -13531,6 +13533,8 @@ paths:
             type: string
             enum:
               - INVOICE
+              - LAB_REQUEST
+              - PRESCRIPTION
       responses:
         "200":
           description: Every token the editor may offer and publish-time validation will
@@ -25631,6 +25635,89 @@ paths:
         - bearer: []
       summary: Create a prescription
       tags: *a36
+  /api/v1/prescriptions/{id}/document:
+    post:
+      operationId: PrescriptionController_printPrescriptionDocument_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Renders the prescription as the paper the patient carries to an
+            apotek — the clinic’s own or an outside one — and files it as a
+            clinical document on the visit. A compound prints under its compound
+            name rather than its ingredients: the apotek dispenses the puyer,
+            and listing six substances where the doctor wrote one preparation
+            invites somebody to hand over six. Reprinting replaces the stored
+            file rather than filing a second copy, and every print is audited.
+            Printing is not a state change."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      documentId:
+                        type: string
+                      kind:
+                        type: string
+                      title:
+                        type: string
+                      printCount:
+                        type: integer
+                      renderedAt:
+                        type: string
+                    required:
+                      - documentId
+                      - kind
+                      - title
+                      - printCount
+                      - renderedAt
+                required:
+                  - data
+                example:
+                  data:
+                    documentId: 77777777-dddd-4ddd-8ddd-777777777777
+                    kind: PRESCRIPTION
+                    title: Resep 00000447 — 20 Juli 2026
+                    printCount: 1
+                    renderedAt: 2026-07-20T08:00:00.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Prescription not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Prescription not found.
+      security:
+        - bearer: []
+      summary: Print the resep for a prescription
+      tags: *a36
   /api/v1/dispenses:
     post:
       operationId: DispenseController_createDispense_v1
@@ -37456,6 +37543,89 @@ paths:
         - bearer: []
       summary: Change where a laboratory order is filled and who pays
       tags: *a52
+  /api/v1/lab-orders/{id}/request-document:
+    post:
+      operationId: LabOrderController_printRequestLetter_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Renders the referral letter from the order and files it as a
+            clinical document on the visit, then answers with the document to
+            download. Rendered rather than drafted, so the letter and the order
+            can never disagree about which tests were requested. Reprinting is
+            expected — paper gets lost — and replaces the stored file rather
+            than filing a second copy; every print is audited. Printing is not a
+            state change: the order does not move, and a request nobody printed
+            is still a request the lab must run."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      documentId:
+                        type: string
+                      kind:
+                        type: string
+                      title:
+                        type: string
+                      printCount:
+                        type: integer
+                      renderedAt:
+                        type: string
+                    required:
+                      - documentId
+                      - kind
+                      - title
+                      - printCount
+                      - renderedAt
+                required:
+                  - data
+                example:
+                  data:
+                    documentId: 66666666-cccc-4ccc-8ccc-666666666666
+                    kind: LAB_REQUEST
+                    title: Surat pengantar laboratorium LAB/20260720/0001
+                    printCount: 1
+                    renderedAt: 2026-07-20T08:00:00.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Lab order not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Lab order not found.
+      security:
+        - bearer: []
+      summary: Print the surat pengantar for a laboratory order
+      tags: *a52
   /api/v1/lab-orders/{id}/collect:
     post:
       operationId: LabSpecimenController_collectLabSpecimens_v1
@@ -42945,6 +43115,8 @@ components:
           type: string
           enum:
             - INVOICE
+            - LAB_REQUEST
+            - PRESCRIPTION
         name:
           type: string
           minLength: 1

@@ -122,6 +122,13 @@ export type PrescriptionPatientProjection = {
   mrn: string;
   fullName: string;
   ownerUserId: string | null;
+  /**
+   * Printed on the resep (P18-T12). An apotek checks a dose against the
+   * patient's age, so a resep without one is a resep a pharmacist has to ring
+   * the clinic about.
+   */
+  dateOfBirth: Date | null;
+  sex: 'MALE' | 'FEMALE' | null;
 };
 
 export type PrescriptionDoctorProjection = {

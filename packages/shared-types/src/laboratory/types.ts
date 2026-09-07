@@ -258,6 +258,12 @@ export type LabWorklistPatientRecord = {
 export type LabWorklistOrderRecord = Omit<LabOrderRecord, 'items'> & {
   itemCount: number;
   patient: LabWorklistPatientRecord;
+  /**
+   * The practice licence the request is signed under, printed on the surat
+   * pengantar (P18-T12). Read from the doctor's own row rather than typed into
+   * a template, so a renewed SIP reaches every future letter without an edit.
+   */
+  orderedByLicenseNumber: string | null;
 };
 
 export type ListLabWorklistParams = {

@@ -11,4 +11,6 @@ export type DocumentTemplateVariableControllerListTemplateVariablesV1Kind = type
 
 export const DocumentTemplateVariableControllerListTemplateVariablesV1Kind = {
   INVOICE: 'INVOICE',
+  LAB_REQUEST: 'LAB_REQUEST',
+  PRESCRIPTION: 'PRESCRIPTION',
 } as const;

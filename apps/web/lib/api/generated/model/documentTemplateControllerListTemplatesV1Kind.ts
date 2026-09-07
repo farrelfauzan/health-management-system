@@ -11,4 +11,6 @@ export type DocumentTemplateControllerListTemplatesV1Kind = typeof DocumentTempl
 
 export const DocumentTemplateControllerListTemplatesV1Kind = {
   INVOICE: 'INVOICE',
+  LAB_REQUEST: 'LAB_REQUEST',
+  PRESCRIPTION: 'PRESCRIPTION',
 } as const;

@@ -11,4 +11,6 @@ export type CreateDocumentTemplateDtoKind = typeof CreateDocumentTemplateDtoKind
 
 export const CreateDocumentTemplateDtoKind = {
   INVOICE: 'INVOICE',
+  LAB_REQUEST: 'LAB_REQUEST',
+  PRESCRIPTION: 'PRESCRIPTION',
 } as const;

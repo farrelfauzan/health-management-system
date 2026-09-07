@@ -124,7 +124,8 @@ describe('Document template variables integration', () => {
   });
 
   it.each([
-    ['an unknown kind', '?kind=PRESCRIPTION'],
+    // See the sibling spec: `PRESCRIPTION` became real in P18-T12.
+    ['an unknown kind', '?kind=AGREEMENT'],
     ['no kind at all', ''],
   ])('refuses %s', async (_label, query) => {
     // The kind is required rather than defaulted to INVOICE: the second

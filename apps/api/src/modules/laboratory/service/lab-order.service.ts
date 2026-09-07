@@ -2,6 +2,7 @@ import {
   CancelLabOrderInput,
   CancelLabOrderMeta,
   ClinicalRequestDispositionInput,
+  ClinicalRequestDocumentView,
   CreateLabOrderInput,
   CreateLabOrderItemPayload,
   LabOrderListItem,
@@ -18,6 +19,9 @@ import { ConfigService } from '@nestjs/config';
 
 import { AuditService } from '../../../common/audit/audit.service';
 import { BillingService } from '../../billing/service/billing.service';
+import { ClinicProfileService } from '../../billing/service/clinic-profile.service';
+import { ClinicalRequestDocumentService } from '../../clinical-request-document/service/clinical-request-document.service';
+import { buildLabRequestContext } from './build-lab-request-context';
 import { CurrentUser } from '../../../common/auth/current-user.type';
 import { CreateLabOrderDto } from '../dto/create-lab-order.dto';
 import { ListLabOrdersQueryDto } from '../dto/list-lab-orders-query.dto';
@@ -57,6 +61,8 @@ export class LabOrderService {
     private readonly labOrderMapper: LabOrderMapper,
     private readonly auditService: AuditService,
     private readonly billingService: BillingService,
+    private readonly clinicProfileService: ClinicProfileService,
+    private readonly clinicalRequestDocumentService: ClinicalRequestDocumentService,
     configService: ConfigService,
   ) {
     this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
@@ -232,6 +238,43 @@ export class LabOrderService {
     });
 
     return this.labOrderMapper.toLabOrderView(updated);
+  }
+
+  /**
+   * Renders the surat pengantar the patient carries to the lab counter
+   * (P18-T12), and files it as a clinical document on the visit.
+   *
+   * Rendered from the order rather than drafted, which is the whole point: the
+   * letter and the order can then never disagree about which tests were
+   * requested. Reprinting is allowed and expected — paper gets lost — and
+   * replaces the stored file rather than filing a second copy.
+   *
+   * Never a state change: printing does not move the order, and a request that
+   * was never printed is still a request the lab must run.
+   */
+  async printRequestLetter(
+    id: string,
+    currentUser: CurrentUser,
+  ): Promise<ClinicalRequestDocumentView> {
+    const order = await this.findLabOrderOrThrow(id);
+    const scope = await this.labOrderAccessService.resolveScopeOrThrow(currentUser, 'read');
+    const encounter = await this.findEncounterOrThrow(order.encounterId);
+    this.labOrderAccessService.assertCanReadEncounterOrders({ encounter, scope, currentUser });
+    const worklistOrder = await this.labOrderRepository.findWorklistOrderById(order.id);
+
+    if (!worklistOrder) {
+      throw new NotFoundException('Lab order not found');
+    }
+    const context = buildLabRequestContext({
+      order,
+      patient: worklistOrder.patient,
+      doctorName: order.orderedByName,
+      doctorLicenseNumber: worklistOrder.orderedByLicenseNumber,
+      clinic: await this.clinicProfileService.getProfile(),
+      clinicLogoDataUri: null,
+    });
+
+    return this.clinicalRequestDocumentService.renderAndFile(context, currentUser.sub);
   }
 
   /**
