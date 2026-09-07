@@ -1122,11 +1122,13 @@ FROM (
     -- this off leaves the registry intact and takes away the second signature.
     ('document-approval', TRUE),
     ('cs-channels', TRUE),
-    -- P18-T01. The one row seeded FALSE. The laboratory module is new, no
-    -- clinic is using it, and a klinik that sends its specimens out has no use
-    -- for a worklist — so an operator switches it on deliberately rather than
-    -- finding lab screens they did not ask for.
-    ('laboratory', FALSE)
+    -- P18-T01 seeded this FALSE while the module was a catalog and nothing
+    -- else. On by default now, like every other row: the catalog is the screen
+    -- a clinic actually needs first, and shipping it switched off meant a fresh
+    -- database hid it with no UI to switch it back on. A klinik that sends its
+    -- specimens out still turns it off deliberately — the switch stays, only
+    -- its default moves.
+    ('laboratory', TRUE)
 ) AS seed_feature_entitlements(feature_key, is_enabled)
 ON CONFLICT ("feature_key") DO NOTHING;
 
