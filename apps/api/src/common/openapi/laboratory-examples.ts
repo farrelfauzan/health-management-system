@@ -50,6 +50,8 @@ const labOrderHeader = {
   priority: 'ROUTINE',
   clinicalNotes: 'Curiga anemia defisiensi besi',
   isFasting: false,
+  fulfilmentSite: 'INTERNAL',
+  chargeMode: 'CLINIC',
   recollectCount: 0,
   orderedAt: timestamp,
 };
@@ -155,6 +157,11 @@ export const LABORATORY_EXAMPLES = {
       isFasting: true,
     },
     cancelRequest: { reason: 'Pasien menolak pengambilan darah' },
+    dispositionRequest: {
+      fulfilmentSite: 'EXTERNAL',
+      chargeMode: 'EXTERNAL',
+      externalFacilityName: 'Laboratorium Prodia Kemang',
+    },
     summary: {
       id: labOrderId,
       orderNumber: labOrderHeader.orderNumber,

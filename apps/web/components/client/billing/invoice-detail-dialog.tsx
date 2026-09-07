@@ -15,6 +15,7 @@ import {
 import { useTranslations } from 'next-intl';
 
 import { AddInvoiceItemForm } from '#components/client/billing/add-invoice-item-form';
+import { ClinicalRequestsList } from '#components/client/billing/clinical-requests-list';
 import { InvoiceDeliverySection } from '#components/client/billing/invoice-delivery-section';
 import { InvoiceDocumentActions } from '#components/client/billing/invoice-document-actions';
 import { InvoiceItemsList } from '#components/client/billing/invoice-items-list';
@@ -122,6 +123,8 @@ export function InvoiceDetailDialog({ invoiceId, open, onOpenChange }: InvoiceDe
               onRemoveItem={canEditLines ? (itemId) => void handleRemoveItem(itemId) : undefined}
               removingItemId={removingItemId}
             />
+
+            <ClinicalRequestsList requests={invoice.clinicalRequests} />
 
             {canEditLines ? <AddInvoiceItemForm invoice={invoice} /> : null}
 

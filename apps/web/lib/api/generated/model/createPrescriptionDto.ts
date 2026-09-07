@@ -5,6 +5,8 @@
  * Health Management System API
  * OpenAPI spec version: 1.0.0
  */
+import type { CreatePrescriptionDtoChargeMode } from './createPrescriptionDtoChargeMode';
+import type { CreatePrescriptionDtoFulfilmentSite } from './createPrescriptionDtoFulfilmentSite';
 import type { CreatePrescriptionDtoItemsItem } from './createPrescriptionDtoItemsItem';
 
 export interface CreatePrescriptionDto {
@@ -21,4 +23,11 @@ export interface CreatePrescriptionDto {
      * @maxItems 50
      */
   items: CreatePrescriptionDtoItemsItem[];
+  fulfilmentSite?: CreatePrescriptionDtoFulfilmentSite;
+  chargeMode?: CreatePrescriptionDtoChargeMode;
+  /**
+     * @minLength 1
+     * @maxLength 200
+     */
+  externalFacilityName?: string;
 }

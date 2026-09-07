@@ -803,6 +803,20 @@ export type EnumPrescriptionStatusFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumPrescriptionStatusFilter<$PrismaModel> | $Enums.PrescriptionStatus
 }
 
+export type EnumFulfilmentSiteFilter<$PrismaModel = never> = {
+  equals?: $Enums.FulfilmentSite | Prisma.EnumFulfilmentSiteFieldRefInput<$PrismaModel>
+  in?: $Enums.FulfilmentSite[] | Prisma.ListEnumFulfilmentSiteFieldRefInput<$PrismaModel>
+  notIn?: $Enums.FulfilmentSite[] | Prisma.ListEnumFulfilmentSiteFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumFulfilmentSiteFilter<$PrismaModel> | $Enums.FulfilmentSite
+}
+
+export type EnumChargeModeFilter<$PrismaModel = never> = {
+  equals?: $Enums.ChargeMode | Prisma.EnumChargeModeFieldRefInput<$PrismaModel>
+  in?: $Enums.ChargeMode[] | Prisma.ListEnumChargeModeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ChargeMode[] | Prisma.ListEnumChargeModeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumChargeModeFilter<$PrismaModel> | $Enums.ChargeMode
+}
+
 export type EnumPrescriptionStatusWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.PrescriptionStatus | Prisma.EnumPrescriptionStatusFieldRefInput<$PrismaModel>
   in?: $Enums.PrescriptionStatus[] | Prisma.ListEnumPrescriptionStatusFieldRefInput<$PrismaModel>
@@ -811,6 +825,26 @@ export type EnumPrescriptionStatusWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumPrescriptionStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumPrescriptionStatusFilter<$PrismaModel>
+}
+
+export type EnumFulfilmentSiteWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.FulfilmentSite | Prisma.EnumFulfilmentSiteFieldRefInput<$PrismaModel>
+  in?: $Enums.FulfilmentSite[] | Prisma.ListEnumFulfilmentSiteFieldRefInput<$PrismaModel>
+  notIn?: $Enums.FulfilmentSite[] | Prisma.ListEnumFulfilmentSiteFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumFulfilmentSiteWithAggregatesFilter<$PrismaModel> | $Enums.FulfilmentSite
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumFulfilmentSiteFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumFulfilmentSiteFilter<$PrismaModel>
+}
+
+export type EnumChargeModeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ChargeMode | Prisma.EnumChargeModeFieldRefInput<$PrismaModel>
+  in?: $Enums.ChargeMode[] | Prisma.ListEnumChargeModeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ChargeMode[] | Prisma.ListEnumChargeModeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumChargeModeWithAggregatesFilter<$PrismaModel> | $Enums.ChargeMode
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumChargeModeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumChargeModeFilter<$PrismaModel>
 }
 
 export type EnumCompoundPreparationNullableFilter<$PrismaModel = never> = {
@@ -2671,6 +2705,20 @@ export type NestedEnumPrescriptionStatusFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumPrescriptionStatusFilter<$PrismaModel> | $Enums.PrescriptionStatus
 }
 
+export type NestedEnumFulfilmentSiteFilter<$PrismaModel = never> = {
+  equals?: $Enums.FulfilmentSite | Prisma.EnumFulfilmentSiteFieldRefInput<$PrismaModel>
+  in?: $Enums.FulfilmentSite[] | Prisma.ListEnumFulfilmentSiteFieldRefInput<$PrismaModel>
+  notIn?: $Enums.FulfilmentSite[] | Prisma.ListEnumFulfilmentSiteFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumFulfilmentSiteFilter<$PrismaModel> | $Enums.FulfilmentSite
+}
+
+export type NestedEnumChargeModeFilter<$PrismaModel = never> = {
+  equals?: $Enums.ChargeMode | Prisma.EnumChargeModeFieldRefInput<$PrismaModel>
+  in?: $Enums.ChargeMode[] | Prisma.ListEnumChargeModeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ChargeMode[] | Prisma.ListEnumChargeModeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumChargeModeFilter<$PrismaModel> | $Enums.ChargeMode
+}
+
 export type NestedEnumPrescriptionStatusWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.PrescriptionStatus | Prisma.EnumPrescriptionStatusFieldRefInput<$PrismaModel>
   in?: $Enums.PrescriptionStatus[] | Prisma.ListEnumPrescriptionStatusFieldRefInput<$PrismaModel>
@@ -2679,6 +2727,26 @@ export type NestedEnumPrescriptionStatusWithAggregatesFilter<$PrismaModel = neve
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumPrescriptionStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumPrescriptionStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumFulfilmentSiteWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.FulfilmentSite | Prisma.EnumFulfilmentSiteFieldRefInput<$PrismaModel>
+  in?: $Enums.FulfilmentSite[] | Prisma.ListEnumFulfilmentSiteFieldRefInput<$PrismaModel>
+  notIn?: $Enums.FulfilmentSite[] | Prisma.ListEnumFulfilmentSiteFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumFulfilmentSiteWithAggregatesFilter<$PrismaModel> | $Enums.FulfilmentSite
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumFulfilmentSiteFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumFulfilmentSiteFilter<$PrismaModel>
+}
+
+export type NestedEnumChargeModeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ChargeMode | Prisma.EnumChargeModeFieldRefInput<$PrismaModel>
+  in?: $Enums.ChargeMode[] | Prisma.ListEnumChargeModeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ChargeMode[] | Prisma.ListEnumChargeModeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumChargeModeWithAggregatesFilter<$PrismaModel> | $Enums.ChargeMode
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumChargeModeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumChargeModeFilter<$PrismaModel>
 }
 
 export type NestedEnumCompoundPreparationNullableFilter<$PrismaModel = never> = {

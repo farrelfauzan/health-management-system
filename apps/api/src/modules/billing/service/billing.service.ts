@@ -1,12 +1,17 @@
 import {
+  BillingClinicalRequestRecord,
   BillingDispensedItemRecord,
   BillingLabItemRecord,
   BillingSourceEncounterRecord,
+  ClinicalRequestBillingState,
+  ClinicalRequestSummary,
   canTransitionInvoiceStatus,
   CreateInvoiceItemPayload,
   getCalendarDateInTimeZone,
   InvoiceDetail,
+  InvoiceDetailRecord,
   InvoiceGenerationGap,
+  InvoiceItemResponse,
   InvoiceListItem,
   InvoicesListMeta,
   InvoiceItemTypeValue,
@@ -122,7 +127,7 @@ export class BillingService {
       items: collected.items,
     });
 
-    return { invoice: this.billingMapper.toInvoiceDetail(created), gaps: collected.gaps };
+    return { invoice: await this.toInvoiceDetail(created), gaps: collected.gaps };
   }
 
   async listInvoices(query: ListInvoicesQueryDto): Promise<{
@@ -153,7 +158,7 @@ export class BillingService {
       throw new NotFoundException('Invoice not found');
     }
 
-    return this.billingMapper.toInvoiceDetail(detail);
+    return this.toInvoiceDetail(detail);
   }
 
   /** DRAFT → ISSUED: the document handed to the patient. From here it is corrected by voiding, never edited. */
@@ -168,7 +173,7 @@ export class BillingService {
     // blocked by the document pipeline.
     await this.invoiceDocumentService.snapshotOnIssue(id);
 
-    return this.billingMapper.toInvoiceDetail(issued);
+    return this.toInvoiceDetail(issued);
   }
 
   /**
@@ -200,7 +205,7 @@ export class BillingService {
       cashierId: currentUser.sub,
     });
 
-    return this.billingMapper.toInvoiceDetail(paid);
+    return this.toInvoiceDetail(paid);
   }
 
   /**
@@ -231,7 +236,7 @@ export class BillingService {
       },
     });
 
-    return this.billingMapper.toInvoiceDetail(voided);
+    return this.toInvoiceDetail(voided);
   }
 
   /**
@@ -263,7 +268,7 @@ export class BillingService {
       metadata: { serviceTariffId: tariff.id, tariffCode: tariff.code, quantity: item.quantity },
     });
 
-    return this.billingMapper.toInvoiceDetail(updated);
+    return this.toInvoiceDetail(updated);
   }
 
   /** Removes one line from a DRAFT invoice; the total follows the lines that remain. */
@@ -297,7 +302,7 @@ export class BillingService {
       },
     });
 
-    return this.billingMapper.toInvoiceDetail(updated);
+    return this.toInvoiceDetail(updated);
   }
 
   /**
@@ -330,6 +335,72 @@ export class BillingService {
     }
 
     return this.billingRepository.findEncounterIdsWithSettledInvoice(encounterIds);
+  }
+
+  /**
+   * Builds the detail together with the visit's clinical requests, so a bill
+   * carrying no lab line can say *why* (P18-T11). Without it the cashier cannot
+   * tell a deliberate exclusion — the patient went to an outside lab, BPJS
+   * covers it — from work that was quietly dropped.
+   */
+  private async toInvoiceDetail(record: InvoiceDetailRecord): Promise<InvoiceDetail> {
+    const detail = this.billingMapper.toInvoiceDetail(record);
+    if (!record.encounterId) {
+      // An inpatient bill hangs off an admission; there is no encounter whose
+      // requests to explain.
+      return detail;
+    }
+    const requests = await this.billingRepository.findClinicalRequestsForEncounter(
+      record.encounterId,
+    );
+
+    return { ...detail, clinicalRequests: this.toClinicalRequestSummaries(requests, detail.items) };
+  }
+
+  /**
+   * Each request is matched to the lines it actually produced, so "billed" is
+   * read off the invoice rather than assumed from the disposition. A CLINIC
+   * request with no line is `NOT_BILLED` — an unpriced test, or medicine the
+   * pharmacy has not dispensed — which is a different fact from one that was
+   * never meant to be charged here.
+   */
+  private toClinicalRequestSummaries(
+    requests: BillingClinicalRequestRecord[],
+    items: InvoiceItemResponse[],
+  ): ClinicalRequestSummary[] {
+    return requests.map((request) => {
+      const lines = items.filter((item) =>
+        request.kind === 'LAB_ORDER'
+          ? item.labOrderId === request.id
+          : item.prescriptionItemId !== undefined && request.id === item.prescriptionItemId,
+      );
+      const billedCents = lines.reduce((total, line) => total + toCents(line.amount), 0);
+
+      return {
+        kind: request.kind,
+        id: request.id,
+        reference: request.reference ?? undefined,
+        description: request.description,
+        state: this.resolveRequestState(request.chargeMode, lines.length > 0),
+        externalFacilityName: request.externalFacilityName ?? undefined,
+        invoiceItemIds: lines.map((line) => line.id),
+        billedAmount: toRupiah(billedCents),
+      };
+    });
+  }
+
+  private resolveRequestState(
+    chargeMode: BillingClinicalRequestRecord['chargeMode'],
+    hasLines: boolean,
+  ): ClinicalRequestBillingState {
+    if (chargeMode === 'EXTERNAL') {
+      return 'EXTERNAL';
+    }
+    if (chargeMode === 'COVERED') {
+      return 'COVERED';
+    }
+
+    return hasLines ? 'BILLED' : 'NOT_BILLED';
   }
 
   private async collectInvoiceItems(params: {
@@ -501,6 +572,14 @@ export class BillingService {
     const gaps: InvoiceGenerationGap[] = [];
     const billedPanelIds = new Set<string>();
     for (const labItem of labItems) {
+      // P18-T11. EXTERNAL means the outside lab charges the patient directly
+      // and COVERED means a payer settles it away from the counter; billing
+      // either here would charge the patient for work this bill does not cover.
+      // The invoice's `clinicalRequests` section still names them, so the
+      // omission is explained rather than silent.
+      if (labItem.chargeMode !== 'CLINIC') {
+        continue;
+      }
       if (labItem.panelId === null) {
         this.pushLabTestLine(labItem, items, gaps);
         continue;
@@ -530,6 +609,7 @@ export class BillingService {
     items.push({
       itemType: 'LAB',
       serviceTariffId: labItem.testTariffId,
+      labOrderId: labItem.labOrderId,
       description: labItem.testName,
       quantity: 1,
       unitPrice: labItem.testPrice,
@@ -552,6 +632,7 @@ export class BillingService {
     items.push({
       itemType: 'LAB',
       serviceTariffId: labItem.panelTariffId,
+      labOrderId: labItem.labOrderId,
       description: labItem.panelName ?? labItem.testName,
       quantity: 1,
       unitPrice: labItem.panelPrice,
@@ -580,6 +661,14 @@ export class BillingService {
       grouped.set(dispensed.medicationId, {
         ...dispensed,
         quantity: (existing?.quantity ?? 0) + dispensed.quantity,
+        // Two prescription lines of the same drug collapse into one billed
+        // line, and that line came from both. Naming either one would be false
+        // provenance, so a merged group carries none — absent is honest,
+        // wrong is not (P18-T11).
+        prescriptionItemId:
+          existing && existing.prescriptionItemId !== dispensed.prescriptionItemId
+            ? null
+            : dispensed.prescriptionItemId,
       });
     }
     for (const dispensed of grouped.values()) {
@@ -597,6 +686,7 @@ export class BillingService {
       items.push({
         itemType: 'MEDICATION',
         medicationId: dispensed.medicationId ?? undefined,
+        prescriptionItemId: dispensed.prescriptionItemId ?? undefined,
         description: medication.name,
         quantity: dispensed.quantity,
         unitPrice: medication.unitPrice,
@@ -648,6 +738,7 @@ export class BillingService {
       );
       items.push({
         itemType: 'MEDICATION',
+        prescriptionItemId: compound.prescriptionItemId || undefined,
         description: compound.name,
         quantity: dispensed.quantity,
         unitPrice: toRupiah(componentCents),

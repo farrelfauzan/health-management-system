@@ -553,6 +553,9 @@ export class PharmacyFlowRepository {
           status: 'ISSUED',
           issuedAt: new Date(),
           notes: payload.notes,
+          fulfilmentSite: payload.fulfilmentSite,
+          chargeMode: payload.chargeMode,
+          externalFacilityName: payload.externalFacilityName,
           items: {
             create: payload.items.map((item) => ({
               medicationId: item.medicationId ?? null,

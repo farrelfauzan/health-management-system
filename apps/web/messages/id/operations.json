@@ -529,6 +529,18 @@
         "ACCOMMODATION": "Kamar",
         "LAB": "Laboratorium",
         "OTHER": "Lainnya"
+      },
+      "clinicalRequests": {
+        "title": "Diminta pada kunjungan ini",
+        "labOrder": "Permintaan lab",
+        "prescription": "Resep",
+        "notOnThisBill": "Tidak ditagih di sini",
+        "state": {
+          "BILLED": "Ditagih di sini",
+          "EXTERNAL": "Dikerjakan di luar — ditagih oleh mereka",
+          "COVERED": "Ditanggung penjamin, tidak ditagih di sini",
+          "NOT_BILLED": "Seharusnya ditagih di sini, tetapi tidak ada barisnya"
+        }
       }
     },
     "integrations": {

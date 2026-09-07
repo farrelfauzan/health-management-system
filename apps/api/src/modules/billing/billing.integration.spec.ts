@@ -40,6 +40,10 @@ describe('Billing integration', () => {
     findLabItemsForBilling: jest.fn(() => Promise.resolve([])),
     findItemsForCashierReport: jest.fn(() => Promise.resolve([])),
     findEncounterIdsWithSettledInvoice: jest.fn(() => Promise.resolve(new Set<string>())),
+    // P18-T11. Every path that returns an invoice detail now also explains the
+    // visit's clinical requests, and `PrismaService` is stubbed wholesale here
+    // — so this has to exist or every detail route answers 500.
+    findClinicalRequestsForEncounter: jest.fn(() => Promise.resolve([])),
   };
 
   const serviceTariffRepositoryMock = {

@@ -8,6 +8,11 @@
 import type { LabOrderControllerListLabOrdersV1Status } from './labOrderControllerListLabOrdersV1Status';
 
 export type LabOrderControllerListLabOrdersV1Params = {
+/**
+ * @minLength 1
+ * @maxLength 32
+ */
+orderNumber?: string;
 status?: LabOrderControllerListLabOrdersV1Status;
 patientId?: string;
 from?: string;

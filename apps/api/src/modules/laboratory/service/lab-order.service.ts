@@ -1,6 +1,7 @@
 import {
   CancelLabOrderInput,
   CancelLabOrderMeta,
+  ClinicalRequestDispositionInput,
   CreateLabOrderInput,
   CreateLabOrderItemPayload,
   LabOrderListItem,
@@ -79,6 +80,9 @@ export class LabOrderService {
       priority: payload.priority ?? 'ROUTINE',
       clinicalNotes: payload.clinicalNotes ?? null,
       isFasting: payload.isFasting ?? false,
+      fulfilmentSite: payload.fulfilmentSite ?? 'INTERNAL',
+      chargeMode: payload.chargeMode ?? 'CLINIC',
+      externalFacilityName: payload.externalFacilityName ?? null,
       orderedAt: new Date(),
       items,
     });
@@ -124,6 +128,7 @@ export class LabOrderService {
     const result = await this.labOrderRepository.listLabOrders({
       page: query.page ?? DEFAULT_PAGE,
       limit: query.limit ?? DEFAULT_PAGE_SIZE,
+      orderNumber: query.orderNumber,
       status: query.status,
       patientId: query.patientId,
       orderedFrom: query.from ? this.toClinicDayStart(query.from) : undefined,
@@ -184,6 +189,49 @@ export class LabOrderService {
     });
 
     return { order: this.labOrderMapper.toLabOrderView(cancelled), meta: { requiresManualCredit } };
+  }
+
+  /**
+   * Moves an order between "we run it" and "they run it", and between "we bill
+   * it" and "somebody else does" (P18-T11).
+   *
+   * A separate route because the decision is usually made after the doctor has
+   * finished: the patient reaches the counter, hears the price, and says they
+   * will go to the lab their insurer uses. Audited with the before and the
+   * after, because "we were told the patient would go elsewhere" is exactly
+   * what a later billing dispute turns on.
+   */
+  async updateDisposition(
+    id: string,
+    payload: ClinicalRequestDispositionInput,
+    currentUser: CurrentUser,
+  ): Promise<LabOrderView> {
+    const order = await this.findLabOrderOrThrow(id);
+    const scope = await this.labOrderAccessService.resolveScopeOrThrow(currentUser, 'write');
+    const encounter = await this.findEncounterOrThrow(order.encounterId);
+    this.labOrderAccessService.assertCanOrderOnEncounter({ encounter, scope, currentUser });
+    this.assertDispositionStillOpen(order);
+    const updated = await this.labOrderRepository.updateLabOrderDisposition({
+      id: order.id,
+      fulfilmentSite: payload.fulfilmentSite,
+      chargeMode: payload.chargeMode,
+      externalFacilityName: payload.externalFacilityName ?? null,
+    });
+    await this.auditService.record({
+      action: 'LAB_ORDER_DISPOSITION_CHANGED',
+      resource: 'LabOrder',
+      resourceId: order.id,
+      actorUserId: currentUser.sub,
+      patientId: order.patientId,
+      metadata: {
+        orderNumber: order.orderNumber,
+        from: { fulfilmentSite: order.fulfilmentSite, chargeMode: order.chargeMode },
+        to: { fulfilmentSite: payload.fulfilmentSite, chargeMode: payload.chargeMode },
+        externalFacilityName: payload.externalFacilityName ?? null,
+      },
+    });
+
+    return this.labOrderMapper.toLabOrderView(updated);
   }
 
   /**
@@ -288,6 +336,20 @@ export class LabOrderService {
     if (clash) {
       throw new ConflictException(
         `A test on this request is already ordered on this visit under ${orderNumberByTestId.get(clash.labTestId)}`,
+      );
+    }
+  }
+
+  /**
+   * Once a tube has been drawn the question is settled: the clinic did the
+   * work, and sending it outside afterwards would leave a specimen belonging to
+   * an order nobody here is running. Correct a mistake by cancelling and
+   * re-ordering, which is the same rule every other lab correction follows.
+   */
+  private assertDispositionStillOpen(order: LabOrderRecord): void {
+    if (order.status !== 'ORDERED') {
+      throw new ConflictException(
+        `Lab order ${order.orderNumber} is ${order.status}; where it is filled can no longer change`,
       );
     }
   }

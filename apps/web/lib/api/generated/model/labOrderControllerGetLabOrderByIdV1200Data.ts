@@ -18,6 +18,8 @@ export type LabOrderControllerGetLabOrderByIdV1200Data = {
   priority: string;
   clinicalNotes: string;
   isFasting: boolean;
+  fulfilmentSite: string;
+  chargeMode: string;
   recollectCount: number;
   orderedAt: string;
   items: LabOrderControllerGetLabOrderByIdV1200DataItemsItem[];

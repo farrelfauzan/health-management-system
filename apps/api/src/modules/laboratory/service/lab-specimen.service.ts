@@ -235,6 +235,14 @@ export class LabSpecimenService {
   }
 
   private assertCollectable(order: LabOrderRecord): void {
+    // P18-T11. Another lab is drawing this one. It never reaches the worklist,
+    // but the route is addressable by id, so the rule is stated here too rather
+    // than left to the query that hides it.
+    if (order.fulfilmentSite === 'EXTERNAL') {
+      throw new ConflictException(
+        `Lab order ${order.orderNumber} is being run by ${order.externalFacilityName ?? 'another facility'}; nothing is collected here`,
+      );
+    }
     if (!COLLECTABLE_STATUSES.some((status) => status === order.status)) {
       throw new ConflictException(
         `Lab order ${order.orderNumber} is ${order.status}; nothing can be collected for it`,

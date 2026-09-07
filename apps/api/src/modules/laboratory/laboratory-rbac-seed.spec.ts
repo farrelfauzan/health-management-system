@@ -104,6 +104,15 @@ describe('Laboratory RBAC seed', () => {
     expect(actualGranted.sort()).toEqual([...granted].sort());
   });
 
+  // P18-T11. Changing where work is filled and who pays for it rides on the
+  // ordering key rather than a new one: it is the same decision the order
+  // itself records, made a few minutes later at the counter. A separate
+  // permission would let a role move money without being able to order.
+  it('adds no separate key for changing a disposition', () => {
+    expect(findPermissionRow('lab-order.disposition:any')).toBeUndefined();
+    expect(findPermissionRow('lab-order.refer:any')).toBeUndefined();
+  });
+
   it('never gives LAB_TECHNICIAN a clinical :any key beyond the lab ones', () => {
     // The promise the role was added under. A future ticket that hands the
     // analis `encounter.read:any` or `patient.read:any` to make one screen

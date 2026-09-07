@@ -133,7 +133,9 @@ export const AuditAction = {
   LAB_ORDER_CANCELLED: 'LAB_ORDER_CANCELLED',
   LAB_SPECIMEN_COLLECTED: 'LAB_SPECIMEN_COLLECTED',
   LAB_SPECIMEN_RECEIVED: 'LAB_SPECIMEN_RECEIVED',
-  LAB_SPECIMEN_REJECTED: 'LAB_SPECIMEN_REJECTED'
+  LAB_SPECIMEN_REJECTED: 'LAB_SPECIMEN_REJECTED',
+  LAB_ORDER_DISPOSITION_CHANGED: 'LAB_ORDER_DISPOSITION_CHANGED',
+  PRESCRIPTION_DISPOSITION_CHANGED: 'PRESCRIPTION_DISPOSITION_CHANGED'
 } as const
 
 export type AuditAction = (typeof AuditAction)[keyof typeof AuditAction]
@@ -900,6 +902,23 @@ export const LabOrderPriority = {
 } as const
 
 export type LabOrderPriority = (typeof LabOrderPriority)[keyof typeof LabOrderPriority]
+
+
+export const FulfilmentSite = {
+  INTERNAL: 'INTERNAL',
+  EXTERNAL: 'EXTERNAL'
+} as const
+
+export type FulfilmentSite = (typeof FulfilmentSite)[keyof typeof FulfilmentSite]
+
+
+export const ChargeMode = {
+  CLINIC: 'CLINIC',
+  EXTERNAL: 'EXTERNAL',
+  COVERED: 'COVERED'
+} as const
+
+export type ChargeMode = (typeof ChargeMode)[keyof typeof ChargeMode]
 
 
 export const LabSpecimenStatus = {

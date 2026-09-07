@@ -5,6 +5,8 @@
  * Health Management System API
  * OpenAPI spec version: 1.0.0
  */
+import type { CreateLabOrderDtoChargeMode } from './createLabOrderDtoChargeMode';
+import type { CreateLabOrderDtoFulfilmentSite } from './createLabOrderDtoFulfilmentSite';
 import type { CreateLabOrderDtoPriority } from './createLabOrderDtoPriority';
 
 export interface CreateLabOrderDto {
@@ -19,4 +21,11 @@ export interface CreateLabOrderDto {
      */
   clinicalNotes?: string;
   isFasting?: boolean;
+  fulfilmentSite?: CreateLabOrderDtoFulfilmentSite;
+  chargeMode?: CreateLabOrderDtoChargeMode;
+  /**
+     * @minLength 1
+     * @maxLength 200
+     */
+  externalFacilityName?: string;
 }

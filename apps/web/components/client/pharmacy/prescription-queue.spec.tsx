@@ -22,6 +22,8 @@ function buildPrescription(overrides: Partial<PrescriptionResponse>): Prescripti
     patientId: 'aaaa1111-2222-4333-8444-555566667777',
     doctorId: 'bbbb1111-2222-4333-8444-555566667777',
     status: 'ISSUED',
+    fulfilmentSite: 'INTERNAL',
+    chargeMode: 'CLINIC',
     issuedAt: '2026-07-23T08:00:00.000Z',
     createdAt: '2026-07-23T08:00:00.000Z',
     updatedAt: '2026-07-23T08:00:00.000Z',

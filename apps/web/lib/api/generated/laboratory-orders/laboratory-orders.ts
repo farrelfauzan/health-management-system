@@ -29,8 +29,10 @@ import type {
   LabOrderControllerGetLabOrderByIdV1200,
   LabOrderControllerListLabOrdersV1200,
   LabOrderControllerListLabOrdersV1Params,
+  LabOrderControllerUpdateDispositionV1200,
   LabWorklistControllerListWorklistV1200,
-  LabWorklistControllerListWorklistV1Params
+  LabWorklistControllerListWorklistV1Params,
+  UpdateLabOrderDispositionDto
 } from '../model';
 
 import { orvalAxiosMutator } from '../../http';
@@ -521,6 +523,107 @@ export function useLabOrderControllerCancelLabOrderV1<TData = Awaited<ReturnType
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getLabOrderControllerCancelLabOrderV1QueryOptions(id,cancelLabOrderDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Change where a laboratory order is filled and who pays
+ */
+export const labOrderControllerUpdateDispositionV1 = (
+    id: string,
+    updateLabOrderDispositionDto: UpdateLabOrderDispositionDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<LabOrderControllerUpdateDispositionV1200>(
+      {url: `/api/v1/lab-orders/${id}/disposition`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: updateLabOrderDispositionDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getLabOrderControllerUpdateDispositionV1QueryKey = (id: string,
+    updateLabOrderDispositionDto?: UpdateLabOrderDispositionDto,) => {
+    return [
+    'PATCH', `/api/v1/lab-orders/${id}/disposition`, updateLabOrderDispositionDto
+    ] as const;
+    }
+
+
+export const getLabOrderControllerUpdateDispositionV1QueryOptions = <TData = Awaited<ReturnType<typeof labOrderControllerUpdateDispositionV1>>, TError = unknown>(id: string,
+    updateLabOrderDispositionDto: UpdateLabOrderDispositionDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof labOrderControllerUpdateDispositionV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getLabOrderControllerUpdateDispositionV1QueryKey(id,updateLabOrderDispositionDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof labOrderControllerUpdateDispositionV1>>> = ({ signal }) => labOrderControllerUpdateDispositionV1(id,updateLabOrderDispositionDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof labOrderControllerUpdateDispositionV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type LabOrderControllerUpdateDispositionV1QueryResult = NonNullable<Awaited<ReturnType<typeof labOrderControllerUpdateDispositionV1>>>
+export type LabOrderControllerUpdateDispositionV1QueryError = unknown
+
+
+export function useLabOrderControllerUpdateDispositionV1<TData = Awaited<ReturnType<typeof labOrderControllerUpdateDispositionV1>>, TError = unknown>(
+ id: string,
+    updateLabOrderDispositionDto: UpdateLabOrderDispositionDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof labOrderControllerUpdateDispositionV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof labOrderControllerUpdateDispositionV1>>,
+          TError,
+          Awaited<ReturnType<typeof labOrderControllerUpdateDispositionV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useLabOrderControllerUpdateDispositionV1<TData = Awaited<ReturnType<typeof labOrderControllerUpdateDispositionV1>>, TError = unknown>(
+ id: string,
+    updateLabOrderDispositionDto: UpdateLabOrderDispositionDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof labOrderControllerUpdateDispositionV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof labOrderControllerUpdateDispositionV1>>,
+          TError,
+          Awaited<ReturnType<typeof labOrderControllerUpdateDispositionV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useLabOrderControllerUpdateDispositionV1<TData = Awaited<ReturnType<typeof labOrderControllerUpdateDispositionV1>>, TError = unknown>(
+ id: string,
+    updateLabOrderDispositionDto: UpdateLabOrderDispositionDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof labOrderControllerUpdateDispositionV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Change where a laboratory order is filled and who pays
+ */
+
+export function useLabOrderControllerUpdateDispositionV1<TData = Awaited<ReturnType<typeof labOrderControllerUpdateDispositionV1>>, TError = unknown>(
+ id: string,
+    updateLabOrderDispositionDto: UpdateLabOrderDispositionDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof labOrderControllerUpdateDispositionV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getLabOrderControllerUpdateDispositionV1QueryOptions(id,updateLabOrderDispositionDto,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

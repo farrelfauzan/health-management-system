@@ -154,6 +154,8 @@ function buildPaidContext(): InvoiceRenderContextRecord {
         itemType: 'CONSULTATION',
         serviceTariffId: null,
         medicationId: null,
+        labOrderId: null,
+        prescriptionItemId: null,
         description: 'Konsultasi Dokter Umum',
         quantity: 1,
         unitPrice: 275_000,

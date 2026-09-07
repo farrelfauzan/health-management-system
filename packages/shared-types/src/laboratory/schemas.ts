@@ -11,6 +11,7 @@ const MAX_NOTES_LENGTH = 1_000;
 /** A single request never names this many tests; the ceiling is a typo guard. */
 const MAX_ORDER_ENTRIES = 50;
 const MAX_PAGE_SIZE = 100;
+const MAX_FACILITY_NAME_LENGTH = 200;
 
 export const labResultTypeSchema = z.enum(['NUMERIC', 'TEXT', 'CODED']);
 
@@ -161,6 +162,16 @@ export type UpdateLabPanelInput = z.infer<typeof updateLabPanelSchema>;
 export type ListLabTestsQuery = z.infer<typeof listLabTestsQuerySchema>;
 export type ListLabPanelsQuery = z.infer<typeof listLabPanelsQuerySchema>;
 
+/**
+ * Where a clinical request is filled and who pays for it (P18-T11). Two axes
+ * rather than one: a klinik that sends blood to a lab rujukan and bills the
+ * patient itself with a markup is EXTERNAL on the first and CLINIC on the
+ * second, and one combined flag could not say that.
+ */
+export const fulfilmentSiteSchema = z.enum(['INTERNAL', 'EXTERNAL']);
+
+export const chargeModeSchema = z.enum(['CLINIC', 'EXTERNAL', 'COVERED']);
+
 export const labOrderStatusSchema = z.enum([
   'ORDERED',
   'COLLECTED',
@@ -189,11 +200,26 @@ export const createLabOrderSchema = z
     priority: labOrderPrioritySchema.optional(),
     clinicalNotes: z.string().trim().min(1).max(MAX_NOTES_LENGTH).optional(),
     isFasting: z.boolean().optional(),
+    /** Defaults to run here and billed here when the doctor says nothing. */
+    fulfilmentSite: fulfilmentSiteSchema.optional(),
+    chargeMode: chargeModeSchema.optional(),
+    externalFacilityName: z.string().trim().min(1).max(MAX_FACILITY_NAME_LENGTH).optional(),
   })
   .refine((payload) => (payload.testIds ?? []).length + (payload.panelIds ?? []).length > 0, {
     path: ['testIds'],
     message: 'An order needs at least one test or panel',
-  });
+  })
+  .refine(
+    (payload) => payload.fulfilmentSite !== 'EXTERNAL' || Boolean(payload.externalFacilityName),
+    { path: ['externalFacilityName'], message: 'Name the facility the patient was sent to' },
+  )
+  .refine(
+    (payload) => payload.fulfilmentSite === 'EXTERNAL' || !payload.externalFacilityName,
+    {
+      path: ['externalFacilityName'],
+      message: 'Work done here cannot name an outside facility',
+    },
+  );
 
 /**
  * Cancelling is the only way an order is withdrawn, and the reason is
@@ -204,6 +230,12 @@ export const cancelLabOrderSchema = z.object({
 });
 
 export const listLabOrdersQuerySchema = z.object({
+  /**
+   * The number printed on the surat pengantar (P18-T13). The analis is holding
+   * paper and has to pull that one order up; without this they scan the
+   * to-collect bucket by eye, which stops working at about forty a morning.
+   */
+  orderNumber: z.string().trim().min(1).max(MAX_CODE_LENGTH).optional(),
   status: labOrderStatusSchema.optional(),
   patientId: z.string().uuid().optional(),
   from: z.string().date().optional(),
@@ -270,3 +302,36 @@ export type CollectLabSpecimensInput = z.infer<typeof collectLabSpecimensSchema>
 export type RejectLabSpecimenInput = z.infer<typeof rejectLabSpecimenSchema>;
 export type LabWorklistBucketValue = z.infer<typeof labWorklistBucketSchema>;
 export type LabWorklistQuery = z.infer<typeof labWorklistQuerySchema>;
+
+/**
+ * A request sent outside has to name where it went — it is what the referral
+ * letter prints and what the cashier reads when explaining why the work is not
+ * on this bill. Naming a facility for work done in-house is the same mistake
+ * in reverse, and the database CHECK refuses both.
+ */
+export const clinicalRequestDispositionSchema = z
+  .object({
+    fulfilmentSite: fulfilmentSiteSchema,
+    chargeMode: chargeModeSchema,
+    externalFacilityName: z.string().trim().min(1).max(MAX_FACILITY_NAME_LENGTH).optional(),
+  })
+  .superRefine((payload, context) => {
+    if (payload.fulfilmentSite === 'EXTERNAL' && !payload.externalFacilityName) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['externalFacilityName'],
+        message: 'Name the facility the patient was sent to',
+      });
+    }
+    if (payload.fulfilmentSite === 'INTERNAL' && payload.externalFacilityName) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['externalFacilityName'],
+        message: 'Work done here cannot name an outside facility',
+      });
+    }
+  });
+
+export type FulfilmentSiteValue = z.infer<typeof fulfilmentSiteSchema>;
+export type ChargeModeValue = z.infer<typeof chargeModeSchema>;
+export type ClinicalRequestDispositionInput = z.infer<typeof clinicalRequestDispositionSchema>;

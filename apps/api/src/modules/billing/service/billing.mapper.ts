@@ -1,4 +1,5 @@
 import {
+  ClinicalRequestSummary,
   InvoiceDetail,
   InvoiceDetailRecord,
   InvoiceItemRecord,
@@ -53,8 +54,19 @@ export class BillingMapper {
     };
   }
 
-  toInvoiceDetail(record: InvoiceDetailRecord): InvoiceDetail {
+  /**
+   * `clinicalRequests` is passed in rather than read off the invoice record: it
+   * describes the *visit*, not the bill, and the answer has to include requests
+   * that deliberately produced no line (P18-T11). Defaulted empty so an
+   * inpatient invoice, which hangs off an admission rather than an encounter,
+   * needs no special case.
+   */
+  toInvoiceDetail(
+    record: InvoiceDetailRecord,
+    clinicalRequests: ClinicalRequestSummary[] = [],
+  ): InvoiceDetail {
     return {
+      clinicalRequests,
       id: record.id,
       invoiceNumber: record.invoiceNumber,
       encounterId: record.encounterId ?? undefined,
@@ -85,6 +97,8 @@ export class BillingMapper {
       itemType: record.itemType,
       serviceTariffId: record.serviceTariffId ?? undefined,
       medicationId: record.medicationId ?? undefined,
+      labOrderId: record.labOrderId ?? undefined,
+      prescriptionItemId: record.prescriptionItemId ?? undefined,
       description: record.description,
       quantity: record.quantity,
       unitPrice: record.unitPrice,

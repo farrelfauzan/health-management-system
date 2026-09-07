@@ -54,6 +54,7 @@ describe('Laboratory ordering integration', () => {
     listLabOrders: jest.fn(),
     listWorklist: jest.fn(),
     cancelLabOrder: jest.fn(),
+    updateLabOrderDisposition: jest.fn(),
   };
 
   const labSpecimenRepositoryMock = {
@@ -102,6 +103,9 @@ describe('Laboratory ordering integration', () => {
       priority: 'ROUTINE' as const,
       clinicalNotes: null,
       isFasting: false,
+      fulfilmentSite: 'INTERNAL' as const,
+      chargeMode: 'CLINIC' as const,
+      externalFacilityName: null,
       recollectCount: 0,
       orderedAt: timestamp,
       cancelledAt: null,
@@ -360,6 +364,67 @@ describe('Laboratory ordering integration', () => {
 
     expect(response.status).toBe(403);
     expect(labSpecimenRepositoryMock.collectLabSpecimens).not.toHaveBeenCalled();
+  });
+
+  // P18-T11. Sending work out is a decision the counter makes, so it has to be
+  // reachable and it has to say where the patient went.
+  it('sends an order to a named outside lab', async () => {
+    const token = await buildToken(attendingDoctorUserId, 'dokter@hms.local');
+    mockActorWithPermissions('DOCTOR', DOCTOR_PERMISSIONS);
+    labOrderRepositoryMock.findLabOrderById.mockResolvedValue(buildOrderRecord());
+    labOrderRepositoryMock.updateLabOrderDisposition.mockResolvedValue(
+      buildOrderRecord({
+        fulfilmentSite: 'EXTERNAL',
+        chargeMode: 'EXTERNAL',
+        externalFacilityName: 'Laboratorium Prodia Kemang',
+      }),
+    );
+
+    const response = await request(app.getHttpServer())
+      .patch(`/api/v1/v1/lab-orders/${labOrderId}/disposition`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        fulfilmentSite: 'EXTERNAL',
+        chargeMode: 'EXTERNAL',
+        externalFacilityName: 'Laboratorium Prodia Kemang',
+      });
+
+    expect(response.status).toBe(200);
+    expect(response.body.data.externalFacilityName).toBe('Laboratorium Prodia Kemang');
+  });
+
+  it('refuses to send work out without naming where it went', async () => {
+    const token = await buildToken(attendingDoctorUserId, 'dokter@hms.local');
+    mockActorWithPermissions('DOCTOR', DOCTOR_PERMISSIONS);
+
+    const response = await request(app.getHttpServer())
+      .patch(`/api/v1/v1/lab-orders/${labOrderId}/disposition`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ fulfilmentSite: 'EXTERNAL', chargeMode: 'EXTERNAL' });
+
+    expect(response.status).toBe(400);
+    expect(labOrderRepositoryMock.updateLabOrderDisposition).not.toHaveBeenCalled();
+  });
+
+  // P18-T13. The number on the letter is the handle the counter works from.
+  it('finds an order by the number printed on its letter', async () => {
+    const token = await buildToken(analystUserId, 'analis@hms.local');
+    mockActorWithPermissions('LAB_TECHNICIAN', ANALYST_PERMISSIONS);
+    labOrderRepositoryMock.listLabOrders.mockResolvedValue({
+      items: [],
+      page: 1,
+      limit: 20,
+      total: 0,
+    });
+
+    const response = await request(app.getHttpServer())
+      .get('/api/v1/v1/lab-orders?orderNumber=LAB%2F20260728%2F0001')
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(response.status).toBe(200);
+    expect(labOrderRepositoryMock.listLabOrders.mock.calls[0][0].orderNumber).toBe(
+      'LAB/20260728/0001',
+    );
   });
 
   it('rejects an unknown worklist bucket before it reaches the query', async () => {

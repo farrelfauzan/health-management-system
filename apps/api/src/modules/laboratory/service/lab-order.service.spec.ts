@@ -44,6 +44,7 @@ describe('LabOrderService', () => {
     findLabOrdersByEncounterId: jest.fn(),
     listLabOrders: jest.fn(),
     cancelLabOrder: jest.fn(),
+    updateLabOrderDisposition: jest.fn(),
   };
 
   const labCatalogServiceMock = {
@@ -85,6 +86,9 @@ describe('LabOrderService', () => {
       priority: 'ROUTINE' as const,
       clinicalNotes: null,
       isFasting: false,
+      fulfilmentSite: 'INTERNAL' as const,
+      chargeMode: 'CLINIC' as const,
+      externalFacilityName: null,
       recollectCount: 0,
       orderedAt: timestamp,
       cancelledAt: null,
@@ -317,6 +321,83 @@ describe('LabOrderService', () => {
         service.cancelLabOrder(labOrderId, { reason: 'Salah input' }, doctorUser),
       ).rejects.toBeInstanceOf(ConflictException);
       expect(labOrderRepositoryMock.cancelLabOrder).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('updateDisposition', () => {
+    // The decision is usually made after the doctor has finished: the patient
+    // reaches the counter, hears the price, and picks the lab their insurer
+    // uses. So it is its own route, and it is audited with both sides.
+    it('sends an order to an outside lab and audits both sides of the change', async () => {
+      labOrderRepositoryMock.findLabOrderById.mockResolvedValue(buildOrderRecord());
+      labOrderRepositoryMock.updateLabOrderDisposition.mockResolvedValue(
+        buildOrderRecord({
+          fulfilmentSite: 'EXTERNAL',
+          chargeMode: 'EXTERNAL',
+          externalFacilityName: 'Laboratorium Prodia Kemang',
+        }),
+      );
+
+      const actual = await service.updateDisposition(
+        labOrderId,
+        {
+          fulfilmentSite: 'EXTERNAL',
+          chargeMode: 'EXTERNAL',
+          externalFacilityName: 'Laboratorium Prodia Kemang',
+        },
+        doctorUser,
+      );
+
+      expect(actual.fulfilmentSite).toBe('EXTERNAL');
+      expect(actual.externalFacilityName).toBe('Laboratorium Prodia Kemang');
+      expect(auditServiceMock.record).toHaveBeenCalledWith(
+        expect.objectContaining({
+          action: 'LAB_ORDER_DISPOSITION_CHANGED',
+          metadata: expect.objectContaining({
+            from: { fulfilmentSite: 'INTERNAL', chargeMode: 'CLINIC' },
+            to: { fulfilmentSite: 'EXTERNAL', chargeMode: 'EXTERNAL' },
+          }),
+        }),
+      );
+    });
+
+    // Once a tube exists the clinic did the work; sending it outside afterwards
+    // would strand a specimen against an order nobody here is running.
+    it('refuses to move an order once a specimen has been drawn', async () => {
+      labOrderRepositoryMock.findLabOrderById.mockResolvedValue(
+        buildOrderRecord({ status: 'COLLECTED' }),
+      );
+
+      await expect(
+        service.updateDisposition(
+          labOrderId,
+          {
+            fulfilmentSite: 'EXTERNAL',
+            chargeMode: 'EXTERNAL',
+            externalFacilityName: 'Laboratorium Prodia Kemang',
+          },
+          doctorUser,
+        ),
+      ).rejects.toBeInstanceOf(ConflictException);
+      expect(labOrderRepositoryMock.updateLabOrderDisposition).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('listLabOrders', () => {
+    // P18-T13. The analis is holding paper with the number on it.
+    it('passes the printed order number through to the query', async () => {
+      labOrderRepositoryMock.listLabOrders.mockResolvedValue({
+        items: [],
+        page: 1,
+        limit: 20,
+        total: 0,
+      });
+
+      await service.listLabOrders({ orderNumber: 'LAB/20260728/0001' } as never);
+
+      expect(labOrderRepositoryMock.listLabOrders.mock.calls[0][0].orderNumber).toBe(
+        'LAB/20260728/0001',
+      );
     });
   });
 

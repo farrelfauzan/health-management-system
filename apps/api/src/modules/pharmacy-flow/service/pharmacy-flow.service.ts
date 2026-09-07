@@ -216,6 +216,13 @@ export class PharmacyFlowService {
       doctorId,
       encounterId: payload.encounterId,
       notes: payload.notes,
+      // P18-T11. A patient who only wants the printed resep is EXTERNAL on
+      // both, which is what separates that from a prescription the pharmacy
+      // has simply not dispensed yet — until now both were an ISSUED row with
+      // no dispense record and nothing could tell them apart.
+      fulfilmentSite: payload.fulfilmentSite ?? 'INTERNAL',
+      chargeMode: payload.chargeMode ?? 'CLINIC',
+      externalFacilityName: payload.externalFacilityName ?? null,
       items: payload.items,
     });
 
@@ -594,6 +601,9 @@ export class PharmacyFlowService {
       doctorId: prescription.doctorId,
       encounterId: prescription.encounterId ?? undefined,
       status: prescription.status,
+      fulfilmentSite: prescription.fulfilmentSite,
+      chargeMode: prescription.chargeMode,
+      externalFacilityName: prescription.externalFacilityName ?? undefined,
       issuedAt: prescription.issuedAt?.toISOString(),
       notes: prescription.notes ?? undefined,
       createdAt: prescription.createdAt.toISOString(),

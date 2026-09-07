@@ -310,6 +310,8 @@ export class InvoiceDocumentRepository {
       itemType: row.itemType,
       serviceTariffId: row.serviceTariffId,
       medicationId: row.medicationId,
+      labOrderId: row.labOrderId,
+      prescriptionItemId: row.prescriptionItemId,
       description: row.description,
       quantity: row.quantity,
       unitPrice: Number(row.unitPrice),
