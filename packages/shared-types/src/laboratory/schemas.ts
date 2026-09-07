@@ -304,6 +304,123 @@ export type LabWorklistBucketValue = z.infer<typeof labWorklistBucketSchema>;
 export type LabWorklistQuery = z.infer<typeof labWorklistQuerySchema>;
 
 /**
+ * Whether a measured value sits inside the normal band for this patient
+ * (P18-T04). Mirrors the Prisma `LabResultFlag` enum.
+ */
+export const labResultFlagSchema = z.enum([
+  'NORMAL',
+  'LOW',
+  'HIGH',
+  'CRITICAL_LOW',
+  'CRITICAL_HIGH',
+  'ABNORMAL',
+]);
+
+/**
+ * One measured value, as the entry form sends it. Exactly one of the three
+ * value fields is given, and which one is decided by the test's result type —
+ * the service refuses a number typed into a CODED test rather than storing it
+ * somewhere it will never be compared.
+ */
+const labResultValueSchema = z.object({
+  valueNumeric: z.number().nullable().optional(),
+  valueText: z.string().trim().min(1).max(MAX_NOTES_LENGTH).nullable().optional(),
+  valueCoded: z.string().trim().min(1).max(MAX_NAME_LENGTH).nullable().optional(),
+});
+
+function hasExactlyOneValue(payload: {
+  valueNumeric?: number | null;
+  valueText?: string | null;
+  valueCoded?: string | null;
+}): boolean {
+  return (
+    [payload.valueNumeric, payload.valueText, payload.valueCoded].filter(
+      (value) => value !== null && value !== undefined,
+    ).length === 1
+  );
+}
+
+const ONE_VALUE_ISSUE = {
+  path: ['valueNumeric'],
+  message: 'A result carries exactly one value',
+};
+
+/**
+ * Deliberately a plain object rather than a refined one: this schema is nested
+ * inside an array below, and `createZodDto`'s OpenAPI metadata factory cannot
+ * read a `ZodEffects` in that position — the API fails to boot on the Swagger
+ * scan rather than at request time. The one-value rule is applied by the batch
+ * schema instead, per item, which reports the same issue against the same path.
+ */
+export const labResultEntrySchema = labResultValueSchema.extend({
+  labOrderItemId: z.string().uuid(),
+});
+
+/**
+ * Entry is a batch upsert: an analis works down a worksheet and saves the
+ * order, not one number at a time. Saving twice re-states the same items
+ * rather than adding versions — versioning is what an *amendment* is for, and
+ * it starts only once a value has been released.
+ */
+export const enterLabResultsSchema = z
+  .object({
+    items: z.array(labResultEntrySchema).min(1).max(MAX_ORDER_ENTRIES),
+  })
+  .superRefine((payload, context) => {
+    payload.items.forEach((item, index) => {
+      if (hasExactlyOneValue(item)) {
+        return;
+      }
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['items', index, 'valueNumeric'],
+        message: ONE_VALUE_ISSUE.message,
+      });
+    });
+  });
+
+/**
+ * Correcting a released value. The reason is mandatory and is not a formality:
+ * somebody may have treated a patient on the strength of the number being
+ * replaced, and this sentence is what the amended report shows them.
+ */
+export const amendLabResultSchema = labResultValueSchema
+  .extend({ reason: z.string().trim().min(1).max(MAX_NOTES_LENGTH) })
+  .refine(hasExactlyOneValue, ONE_VALUE_ISSUE);
+
+/**
+ * The trend feed. `testCode` narrows to one test — the only useful shape, since
+ * comparing Hb with GDS says nothing — and the range is clinic days.
+ */
+export const listPatientLabResultsQuerySchema = z.object({
+  testCode: z.string().trim().min(1).max(MAX_CODE_LENGTH).optional(),
+  from: z.string().date().optional(),
+  to: z.string().date().optional(),
+  limit: z.coerce.number().int().min(1).max(MAX_PAGE_SIZE).optional(),
+});
+
+/**
+ * How this clinic runs its bench (P18-T04). Both flags loosen a safety rule,
+ * so both are optional on the wire and neither has a permissive default: a
+ * PATCH that names one leaves the other exactly as it was.
+ */
+export const updateLaboratorySettingsSchema = z
+  .object({
+    technicianMayVerify: z.boolean().optional(),
+    singleOperator: z.boolean().optional(),
+  })
+  .refine((payload) => Object.keys(payload).length > 0, {
+    message: 'At least one field must be provided',
+  });
+
+export type LabResultFlagValue = z.infer<typeof labResultFlagSchema>;
+export type LabResultEntryInput = z.infer<typeof labResultEntrySchema>;
+export type EnterLabResultsInput = z.infer<typeof enterLabResultsSchema>;
+export type AmendLabResultInput = z.infer<typeof amendLabResultSchema>;
+export type ListPatientLabResultsQuery = z.infer<typeof listPatientLabResultsQuerySchema>;
+export type UpdateLaboratorySettingsInput = z.infer<typeof updateLaboratorySettingsSchema>;
+
+/**
  * A request sent outside has to name where it went — it is what the referral
  * letter prints and what the cashier reads when explaining why the work is not
  * on this bill. Naming a facility for work done in-house is the same mistake

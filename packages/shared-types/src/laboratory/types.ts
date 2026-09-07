@@ -5,6 +5,7 @@ import type {
   LabOrderPriorityValue,
   LabOrderStatusValue,
   LabReferenceRangeInput,
+  LabResultFlagValue,
   LabResultTypeValue,
   LabSpecimenRejectReasonValue,
   LabSpecimenStatusValue,
@@ -303,4 +304,133 @@ export type BillingLabItemRecord = {
 /** The single row a daily counter upsert returns. */
 export type LabNumberAllocationRow = {
   allocated: number;
+};
+
+/**
+ * One measured value as the repository returns it (P18-T04). The reference
+ * band travels with the value because it was snapshotted onto the row at
+ * entry: nothing downstream re-reads the catalog, which is what keeps a range
+ * edited today from re-flagging a result measured last year.
+ */
+export type LabResultRecord = {
+  id: string;
+  labOrderItemId: string;
+  version: number;
+  valueNumeric: number | null;
+  valueText: string | null;
+  valueCoded: string | null;
+  unit: string | null;
+  refLow: number | null;
+  refHigh: number | null;
+  refCriticalLow: number | null;
+  refCriticalHigh: number | null;
+  refText: string | null;
+  flag: LabResultFlagValue | null;
+  enteredById: string;
+  enteredAt: Date;
+  verifiedById: string | null;
+  verifiedAt: Date | null;
+  verifiedUnderSingleOperator: boolean;
+  amendedFromId: string | null;
+  amendReason: string | null;
+};
+
+/** A result with the test it measures, for the trend feed and the report. */
+export type PatientLabResultRecord = LabResultRecord & {
+  labOrderId: string;
+  orderNumber: string;
+  testCode: string;
+  testName: string;
+  resultType: LabResultTypeValue;
+  collectedAt: Date | null;
+  releasedAt: Date | null;
+};
+
+/** The band that applied to one patient for one test, resolved at entry. */
+export type LabResultRangeSnapshot = {
+  refLow: number | null;
+  refHigh: number | null;
+  refCriticalLow: number | null;
+  refCriticalHigh: number | null;
+  refText: string | null;
+};
+
+/** One row of the batch entry write, after the service has resolved its band. */
+export type LabResultEntryPayload = LabResultRangeSnapshot & {
+  labOrderItemId: string;
+  valueNumeric: number | null;
+  valueText: string | null;
+  valueCoded: string | null;
+  unit: string | null;
+  flag: LabResultFlagValue | null;
+};
+
+export type EnterLabResultsPayload = {
+  labOrderId: string;
+  enteredById: string;
+  enteredAt: Date;
+  entries: readonly LabResultEntryPayload[];
+};
+
+export type ReleaseLabOrderPayload = {
+  labOrderId: string;
+  verifiedById: string;
+  verifiedAt: Date;
+  verifiedUnderSingleOperator: boolean;
+};
+
+/**
+ * An amendment, written as the next version of the row it corrects. The band
+ * is carried forward rather than re-resolved: an amendment corrects the
+ * *value*, never the standard the original was judged against.
+ */
+export type AmendLabResultPayload = LabResultRangeSnapshot & {
+  amendedFromId: string;
+  labOrderId: string;
+  labOrderItemId: string;
+  version: number;
+  valueNumeric: number | null;
+  valueText: string | null;
+  valueCoded: string | null;
+  unit: string | null;
+  flag: LabResultFlagValue | null;
+  amendReason: string;
+  enteredById: string;
+  enteredAt: Date;
+  verifiedById: string;
+  verifiedAt: Date;
+  verifiedUnderSingleOperator: boolean;
+};
+
+/** Repository query parameters for the patient trend feed. */
+export type ListPatientLabResultsParams = {
+  patientId: string;
+  testCode?: string;
+  from?: Date;
+  to?: Date;
+  limit: number;
+};
+
+/**
+ * The facts the range resolver needs about the patient the value belongs to:
+ * sex, and how old they were when the sample was taken — not how old they are
+ * now, which is the difference between a neonatal band and an adult one.
+ */
+export type LabResultPatientContext = {
+  sex: 'MALE' | 'FEMALE';
+  ageDaysAtCollection: number | null;
+};
+
+/** How this clinic runs its bench, as the repository returns it (P18-T04). */
+export type LaboratorySettingsRecord = {
+  technicianMayVerify: boolean;
+  singleOperator: boolean;
+  updatedById: string | null;
+  updatedAt: Date | null;
+};
+
+export type UpdateLaboratorySettingsPayload = {
+  technicianMayVerify?: boolean;
+  singleOperator?: boolean;
+  updatedById: string;
 };

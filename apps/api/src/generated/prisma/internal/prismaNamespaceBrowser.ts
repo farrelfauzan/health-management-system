@@ -151,6 +151,8 @@ export const ModelName = {
   LabOrderItem: 'LabOrderItem',
   LabSpecimenCounter: 'LabSpecimenCounter',
   LabSpecimen: 'LabSpecimen',
+  LabResult: 'LabResult',
+  LaboratorySettings: 'LaboratorySettings',
   Immunization: 'Immunization'
 } as const
 
@@ -1841,6 +1843,48 @@ export const LabSpecimenScalarFieldEnum = {
 } as const
 
 export type LabSpecimenScalarFieldEnum = (typeof LabSpecimenScalarFieldEnum)[keyof typeof LabSpecimenScalarFieldEnum]
+
+
+export const LabResultScalarFieldEnum = {
+  id: 'id',
+  labOrderItemId: 'labOrderItemId',
+  version: 'version',
+  valueNumeric: 'valueNumeric',
+  valueText: 'valueText',
+  valueCoded: 'valueCoded',
+  unit: 'unit',
+  refLow: 'refLow',
+  refHigh: 'refHigh',
+  refCriticalLow: 'refCriticalLow',
+  refCriticalHigh: 'refCriticalHigh',
+  refText: 'refText',
+  flag: 'flag',
+  enteredById: 'enteredById',
+  enteredAt: 'enteredAt',
+  verifiedById: 'verifiedById',
+  verifiedAt: 'verifiedAt',
+  verifiedUnderSingleOperator: 'verifiedUnderSingleOperator',
+  amendedFromId: 'amendedFromId',
+  amendReason: 'amendReason',
+  satusehatObservationId: 'satusehatObservationId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type LabResultScalarFieldEnum = (typeof LabResultScalarFieldEnum)[keyof typeof LabResultScalarFieldEnum]
+
+
+export const LaboratorySettingsScalarFieldEnum = {
+  id: 'id',
+  facilityId: 'facilityId',
+  technicianMayVerify: 'technicianMayVerify',
+  singleOperator: 'singleOperator',
+  updatedById: 'updatedById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type LaboratorySettingsScalarFieldEnum = (typeof LaboratorySettingsScalarFieldEnum)[keyof typeof LaboratorySettingsScalarFieldEnum]
 
 
 export const ImmunizationScalarFieldEnum = {

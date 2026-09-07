@@ -86,6 +86,12 @@ const GATED_CONTROLLERS: Readonly<Record<string, FeatureKey>> = {
   LabOrderController: 'laboratory',
   LabSpecimenController: 'laboratory',
   LabWorklistController: 'laboratory',
+  // P18-T04. Results, the patient's trend and the bench's own operating rules.
+  // The settings screen goes with the rest: a clinic without a laboratory has
+  // no verification policy to set.
+  LabResultController: 'laboratory',
+  PatientLabResultController: 'laboratory',
+  LaboratorySettingsController: 'laboratory',
 };
 
 /**

@@ -9,6 +9,7 @@ import {
 import { AuditContextService } from '../../../common/audit/audit-context.service';
 import { AuthRepository } from '../../auth/repository/auth.repository';
 import { LabOrderService } from '../../laboratory/service/lab-order.service';
+import { LabResultService } from '../../laboratory/service/lab-result.service';
 import { ListEncountersQueryDto } from '../dto/list-encounters-query.dto';
 import { OpenEncounterDto } from '../dto/open-encounter.dto';
 import { UpdateEncounterSoapDto } from '../dto/update-encounter-soap.dto';
@@ -60,11 +61,15 @@ describe('EncounterService', () => {
   const labOrderServiceMock = {
     findOpenOrdersForEncounter: jest.fn(() => Promise.resolve([])),
   } as unknown as LabOrderService;
+  const labResultServiceMock = {
+    findReleasedResultsForEncounter: jest.fn(() => Promise.resolve([])),
+  } as unknown as LabResultService;
   const service = new EncounterService(
     encounterRepositoryMock,
     accessService,
     new EncounterMapper(),
     labOrderServiceMock,
+    labResultServiceMock,
   );
 
   const adminUser = { sub: '4e8580c4-9e80-44ff-9f8f-8c8f9d8d90f8', email: 'admin@hms.local' };

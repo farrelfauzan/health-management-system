@@ -3,28 +3,38 @@ import { Module } from '@nestjs/common';
 import { AuthModule } from '../auth/auth.module';
 import { BillingModule } from '../billing/billing.module';
 import { ClinicalRequestDocumentModule } from '../clinical-request-document/clinical-request-document.module';
+import { NotificationModule } from '../notification/notification.module';
 import { EncounterLabOrderController } from './controller/encounter-lab-order.controller';
 import { LabOrderController } from './controller/lab-order.controller';
 import { LabPanelController } from './controller/lab-panel.controller';
+import { LabResultController } from './controller/lab-result.controller';
 import { LabSpecimenController } from './controller/lab-specimen.controller';
+import { LaboratorySettingsController } from './controller/laboratory-settings.controller';
 import { LabTestController } from './controller/lab-test.controller';
 import { LabWorklistController } from './controller/lab-worklist.controller';
+import { PatientLabResultController } from './controller/patient-lab-result.controller';
 import { LabCatalogRepository } from './repository/lab-catalog.repository';
 import { LabDailyNumberAllocatorRepository } from './repository/lab-daily-number-allocator.repository';
 import { LabOrderRepository } from './repository/lab-order.repository';
+import { LabResultRepository } from './repository/lab-result.repository';
 import { LabSpecimenRepository } from './repository/lab-specimen.repository';
+import { LaboratorySettingsRepository } from './repository/laboratory-settings.repository';
 import { LabCatalogMapper } from './service/lab-catalog.mapper';
 import { LabCatalogService } from './service/lab-catalog.service';
 import { LabOrderAccessService } from './service/lab-order-access.service';
 import { LabOrderMapper } from './service/lab-order.mapper';
 import { LabOrderService } from './service/lab-order.service';
 import { LabPaymentGateService } from './service/lab-payment-gate.service';
+import { LabResultMapper } from './service/lab-result.mapper';
+import { LabResultService } from './service/lab-result.service';
 import { LabSpecimenService } from './service/lab-specimen.service';
+import { LaboratorySettingsService } from './service/laboratory-settings.service';
 
 /**
- * The laboratory module: the catalog (`P18-T01`), ordering (`P18-T02`) and the
- * specimens drawn against an order (`P18-T03`). Results, the report and the
- * SATUSEHAT lab chain join it later in P18.
+ * The laboratory module: the catalog (`P18-T01`), ordering (`P18-T02`), the
+ * specimens drawn against an order (`P18-T03`) and the values measured from
+ * them (`P18-T04`). The report and the SATUSEHAT lab chain join it later in
+ * P18.
  *
  * `AuthModule` for the actor behind an OWN scope check; `BillingModule` for the
  * pay-before-collect gate (`P18-T06`), which asks the module that owns money
@@ -37,7 +47,9 @@ import { LabSpecimenService } from './service/lab-specimen.service';
   // ClinicalRequestDocumentModule for P18-T12: the surat pengantar is rendered
   // by the module that owns printing, from a context this module gathers —
   // what a lab order means stays here.
-  imports: [AuthModule, BillingModule, ClinicalRequestDocumentModule],
+  // `NotificationModule` for P18-T04: a critical value reaches the ordering
+  // doctor's bell on entry, before anybody has verified it.
+  imports: [AuthModule, BillingModule, ClinicalRequestDocumentModule, NotificationModule],
   controllers: [
     LabTestController,
     LabPanelController,
@@ -45,23 +57,34 @@ import { LabSpecimenService } from './service/lab-specimen.service';
     LabOrderController,
     LabSpecimenController,
     LabWorklistController,
+    LabResultController,
+    PatientLabResultController,
+    LaboratorySettingsController,
   ],
   providers: [
     LabCatalogRepository,
     LabDailyNumberAllocatorRepository,
     LabOrderRepository,
     LabSpecimenRepository,
+    LabResultRepository,
+    LaboratorySettingsRepository,
     LabCatalogMapper,
     LabOrderMapper,
+    LabResultMapper,
     LabCatalogService,
     LabOrderAccessService,
     LabOrderService,
     LabPaymentGateService,
     LabSpecimenService,
+    LaboratorySettingsService,
+    LabResultService,
   ],
   // `LabOrderService` for `P18-T02`: closing an encounter names the lab work
   // still in flight, and the EMR module asks the module that owns orders rather
   // than reading its tables.
-  exports: [LabCatalogService, LabOrderService],
+  // `LabResultService` for `P18-T04`: the encounter record shows released
+  // values next to the vitals, and the EMR module asks the module that owns
+  // results rather than reading its tables.
+  exports: [LabCatalogService, LabOrderService, LabResultService],
 })
 export class LaboratoryModule {}

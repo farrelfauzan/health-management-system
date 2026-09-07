@@ -20,6 +20,10 @@ describe('Laboratory RBAC seed', () => {
     'lab-order.write:own',
     'lab-order.write:any',
     'lab-specimen.write:any',
+    'lab-result.write:any',
+    'lab-result.verify:any',
+    'lab-settings.read:any',
+    'lab-settings.write:any',
   ] as const;
 
   /** The CASL subject and scope each key must carry, which the guard re-resolves. */
@@ -31,6 +35,10 @@ describe('Laboratory RBAC seed', () => {
     'lab-order.write:own': ['LabOrder', 'OWN'],
     'lab-order.write:any': ['LabOrder', 'ANY'],
     'lab-specimen.write:any': ['LabSpecimen', 'ANY'],
+    'lab-result.write:any': ['LabResult', 'ANY'],
+    'lab-result.verify:any': ['LabResult', 'ANY'],
+    'lab-settings.read:any': ['LaboratorySettings', 'ANY'],
+    'lab-settings.write:any': ['LaboratorySettings', 'ANY'],
   };
 
   const EXPECTED_BINDINGS: ReadonlyArray<readonly [string, readonly string[]]> = [
@@ -42,16 +50,46 @@ describe('Laboratory RBAC seed', () => {
         'lab-order.read:any',
         'lab-order.write:any',
         'lab-specimen.write:any',
+        'lab-result.write:any',
+        'lab-result.verify:any',
+        'lab-settings.read:any',
+        'lab-settings.write:any',
       ],
     ],
     // Read only on the catalog: a doctor orders from it and needs to know what
     // a test measures. What the clinic offers is not their decision. OWN on the
     // order itself — ordering is the attending practitioner's act (P18-T02).
-    ['DOCTOR', ['lab-test.read:any', 'lab-order.read:own', 'lab-order.write:own']],
+    // P18-T04. `verify` and no `write`: a doctor signs a result out, and the
+    // service refuses them as the second signature on a value they typed
+    // themselves unless the clinic runs single-operator. Read on the settings
+    // so the release screen can say which rules are in force.
+    [
+      'DOCTOR',
+      [
+        'lab-test.read:any',
+        'lab-order.read:own',
+        'lab-order.write:own',
+        'lab-result.verify:any',
+        'lab-settings.read:any',
+      ],
+    ],
     // The bench: reads the catalog and the orders, and handles specimens.
     // Deliberately no write on an order — an analis runs what was asked for and
     // never decides what was asked for.
-    ['LAB_TECHNICIAN', ['lab-test.read:any', 'lab-order.read:any', 'lab-specimen.write:any']],
+    [
+      'LAB_TECHNICIAN',
+      [
+        'lab-test.read:any',
+        'lab-order.read:any',
+        'lab-specimen.write:any',
+        'lab-result.write:any',
+        // Held, but inert until the clinic turns `technicianMayVerify` on —
+        // a seeded grant cannot depend on a runtime row, so the capability is
+        // seeded and `LabResultService` enforces the policy (P18-T04).
+        'lab-result.verify:any',
+        'lab-settings.read:any',
+      ],
+    ],
     ['PHARMACIST', []],
     ['PATIENT', []],
   ];
@@ -108,6 +146,24 @@ describe('Laboratory RBAC seed', () => {
   // ordering key rather than a new one: it is the same decision the order
   // itself records, made a few minutes later at the counter. A separate
   // permission would let a role move money without being able to order.
+  // P18-T04. Entering a value and signing it out are two keys, because they
+  // are the two halves of a two-person rule. Merging them would let whoever
+  // typed a number be its own second signature by construction.
+  it('keeps entering a result and verifying one as separate keys', () => {
+    expect(findPermissionRow('lab-result.write:any')).toBeDefined();
+    expect(findPermissionRow('lab-result.verify:any')).toBeDefined();
+    expect(findPermissionRow('lab-result.write:any')).toContain(`'write'`);
+    expect(findPermissionRow('lab-result.verify:any')).toContain(`'verify'`);
+  });
+
+  // Changing who may sign a result out is an administrative act, never a bench
+  // one: the analis reads the rules and cannot rewrite them.
+  it('never lets the bench change the rules it is judged by', () => {
+    expect(hasBinding('LAB_TECHNICIAN', 'lab-settings.write:any')).toBe(false);
+    expect(hasBinding('DOCTOR', 'lab-settings.write:any')).toBe(false);
+    expect(hasBinding('ADMIN', 'lab-settings.write:any')).toBe(true);
+  });
+
   it('adds no separate key for changing a disposition', () => {
     expect(findPermissionRow('lab-order.disposition:any')).toBeUndefined();
     expect(findPermissionRow('lab-order.refer:any')).toBeUndefined();

@@ -185,6 +185,18 @@
         "patientDocumentReleased": {
           "title": "A result was released to your patient",
           "body": "A {category} for {patientName} is now visible to the patient and in the visit's Documents panel."
+        },
+        "labResultCritical": {
+          "title": "Critical laboratory value",
+          "body": "{testCount} test(s) on {orderNumber} came back critical and need attention now."
+        },
+        "labResultReleased": {
+          "title": "Laboratory results released",
+          "body": "The results for {orderNumber} have been signed out and are on the visit."
+        },
+        "labResultAmended": {
+          "title": "Laboratory result amended",
+          "body": "A released value on {orderNumber} has been corrected. Check it before acting on the earlier one."
         }
       },
       "profile": {

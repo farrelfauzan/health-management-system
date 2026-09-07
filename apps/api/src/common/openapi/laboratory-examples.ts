@@ -56,9 +56,36 @@ const labOrderHeader = {
   orderedAt: timestamp,
 };
 
+const labResultId = '77777777-dddd-4ddd-8ddd-777777777777';
+
+const analystUserId = '88888888-eeee-4eee-8eee-888888888888';
+
+const doctorUserId = '99999999-ffff-4fff-8fff-999999999999';
+
+/**
+ * A critical haemoglobin for an adult woman — the case the whole ticket is
+ * shaped around: flagged on entry, telephoned before anybody signs it out.
+ */
+const labResult = {
+  id: labResultId,
+  labOrderItemId: labOrderItem.id,
+  version: 1,
+  valueNumeric: 6.8,
+  unit: 'g/dL',
+  refLow: 12,
+  refHigh: 16,
+  refCriticalLow: 7,
+  refCriticalHigh: 20,
+  flag: 'CRITICAL_LOW',
+  enteredById: analystUserId,
+  enteredAt: timestamp,
+  verifiedUnderSingleOperator: false,
+};
+
 /**
  * Response and request examples for the laboratory catalog (`P18-T01`), its
- * orders (`P18-T02`) and the specimens drawn for them (`P18-T03`).
+ * orders (`P18-T02`), the specimens drawn for them (`P18-T03`) and the values
+ * measured against them (`P18-T04`).
  */
 export const LABORATORY_EXAMPLES = {
   labTest: {
@@ -189,6 +216,54 @@ export const LABORATORY_EXAMPLES = {
       collectedAt: timestamp,
       patient: worklistPatient,
     },
+  },
+  labResult: {
+    view: labResult,
+    released: {
+      ...labResult,
+      verifiedById: doctorUserId,
+      verifiedAt: timestamp,
+    },
+    enterRequest: {
+      items: [{ labOrderItemId: labOrderItem.id, valueNumeric: 6.8 }],
+    },
+    amendRequest: {
+      valueNumeric: 8.6,
+      reason: 'Salah ketik: 6.8 seharusnya 8.6, dikoreksi dari worksheet',
+    },
+    amended: {
+      ...labResult,
+      id: 'aaaaaaaa-dddd-4ddd-8ddd-aaaaaaaaaaaa',
+      version: 2,
+      valueNumeric: 8.6,
+      flag: 'LOW',
+      amendedFromId: labResultId,
+      amendReason: 'Salah ketik: 6.8 seharusnya 8.6, dikoreksi dari worksheet',
+      verifiedById: doctorUserId,
+      verifiedAt: timestamp,
+      verifiedUnderSingleOperator: true,
+    },
+    trendItem: {
+      ...labResult,
+      verifiedById: doctorUserId,
+      verifiedAt: timestamp,
+      labOrderId,
+      orderNumber: labOrderHeader.orderNumber,
+      testCode: 'HB',
+      testName: 'Hemoglobin',
+      resultType: 'NUMERIC',
+      collectedAt: timestamp,
+      releasedAt: timestamp,
+    },
+  },
+  laboratorySettings: {
+    view: {
+      technicianMayVerify: false,
+      singleOperator: false,
+      updatedById: doctorUserId,
+      updatedAt: timestamp,
+    },
+    updateRequest: { technicianMayVerify: true },
   },
   labWorklist: {
     item: {

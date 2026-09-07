@@ -1317,6 +1317,45 @@ export type LabSpecimenCounter = Prisma.LabSpecimenCounterModel
  */
 export type LabSpecimen = Prisma.LabSpecimenModel
 /**
+ * Model LabResult
+ * One measured value for one test on one order (P18-T04).
+ * 
+ * The reference band is **snapshotted here at entry** rather than read back
+ * from `LabReferenceRange` at display time: a range edited in 2027 must not
+ * re-flag a 2026 result, because a flag records what was abnormal by the
+ * standard in force when it was measured. The critical thresholds are
+ * snapshotted alongside the normal band for the same reason — without them an
+ * amendment could not recompute its flag from the standard the original was
+ * judged against, and a report could not say what made a value critical.
+ * 
+ * An amendment is a **new row** with `version + 1` and `amendedFromId` set;
+ * the superseded row stays readable for ever. A released value is never
+ * overwritten, because somebody may have treated a patient on the strength of
+ * it and the record has to be able to show what they saw.
+ */
+export type LabResult = Prisma.LabResultModel
+/**
+ * Model LaboratorySettings
+ * How this clinic runs its bench (P18-T04).
+ * 
+ * A row rather than deployment configuration: who may sign a result out is a
+ * clinical governance choice a clinic makes and may later be asked to
+ * justify, and an environment variable carries no actor, no timestamp, and
+ * cannot differ between facilities. Modelled on `BpjsPcareConfig` and
+ * `AiProviderConfig` — the pattern this repo already uses for operational
+ * switches — rather than a generic key-value settings store, which does not
+ * exist here and would type every setting as a string.
+ * 
+ * Both flags default to the strict posture, and absence of a row means the
+ * same: a fresh database verifies with two different people and refuses a
+ * technician's signature. A clinic loosens either one deliberately.
+ * 
+ * `facilityId` is null on the single-tenant deployment, and Postgres treats
+ * NULLs as distinct in a unique index, so what actually keeps this table a
+ * singleton there is a hand-written partial unique index in the migration.
+ */
+export type LaboratorySettings = Prisma.LaboratorySettingsModel
+/**
  * Model Immunization
  * One vaccination given during a visit.
  * 

@@ -4,6 +4,7 @@ import type {
   LabOrderItemStatusValue,
   LabOrderPriorityValue,
   LabOrderStatusValue,
+  LabResultFlagValue,
   LabResultTypeValue,
   LabSpecimenRejectReasonValue,
   LabSpecimenStatusValue,
@@ -220,4 +221,77 @@ export type LabSpecimenLabel = {
   specimenType: LabSpecimenTypeValue;
   collectedAt: string;
   patient: LabWorklistPatient;
+};
+
+/**
+ * One measured value on the wire (P18-T04).
+ *
+ * The reference band travels with the value rather than being looked up by the
+ * client, because the band shown next to a number has to be the one that
+ * number was judged against — the catalog's current band may be a different
+ * band entirely. `flag` absent means no range applied to this patient's sex and
+ * age; the UI says "tidak ada rentang rujukan" and shows the value unjudged.
+ */
+export type LabResultView = {
+  id: string;
+  labOrderItemId: string;
+  version: number;
+  valueNumeric?: number;
+  valueText?: string;
+  valueCoded?: string;
+  unit?: string;
+  refLow?: number;
+  refHigh?: number;
+  refCriticalLow?: number;
+  refCriticalHigh?: number;
+  refText?: string;
+  flag?: LabResultFlagValue;
+  /**
+   * Who typed the value and who signed it out, as account ids. Ids and not
+   * names because a `User` in this system has no display name — the same
+   * reason a specimen reports only `collectedById`. A screen that needs to
+   * name them resolves the account itself.
+   */
+  enteredById: string;
+  enteredAt: string;
+  verifiedById?: string;
+  verifiedAt?: string;
+  /**
+   * True when this value was signed out by the person who typed it, under a
+   * clinic that has `singleOperator` on. Shown rather than hidden: a reader
+   * of the report is entitled to know how many pairs of eyes the number had.
+   */
+  verifiedUnderSingleOperator: boolean;
+  /** Set when this row corrects an earlier one, with the reason it was corrected. */
+  amendedFromId?: string;
+  amendReason?: string;
+};
+
+/** An order with the current version of every value entered against it. */
+export type LabOrderResultsView = {
+  order: LabOrderView;
+  results: LabResultView[];
+};
+
+/**
+ * One point on a test's trend (P18-T04). Released values only: an unverified
+ * number is not a data point, and a doctor comparing this month against last
+ * must not be shown something nobody has signed.
+ */
+export type PatientLabResultView = LabResultView & {
+  labOrderId: string;
+  orderNumber: string;
+  testCode: string;
+  testName: string;
+  resultType: LabResultTypeValue;
+  collectedAt?: string;
+  releasedAt?: string;
+};
+
+/** How this clinic runs its bench (P18-T04). */
+export type LaboratorySettingsView = {
+  technicianMayVerify: boolean;
+  singleOperator: boolean;
+  updatedById?: string;
+  updatedAt?: string;
 };

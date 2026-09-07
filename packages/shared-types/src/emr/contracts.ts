@@ -5,7 +5,7 @@ import type {
   ImmunizationRouteValue,
   ImmunizationSiteValue,
 } from '#emr/schemas';
-import type { LabOrderSummary } from '#laboratory/contracts';
+import type { LabOrderSummary, PatientLabResultView } from '#laboratory/contracts';
 import type { PrescriptionStatusValue } from '#pharmacy-flow/schemas';
 
 /**
@@ -193,6 +193,13 @@ export type EncounterDetail = EncounterResponse & {
    * carries the items and specimens.
    */
   labOrders: LabOrderSummary[];
+  /**
+   * Released laboratory values on this visit (P18-T04), so the doctor reads
+   * them next to the vitals rather than opening the order. Current versions
+   * only, and released ones only: an unverified number is not a result, and a
+   * corrected value replaces the one it supersedes rather than joining it.
+   */
+  labResults: PatientLabResultView[];
 };
 
 /**

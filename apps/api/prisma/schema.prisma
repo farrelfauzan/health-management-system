@@ -259,6 +259,14 @@ enum AuditAction {
   /// question a pharmacist eventually asks.
   LAB_REQUEST_PRINTED
   PRESCRIPTION_PRINTED
+  /// The result chain (P18-T04). Three verbs and not one UPDATE because the
+  /// questions asked afterwards are different questions: who typed this
+  /// number, who signed it out, and who corrected it after it had already
+  /// been acted on. The amendment row is the one a disputed result is read
+  /// backwards from, and it names both operators and the version.
+  LAB_RESULT_ENTERED
+  LAB_RESULT_RELEASED
+  LAB_RESULT_AMENDED
 }
 
 enum BpjsSubmissionType {
@@ -780,6 +788,9 @@ model User {
   namedApprovalRounds       DocumentApprovalApprover[]
   approvalDecisions         DocumentApprovalDecision[]
   collectedLabSpecimens     LabSpecimen[]              @relation("LabSpecimenCollectedBy")
+  enteredLabResults         LabResult[]                @relation("LabResultEnteredBy")
+  verifiedLabResults        LabResult[]                @relation("LabResultVerifiedBy")
+  updatedLaboratorySettings LaboratorySettings[]       @relation("LaboratorySettingsUpdatedBy")
 
   @@index([organizationUnitId])
   /// The offboarding sweep's one read: everyone currently in a window.
@@ -4134,6 +4145,14 @@ enum NotificationType {
   /// ever being behind them. Carries the category and the patient, never a
   /// result value.
   PATIENT_DOCUMENT_RELEASED
+  /// Laboratory results (P18-T04), both addressed to the ordering doctor.
+  /// `CRITICAL` fires on **entry**, before anybody has verified the result: a
+  /// value that has to be telephoned does not wait for a second signature.
+  /// `RELEASED` fires when the order is signed out, which is the ordinary
+  /// case and the one the doctor reads at their own pace. Neither carries the
+  /// value — a bell row is read on a shared terminal.
+  LAB_RESULT_CRITICAL
+  LAB_RESULT_RELEASED
   /// Document approval (P16-T30, FR-E5-25/26). Six kinds because each has a
   /// different audience and a different sentence: the first goes to every
   /// named approver, the next three to the drafter, and the last two back to
@@ -4845,6 +4864,9 @@ model LabOrderItem {
   labTest  LabTest      @relation(fields: [labTestId], references: [id], onDelete: Restrict)
   panel    LabPanel?    @relation(fields: [panelId], references: [id], onDelete: Restrict)
   specimen LabSpecimen? @relation(fields: [specimenId], references: [id], onDelete: SetNull)
+  /// Every version of this test's value, newest last (P18-T04). A list rather
+  /// than one row because an amendment supersedes without erasing.
+  results  LabResult[]
 
   /// One row per test per order: ordering the same test twice on one request
   /// is a mistake, not a quantity.
@@ -4926,6 +4948,130 @@ model LabSpecimen {
   @@index([labOrderId])
   @@index([status, collectedAt])
   @@map("lab_specimens")
+}
+
+/// Whether a measured value sits inside the normal band for this patient
+/// (P18-T04) — and, when it does not, how far outside. CRITICAL_LOW and
+/// CRITICAL_HIGH are not "very abnormal": they are the values a lab must
+/// telephone, and they are what raises a notification before anybody has
+/// signed the result out. ABNORMAL is the TEXT/CODED counterpart, where
+/// "abnormal" is all a non-numeric result can say.
+enum LabResultFlag {
+  NORMAL
+  LOW
+  HIGH
+  CRITICAL_LOW
+  CRITICAL_HIGH
+  ABNORMAL
+
+  @@map("lab_result_flag")
+}
+
+/// One measured value for one test on one order (P18-T04).
+///
+/// The reference band is **snapshotted here at entry** rather than read back
+/// from `LabReferenceRange` at display time: a range edited in 2027 must not
+/// re-flag a 2026 result, because a flag records what was abnormal by the
+/// standard in force when it was measured. The critical thresholds are
+/// snapshotted alongside the normal band for the same reason — without them an
+/// amendment could not recompute its flag from the standard the original was
+/// judged against, and a report could not say what made a value critical.
+///
+/// An amendment is a **new row** with `version + 1` and `amendedFromId` set;
+/// the superseded row stays readable for ever. A released value is never
+/// overwritten, because somebody may have treated a patient on the strength of
+/// it and the record has to be able to show what they saw.
+model LabResult {
+  id                          String         @id @default(uuid()) @db.Uuid
+  labOrderItemId              String         @map("lab_order_item_id") @db.Uuid
+  version                     Int            @default(1)
+  /// Exactly one of the three value columns is set, decided by the test's
+  /// `LabResultType`. Three columns rather than one text column because a
+  /// numeric result is compared, trended and unit-bearing, and a value stored
+  /// as prose can do none of those.
+  valueNumeric                Decimal?       @map("value_numeric") @db.Decimal(12, 4)
+  valueText                   String?        @map("value_text")
+  valueCoded                  String?        @map("value_coded")
+  /// Snapshotted from the test, for the same reason the range is: a unit
+  /// changed in the catalog must not silently restate an old measurement.
+  unit                        String?
+  refLow                      Decimal?       @map("ref_low") @db.Decimal(12, 4)
+  refHigh                     Decimal?       @map("ref_high") @db.Decimal(12, 4)
+  refCriticalLow              Decimal?       @map("ref_critical_low") @db.Decimal(12, 4)
+  refCriticalHigh             Decimal?       @map("ref_critical_high") @db.Decimal(12, 4)
+  refText                     String?        @map("ref_text")
+  /// Null when no band applied to this patient's sex and age. The value is
+  /// recorded and shown as "tidak ada rentang rujukan" — never judged against
+  /// an adult range that was not meant for them.
+  flag                        LabResultFlag?
+  enteredById                 String         @map("entered_by_id") @db.Uuid
+  enteredAt                   DateTime       @map("entered_at")
+  verifiedById                String?        @map("verified_by_id") @db.Uuid
+  verifiedAt                  DateTime?      @map("verified_at")
+  /// Whether `LaboratorySettings.singleOperator` was on when this row was
+  /// verified. Recorded on the result and not only in the settings table
+  /// because the settings row is current state while this is history: three
+  /// years on, this column is what says whether one signature on a result was
+  /// clinic policy or a bug.
+  verifiedUnderSingleOperator Boolean        @default(false) @map("verified_under_single_operator")
+  /// The row this one corrects, when it is an amendment.
+  amendedFromId               String?        @map("amended_from_id") @db.Uuid
+  amendReason                 String?        @map("amend_reason")
+  /// IHS id returned by SATUSEHAT on first successful submission (P18-T09).
+  satusehatObservationId      String?        @map("satusehat_observation_id")
+  createdAt                   DateTime       @default(now()) @map("created_at")
+  updatedAt                   DateTime       @updatedAt @map("updated_at")
+
+  labOrderItem LabOrderItem @relation(fields: [labOrderItemId], references: [id], onDelete: Cascade)
+  enteredBy    User         @relation("LabResultEnteredBy", fields: [enteredById], references: [id], onDelete: Restrict)
+  verifiedBy   User?        @relation("LabResultVerifiedBy", fields: [verifiedById], references: [id], onDelete: Restrict)
+  amendedFrom  LabResult?   @relation("LabResultAmendment", fields: [amendedFromId], references: [id], onDelete: Restrict)
+  amendments   LabResult[]  @relation("LabResultAmendment")
+
+  /// One row per version per item: an amendment allocates the next version
+  /// inside the same transaction, so two amendments racing cannot both claim
+  /// v2 and silently lose one correction.
+  @@unique([labOrderItemId, version])
+  @@index([labOrderItemId])
+  @@index([amendedFromId])
+  @@map("lab_results")
+}
+
+/// How this clinic runs its bench (P18-T04).
+///
+/// A row rather than deployment configuration: who may sign a result out is a
+/// clinical governance choice a clinic makes and may later be asked to
+/// justify, and an environment variable carries no actor, no timestamp, and
+/// cannot differ between facilities. Modelled on `BpjsPcareConfig` and
+/// `AiProviderConfig` — the pattern this repo already uses for operational
+/// switches — rather than a generic key-value settings store, which does not
+/// exist here and would type every setting as a string.
+///
+/// Both flags default to the strict posture, and absence of a row means the
+/// same: a fresh database verifies with two different people and refuses a
+/// technician's signature. A clinic loosens either one deliberately.
+///
+/// `facilityId` is null on the single-tenant deployment, and Postgres treats
+/// NULLs as distinct in a unique index, so what actually keeps this table a
+/// singleton there is a hand-written partial unique index in the migration.
+model LaboratorySettings {
+  id                  String   @id @default(uuid()) @db.Uuid
+  facilityId          String?  @unique @map("facility_id") @db.Uuid
+  /// Whether a LAB_TECHNICIAN may verify and release results. Off: release is
+  /// a doctor's or an administrator's act.
+  technicianMayVerify Boolean  @default(false) @map("technician_may_verify")
+  /// Whether one person may both enter and verify the same result. Off: the
+  /// two signatures must be different people. On is the solo-klinik reality,
+  /// where there is only one person to sign — and every result released under
+  /// it says so on its own row.
+  singleOperator      Boolean  @default(false) @map("single_operator")
+  updatedById         String?  @map("updated_by_id") @db.Uuid
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @updatedAt @map("updated_at")
+
+  updatedBy User? @relation("LaboratorySettingsUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
+
+  @@map("laboratory_settings")
 }
 
 /// One vaccination given during a visit.
