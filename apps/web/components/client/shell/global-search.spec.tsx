@@ -62,7 +62,7 @@ function mockListResponse(items: unknown[]): {
   };
 }
 
-function renderGlobalSearch(rules: AppRule[]): void {
+function renderGlobalSearch(rules: AppRule[], excludedHrefs: readonly string[] = []): void {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false } },
   });
@@ -70,7 +70,7 @@ function renderGlobalSearch(rules: AppRule[]): void {
     <QueryClientProvider client={queryClient}>
       <AbilityProvider ability={buildAppAbility(rules)}>
         <NextIntlClientProvider locale="id" messages={messages}>
-          <GlobalSearch />
+          <GlobalSearch excludedHrefs={excludedHrefs} />
         </NextIntlClientProvider>
       </AbilityProvider>
     </QueryClientProvider>,
@@ -171,6 +171,34 @@ describe('GlobalSearch', () => {
 
     expect(await screen.findByText('Pasien')).toBeInTheDocument();
     expect(screen.queryByText('Administrasi')).not.toBeInTheDocument();
+  });
+
+  // The palette used to filter on the ability alone, so a feature this client
+  // did not buy stayed searchable: the entry was gone from the sidebar, and
+  // picking it here only bounced off the page's own gate back to the
+  // dashboard. The pair matters — the negative alone would pass if the label
+  // simply never rendered.
+  it('offers a nav link the ability allows when the shell kept it', async () => {
+    const user = userEvent.setup();
+    mockEmptyResponses();
+    renderGlobalSearch([{ action: 'read', subject: 'LabTest' }]);
+
+    await user.keyboard('{Meta>}k{/Meta}');
+
+    expect(await screen.findByText('Laboratorium')).toBeInTheDocument();
+  });
+
+  it('drops that same link once the shell excludes it', async () => {
+    const user = userEvent.setup();
+    mockEmptyResponses();
+    renderGlobalSearch([{ action: 'read', subject: 'LabTest' }], [
+      '/admin/settings/laboratory',
+    ]);
+
+    await user.keyboard('{Meta>}k{/Meta}');
+
+    expect(await screen.findByPlaceholderText('Cari pasien, dokter, pengguna...')).toBeVisible();
+    expect(screen.queryByText('Laboratorium')).not.toBeInTheDocument();
   });
 
   it('never queries or shows the users group without the user read ability', async () => {

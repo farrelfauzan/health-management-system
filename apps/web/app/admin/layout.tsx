@@ -44,10 +44,11 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
   // shrink the sidebar to *My Documents*; the dashboard entry needs no grant,
   // so it is dropped by name, and the assistant launcher goes with it.
   const offboarding = resolveOffboardingSession(claims, 'admin');
-  const sections = filterNavSections(buildAppAbility(rules), undefined, [
+  const excludedNavHrefs = [
     ...(isPharmacistOnly || offboarding ? ['/admin/dashboard'] : []),
     ...resolveDisabledNavHrefs(claims),
-  ]);
+  ];
+  const sections = filterNavSections(buildAppAbility(rules), undefined, excludedNavHrefs);
   const isChatEnabled = offboarding === null && isFeatureEnabled(claims, 'ai-chatbot');
   const profile = resolveShellProfile(claims);
   const idlePolicy = resolveSessionIdlePolicy();
@@ -80,7 +81,7 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
             and the table's own overflow-x container can never engage.
           */}
           <SidebarInset className="min-w-0">
-            <TopBar profile={profile} />
+            <TopBar profile={profile} excludedNavHrefs={excludedNavHrefs} />
             {offboarding ? (
               <OffboardingBanner
                 deadline={offboarding.deadline}
