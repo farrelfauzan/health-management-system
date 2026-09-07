@@ -59,7 +59,11 @@ import { ServiceTariffService } from './service/service-tariff.service';
   // `InvoiceDocumentService` for P16-T25: the delivery module asks it for the
   // bill's state and its rendered snapshot, and applies the send rule itself.
   // `ClinicProfileService` for P16-T26: the message names the clinic.
+  // `BillingService` for P18-T06: pay-before-collect asks the module that owns
+  // money whether a visit is settled, rather than the laboratory reading
+  // invoices and forming its own opinion of what "paid" means.
   exports: [
+    BillingService,
     CashierReportService,
     AccommodationBillingService,
     InvoiceDocumentService,

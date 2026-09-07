@@ -1269,6 +1269,54 @@ export type LabPanel = Prisma.LabPanelModel
  */
 export type LabPanelMember = Prisma.LabPanelMemberModel
 /**
+ * Model LabOrderCounter
+ * Sequence source for per-day lab order numbers — the `InvoiceCounter`
+ * reasoning applied to the bench. Allocation is one atomic
+ * `INSERT … ON CONFLICT … RETURNING` inside the order-create transaction,
+ * never `MAX + 1`, which races when two doctors order at once.
+ */
+export type LabOrderCounter = Prisma.LabOrderCounterModel
+/**
+ * Model LabOrder
+ * One request for laboratory work, made during a visit.
+ * 
+ * The order is the unit everything else attaches to: the specimen is drawn
+ * for it, the result is entered against its items, the invoice line is priced
+ * from it, and the SATUSEHAT `ServiceRequest` is it. `patientId` is
+ * denormalised from the encounter for the same reason `Immunization` carries
+ * one — a patient's lab history is one indexed read, and it is the fact that
+ * outlives the visit.
+ */
+export type LabOrder = Prisma.LabOrderModel
+/**
+ * Model LabOrderItem
+ * One test on an order.
+ * 
+ * A panel is **expanded here at order time**: ordering darah rutin writes one
+ * row per member with `panelId` set. A later edit to the panel's membership
+ * therefore never rewrites what was actually ordered, while billing (P18-T06)
+ * still groups on `panelId` to charge the panel once instead of six times.
+ */
+export type LabOrderItem = Prisma.LabOrderItemModel
+/**
+ * Model LabSpecimenCounter
+ * Sequence source for per-day accession numbers, allocated exactly as order
+ * numbers are and for the same reason: two analysts collecting at once must
+ * never print the same barcode.
+ */
+export type LabSpecimenCounter = Prisma.LabSpecimenCounterModel
+/**
+ * Model LabSpecimen
+ * One drawn sample: who took it, when, which tube, and whether it was fit to
+ * analyse.
+ * 
+ * Between the order and the result, and the reason both are traceable. One
+ * specimen per `specimenType` per collection by default — a single EDTA tube
+ * serves the whole darah rutin — so collection creates a specimen for each
+ * distinct type among the still-pending items and links those items to it.
+ */
+export type LabSpecimen = Prisma.LabSpecimenModel
+/**
  * Model Immunization
  * One vaccination given during a visit.
  * 

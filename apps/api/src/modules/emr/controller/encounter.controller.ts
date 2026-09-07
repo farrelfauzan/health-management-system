@@ -143,7 +143,7 @@ export class EncounterController {
   @ApiEndpoint({
     summary: 'Close a clinical encounter',
     responseDescription:
-      'The encounter is FINISHED and its registration COMPLETED, in one transaction.',
+      'The encounter is FINISHED and its registration COMPLETED, in one transaction. Lab work still in flight does not block the close — results arrive after the patient has gone home — so `meta.openLabOrders` names what is outstanding for the UI to warn about.',
     responseExample: {
       data: {
         ...PHASE_THREE_EXAMPLES.encounter.listItem,
@@ -159,10 +159,11 @@ export class EncounterController {
     @AuthUser() currentUser?: CurrentUser,
   ) {
     const actor = this.assertAuthenticated(currentUser);
-    const encounter = await this.encounterService.closeEncounter(id, actor);
+    const closed = await this.encounterService.closeEncounter(id, actor);
 
     return {
-      data: encounter,
+      data: closed.encounter,
+      meta: closed.meta,
       message: 'Encounter closed',
     };
   }

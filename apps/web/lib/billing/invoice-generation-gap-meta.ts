@@ -20,4 +20,8 @@ export const INVOICE_GENERATION_GAP_MESSAGES: Record<InvoiceGenerationGapReason,
     'The compound was priced from its ingredients, but there is no active JASA-RACIK tariff, so the compounding fee was not billed. Add one under Tariffs and reissue.',
   NO_TARIFF_FOR_IMMUNIZATION:
     'This vaccination has no matching tariff. Add a tariff whose code matches the vaccine’s catalog code and regenerate, or add the line by hand from the draft invoice.',
+  NO_TARIFF_FOR_LAB_TEST:
+    'This laboratory test has no active LAB tariff, so it was left off the bill. Price it under Tariffs and regenerate, or add the line by hand from the draft invoice.',
+  NO_TARIFF_FOR_LAB_PANEL:
+    'This laboratory panel has no active LAB tariff. A panel is billed once at its own price, so pricing its members individually will not fill this gap — price the panel and regenerate.',
 };

@@ -83,6 +83,19 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     -- deciding what the clinic offers is an administrative decision.
     ('lab-test.read:any', 'LabTest', 'read', 'ANY', 'Read the laboratory catalog'),
     ('lab-test.write:any', 'LabTest', 'write', 'ANY', 'Create and edit laboratory tests and panels'),
+    -- P18-T02. OWN is the encounter's own rule: a doctor orders on the visits
+    -- they are attending, and reads back what they ordered. The analis holds
+    -- `lab-order.read:any` and no encounter key at all — a worklist is not a
+    -- route into the medical record, which is why ordering has its own subject
+    -- rather than riding on `encounter.write`.
+    ('lab-order.read:own', 'LabOrder', 'read', 'OWN', 'Read laboratory orders on own encounters'),
+    ('lab-order.read:any', 'LabOrder', 'read', 'ANY', 'Read every laboratory order'),
+    ('lab-order.write:own', 'LabOrder', 'write', 'OWN', 'Order and cancel laboratory tests on own encounters'),
+    ('lab-order.write:any', 'LabOrder', 'write', 'ANY', 'Order and cancel laboratory tests on any encounter'),
+    -- P18-T03. `:any` only, and deliberately no `:own` form: collecting is a
+    -- bench act performed on whoever is in the chair, and there is no version
+    -- of it scoped to one person's own records.
+    ('lab-specimen.write:any', 'LabSpecimen', 'write', 'ANY', 'Collect, receive and reject laboratory specimens'),
     ('portal.patient-access:own', 'Portal', 'patient-access', 'OWN', 'Access the patient portal'),
     ('role.assign:any', 'Role', 'assign', 'ANY', 'Assign roles to users'),
     ('role.read:any', 'Role', 'read', 'ANY', 'Read role catalog'),
@@ -478,6 +491,12 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('ADMIN', 'service-tariff.write:any'),
     ('ADMIN', 'lab-test.read:any'),
     ('ADMIN', 'lab-test.write:any'),
+    -- P18-T02/T03. The front desk raises and withdraws orders on behalf of the
+    -- clinic (a doctor's paper request typed in, a cancellation the patient
+    -- asks for at the counter), and covers the bench when the analis is out.
+    ('ADMIN', 'lab-order.read:any'),
+    ('ADMIN', 'lab-order.write:any'),
+    ('ADMIN', 'lab-specimen.write:any'),
     ('ADMIN', 'invoice.read:any'),
     ('ADMIN', 'invoice.write:any'),
     ('ADMIN', 'invoice.deliver:any'),
@@ -622,6 +641,10 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     -- what a test measures and what its normal range is; what the clinic
     -- offers is not their decision.
     ('DOCTOR', 'lab-test.read:any'),
+    -- P18-T02. OWN on both: ordering is the attending practitioner's act, and
+    -- what comes back is the work on their own visits.
+    ('DOCTOR', 'lab-order.read:own'),
+    ('DOCTOR', 'lab-order.write:own'),
     ('DOCTOR', 'prescription.read:own'),
     ('DOCTOR', 'prescription.write:own'),
     ('DOCTOR', 'chat.session.create:own'),
@@ -665,6 +688,10 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     -- Read only. Deciding what the clinic offers and what it costs is an
     -- administrative act; running the test is not.
     ('LAB_TECHNICIAN', 'lab-test.read:any'),
+    -- The worklist and the orders behind it. Read-only on the order itself: an
+    -- analis runs what was asked for and never decides what was asked for.
+    ('LAB_TECHNICIAN', 'lab-order.read:any'),
+    ('LAB_TECHNICIAN', 'lab-specimen.write:any'),
     -- Read only, and only because a specimen label and a lab report carry the
     -- clinic's identity — the same reason PHARMACIST and DOCTOR have it.
     ('LAB_TECHNICIAN', 'clinic-profile.read:any'),

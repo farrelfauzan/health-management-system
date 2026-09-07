@@ -31,6 +31,7 @@ const ENCOUNTER = {
   procedures: [],
   immunizations: [],
   prescriptions: [],
+  labOrders: [],
 } satisfies EncounterDetail;
 
 function renderLocalized(node: React.ReactNode): void {

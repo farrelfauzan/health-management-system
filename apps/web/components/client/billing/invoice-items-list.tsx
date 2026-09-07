@@ -23,6 +23,29 @@ export function InvoiceItemsList({
 }: InvoiceItemsListProps) {
   const format = useFormatter();
   const t = useTranslations('operations');
+  // Translated rather than title-cased from the enum: "LAB" reads as "Lab" in
+  // both locales that way, and an Indonesian invoice has to say "Laboratorium"
+  // (P18-T06). The lookup is by literal key so a type with no message is a
+  // compile error here rather than a missing-key crash on a patient's bill;
+  // anything outside the map falls back to the generic formatting.
+  const itemTypeLabel = (itemType: string) => {
+    switch (itemType) {
+      case 'CONSULTATION':
+        return t('billing.itemTypes.CONSULTATION');
+      case 'PROCEDURE':
+        return t('billing.itemTypes.PROCEDURE');
+      case 'MEDICATION':
+        return t('billing.itemTypes.MEDICATION');
+      case 'ACCOMMODATION':
+        return t('billing.itemTypes.ACCOMMODATION');
+      case 'LAB':
+        return t('billing.itemTypes.LAB');
+      case 'OTHER':
+        return t('billing.itemTypes.OTHER');
+      default:
+        return formatStatusLabel(itemType);
+    }
+  };
   const money = (amount: number) =>
     format.number(amount, { style: 'currency', currency: 'IDR', maximumFractionDigits: 2 });
   return (
@@ -33,7 +56,7 @@ export function InvoiceItemsList({
             <div className="min-w-0">
               <p className="truncate text-sm text-slate-800">{item.description}</p>
               <p className="text-xs text-slate-500">
-                {formatStatusLabel(item.itemType)} · {item.quantity} × {money(item.unitPrice)}
+                {itemTypeLabel(item.itemType)} · {item.quantity} × {money(item.unitPrice)}
               </p>
             </div>
             <div className="flex shrink-0 items-center gap-2">

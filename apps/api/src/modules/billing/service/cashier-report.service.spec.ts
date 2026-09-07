@@ -7,6 +7,7 @@ import { CashierReportService } from './cashier-report.service';
 describe('CashierReportService', () => {
   const billingRepositoryMock = {
     findPaymentsForCashierReport: jest.fn(),
+    findItemsForCashierReport: jest.fn(),
   };
 
   const configServiceMock = {
@@ -24,6 +25,7 @@ describe('CashierReportService', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     billingRepositoryMock.findPaymentsForCashierReport.mockResolvedValue([]);
+    billingRepositoryMock.findItemsForCashierReport.mockResolvedValue([]);
   });
 
   it('bounds the requested clinic day by Jakarta-local midnights in UTC', async () => {
@@ -76,7 +78,32 @@ describe('CashierReportService', () => {
       totals: { count: 0, totalAmount: 0 },
       byMethod: [],
       byDoctor: [],
+      byItemType: [],
     });
+  });
+
+  // P18-T06. A payment row carries only the invoice total, so the day's
+  // composition is summed from the settled invoices' lines — which is the only
+  // way "how much of today was laboratory" is answerable at all.
+  it('splits the day by what the money was for', async () => {
+    billingRepositoryMock.findPaymentsForCashierReport.mockResolvedValue([
+      { method: 'CASH', amount: 185000, doctor: doctorBudi },
+    ]);
+    billingRepositoryMock.findItemsForCashierReport.mockResolvedValue([
+      { itemType: 'CONSULTATION', amount: 50000 },
+      { itemType: 'LAB', amount: 100000 },
+      { itemType: 'LAB', amount: 35000 },
+    ]);
+
+    const actualReport = await service.getDailyReport({
+      date: '2026-07-28',
+    } as CashierDailyReportQueryDto);
+
+    expect(actualReport.byItemType).toEqual([
+      { itemType: 'CONSULTATION', count: 1, totalAmount: 50000 },
+      { itemType: 'LAB', count: 2, totalAmount: 135000 },
+    ]);
+    expect(actualReport.totals.totalAmount).toBe(185000);
   });
 
   it('defaults to the clinic-local today when no date is given', async () => {

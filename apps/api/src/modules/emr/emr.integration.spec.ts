@@ -7,6 +7,7 @@ import request from 'supertest';
 import { AppModule } from '../../app.module';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { AuthRepository } from '../auth/repository/auth.repository';
+import { LabOrderRepository } from '../laboratory/repository/lab-order.repository';
 import { Icd10CodeRepository } from '../terminology/repository/icd10-code.repository';
 import { EncounterRepository } from './repository/encounter.repository';
 
@@ -43,6 +44,14 @@ describe('EMR integration', () => {
   const icd10CodeRepositoryMock = {
     searchIcd10Codes: jest.fn(),
     findActiveIcd10CodeById: jest.fn(),
+  };
+
+  // P18-T02. Closing a visit now names the lab work still in flight, and the
+  // encounter detail carries its orders. `PrismaService` is stubbed wholesale
+  // below, so the laboratory repository has to be overridden here or every
+  // close answers 500 — the same reason the audit delegate is stubbed.
+  const labOrderRepositoryMock = {
+    findLabOrdersByEncounterId: jest.fn(() => Promise.resolve([])),
   };
 
   const prismaServiceMock = {
@@ -117,6 +126,8 @@ describe('EMR integration', () => {
       .useValue(encounterRepositoryMock)
       .overrideProvider(Icd10CodeRepository)
       .useValue(icd10CodeRepositoryMock)
+      .overrideProvider(LabOrderRepository)
+      .useValue(labOrderRepositoryMock)
       .overrideProvider(PrismaService)
       .useValue(prismaServiceMock)
       .compile();

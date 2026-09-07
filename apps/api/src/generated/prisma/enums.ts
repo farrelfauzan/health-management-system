@@ -128,7 +128,12 @@ export const AuditAction = {
   APPROVAL_SUPERSEDED: 'APPROVAL_SUPERSEDED',
   APPROVAL_GRANTED: 'APPROVAL_GRANTED',
   APPROVAL_REJECTED: 'APPROVAL_REJECTED',
-  DOCUMENT_ISSUED: 'DOCUMENT_ISSUED'
+  DOCUMENT_ISSUED: 'DOCUMENT_ISSUED',
+  LAB_ORDER_CREATED: 'LAB_ORDER_CREATED',
+  LAB_ORDER_CANCELLED: 'LAB_ORDER_CANCELLED',
+  LAB_SPECIMEN_COLLECTED: 'LAB_SPECIMEN_COLLECTED',
+  LAB_SPECIMEN_RECEIVED: 'LAB_SPECIMEN_RECEIVED',
+  LAB_SPECIMEN_REJECTED: 'LAB_SPECIMEN_REJECTED'
 } as const
 
 export type AuditAction = (typeof AuditAction)[keyof typeof AuditAction]
@@ -866,3 +871,53 @@ export const LabSpecimenType = {
 } as const
 
 export type LabSpecimenType = (typeof LabSpecimenType)[keyof typeof LabSpecimenType]
+
+
+export const LabOrderStatus = {
+  ORDERED: 'ORDERED',
+  COLLECTED: 'COLLECTED',
+  IN_PROGRESS: 'IN_PROGRESS',
+  RESULTED: 'RESULTED',
+  RELEASED: 'RELEASED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type LabOrderStatus = (typeof LabOrderStatus)[keyof typeof LabOrderStatus]
+
+
+export const LabOrderItemStatus = {
+  PENDING: 'PENDING',
+  RESULTED: 'RESULTED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type LabOrderItemStatus = (typeof LabOrderItemStatus)[keyof typeof LabOrderItemStatus]
+
+
+export const LabOrderPriority = {
+  ROUTINE: 'ROUTINE',
+  URGENT: 'URGENT'
+} as const
+
+export type LabOrderPriority = (typeof LabOrderPriority)[keyof typeof LabOrderPriority]
+
+
+export const LabSpecimenStatus = {
+  COLLECTED: 'COLLECTED',
+  RECEIVED: 'RECEIVED',
+  REJECTED: 'REJECTED'
+} as const
+
+export type LabSpecimenStatus = (typeof LabSpecimenStatus)[keyof typeof LabSpecimenStatus]
+
+
+export const LabSpecimenRejectReason = {
+  HEMOLYSED: 'HEMOLYSED',
+  INSUFFICIENT: 'INSUFFICIENT',
+  CLOTTED: 'CLOTTED',
+  MISLABELLED: 'MISLABELLED',
+  CONTAMINATED: 'CONTAMINATED',
+  OTHER: 'OTHER'
+} as const
+
+export type LabSpecimenRejectReason = (typeof LabSpecimenRejectReason)[keyof typeof LabSpecimenRejectReason]

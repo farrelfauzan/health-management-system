@@ -521,6 +521,14 @@
         "invalidQuantity": "Jumlah harus bilangan bulat minimal 1.",
         "addError": "Baris tidak dapat ditambahkan. Silakan coba lagi.",
         "removeError": "Baris tidak dapat dihapus. Silakan coba lagi."
+      },
+      "itemTypes": {
+        "CONSULTATION": "Konsultasi",
+        "PROCEDURE": "Tindakan",
+        "MEDICATION": "Obat",
+        "ACCOMMODATION": "Kamar",
+        "LAB": "Laboratorium",
+        "OTHER": "Lainnya"
       }
     },
     "integrations": {

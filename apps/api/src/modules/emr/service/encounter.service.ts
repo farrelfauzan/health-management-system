@@ -1,6 +1,7 @@
 import {
   ActorScopeResolution,
   canTransitionRegistrationStatus,
+  CloseEncounterMeta,
   EncounterDetail,
   EncounterListItem,
   EncountersListMeta,
@@ -21,6 +22,7 @@ import { ListEncountersQueryDto } from '../dto/list-encounters-query.dto';
 import { OpenEncounterDto } from '../dto/open-encounter.dto';
 import { UpdateEncounterSoapDto } from '../dto/update-encounter-soap.dto';
 import { EncounterRepository } from '../repository/encounter.repository';
+import { LabOrderService } from '../../laboratory/service/lab-order.service';
 import { EncounterAccessService } from './encounter-access.service';
 import { EncounterMapper } from './encounter.mapper';
 
@@ -42,6 +44,7 @@ export class EncounterService {
     private readonly encounterRepository: EncounterRepository,
     private readonly encounterAccessService: EncounterAccessService,
     private readonly encounterMapper: EncounterMapper,
+    private readonly labOrderService: LabOrderService,
   ) {}
 
   async listEncounters(
@@ -80,8 +83,12 @@ export class EncounterService {
     if (!detail) {
       throw new NotFoundException('Encounter not found');
     }
+    // P18-T02. Asked of the module that owns orders rather than joined into the
+    // detail include: the laboratory is an optional feature, and a clinic
+    // without it gets an empty list rather than a query it cannot use.
+    const labOrders = await this.labOrderService.findOpenOrdersForEncounter(id);
 
-    return this.encounterMapper.toEncounterDetail(detail);
+    return { ...this.encounterMapper.toEncounterDetail(detail), labOrders };
   }
 
   /**
@@ -145,13 +152,22 @@ export class EncounterService {
    * COMPLETED in one transaction, which is what moves the patient out of the
    * queue and lets Phase 9 bill the visit.
    */
-  async closeEncounter(id: string, currentUser: CurrentUser): Promise<EncounterListItem> {
-    return this.transitionEncounter({
+  async closeEncounter(
+    id: string,
+    currentUser: CurrentUser,
+  ): Promise<{ encounter: EncounterListItem; meta: CloseEncounterMeta }> {
+    // P18-T02: read before the transition, because a released order is no
+    // longer open and the close itself does not touch lab state — what the
+    // doctor needs warning about is what was outstanding as they finished.
+    const openLabOrders = await this.labOrderService.findOpenOrdersForEncounter(id);
+    const encounter = await this.transitionEncounter({
       id,
       currentUser,
       status: 'FINISHED',
       registrationStatus: 'COMPLETED',
     });
+
+    return { encounter, meta: { openLabOrders } };
   }
 
   /**

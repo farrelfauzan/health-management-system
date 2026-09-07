@@ -1,5 +1,6 @@
 import {
   BillingDispensedItemRecord,
+  BillingLabItemRecord,
   BillingSourceEncounterRecord,
   canTransitionInvoiceStatus,
   CreateInvoiceItemPayload,
@@ -104,9 +105,11 @@ export class BillingService {
     const dispensedItems = await this.billingRepository.findDispensedItemsByEncounterId(
       encounter.id,
     );
+    const labItems = await this.billingRepository.findLabItemsForBilling(encounter.id);
     const collected = await this.collectInvoiceItems({
       encounter,
       dispensedItems,
+      labItems,
       consultationTariffId: payload.consultationTariffId,
     });
     const totalCents = collected.items.reduce((sum, item) => sum + toCents(item.amount), 0);
@@ -297,12 +300,45 @@ export class BillingService {
     return this.billingMapper.toInvoiceDetail(updated);
   }
 
+  /**
+   * Whether this visit has been settled — the question pay-before-collect asks
+   * (P18-T06). A service method rather than a repository call across modules,
+   * so the laboratory cannot form its own opinion of what "paid" means.
+   */
+  async hasSettledInvoiceForEncounter(encounterId: string): Promise<boolean> {
+    const settled = await this.billingRepository.findEncounterIdsWithSettledInvoice([encounterId]);
+
+    return settled.has(encounterId);
+  }
+
+  /**
+   * Whether this visit's bill has already left DRAFT — the question a lab
+   * cancellation asks (P18-T06). Removing a line from an issued invoice is not
+   * something the laboratory may do, so the cancel response says a manual
+   * credit is needed instead of silently leaving the patient charged.
+   */
+  async hasIssuedInvoiceForEncounter(encounterId: string): Promise<boolean> {
+    return this.billingRepository.hasIssuedInvoiceForEncounter(encounterId);
+  }
+
+  /** The same question asked of a whole worklist at once. */
+  async findEncounterIdsWithSettledInvoice(
+    encounterIds: readonly string[],
+  ): Promise<ReadonlySet<string>> {
+    if (encounterIds.length === 0) {
+      return new Set();
+    }
+
+    return this.billingRepository.findEncounterIdsWithSettledInvoice(encounterIds);
+  }
+
   private async collectInvoiceItems(params: {
     encounter: BillingSourceEncounterRecord;
     dispensedItems: BillingDispensedItemRecord[];
+    labItems: BillingLabItemRecord[];
     consultationTariffId?: string;
   }): Promise<CollectedItems> {
-    const { encounter, dispensedItems, consultationTariffId } = params;
+    const { encounter, dispensedItems, labItems, consultationTariffId } = params;
     const items: CreateInvoiceItemPayload[] = [];
     const gaps: InvoiceGenerationGap[] = [];
     const consultation = await this.resolveConsultationSelection(consultationTariffId);
@@ -318,6 +354,9 @@ export class BillingService {
     const immunizations = await this.collectImmunizationItems(encounter);
     items.push(...immunizations.items);
     gaps.push(...immunizations.gaps);
+    const lab = this.collectLabItems(labItems);
+    items.push(...lab.items);
+    gaps.push(...lab.gaps);
     const medications = this.collectMedicationItems(dispensedItems);
     const compounds = await this.collectCompoundItems(dispensedItems);
     items.push(...compounds.items);
@@ -444,6 +483,80 @@ export class BillingService {
       items.push(this.buildTariffItem(tariff, 'PROCEDURE', grouped.quantity));
     }
     return { items, gaps };
+  }
+
+  /**
+   * Lab work is billed the way it is sold: a panel is one line at the panel's
+   * own tariff however many tests it expanded into, and a loose test is one
+   * line at its own. Charging six members of a darah rutin separately would
+   * bill a patient several times what the clinic quoted them.
+   *
+   * A test or panel with no active tariff is a gap naming it — the procedure
+   * rule from P9 applied to the bench. Free lab work is the failure this
+   * prevents: the tests are recorded, so the omission would otherwise be
+   * invisible until somebody reconciled a month of them.
+   */
+  private collectLabItems(labItems: BillingLabItemRecord[]): CollectedItems {
+    const items: CreateInvoiceItemPayload[] = [];
+    const gaps: InvoiceGenerationGap[] = [];
+    const billedPanelIds = new Set<string>();
+    for (const labItem of labItems) {
+      if (labItem.panelId === null) {
+        this.pushLabTestLine(labItem, items, gaps);
+        continue;
+      }
+      if (billedPanelIds.has(labItem.panelId)) {
+        continue;
+      }
+      billedPanelIds.add(labItem.panelId);
+      this.pushLabPanelLine(labItem, items, gaps);
+    }
+    return { items, gaps };
+  }
+
+  private pushLabTestLine(
+    labItem: BillingLabItemRecord,
+    items: CreateInvoiceItemPayload[],
+    gaps: InvoiceGenerationGap[],
+  ): void {
+    if (labItem.testPrice === null || labItem.testTariffId === null) {
+      gaps.push({
+        reason: 'NO_TARIFF_FOR_LAB_TEST',
+        code: labItem.testCode,
+        description: labItem.testName,
+      });
+      return;
+    }
+    items.push({
+      itemType: 'LAB',
+      serviceTariffId: labItem.testTariffId,
+      description: labItem.testName,
+      quantity: 1,
+      unitPrice: labItem.testPrice,
+      amount: labItem.testPrice,
+    });
+  }
+
+  private pushLabPanelLine(
+    labItem: BillingLabItemRecord,
+    items: CreateInvoiceItemPayload[],
+    gaps: InvoiceGenerationGap[],
+  ): void {
+    if (labItem.panelPrice === null || labItem.panelTariffId === null) {
+      gaps.push({
+        reason: 'NO_TARIFF_FOR_LAB_PANEL',
+        description: labItem.panelName ?? labItem.testName,
+      });
+      return;
+    }
+    items.push({
+      itemType: 'LAB',
+      serviceTariffId: labItem.panelTariffId,
+      description: labItem.panelName ?? labItem.testName,
+      quantity: 1,
+      unitPrice: labItem.panelPrice,
+      amount: labItem.panelPrice,
+    });
   }
 
   /**

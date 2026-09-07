@@ -101,7 +101,9 @@ export type InvoiceGenerationGapReason =
   | 'NO_ACCOMMODATION_TARIFF'
   | 'UNPRICED_COMPOUND_COMPONENT'
   | 'NO_COMPOUNDING_FEE_TARIFF'
-  | 'NO_TARIFF_FOR_IMMUNIZATION';
+  | 'NO_TARIFF_FOR_IMMUNIZATION'
+  | 'NO_TARIFF_FOR_LAB_TEST'
+  | 'NO_TARIFF_FOR_LAB_PANEL';
 
 /**
  * A billable thing the generator found on the encounter but could not price.
@@ -134,11 +136,26 @@ export type CashierReportDoctorLine = CashierReportTotals & {
  * reconcile?) and by doctor (who produced the revenue?). Built from payments,
  * so voided and unpaid invoices never appear in it.
  */
+/**
+ * What the day's settled money was actually *for* (P18-T06). Split by item
+ * type rather than only by method and doctor, because "how much of today was
+ * laboratory" is a question a clinic asks the moment it starts selling lab
+ * work — and the answer is not derivable from a payment row, which carries only
+ * the invoice total.
+ *
+ * Sums the items of the invoices settled that day, so a part-composed bill
+ * reconciles against `totals` line for line.
+ */
+export type CashierReportItemTypeLine = CashierReportTotals & {
+  itemType: InvoiceItemTypeValue;
+};
+
 export type CashierDailyReport = {
   date: string;
   totals: CashierReportTotals;
   byMethod: CashierReportMethodLine[];
   byDoctor: CashierReportDoctorLine[];
+  byItemType: CashierReportItemTypeLine[];
 };
 
 /**

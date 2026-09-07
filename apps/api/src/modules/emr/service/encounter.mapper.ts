@@ -71,6 +71,9 @@ export class EncounterMapper {
         issuedAt: prescription.issuedAt?.toISOString(),
         itemCount: prescription._count.items,
       })),
+      // P18-T02. Filled by the service from the module that owns lab orders;
+      // the mapper has no lab record to map and must not invent one.
+      labOrders: [],
     };
   }
 
