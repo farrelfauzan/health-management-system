@@ -258,6 +258,16 @@ export type CashierReportPaymentRecord = {
   doctor: { id: string; fullName: string } | null;
 };
 
+/**
+ * One settled invoice line, for the day's revenue composition (P18-T06). Read
+ * alongside the payments rather than joined onto them: a payment is one row per
+ * invoice, and the composition needs one row per line.
+ */
+export type CashierReportItemRecord = {
+  itemType: InvoiceItemTypeValue;
+  amount: number;
+};
+
 export type CashierReportDayRange = {
   startInclusive: Date;
   endExclusive: Date;

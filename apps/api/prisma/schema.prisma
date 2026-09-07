@@ -235,6 +235,17 @@ enum AuditAction {
   /// from the approving transaction when it does — so "what did we issue"
   /// never depends on which route it took.
   DOCUMENT_ISSUED
+  /// The laboratory chain (P18-T02, P18-T03). Named verbs rather than generic
+  /// CREATE/UPDATE rows because the questions asked of this table afterwards
+  /// are "who ordered a test on this patient", "who cancelled one and why",
+  /// and "which tube was rejected before the result existed" — and an UPDATE
+  /// row looks identical for all three. A rejected specimen in particular is
+  /// the event a disputed result is read backwards from.
+  LAB_ORDER_CREATED
+  LAB_ORDER_CANCELLED
+  LAB_SPECIMEN_COLLECTED
+  LAB_SPECIMEN_RECEIVED
+  LAB_SPECIMEN_REJECTED
 }
 
 enum BpjsSubmissionType {
@@ -665,17 +676,17 @@ enum ChatActor {
 }
 
 model User {
-  id           String    @id @default(uuid()) @db.Uuid
-  email        String    @unique
-  passwordHash String    @map("password_hash")
-  isActive     Boolean   @default(true) @map("is_active")
+  id                 String    @id @default(uuid()) @db.Uuid
+  email              String    @unique
+  passwordHash       String    @map("password_hash")
+  isActive           Boolean   @default(true) @map("is_active")
   /// Reserved service account: a row that exists so machine-originated writes
   /// have a real actor to hang off (P14-T04's BPJS Antrean bridge is the first
   /// one). It stays `isActive` because every domain service resolves its
   /// permissions through the ordinary active-user lookup — what makes it a
   /// non-identity is that the login path refuses it outright, so no password,
   /// reset, or token grant can ever turn it into a session.
-  isSystem     Boolean   @default(false) @map("is_system")
+  isSystem           Boolean   @default(false) @map("is_system")
   /// Offboarding state (P16-T41, §7.3.10). Deliberately a column and not a
   /// role: the reduced capability set — view, download, export and delete
   /// one's own vault, nothing else — is a hard-coded ability-factory branch,
@@ -685,16 +696,16 @@ model User {
   /// and collapsing the two would hand every dismissed person a month of
   /// access. The login path refuses sign-in once the window has closed, the
   /// way it refuses `isSystem`, so the refusal never depends on a job.
-  offboardedAt DateTime? @map("offboarded_at")
+  offboardedAt       DateTime? @map("offboarded_at")
   /// Which box on the org chart this person sits in (SJ-1). Nullable because
   /// the chart is optional structure a clinic may never fill in, and because a
   /// staff account must keep working while a reorganisation is half done.
   /// Membership lives here rather than in a join table because a person belongs
   /// to one unit — matrix reporting is a second edge type, not a second row.
-  organizationUnitId String? @map("organization_unit_id") @db.Uuid
-  createdAt    DateTime  @default(now()) @map("created_at")
-  updatedAt    DateTime  @updatedAt @map("updated_at")
-  deletedAt    DateTime? @map("deleted_at")
+  organizationUnitId String?   @map("organization_unit_id") @db.Uuid
+  createdAt          DateTime  @default(now()) @map("created_at")
+  updatedAt          DateTime  @updatedAt @map("updated_at")
+  deletedAt          DateTime? @map("deleted_at")
 
   organizationUnit           OrganizationUnit?            @relation("OrganizationUnitMember", fields: [organizationUnitId], references: [id], onDelete: Restrict)
   roles                      UserRole[]
@@ -744,10 +755,12 @@ model User {
   requestedDeliveries        DocumentDelivery[]           @relation("DeliveryRequestedBy")
   defaultApproverForTypes    DocumentTypeApprover[]
 
-  draftedManagedDocuments    ManagedDocument[]            @relation("ManagedDocumentDraftedBy")
-  submittedApprovalRequests  DocumentApprovalRequest[]    @relation("DocumentApprovalSubmittedBy")
-  namedApprovalRounds        DocumentApprovalApprover[]
-  approvalDecisions          DocumentApprovalDecision[]
+  draftedManagedDocuments   ManagedDocument[]          @relation("ManagedDocumentDraftedBy")
+  submittedApprovalRequests DocumentApprovalRequest[]  @relation("DocumentApprovalSubmittedBy")
+  namedApprovalRounds       DocumentApprovalApprover[]
+  approvalDecisions         DocumentApprovalDecision[]
+  collectedLabSpecimens     LabSpecimen[]              @relation("LabSpecimenCollectedBy")
+
   @@index([organizationUnitId])
   /// The offboarding sweep's one read: everyone currently in a window.
   @@index([offboardedAt])
@@ -1092,6 +1105,7 @@ model PatientProfile {
   immunizations         Immunization[]
   encounters            Encounter[]
   invoices              Invoice[]
+  labOrders             LabOrder[]
   bpjsEligibilityChecks BpjsEligibilityCheck[]
   privacyNoticeRecords  PatientPrivacyNoticeRecord[]
   channelLinks          ChannelPatientLink[]
@@ -1101,7 +1115,8 @@ model PatientProfile {
   deliveryConsents      PatientDeliveryConsent[]
   deliveries            DocumentDelivery[]
 
-  managedDocuments      ManagedDocument[]
+  managedDocuments ManagedDocument[]
+
   @@index([deletedAt])
   @@index([ownerUserId])
   @@index([isActive])
@@ -1436,8 +1451,10 @@ model DoctorProfile {
   encounters          Encounter[]
   admissions          Admission[]
   immunizations       Immunization[]       @relation("ImmunizationPerformedBy")
+  labOrders           LabOrder[]
 
   managedDocuments ManagedDocument[]
+
   @@index([deletedAt])
   @@index([isActive])
   @@index([fullName])
@@ -1654,10 +1671,10 @@ model Appointment {
 
   patient            PatientProfile?     @relation(fields: [patientId], references: [id], onDelete: Restrict)
   prospectivePatient ProspectivePatient? @relation(fields: [prospectivePatientId], references: [id], onDelete: Restrict)
-  doctor       DoctorProfile       @relation(fields: [doctorId], references: [id], onDelete: Restrict)
-  session      AppointmentSession? @relation(fields: [sessionId], references: [id], onDelete: Restrict)
-  createdBy    User?               @relation("AppointmentCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
-  registration Registration?
+  doctor             DoctorProfile       @relation(fields: [doctorId], references: [id], onDelete: Restrict)
+  session            AppointmentSession? @relation(fields: [sessionId], references: [id], onDelete: Restrict)
+  createdBy          User?               @relation("AppointmentCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  registration       Registration?
 
   @@unique([sessionId, queueNumber])
   @@index([bookingSource, scheduledAt])
@@ -1826,6 +1843,7 @@ model Encounter {
   bpjsReferral        BpjsReferral?
   admissions          Admission[]
   clinicalDocuments   Document[]
+  labOrders           LabOrder[]
 
   @@index([patientId, startedAt])
   @@index([doctorId, startedAt])
@@ -2036,12 +2054,12 @@ model Medication {
   updatedAt    DateTime            @updatedAt @map("updated_at")
   deletedAt    DateTime?           @map("deleted_at")
 
-  prescriptionItems PrescriptionMedication[]
+  prescriptionItems  PrescriptionMedication[]
   compoundComponents PrescriptionItemComponent[]
-  dispenseItems     DispenseItem[]
-  stockReceipts     MedicationStockReceipt[]
-  invoiceItems      InvoiceItem[]
-  immunizations     Immunization[]
+  dispenseItems      DispenseItem[]
+  stockReceipts      MedicationStockReceipt[]
+  invoiceItems       InvoiceItem[]
+  immunizations      Immunization[]
 
   @@index([name])
   @@index([category])
@@ -2128,13 +2146,13 @@ model PrescriptionMedication {
 /// `quantity` is decimal because a puyer routinely uses a third or a half of a
 /// tablet — which is the whole reason the compound exists.
 model PrescriptionItemComponent {
-  id                  String   @id @default(uuid()) @db.Uuid
-  prescriptionItemId  String   @map("prescription_item_id") @db.Uuid
-  medicationId        String   @map("medication_id") @db.Uuid
-  quantity            Decimal  @db.Decimal(12, 4)
-  unit                String
-  createdAt           DateTime @default(now()) @map("created_at")
-  updatedAt           DateTime @updatedAt @map("updated_at")
+  id                 String   @id @default(uuid()) @db.Uuid
+  prescriptionItemId String   @map("prescription_item_id") @db.Uuid
+  medicationId       String   @map("medication_id") @db.Uuid
+  quantity           Decimal  @db.Decimal(12, 4)
+  unit               String
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
 
   prescriptionItem PrescriptionMedication @relation(fields: [prescriptionItemId], references: [id], onDelete: Cascade)
   medication       Medication             @relation(fields: [medicationId], references: [id], onDelete: Restrict)
@@ -2258,29 +2276,29 @@ model DispenseItemStockAllocation {
 /// the migration is what actually keeps that row a singleton, exactly as it
 /// does for the two BPJS config tables.
 model ClinicProfile {
-  id             String    @id @default(uuid()) @db.Uuid
-  facilityId     String?   @unique @map("facility_id") @db.Uuid
+  id             String   @id @default(uuid()) @db.Uuid
+  facilityId     String?  @unique @map("facility_id") @db.Uuid
   name           String
-  legalName      String?   @map("legal_name")
+  legalName      String?  @map("legal_name")
   address        String?
-  phoneNumber    String?   @map("phone_number")
+  phoneNumber    String?  @map("phone_number")
   email          String?
   /// Izin operasional klinik — the operating licence a receipt is expected to
   /// carry in Indonesia.
-  licenseNumber  String?   @map("license_number")
+  licenseNumber  String?  @map("license_number")
   /// NPWP. Stored as written; HMS neither validates nor formats it, because a
   /// receipt reproduces what the clinic was issued.
-  taxId          String?   @map("tax_id")
+  taxId          String?  @map("tax_id")
   /// Server-minted object key for the re-encoded logo, or null. The bytes
   /// behind it are always this service's own re-encode, never what the
   /// browser uploaded (docs/security/file-uploads.md §1).
-  logoStorageKey String?   @map("logo_storage_key")
+  logoStorageKey String?  @map("logo_storage_key")
   /// What the stored object actually is, so the signed download pins
   /// `ResponseContentType` to a validated value rather than to a constant
   /// that a future re-encode target would silently make wrong.
-  logoMimeType   String?   @map("logo_mime_type")
-  createdAt      DateTime  @default(now()) @map("created_at")
-  updatedAt      DateTime  @updatedAt @map("updated_at")
+  logoMimeType   String?  @map("logo_mime_type")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
 
   @@map("clinic_profiles")
 }
@@ -2376,17 +2394,18 @@ model Invoice {
   updatedAt     DateTime      @updatedAt @map("updated_at")
   deletedAt     DateTime?     @map("deleted_at")
 
-  encounter Encounter?     @relation(fields: [encounterId], references: [id], onDelete: Restrict)
-  admission Admission?     @relation(fields: [admissionId], references: [id], onDelete: Restrict)
-  patient   PatientProfile @relation(fields: [patientId], references: [id], onDelete: Restrict)
-  voidedBy  User?          @relation("InvoiceVoidedBy", fields: [voidedById], references: [id], onDelete: SetNull)
-  createdBy User?          @relation("InvoiceCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
-  items     InvoiceItem[]
-  payment   Payment?
-  documents InvoiceDocument[]
+  encounter  Encounter?         @relation(fields: [encounterId], references: [id], onDelete: Restrict)
+  admission  Admission?         @relation(fields: [admissionId], references: [id], onDelete: Restrict)
+  patient    PatientProfile     @relation(fields: [patientId], references: [id], onDelete: Restrict)
+  voidedBy   User?              @relation("InvoiceVoidedBy", fields: [voidedById], references: [id], onDelete: SetNull)
+  createdBy  User?              @relation("InvoiceCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  items      InvoiceItem[]
+  payment    Payment?
+  documents  InvoiceDocument[]
   deliveries DocumentDelivery[]
 
   managedDocuments ManagedDocument[]
+
   @@index([encounterId])
   @@index([admissionId])
   @@index([patientId, createdAt])
@@ -2499,6 +2518,7 @@ model DocumentTemplate {
   versions  DocumentTemplateVersion[]
 
   managedDocuments ManagedDocument[]
+
   @@index([kind, status])
   @@index([createdById])
   @@index([deletedAt])
@@ -2512,19 +2532,19 @@ model DocumentTemplate {
 /// after publish touches only the working copy; the AC is that a published
 /// version stays byte-identical.
 model DocumentTemplateVersion {
-  id            String   @id @default(uuid()) @db.Uuid
-  templateId    String   @map("template_id") @db.Uuid
-  versionNumber Int      @map("version_number")
-  contentHtml   String   @map("content_html")
-  settings      Json
-  publishedById String?  @map("published_by_id") @db.Uuid
-  publishedAt   DateTime @default(now()) @map("published_at")
+  id                 String   @id @default(uuid()) @db.Uuid
+  templateId         String   @map("template_id") @db.Uuid
+  versionNumber      Int      @map("version_number")
+  contentHtml        String   @map("content_html")
+  settings           Json
+  publishedById      String?  @map("published_by_id") @db.Uuid
+  publishedAt        DateTime @default(now()) @map("published_at")
   /// The decision that released this version (P16-T32), when it was published
   /// through an approval round rather than directly. Null is the ordinary
   /// case — a clinic that has not turned approval on for INVOICE_TEMPLATE
   /// publishes in one click (US-E5-06) — so this is the audit link, never a
   /// requirement.
-  approvalDecisionId String? @map("approval_decision_id") @db.Uuid
+  approvalDecisionId String?  @map("approval_decision_id") @db.Uuid
 
   template         DocumentTemplate          @relation(fields: [templateId], references: [id], onDelete: Cascade)
   publishedBy      User?                     @relation("DocumentTemplateVersionPublishedBy", fields: [publishedById], references: [id], onDelete: SetNull)
@@ -3262,7 +3282,8 @@ model Document {
   /// "the" document would leave the other one still serving it. Keys are
   /// server-minted UUIDs and never reused, so this constrains nothing an
   /// honest flow does.
-  managedDocuments   ManagedDocument[]
+  managedDocuments ManagedDocument[]
+
   @@unique([storageKey])
   @@index([ownerType, ownerId])
   @@index([purpose, ingestStatus])
@@ -3974,9 +3995,9 @@ model Admission {
   updatedAt         DateTime        @updatedAt @map("updated_at")
   deletedAt         DateTime?       @map("deleted_at")
 
-  patient         PatientProfile  @relation(fields: [patientId], references: [id], onDelete: Restrict)
-  admittingDoctor DoctorProfile   @relation(fields: [admittingDoctorId], references: [id], onDelete: Restrict)
-  sourceEncounter Encounter?      @relation(fields: [sourceEncounterId], references: [id], onDelete: SetNull)
+  patient           PatientProfile  @relation(fields: [patientId], references: [id], onDelete: Restrict)
+  admittingDoctor   DoctorProfile   @relation(fields: [admittingDoctorId], references: [id], onDelete: Restrict)
+  sourceEncounter   Encounter?      @relation(fields: [sourceEncounterId], references: [id], onDelete: SetNull)
   createdBy         User?           @relation("AdmissionCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
   bedAssignments    BedAssignment[]
   invoices          Invoice[]
@@ -4201,36 +4222,37 @@ enum DocumentContentMode {
 /// The approval policy lives here rather than in a second table: a policy
 /// about a type that is itself a row has no reason to be another row.
 model DocumentType {
-  id                 String               @id @default(uuid()) @db.Uuid
+  id          String               @id @default(uuid()) @db.Uuid
   /// Stable machine identity. Reports, filters and future integrations key on
   /// this, which is why renaming is free and re-coding is not.
-  code               String               @unique
-  name               String
-  description        String?
+  code        String               @unique
+  name        String
+  description String?
   /// Never accepted from a request — the service sets GENERIC for anything a
   /// clinic creates. This one line is what makes dynamic types safe.
-  behavior           DocumentTypeBehavior @default(GENERIC)
-  isSystem           Boolean              @default(false) @map("is_system")
+  behavior    DocumentTypeBehavior @default(GENERIC)
+  isSystem    Boolean              @default(false) @map("is_system")
 
-  isApprovalRequired Boolean              @default(false) @map("is_approval_required")
-  allowSelfApproval  Boolean              @default(false) @map("allow_self_approval")
-  requiredApprovals  Int                  @default(1) @map("required_approvals")
+  isApprovalRequired Boolean @default(false) @map("is_approval_required")
+  allowSelfApproval  Boolean @default(false) @map("allow_self_approval")
+  requiredApprovals  Int     @default(1) @map("required_approvals")
 
   /// Shape of a document of this type: which parties it must name and whether
   /// its body is written here or uploaded.
-  requiresPatient    Boolean              @default(false) @map("requires_patient")
-  requiresDoctor     Boolean              @default(false) @map("requires_doctor")
-  contentMode        DocumentContentMode  @default(EITHER) @map("content_mode")
+  requiresPatient Boolean             @default(false) @map("requires_patient")
+  requiresDoctor  Boolean             @default(false) @map("requires_doctor")
+  contentMode     DocumentContentMode @default(EITHER) @map("content_mode")
 
-  isActive           Boolean              @default(true) @map("is_active")
-  sortOrder          Int                  @default(0) @map("sort_order")
-  createdAt          DateTime             @default(now()) @map("created_at")
-  updatedAt          DateTime             @updatedAt @map("updated_at")
-  deletedAt          DateTime?            @map("deleted_at")
+  isActive  Boolean   @default(true) @map("is_active")
+  sortOrder Int       @default(0) @map("sort_order")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
 
   defaultApprovers DocumentTypeApprover[]
 
-  documents        ManagedDocument[]
+  documents ManagedDocument[]
+
   @@index([isActive, sortOrder])
   @@map("document_types")
 }
@@ -4280,20 +4302,20 @@ enum ManagedDocumentStatus {
 /// PATIENT_BILL to a holder of `invoice.read`. The module is a surface over
 /// those sources, never a bypass of their rules (§7.5.3).
 model ManagedDocument {
-  id             String                @id @default(uuid()) @db.Uuid
+  id               String                @id @default(uuid()) @db.Uuid
   /// A row in `DocumentType`, not an enum value — the clinic owns this list.
-  typeId         String                @map("type_id") @db.Uuid
-  status         ManagedDocumentStatus @default(DRAFT)
-  title          String
-  documentNumber String?               @map("document_number")
+  typeId           String                @map("type_id") @db.Uuid
+  status           ManagedDocumentStatus @default(DRAFT)
+  title            String
+  documentNumber   String?               @map("document_number")
   /// Drafted content, sanitised server-side like a template body.
-  contentHtml    String?               @map("content_html")
+  contentHtml      String?               @map("content_html")
   /// Uploaded payload. Exactly one of contentHtml / storageKey is set. The
   /// two columns after it describe the stored object (P16-T36) and are set
   /// together with it — a CHECK ties the three.
-  storageKey       String? @map("storage_key")
-  storageMimeType  String? @map("storage_mime_type")
-  storageSizeBytes Int?    @map("storage_size_bytes")
+  storageKey       String?               @map("storage_key")
+  storageMimeType  String?               @map("storage_mime_type")
+  storageSizeBytes Int?                  @map("storage_size_bytes")
 
   /// Parties, for agreements and consents. Nullable — a policy has none;
   /// the type row says which are required (FR-E5-35).
@@ -4321,6 +4343,8 @@ model ManagedDocument {
   subjectDocument Document?         @relation(fields: [subjectDocumentId], references: [id], onDelete: Restrict)
   subjectInvoice  Invoice?          @relation(fields: [subjectInvoiceId], references: [id], onDelete: Restrict)
 
+  approvalRequests DocumentApprovalRequest[]
+
   /// The registry's own query shapes: list by type and status, sort by date,
   /// and find a patient's agreements.
   @@index([typeId, status, createdAt])
@@ -4333,8 +4357,6 @@ model ManagedDocument {
   @@index([subjectInvoiceId])
   @@index([deletedAt])
   @@map("managed_documents")
-
-  approvalRequests DocumentApprovalRequest[]
 }
 
 /// Where one round of review stands (P16-T29, §7.5.4).
@@ -4371,23 +4393,23 @@ enum DocumentApprovalStatus {
 /// One round with N approvers. Sequential chains are an explicit non-goal
 /// (§4), which is why there is no ordinal on the approver rows.
 model DocumentApprovalRequest {
-  id            String                 @id @default(uuid()) @db.Uuid
-  documentId    String                 @map("document_id") @db.Uuid
+  id                String                 @id @default(uuid()) @db.Uuid
+  documentId        String                 @map("document_id") @db.Uuid
   /// Content + approver set as submitted. A snapshot, never a live read.
-  frozenPayload Json                   @map("frozen_payload")
-  status        DocumentApprovalStatus @default(PENDING)
-  submittedById String                 @map("submitted_by_id") @db.Uuid
-  submittedAt   DateTime               @default(now()) @map("submitted_at")
+  frozenPayload     Json                   @map("frozen_payload")
+  status            DocumentApprovalStatus @default(PENDING)
+  submittedById     String                 @map("submitted_by_id") @db.Uuid
+  submittedAt       DateTime               @default(now()) @map("submitted_at")
   /// Reminders and the overdue flag only — never a decision.
-  dueAt         DateTime?              @map("due_at")
-  resolvedAt    DateTime?              @map("resolved_at")
+  dueAt             DateTime?              @map("due_at")
+  resolvedAt        DateTime?              @map("resolved_at")
   /// Set once the due-soon reminder has fired for this round, so a second
   /// sweep tick sends nothing (FR-E5-27). Two columns rather than a notice
   /// table: a round has exactly one deadline, so there is nothing to key on.
-  dueSoonNotifiedAt DateTime?          @map("due_soon_notified_at")
-  overdueNotifiedAt DateTime?          @map("overdue_notified_at")
-  createdAt     DateTime               @default(now()) @map("created_at")
-  updatedAt     DateTime               @updatedAt @map("updated_at")
+  dueSoonNotifiedAt DateTime?              @map("due_soon_notified_at")
+  overdueNotifiedAt DateTime?              @map("overdue_notified_at")
+  createdAt         DateTime               @default(now()) @map("created_at")
+  updatedAt         DateTime               @updatedAt @map("updated_at")
 
   document    ManagedDocument            @relation(fields: [documentId], references: [id], onDelete: Cascade)
   submittedBy User                       @relation("DocumentApprovalSubmittedBy", fields: [submittedById], references: [id], onDelete: Restrict)
@@ -4486,37 +4508,38 @@ enum LabSpecimenType {
 /// is referenced. That keeps a price change from touching the coded catalog,
 /// and lets a test exist before anyone has decided what to charge for it.
 model LabTest {
-  id           String          @id @default(uuid()) @db.Uuid
+  id              String          @id @default(uuid()) @db.Uuid
   /// Local code the clinic uses on its own forms, e.g. HB, GDS.
-  code         String          @unique
-  name         String
+  code            String          @unique
+  name            String
   /// Nullable on purpose, and the same rule KFA follows for medications: a
   /// test without a LOINC code is usable locally and simply not reported to
   /// SATUSEHAT, rather than reported under a guessed code.
-  loincCode    String?         @map("loinc_code")
-  loincDisplay String?         @map("loinc_display")
-  specimenType LabSpecimenType @map("specimen_type")
-  resultType   LabResultType   @map("result_type")
+  loincCode       String?         @map("loinc_code")
+  loincDisplay    String?         @map("loinc_display")
+  specimenType    LabSpecimenType @map("specimen_type")
+  resultType      LabResultType   @map("result_type")
   /// UCUM unit for NUMERIC tests. Null for TEXT and CODED, where a unit would
   /// be meaningless.
-  unit         String?
+  unit            String?
   /// Decimal places a NUMERIC result is recorded and displayed to.
-  decimals     Int             @default(0)
+  decimals        Int             @default(0)
   /// The closed list a CODED result is picked from, e.g. ["Negatif","Positif"].
   /// Empty for every other result type.
-  codedOptions String[]        @default([]) @map("coded_options")
-  isActive     Boolean         @default(true) @map("is_active")
+  codedOptions    String[]        @default([]) @map("coded_options")
+  isActive        Boolean         @default(true) @map("is_active")
   /// Price, when one has been set. Nullable because a test is orderable before
   /// it is priced; an unpriced test becomes a visible invoice gap (P18-T06)
   /// rather than a silent zero.
-  serviceTariffId String?      @map("service_tariff_id") @db.Uuid
-  createdAt    DateTime        @default(now()) @map("created_at")
-  updatedAt    DateTime        @updatedAt @map("updated_at")
-  deletedAt    DateTime?       @map("deleted_at")
+  serviceTariffId String?         @map("service_tariff_id") @db.Uuid
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
+  deletedAt       DateTime?       @map("deleted_at")
 
   serviceTariff   ServiceTariff?      @relation(fields: [serviceTariffId], references: [id], onDelete: SetNull)
   referenceRanges LabReferenceRange[]
   panelMembers    LabPanelMember[]
+  orderItems      LabOrderItem[]
 
   @@index([isActive])
   @@index([serviceTariffId])
@@ -4535,22 +4558,22 @@ model LabTest {
 /// the same kind of row. A band with both bounds null applies to every age,
 /// which is what almost every adult range is.
 model LabReferenceRange {
-  id           String     @id @default(uuid()) @db.Uuid
-  labTestId    String     @map("lab_test_id") @db.Uuid
+  id           String      @id @default(uuid()) @db.Uuid
+  labTestId    String      @map("lab_test_id") @db.Uuid
   /// Null means the range applies to any sex.
   sex          PatientSex?
-  ageMinDays   Int?       @map("age_min_days")
-  ageMaxDays   Int?       @map("age_max_days")
-  low          Decimal?   @db.Decimal(12, 4)
-  high         Decimal?   @db.Decimal(12, 4)
+  ageMinDays   Int?        @map("age_min_days")
+  ageMaxDays   Int?        @map("age_max_days")
+  low          Decimal?    @db.Decimal(12, 4)
+  high         Decimal?    @db.Decimal(12, 4)
   /// Outside these, a result is a critical value the lab must telephone
   /// (P18-T04). Null when the test has no critical threshold.
-  criticalLow  Decimal?   @map("critical_low") @db.Decimal(12, 4)
-  criticalHigh Decimal?   @map("critical_high") @db.Decimal(12, 4)
+  criticalLow  Decimal?    @map("critical_low") @db.Decimal(12, 4)
+  criticalHigh Decimal?    @map("critical_high") @db.Decimal(12, 4)
   /// The normal value for a TEXT or CODED test, e.g. "Negatif".
-  textNormal   String?    @map("text_normal")
-  createdAt    DateTime   @default(now()) @map("created_at")
-  updatedAt    DateTime   @updatedAt @map("updated_at")
+  textNormal   String?     @map("text_normal")
+  createdAt    DateTime    @default(now()) @map("created_at")
+  updatedAt    DateTime    @updatedAt @map("updated_at")
 
   labTest LabTest @relation(fields: [labTestId], references: [id], onDelete: Cascade)
 
@@ -4574,6 +4597,7 @@ model LabPanel {
 
   serviceTariff ServiceTariff?   @relation(fields: [serviceTariffId], references: [id], onDelete: SetNull)
   members       LabPanelMember[]
+  orderItems    LabOrderItem[]
 
   @@index([isActive])
   @@index([serviceTariffId])
@@ -4596,6 +4620,210 @@ model LabPanelMember {
   @@id([panelId, labTestId])
   @@index([labTestId])
   @@map("lab_panel_members")
+}
+
+/// Where an order sits between the doctor's instruction and the released
+/// report (P18-T02). One status on the order rather than only per item because
+/// the lab works the order as a unit — a tube is drawn for a request, not for
+/// a line — while `LabOrderItem.status` records which individual tests came
+/// back, which is what a partially resulted order needs.
+enum LabOrderStatus {
+  ORDERED
+  COLLECTED
+  IN_PROGRESS
+  RESULTED
+  RELEASED
+  CANCELLED
+
+  @@map("lab_order_status")
+}
+
+enum LabOrderItemStatus {
+  PENDING
+  RESULTED
+  CANCELLED
+
+  @@map("lab_order_item_status")
+}
+
+/// URGENT is `cito` — the worklist sorts on it. Two values, not a triage
+/// scale: a klinik pratama either runs a test now or runs it in the batch.
+enum LabOrderPriority {
+  ROUTINE
+  URGENT
+
+  @@map("lab_order_priority")
+}
+
+/// Sequence source for per-day lab order numbers — the `InvoiceCounter`
+/// reasoning applied to the bench. Allocation is one atomic
+/// `INSERT … ON CONFLICT … RETURNING` inside the order-create transaction,
+/// never `MAX + 1`, which races when two doctors order at once.
+model LabOrderCounter {
+  orderDate DateTime @id @map("order_date") @db.Date
+  nextValue Int      @map("next_value")
+  updatedAt DateTime @default(now()) @map("updated_at")
+
+  @@map("lab_order_counters")
+}
+
+/// One request for laboratory work, made during a visit.
+///
+/// The order is the unit everything else attaches to: the specimen is drawn
+/// for it, the result is entered against its items, the invoice line is priced
+/// from it, and the SATUSEHAT `ServiceRequest` is it. `patientId` is
+/// denormalised from the encounter for the same reason `Immunization` carries
+/// one — a patient's lab history is one indexed read, and it is the fact that
+/// outlives the visit.
+model LabOrder {
+  id                        String           @id @default(uuid()) @db.Uuid
+  encounterId               String           @map("encounter_id") @db.Uuid
+  patientId                 String           @map("patient_id") @db.Uuid
+  orderedById               String           @map("ordered_by_id") @db.Uuid
+  /// LAB/YYYYMMDD/#### allocated from `LabOrderCounter`. What the analis
+  /// writes on the worksheet and what the patient is told to quote.
+  orderNumber               String           @unique @map("order_number")
+  status                    LabOrderStatus   @default(ORDERED)
+  priority                  LabOrderPriority @default(ROUTINE)
+  /// Why the doctor asked — the only clinical text the lab worklist shows.
+  /// A specimen is worked differently when the question is "rule out demam
+  /// berdarah" than when it is a routine check, and nothing else from the
+  /// encounter is the analis's business (P18-T03).
+  clinicalNotes             String?          @map("clinical_notes")
+  isFasting                 Boolean          @default(false) @map("is_fasting")
+  /// How many times a specimen for this order was rejected and had to be
+  /// drawn again (P18-T03). Counted on the order rather than derived from the
+  /// specimen rows so the worklist badge is one column read, and because it
+  /// is the number the patient experiences: three needles for one request.
+  recollectCount            Int              @default(0) @map("recollect_count")
+  orderedAt                 DateTime         @default(now()) @map("ordered_at")
+  cancelledAt               DateTime?        @map("cancelled_at")
+  cancelReason              String?          @map("cancel_reason")
+  releasedAt                DateTime?        @map("released_at")
+  /// IHS id returned by SATUSEHAT on first successful submission (P18-T09).
+  satusehatServiceRequestId String?          @map("satusehat_service_request_id")
+  createdAt                 DateTime         @default(now()) @map("created_at")
+  updatedAt                 DateTime         @updatedAt @map("updated_at")
+
+  encounter Encounter      @relation(fields: [encounterId], references: [id], onDelete: Restrict)
+  patient   PatientProfile @relation(fields: [patientId], references: [id], onDelete: Restrict)
+  orderedBy DoctorProfile  @relation(fields: [orderedById], references: [id], onDelete: Restrict)
+  items     LabOrderItem[]
+  specimens LabSpecimen[]
+
+  @@index([encounterId])
+  @@index([patientId, orderedAt])
+  @@index([status, orderedAt])
+  @@map("lab_orders")
+}
+
+/// One test on an order.
+///
+/// A panel is **expanded here at order time**: ordering darah rutin writes one
+/// row per member with `panelId` set. A later edit to the panel's membership
+/// therefore never rewrites what was actually ordered, while billing (P18-T06)
+/// still groups on `panelId` to charge the panel once instead of six times.
+model LabOrderItem {
+  id         String             @id @default(uuid()) @db.Uuid
+  labOrderId String             @map("lab_order_id") @db.Uuid
+  labTestId  String             @map("lab_test_id") @db.Uuid
+  /// The panel this row was expanded from, or null when the test was ordered
+  /// loose. Provenance *and* pricing key, which is why it is `Restrict`: a
+  /// panel that has been ordered is deactivated, never deleted.
+  panelId    String?            @map("panel_id") @db.Uuid
+  /// The tube that serves this test, set when the specimen is collected
+  /// (P18-T03). Null again after a rejection, because the item is waiting for
+  /// a fresh draw.
+  specimenId String?            @map("specimen_id") @db.Uuid
+  status     LabOrderItemStatus @default(PENDING)
+  createdAt  DateTime           @default(now()) @map("created_at")
+  updatedAt  DateTime           @updatedAt @map("updated_at")
+
+  labOrder LabOrder     @relation(fields: [labOrderId], references: [id], onDelete: Cascade)
+  labTest  LabTest      @relation(fields: [labTestId], references: [id], onDelete: Restrict)
+  panel    LabPanel?    @relation(fields: [panelId], references: [id], onDelete: Restrict)
+  specimen LabSpecimen? @relation(fields: [specimenId], references: [id], onDelete: SetNull)
+
+  /// One row per test per order: ordering the same test twice on one request
+  /// is a mistake, not a quantity.
+  @@unique([labOrderId, labTestId])
+  @@index([labTestId])
+  @@index([panelId])
+  @@index([specimenId])
+  @@map("lab_order_items")
+}
+
+/// Whether a drawn sample is usable (P18-T03). REJECTED is terminal for the
+/// specimen row: the tube is discarded and a new one is drawn, which is a new
+/// row with its own accession number, because the discarded draw is a fact
+/// worth keeping.
+enum LabSpecimenStatus {
+  COLLECTED
+  RECEIVED
+  REJECTED
+
+  @@map("lab_specimen_status")
+}
+
+/// Why a tube could not be analysed. A closed list rather than free text: the
+/// question a clinic asks of this column is "which of these keeps happening",
+/// and prose cannot be counted. `rejectNotes` carries the detail.
+enum LabSpecimenRejectReason {
+  HEMOLYSED
+  INSUFFICIENT
+  CLOTTED
+  MISLABELLED
+  CONTAMINATED
+  OTHER
+
+  @@map("lab_specimen_reject_reason")
+}
+
+/// Sequence source for per-day accession numbers, allocated exactly as order
+/// numbers are and for the same reason: two analysts collecting at once must
+/// never print the same barcode.
+model LabSpecimenCounter {
+  collectionDate DateTime @id @map("collection_date") @db.Date
+  nextValue      Int      @map("next_value")
+  updatedAt      DateTime @default(now()) @map("updated_at")
+
+  @@map("lab_specimen_counters")
+}
+
+/// One drawn sample: who took it, when, which tube, and whether it was fit to
+/// analyse.
+///
+/// Between the order and the result, and the reason both are traceable. One
+/// specimen per `specimenType` per collection by default — a single EDTA tube
+/// serves the whole darah rutin — so collection creates a specimen for each
+/// distinct type among the still-pending items and links those items to it.
+model LabSpecimen {
+  id                  String                   @id @default(uuid()) @db.Uuid
+  labOrderId          String                   @map("lab_order_id") @db.Uuid
+  specimenType        LabSpecimenType          @map("specimen_type")
+  /// SPC/YYYYMMDD/#### — the value printed on the label and scanned at the
+  /// bench, which is why it is unique rather than unique-per-order.
+  accessionNumber     String                   @unique @map("accession_number")
+  collectedAt         DateTime                 @map("collected_at")
+  collectedById       String                   @map("collected_by_id") @db.Uuid
+  receivedAt          DateTime?                @map("received_at")
+  status              LabSpecimenStatus        @default(COLLECTED)
+  rejectedAt          DateTime?                @map("rejected_at")
+  rejectReason        LabSpecimenRejectReason? @map("reject_reason")
+  rejectNotes         String?                  @map("reject_notes")
+  notes               String?
+  /// IHS id returned by SATUSEHAT on first successful submission (P18-T09).
+  satusehatSpecimenId String?                  @map("satusehat_specimen_id")
+  createdAt           DateTime                 @default(now()) @map("created_at")
+  updatedAt           DateTime                 @updatedAt @map("updated_at")
+
+  labOrder    LabOrder       @relation(fields: [labOrderId], references: [id], onDelete: Cascade)
+  collectedBy User           @relation("LabSpecimenCollectedBy", fields: [collectedById], references: [id], onDelete: Restrict)
+  items       LabOrderItem[]
+
+  @@index([labOrderId])
+  @@index([status, collectedAt])
+  @@map("lab_specimens")
 }
 
 /// One vaccination given during a visit.

@@ -1,0 +1,339 @@
+import {
+  CancelLabOrderInput,
+  CancelLabOrderMeta,
+  CreateLabOrderInput,
+  CreateLabOrderItemPayload,
+  LabOrderListItem,
+  LabOrderRecord,
+  LabOrderSummary,
+  LabOrderView,
+  LabOrdersListMeta,
+  LabPanelRecord,
+  LabTestRecord,
+  getStartOfCalendarDateInTimeZone,
+} from '@hms/shared-types';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+
+import { AuditService } from '../../../common/audit/audit.service';
+import { BillingService } from '../../billing/service/billing.service';
+import { CurrentUser } from '../../../common/auth/current-user.type';
+import { CreateLabOrderDto } from '../dto/create-lab-order.dto';
+import { ListLabOrdersQueryDto } from '../dto/list-lab-orders-query.dto';
+import { LabOrderRepository } from '../repository/lab-order.repository';
+import { LabCatalogService } from './lab-catalog.service';
+import { LabOrderAccessService } from './lab-order-access.service';
+import { LabOrderMapper } from './lab-order.mapper';
+
+const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
+
+const DEFAULT_PAGE = 1;
+
+const DEFAULT_PAGE_SIZE = 20;
+
+const DAY_IN_MILLISECONDS = 86_400_000;
+
+/** Statuses from which an order can still be withdrawn: nothing has been measured yet. */
+const CANCELLABLE_STATUSES = ['ORDERED', 'COLLECTED'] as const;
+
+/**
+ * Lab ordering: the clinical instruction, and the unit every later part of P18
+ * attaches to.
+ *
+ * The rules that matter here are the ones that stop a patient being drawn or
+ * charged twice — a panel is expanded once, a test already live on the visit is
+ * refused with the order number the patient is waiting on, and a withdrawn
+ * order always says why.
+ */
+@Injectable()
+export class LabOrderService {
+  private readonly clinicTimeZone: string;
+
+  constructor(
+    private readonly labOrderRepository: LabOrderRepository,
+    private readonly labCatalogService: LabCatalogService,
+    private readonly labOrderAccessService: LabOrderAccessService,
+    private readonly labOrderMapper: LabOrderMapper,
+    private readonly auditService: AuditService,
+    private readonly billingService: BillingService,
+    configService: ConfigService,
+  ) {
+    this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
+  }
+
+  async createLabOrder(
+    encounterId: string,
+    payload: CreateLabOrderDto,
+    currentUser: CurrentUser,
+  ): Promise<LabOrderView> {
+    const scope = await this.labOrderAccessService.resolveScopeOrThrow(currentUser, 'write');
+    const encounter = await this.findEncounterOrThrow(encounterId);
+    this.labOrderAccessService.assertCanOrderOnEncounter({ encounter, scope, currentUser });
+    this.assertEncounterOpen(encounter.status);
+    const items = await this.buildOrderItems(payload);
+    await this.assertTestsNotAlreadyOrdered(encounterId, items);
+    const created = await this.labOrderRepository.createLabOrder({
+      encounterId,
+      patientId: encounter.patientId,
+      orderedById: encounter.doctorId,
+      priority: payload.priority ?? 'ROUTINE',
+      clinicalNotes: payload.clinicalNotes ?? null,
+      isFasting: payload.isFasting ?? false,
+      orderedAt: new Date(),
+      items,
+    });
+    await this.auditService.record({
+      action: 'LAB_ORDER_CREATED',
+      resource: 'LabOrder',
+      resourceId: created.id,
+      actorUserId: currentUser.sub,
+      patientId: encounter.patientId,
+      metadata: {
+        orderNumber: created.orderNumber,
+        encounterId,
+        itemCount: created.items.length,
+        priority: created.priority,
+      },
+    });
+
+    return this.labOrderMapper.toLabOrderView(created);
+  }
+
+  async listEncounterLabOrders(
+    encounterId: string,
+    currentUser: CurrentUser,
+  ): Promise<LabOrderView[]> {
+    const scope = await this.labOrderAccessService.resolveScopeOrThrow(currentUser, 'read');
+    const encounter = await this.findEncounterOrThrow(encounterId);
+    this.labOrderAccessService.assertCanReadEncounterOrders({ encounter, scope, currentUser });
+    const records = await this.labOrderRepository.findLabOrdersByEncounterId(encounterId);
+
+    return records.map((record) => this.labOrderMapper.toLabOrderView(record));
+  }
+
+  /**
+   * The clinic-wide list, behind `lab-order.read:any`. No OWN branch: a list
+   * filtered to one doctor's own orders is what the encounter route already
+   * returns, and widening this one to OWN would leak every other patient's
+   * order numbers to anyone holding the narrower key.
+   */
+  async listLabOrders(query: ListLabOrdersQueryDto): Promise<{
+    items: LabOrderListItem[];
+    meta: LabOrdersListMeta;
+  }> {
+    const result = await this.labOrderRepository.listLabOrders({
+      page: query.page ?? DEFAULT_PAGE,
+      limit: query.limit ?? DEFAULT_PAGE_SIZE,
+      status: query.status,
+      patientId: query.patientId,
+      orderedFrom: query.from ? this.toClinicDayStart(query.from) : undefined,
+      orderedTo: query.to ? this.toExclusiveClinicDayEnd(query.to) : undefined,
+    });
+
+    return {
+      items: result.items.map((item) => this.labOrderMapper.toLabOrderListItem(item)),
+      meta: { page: result.page, limit: result.limit, total: result.total },
+    };
+  }
+
+  async getLabOrderById(id: string, currentUser: CurrentUser): Promise<LabOrderView> {
+    const order = await this.findLabOrderOrThrow(id);
+    const scope = await this.labOrderAccessService.resolveScopeOrThrow(currentUser, 'read');
+    const encounter = await this.findEncounterOrThrow(order.encounterId);
+    this.labOrderAccessService.assertCanReadEncounterOrders({ encounter, scope, currentUser });
+
+    return this.labOrderMapper.toLabOrderView(order);
+  }
+
+  /**
+   * Withdraws an order that has not been measured yet. Once a result exists the
+   * order is history: correcting it is a result-level act, not a cancellation.
+   */
+  async cancelLabOrder(
+    id: string,
+    payload: CancelLabOrderInput,
+    currentUser: CurrentUser,
+  ): Promise<{ order: LabOrderView; meta: CancelLabOrderMeta }> {
+    const order = await this.findLabOrderOrThrow(id);
+    const scope = await this.labOrderAccessService.resolveScopeOrThrow(currentUser, 'write');
+    const encounter = await this.findEncounterOrThrow(order.encounterId);
+    this.labOrderAccessService.assertCanOrderOnEncounter({ encounter, scope, currentUser });
+    this.assertCancellable(order);
+    const cancelled = await this.labOrderRepository.cancelLabOrder({
+      id: order.id,
+      cancelledAt: new Date(),
+      cancelReason: payload.reason,
+    });
+    // P18-T06: an issued bill is corrected by voiding and reissuing, which is
+    // not the laboratory's to do. Say so rather than leave the patient charged
+    // for a test nobody ran.
+    const requiresManualCredit = await this.billingService.hasIssuedInvoiceForEncounter(
+      order.encounterId,
+    );
+    await this.auditService.record({
+      action: 'LAB_ORDER_CANCELLED',
+      resource: 'LabOrder',
+      resourceId: order.id,
+      actorUserId: currentUser.sub,
+      patientId: order.patientId,
+      metadata: {
+        orderNumber: order.orderNumber,
+        previousStatus: order.status,
+        requiresManualCredit,
+      },
+    });
+
+    return { order: this.labOrderMapper.toLabOrderView(cancelled), meta: { requiresManualCredit } };
+  }
+
+  /**
+   * The orders still outstanding when a visit is closed (P18-T02). Closing is
+   * allowed with work in flight — results arrive after the patient has gone
+   * home — so the close response names them instead of refusing.
+   */
+  async findOpenOrdersForEncounter(encounterId: string): Promise<LabOrderSummary[]> {
+    const records = await this.labOrderRepository.findLabOrdersByEncounterId(encounterId);
+
+    return records
+      .filter((record) => record.status !== 'RELEASED' && record.status !== 'CANCELLED')
+      .map((record) => this.labOrderMapper.toLabOrderSummary(record));
+  }
+
+  /**
+   * Expands panels into their members at order time so a later panel edit never
+   * rewrites what was actually ordered, and keeps `panelId` on each expanded
+   * row so billing can price the panel once (P18-T06).
+   *
+   * A test named both loosely and inside a panel keeps its panel: the clinic
+   * sold the panel, and charging the loose price on top of it would double-bill
+   * the same tube.
+   */
+  private async buildOrderItems(
+    payload: CreateLabOrderInput,
+  ): Promise<CreateLabOrderItemPayload[]> {
+    this.assertNoRepeatsInRequest(payload.testIds ?? [], 'test');
+    this.assertNoRepeatsInRequest(payload.panelIds ?? [], 'panel');
+    const testIds = payload.testIds ?? [];
+    const panelIds = payload.panelIds ?? [];
+    const [tests, panels] = await Promise.all([
+      testIds.length > 0 ? this.labCatalogService.findOrderableLabTests(testIds) : [],
+      panelIds.length > 0 ? this.labCatalogService.findOrderableLabPanels(panelIds) : [],
+    ]);
+    this.assertAllOrderable(testIds, tests, 'test');
+    this.assertAllOrderable(panelIds, panels, 'panel');
+    const panelIdByTestId = new Map<string, string>();
+    for (const panel of panels) {
+      for (const member of panel.members) {
+        panelIdByTestId.set(member.labTestId, panel.id);
+      }
+    }
+    const items = new Map<string, CreateLabOrderItemPayload>();
+    for (const labTestId of [...panelIdByTestId.keys(), ...testIds]) {
+      items.set(labTestId, { labTestId, panelId: panelIdByTestId.get(labTestId) ?? null });
+    }
+
+    return [...items.values()];
+  }
+
+  /**
+   * A request naming the same test twice is a mistake in the form, not an
+   * instruction to run it twice — the database's `@@unique([labOrderId,
+   * labTestId])` would refuse it anyway, and a readable 409 says which one.
+   *
+   * Distinct from the panel overlap handled above: a test named loosely *and*
+   * inside a panel is two different ways of asking for one test, and is merged.
+   */
+  private assertNoRepeatsInRequest(ids: readonly string[], label: 'test' | 'panel'): void {
+    const seen = new Set<string>();
+    const repeated = ids.find((id) => {
+      const isRepeat = seen.has(id);
+      seen.add(id);
+      return isRepeat;
+    });
+    if (repeated) {
+      throw new ConflictException(`The same laboratory ${label} is listed twice: ${repeated}`);
+    }
+  }
+
+  private assertAllOrderable(
+    requestedIds: readonly string[],
+    found: ReadonlyArray<LabTestRecord | LabPanelRecord>,
+    label: 'test' | 'panel',
+  ): void {
+    if (found.length === requestedIds.length) {
+      return;
+    }
+    const foundIds = new Set(found.map((row) => row.id));
+    const missing = requestedIds.filter((id) => !foundIds.has(id));
+    throw new NotFoundException(
+      `No active laboratory ${label} exists for: ${missing.join(', ')}`,
+    );
+  }
+
+  /**
+   * The duplicate rule is per encounter, not per order: a test ordered twice on
+   * one visit is a second draw and a second charge. The 409 names the order the
+   * patient is already waiting on so the doctor can look at it instead.
+   */
+  private async assertTestsNotAlreadyOrdered(
+    encounterId: string,
+    items: readonly CreateLabOrderItemPayload[],
+  ): Promise<void> {
+    const live = await this.labOrderRepository.findLiveItemsByEncounterId(encounterId);
+    if (live.length === 0) {
+      return;
+    }
+    const orderNumberByTestId = new Map(live.map((item) => [item.labTestId, item.orderNumber]));
+    const clash = items.find((item) => orderNumberByTestId.has(item.labTestId));
+    if (clash) {
+      throw new ConflictException(
+        `A test on this request is already ordered on this visit under ${orderNumberByTestId.get(clash.labTestId)}`,
+      );
+    }
+  }
+
+  private assertEncounterOpen(status: string): void {
+    if (status !== 'IN_PROGRESS') {
+      throw new ConflictException(
+        `Encounter in status ${status} can no longer be ordered against — only IN_PROGRESS visits are`,
+      );
+    }
+  }
+
+  private assertCancellable(order: LabOrderRecord): void {
+    if (!CANCELLABLE_STATUSES.some((status) => status === order.status)) {
+      throw new ConflictException(
+        `Lab order ${order.orderNumber} is ${order.status} and can no longer be cancelled`,
+      );
+    }
+  }
+
+  private async findEncounterOrThrow(encounterId: string) {
+    const encounter = await this.labOrderRepository.findEncounterForOrdering(encounterId);
+
+    if (!encounter) {
+      throw new NotFoundException('Encounter not found');
+    }
+
+    return encounter;
+  }
+
+  private async findLabOrderOrThrow(id: string): Promise<LabOrderRecord> {
+    const order = await this.labOrderRepository.findLabOrderById(id);
+
+    if (!order) {
+      throw new NotFoundException('Lab order not found');
+    }
+
+    return order;
+  }
+
+  private toClinicDayStart(date: string): Date {
+    return getStartOfCalendarDateInTimeZone(date, this.clinicTimeZone);
+  }
+
+  /** `to` names a whole clinic day, so the bound is the next local midnight. */
+  private toExclusiveClinicDayEnd(date: string): Date {
+    return new Date(this.toClinicDayStart(date).getTime() + DAY_IN_MILLISECONDS);
+  }
+}

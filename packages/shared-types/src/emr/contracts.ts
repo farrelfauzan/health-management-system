@@ -5,6 +5,7 @@ import type {
   ImmunizationRouteValue,
   ImmunizationSiteValue,
 } from '#emr/schemas';
+import type { LabOrderSummary } from '#laboratory/contracts';
 import type { PrescriptionStatusValue } from '#pharmacy-flow/schemas';
 
 /**
@@ -185,6 +186,23 @@ export type EncounterDetail = EncounterResponse & {
   procedures: ProcedureResponse[];
   immunizations: ImmunizationResponse[];
   prescriptions: EncounterRelatedPrescription[];
+  /**
+   * The lab work raised on this visit (P18-T02) — number, status and how many
+   * tests. A summary rather than the orders themselves: the visit view shows
+   * that work was asked for and where it got to, and the order's own route
+   * carries the items and specimens.
+   */
+  labOrders: LabOrderSummary[];
+};
+
+/**
+ * What closing a visit reported back (P18-T02). Closing with lab work in
+ * flight is allowed — results arrive after the patient has gone home — so the
+ * response names the orders still outstanding instead of refusing, and the UI
+ * warns rather than blocks.
+ */
+export type CloseEncounterMeta = {
+  openLabOrders: LabOrderSummary[];
 };
 
 export type EncountersListMeta = {

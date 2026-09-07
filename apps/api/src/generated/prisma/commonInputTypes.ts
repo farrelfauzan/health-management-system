@@ -1754,6 +1754,91 @@ export type EnumPatientSexNullableWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumPatientSexNullableFilter<$PrismaModel>
 }
 
+export type EnumLabOrderStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.LabOrderStatus | Prisma.EnumLabOrderStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.LabOrderStatus[] | Prisma.ListEnumLabOrderStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.LabOrderStatus[] | Prisma.ListEnumLabOrderStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumLabOrderStatusFilter<$PrismaModel> | $Enums.LabOrderStatus
+}
+
+export type EnumLabOrderPriorityFilter<$PrismaModel = never> = {
+  equals?: $Enums.LabOrderPriority | Prisma.EnumLabOrderPriorityFieldRefInput<$PrismaModel>
+  in?: $Enums.LabOrderPriority[] | Prisma.ListEnumLabOrderPriorityFieldRefInput<$PrismaModel>
+  notIn?: $Enums.LabOrderPriority[] | Prisma.ListEnumLabOrderPriorityFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumLabOrderPriorityFilter<$PrismaModel> | $Enums.LabOrderPriority
+}
+
+export type EnumLabOrderStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.LabOrderStatus | Prisma.EnumLabOrderStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.LabOrderStatus[] | Prisma.ListEnumLabOrderStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.LabOrderStatus[] | Prisma.ListEnumLabOrderStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumLabOrderStatusWithAggregatesFilter<$PrismaModel> | $Enums.LabOrderStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumLabOrderStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumLabOrderStatusFilter<$PrismaModel>
+}
+
+export type EnumLabOrderPriorityWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.LabOrderPriority | Prisma.EnumLabOrderPriorityFieldRefInput<$PrismaModel>
+  in?: $Enums.LabOrderPriority[] | Prisma.ListEnumLabOrderPriorityFieldRefInput<$PrismaModel>
+  notIn?: $Enums.LabOrderPriority[] | Prisma.ListEnumLabOrderPriorityFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumLabOrderPriorityWithAggregatesFilter<$PrismaModel> | $Enums.LabOrderPriority
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumLabOrderPriorityFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumLabOrderPriorityFilter<$PrismaModel>
+}
+
+export type EnumLabOrderItemStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.LabOrderItemStatus | Prisma.EnumLabOrderItemStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.LabOrderItemStatus[] | Prisma.ListEnumLabOrderItemStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.LabOrderItemStatus[] | Prisma.ListEnumLabOrderItemStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumLabOrderItemStatusFilter<$PrismaModel> | $Enums.LabOrderItemStatus
+}
+
+export type EnumLabOrderItemStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.LabOrderItemStatus | Prisma.EnumLabOrderItemStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.LabOrderItemStatus[] | Prisma.ListEnumLabOrderItemStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.LabOrderItemStatus[] | Prisma.ListEnumLabOrderItemStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumLabOrderItemStatusWithAggregatesFilter<$PrismaModel> | $Enums.LabOrderItemStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumLabOrderItemStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumLabOrderItemStatusFilter<$PrismaModel>
+}
+
+export type EnumLabSpecimenStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.LabSpecimenStatus | Prisma.EnumLabSpecimenStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.LabSpecimenStatus[] | Prisma.ListEnumLabSpecimenStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.LabSpecimenStatus[] | Prisma.ListEnumLabSpecimenStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumLabSpecimenStatusFilter<$PrismaModel> | $Enums.LabSpecimenStatus
+}
+
+export type EnumLabSpecimenRejectReasonNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.LabSpecimenRejectReason | Prisma.EnumLabSpecimenRejectReasonFieldRefInput<$PrismaModel> | null
+  in?: $Enums.LabSpecimenRejectReason[] | Prisma.ListEnumLabSpecimenRejectReasonFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.LabSpecimenRejectReason[] | Prisma.ListEnumLabSpecimenRejectReasonFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumLabSpecimenRejectReasonNullableFilter<$PrismaModel> | $Enums.LabSpecimenRejectReason | null
+}
+
+export type EnumLabSpecimenStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.LabSpecimenStatus | Prisma.EnumLabSpecimenStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.LabSpecimenStatus[] | Prisma.ListEnumLabSpecimenStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.LabSpecimenStatus[] | Prisma.ListEnumLabSpecimenStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumLabSpecimenStatusWithAggregatesFilter<$PrismaModel> | $Enums.LabSpecimenStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumLabSpecimenStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumLabSpecimenStatusFilter<$PrismaModel>
+}
+
+export type EnumLabSpecimenRejectReasonNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.LabSpecimenRejectReason | Prisma.EnumLabSpecimenRejectReasonFieldRefInput<$PrismaModel> | null
+  in?: $Enums.LabSpecimenRejectReason[] | Prisma.ListEnumLabSpecimenRejectReasonFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.LabSpecimenRejectReason[] | Prisma.ListEnumLabSpecimenRejectReasonFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumLabSpecimenRejectReasonNullableWithAggregatesFilter<$PrismaModel> | $Enums.LabSpecimenRejectReason | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumLabSpecimenRejectReasonNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumLabSpecimenRejectReasonNullableFilter<$PrismaModel>
+}
+
 export type EnumImmunizationRouteNullableFilter<$PrismaModel = never> = {
   equals?: $Enums.ImmunizationRoute | Prisma.EnumImmunizationRouteFieldRefInput<$PrismaModel> | null
   in?: $Enums.ImmunizationRoute[] | Prisma.ListEnumImmunizationRouteFieldRefInput<$PrismaModel> | null
@@ -3481,6 +3566,91 @@ export type NestedEnumPatientSexNullableWithAggregatesFilter<$PrismaModel = neve
   _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
   _min?: Prisma.NestedEnumPatientSexNullableFilter<$PrismaModel>
   _max?: Prisma.NestedEnumPatientSexNullableFilter<$PrismaModel>
+}
+
+export type NestedEnumLabOrderStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.LabOrderStatus | Prisma.EnumLabOrderStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.LabOrderStatus[] | Prisma.ListEnumLabOrderStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.LabOrderStatus[] | Prisma.ListEnumLabOrderStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumLabOrderStatusFilter<$PrismaModel> | $Enums.LabOrderStatus
+}
+
+export type NestedEnumLabOrderPriorityFilter<$PrismaModel = never> = {
+  equals?: $Enums.LabOrderPriority | Prisma.EnumLabOrderPriorityFieldRefInput<$PrismaModel>
+  in?: $Enums.LabOrderPriority[] | Prisma.ListEnumLabOrderPriorityFieldRefInput<$PrismaModel>
+  notIn?: $Enums.LabOrderPriority[] | Prisma.ListEnumLabOrderPriorityFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumLabOrderPriorityFilter<$PrismaModel> | $Enums.LabOrderPriority
+}
+
+export type NestedEnumLabOrderStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.LabOrderStatus | Prisma.EnumLabOrderStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.LabOrderStatus[] | Prisma.ListEnumLabOrderStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.LabOrderStatus[] | Prisma.ListEnumLabOrderStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumLabOrderStatusWithAggregatesFilter<$PrismaModel> | $Enums.LabOrderStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumLabOrderStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumLabOrderStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumLabOrderPriorityWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.LabOrderPriority | Prisma.EnumLabOrderPriorityFieldRefInput<$PrismaModel>
+  in?: $Enums.LabOrderPriority[] | Prisma.ListEnumLabOrderPriorityFieldRefInput<$PrismaModel>
+  notIn?: $Enums.LabOrderPriority[] | Prisma.ListEnumLabOrderPriorityFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumLabOrderPriorityWithAggregatesFilter<$PrismaModel> | $Enums.LabOrderPriority
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumLabOrderPriorityFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumLabOrderPriorityFilter<$PrismaModel>
+}
+
+export type NestedEnumLabOrderItemStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.LabOrderItemStatus | Prisma.EnumLabOrderItemStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.LabOrderItemStatus[] | Prisma.ListEnumLabOrderItemStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.LabOrderItemStatus[] | Prisma.ListEnumLabOrderItemStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumLabOrderItemStatusFilter<$PrismaModel> | $Enums.LabOrderItemStatus
+}
+
+export type NestedEnumLabOrderItemStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.LabOrderItemStatus | Prisma.EnumLabOrderItemStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.LabOrderItemStatus[] | Prisma.ListEnumLabOrderItemStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.LabOrderItemStatus[] | Prisma.ListEnumLabOrderItemStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumLabOrderItemStatusWithAggregatesFilter<$PrismaModel> | $Enums.LabOrderItemStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumLabOrderItemStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumLabOrderItemStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumLabSpecimenStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.LabSpecimenStatus | Prisma.EnumLabSpecimenStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.LabSpecimenStatus[] | Prisma.ListEnumLabSpecimenStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.LabSpecimenStatus[] | Prisma.ListEnumLabSpecimenStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumLabSpecimenStatusFilter<$PrismaModel> | $Enums.LabSpecimenStatus
+}
+
+export type NestedEnumLabSpecimenRejectReasonNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.LabSpecimenRejectReason | Prisma.EnumLabSpecimenRejectReasonFieldRefInput<$PrismaModel> | null
+  in?: $Enums.LabSpecimenRejectReason[] | Prisma.ListEnumLabSpecimenRejectReasonFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.LabSpecimenRejectReason[] | Prisma.ListEnumLabSpecimenRejectReasonFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumLabSpecimenRejectReasonNullableFilter<$PrismaModel> | $Enums.LabSpecimenRejectReason | null
+}
+
+export type NestedEnumLabSpecimenStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.LabSpecimenStatus | Prisma.EnumLabSpecimenStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.LabSpecimenStatus[] | Prisma.ListEnumLabSpecimenStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.LabSpecimenStatus[] | Prisma.ListEnumLabSpecimenStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumLabSpecimenStatusWithAggregatesFilter<$PrismaModel> | $Enums.LabSpecimenStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumLabSpecimenStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumLabSpecimenStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumLabSpecimenRejectReasonNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.LabSpecimenRejectReason | Prisma.EnumLabSpecimenRejectReasonFieldRefInput<$PrismaModel> | null
+  in?: $Enums.LabSpecimenRejectReason[] | Prisma.ListEnumLabSpecimenRejectReasonFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.LabSpecimenRejectReason[] | Prisma.ListEnumLabSpecimenRejectReasonFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumLabSpecimenRejectReasonNullableWithAggregatesFilter<$PrismaModel> | $Enums.LabSpecimenRejectReason | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumLabSpecimenRejectReasonNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumLabSpecimenRejectReasonNullableFilter<$PrismaModel>
 }
 
 export type NestedEnumImmunizationRouteNullableFilter<$PrismaModel = never> = {

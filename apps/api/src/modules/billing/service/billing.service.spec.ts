@@ -1,4 +1,4 @@
-import type { ServiceTariffRecord } from '@hms/shared-types';
+import type { BillingLabItemRecord, ServiceTariffRecord } from '@hms/shared-types';
 import { BadRequestException, ConflictException, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
@@ -17,6 +17,10 @@ describe('BillingService', () => {
   const billingRepositoryMock = {
     findEncounterForBilling: jest.fn(),
     findDispensedItemsByEncounterId: jest.fn(),
+    findLabItemsForBilling: jest.fn<Promise<BillingLabItemRecord[]>, [string]>(() =>
+      Promise.resolve([]),
+    ),
+    findEncounterIdsWithSettledInvoice: jest.fn(() => Promise.resolve(new Set<string>())),
     findLiveInvoiceByEncounterId: jest.fn(),
     createInvoiceWithItems: jest.fn(),
     listInvoices: jest.fn(),
@@ -101,6 +105,27 @@ describe('BillingService', () => {
     createdAt: timestamp,
     updatedAt: timestamp,
   };
+
+  const labPanelTariffId = '9d2e3a7a-6b8c-4b80-9f32-4c1e5b6d7f80';
+  const labTestTariffId = 'ae3f4b8b-7c9d-4c91-8043-5d2f6c7e8091';
+  const labPanelId = 'bf405c9c-8dae-4da2-9154-6e3a7d8f9102';
+
+  /** A darah-rutin member: priced through its panel, never on its own. */
+  function buildLabItem(fields: { testCode: string; testName: string }) {
+    return {
+      labOrderId: 'lab-order-1',
+      orderNumber: 'LAB/20260728/0001',
+      labTestId: `test-${fields.testCode}`,
+      testCode: fields.testCode,
+      testName: fields.testName,
+      testTariffId: null,
+      testPrice: null,
+      panelId: labPanelId,
+      panelName: 'Darah Rutin',
+      panelTariffId: labPanelTariffId,
+      panelPrice: 90000,
+    };
+  }
 
   const patientRecord = {
     id: patientId,
@@ -323,6 +348,81 @@ describe('BillingService', () => {
           description: 'Paracetamol 500 mg',
         }),
       ]);
+      expect(billingRepositoryMock.createInvoiceWithItems.mock.calls[0][0].items).toEqual([]);
+    });
+
+    // P18-T06. A panel is one line at the panel's own tariff however many
+    // tests it expanded into: charging six members of a darah rutin separately
+    // would bill the patient several times what the clinic quoted.
+    it('bills a lab panel once and a loose test on its own', async () => {
+      serviceTariffRepositoryMock.findActiveConsultationTariffs.mockResolvedValue([]);
+      serviceTariffRepositoryMock.findActiveTariffsByIcd9cmCodes.mockResolvedValue([]);
+      billingRepositoryMock.findLabItemsForBilling.mockResolvedValue([
+        buildLabItem({ testCode: 'HB', testName: 'Hemoglobin' }),
+        buildLabItem({ testCode: 'LEU', testName: 'Leukosit' }),
+        buildLabItem({ testCode: 'TRO', testName: 'Trombosit' }),
+        {
+          ...buildLabItem({ testCode: 'GDS', testName: 'Glukosa Darah Sewaktu' }),
+          testTariffId: labTestTariffId,
+          testPrice: 25000,
+          panelId: null,
+          panelName: null,
+          panelTariffId: null,
+          panelPrice: null,
+        },
+      ]);
+
+      const actualResult = await service.generateInvoice(inputPayload, cashierUser);
+
+      expect(actualResult.gaps).toEqual([
+        expect.objectContaining({ reason: 'NO_CONSULTATION_TARIFF' }),
+        expect.objectContaining({ reason: 'NO_TARIFF_FOR_PROCEDURE' }),
+      ]);
+      expect(billingRepositoryMock.createInvoiceWithItems.mock.calls[0][0].items).toEqual([
+        expect.objectContaining({
+          itemType: 'LAB',
+          serviceTariffId: labPanelTariffId,
+          description: 'Darah Rutin',
+          quantity: 1,
+          amount: 90000,
+        }),
+        expect.objectContaining({
+          itemType: 'LAB',
+          serviceTariffId: labTestTariffId,
+          description: 'Glukosa Darah Sewaktu',
+          quantity: 1,
+          amount: 25000,
+        }),
+      ]);
+    });
+
+    // The procedure rule from P9 applied to the bench. Free lab work is the
+    // failure this prevents: the tests are recorded, so an omission would stay
+    // invisible until somebody reconciled a month of them.
+    it('gaps an unpriced lab test rather than billing it at nothing', async () => {
+      serviceTariffRepositoryMock.findActiveConsultationTariffs.mockResolvedValue([]);
+      serviceTariffRepositoryMock.findActiveTariffsByIcd9cmCodes.mockResolvedValue([]);
+      billingRepositoryMock.findLabItemsForBilling.mockResolvedValue([
+        {
+          ...buildLabItem({ testCode: 'HBA1C', testName: 'HbA1c' }),
+          testTariffId: null,
+          testPrice: null,
+          panelId: null,
+          panelName: null,
+          panelTariffId: null,
+          panelPrice: null,
+        },
+      ]);
+
+      const actualResult = await service.generateInvoice(inputPayload, cashierUser);
+
+      expect(actualResult.gaps).toContainEqual(
+        expect.objectContaining({
+          reason: 'NO_TARIFF_FOR_LAB_TEST',
+          code: 'HBA1C',
+          description: 'HbA1c',
+        }),
+      );
       expect(billingRepositoryMock.createInvoiceWithItems.mock.calls[0][0].items).toEqual([]);
     });
 

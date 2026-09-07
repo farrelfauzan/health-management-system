@@ -211,6 +211,7 @@ export type LabPanelWhereInput = {
   deletedAt?: Prisma.DateTimeNullableFilter<"LabPanel"> | Date | string | null
   serviceTariff?: Prisma.XOR<Prisma.ServiceTariffNullableScalarRelationFilter, Prisma.ServiceTariffWhereInput> | null
   members?: Prisma.LabPanelMemberListRelationFilter
+  orderItems?: Prisma.LabOrderItemListRelationFilter
 }
 
 export type LabPanelOrderByWithRelationInput = {
@@ -224,6 +225,7 @@ export type LabPanelOrderByWithRelationInput = {
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   serviceTariff?: Prisma.ServiceTariffOrderByWithRelationInput
   members?: Prisma.LabPanelMemberOrderByRelationAggregateInput
+  orderItems?: Prisma.LabOrderItemOrderByRelationAggregateInput
 }
 
 export type LabPanelWhereUniqueInput = Prisma.AtLeast<{
@@ -240,6 +242,7 @@ export type LabPanelWhereUniqueInput = Prisma.AtLeast<{
   deletedAt?: Prisma.DateTimeNullableFilter<"LabPanel"> | Date | string | null
   serviceTariff?: Prisma.XOR<Prisma.ServiceTariffNullableScalarRelationFilter, Prisma.ServiceTariffWhereInput> | null
   members?: Prisma.LabPanelMemberListRelationFilter
+  orderItems?: Prisma.LabOrderItemListRelationFilter
 }, "id" | "code">
 
 export type LabPanelOrderByWithAggregationInput = {
@@ -280,6 +283,7 @@ export type LabPanelCreateInput = {
   deletedAt?: Date | string | null
   serviceTariff?: Prisma.ServiceTariffCreateNestedOneWithoutLabPanelsInput
   members?: Prisma.LabPanelMemberCreateNestedManyWithoutPanelInput
+  orderItems?: Prisma.LabOrderItemCreateNestedManyWithoutPanelInput
 }
 
 export type LabPanelUncheckedCreateInput = {
@@ -292,6 +296,7 @@ export type LabPanelUncheckedCreateInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   members?: Prisma.LabPanelMemberUncheckedCreateNestedManyWithoutPanelInput
+  orderItems?: Prisma.LabOrderItemUncheckedCreateNestedManyWithoutPanelInput
 }
 
 export type LabPanelUpdateInput = {
@@ -304,6 +309,7 @@ export type LabPanelUpdateInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   serviceTariff?: Prisma.ServiceTariffUpdateOneWithoutLabPanelsNestedInput
   members?: Prisma.LabPanelMemberUpdateManyWithoutPanelNestedInput
+  orderItems?: Prisma.LabOrderItemUpdateManyWithoutPanelNestedInput
 }
 
 export type LabPanelUncheckedUpdateInput = {
@@ -316,6 +322,7 @@ export type LabPanelUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   members?: Prisma.LabPanelMemberUncheckedUpdateManyWithoutPanelNestedInput
+  orderItems?: Prisma.LabOrderItemUncheckedUpdateManyWithoutPanelNestedInput
 }
 
 export type LabPanelCreateManyInput = {
@@ -398,6 +405,11 @@ export type LabPanelScalarRelationFilter = {
   isNot?: Prisma.LabPanelWhereInput
 }
 
+export type LabPanelNullableScalarRelationFilter = {
+  is?: Prisma.LabPanelWhereInput | null
+  isNot?: Prisma.LabPanelWhereInput | null
+}
+
 export type LabPanelCreateNestedManyWithoutServiceTariffInput = {
   create?: Prisma.XOR<Prisma.LabPanelCreateWithoutServiceTariffInput, Prisma.LabPanelUncheckedCreateWithoutServiceTariffInput> | Prisma.LabPanelCreateWithoutServiceTariffInput[] | Prisma.LabPanelUncheckedCreateWithoutServiceTariffInput[]
   connectOrCreate?: Prisma.LabPanelCreateOrConnectWithoutServiceTariffInput | Prisma.LabPanelCreateOrConnectWithoutServiceTariffInput[]
@@ -454,6 +466,22 @@ export type LabPanelUpdateOneRequiredWithoutMembersNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.LabPanelUpdateToOneWithWhereWithoutMembersInput, Prisma.LabPanelUpdateWithoutMembersInput>, Prisma.LabPanelUncheckedUpdateWithoutMembersInput>
 }
 
+export type LabPanelCreateNestedOneWithoutOrderItemsInput = {
+  create?: Prisma.XOR<Prisma.LabPanelCreateWithoutOrderItemsInput, Prisma.LabPanelUncheckedCreateWithoutOrderItemsInput>
+  connectOrCreate?: Prisma.LabPanelCreateOrConnectWithoutOrderItemsInput
+  connect?: Prisma.LabPanelWhereUniqueInput
+}
+
+export type LabPanelUpdateOneWithoutOrderItemsNestedInput = {
+  create?: Prisma.XOR<Prisma.LabPanelCreateWithoutOrderItemsInput, Prisma.LabPanelUncheckedCreateWithoutOrderItemsInput>
+  connectOrCreate?: Prisma.LabPanelCreateOrConnectWithoutOrderItemsInput
+  upsert?: Prisma.LabPanelUpsertWithoutOrderItemsInput
+  disconnect?: Prisma.LabPanelWhereInput | boolean
+  delete?: Prisma.LabPanelWhereInput | boolean
+  connect?: Prisma.LabPanelWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.LabPanelUpdateToOneWithWhereWithoutOrderItemsInput, Prisma.LabPanelUpdateWithoutOrderItemsInput>, Prisma.LabPanelUncheckedUpdateWithoutOrderItemsInput>
+}
+
 export type LabPanelCreateWithoutServiceTariffInput = {
   id?: string
   code: string
@@ -463,6 +491,7 @@ export type LabPanelCreateWithoutServiceTariffInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   members?: Prisma.LabPanelMemberCreateNestedManyWithoutPanelInput
+  orderItems?: Prisma.LabOrderItemCreateNestedManyWithoutPanelInput
 }
 
 export type LabPanelUncheckedCreateWithoutServiceTariffInput = {
@@ -474,6 +503,7 @@ export type LabPanelUncheckedCreateWithoutServiceTariffInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   members?: Prisma.LabPanelMemberUncheckedCreateNestedManyWithoutPanelInput
+  orderItems?: Prisma.LabOrderItemUncheckedCreateNestedManyWithoutPanelInput
 }
 
 export type LabPanelCreateOrConnectWithoutServiceTariffInput = {
@@ -525,6 +555,7 @@ export type LabPanelCreateWithoutMembersInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   serviceTariff?: Prisma.ServiceTariffCreateNestedOneWithoutLabPanelsInput
+  orderItems?: Prisma.LabOrderItemCreateNestedManyWithoutPanelInput
 }
 
 export type LabPanelUncheckedCreateWithoutMembersInput = {
@@ -536,6 +567,7 @@ export type LabPanelUncheckedCreateWithoutMembersInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  orderItems?: Prisma.LabOrderItemUncheckedCreateNestedManyWithoutPanelInput
 }
 
 export type LabPanelCreateOrConnectWithoutMembersInput = {
@@ -563,6 +595,7 @@ export type LabPanelUpdateWithoutMembersInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   serviceTariff?: Prisma.ServiceTariffUpdateOneWithoutLabPanelsNestedInput
+  orderItems?: Prisma.LabOrderItemUpdateManyWithoutPanelNestedInput
 }
 
 export type LabPanelUncheckedUpdateWithoutMembersInput = {
@@ -574,6 +607,71 @@ export type LabPanelUncheckedUpdateWithoutMembersInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  orderItems?: Prisma.LabOrderItemUncheckedUpdateManyWithoutPanelNestedInput
+}
+
+export type LabPanelCreateWithoutOrderItemsInput = {
+  id?: string
+  code: string
+  name: string
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  serviceTariff?: Prisma.ServiceTariffCreateNestedOneWithoutLabPanelsInput
+  members?: Prisma.LabPanelMemberCreateNestedManyWithoutPanelInput
+}
+
+export type LabPanelUncheckedCreateWithoutOrderItemsInput = {
+  id?: string
+  code: string
+  name: string
+  isActive?: boolean
+  serviceTariffId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  members?: Prisma.LabPanelMemberUncheckedCreateNestedManyWithoutPanelInput
+}
+
+export type LabPanelCreateOrConnectWithoutOrderItemsInput = {
+  where: Prisma.LabPanelWhereUniqueInput
+  create: Prisma.XOR<Prisma.LabPanelCreateWithoutOrderItemsInput, Prisma.LabPanelUncheckedCreateWithoutOrderItemsInput>
+}
+
+export type LabPanelUpsertWithoutOrderItemsInput = {
+  update: Prisma.XOR<Prisma.LabPanelUpdateWithoutOrderItemsInput, Prisma.LabPanelUncheckedUpdateWithoutOrderItemsInput>
+  create: Prisma.XOR<Prisma.LabPanelCreateWithoutOrderItemsInput, Prisma.LabPanelUncheckedCreateWithoutOrderItemsInput>
+  where?: Prisma.LabPanelWhereInput
+}
+
+export type LabPanelUpdateToOneWithWhereWithoutOrderItemsInput = {
+  where?: Prisma.LabPanelWhereInput
+  data: Prisma.XOR<Prisma.LabPanelUpdateWithoutOrderItemsInput, Prisma.LabPanelUncheckedUpdateWithoutOrderItemsInput>
+}
+
+export type LabPanelUpdateWithoutOrderItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  serviceTariff?: Prisma.ServiceTariffUpdateOneWithoutLabPanelsNestedInput
+  members?: Prisma.LabPanelMemberUpdateManyWithoutPanelNestedInput
+}
+
+export type LabPanelUncheckedUpdateWithoutOrderItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  serviceTariffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  members?: Prisma.LabPanelMemberUncheckedUpdateManyWithoutPanelNestedInput
 }
 
 export type LabPanelCreateManyServiceTariffInput = {
@@ -595,6 +693,7 @@ export type LabPanelUpdateWithoutServiceTariffInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   members?: Prisma.LabPanelMemberUpdateManyWithoutPanelNestedInput
+  orderItems?: Prisma.LabOrderItemUpdateManyWithoutPanelNestedInput
 }
 
 export type LabPanelUncheckedUpdateWithoutServiceTariffInput = {
@@ -606,6 +705,7 @@ export type LabPanelUncheckedUpdateWithoutServiceTariffInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   members?: Prisma.LabPanelMemberUncheckedUpdateManyWithoutPanelNestedInput
+  orderItems?: Prisma.LabOrderItemUncheckedUpdateManyWithoutPanelNestedInput
 }
 
 export type LabPanelUncheckedUpdateManyWithoutServiceTariffInput = {
@@ -625,10 +725,12 @@ export type LabPanelUncheckedUpdateManyWithoutServiceTariffInput = {
 
 export type LabPanelCountOutputType = {
   members: number
+  orderItems: number
 }
 
 export type LabPanelCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   members?: boolean | LabPanelCountOutputTypeCountMembersArgs
+  orderItems?: boolean | LabPanelCountOutputTypeCountOrderItemsArgs
 }
 
 /**
@@ -648,6 +750,13 @@ export type LabPanelCountOutputTypeCountMembersArgs<ExtArgs extends runtime.Type
   where?: Prisma.LabPanelMemberWhereInput
 }
 
+/**
+ * LabPanelCountOutputType without action
+ */
+export type LabPanelCountOutputTypeCountOrderItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.LabOrderItemWhereInput
+}
+
 
 export type LabPanelSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -660,6 +769,7 @@ export type LabPanelSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   deletedAt?: boolean
   serviceTariff?: boolean | Prisma.LabPanel$serviceTariffArgs<ExtArgs>
   members?: boolean | Prisma.LabPanel$membersArgs<ExtArgs>
+  orderItems?: boolean | Prisma.LabPanel$orderItemsArgs<ExtArgs>
   _count?: boolean | Prisma.LabPanelCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["labPanel"]>
 
@@ -702,6 +812,7 @@ export type LabPanelOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs =
 export type LabPanelInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   serviceTariff?: boolean | Prisma.LabPanel$serviceTariffArgs<ExtArgs>
   members?: boolean | Prisma.LabPanel$membersArgs<ExtArgs>
+  orderItems?: boolean | Prisma.LabPanel$orderItemsArgs<ExtArgs>
   _count?: boolean | Prisma.LabPanelCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type LabPanelIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -716,6 +827,7 @@ export type $LabPanelPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
   objects: {
     serviceTariff: Prisma.$ServiceTariffPayload<ExtArgs> | null
     members: Prisma.$LabPanelMemberPayload<ExtArgs>[]
+    orderItems: Prisma.$LabOrderItemPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1122,6 +1234,7 @@ export interface Prisma__LabPanelClient<T, Null = never, ExtArgs extends runtime
   readonly [Symbol.toStringTag]: "PrismaPromise"
   serviceTariff<T extends Prisma.LabPanel$serviceTariffArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.LabPanel$serviceTariffArgs<ExtArgs>>): Prisma.Prisma__ServiceTariffClient<runtime.Types.Result.GetResult<Prisma.$ServiceTariffPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   members<T extends Prisma.LabPanel$membersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.LabPanel$membersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LabPanelMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  orderItems<T extends Prisma.LabPanel$orderItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.LabPanel$orderItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LabOrderItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1600,6 +1713,30 @@ export type LabPanel$membersArgs<ExtArgs extends runtime.Types.Extensions.Intern
   take?: number
   skip?: number
   distinct?: Prisma.LabPanelMemberScalarFieldEnum | Prisma.LabPanelMemberScalarFieldEnum[]
+}
+
+/**
+ * LabPanel.orderItems
+ */
+export type LabPanel$orderItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the LabOrderItem
+   */
+  select?: Prisma.LabOrderItemSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the LabOrderItem
+   */
+  omit?: Prisma.LabOrderItemOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LabOrderItemInclude<ExtArgs> | null
+  where?: Prisma.LabOrderItemWhereInput
+  orderBy?: Prisma.LabOrderItemOrderByWithRelationInput | Prisma.LabOrderItemOrderByWithRelationInput[]
+  cursor?: Prisma.LabOrderItemWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.LabOrderItemScalarFieldEnum | Prisma.LabOrderItemScalarFieldEnum[]
 }
 
 /**

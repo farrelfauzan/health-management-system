@@ -161,6 +161,30 @@ export class LabCatalogRepository {
     return row ? this.toLabPanelRecord(row) : null;
   }
 
+  /**
+   * The active catalog rows an order names. Inactive and soft-deleted tests are
+   * simply absent, which is what lets the service refuse the order naming them
+   * rather than writing an item nobody can run.
+   */
+  async findActiveLabTestsByIds(ids: readonly string[]): Promise<LabTestRecord[]> {
+    const rows = await this.prisma.labTest.findMany({
+      where: { id: { in: [...ids] }, isActive: true, deletedAt: null },
+      orderBy: { code: 'asc' },
+      include: LAB_TEST_INCLUDE,
+    });
+    return rows.map((row) => this.toLabTestRecord(row));
+  }
+
+  /** The same, for panels — with their members, which is what gets expanded. */
+  async findActiveLabPanelsByIds(ids: readonly string[]): Promise<LabPanelRecord[]> {
+    const rows = await this.prisma.labPanel.findMany({
+      where: { id: { in: [...ids] }, isActive: true, deletedAt: null },
+      orderBy: { code: 'asc' },
+      include: LAB_PANEL_INCLUDE,
+    });
+    return rows.map((row) => this.toLabPanelRecord(row));
+  }
+
   async countActiveLabTests(ids: readonly string[]): Promise<number> {
     return this.prisma.labTest.count({
       where: { id: { in: [...ids] }, deletedAt: null },

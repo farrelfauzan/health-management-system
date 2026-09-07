@@ -1,8 +1,10 @@
 import {
   AddInvoiceItemRecordPayload,
   BillingDispensedItemRecord,
+  BillingLabItemRecord,
   BillingSourceEncounterRecord,
   CashierReportDayRange,
+  CashierReportItemRecord,
   CashierReportPaymentRecord,
   CreateInvoiceRecordPayload,
   InvoiceDetailRecord,
@@ -18,6 +20,7 @@ import {
 import { Injectable } from '@nestjs/common';
 
 import { Prisma } from '../../../generated/prisma/client';
+import { Decimal } from '../../../generated/prisma/internal/prismaNamespace';
 import { PrismaService } from '../../../common/prisma/prisma.service';
 import { PrismaTransactionClient } from '../../../common/prisma/prisma.types';
 import { InvoiceNumberAllocatorRepository } from './invoice-number-allocator.repository';
@@ -377,6 +380,114 @@ export class BillingRepository {
     }));
   }
 
+  /**
+   * The lab work this visit is billed for (P18-T06). Cancelled orders and
+   * cancelled items are excluded — a withdrawn test was never run and is never
+   * charged — and both tariffs come back on every row so the service can price
+   * a panel once and a loose test on its own without a second query.
+   */
+  async findLabItemsForBilling(encounterId: string): Promise<BillingLabItemRecord[]> {
+    const rows = await this.prisma.labOrderItem.findMany({
+      where: {
+        status: { not: 'CANCELLED' },
+        labOrder: { encounterId, status: { not: 'CANCELLED' } },
+      },
+      select: {
+        labTestId: true,
+        panelId: true,
+        labOrder: { select: { id: true, orderNumber: true } },
+        labTest: {
+          select: {
+            code: true,
+            name: true,
+            serviceTariffId: true,
+            serviceTariff: { select: { price: true, isActive: true } },
+          },
+        },
+        panel: {
+          select: {
+            name: true,
+            serviceTariffId: true,
+            serviceTariff: { select: { price: true, isActive: true } },
+          },
+        },
+      },
+      orderBy: [{ labOrderId: 'asc' }, { panelId: 'asc' }, { createdAt: 'asc' }],
+    });
+    return rows.map((row) => ({
+      labOrderId: row.labOrder.id,
+      orderNumber: row.labOrder.orderNumber,
+      labTestId: row.labTestId,
+      testCode: row.labTest.code,
+      testName: row.labTest.name,
+      testTariffId: row.labTest.serviceTariffId,
+      testPrice: toActiveTariffPrice(row.labTest.serviceTariff),
+      panelId: row.panelId,
+      panelName: row.panel?.name ?? null,
+      panelTariffId: row.panel?.serviceTariffId ?? null,
+      panelPrice: toActiveTariffPrice(row.panel?.serviceTariff ?? null),
+    }));
+  }
+
+  /**
+   * Every line of the invoices settled in the window, for the day's revenue
+   * composition. Voided invoices cannot carry a payment, so filtering on the
+   * payment is enough.
+   */
+  async findItemsForCashierReport(
+    range: CashierReportDayRange,
+  ): Promise<CashierReportItemRecord[]> {
+    const rows = await this.prisma.invoiceItem.findMany({
+      where: {
+        invoice: {
+          payment: { paidAt: { gte: range.startInclusive, lt: range.endExclusive } },
+        },
+      },
+      select: { itemType: true, amount: true },
+    });
+    return rows.map((row) => ({ itemType: row.itemType, amount: Number(row.amount) }));
+  }
+
+  /**
+   * Whether a live invoice for this encounter has left DRAFT. VOID is excluded
+   * by `canTransitionInvoiceStatus`'s own rule — a voided bill charges nobody —
+   * and the partial unique index means at most one live invoice exists anyway.
+   */
+  async hasIssuedInvoiceForEncounter(encounterId: string): Promise<boolean> {
+    const existing = await this.prisma.invoice.findFirst({
+      where: {
+        encounterId,
+        status: { in: ['ISSUED', 'PAID'] },
+        deletedAt: null,
+      },
+      select: { id: true },
+    });
+    return existing !== null;
+  }
+
+  /**
+   * Which of these encounters already have a PAID invoice (P18-T06). One query
+   * for the whole worklist rather than one per row, and a set rather than rows
+   * because the only question asked of it is membership.
+   */
+  async findEncounterIdsWithSettledInvoice(
+    encounterIds: readonly string[],
+  ): Promise<ReadonlySet<string>> {
+    const rows = await this.prisma.invoice.findMany({
+      where: {
+        encounterId: { in: [...encounterIds] },
+        status: 'PAID',
+        deletedAt: null,
+      },
+      select: { encounterId: true },
+    });
+    return new Set(
+      rows
+        .map((row) => row.encounterId)
+        .filter((encounterId): encounterId is string => encounterId !== null),
+    );
+  }
+
   private buildCreatedAtFilter(params: ListInvoicesParams) {
     const { createdFrom, createdTo } = params;
     if (!createdFrom && !createdTo) {
@@ -451,4 +562,9 @@ export class BillingRepository {
       payment: payment ? { ...payment, amount: Number(payment.amount) } : null,
     };
   }
+}
+
+/** A deactivated tariff is not a price. Treated as no price at all, which makes it a gap. */
+function toActiveTariffPrice(tariff: { price: Decimal; isActive: boolean } | null): number | null {
+  return tariff && tariff.isActive ? Number(tariff.price) : null;
 }

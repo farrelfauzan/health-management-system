@@ -34,6 +34,12 @@ describe('Billing integration', () => {
     addInvoiceItem: jest.fn(),
     removeInvoiceItem: jest.fn(),
     findPaymentsForCashierReport: jest.fn(),
+    // P18-T06. Generation now also collects lab lines and the cashier report
+    // its revenue composition; both default to empty so every existing
+    // expectation still describes a visit with no laboratory work on it.
+    findLabItemsForBilling: jest.fn(() => Promise.resolve([])),
+    findItemsForCashierReport: jest.fn(() => Promise.resolve([])),
+    findEncounterIdsWithSettledInvoice: jest.fn(() => Promise.resolve(new Set<string>())),
   };
 
   const serviceTariffRepositoryMock = {

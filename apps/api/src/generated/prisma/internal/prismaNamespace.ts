@@ -479,6 +479,11 @@ export const ModelName = {
   LabReferenceRange: 'LabReferenceRange',
   LabPanel: 'LabPanel',
   LabPanelMember: 'LabPanelMember',
+  LabOrderCounter: 'LabOrderCounter',
+  LabOrder: 'LabOrder',
+  LabOrderItem: 'LabOrderItem',
+  LabSpecimenCounter: 'LabSpecimenCounter',
+  LabSpecimen: 'LabSpecimen',
   Immunization: 'Immunization'
 } as const
 
@@ -495,7 +500,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientDeliveryConsent" | "documentDelivery" | "documentDeliveryLink" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorLicenseExpiryNotice" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "prescriptionItemComponent" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "vaultDocumentExpiryNotice" | "vaultDocumentShare" | "userOffboardingNotice" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit" | "documentType" | "documentTypeApprover" | "managedDocument" | "documentApprovalRequest" | "documentApprovalApprover" | "documentApprovalDecision" | "labTest" | "labReferenceRange" | "labPanel" | "labPanelMember" | "immunization"
+    modelProps: "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientDeliveryConsent" | "documentDelivery" | "documentDeliveryLink" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorLicenseExpiryNotice" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "prescriptionItemComponent" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "vaultDocumentExpiryNotice" | "vaultDocumentShare" | "userOffboardingNotice" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit" | "documentType" | "documentTypeApprover" | "managedDocument" | "documentApprovalRequest" | "documentApprovalApprover" | "documentApprovalDecision" | "labTest" | "labReferenceRange" | "labPanel" | "labPanelMember" | "labOrderCounter" | "labOrder" | "labOrderItem" | "labSpecimenCounter" | "labSpecimen" | "immunization"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -7529,6 +7534,376 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    LabOrderCounter: {
+      payload: Prisma.$LabOrderCounterPayload<ExtArgs>
+      fields: Prisma.LabOrderCounterFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.LabOrderCounterFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabOrderCounterPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.LabOrderCounterFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabOrderCounterPayload>
+        }
+        findFirst: {
+          args: Prisma.LabOrderCounterFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabOrderCounterPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.LabOrderCounterFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabOrderCounterPayload>
+        }
+        findMany: {
+          args: Prisma.LabOrderCounterFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabOrderCounterPayload>[]
+        }
+        create: {
+          args: Prisma.LabOrderCounterCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabOrderCounterPayload>
+        }
+        createMany: {
+          args: Prisma.LabOrderCounterCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.LabOrderCounterCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabOrderCounterPayload>[]
+        }
+        delete: {
+          args: Prisma.LabOrderCounterDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabOrderCounterPayload>
+        }
+        update: {
+          args: Prisma.LabOrderCounterUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabOrderCounterPayload>
+        }
+        deleteMany: {
+          args: Prisma.LabOrderCounterDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.LabOrderCounterUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.LabOrderCounterUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabOrderCounterPayload>[]
+        }
+        upsert: {
+          args: Prisma.LabOrderCounterUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabOrderCounterPayload>
+        }
+        aggregate: {
+          args: Prisma.LabOrderCounterAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateLabOrderCounter>
+        }
+        groupBy: {
+          args: Prisma.LabOrderCounterGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.LabOrderCounterGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.LabOrderCounterCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.LabOrderCounterCountAggregateOutputType> | number
+        }
+      }
+    }
+    LabOrder: {
+      payload: Prisma.$LabOrderPayload<ExtArgs>
+      fields: Prisma.LabOrderFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.LabOrderFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabOrderPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.LabOrderFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabOrderPayload>
+        }
+        findFirst: {
+          args: Prisma.LabOrderFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabOrderPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.LabOrderFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabOrderPayload>
+        }
+        findMany: {
+          args: Prisma.LabOrderFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabOrderPayload>[]
+        }
+        create: {
+          args: Prisma.LabOrderCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabOrderPayload>
+        }
+        createMany: {
+          args: Prisma.LabOrderCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.LabOrderCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabOrderPayload>[]
+        }
+        delete: {
+          args: Prisma.LabOrderDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabOrderPayload>
+        }
+        update: {
+          args: Prisma.LabOrderUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabOrderPayload>
+        }
+        deleteMany: {
+          args: Prisma.LabOrderDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.LabOrderUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.LabOrderUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabOrderPayload>[]
+        }
+        upsert: {
+          args: Prisma.LabOrderUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabOrderPayload>
+        }
+        aggregate: {
+          args: Prisma.LabOrderAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateLabOrder>
+        }
+        groupBy: {
+          args: Prisma.LabOrderGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.LabOrderGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.LabOrderCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.LabOrderCountAggregateOutputType> | number
+        }
+      }
+    }
+    LabOrderItem: {
+      payload: Prisma.$LabOrderItemPayload<ExtArgs>
+      fields: Prisma.LabOrderItemFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.LabOrderItemFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabOrderItemPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.LabOrderItemFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabOrderItemPayload>
+        }
+        findFirst: {
+          args: Prisma.LabOrderItemFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabOrderItemPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.LabOrderItemFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabOrderItemPayload>
+        }
+        findMany: {
+          args: Prisma.LabOrderItemFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabOrderItemPayload>[]
+        }
+        create: {
+          args: Prisma.LabOrderItemCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabOrderItemPayload>
+        }
+        createMany: {
+          args: Prisma.LabOrderItemCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.LabOrderItemCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabOrderItemPayload>[]
+        }
+        delete: {
+          args: Prisma.LabOrderItemDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabOrderItemPayload>
+        }
+        update: {
+          args: Prisma.LabOrderItemUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabOrderItemPayload>
+        }
+        deleteMany: {
+          args: Prisma.LabOrderItemDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.LabOrderItemUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.LabOrderItemUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabOrderItemPayload>[]
+        }
+        upsert: {
+          args: Prisma.LabOrderItemUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabOrderItemPayload>
+        }
+        aggregate: {
+          args: Prisma.LabOrderItemAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateLabOrderItem>
+        }
+        groupBy: {
+          args: Prisma.LabOrderItemGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.LabOrderItemGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.LabOrderItemCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.LabOrderItemCountAggregateOutputType> | number
+        }
+      }
+    }
+    LabSpecimenCounter: {
+      payload: Prisma.$LabSpecimenCounterPayload<ExtArgs>
+      fields: Prisma.LabSpecimenCounterFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.LabSpecimenCounterFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabSpecimenCounterPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.LabSpecimenCounterFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabSpecimenCounterPayload>
+        }
+        findFirst: {
+          args: Prisma.LabSpecimenCounterFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabSpecimenCounterPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.LabSpecimenCounterFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabSpecimenCounterPayload>
+        }
+        findMany: {
+          args: Prisma.LabSpecimenCounterFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabSpecimenCounterPayload>[]
+        }
+        create: {
+          args: Prisma.LabSpecimenCounterCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabSpecimenCounterPayload>
+        }
+        createMany: {
+          args: Prisma.LabSpecimenCounterCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.LabSpecimenCounterCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabSpecimenCounterPayload>[]
+        }
+        delete: {
+          args: Prisma.LabSpecimenCounterDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabSpecimenCounterPayload>
+        }
+        update: {
+          args: Prisma.LabSpecimenCounterUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabSpecimenCounterPayload>
+        }
+        deleteMany: {
+          args: Prisma.LabSpecimenCounterDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.LabSpecimenCounterUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.LabSpecimenCounterUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabSpecimenCounterPayload>[]
+        }
+        upsert: {
+          args: Prisma.LabSpecimenCounterUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabSpecimenCounterPayload>
+        }
+        aggregate: {
+          args: Prisma.LabSpecimenCounterAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateLabSpecimenCounter>
+        }
+        groupBy: {
+          args: Prisma.LabSpecimenCounterGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.LabSpecimenCounterGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.LabSpecimenCounterCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.LabSpecimenCounterCountAggregateOutputType> | number
+        }
+      }
+    }
+    LabSpecimen: {
+      payload: Prisma.$LabSpecimenPayload<ExtArgs>
+      fields: Prisma.LabSpecimenFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.LabSpecimenFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabSpecimenPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.LabSpecimenFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabSpecimenPayload>
+        }
+        findFirst: {
+          args: Prisma.LabSpecimenFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabSpecimenPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.LabSpecimenFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabSpecimenPayload>
+        }
+        findMany: {
+          args: Prisma.LabSpecimenFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabSpecimenPayload>[]
+        }
+        create: {
+          args: Prisma.LabSpecimenCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabSpecimenPayload>
+        }
+        createMany: {
+          args: Prisma.LabSpecimenCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.LabSpecimenCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabSpecimenPayload>[]
+        }
+        delete: {
+          args: Prisma.LabSpecimenDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabSpecimenPayload>
+        }
+        update: {
+          args: Prisma.LabSpecimenUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabSpecimenPayload>
+        }
+        deleteMany: {
+          args: Prisma.LabSpecimenDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.LabSpecimenUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.LabSpecimenUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabSpecimenPayload>[]
+        }
+        upsert: {
+          args: Prisma.LabSpecimenUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabSpecimenPayload>
+        }
+        aggregate: {
+          args: Prisma.LabSpecimenAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateLabSpecimen>
+        }
+        groupBy: {
+          args: Prisma.LabSpecimenGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.LabSpecimenGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.LabSpecimenCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.LabSpecimenCountAggregateOutputType> | number
+        }
+      }
+    }
     Immunization: {
       payload: Prisma.$ImmunizationPayload<ExtArgs>
       fields: Prisma.ImmunizationFieldRefs
@@ -9229,6 +9604,82 @@ export const LabPanelMemberScalarFieldEnum = {
 export type LabPanelMemberScalarFieldEnum = (typeof LabPanelMemberScalarFieldEnum)[keyof typeof LabPanelMemberScalarFieldEnum]
 
 
+export const LabOrderCounterScalarFieldEnum = {
+  orderDate: 'orderDate',
+  nextValue: 'nextValue',
+  updatedAt: 'updatedAt'
+} as const
+
+export type LabOrderCounterScalarFieldEnum = (typeof LabOrderCounterScalarFieldEnum)[keyof typeof LabOrderCounterScalarFieldEnum]
+
+
+export const LabOrderScalarFieldEnum = {
+  id: 'id',
+  encounterId: 'encounterId',
+  patientId: 'patientId',
+  orderedById: 'orderedById',
+  orderNumber: 'orderNumber',
+  status: 'status',
+  priority: 'priority',
+  clinicalNotes: 'clinicalNotes',
+  isFasting: 'isFasting',
+  recollectCount: 'recollectCount',
+  orderedAt: 'orderedAt',
+  cancelledAt: 'cancelledAt',
+  cancelReason: 'cancelReason',
+  releasedAt: 'releasedAt',
+  satusehatServiceRequestId: 'satusehatServiceRequestId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type LabOrderScalarFieldEnum = (typeof LabOrderScalarFieldEnum)[keyof typeof LabOrderScalarFieldEnum]
+
+
+export const LabOrderItemScalarFieldEnum = {
+  id: 'id',
+  labOrderId: 'labOrderId',
+  labTestId: 'labTestId',
+  panelId: 'panelId',
+  specimenId: 'specimenId',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type LabOrderItemScalarFieldEnum = (typeof LabOrderItemScalarFieldEnum)[keyof typeof LabOrderItemScalarFieldEnum]
+
+
+export const LabSpecimenCounterScalarFieldEnum = {
+  collectionDate: 'collectionDate',
+  nextValue: 'nextValue',
+  updatedAt: 'updatedAt'
+} as const
+
+export type LabSpecimenCounterScalarFieldEnum = (typeof LabSpecimenCounterScalarFieldEnum)[keyof typeof LabSpecimenCounterScalarFieldEnum]
+
+
+export const LabSpecimenScalarFieldEnum = {
+  id: 'id',
+  labOrderId: 'labOrderId',
+  specimenType: 'specimenType',
+  accessionNumber: 'accessionNumber',
+  collectedAt: 'collectedAt',
+  collectedById: 'collectedById',
+  receivedAt: 'receivedAt',
+  status: 'status',
+  rejectedAt: 'rejectedAt',
+  rejectReason: 'rejectReason',
+  rejectNotes: 'rejectNotes',
+  notes: 'notes',
+  satusehatSpecimenId: 'satusehatSpecimenId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type LabSpecimenScalarFieldEnum = (typeof LabSpecimenScalarFieldEnum)[keyof typeof LabSpecimenScalarFieldEnum]
+
+
 export const ImmunizationScalarFieldEnum = {
   id: 'id',
   encounterId: 'encounterId',
@@ -10405,6 +10856,76 @@ export type ListEnumLabResultTypeFieldRefInput<$PrismaModel> = FieldRefInputType
 
 
 /**
+ * Reference to a field of type 'LabOrderStatus'
+ */
+export type EnumLabOrderStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'LabOrderStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'LabOrderStatus[]'
+ */
+export type ListEnumLabOrderStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'LabOrderStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'LabOrderPriority'
+ */
+export type EnumLabOrderPriorityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'LabOrderPriority'>
+    
+
+
+/**
+ * Reference to a field of type 'LabOrderPriority[]'
+ */
+export type ListEnumLabOrderPriorityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'LabOrderPriority[]'>
+    
+
+
+/**
+ * Reference to a field of type 'LabOrderItemStatus'
+ */
+export type EnumLabOrderItemStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'LabOrderItemStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'LabOrderItemStatus[]'
+ */
+export type ListEnumLabOrderItemStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'LabOrderItemStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'LabSpecimenStatus'
+ */
+export type EnumLabSpecimenStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'LabSpecimenStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'LabSpecimenStatus[]'
+ */
+export type ListEnumLabSpecimenStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'LabSpecimenStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'LabSpecimenRejectReason'
+ */
+export type EnumLabSpecimenRejectReasonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'LabSpecimenRejectReason'>
+    
+
+
+/**
+ * Reference to a field of type 'LabSpecimenRejectReason[]'
+ */
+export type ListEnumLabSpecimenRejectReasonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'LabSpecimenRejectReason[]'>
+    
+
+
+/**
  * Reference to a field of type 'ImmunizationRoute'
  */
 export type EnumImmunizationRouteFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ImmunizationRoute'>
@@ -10650,6 +11171,11 @@ export type GlobalOmitConfig = {
   labReferenceRange?: Prisma.LabReferenceRangeOmit
   labPanel?: Prisma.LabPanelOmit
   labPanelMember?: Prisma.LabPanelMemberOmit
+  labOrderCounter?: Prisma.LabOrderCounterOmit
+  labOrder?: Prisma.LabOrderOmit
+  labOrderItem?: Prisma.LabOrderItemOmit
+  labSpecimenCounter?: Prisma.LabSpecimenCounterOmit
+  labSpecimen?: Prisma.LabSpecimenOmit
   immunization?: Prisma.ImmunizationOmit
 }
 

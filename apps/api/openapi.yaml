@@ -33836,7 +33836,10 @@ paths:
       responses:
         "200":
           description: The encounter is FINISHED and its registration COMPLETED, in one
-            transaction.
+            transaction. Lab work still in flight does not block the close —
+            results arrive after the patient has gone home — so
+            `meta.openLabOrders` names what is outstanding for the UI to warn
+            about.
           content:
             application/json:
               schema:
@@ -36350,6 +36353,1424 @@ paths:
         - bearer: []
       summary: Update a laboratory panel
       tags: *a50
+  /api/v1/encounters/{encounterId}/lab-orders:
+    post:
+      operationId: EncounterLabOrderController_createLabOrder_v1
+      parameters:
+        - name: encounterId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateLabOrderDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  panelIds:
+                    - bbbbbbbb-2222-4222-8222-bbbbbbbbbbbb
+                  testIds:
+                    - aaaaaaaa-1111-4111-8111-aaaaaaaaaaaa
+                  priority: ROUTINE
+                  clinicalNotes: Curiga anemia defisiensi besi
+                  isFasting: true
+      responses:
+        "201":
+          description: One order with its panels expanded into items. Panels are expanded
+            at order time, so a later edit to a panel never rewrites what was
+            ordered — and billing still prices the panel once. Ordering is
+            refused on an encounter that is not IN_PROGRESS, and a test already
+            live on the visit comes back as a 409 naming the order it is already
+            on.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      orderNumber:
+                        type: string
+                      encounterId:
+                        type: string
+                      patientId:
+                        type: string
+                      orderedById:
+                        type: string
+                      orderedByName:
+                        type: string
+                      status:
+                        type: string
+                      priority:
+                        type: string
+                      clinicalNotes:
+                        type: string
+                      isFasting:
+                        type: boolean
+                      recollectCount:
+                        type: integer
+                      orderedAt:
+                        type: string
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            labTestId:
+                              type: string
+                            code:
+                              type: string
+                            name:
+                              type: string
+                            specimenType:
+                              type: string
+                            resultType:
+                              type: string
+                            status:
+                              type: string
+                            panelId:
+                              type: string
+                            panelName:
+                              type: string
+                          required:
+                            - id
+                            - labTestId
+                            - code
+                            - name
+                            - specimenType
+                            - resultType
+                            - status
+                            - panelId
+                            - panelName
+                      specimens:
+                        type: array
+                        items: {}
+                    required:
+                      - id
+                      - orderNumber
+                      - encounterId
+                      - patientId
+                      - orderedById
+                      - orderedByName
+                      - status
+                      - priority
+                      - clinicalNotes
+                      - isFasting
+                      - recollectCount
+                      - orderedAt
+                      - items
+                      - specimens
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: eeeeeeee-5555-4555-8555-eeeeeeeeeeee
+                    orderNumber: LAB/20260720/0001
+                    encounterId: 11111111-7777-4777-8777-111111111111
+                    patientId: 22222222-8888-4888-8888-222222222222
+                    orderedById: 33333333-9999-4999-8999-333333333333
+                    orderedByName: dr. Andi Wijaya
+                    status: ORDERED
+                    priority: ROUTINE
+                    clinicalNotes: Curiga anemia defisiensi besi
+                    isFasting: false
+                    recollectCount: 0
+                    orderedAt: 2026-07-20T08:00:00.000Z
+                    items:
+                      - id: 44444444-aaaa-4aaa-8aaa-444444444444
+                        labTestId: aaaaaaaa-1111-4111-8111-aaaaaaaaaaaa
+                        code: HB
+                        name: Hemoglobin
+                        specimenType: WHOLE_BLOOD
+                        resultType: NUMERIC
+                        status: PENDING
+                        panelId: bbbbbbbb-2222-4222-8222-bbbbbbbbbbbb
+                        panelName: Darah Rutin
+                    specimens: []
+                  message: Lab order created
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Encounter not found, or a named test or panel is not orderable.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Encounter not found, or a named test or panel is not orderable.
+      security:
+        - bearer: []
+      summary: Order laboratory tests on an encounter
+      tags: &a51
+        - Laboratory Orders
+    get:
+      operationId: EncounterLabOrderController_listEncounterLabOrders_v1
+      parameters:
+        - name: encounterId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Every order raised on this visit, oldest first, with items and
+            specimens. Under OWN scope the attending practitioner and the
+            patient may read them.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        orderNumber:
+                          type: string
+                        encounterId:
+                          type: string
+                        patientId:
+                          type: string
+                        orderedById:
+                          type: string
+                        orderedByName:
+                          type: string
+                        status:
+                          type: string
+                        priority:
+                          type: string
+                        clinicalNotes:
+                          type: string
+                        isFasting:
+                          type: boolean
+                        recollectCount:
+                          type: integer
+                        orderedAt:
+                          type: string
+                        items:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                              labTestId:
+                                type: string
+                              code:
+                                type: string
+                              name:
+                                type: string
+                              specimenType:
+                                type: string
+                              resultType:
+                                type: string
+                              status:
+                                type: string
+                              panelId:
+                                type: string
+                              panelName:
+                                type: string
+                            required:
+                              - id
+                              - labTestId
+                              - code
+                              - name
+                              - specimenType
+                              - resultType
+                              - status
+                              - panelId
+                              - panelName
+                        specimens:
+                          type: array
+                          items: {}
+                      required:
+                        - id
+                        - orderNumber
+                        - encounterId
+                        - patientId
+                        - orderedById
+                        - orderedByName
+                        - status
+                        - priority
+                        - clinicalNotes
+                        - isFasting
+                        - recollectCount
+                        - orderedAt
+                        - items
+                        - specimens
+                required:
+                  - data
+                example:
+                  data:
+                    - id: eeeeeeee-5555-4555-8555-eeeeeeeeeeee
+                      orderNumber: LAB/20260720/0001
+                      encounterId: 11111111-7777-4777-8777-111111111111
+                      patientId: 22222222-8888-4888-8888-222222222222
+                      orderedById: 33333333-9999-4999-8999-333333333333
+                      orderedByName: dr. Andi Wijaya
+                      status: ORDERED
+                      priority: ROUTINE
+                      clinicalNotes: Curiga anemia defisiensi besi
+                      isFasting: false
+                      recollectCount: 0
+                      orderedAt: 2026-07-20T08:00:00.000Z
+                      items:
+                        - id: 44444444-aaaa-4aaa-8aaa-444444444444
+                          labTestId: aaaaaaaa-1111-4111-8111-aaaaaaaaaaaa
+                          code: HB
+                          name: Hemoglobin
+                          specimenType: WHOLE_BLOOD
+                          resultType: NUMERIC
+                          status: PENDING
+                          panelId: bbbbbbbb-2222-4222-8222-bbbbbbbbbbbb
+                          panelName: Darah Rutin
+                      specimens: []
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Encounter not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Encounter not found.
+      security:
+        - bearer: []
+      summary: List an encounter’s laboratory orders
+      tags: *a51
+  /api/v1/lab-orders:
+    get:
+      operationId: LabOrderController_listLabOrders_v1
+      parameters:
+        - name: status
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - ORDERED
+              - COLLECTED
+              - IN_PROGRESS
+              - RESULTED
+              - RELEASED
+              - CANCELLED
+        - name: patientId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: from
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: to
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            exclusiveMinimum: false
+            type: integer
+        - name: limit
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            exclusiveMaximum: false
+            exclusiveMinimum: false
+            type: integer
+      responses:
+        "200":
+          description: Newest first, filtered by status, patient and clinic-day range.
+            Behind `lab-order.read:any` — a doctor’s own orders come back on the
+            encounter route.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        orderNumber:
+                          type: string
+                        encounterId:
+                          type: string
+                        patientId:
+                          type: string
+                        orderedById:
+                          type: string
+                        orderedByName:
+                          type: string
+                        status:
+                          type: string
+                        priority:
+                          type: string
+                        clinicalNotes:
+                          type: string
+                        isFasting:
+                          type: boolean
+                        recollectCount:
+                          type: integer
+                        orderedAt:
+                          type: string
+                        itemCount:
+                          type: integer
+                        patientName:
+                          type: string
+                        patientMrn:
+                          type: string
+                      required:
+                        - id
+                        - orderNumber
+                        - encounterId
+                        - patientId
+                        - orderedById
+                        - orderedByName
+                        - status
+                        - priority
+                        - clinicalNotes
+                        - isFasting
+                        - recollectCount
+                        - orderedAt
+                        - itemCount
+                        - patientName
+                        - patientMrn
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                    required:
+                      - page
+                      - limit
+                      - total
+                required:
+                  - data
+                  - meta
+                example:
+                  data:
+                    - id: eeeeeeee-5555-4555-8555-eeeeeeeeeeee
+                      orderNumber: LAB/20260720/0001
+                      encounterId: 11111111-7777-4777-8777-111111111111
+                      patientId: 22222222-8888-4888-8888-222222222222
+                      orderedById: 33333333-9999-4999-8999-333333333333
+                      orderedByName: dr. Andi Wijaya
+                      status: ORDERED
+                      priority: ROUTINE
+                      clinicalNotes: Curiga anemia defisiensi besi
+                      isFasting: false
+                      recollectCount: 0
+                      orderedAt: 2026-07-20T08:00:00.000Z
+                      itemCount: 6
+                      patientName: Siti Rahayu
+                      patientMrn: MRN00000123
+                  meta:
+                    page: 1
+                    limit: 20
+                    total: 1
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: List laboratory orders
+      tags: &a52
+        - Laboratory Orders
+  /api/v1/lab-orders/{id}:
+    get:
+      operationId: LabOrderController_getLabOrderById_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The order with its expanded items and every specimen drawn for it.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      orderNumber:
+                        type: string
+                      encounterId:
+                        type: string
+                      patientId:
+                        type: string
+                      orderedById:
+                        type: string
+                      orderedByName:
+                        type: string
+                      status:
+                        type: string
+                      priority:
+                        type: string
+                      clinicalNotes:
+                        type: string
+                      isFasting:
+                        type: boolean
+                      recollectCount:
+                        type: integer
+                      orderedAt:
+                        type: string
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            labTestId:
+                              type: string
+                            code:
+                              type: string
+                            name:
+                              type: string
+                            specimenType:
+                              type: string
+                            resultType:
+                              type: string
+                            status:
+                              type: string
+                            panelId:
+                              type: string
+                            panelName:
+                              type: string
+                          required:
+                            - id
+                            - labTestId
+                            - code
+                            - name
+                            - specimenType
+                            - resultType
+                            - status
+                            - panelId
+                            - panelName
+                      specimens:
+                        type: array
+                        items: {}
+                    required:
+                      - id
+                      - orderNumber
+                      - encounterId
+                      - patientId
+                      - orderedById
+                      - orderedByName
+                      - status
+                      - priority
+                      - clinicalNotes
+                      - isFasting
+                      - recollectCount
+                      - orderedAt
+                      - items
+                      - specimens
+                required:
+                  - data
+                example:
+                  data:
+                    id: eeeeeeee-5555-4555-8555-eeeeeeeeeeee
+                    orderNumber: LAB/20260720/0001
+                    encounterId: 11111111-7777-4777-8777-111111111111
+                    patientId: 22222222-8888-4888-8888-222222222222
+                    orderedById: 33333333-9999-4999-8999-333333333333
+                    orderedByName: dr. Andi Wijaya
+                    status: ORDERED
+                    priority: ROUTINE
+                    clinicalNotes: Curiga anemia defisiensi besi
+                    isFasting: false
+                    recollectCount: 0
+                    orderedAt: 2026-07-20T08:00:00.000Z
+                    items:
+                      - id: 44444444-aaaa-4aaa-8aaa-444444444444
+                        labTestId: aaaaaaaa-1111-4111-8111-aaaaaaaaaaaa
+                        code: HB
+                        name: Hemoglobin
+                        specimenType: WHOLE_BLOOD
+                        resultType: NUMERIC
+                        status: PENDING
+                        panelId: bbbbbbbb-2222-4222-8222-bbbbbbbbbbbb
+                        panelName: Darah Rutin
+                    specimens: []
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Lab order not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Lab order not found.
+      security:
+        - bearer: []
+      summary: Read one laboratory order
+      tags: *a52
+  /api/v1/lab-orders/{id}/cancel:
+    post:
+      operationId: LabOrderController_cancelLabOrder_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CancelLabOrderDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  reason: Pasien menolak pengambilan darah
+      responses:
+        "200":
+          description: "The order is withdrawn with its reason and its pending items go
+            with it. Only ORDERED and COLLECTED orders can be cancelled — once a
+            result exists the order is history. `meta.requiresManualCredit` is
+            true when the visit’s invoice has already been issued: an issued
+            bill is corrected by voiding and reissuing, which is not the
+            laboratory’s to do."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      orderNumber:
+                        type: string
+                      encounterId:
+                        type: string
+                      patientId:
+                        type: string
+                      orderedById:
+                        type: string
+                      orderedByName:
+                        type: string
+                      status:
+                        type: string
+                      priority:
+                        type: string
+                      clinicalNotes:
+                        type: string
+                      isFasting:
+                        type: boolean
+                      recollectCount:
+                        type: integer
+                      orderedAt:
+                        type: string
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            labTestId:
+                              type: string
+                            code:
+                              type: string
+                            name:
+                              type: string
+                            specimenType:
+                              type: string
+                            resultType:
+                              type: string
+                            status:
+                              type: string
+                            panelId:
+                              type: string
+                            panelName:
+                              type: string
+                          required:
+                            - id
+                            - labTestId
+                            - code
+                            - name
+                            - specimenType
+                            - resultType
+                            - status
+                            - panelId
+                            - panelName
+                      specimens:
+                        type: array
+                        items: {}
+                    required:
+                      - id
+                      - orderNumber
+                      - encounterId
+                      - patientId
+                      - orderedById
+                      - orderedByName
+                      - status
+                      - priority
+                      - clinicalNotes
+                      - isFasting
+                      - recollectCount
+                      - orderedAt
+                      - items
+                      - specimens
+                  meta:
+                    type: object
+                    properties:
+                      requiresManualCredit:
+                        type: boolean
+                    required:
+                      - requiresManualCredit
+                  message:
+                    type: string
+                required:
+                  - data
+                  - meta
+                  - message
+                example:
+                  data:
+                    id: eeeeeeee-5555-4555-8555-eeeeeeeeeeee
+                    orderNumber: LAB/20260720/0001
+                    encounterId: 11111111-7777-4777-8777-111111111111
+                    patientId: 22222222-8888-4888-8888-222222222222
+                    orderedById: 33333333-9999-4999-8999-333333333333
+                    orderedByName: dr. Andi Wijaya
+                    status: CANCELLED
+                    priority: ROUTINE
+                    clinicalNotes: Curiga anemia defisiensi besi
+                    isFasting: false
+                    recollectCount: 0
+                    orderedAt: 2026-07-20T08:00:00.000Z
+                    items:
+                      - id: 44444444-aaaa-4aaa-8aaa-444444444444
+                        labTestId: aaaaaaaa-1111-4111-8111-aaaaaaaaaaaa
+                        code: HB
+                        name: Hemoglobin
+                        specimenType: WHOLE_BLOOD
+                        resultType: NUMERIC
+                        status: PENDING
+                        panelId: bbbbbbbb-2222-4222-8222-bbbbbbbbbbbb
+                        panelName: Darah Rutin
+                    specimens: []
+                  meta:
+                    requiresManualCredit: false
+                  message: Lab order cancelled
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Lab order not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Lab order not found.
+      security:
+        - bearer: []
+      summary: Cancel a laboratory order
+      tags: *a52
+  /api/v1/lab-orders/{id}/collect:
+    post:
+      operationId: LabSpecimenController_collectLabSpecimens_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CollectLabSpecimensDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  collectedAt: 2026-07-20T08:00:00.000Z
+                  notes: Vena cubiti kanan
+      responses:
+        "201":
+          description: One specimen per distinct specimen type among the items still
+            waiting for one — a single EDTA tube serves the whole darah rutin —
+            each with its own accession number, and the order moves to
+            COLLECTED. With `LAB_REQUIRE_PAYMENT_BEFORE_COLLECTION` on, an
+            unsettled umum visit is refused with `LAB_PAYMENT_REQUIRED`; BPJS
+            payers collect freely.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        labOrderId:
+                          type: string
+                        specimenType:
+                          type: string
+                        accessionNumber:
+                          type: string
+                        collectedAt:
+                          type: string
+                        collectedById:
+                          type: string
+                        status:
+                          type: string
+                      required:
+                        - id
+                        - labOrderId
+                        - specimenType
+                        - accessionNumber
+                        - collectedAt
+                        - collectedById
+                        - status
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    - id: ffffffff-6666-4666-8666-ffffffffffff
+                      labOrderId: eeeeeeee-5555-4555-8555-eeeeeeeeeeee
+                      specimenType: WHOLE_BLOOD
+                      accessionNumber: SPC/20260720/0001
+                      collectedAt: 2026-07-20T08:00:00.000Z
+                      collectedById: 55555555-bbbb-4bbb-8bbb-555555555555
+                      status: COLLECTED
+                  message: Specimens collected
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Lab order not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Lab order not found.
+      security:
+        - bearer: []
+      summary: Collect the specimens an order needs
+      tags: &a53
+        - Laboratory Specimens
+  /api/v1/lab-specimens/{id}/receive:
+    post:
+      operationId: LabSpecimenController_receiveLabSpecimen_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Optional step: a clinic that draws and analyses in one room never
+            calls it, and the order moves on regardless."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      labOrderId:
+                        type: string
+                      specimenType:
+                        type: string
+                      accessionNumber:
+                        type: string
+                      collectedAt:
+                        type: string
+                      collectedById:
+                        type: string
+                      status:
+                        type: string
+                    required:
+                      - id
+                      - labOrderId
+                      - specimenType
+                      - accessionNumber
+                      - collectedAt
+                      - collectedById
+                      - status
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: ffffffff-6666-4666-8666-ffffffffffff
+                    labOrderId: eeeeeeee-5555-4555-8555-eeeeeeeeeeee
+                    specimenType: WHOLE_BLOOD
+                    accessionNumber: SPC/20260720/0001
+                    collectedAt: 2026-07-20T08:00:00.000Z
+                    collectedById: 55555555-bbbb-4bbb-8bbb-555555555555
+                    status: RECEIVED
+                  message: Specimen received
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Lab specimen not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Lab specimen not found.
+      security:
+        - bearer: []
+      summary: Mark a specimen as arrived in the lab
+      tags: *a53
+  /api/v1/lab-specimens/{id}/reject:
+    post:
+      operationId: LabSpecimenController_rejectLabSpecimen_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RejectLabSpecimenDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  reason: HEMOLYSED
+                  notes: Sampel lisis, ambil ulang
+      responses:
+        "200":
+          description: "The tube is discarded with its reason, its items return to
+            PENDING, and the order reappears in *to-collect* with the recollect
+            counter bumped. The rejected row is kept: the patient sat through
+            that needle."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      labOrderId:
+                        type: string
+                      specimenType:
+                        type: string
+                      accessionNumber:
+                        type: string
+                      collectedAt:
+                        type: string
+                      collectedById:
+                        type: string
+                      status:
+                        type: string
+                    required:
+                      - id
+                      - labOrderId
+                      - specimenType
+                      - accessionNumber
+                      - collectedAt
+                      - collectedById
+                      - status
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: ffffffff-6666-4666-8666-ffffffffffff
+                    labOrderId: eeeeeeee-5555-4555-8555-eeeeeeeeeeee
+                    specimenType: WHOLE_BLOOD
+                    accessionNumber: SPC/20260720/0001
+                    collectedAt: 2026-07-20T08:00:00.000Z
+                    collectedById: 55555555-bbbb-4bbb-8bbb-555555555555
+                    status: REJECTED
+                  message: Specimen rejected
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Lab specimen not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Lab specimen not found.
+      security:
+        - bearer: []
+      summary: Reject a specimen and ask for a fresh draw
+      tags: *a53
+  /api/v1/lab-specimens/{id}/label:
+    get:
+      operationId: LabSpecimenController_getSpecimenLabel_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Values, never layout: printing is a browser print of a 50×25 mm
+            CSS page (P18-T08) and no printer is integrated."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      accessionNumber:
+                        type: string
+                      orderNumber:
+                        type: string
+                      specimenType:
+                        type: string
+                      collectedAt:
+                        type: string
+                      patient:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          fullName:
+                            type: string
+                          mrn:
+                            type: string
+                          dateOfBirth:
+                            type: string
+                          sex:
+                            type: string
+                          ageYears:
+                            type: integer
+                        required:
+                          - id
+                          - fullName
+                          - mrn
+                          - dateOfBirth
+                          - sex
+                          - ageYears
+                    required:
+                      - accessionNumber
+                      - orderNumber
+                      - specimenType
+                      - collectedAt
+                      - patient
+                required:
+                  - data
+                example:
+                  data:
+                    accessionNumber: SPC/20260720/0001
+                    orderNumber: LAB/20260720/0001
+                    specimenType: WHOLE_BLOOD
+                    collectedAt: 2026-07-20T08:00:00.000Z
+                    patient:
+                      id: 22222222-8888-4888-8888-222222222222
+                      fullName: Siti Rahayu
+                      mrn: MRN00000123
+                      dateOfBirth: 1990-04-12
+                      sex: FEMALE
+                      ageYears: 36
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Lab specimen not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Lab specimen not found.
+      security:
+        - bearer: []
+      summary: Read a specimen label payload
+      tags: *a53
+  /api/v1/lab-worklist:
+    get:
+      operationId: LabWorklistController_listWorklist_v1
+      parameters:
+        - name: bucket
+          required: true
+          in: query
+          schema:
+            type: string
+            enum:
+              - to-collect
+              - in-progress
+              - to-validate
+              - released
+        - name: date
+          required: false
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Cito first, then oldest first. Each row carries the patient
+            identity needed to match a tube to a person and the order’s clinical
+            notes — and nothing else clinical: a worklist is not a route into
+            the medical record."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        orderNumber:
+                          type: string
+                        status:
+                          type: string
+                        priority:
+                          type: string
+                        isFasting:
+                          type: boolean
+                        recollectCount:
+                          type: integer
+                        orderedAt:
+                          type: string
+                        clinicalNotes:
+                          type: string
+                        patient:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            fullName:
+                              type: string
+                            mrn:
+                              type: string
+                            dateOfBirth:
+                              type: string
+                            sex:
+                              type: string
+                            ageYears:
+                              type: integer
+                          required:
+                            - id
+                            - fullName
+                            - mrn
+                            - dateOfBirth
+                            - sex
+                            - ageYears
+                        itemCount:
+                          type: integer
+                        specimens:
+                          type: array
+                          items: {}
+                        isAwaitingPayment:
+                          type: boolean
+                      required:
+                        - id
+                        - orderNumber
+                        - status
+                        - priority
+                        - isFasting
+                        - recollectCount
+                        - orderedAt
+                        - clinicalNotes
+                        - patient
+                        - itemCount
+                        - specimens
+                        - isAwaitingPayment
+                required:
+                  - data
+                example:
+                  data:
+                    - id: eeeeeeee-5555-4555-8555-eeeeeeeeeeee
+                      orderNumber: LAB/20260720/0001
+                      status: ORDERED
+                      priority: URGENT
+                      isFasting: true
+                      recollectCount: 0
+                      orderedAt: 2026-07-20T08:00:00.000Z
+                      clinicalNotes: Curiga anemia defisiensi besi
+                      patient:
+                        id: 22222222-8888-4888-8888-222222222222
+                        fullName: Siti Rahayu
+                        mrn: MRN00000123
+                        dateOfBirth: 1990-04-12
+                        sex: FEMALE
+                        ageYears: 36
+                      itemCount: 6
+                      specimens: []
+                      isAwaitingPayment: false
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: List the laboratory worklist
+      tags:
+        - Laboratory Orders
   /api/v1/satusehat/patients/{patientId}/link:
     post:
       operationId: SatusehatLinkController_linkPatient_v1
@@ -36419,7 +37840,7 @@ paths:
       security:
         - bearer: []
       summary: Link a patient to their SATUSEHAT IHS number
-      tags: &a51
+      tags: &a54
         - SATUSEHAT
   /api/v1/satusehat/doctors/{doctorId}/link:
     post:
@@ -36490,7 +37911,7 @@ paths:
       security:
         - bearer: []
       summary: Link a doctor to their SATUSEHAT IHS practitioner number
-      tags: *a51
+      tags: *a54
   /api/v1/satusehat/submissions:
     get:
       operationId: SatusehatSubmissionController_listSubmissions_v1
@@ -36631,7 +38052,7 @@ paths:
       security:
         - bearer: []
       summary: List SATUSEHAT submission outbox entries
-      tags: &a52
+      tags: &a55
         - SATUSEHAT
   /api/v1/satusehat/submissions/{id}/retry:
     post:
@@ -36740,7 +38161,7 @@ paths:
       security:
         - bearer: []
       summary: Retry a failed SATUSEHAT submission
-      tags: *a52
+      tags: *a55
   /api/v1/bpjs/config:
     get:
       operationId: BpjsPcareConfigController_getConfig_v1
@@ -36854,7 +38275,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS PCare bridging configuration
-      tags: &a53
+      tags: &a56
         - BPJS PCare
     put:
       operationId: BpjsPcareConfigController_upsertConfig_v1
@@ -36992,7 +38413,7 @@ paths:
       security:
         - bearer: []
       summary: Create or replace the BPJS PCare bridging configuration
-      tags: *a53
+      tags: *a56
     delete:
       operationId: BpjsPcareConfigController_deleteConfig_v1
       parameters: []
@@ -37051,7 +38472,7 @@ paths:
       security:
         - bearer: []
       summary: Delete the BPJS PCare bridging configuration
-      tags: *a53
+      tags: *a56
   /api/v1/bpjs/config/test-connection:
     post:
       operationId: BpjsPcareConfigController_testConnection_v1
@@ -37117,7 +38538,7 @@ paths:
       security:
         - bearer: []
       summary: Test the stored BPJS PCare credentials
-      tags: *a53
+      tags: *a56
   /api/v1/bpjs/reference/sync:
     post:
       operationId: BpjsReferenceController_syncCatalogs_v1
@@ -37205,7 +38626,7 @@ paths:
       security:
         - bearer: []
       summary: Sync the enumerable BPJS PCare reference catalogs
-      tags: &a54
+      tags: &a57
         - BPJS PCare
   /api/v1/bpjs/reference/status:
     get:
@@ -37272,7 +38693,7 @@ paths:
       security:
         - bearer: []
       summary: Read per-catalog BPJS reference sync status
-      tags: *a54
+      tags: *a57
   /api/v1/bpjs/reference/{catalog}:
     get:
       operationId: BpjsReferenceController_searchCatalog_v1
@@ -37366,7 +38787,7 @@ paths:
       security:
         - bearer: []
       summary: Search a synced BPJS reference catalog locally
-      tags: *a54
+      tags: *a57
   /api/v1/bpjs/reference/{catalog}/search:
     post:
       operationId: BpjsReferenceController_searchCatalogRemote_v1
@@ -37472,7 +38893,7 @@ paths:
       security:
         - bearer: []
       summary: Search a keyword-only BPJS catalog live and cache the results
-      tags: *a54
+      tags: *a57
   /api/v1/bpjs/mappings:
     get:
       operationId: BpjsMappingController_getOverview_v1
@@ -37560,7 +38981,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS mapping overview
-      tags: &a55
+      tags: &a58
         - BPJS PCare
   /api/v1/bpjs/mappings/doctors/{doctorId}:
     put:
@@ -37654,7 +39075,7 @@ paths:
       security:
         - bearer: []
       summary: Set or clear a doctor’s BPJS kdDokter mapping
-      tags: *a55
+      tags: *a58
   /api/v1/bpjs/mappings/specialties/{specialtyId}:
     put:
       operationId: BpjsMappingController_setSpecialtyMapping_v1
@@ -37743,7 +39164,7 @@ paths:
       security:
         - bearer: []
       summary: Set or clear a specialty’s BPJS kdPoli mapping
-      tags: *a55
+      tags: *a58
   /api/v1/bpjs/mappings/medications/{medicationId}:
     put:
       operationId: BpjsMappingController_setMedicationMapping_v1
@@ -37837,7 +39258,7 @@ paths:
       security:
         - bearer: []
       summary: Link or unlink a medication’s DPHO code
-      tags: *a55
+      tags: *a58
   /api/v1/bpjs/eligibility/patients/{patientId}/check:
     post:
       operationId: BpjsEligibilityController_checkEligibility_v1
@@ -38137,7 +39558,7 @@ paths:
       security:
         - bearer: []
       summary: List BPJS PCare submission outbox entries
-      tags: &a56
+      tags: &a59
         - BPJS PCare
   /api/v1/bpjs/submissions/{id}/retry:
     post:
@@ -38246,7 +39667,7 @@ paths:
       security:
         - bearer: []
       summary: Retry a failed BPJS PCare submission
-      tags: *a56
+      tags: *a59
   /api/v1/bpjs/reports/monthly:
     get:
       operationId: BpjsReportController_getMonthlyReport_v1
@@ -38493,7 +39914,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS Antrean Online bridging configuration
-      tags: &a57
+      tags: &a60
         - BPJS Antrean
     put:
       operationId: BpjsAntreanConfigController_upsertConfig_v1
@@ -38634,7 +40055,7 @@ paths:
       security:
         - bearer: []
       summary: Create or replace the BPJS Antrean Online bridging configuration
-      tags: *a57
+      tags: *a60
     delete:
       operationId: BpjsAntreanConfigController_deleteConfig_v1
       parameters: []
@@ -38693,7 +40114,7 @@ paths:
       security:
         - bearer: []
       summary: Delete the BPJS Antrean Online bridging configuration
-      tags: *a57
+      tags: *a60
   /api/v1/bpjs/antrean/config/test-connection:
     post:
       operationId: BpjsAntreanConfigController_testConnection_v1
@@ -38759,7 +40180,7 @@ paths:
       security:
         - bearer: []
       summary: Test the stored BPJS Antrean credentials
-      tags: *a57
+      tags: *a60
   /api/v1/bpjs/antrean/inbound-readiness:
     get:
       operationId: BpjsAntreanConfigController_getInboundReadiness_v1
@@ -38829,7 +40250,7 @@ paths:
       security:
         - bearer: []
       summary: Report whether the inbound Antrean web services can serve BPJS
-      tags: *a57
+      tags: *a60
   /api/v1/bpjs/antrean/hfis-reconciliation:
     get:
       operationId: BpjsAntreanConfigController_getHfisReconciliation_v1
@@ -38931,7 +40352,7 @@ paths:
       security:
         - bearer: []
       summary: Compare HFIS against HMS and report the disagreements
-      tags: *a57
+      tags: *a60
   /api/v1/admin/features:
     get:
       operationId: FeatureAdminController_getEntitlements_v1
@@ -39010,7 +40431,7 @@ paths:
       security:
         - bearer: []
       summary: List every feature and whether this client has it
-      tags: &a58
+      tags: &a61
         - Feature Entitlements
   /api/v1/admin/features/{key}:
     put:
@@ -39127,7 +40548,7 @@ paths:
       security:
         - bearer: []
       summary: Switch a feature on or off for this client
-      tags: *a58
+      tags: *a61
   /api/v1/features/availability:
     get:
       operationId: FeatureAvailabilityController_getAvailability_v1
@@ -39250,7 +40671,7 @@ paths:
       security:
         - bearer: []
       summary: List active roles
-      tags: &a59
+      tags: &a62
         - RBAC
     post:
       operationId: RbacController_createRole_v1
@@ -39337,7 +40758,7 @@ paths:
       security:
         - bearer: []
       summary: Create a custom role
-      tags: *a59
+      tags: *a62
   /api/v1/rbac/permissions:
     get:
       operationId: RbacController_getPermissionCatalog_v1
@@ -39417,7 +40838,7 @@ paths:
       security:
         - bearer: []
       summary: List the permission catalog
-      tags: *a59
+      tags: *a62
   /api/v1/rbac/roles/{id}:
     get:
       operationId: RbacController_getRoleById_v1
@@ -39536,7 +40957,7 @@ paths:
       security:
         - bearer: []
       summary: Get a role with its permissions and member count
-      tags: *a59
+      tags: *a62
     patch:
       operationId: RbacController_updateRole_v1
       parameters:
@@ -39635,7 +41056,7 @@ paths:
       security:
         - bearer: []
       summary: Update a role name or description
-      tags: *a59
+      tags: *a62
     delete:
       operationId: RbacController_deleteRole_v1
       parameters:
@@ -39711,7 +41132,7 @@ paths:
       security:
         - bearer: []
       summary: Soft-delete a role
-      tags: *a59
+      tags: *a62
   /api/v1/rbac/roles/{id}/permissions:
     put:
       operationId: RbacController_setRolePermissions_v1
@@ -39857,7 +41278,7 @@ paths:
       security:
         - bearer: []
       summary: Replace the permission set attached to a role
-      tags: *a59
+      tags: *a62
   /api/v1/rbac/assign-role:
     post:
       operationId: RbacController_assignRole_v1
@@ -39949,7 +41370,7 @@ paths:
       security:
         - bearer: []
       summary: Assign a role to a user
-      tags: *a59
+      tags: *a62
   /api/v1/rbac/unassign-role:
     post:
       operationId: RbacController_unassignRole_v1
@@ -40041,7 +41462,7 @@ paths:
       security:
         - bearer: []
       summary: Unassign a role from a user
-      tags: *a59
+      tags: *a62
   /api/v1/health:
     get:
       operationId: HealthController_getHealth_v1
@@ -43454,6 +44875,69 @@ components:
           items:
             type: string
             format: uuid
+    CreateLabOrderDto:
+      type: object
+      properties:
+        testIds:
+          type: array
+          maxItems: 50
+          items:
+            type: string
+            format: uuid
+        panelIds:
+          type: array
+          maxItems: 50
+          items:
+            type: string
+            format: uuid
+        priority:
+          type: string
+          enum:
+            - ROUTINE
+            - URGENT
+        clinicalNotes:
+          type: string
+          minLength: 1
+          maxLength: 1000
+        isFasting:
+          type: boolean
+    CancelLabOrderDto:
+      type: object
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 1000
+      required:
+        - reason
+    CollectLabSpecimensDto:
+      type: object
+      properties:
+        collectedAt:
+          type: string
+          format: date-time
+        notes:
+          type: string
+          minLength: 1
+          maxLength: 1000
+    RejectLabSpecimenDto:
+      type: object
+      properties:
+        reason:
+          type: string
+          enum:
+            - HEMOLYSED
+            - INSUFFICIENT
+            - CLOTTED
+            - MISLABELLED
+            - CONTAMINATED
+            - OTHER
+        notes:
+          type: string
+          minLength: 1
+          maxLength: 1000
+      required:
+        - reason
     UpsertBpjsPcareConfigDto:
       type: object
       properties:

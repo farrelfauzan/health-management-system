@@ -146,6 +146,11 @@ export const ModelName = {
   LabReferenceRange: 'LabReferenceRange',
   LabPanel: 'LabPanel',
   LabPanelMember: 'LabPanelMember',
+  LabOrderCounter: 'LabOrderCounter',
+  LabOrder: 'LabOrder',
+  LabOrderItem: 'LabOrderItem',
+  LabSpecimenCounter: 'LabSpecimenCounter',
+  LabSpecimen: 'LabSpecimen',
   Immunization: 'Immunization'
 } as const
 
@@ -1750,6 +1755,82 @@ export const LabPanelMemberScalarFieldEnum = {
 } as const
 
 export type LabPanelMemberScalarFieldEnum = (typeof LabPanelMemberScalarFieldEnum)[keyof typeof LabPanelMemberScalarFieldEnum]
+
+
+export const LabOrderCounterScalarFieldEnum = {
+  orderDate: 'orderDate',
+  nextValue: 'nextValue',
+  updatedAt: 'updatedAt'
+} as const
+
+export type LabOrderCounterScalarFieldEnum = (typeof LabOrderCounterScalarFieldEnum)[keyof typeof LabOrderCounterScalarFieldEnum]
+
+
+export const LabOrderScalarFieldEnum = {
+  id: 'id',
+  encounterId: 'encounterId',
+  patientId: 'patientId',
+  orderedById: 'orderedById',
+  orderNumber: 'orderNumber',
+  status: 'status',
+  priority: 'priority',
+  clinicalNotes: 'clinicalNotes',
+  isFasting: 'isFasting',
+  recollectCount: 'recollectCount',
+  orderedAt: 'orderedAt',
+  cancelledAt: 'cancelledAt',
+  cancelReason: 'cancelReason',
+  releasedAt: 'releasedAt',
+  satusehatServiceRequestId: 'satusehatServiceRequestId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type LabOrderScalarFieldEnum = (typeof LabOrderScalarFieldEnum)[keyof typeof LabOrderScalarFieldEnum]
+
+
+export const LabOrderItemScalarFieldEnum = {
+  id: 'id',
+  labOrderId: 'labOrderId',
+  labTestId: 'labTestId',
+  panelId: 'panelId',
+  specimenId: 'specimenId',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type LabOrderItemScalarFieldEnum = (typeof LabOrderItemScalarFieldEnum)[keyof typeof LabOrderItemScalarFieldEnum]
+
+
+export const LabSpecimenCounterScalarFieldEnum = {
+  collectionDate: 'collectionDate',
+  nextValue: 'nextValue',
+  updatedAt: 'updatedAt'
+} as const
+
+export type LabSpecimenCounterScalarFieldEnum = (typeof LabSpecimenCounterScalarFieldEnum)[keyof typeof LabSpecimenCounterScalarFieldEnum]
+
+
+export const LabSpecimenScalarFieldEnum = {
+  id: 'id',
+  labOrderId: 'labOrderId',
+  specimenType: 'specimenType',
+  accessionNumber: 'accessionNumber',
+  collectedAt: 'collectedAt',
+  collectedById: 'collectedById',
+  receivedAt: 'receivedAt',
+  status: 'status',
+  rejectedAt: 'rejectedAt',
+  rejectReason: 'rejectReason',
+  rejectNotes: 'rejectNotes',
+  notes: 'notes',
+  satusehatSpecimenId: 'satusehatSpecimenId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type LabSpecimenScalarFieldEnum = (typeof LabSpecimenScalarFieldEnum)[keyof typeof LabSpecimenScalarFieldEnum]
 
 
 export const ImmunizationScalarFieldEnum = {

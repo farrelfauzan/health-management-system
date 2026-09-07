@@ -1,7 +1,9 @@
 import {
   CreateLabPanelInput,
   CreateLabTestInput,
+  LabPanelRecord,
   LabPanelView,
+  LabTestRecord,
   LabTestView,
   ListLabPanelsQuery,
   ListLabTestsQuery,
@@ -110,6 +112,19 @@ export class LabCatalogService {
     }
     const updated = await this.labCatalogRepository.updateLabPanel({ id, ...payload });
     return this.labCatalogMapper.toLabPanelView(updated);
+  }
+
+  /**
+   * The catalog rows an order names, for `LabOrderService` (P18-T02). Active
+   * rows only: a deactivated test stays in the catalog for the results already
+   * entered against it, and is not orderable again.
+   */
+  async findOrderableLabTests(ids: readonly string[]): Promise<LabTestRecord[]> {
+    return this.labCatalogRepository.findActiveLabTestsByIds(ids);
+  }
+
+  async findOrderableLabPanels(ids: readonly string[]): Promise<LabPanelRecord[]> {
+    return this.labCatalogRepository.findActiveLabPanelsByIds(ids);
   }
 
   /**

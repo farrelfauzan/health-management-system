@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 
 import { AuthModule } from '../auth/auth.module';
+import { LaboratoryModule } from '../laboratory/laboratory.module';
 import { PharmacyFlowModule } from '../pharmacy-flow/pharmacy-flow.module';
 import { TerminologyModule } from '../terminology/terminology.module';
 import { EncounterClinicalDataController } from './controller/encounter-clinical-data.controller';
@@ -16,7 +17,11 @@ import { EncounterService } from './service/encounter.service';
   // PharmacyFlowModule for the vaccine lookup behind P10-T16: vaccines are KFA
   // products and live in the medication catalog, so the check goes through
   // that module's service rather than into its repository.
-  imports: [AuthModule, TerminologyModule, PharmacyFlowModule],
+  // LaboratoryModule for P18-T02: the encounter record shows the lab work
+  // raised on the visit, and closing names what is still outstanding. The
+  // dependency runs one way — the laboratory reads the encounter row it needs
+  // from its own repository, so nothing here is circular.
+  imports: [AuthModule, TerminologyModule, PharmacyFlowModule, LaboratoryModule],
   controllers: [
     EncounterController,
     EncounterClinicalDataController,

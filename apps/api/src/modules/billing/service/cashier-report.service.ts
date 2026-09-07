@@ -1,8 +1,11 @@
 import {
   CashierDailyReport,
   CashierReportDoctorLine,
+  CashierReportItemRecord,
+  CashierReportItemTypeLine,
   CashierReportMethodLine,
   CashierReportPaymentRecord,
+  InvoiceItemTypeValue,
   getCalendarDateInTimeZone,
   getStartOfCalendarDateInTimeZone,
   PaymentMethodValue,
@@ -54,15 +57,19 @@ export class CashierReportService {
     const date = query.date ?? getCalendarDateInTimeZone(new Date(), this.clinicTimeZone);
     const startInclusive = getStartOfCalendarDateInTimeZone(date, this.clinicTimeZone);
     const endExclusive = this.addDays(startInclusive, DAYS_PER_STEP);
-    const payments = await this.billingRepository.findPaymentsForCashierReport({
-      startInclusive,
-      endExclusive,
-    });
+    const [payments, items] = await Promise.all([
+      this.billingRepository.findPaymentsForCashierReport({ startInclusive, endExclusive }),
+      this.billingRepository.findItemsForCashierReport({ startInclusive, endExclusive }),
+    ]);
 
-    return this.buildReport(date, payments);
+    return this.buildReport(date, payments, items);
   }
 
-  private buildReport(date: string, payments: CashierReportPaymentRecord[]): CashierDailyReport {
+  private buildReport(
+    date: string,
+    payments: CashierReportPaymentRecord[],
+    items: CashierReportItemRecord[],
+  ): CashierDailyReport {
     const overall: MutableTotals = { count: 0, totalCents: 0 };
     const byMethod = new Map<PaymentMethodValue, MutableTotals>();
     const byDoctor = new Map<string, MutableTotals & { doctorName: string }>();
@@ -78,7 +85,30 @@ export class CashierReportService {
       totals: { count: overall.count, totalAmount: toRupiah(overall.totalCents) },
       byMethod: this.toMethodLines(byMethod),
       byDoctor: this.toDoctorLines(byDoctor),
+      byItemType: this.toItemTypeLines(items),
     };
+  }
+
+  /**
+   * What the day's money was for (P18-T06). Sums the settled invoices' lines,
+   * because a payment row carries only the invoice total and cannot say how
+   * much of it was laboratory.
+   */
+  private toItemTypeLines(items: CashierReportItemRecord[]): CashierReportItemTypeLine[] {
+    const byItemType = new Map<InvoiceItemTypeValue, MutableTotals>();
+    for (const item of items) {
+      const existing = byItemType.get(item.itemType) ?? { count: 0, totalCents: 0 };
+      addPaymentToTotals(existing, Math.round(item.amount * CENTS_PER_RUPIAH_UNIT));
+      byItemType.set(item.itemType, existing);
+    }
+
+    return [...byItemType.entries()]
+      .map(([itemType, totals]) => ({
+        itemType,
+        count: totals.count,
+        totalAmount: toRupiah(totals.totalCents),
+      }))
+      .sort((left, right) => left.itemType.localeCompare(right.itemType));
   }
 
   private resolveMethodLine(

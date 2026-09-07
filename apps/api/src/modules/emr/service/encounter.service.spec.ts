@@ -8,6 +8,7 @@ import {
 
 import { AuditContextService } from '../../../common/audit/audit-context.service';
 import { AuthRepository } from '../../auth/repository/auth.repository';
+import { LabOrderService } from '../../laboratory/service/lab-order.service';
 import { ListEncountersQueryDto } from '../dto/list-encounters-query.dto';
 import { OpenEncounterDto } from '../dto/open-encounter.dto';
 import { UpdateEncounterSoapDto } from '../dto/update-encounter-soap.dto';
@@ -56,10 +57,14 @@ describe('EncounterService', () => {
     authRepositoryMock,
     new AuditContextService(),
   );
+  const labOrderServiceMock = {
+    findOpenOrdersForEncounter: jest.fn(() => Promise.resolve([])),
+  } as unknown as LabOrderService;
   const service = new EncounterService(
     encounterRepositoryMock,
     accessService,
     new EncounterMapper(),
+    labOrderServiceMock,
   );
 
   const adminUser = { sub: '4e8580c4-9e80-44ff-9f8f-8c8f9d8d90f8', email: 'admin@hms.local' };
@@ -492,7 +497,33 @@ describe('EncounterService', () => {
           registrationStatus: 'COMPLETED',
         }),
       );
-      expect(actual.status).toBe('FINISHED');
+      expect(actual.encounter.status).toBe('FINISHED');
+    });
+
+    // P18-T02. Closing with lab work in flight is allowed — results arrive
+    // after the patient has gone home — so the response names what is still
+    // outstanding instead of refusing.
+    it('names the lab orders still open when the visit is closed', async () => {
+      mockAdminWriter();
+      (encounterRepositoryMock.findEncounterWithRelationsById as jest.Mock).mockResolvedValue(
+        encounterRecord,
+      );
+      (encounterRepositoryMock.findRegistrationForEncounter as jest.Mock).mockResolvedValue({
+        id: registrationId,
+        patientId,
+        status: 'CHECKED_IN',
+      });
+      (encounterRepositoryMock.closeEncounter as jest.Mock).mockResolvedValue({
+        ...encounterRecord,
+        status: 'FINISHED',
+        endedAt: timestamp,
+      });
+      const openOrder = { id: 'order-1', orderNumber: 'LAB/20260720/0001' };
+      (labOrderServiceMock.findOpenOrdersForEncounter as jest.Mock).mockResolvedValue([openOrder]);
+
+      const actual = await service.closeEncounter(encounterId, adminUser);
+
+      expect(actual.meta.openLabOrders).toEqual([openOrder]);
     });
 
     it('refuses to close an already closed record', async () => {

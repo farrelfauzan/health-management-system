@@ -521,6 +521,14 @@
         "invalidQuantity": "Quantity must be a whole number of at least 1.",
         "addError": "Unable to add the line. Please try again.",
         "removeError": "Unable to remove the line. Please try again."
+      },
+      "itemTypes": {
+        "CONSULTATION": "Consultation",
+        "PROCEDURE": "Procedure",
+        "MEDICATION": "Medication",
+        "ACCOMMODATION": "Room",
+        "LAB": "Laboratory",
+        "OTHER": "Other"
       }
     },
     "integrations": {

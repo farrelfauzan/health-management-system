@@ -2430,10 +2430,6 @@ export type $ManagedDocumentPayload<ExtArgs extends runtime.Types.Extensions.Int
     subjectTemplate: Prisma.$DocumentTemplatePayload<ExtArgs> | null
     subjectDocument: Prisma.$DocumentPayload<ExtArgs> | null
     subjectInvoice: Prisma.$InvoicePayload<ExtArgs> | null
-    /**
-     * The registry's own query shapes: list by type and status, sort by date,
-     * and find a patient's agreements.
-     */
     approvalRequests: Prisma.$DocumentApprovalRequestPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
