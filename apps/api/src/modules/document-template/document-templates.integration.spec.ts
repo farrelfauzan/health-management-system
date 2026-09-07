@@ -444,7 +444,10 @@ describe('Document templates integration', () => {
   });
 
   it.each([
-    ['an unknown kind', { kind: 'PRESCRIPTION', name: 'X' }],
+    // `PRESCRIPTION` stood here until P18-T12 made it a real kind. `AGREEMENT`
+    // is the next one that does not exist yet (E5), so when it lands this spec
+    // fails loudly and gets a fresh placeholder — which is the point.
+    ['an unknown kind', { kind: 'AGREEMENT', name: 'X' }],
     ['a blank name', { kind: 'INVOICE', name: '   ' }],
     ['unknown settings keys', { kind: 'INVOICE', name: 'X', settings: { paperSize: 'A4', rogue: 1 } }],
   ])('refuses a create with %s', async (_label, payload) => {

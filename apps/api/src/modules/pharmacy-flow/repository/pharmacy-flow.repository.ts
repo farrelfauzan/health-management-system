@@ -48,6 +48,10 @@ const PRESCRIPTION_DETAIL_INCLUDE = {
       mrn: true,
       fullName: true,
       ownerUserId: true,
+      // P18-T12: the resep prints these, and an apotek checks a dose against
+      // the patient's age.
+      dateOfBirth: true,
+      sex: true,
     },
   },
   doctor: {

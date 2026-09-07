@@ -137,6 +137,29 @@ export class LabOrderController {
     };
   }
 
+  @Post(':id/request-document')
+  @HttpCode(200)
+  @Auth([{ action: 'read', subject: 'LabOrder' }])
+  @Audited({ resource: 'lab-request-document', action: AuditAction.CREATE })
+  @ApiEndpoint({
+    summary: 'Print the surat pengantar for a laboratory order',
+    responseDescription:
+      'Renders the referral letter from the order and files it as a clinical document on the visit, then answers with the document to download. Rendered rather than drafted, so the letter and the order can never disagree about which tests were requested. Reprinting is expected — paper gets lost — and replaces the stored file rather than filing a second copy; every print is audited. Printing is not a state change: the order does not move, and a request nobody printed is still a request the lab must run.',
+    responseExample: { data: LABORATORY_EXAMPLES.labOrder.requestDocument },
+    notFoundDescription: 'Lab order not found.',
+  })
+  async printRequestLetter(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @AuthUser() currentUser?: CurrentUser,
+  ) {
+    return {
+      data: await this.labOrderService.printRequestLetter(
+        id,
+        this.assertAuthenticated(currentUser),
+      ),
+    };
+  }
+
   private assertAuthenticated(currentUser?: CurrentUser): CurrentUser {
     if (!currentUser?.sub) {
       throw new UnauthorizedException('Missing authenticated user');

@@ -32,6 +32,7 @@ import type {
   PrescriptionControllerCreatePrescriptionV1201,
   PrescriptionControllerListPrescriptionsV1200,
   PrescriptionControllerListPrescriptionsV1Params,
+  PrescriptionControllerPrintPrescriptionDocumentV1200,
   UpdateMedicationDto
 } from '../model';
 
@@ -519,6 +520,98 @@ export function usePrescriptionControllerCreatePrescriptionV1<TData = Awaited<Re
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getPrescriptionControllerCreatePrescriptionV1QueryOptions(createPrescriptionDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Print the resep for a prescription
+ */
+export const prescriptionControllerPrintPrescriptionDocumentV1 = (
+    id: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<PrescriptionControllerPrintPrescriptionDocumentV1200>(
+      {url: `/api/v1/prescriptions/${id}/document`, method: 'POST', signal
+    },
+      );
+    }
+
+
+
+
+export const getPrescriptionControllerPrintPrescriptionDocumentV1QueryKey = (id: string,) => {
+    return [
+    'POST', `/api/v1/prescriptions/${id}/document`
+    ] as const;
+    }
+
+
+export const getPrescriptionControllerPrintPrescriptionDocumentV1QueryOptions = <TData = Awaited<ReturnType<typeof prescriptionControllerPrintPrescriptionDocumentV1>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof prescriptionControllerPrintPrescriptionDocumentV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getPrescriptionControllerPrintPrescriptionDocumentV1QueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof prescriptionControllerPrintPrescriptionDocumentV1>>> = ({ signal }) => prescriptionControllerPrintPrescriptionDocumentV1(id, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof prescriptionControllerPrintPrescriptionDocumentV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type PrescriptionControllerPrintPrescriptionDocumentV1QueryResult = NonNullable<Awaited<ReturnType<typeof prescriptionControllerPrintPrescriptionDocumentV1>>>
+export type PrescriptionControllerPrintPrescriptionDocumentV1QueryError = unknown
+
+
+export function usePrescriptionControllerPrintPrescriptionDocumentV1<TData = Awaited<ReturnType<typeof prescriptionControllerPrintPrescriptionDocumentV1>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof prescriptionControllerPrintPrescriptionDocumentV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof prescriptionControllerPrintPrescriptionDocumentV1>>,
+          TError,
+          Awaited<ReturnType<typeof prescriptionControllerPrintPrescriptionDocumentV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePrescriptionControllerPrintPrescriptionDocumentV1<TData = Awaited<ReturnType<typeof prescriptionControllerPrintPrescriptionDocumentV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof prescriptionControllerPrintPrescriptionDocumentV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof prescriptionControllerPrintPrescriptionDocumentV1>>,
+          TError,
+          Awaited<ReturnType<typeof prescriptionControllerPrintPrescriptionDocumentV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePrescriptionControllerPrintPrescriptionDocumentV1<TData = Awaited<ReturnType<typeof prescriptionControllerPrintPrescriptionDocumentV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof prescriptionControllerPrintPrescriptionDocumentV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Print the resep for a prescription
+ */
+
+export function usePrescriptionControllerPrintPrescriptionDocumentV1<TData = Awaited<ReturnType<typeof prescriptionControllerPrintPrescriptionDocumentV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof prescriptionControllerPrintPrescriptionDocumentV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getPrescriptionControllerPrintPrescriptionDocumentV1QueryOptions(id,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

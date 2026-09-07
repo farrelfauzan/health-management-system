@@ -38,11 +38,12 @@ export type TemplateVariable = {
 };
 
 /**
- * Which document a registry belongs to. Only invoices exist today; clinical
- * documents (`E2`) and agreements (`E5`) get their own sets, which is why the
- * route takes a kind rather than answering with one global list.
+ * Which document a registry belongs to. Invoices (`P16-T04`) and the two
+ * printed clinical requests (`P18-T12`) — the surat pengantar laboratorium and
+ * the resep — each get their own set, which is why the route takes a kind
+ * rather than answering with one global list. Agreements (`E5`) follow.
  */
-export const TEMPLATE_VARIABLE_KINDS = ['INVOICE'] as const;
+export const TEMPLATE_VARIABLE_KINDS = ['INVOICE', 'LAB_REQUEST', 'PRESCRIPTION'] as const;
 
 export type TemplateVariableKind = (typeof TEMPLATE_VARIABLE_KINDS)[number];
 
@@ -117,7 +118,13 @@ export const INVOICE_ITEM_ROW_VARIABLES: readonly TemplateVariable[] = [
  * in a WYSIWYG editor. The resolver never emits the plaintext either — it
  * masks and forgets.
  */
-export const INVOICE_TEMPLATE_VARIABLES: readonly TemplateVariable[] = [
+/**
+ * The letterhead every clinic-issued document carries. Extracted from the
+ * invoice registry when the printed clinical requests arrived (`P18-T12`)
+ * rather than copied into each: a token added to one letterhead has to reach
+ * all of them, and three hand-maintained copies drift on the first change.
+ */
+const CLINIC_IDENTITY_VARIABLES: readonly TemplateVariable[] = [
   {
     token: 'clinic.name',
     labelId: 'Nama klinik',
@@ -174,6 +181,10 @@ export const INVOICE_TEMPLATE_VARIABLES: readonly TemplateVariable[] = [
     type: 'image',
     sample: 'data:image/png;base64,…',
   },
+];
+
+export const INVOICE_TEMPLATE_VARIABLES: readonly TemplateVariable[] = [
+  ...CLINIC_IDENTITY_VARIABLES,
   {
     token: 'invoice.number',
     labelId: 'Nomor faktur',
@@ -345,8 +356,249 @@ export const INVOICE_TEMPLATE_VARIABLES: readonly TemplateVariable[] = [
   ...INVOICE_ITEM_ROW_VARIABLES,
 ];
 
+/**
+ * The identity every printed clinical request carries: who issued it, who it is
+ * about, and who signed it (`P18-T12`).
+ *
+ * Shared between the two registries below rather than written twice — the
+ * letterhead of a surat pengantar and a resep is the same letterhead, and two
+ * copies would drift the first time somebody added a token to one.
+ */
+const CLINICAL_REQUEST_SHARED_VARIABLES: readonly TemplateVariable[] = [
+  ...CLINIC_IDENTITY_VARIABLES,
+  {
+    token: 'patient.fullName',
+    labelId: 'Nama pasien',
+    labelEn: 'Patient name',
+    type: 'text',
+    sample: 'Arsyila Layla Safiya',
+  },
+  {
+    token: 'patient.mrn',
+    labelId: 'Nomor rekam medis',
+    labelEn: 'Medical record number',
+    type: 'text',
+    sample: '00000447',
+  },
+  {
+    token: 'patient.dateOfBirth',
+    labelId: 'Tanggal lahir',
+    labelEn: 'Date of birth',
+    type: 'date',
+    sample: '12 April 1990',
+  },
+  {
+    token: 'patient.sex',
+    labelId: 'Jenis kelamin',
+    labelEn: 'Sex',
+    type: 'enum',
+    sample: 'Perempuan',
+  },
+  {
+    token: 'patient.age',
+    labelId: 'Umur',
+    labelEn: 'Age',
+    type: 'text',
+    sample: '36 tahun',
+  },
+  {
+    token: 'doctor.fullName',
+    labelId: 'Nama dokter',
+    labelEn: 'Doctor name',
+    type: 'text',
+    sample: 'dr. Yusuf Hidayat',
+  },
+  {
+    // The practice licence a request has to be signed under. Printed from the
+    // doctor's own licence row rather than typed into the template, so a
+    // renewed SIP reaches every future letter without an edit.
+    token: 'doctor.licenseNumber',
+    labelId: 'Nomor SIP',
+    labelEn: 'Practice licence number',
+    type: 'text',
+    sample: 'SIP-2026-0005',
+  },
+  {
+    token: 'request.issuedAt',
+    labelId: 'Tanggal terbit',
+    labelEn: 'Issued on',
+    type: 'date',
+    sample: '7 September 2026',
+  },
+];
+
+/**
+ * The surat pengantar laboratorium (`P18-T12`).
+ *
+ * `order.number` is the load-bearing token: it is what the analis types or
+ * scans at the counter to pull the order up, and `order.barcode` is the same
+ * value rendered as a scannable image.
+ */
+export const LAB_REQUEST_TEMPLATE_VARIABLES: readonly TemplateVariable[] = [
+  ...CLINICAL_REQUEST_SHARED_VARIABLES,
+  {
+    token: 'order.number',
+    labelId: 'Nomor permintaan',
+    labelEn: 'Order number',
+    type: 'text',
+    sample: 'LAB/20260907/0001',
+  },
+  {
+    token: 'order.barcode',
+    labelId: 'Barcode nomor permintaan',
+    labelEn: 'Order number barcode',
+    type: 'image',
+    sample: 'data:image/svg+xml;base64,…',
+  },
+  {
+    token: 'order.priority',
+    labelId: 'Prioritas',
+    labelEn: 'Priority',
+    type: 'enum',
+    sample: 'Rutin',
+  },
+  {
+    token: 'order.isFasting',
+    labelId: 'Puasa',
+    labelEn: 'Fasting required',
+    type: 'text',
+    sample: 'Ya',
+  },
+  {
+    token: 'order.clinicalNotes',
+    labelId: 'Keterangan klinis',
+    labelEn: 'Clinical notes',
+    type: 'text',
+    sample: 'Curiga infeksi saluran kemih',
+  },
+  {
+    // Our own laboratory, or the outside one the patient was referred to
+    // (P18-T11). One template serves both — the destination is the only line
+    // that differs between a letter kept in-house and a referral out.
+    token: 'order.destination',
+    labelId: 'Ditujukan kepada',
+    labelEn: 'Destination',
+    type: 'text',
+    sample: 'Laboratorium Klinik Sehat Bersama',
+  },
+  {
+    token: 'tests',
+    labelId: 'Daftar pemeriksaan',
+    labelEn: 'Requested tests',
+    type: 'block',
+    sample: '10 pemeriksaan',
+  },
+  {
+    token: 'test.no',
+    labelId: 'No. baris pemeriksaan',
+    labelEn: 'Test row number',
+    type: 'number',
+    sample: '1',
+  },
+  {
+    token: 'test.code',
+    labelId: 'Kode pemeriksaan',
+    labelEn: 'Test code',
+    type: 'text',
+    sample: 'URPROT',
+  },
+  {
+    token: 'test.name',
+    labelId: 'Nama pemeriksaan',
+    labelEn: 'Test name',
+    type: 'text',
+    sample: 'Urin - Protein',
+  },
+  {
+    token: 'test.specimen',
+    labelId: 'Jenis spesimen',
+    labelEn: 'Specimen type',
+    type: 'enum',
+    sample: 'Urin',
+  },
+  {
+    // The panel a test was expanded from, so the letter groups the way the
+    // doctor ordered rather than listing ten loose rows.
+    token: 'test.panel',
+    labelId: 'Paket',
+    labelEn: 'Panel',
+    type: 'text',
+    sample: 'Urin Rutin',
+  },
+];
+
+/** The resep (`P18-T12`), for the clinic's own apotek or an outside one. */
+export const PRESCRIPTION_TEMPLATE_VARIABLES: readonly TemplateVariable[] = [
+  ...CLINICAL_REQUEST_SHARED_VARIABLES,
+  {
+    token: 'prescription.destination',
+    labelId: 'Ditujukan kepada',
+    labelEn: 'Destination',
+    type: 'text',
+    sample: 'Apotek Klinik Sehat Bersama',
+  },
+  {
+    token: 'prescription.notes',
+    labelId: 'Catatan resep',
+    labelEn: 'Prescription notes',
+    type: 'text',
+    sample: 'Habiskan antibiotik meski keluhan mereda',
+  },
+  {
+    token: 'medications',
+    labelId: 'Daftar obat',
+    labelEn: 'Prescribed items',
+    type: 'block',
+    sample: '2 obat',
+  },
+  {
+    token: 'medication.no',
+    labelId: 'No. baris obat',
+    labelEn: 'Item row number',
+    type: 'number',
+    sample: '1',
+  },
+  {
+    token: 'medication.name',
+    labelId: 'Nama obat',
+    labelEn: 'Medication name',
+    type: 'text',
+    sample: 'Amoxicillin 500 mg',
+  },
+  {
+    token: 'medication.dosage',
+    labelId: 'Dosis',
+    labelEn: 'Dosage',
+    type: 'text',
+    sample: '1 kapsul',
+  },
+  {
+    token: 'medication.frequency',
+    labelId: 'Aturan pakai',
+    labelEn: 'Frequency',
+    type: 'text',
+    sample: '3x sehari',
+  },
+  {
+    token: 'medication.quantity',
+    labelId: 'Jumlah',
+    labelEn: 'Quantity',
+    type: 'number',
+    sample: '15',
+  },
+  {
+    token: 'medication.instructions',
+    labelId: 'Petunjuk',
+    labelEn: 'Instructions',
+    type: 'text',
+    sample: 'Diminum sesudah makan',
+  },
+];
+
 export const TEMPLATE_VARIABLES_BY_KIND: Readonly<
   Record<TemplateVariableKind, readonly TemplateVariable[]>
 > = {
   INVOICE: INVOICE_TEMPLATE_VARIABLES,
+  LAB_REQUEST: LAB_REQUEST_TEMPLATE_VARIABLES,
+  PRESCRIPTION: PRESCRIPTION_TEMPLATE_VARIABLES,
 };

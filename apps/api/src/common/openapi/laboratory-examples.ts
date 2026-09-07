@@ -157,6 +157,13 @@ export const LABORATORY_EXAMPLES = {
       isFasting: true,
     },
     cancelRequest: { reason: 'Pasien menolak pengambilan darah' },
+    requestDocument: {
+      documentId: '66666666-cccc-4ccc-8ccc-666666666666',
+      kind: 'LAB_REQUEST',
+      title: 'Surat pengantar laboratorium LAB/20260720/0001',
+      printCount: 1,
+      renderedAt: timestamp,
+    },
     dispositionRequest: {
       fulfilmentSite: 'EXTERNAL',
       chargeMode: 'EXTERNAL',

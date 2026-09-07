@@ -3,6 +3,8 @@ import { ConfigService } from '@nestjs/config';
 
 import { AuditService } from '../../../common/audit/audit.service';
 import { BillingService } from '../../billing/service/billing.service';
+import { ClinicProfileService } from '../../billing/service/clinic-profile.service';
+import { ClinicalRequestDocumentService } from '../../clinical-request-document/service/clinical-request-document.service';
 import { CreateLabOrderDto } from '../dto/create-lab-order.dto';
 import { LabOrderRepository } from '../repository/lab-order.repository';
 import { LabCatalogService } from './lab-catalog.service';
@@ -62,6 +64,10 @@ describe('LabOrderService', () => {
 
   const billingServiceMock = { hasIssuedInvoiceForEncounter: jest.fn() };
 
+  const clinicProfileServiceMock = { getProfile: jest.fn() };
+
+  const clinicalRequestDocumentServiceMock = { renderAndFile: jest.fn() };
+
   const configServiceMock = { get: jest.fn().mockReturnValue('Asia/Jakarta') };
 
   const service = new LabOrderService(
@@ -71,6 +77,8 @@ describe('LabOrderService', () => {
     new LabOrderMapper(),
     auditServiceMock as unknown as AuditService,
     billingServiceMock as unknown as BillingService,
+    clinicProfileServiceMock as unknown as ClinicProfileService,
+    clinicalRequestDocumentServiceMock as unknown as ClinicalRequestDocumentService,
     configServiceMock as unknown as ConfigService,
   );
 

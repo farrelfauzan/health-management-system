@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 
 import { AuthModule } from '../auth/auth.module';
 import { BillingModule } from '../billing/billing.module';
+import { ClinicalRequestDocumentModule } from '../clinical-request-document/clinical-request-document.module';
 import { EncounterLabOrderController } from './controller/encounter-lab-order.controller';
 import { LabOrderController } from './controller/lab-order.controller';
 import { LabPanelController } from './controller/lab-panel.controller';
@@ -33,7 +34,10 @@ import { LabSpecimenService } from './service/lab-specimen.service';
  * dependency runs one way only.
  */
 @Module({
-  imports: [AuthModule, BillingModule],
+  // ClinicalRequestDocumentModule for P18-T12: the surat pengantar is rendered
+  // by the module that owns printing, from a context this module gathers —
+  // what a lab order means stays here.
+  imports: [AuthModule, BillingModule, ClinicalRequestDocumentModule],
   controllers: [
     LabTestController,
     LabPanelController,

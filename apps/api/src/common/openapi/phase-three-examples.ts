@@ -887,6 +887,13 @@ export const PHASE_THREE_EXAMPLES = {
     },
   },
   pharmacy: {
+    prescriptionDocument: {
+      documentId: '77777777-dddd-4ddd-8ddd-777777777777',
+      kind: 'PRESCRIPTION',
+      title: 'Resep 00000447 — 20 Juli 2026',
+      printCount: 1,
+      renderedAt: '2026-07-20T08:00:00.000Z',
+    },
     medication,
     medicationCreateRequest,
     medicationUpdateRequest,

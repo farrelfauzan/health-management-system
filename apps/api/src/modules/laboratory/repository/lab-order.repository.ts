@@ -39,7 +39,7 @@ const LAB_ORDER_INCLUDE = {
  * worklist is not a route into the medical record (P18-T03).
  */
 const LAB_WORKLIST_INCLUDE = {
-  orderedBy: { select: { fullName: true } },
+  orderedBy: { select: { fullName: true, licenseNumber: true } },
   specimens: { orderBy: { collectedAt: 'asc' as const } },
   patient: {
     select: {
@@ -328,6 +328,7 @@ export class LabOrderRepository {
     return {
       ...this.toOrderHeader(row),
       itemCount: row._count.items,
+      orderedByLicenseNumber: row.orderedBy.licenseNumber ?? null,
       specimens: row.specimens.map((specimen) => toLabSpecimenRecord(specimen)),
       patient: {
         id: row.patient.id,

@@ -7,6 +7,8 @@ import {
 import { ConfigService } from '@nestjs/config';
 
 import { AuthRepository } from '../../auth/repository/auth.repository';
+import { ClinicProfileService } from '../../billing/service/clinic-profile.service';
+import { ClinicalRequestDocumentService } from '../../clinical-request-document/service/clinical-request-document.service';
 import { MedicationIdentifierConflictError } from '../repository/medication-identifier-conflict.error';
 import { PharmacyFlowRepository } from '../repository/pharmacy-flow.repository';
 import { PharmacyFlowService } from './pharmacy-flow.service';
@@ -71,6 +73,8 @@ describe('PharmacyFlowService', () => {
   const service = new PharmacyFlowService(
     pharmacyFlowRepositoryMock,
     authRepositoryMock,
+    { getProfile: jest.fn() } as unknown as ClinicProfileService,
+    { renderAndFile: jest.fn() } as unknown as ClinicalRequestDocumentService,
     { get: jest.fn().mockReturnValue('Asia/Jakarta') } as unknown as ConfigService,
   );
 

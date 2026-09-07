@@ -253,6 +253,12 @@ enum AuditAction {
   /// all recorded.
   LAB_ORDER_DISPOSITION_CHANGED
   PRESCRIPTION_DISPOSITION_CHANGED
+  /// A clinical request was printed for the patient to carry (P18-T12).
+  /// Reprints are routine — a letter gets lost — so every print is recorded
+  /// rather than only the first: "how many copies of this resep exist" is a
+  /// question a pharmacist eventually asks.
+  LAB_REQUEST_PRINTED
+  PRESCRIPTION_PRINTED
 }
 
 enum BpjsSubmissionType {
@@ -624,6 +630,13 @@ enum PaymentMethod {
 /// their own variable registries.
 enum DocumentTemplateKind {
   INVOICE
+  /// The surat pengantar laboratorium the patient carries to the lab counter
+  /// (P18-T12). Rendered from the order, never drafted, so the letter and the
+  /// order can never disagree about which tests were requested.
+  LAB_REQUEST
+  /// The resep the patient carries to an apotek — the clinic's own or an
+  /// outside one.
+  PRESCRIPTION
 }
 
 /// Where a template sits in its lifecycle. DRAFT until the first immutable
@@ -2096,6 +2109,9 @@ model Prescription {
   chargeMode           ChargeMode         @default(CLINIC) @map("charge_mode")
   /// The apotek the patient was sent to, when `fulfilmentSite` is EXTERNAL.
   externalFacilityName String?            @map("external_facility_name")
+  /// The printed resep for this prescription (P18-T12), on the same terms as
+  /// `LabOrder.requestDocumentId`.
+  documentId           String?            @unique @map("document_id") @db.Uuid
   issuedAt             DateTime?          @map("issued_at")
   notes                String?
   createdAt            DateTime           @default(now()) @map("created_at")
@@ -2107,6 +2123,7 @@ model Prescription {
   encounter       Encounter?               @relation(fields: [encounterId], references: [id], onDelete: Restrict)
   items           PrescriptionMedication[]
   dispenseRecords DispenseRecord[]
+  document        Document?                @relation("PrescriptionDocument", fields: [documentId], references: [id], onDelete: SetNull)
 
   @@index([patientId, status])
   @@index([doctorId, status])
@@ -3303,6 +3320,12 @@ model Document {
   admission  Admission?      @relation(fields: [admissionId], references: [id], onDelete: Restrict)
   releasedBy User?           @relation("DocumentReleasedBy", fields: [releasedById], references: [id], onDelete: Restrict)
   chunks     DocumentChunk[]
+
+  /// The clinical request this file is the printout of (P18-T12). Back-links
+  /// for the one-to-one on the order and prescription side; a document reached
+  /// through the patient's file list carries no such link and needs none.
+  labOrder     LabOrder?     @relation("LabOrderRequestDocument")
+  prescription Prescription? @relation("PrescriptionDocument")
 
   vaultExpiryNotices VaultDocumentExpiryNotice[]
   vaultShares        VaultDocumentShare[]
@@ -4763,6 +4786,11 @@ model LabOrder {
   /// text: a klinik pratama refers to whichever lab it has an arrangement
   /// with, and a directory of them is not this ticket.
   externalFacilityName      String?          @map("external_facility_name")
+  /// The surat pengantar rendered for this order (P18-T12). One document per
+  /// order, re-rendered on reprint, so "the letter for this order" is one
+  /// column read rather than a search. `SetNull` because purging a document
+  /// must never take the order with it.
+  requestDocumentId         String?          @unique @map("request_document_id") @db.Uuid
   /// How many times a specimen for this order was rejected and had to be
   /// drawn again (P18-T03). Counted on the order rather than derived from the
   /// specimen rows so the worklist badge is one column read, and because it
@@ -4777,12 +4805,13 @@ model LabOrder {
   createdAt                 DateTime         @default(now()) @map("created_at")
   updatedAt                 DateTime         @updatedAt @map("updated_at")
 
-  encounter    Encounter      @relation(fields: [encounterId], references: [id], onDelete: Restrict)
-  patient      PatientProfile @relation(fields: [patientId], references: [id], onDelete: Restrict)
-  orderedBy    DoctorProfile  @relation(fields: [orderedById], references: [id], onDelete: Restrict)
-  items        LabOrderItem[]
-  specimens    LabSpecimen[]
-  invoiceItems InvoiceItem[]
+  encounter       Encounter      @relation(fields: [encounterId], references: [id], onDelete: Restrict)
+  patient         PatientProfile @relation(fields: [patientId], references: [id], onDelete: Restrict)
+  orderedBy       DoctorProfile  @relation(fields: [orderedById], references: [id], onDelete: Restrict)
+  items           LabOrderItem[]
+  specimens       LabSpecimen[]
+  invoiceItems    InvoiceItem[]
+  requestDocument Document?      @relation("LabOrderRequestDocument", fields: [requestDocumentId], references: [id], onDelete: SetNull)
 
   @@index([encounterId])
   @@index([patientId, orderedAt])
