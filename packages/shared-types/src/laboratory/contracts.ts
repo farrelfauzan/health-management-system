@@ -1,4 +1,6 @@
 import type {
+  ChargeModeValue,
+  FulfilmentSiteValue,
   LabOrderItemStatusValue,
   LabOrderPriorityValue,
   LabOrderStatusValue,
@@ -103,6 +105,10 @@ export type LabOrderView = {
   priority: LabOrderPriorityValue;
   clinicalNotes?: string;
   isFasting: boolean;
+  /** Where the work runs and who pays (P18-T11). */
+  fulfilmentSite: FulfilmentSiteValue;
+  chargeMode: ChargeModeValue;
+  externalFacilityName?: string;
   recollectCount: number;
   orderedAt: string;
   cancelledAt?: string;

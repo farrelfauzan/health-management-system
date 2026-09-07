@@ -1,4 +1,6 @@
 import type {
+  ChargeModeValue,
+  FulfilmentSiteValue,
   LabOrderItemStatusValue,
   LabOrderPriorityValue,
   LabOrderStatusValue,
@@ -107,6 +109,7 @@ export type UpdateLabPanelPayload = Partial<Omit<CreateLabPanelPayload, 'labTest
 export type ListLabOrdersParams = {
   page: number;
   limit: number;
+  orderNumber?: string;
   status?: LabOrderStatusValue;
   patientId?: string;
   orderedFrom?: Date;
@@ -152,6 +155,9 @@ export type LabOrderRecord = {
   priority: LabOrderPriorityValue;
   clinicalNotes: string | null;
   isFasting: boolean;
+  fulfilmentSite: FulfilmentSiteValue;
+  chargeMode: ChargeModeValue;
+  externalFacilityName: string | null;
   recollectCount: number;
   orderedAt: Date;
   cancelledAt: Date | null;
@@ -200,6 +206,9 @@ export type CreateLabOrderPayload = {
   priority: LabOrderPriorityValue;
   clinicalNotes: string | null;
   isFasting: boolean;
+  fulfilmentSite: FulfilmentSiteValue;
+  chargeMode: ChargeModeValue;
+  externalFacilityName: string | null;
   orderedAt: Date;
   items: readonly CreateLabOrderItemPayload[];
 };
@@ -257,6 +266,14 @@ export type ListLabWorklistParams = {
   orderedTo?: Date;
 };
 
+/** A disposition change, for the audited update route (P18-T11). */
+export type UpdateLabOrderDispositionPayload = {
+  id: string;
+  fulfilmentSite: FulfilmentSiteValue;
+  chargeMode: ChargeModeValue;
+  externalFacilityName: string | null;
+};
+
 /**
  * One priced lab line as billing reads it (P18-T06). Panel members arrive with
  * the panel's own tariff so the group is charged once; a loose test carries
@@ -265,6 +282,7 @@ export type ListLabWorklistParams = {
 export type BillingLabItemRecord = {
   labOrderId: string;
   orderNumber: string;
+  chargeMode: ChargeModeValue;
   labTestId: string;
   testCode: string;
   testName: string;

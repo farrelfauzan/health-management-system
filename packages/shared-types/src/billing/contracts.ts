@@ -39,6 +39,9 @@ export type InvoiceItemResponse = {
   itemType: InvoiceItemTypeValue;
   serviceTariffId?: string;
   medicationId?: string;
+  /** What this line was charged for (P18-T11). Provenance, not a re-price. */
+  labOrderId?: string;
+  prescriptionItemId?: string;
   description: string;
   quantity: number;
   unitPrice: number;
@@ -86,6 +89,41 @@ export type InvoiceDetail = Omit<InvoiceListItem, 'itemCount'> & {
   voidReason?: string;
   voidedById?: string;
   createdById?: string;
+  /**
+   * Every lab order and prescription raised on this visit, billed here or not
+   * (P18-T11). Without it a bill carrying no lab line is indistinguishable
+   * from a bug: the cashier cannot tell a deliberate exclusion — the patient
+   * went to an outside lab, BPJS covers it — from work that was quietly
+   * dropped. Gaps only ever reported the tariff that was missing, never the
+   * request that was never meant to be charged.
+   */
+  clinicalRequests: ClinicalRequestSummary[];
+};
+
+/** Why a clinical request is, or is not, a line on this invoice. */
+export type ClinicalRequestBillingState =
+  /** Charged here; `invoiceItemIds` names the lines it produced. */
+  | 'BILLED'
+  /** Filled elsewhere — the outside lab or apotek charges the patient directly. */
+  | 'EXTERNAL'
+  /** A payer settles it away from the counter, so the receipt must not ask for it. */
+  | 'COVERED'
+  /** Meant to be charged here and was not — an unpriced test, or nothing dispensed yet. */
+  | 'NOT_BILLED';
+
+export type ClinicalRequestSummary = {
+  kind: 'LAB_ORDER' | 'PRESCRIPTION';
+  id: string;
+  /** Order number for lab work; the prescription has no printed number of its own. */
+  reference?: string;
+  description: string;
+  state: ClinicalRequestBillingState;
+  /** Named when the work was sent out, so the cashier can say where. */
+  externalFacilityName?: string;
+  /** The lines this request produced. Empty for everything but BILLED. */
+  invoiceItemIds: string[];
+  /** Rupiah actually charged here. Zero unless BILLED. */
+  billedAmount: number;
 };
 
 export type InvoicesListMeta = {

@@ -17,6 +17,8 @@ export type LabOrderControllerListLabOrdersV1200DataItem = {
   priority: string;
   clinicalNotes: string;
   isFasting: boolean;
+  fulfilmentSite: string;
+  chargeMode: string;
   recollectCount: number;
   orderedAt: string;
   itemCount: number;

@@ -9,6 +9,7 @@ import {
   ListLabOrdersParams,
   ListLabWorklistParams,
   LabWorklistOrderRecord,
+  UpdateLabOrderDispositionPayload,
 } from '@hms/shared-types';
 import { Injectable } from '@nestjs/common';
 
@@ -135,6 +136,9 @@ export class LabOrderRepository {
           priority: payload.priority,
           clinicalNotes: payload.clinicalNotes,
           isFasting: payload.isFasting,
+          fulfilmentSite: payload.fulfilmentSite,
+          chargeMode: payload.chargeMode,
+          externalFacilityName: payload.externalFacilityName,
           orderedAt: payload.orderedAt,
           items: {
             create: payload.items.map((item) => ({
@@ -173,6 +177,11 @@ export class LabOrderRepository {
     total: number;
   }> {
     const where = {
+      // P18-T13. Exact and case-insensitive: the number is scanned or typed
+      // off paper, and `LAB/20260728/0001` is not something anyone browses for.
+      ...(params.orderNumber
+        ? { orderNumber: { equals: params.orderNumber, mode: 'insensitive' as const } }
+        : {}),
       ...(params.status ? { status: params.status } : {}),
       ...(params.patientId ? { patientId: params.patientId } : {}),
       ...(params.orderedFrom || params.orderedTo
@@ -217,6 +226,10 @@ export class LabOrderRepository {
     const rows = await this.prisma.labOrder.findMany({
       where: {
         status: { in: [...params.statuses] },
+        // P18-T11. Work another lab is running is not this bench's queue. It
+        // stays on the order and on the invoice's request list; it just never
+        // appears as something to do here.
+        fulfilmentSite: 'INTERNAL',
         ...(params.orderedFrom || params.orderedTo
           ? {
               orderedAt: {
@@ -241,6 +254,21 @@ export class LabOrderRepository {
       include: LAB_WORKLIST_INCLUDE,
     });
     return row ? this.toWorklistRecord(row as unknown as LabWorklistRow) : null;
+  }
+
+  async updateLabOrderDisposition(
+    payload: UpdateLabOrderDispositionPayload,
+  ): Promise<LabOrderRecord> {
+    const row = await this.prisma.labOrder.update({
+      where: { id: payload.id },
+      data: {
+        fulfilmentSite: payload.fulfilmentSite,
+        chargeMode: payload.chargeMode,
+        externalFacilityName: payload.externalFacilityName,
+      },
+      include: LAB_ORDER_INCLUDE,
+    });
+    return this.toLabOrderRecord(row as unknown as LabOrderRow);
   }
 
   async cancelLabOrder(payload: CancelLabOrderPayload): Promise<LabOrderRecord> {
@@ -274,6 +302,9 @@ export class LabOrderRepository {
       priority: row.priority,
       clinicalNotes: row.clinicalNotes,
       isFasting: row.isFasting,
+      fulfilmentSite: row.fulfilmentSite,
+      chargeMode: row.chargeMode,
+      externalFacilityName: row.externalFacilityName,
       recollectCount: row.recollectCount,
       orderedAt: row.orderedAt,
       cancelledAt: row.cancelledAt,
@@ -321,6 +352,9 @@ export class LabOrderRepository {
       priority: row.priority,
       clinicalNotes: row.clinicalNotes,
       isFasting: row.isFasting,
+      fulfilmentSite: row.fulfilmentSite,
+      chargeMode: row.chargeMode,
+      externalFacilityName: row.externalFacilityName,
       recollectCount: row.recollectCount,
       orderedAt: row.orderedAt,
       cancelledAt: row.cancelledAt,

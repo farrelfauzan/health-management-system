@@ -1,3 +1,4 @@
+import type { ChargeModeValue, FulfilmentSiteValue } from '#laboratory/schemas';
 import type {
   CompoundPreparationValue,
   DispenseStatusValue,
@@ -85,6 +86,10 @@ export type PrescriptionResponse = {
   doctorId: string;
   encounterId?: string;
   status: PrescriptionStatusValue;
+  /** Where the medicine is bought and who pays for it (P18-T11). */
+  fulfilmentSite: FulfilmentSiteValue;
+  chargeMode: ChargeModeValue;
+  externalFacilityName?: string;
   issuedAt?: string;
   notes?: string;
   createdAt: string;

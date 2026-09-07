@@ -620,8 +620,38 @@ describe('PharmacyFlowService', () => {
         patientId,
         doctorId,
         notes: undefined,
+        // P18-T11 defaults: filled at the clinic's own apotek and billed here,
+        // which is what every prescription written before that ticket meant.
+        fulfilmentSite: 'INTERNAL',
+        chargeMode: 'CLINIC',
+        externalFacilityName: null,
         items: createPayload.items,
       });
+    });
+
+    // The printed-resep-only case. Until now this was indistinguishable from a
+    // prescription the pharmacy had not got to yet: both were ISSUED with no
+    // dispense record.
+    it('records that the patient will buy the medicine outside', async () => {
+      mockPermissions([{ action: 'write', resource: 'Prescription', scope: 'ANY' }]);
+
+      await service.createPrescription(
+        {
+          ...createPayload,
+          fulfilmentSite: 'EXTERNAL',
+          chargeMode: 'EXTERNAL',
+          externalFacilityName: 'Apotek K-24 Kemang',
+        },
+        currentUser,
+      );
+
+      expect(repositoryMock.createPrescription).toHaveBeenCalledWith(
+        expect.objectContaining({
+          fulfilmentSite: 'EXTERNAL',
+          chargeMode: 'EXTERNAL',
+          externalFacilityName: 'Apotek K-24 Kemang',
+        }),
+      );
     });
   });
 

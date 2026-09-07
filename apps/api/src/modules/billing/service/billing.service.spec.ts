@@ -20,6 +20,7 @@ describe('BillingService', () => {
     findLabItemsForBilling: jest.fn<Promise<BillingLabItemRecord[]>, [string]>(() =>
       Promise.resolve([]),
     ),
+    findClinicalRequestsForEncounter: jest.fn(() => Promise.resolve([])),
     findEncounterIdsWithSettledInvoice: jest.fn(() => Promise.resolve(new Set<string>())),
     findLiveInvoiceByEncounterId: jest.fn(),
     createInvoiceWithItems: jest.fn(),
@@ -111,10 +112,15 @@ describe('BillingService', () => {
   const labPanelId = 'bf405c9c-8dae-4da2-9154-6e3a7d8f9102';
 
   /** A darah-rutin member: priced through its panel, never on its own. */
-  function buildLabItem(fields: { testCode: string; testName: string }) {
+  function buildLabItem(fields: {
+    testCode: string;
+    testName: string;
+    chargeMode?: 'CLINIC' | 'EXTERNAL' | 'COVERED';
+  }) {
     return {
       labOrderId: 'lab-order-1',
       orderNumber: 'LAB/20260728/0001',
+      chargeMode: fields.chargeMode ?? ('CLINIC' as const),
       labTestId: `test-${fields.testCode}`,
       testCode: fields.testCode,
       testName: fields.testName,
@@ -424,6 +430,48 @@ describe('BillingService', () => {
         }),
       );
       expect(billingRepositoryMock.createInvoiceWithItems.mock.calls[0][0].items).toEqual([]);
+    });
+
+    // P18-T11. The outside lab charges the patient directly; billing it here
+    // would charge them twice for one test.
+    it('never bills lab work another facility is charging for', async () => {
+      serviceTariffRepositoryMock.findActiveConsultationTariffs.mockResolvedValue([]);
+      serviceTariffRepositoryMock.findActiveTariffsByIcd9cmCodes.mockResolvedValue([]);
+      billingRepositoryMock.findLabItemsForBilling.mockResolvedValue([
+        buildLabItem({ testCode: 'HB', testName: 'Hemoglobin', chargeMode: 'EXTERNAL' }),
+      ]);
+
+      await service.generateInvoice(inputPayload, cashierUser);
+
+      expect(billingRepositoryMock.createInvoiceWithItems.mock.calls[0][0].items).toEqual([]);
+    });
+
+    // A payer settles it away from the counter, so the receipt must not ask
+    // the patient for it either.
+    it('never bills lab work a payer covers', async () => {
+      serviceTariffRepositoryMock.findActiveConsultationTariffs.mockResolvedValue([]);
+      serviceTariffRepositoryMock.findActiveTariffsByIcd9cmCodes.mockResolvedValue([]);
+      billingRepositoryMock.findLabItemsForBilling.mockResolvedValue([
+        buildLabItem({ testCode: 'HB', testName: 'Hemoglobin', chargeMode: 'COVERED' }),
+      ]);
+
+      await service.generateInvoice(inputPayload, cashierUser);
+
+      expect(billingRepositoryMock.createInvoiceWithItems.mock.calls[0][0].items).toEqual([]);
+    });
+
+    it('stamps the order onto the line it produced, so billed is a fact not a guess', async () => {
+      serviceTariffRepositoryMock.findActiveConsultationTariffs.mockResolvedValue([]);
+      serviceTariffRepositoryMock.findActiveTariffsByIcd9cmCodes.mockResolvedValue([]);
+      billingRepositoryMock.findLabItemsForBilling.mockResolvedValue([
+        buildLabItem({ testCode: 'HB', testName: 'Hemoglobin' }),
+      ]);
+
+      await service.generateInvoice(inputPayload, cashierUser);
+
+      expect(billingRepositoryMock.createInvoiceWithItems.mock.calls[0][0].items).toEqual([
+        expect.objectContaining({ itemType: 'LAB', labOrderId: 'lab-order-1' }),
+      ]);
     });
 
     it('rejects an encounter that is not FINISHED', async () => {

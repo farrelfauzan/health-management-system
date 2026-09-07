@@ -36415,6 +36415,10 @@ paths:
                         type: string
                       isFasting:
                         type: boolean
+                      fulfilmentSite:
+                        type: string
+                      chargeMode:
+                        type: string
                       recollectCount:
                         type: integer
                       orderedAt:
@@ -36466,6 +36470,8 @@ paths:
                       - priority
                       - clinicalNotes
                       - isFasting
+                      - fulfilmentSite
+                      - chargeMode
                       - recollectCount
                       - orderedAt
                       - items
@@ -36487,6 +36493,8 @@ paths:
                     priority: ROUTINE
                     clinicalNotes: Curiga anemia defisiensi besi
                     isFasting: false
+                    fulfilmentSite: INTERNAL
+                    chargeMode: CLINIC
                     recollectCount: 0
                     orderedAt: 2026-07-20T08:00:00.000Z
                     items:
@@ -36585,6 +36593,10 @@ paths:
                           type: string
                         isFasting:
                           type: boolean
+                        fulfilmentSite:
+                          type: string
+                        chargeMode:
+                          type: string
                         recollectCount:
                           type: integer
                         orderedAt:
@@ -36636,6 +36648,8 @@ paths:
                         - priority
                         - clinicalNotes
                         - isFasting
+                        - fulfilmentSite
+                        - chargeMode
                         - recollectCount
                         - orderedAt
                         - items
@@ -36654,6 +36668,8 @@ paths:
                       priority: ROUTINE
                       clinicalNotes: Curiga anemia defisiensi besi
                       isFasting: false
+                      fulfilmentSite: INTERNAL
+                      chargeMode: CLINIC
                       recollectCount: 0
                       orderedAt: 2026-07-20T08:00:00.000Z
                       items:
@@ -36702,6 +36718,13 @@ paths:
     get:
       operationId: LabOrderController_listLabOrders_v1
       parameters:
+        - name: orderNumber
+          required: false
+          in: query
+          schema:
+            minLength: 1
+            maxLength: 32
+            type: string
         - name: status
           required: false
           in: query
@@ -36781,6 +36804,10 @@ paths:
                           type: string
                         isFasting:
                           type: boolean
+                        fulfilmentSite:
+                          type: string
+                        chargeMode:
+                          type: string
                         recollectCount:
                           type: integer
                         orderedAt:
@@ -36802,6 +36829,8 @@ paths:
                         - priority
                         - clinicalNotes
                         - isFasting
+                        - fulfilmentSite
+                        - chargeMode
                         - recollectCount
                         - orderedAt
                         - itemCount
@@ -36835,6 +36864,8 @@ paths:
                       priority: ROUTINE
                       clinicalNotes: Curiga anemia defisiensi besi
                       isFasting: false
+                      fulfilmentSite: INTERNAL
+                      chargeMode: CLINIC
                       recollectCount: 0
                       orderedAt: 2026-07-20T08:00:00.000Z
                       itemCount: 6
@@ -36907,6 +36938,10 @@ paths:
                         type: string
                       isFasting:
                         type: boolean
+                      fulfilmentSite:
+                        type: string
+                      chargeMode:
+                        type: string
                       recollectCount:
                         type: integer
                       orderedAt:
@@ -36958,6 +36993,8 @@ paths:
                       - priority
                       - clinicalNotes
                       - isFasting
+                      - fulfilmentSite
+                      - chargeMode
                       - recollectCount
                       - orderedAt
                       - items
@@ -36976,6 +37013,8 @@ paths:
                     priority: ROUTINE
                     clinicalNotes: Curiga anemia defisiensi besi
                     isFasting: false
+                    fulfilmentSite: INTERNAL
+                    chargeMode: CLINIC
                     recollectCount: 0
                     orderedAt: 2026-07-20T08:00:00.000Z
                     items:
@@ -37076,6 +37115,10 @@ paths:
                         type: string
                       isFasting:
                         type: boolean
+                      fulfilmentSite:
+                        type: string
+                      chargeMode:
+                        type: string
                       recollectCount:
                         type: integer
                       orderedAt:
@@ -37127,6 +37170,8 @@ paths:
                       - priority
                       - clinicalNotes
                       - isFasting
+                      - fulfilmentSite
+                      - chargeMode
                       - recollectCount
                       - orderedAt
                       - items
@@ -37156,6 +37201,8 @@ paths:
                     priority: ROUTINE
                     clinicalNotes: Curiga anemia defisiensi besi
                     isFasting: false
+                    fulfilmentSite: INTERNAL
+                    chargeMode: CLINIC
                     recollectCount: 0
                     orderedAt: 2026-07-20T08:00:00.000Z
                     items:
@@ -37211,6 +37258,203 @@ paths:
       security:
         - bearer: []
       summary: Cancel a laboratory order
+      tags: *a52
+  /api/v1/lab-orders/{id}/disposition:
+    patch:
+      operationId: LabOrderController_updateDisposition_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateLabOrderDispositionDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  fulfilmentSite: EXTERNAL
+                  chargeMode: EXTERNAL
+                  externalFacilityName: Laboratorium Prodia Kemang
+      responses:
+        "200":
+          description: "Moves the order between “we run it” and “an outside lab runs it”,
+            and between “we bill it” and “somebody else does”. Usually called
+            after the doctor has finished — the patient reaches the counter,
+            hears the price, and chooses the lab their insurer uses. An EXTERNAL
+            order leaves the worklist and stops producing an invoice line; the
+            bill still names it, so the omission is explained. Only an ORDERED
+            order can move: once a tube is drawn the clinic did the work."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      orderNumber:
+                        type: string
+                      encounterId:
+                        type: string
+                      patientId:
+                        type: string
+                      orderedById:
+                        type: string
+                      orderedByName:
+                        type: string
+                      status:
+                        type: string
+                      priority:
+                        type: string
+                      clinicalNotes:
+                        type: string
+                      isFasting:
+                        type: boolean
+                      fulfilmentSite:
+                        type: string
+                      chargeMode:
+                        type: string
+                      recollectCount:
+                        type: integer
+                      orderedAt:
+                        type: string
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            labTestId:
+                              type: string
+                            code:
+                              type: string
+                            name:
+                              type: string
+                            specimenType:
+                              type: string
+                            resultType:
+                              type: string
+                            status:
+                              type: string
+                            panelId:
+                              type: string
+                            panelName:
+                              type: string
+                          required:
+                            - id
+                            - labTestId
+                            - code
+                            - name
+                            - specimenType
+                            - resultType
+                            - status
+                            - panelId
+                            - panelName
+                      specimens:
+                        type: array
+                        items: {}
+                      externalFacilityName:
+                        type: string
+                    required:
+                      - id
+                      - orderNumber
+                      - encounterId
+                      - patientId
+                      - orderedById
+                      - orderedByName
+                      - status
+                      - priority
+                      - clinicalNotes
+                      - isFasting
+                      - fulfilmentSite
+                      - chargeMode
+                      - recollectCount
+                      - orderedAt
+                      - items
+                      - specimens
+                      - externalFacilityName
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: eeeeeeee-5555-4555-8555-eeeeeeeeeeee
+                    orderNumber: LAB/20260720/0001
+                    encounterId: 11111111-7777-4777-8777-111111111111
+                    patientId: 22222222-8888-4888-8888-222222222222
+                    orderedById: 33333333-9999-4999-8999-333333333333
+                    orderedByName: dr. Andi Wijaya
+                    status: ORDERED
+                    priority: ROUTINE
+                    clinicalNotes: Curiga anemia defisiensi besi
+                    isFasting: false
+                    fulfilmentSite: EXTERNAL
+                    chargeMode: EXTERNAL
+                    recollectCount: 0
+                    orderedAt: 2026-07-20T08:00:00.000Z
+                    items:
+                      - id: 44444444-aaaa-4aaa-8aaa-444444444444
+                        labTestId: aaaaaaaa-1111-4111-8111-aaaaaaaaaaaa
+                        code: HB
+                        name: Hemoglobin
+                        specimenType: WHOLE_BLOOD
+                        resultType: NUMERIC
+                        status: PENDING
+                        panelId: bbbbbbbb-2222-4222-8222-bbbbbbbbbbbb
+                        panelName: Darah Rutin
+                    specimens: []
+                    externalFacilityName: Laboratorium Prodia Kemang
+                  message: Lab order disposition updated
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Lab order not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Lab order not found.
+      security:
+        - bearer: []
+      summary: Change where a laboratory order is filled and who pays
       tags: *a52
   /api/v1/lab-orders/{id}/collect:
     post:
@@ -44053,6 +44297,21 @@ components:
               - dosage
               - frequency
               - quantity
+        fulfilmentSite:
+          type: string
+          enum:
+            - INTERNAL
+            - EXTERNAL
+        chargeMode:
+          type: string
+          enum:
+            - CLINIC
+            - EXTERNAL
+            - COVERED
+        externalFacilityName:
+          type: string
+          minLength: 1
+          maxLength: 200
       required:
         - patientId
         - items
@@ -44901,6 +45160,21 @@ components:
           maxLength: 1000
         isFasting:
           type: boolean
+        fulfilmentSite:
+          type: string
+          enum:
+            - INTERNAL
+            - EXTERNAL
+        chargeMode:
+          type: string
+          enum:
+            - CLINIC
+            - EXTERNAL
+            - COVERED
+        externalFacilityName:
+          type: string
+          minLength: 1
+          maxLength: 200
     CancelLabOrderDto:
       type: object
       properties:
@@ -44910,6 +45184,27 @@ components:
           maxLength: 1000
       required:
         - reason
+    UpdateLabOrderDispositionDto:
+      type: object
+      properties:
+        fulfilmentSite:
+          type: string
+          enum:
+            - INTERNAL
+            - EXTERNAL
+        chargeMode:
+          type: string
+          enum:
+            - CLINIC
+            - EXTERNAL
+            - COVERED
+        externalFacilityName:
+          type: string
+          minLength: 1
+          maxLength: 200
+      required:
+        - fulfilmentSite
+        - chargeMode
     CollectLabSpecimensDto:
       type: object
       properties:

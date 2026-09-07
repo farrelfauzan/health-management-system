@@ -5,6 +5,7 @@ import {
   HttpCode,
   Param,
   ParseUUIDPipe,
+  Patch,
   Post,
   Query,
   UnauthorizedException,
@@ -21,6 +22,7 @@ import { LABORATORY_EXAMPLES } from '../../../common/openapi/laboratory-examples
 import { AuditAction } from '../../../generated/prisma/client';
 import { CancelLabOrderDto } from '../dto/cancel-lab-order.dto';
 import { ListLabOrdersQueryDto } from '../dto/list-lab-orders-query.dto';
+import { UpdateLabOrderDispositionDto } from '../dto/update-lab-order-disposition.dto';
 import { LabOrderService } from '../service/lab-order.service';
 
 /**
@@ -97,6 +99,41 @@ export class LabOrderController {
       data: cancelled.order,
       meta: cancelled.meta,
       message: 'Lab order cancelled',
+    };
+  }
+
+  @Patch(':id/disposition')
+  @Auth([{ action: 'write', subject: 'LabOrder' }])
+  @Audited({ resource: 'lab-order', action: AuditAction.UPDATE })
+  @ApiEndpoint({
+    summary: 'Change where a laboratory order is filled and who pays',
+    responseDescription:
+      'Moves the order between “we run it” and “an outside lab runs it”, and between “we bill it” and “somebody else does”. Usually called after the doctor has finished — the patient reaches the counter, hears the price, and chooses the lab their insurer uses. An EXTERNAL order leaves the worklist and stops producing an invoice line; the bill still names it, so the omission is explained. Only an ORDERED order can move: once a tube is drawn the clinic did the work.',
+    responseExample: {
+      data: {
+        ...LABORATORY_EXAMPLES.labOrder.view,
+        fulfilmentSite: 'EXTERNAL',
+        chargeMode: 'EXTERNAL',
+        externalFacilityName: 'Laboratorium Prodia Kemang',
+      },
+      message: 'Lab order disposition updated',
+    },
+    requestType: UpdateLabOrderDispositionDto,
+    requestExample: LABORATORY_EXAMPLES.labOrder.dispositionRequest,
+    notFoundDescription: 'Lab order not found.',
+  })
+  async updateDisposition(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() payload: UpdateLabOrderDispositionDto,
+    @AuthUser() currentUser?: CurrentUser,
+  ) {
+    return {
+      data: await this.labOrderService.updateDisposition(
+        id,
+        payload,
+        this.assertAuthenticated(currentUser),
+      ),
+      message: 'Lab order disposition updated',
     };
   }
 

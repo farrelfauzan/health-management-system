@@ -1,3 +1,4 @@
+import { chargeModeSchema, fulfilmentSiteSchema } from '#laboratory/schemas';
 import { z } from 'zod';
 
 export const PRESCRIPTION_STATUSES = [
@@ -260,10 +261,27 @@ export const createPrescriptionSchema = z
     encounterId: z.string().uuid().optional(),
     notes: z.string().trim().min(1).max(1000).optional(),
     items: z.array(prescriptionItemSchema).min(1).max(50),
+    /**
+     * Where the medicine is actually bought and who pays (P18-T11). Defaults to
+     * the clinic's own apotek. A patient who only wants the printed resep is
+     * EXTERNAL on both, which is what separates that from a prescription the
+     * pharmacy simply has not dispensed yet.
+     */
+    fulfilmentSite: fulfilmentSiteSchema.optional(),
+    chargeMode: chargeModeSchema.optional(),
+    externalFacilityName: z.string().trim().min(1).max(200).optional(),
   })
   .refine((payload) => hasUniqueMedicationIds(payload.items), {
     message: 'Prescription items must reference unique medications',
     path: ['items'],
+  })
+  .refine(
+    (payload) => payload.fulfilmentSite !== 'EXTERNAL' || Boolean(payload.externalFacilityName),
+    { path: ['externalFacilityName'], message: 'Name the apotek the patient was sent to' },
+  )
+  .refine((payload) => payload.fulfilmentSite === 'EXTERNAL' || !payload.externalFacilityName, {
+    path: ['externalFacilityName'],
+    message: 'Medicine dispensed here cannot name an outside apotek',
   });
 
 /**

@@ -5,9 +5,9 @@
  * Health Management System API
  * OpenAPI spec version: 1.0.0
  */
-import type { EncounterLabOrderControllerListEncounterLabOrdersV1200DataItemItemsItem } from './encounterLabOrderControllerListEncounterLabOrdersV1200DataItemItemsItem';
+import type { LabOrderControllerUpdateDispositionV1200DataItemsItem } from './labOrderControllerUpdateDispositionV1200DataItemsItem';
 
-export type EncounterLabOrderControllerListEncounterLabOrdersV1200DataItem = {
+export type LabOrderControllerUpdateDispositionV1200Data = {
   id: string;
   orderNumber: string;
   encounterId: string;
@@ -22,6 +22,7 @@ export type EncounterLabOrderControllerListEncounterLabOrdersV1200DataItem = {
   chargeMode: string;
   recollectCount: number;
   orderedAt: string;
-  items: EncounterLabOrderControllerListEncounterLabOrdersV1200DataItemItemsItem[];
+  items: LabOrderControllerUpdateDispositionV1200DataItemsItem[];
   specimens: unknown[];
+  externalFacilityName: string;
 };

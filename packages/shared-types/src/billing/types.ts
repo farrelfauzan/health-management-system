@@ -39,6 +39,8 @@ export type InvoiceItemRecord = {
   itemType: InvoiceItemTypeValue;
   serviceTariffId: string | null;
   medicationId: string | null;
+  labOrderId: string | null;
+  prescriptionItemId: string | null;
   description: string;
   quantity: number;
   unitPrice: number;
@@ -176,6 +178,8 @@ export type BillingSourceEncounterRecord = {
  */
 export type BillingDispensedItemRecord = {
   medicationId: string | null;
+  /** The prescription line this came off, stamped onto the invoice line (P18-T11). */
+  prescriptionItemId: string | null;
   quantity: number;
   medication: {
     id: string;
@@ -198,6 +202,8 @@ export type CreateInvoiceItemPayload = {
   itemType: InvoiceItemTypeValue;
   serviceTariffId?: string;
   medicationId?: string;
+  labOrderId?: string;
+  prescriptionItemId?: string;
   description: string;
   quantity: number;
   unitPrice: number;
@@ -263,6 +269,19 @@ export type CashierReportPaymentRecord = {
  * alongside the payments rather than joined onto them: a payment is one row per
  * invoice, and the composition needs one row per line.
  */
+/**
+ * A clinical request on the visit as the invoice reader sees it, before the
+ * service decides what to say about it (P18-T11).
+ */
+export type BillingClinicalRequestRecord = {
+  kind: 'LAB_ORDER' | 'PRESCRIPTION';
+  id: string;
+  reference: string | null;
+  description: string;
+  chargeMode: 'CLINIC' | 'EXTERNAL' | 'COVERED';
+  externalFacilityName: string | null;
+};
+
 export type CashierReportItemRecord = {
   itemType: InvoiceItemTypeValue;
   amount: number;

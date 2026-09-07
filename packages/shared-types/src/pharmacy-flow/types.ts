@@ -1,3 +1,4 @@
+import type { ChargeModeValue, FulfilmentSiteValue } from '#laboratory/schemas';
 import type {
   CompoundPreparationValue,
   DispenseStatusValue,
@@ -188,6 +189,9 @@ export type PrescriptionDetailRecord = {
   doctorId: string;
   encounterId: string | null;
   status: PrescriptionStatusValue;
+  fulfilmentSite: FulfilmentSiteValue;
+  chargeMode: ChargeModeValue;
+  externalFacilityName: string | null;
   issuedAt: Date | null;
   notes: string | null;
   createdAt: Date;
@@ -217,7 +221,18 @@ export type CreatePrescriptionRecordPayload = {
   doctorId: string;
   encounterId?: string;
   notes?: string;
+  fulfilmentSite: FulfilmentSiteValue;
+  chargeMode: ChargeModeValue;
+  externalFacilityName: string | null;
   items: CreatePrescriptionItemPayload[];
+};
+
+/** An audited change to where a prescription is filled and who pays (P18-T11). */
+export type UpdatePrescriptionDispositionPayload = {
+  id: string;
+  fulfilmentSite: FulfilmentSiteValue;
+  chargeMode: ChargeModeValue;
+  externalFacilityName: string | null;
 };
 
 /**

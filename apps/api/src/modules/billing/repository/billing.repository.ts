@@ -1,6 +1,7 @@
 import {
   AddInvoiceItemRecordPayload,
   BillingDispensedItemRecord,
+  BillingClinicalRequestRecord,
   BillingLabItemRecord,
   BillingSourceEncounterRecord,
   CashierReportDayRange,
@@ -131,6 +132,7 @@ export class BillingRepository {
       row.medication
         ? {
             medicationId: row.medication.id,
+            prescriptionItemId: row.prescriptionItemId,
             quantity: row.quantity,
             medication: {
               id: row.medication.id,
@@ -142,6 +144,7 @@ export class BillingRepository {
           }
         : {
             medicationId: null,
+            prescriptionItemId: row.prescriptionItemId,
             quantity: row.quantity,
             medication: null,
             // A compound is priced from its ingredients plus a compounding
@@ -203,6 +206,8 @@ export class BillingRepository {
               itemType: item.itemType,
               serviceTariffId: item.serviceTariffId,
               medicationId: item.medicationId,
+              labOrderId: item.labOrderId,
+              prescriptionItemId: item.prescriptionItemId,
               description: item.description,
               quantity: item.quantity,
               unitPrice: item.unitPrice,
@@ -395,7 +400,7 @@ export class BillingRepository {
       select: {
         labTestId: true,
         panelId: true,
-        labOrder: { select: { id: true, orderNumber: true } },
+        labOrder: { select: { id: true, orderNumber: true, chargeMode: true } },
         labTest: {
           select: {
             code: true,
@@ -417,6 +422,7 @@ export class BillingRepository {
     return rows.map((row) => ({
       labOrderId: row.labOrder.id,
       orderNumber: row.labOrder.orderNumber,
+      chargeMode: row.labOrder.chargeMode,
       labTestId: row.labTestId,
       testCode: row.labTest.code,
       testName: row.labTest.name,
@@ -427,6 +433,59 @@ export class BillingRepository {
       panelTariffId: row.panel?.serviceTariffId ?? null,
       panelPrice: toActiveTariffPrice(row.panel?.serviceTariff ?? null),
     }));
+  }
+
+  /**
+   * Every lab order and prescription raised on this visit, whatever their
+   * disposition (P18-T11). Cancelled ones are excluded — a withdrawn request is
+   * not something the cashier has to explain — but everything else comes back,
+   * including work sent outside, because "why is there no lab line on this
+   * bill" is exactly the question this answers.
+   */
+  async findClinicalRequestsForEncounter(
+    encounterId: string,
+  ): Promise<BillingClinicalRequestRecord[]> {
+    const [labOrders, prescriptions] = await Promise.all([
+      this.prisma.labOrder.findMany({
+        where: { encounterId, status: { not: 'CANCELLED' } },
+        select: {
+          id: true,
+          orderNumber: true,
+          chargeMode: true,
+          externalFacilityName: true,
+          _count: { select: { items: true } },
+        },
+        orderBy: { orderedAt: 'asc' },
+      }),
+      this.prisma.prescription.findMany({
+        where: { encounterId, deletedAt: null, status: { not: 'CANCELLED' } },
+        select: {
+          id: true,
+          chargeMode: true,
+          externalFacilityName: true,
+          _count: { select: { items: true } },
+        },
+        orderBy: { createdAt: 'asc' },
+      }),
+    ]);
+    return [
+      ...labOrders.map((order) => ({
+        kind: 'LAB_ORDER' as const,
+        id: order.id,
+        reference: order.orderNumber,
+        description: `${order._count.items} laboratory ${order._count.items === 1 ? 'test' : 'tests'}`,
+        chargeMode: order.chargeMode,
+        externalFacilityName: order.externalFacilityName,
+      })),
+      ...prescriptions.map((prescription) => ({
+        kind: 'PRESCRIPTION' as const,
+        id: prescription.id,
+        reference: null,
+        description: `${prescription._count.items} prescribed ${prescription._count.items === 1 ? 'item' : 'items'}`,
+        chargeMode: prescription.chargeMode,
+        externalFacilityName: prescription.externalFacilityName,
+      })),
+    ];
   }
 
   /**

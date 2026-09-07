@@ -246,6 +246,13 @@ enum AuditAction {
   LAB_SPECIMEN_COLLECTED
   LAB_SPECIMEN_RECEIVED
   LAB_SPECIMEN_REJECTED
+  /// A clinical request changed where it is filled or who pays for it
+  /// (P18-T11). Its own verb rather than a generic UPDATE because it is the
+  /// row a billing dispute turns on: "we were told the patient would buy it
+  /// outside" is answerable only if the change, the actor and the moment are
+  /// all recorded.
+  LAB_ORDER_DISPOSITION_CHANGED
+  PRESCRIPTION_DISPOSITION_CHANGED
 }
 
 enum BpjsSubmissionType {
@@ -2070,20 +2077,30 @@ model Medication {
 }
 
 model Prescription {
-  id          String             @id @default(uuid()) @db.Uuid
-  patientId   String             @map("patient_id") @db.Uuid
-  doctorId    String             @map("doctor_id") @db.Uuid
+  id                   String             @id @default(uuid()) @db.Uuid
+  patientId            String             @map("patient_id") @db.Uuid
+  doctorId             String             @map("doctor_id") @db.Uuid
   /// The visit this prescription was written during. Nullable, and deliberately
   /// so: repeat prescriptions are issued between visits, and every MVP row
   /// predates the encounter record. Once set it is never moved — a prescription
   /// belongs to the visit that produced it.
-  encounterId String?            @map("encounter_id") @db.Uuid
-  status      PrescriptionStatus @default(DRAFT)
-  issuedAt    DateTime?          @map("issued_at")
-  notes       String?
-  createdAt   DateTime           @default(now()) @map("created_at")
-  updatedAt   DateTime           @updatedAt @map("updated_at")
-  deletedAt   DateTime?          @map("deleted_at")
+  encounterId          String?            @map("encounter_id") @db.Uuid
+  status               PrescriptionStatus @default(DRAFT)
+  /// Where the medicine is actually bought, and who pays (P18-T11). Billing
+  /// already only charges what the pharmacy dispensed, so EXTERNAL was never
+  /// double-billed — what this records is the *intent*, which is what
+  /// separates "the patient bought it outside" from "the pharmacy has not
+  /// dispensed yet". Both were an ISSUED prescription with no dispense record
+  /// until now.
+  fulfilmentSite       FulfilmentSite     @default(INTERNAL) @map("fulfilment_site")
+  chargeMode           ChargeMode         @default(CLINIC) @map("charge_mode")
+  /// The apotek the patient was sent to, when `fulfilmentSite` is EXTERNAL.
+  externalFacilityName String?            @map("external_facility_name")
+  issuedAt             DateTime?          @map("issued_at")
+  notes                String?
+  createdAt            DateTime           @default(now()) @map("created_at")
+  updatedAt            DateTime           @updatedAt @map("updated_at")
+  deletedAt            DateTime?          @map("deleted_at")
 
   patient         PatientProfile           @relation(fields: [patientId], references: [id], onDelete: Restrict)
   doctor          DoctorProfile            @relation(fields: [doctorId], references: [id], onDelete: Restrict)
@@ -2135,6 +2152,7 @@ model PrescriptionMedication {
   medication    Medication?                 @relation(fields: [medicationId], references: [id], onDelete: Restrict)
   components    PrescriptionItemComponent[]
   dispenseItems DispenseItem[]
+  invoiceItems  InvoiceItem[]
 
   @@index([prescriptionId])
   @@index([medicationId])
@@ -2424,27 +2442,41 @@ model Invoice {
 /// replaces them wholesale, and a voided invoice keeps its lines because the
 /// invoice row itself is never deleted.
 model InvoiceItem {
-  id              String          @id @default(uuid()) @db.Uuid
-  invoiceId       String          @map("invoice_id") @db.Uuid
-  itemType        InvoiceItemType @map("item_type")
-  serviceTariffId String?         @map("service_tariff_id") @db.Uuid
-  medicationId    String?         @map("medication_id") @db.Uuid
-  description     String
-  quantity        Int
-  unitPrice       Decimal         @map("unit_price") @db.Decimal(12, 2)
+  id                 String          @id @default(uuid()) @db.Uuid
+  invoiceId          String          @map("invoice_id") @db.Uuid
+  itemType           InvoiceItemType @map("item_type")
+  serviceTariffId    String?         @map("service_tariff_id") @db.Uuid
+  medicationId       String?         @map("medication_id") @db.Uuid
+  /// What this line was charged *for* (P18-T11). Provenance only, `SetNull`
+  /// like the two above — losing the source row must never take the billed
+  /// line with it, because the line is a financial snapshot.
+  ///
+  /// Without these, "was this lab order billed?" is answered by matching
+  /// descriptions and tariff ids, which breaks the moment a panel and a loose
+  /// test share a tariff or somebody edits a description. With them it is a
+  /// recorded fact, and reconciling work done against work billed is one join.
+  labOrderId         String?         @map("lab_order_id") @db.Uuid
+  prescriptionItemId String?         @map("prescription_item_id") @db.Uuid
+  description        String
+  quantity           Int
+  unitPrice          Decimal         @map("unit_price") @db.Decimal(12, 2)
   /// Always `quantity * unitPrice`, enforced by a CHECK in the migration —
   /// stored anyway because the row is a financial snapshot, not a view.
-  amount          Decimal         @db.Decimal(12, 2)
-  createdAt       DateTime        @default(now()) @map("created_at")
-  updatedAt       DateTime        @updatedAt @map("updated_at")
+  amount             Decimal         @db.Decimal(12, 2)
+  createdAt          DateTime        @default(now()) @map("created_at")
+  updatedAt          DateTime        @updatedAt @map("updated_at")
 
-  invoice       Invoice        @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
-  serviceTariff ServiceTariff? @relation(fields: [serviceTariffId], references: [id], onDelete: SetNull)
-  medication    Medication?    @relation(fields: [medicationId], references: [id], onDelete: SetNull)
+  invoice          Invoice                 @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  serviceTariff    ServiceTariff?          @relation(fields: [serviceTariffId], references: [id], onDelete: SetNull)
+  medication       Medication?             @relation(fields: [medicationId], references: [id], onDelete: SetNull)
+  labOrder         LabOrder?               @relation(fields: [labOrderId], references: [id], onDelete: SetNull)
+  prescriptionItem PrescriptionMedication? @relation(fields: [prescriptionItemId], references: [id], onDelete: SetNull)
 
   @@index([invoiceId])
   @@index([serviceTariffId])
   @@index([medicationId])
+  @@index([labOrderId])
+  @@index([prescriptionItemId])
   @@map("invoice_items")
 }
 
@@ -4655,6 +4687,37 @@ enum LabOrderPriority {
   @@map("lab_order_priority")
 }
 
+/// Where a clinical request is actually filled (P18-T11).
+///
+/// Separate from {@link ChargeMode} because who performs the work and who
+/// charges for it are different questions. A klinik that sends blood to a lab
+/// rujukan and then bills the patient itself with a markup is EXTERNAL here and
+/// CLINIC there — one combined flag could not express it.
+///
+/// EXTERNAL never enters the lab worklist or the pharmacy queue: it is work
+/// nobody in this building will do.
+enum FulfilmentSite {
+  INTERNAL
+  EXTERNAL
+
+  @@map("fulfilment_site")
+}
+
+/// Who pays for a clinical request, and therefore whether it produces an
+/// invoice line at all (P18-T11).
+///
+/// CLINIC is the only value that bills. EXTERNAL means the outside lab or
+/// apotek charges the patient directly — billing it here would charge them
+/// twice. COVERED means a payer settles it away from the counter, so the
+/// receipt must not ask the patient for it.
+enum ChargeMode {
+  CLINIC
+  EXTERNAL
+  COVERED
+
+  @@map("charge_mode")
+}
+
 /// Sequence source for per-day lab order numbers — the `InvoiceCounter`
 /// reasoning applied to the bench. Allocation is one atomic
 /// `INSERT … ON CONFLICT … RETURNING` inside the order-create transaction,
@@ -4691,6 +4754,15 @@ model LabOrder {
   /// encounter is the analis's business (P18-T03).
   clinicalNotes             String?          @map("clinical_notes")
   isFasting                 Boolean          @default(false) @map("is_fasting")
+  /// Where the work is run, and who pays for it (P18-T11). Defaulted so every
+  /// row written before this ticket keeps exactly the behaviour it had: run
+  /// here, billed here.
+  fulfilmentSite            FulfilmentSite   @default(INTERNAL) @map("fulfilment_site")
+  chargeMode                ChargeMode       @default(CLINIC) @map("charge_mode")
+  /// The lab the patient was sent to, when `fulfilmentSite` is EXTERNAL. Free
+  /// text: a klinik pratama refers to whichever lab it has an arrangement
+  /// with, and a directory of them is not this ticket.
+  externalFacilityName      String?          @map("external_facility_name")
   /// How many times a specimen for this order was rejected and had to be
   /// drawn again (P18-T03). Counted on the order rather than derived from the
   /// specimen rows so the worklist badge is one column read, and because it
@@ -4705,11 +4777,12 @@ model LabOrder {
   createdAt                 DateTime         @default(now()) @map("created_at")
   updatedAt                 DateTime         @updatedAt @map("updated_at")
 
-  encounter Encounter      @relation(fields: [encounterId], references: [id], onDelete: Restrict)
-  patient   PatientProfile @relation(fields: [patientId], references: [id], onDelete: Restrict)
-  orderedBy DoctorProfile  @relation(fields: [orderedById], references: [id], onDelete: Restrict)
-  items     LabOrderItem[]
-  specimens LabSpecimen[]
+  encounter    Encounter      @relation(fields: [encounterId], references: [id], onDelete: Restrict)
+  patient      PatientProfile @relation(fields: [patientId], references: [id], onDelete: Restrict)
+  orderedBy    DoctorProfile  @relation(fields: [orderedById], references: [id], onDelete: Restrict)
+  items        LabOrderItem[]
+  specimens    LabSpecimen[]
+  invoiceItems InvoiceItem[]
 
   @@index([encounterId])
   @@index([patientId, orderedAt])

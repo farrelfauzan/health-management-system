@@ -8612,6 +8612,9 @@ export const PrescriptionScalarFieldEnum = {
   doctorId: 'doctorId',
   encounterId: 'encounterId',
   status: 'status',
+  fulfilmentSite: 'fulfilmentSite',
+  chargeMode: 'chargeMode',
+  externalFacilityName: 'externalFacilityName',
   issuedAt: 'issuedAt',
   notes: 'notes',
   createdAt: 'createdAt',
@@ -8782,6 +8785,8 @@ export const InvoiceItemScalarFieldEnum = {
   itemType: 'itemType',
   serviceTariffId: 'serviceTariffId',
   medicationId: 'medicationId',
+  labOrderId: 'labOrderId',
+  prescriptionItemId: 'prescriptionItemId',
   description: 'description',
   quantity: 'quantity',
   unitPrice: 'unitPrice',
@@ -9623,6 +9628,9 @@ export const LabOrderScalarFieldEnum = {
   priority: 'priority',
   clinicalNotes: 'clinicalNotes',
   isFasting: 'isFasting',
+  fulfilmentSite: 'fulfilmentSite',
+  chargeMode: 'chargeMode',
+  externalFacilityName: 'externalFacilityName',
   recollectCount: 'recollectCount',
   orderedAt: 'orderedAt',
   cancelledAt: 'cancelledAt',
@@ -10222,6 +10230,34 @@ export type EnumPrescriptionStatusFieldRefInput<$PrismaModel> = FieldRefInputTyp
  * Reference to a field of type 'PrescriptionStatus[]'
  */
 export type ListEnumPrescriptionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PrescriptionStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'FulfilmentSite'
+ */
+export type EnumFulfilmentSiteFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FulfilmentSite'>
+    
+
+
+/**
+ * Reference to a field of type 'FulfilmentSite[]'
+ */
+export type ListEnumFulfilmentSiteFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FulfilmentSite[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ChargeMode'
+ */
+export type EnumChargeModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ChargeMode'>
+    
+
+
+/**
+ * Reference to a field of type 'ChargeMode[]'
+ */
+export type ListEnumChargeModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ChargeMode[]'>
     
 
 

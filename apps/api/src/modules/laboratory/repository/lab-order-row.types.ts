@@ -1,4 +1,6 @@
 import {
+  ChargeModeValue,
+  FulfilmentSiteValue,
   LabOrderItemStatusValue,
   LabOrderPriorityValue,
   LabOrderStatusValue,
@@ -54,6 +56,9 @@ export type LabOrderRow = {
   priority: LabOrderPriorityValue;
   clinicalNotes: string | null;
   isFasting: boolean;
+  fulfilmentSite: FulfilmentSiteValue;
+  chargeMode: ChargeModeValue;
+  externalFacilityName: string | null;
   recollectCount: number;
   orderedAt: Date;
   cancelledAt: Date | null;

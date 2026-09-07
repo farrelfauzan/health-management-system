@@ -529,6 +529,18 @@
         "ACCOMMODATION": "Room",
         "LAB": "Laboratory",
         "OTHER": "Other"
+      },
+      "clinicalRequests": {
+        "title": "Requested on this visit",
+        "labOrder": "Lab order",
+        "prescription": "Prescription",
+        "notOnThisBill": "Not on this bill",
+        "state": {
+          "BILLED": "Charged here",
+          "EXTERNAL": "Filled elsewhere — they charge the patient",
+          "COVERED": "Covered by a payer, not charged here",
+          "NOT_BILLED": "Meant to be charged here, but no line was produced"
+        }
       }
     },
     "integrations": {

@@ -18,6 +18,8 @@ export type EncounterLabOrderControllerCreateLabOrderV1201Data = {
   priority: string;
   clinicalNotes: string;
   isFasting: boolean;
+  fulfilmentSite: string;
+  chargeMode: string;
   recollectCount: number;
   orderedAt: string;
   items: EncounterLabOrderControllerCreateLabOrderV1201DataItemsItem[];

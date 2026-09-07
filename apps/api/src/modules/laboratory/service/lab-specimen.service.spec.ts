@@ -83,6 +83,9 @@ describe('LabSpecimenService', () => {
       priority: 'ROUTINE' as const,
       clinicalNotes: null,
       isFasting: false,
+      fulfilmentSite: 'INTERNAL' as const,
+      chargeMode: 'CLINIC' as const,
+      externalFacilityName: null,
       recollectCount: 0,
       orderedAt: timestamp,
       cancelledAt: null,
@@ -171,6 +174,24 @@ describe('LabSpecimenService', () => {
       await expect(
         service.collectLabSpecimens(labOrderId, {}, analystUser),
       ).rejects.toBeInstanceOf(ConflictException);
+      expect(labSpecimenRepositoryMock.collectLabSpecimens).not.toHaveBeenCalled();
+    });
+
+    // P18-T11. It never reaches the worklist, but the route is addressable by
+    // id, so the rule is stated at the service rather than left to the query
+    // that hides it.
+    it('refuses to draw for an order another lab is running', async () => {
+      labOrderRepositoryMock.findLabOrderById.mockResolvedValue(
+        buildOrderRecord({
+          fulfilmentSite: 'EXTERNAL',
+          externalFacilityName: 'Laboratorium Prodia Kemang',
+          items: [buildItem('hb', 'WHOLE_BLOOD')],
+        }),
+      );
+
+      await expect(
+        service.collectLabSpecimens(labOrderId, {}, analystUser),
+      ).rejects.toThrow('Laboratorium Prodia Kemang');
       expect(labSpecimenRepositoryMock.collectLabSpecimens).not.toHaveBeenCalled();
     });
 
