@@ -29,6 +29,7 @@ export default async function AdminPatientDetailPage({ params }: AdminPatientDet
     <PatientDetailPanel
       patientId={id}
       isSatusehatEnabled={isFeatureEnabled(claims, 'satusehat')}
+      isLaboratoryEnabled={isFeatureEnabled(claims, 'laboratory')}
     />
   );
 }

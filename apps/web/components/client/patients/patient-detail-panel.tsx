@@ -14,6 +14,7 @@ import {
 } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { PatientLabHistoryPanel } from '#components/client/laboratory/patient-lab-history-panel';
 import { PatientDocumentsPanel } from '#components/client/patient-documents/patient-documents-panel';
 import { AssignDoctorDialog } from '#components/client/patients/assign-doctor-dialog';
 import { PatientActivityCard } from '#components/client/patients/patient-activity-card';
@@ -32,17 +33,28 @@ import { usePatientDetail } from '#lib/patients/use-patient-detail';
 type PatientDetailPanelProps = {
   patientId: string;
   isSatusehatEnabled: boolean;
+  /**
+   * P18-T07. Resolved on the server page from the session claims. Visibility
+   * only: the API refuses the trend feed for a clinic without the entitlement
+   * whatever this says.
+   */
+  isLaboratoryEnabled?: boolean;
 };
 
 export function PatientDetailPanel({
   patientId,
   isSatusehatEnabled,
+  isLaboratoryEnabled = false,
 }: PatientDetailPanelProps) {
   const t = useTranslations('clinical');
   const ability = useAbility();
   // Visibility only. The tab hides for a role without the grant; the API's
   // guard is what refuses the list to anyone who reaches the route anyway.
   const canReadDocuments = ability.can('read', 'PatientDocument');
+  // P18-T07. Two gates, refusing for different reasons: a clinic without the
+  // entitlement has no laboratory at all, and a person without the order key
+  // has one they may not read.
+  const canReadLabHistory = isLaboratoryEnabled && ability.can('read', 'LabOrder');
   const detailQuery = usePatientDetail(patientId);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState<boolean>(false);
   const [isAssignDialogOpen, setIsAssignDialogOpen] = useState<boolean>(false);
@@ -94,6 +106,9 @@ export function PatientDetailPanel({
           {canReadDocuments ? (
             <TabsTrigger value="documents">{t('patients.tabs.documents')}</TabsTrigger>
           ) : null}
+          {canReadLabHistory ? (
+            <TabsTrigger value="laboratory">{t('patients.tabs.laboratory')}</TabsTrigger>
+          ) : null}
         </TabsList>
         <TabsContent value="overview">
           <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">
@@ -120,6 +135,11 @@ export function PatientDetailPanel({
         {canReadDocuments ? (
           <TabsContent value="documents">
             <PatientDocumentsPanel patientId={patient.id} />
+          </TabsContent>
+        ) : null}
+        {canReadLabHistory ? (
+          <TabsContent value="laboratory">
+            <PatientLabHistoryPanel patientId={patient.id} />
           </TabsContent>
         ) : null}
       </Tabs>
