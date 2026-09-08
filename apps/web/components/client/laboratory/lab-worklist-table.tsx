@@ -36,7 +36,13 @@ export function LabWorklistTable({
   const sorted = [...items].sort(compareWorklistItems);
 
   if (isPending) {
-    return <TableSkeleton columns={TABLE_COLUMN_COUNT} />;
+    return (
+      <DataTable minWidthClassName="min-w-[64rem]">
+        <TableBody>
+          <TableSkeleton columns={TABLE_COLUMN_COUNT} />
+        </TableBody>
+      </DataTable>
+    );
   }
 
   if (isError && sorted.length === 0) {

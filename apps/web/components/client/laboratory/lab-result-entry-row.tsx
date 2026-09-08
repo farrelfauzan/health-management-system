@@ -34,7 +34,8 @@ type LabResultEntryRowProps = {
   isDirty: boolean;
   disabled: boolean;
   onChange: (draft: LabResultDraft) => void;
-  onBlur: () => void;
+  /** Called with the draft to save when the analis leaves the row or picks a coded value. */
+  onCommit: (draft: LabResultDraft) => void;
 };
 
 /**
@@ -51,7 +52,7 @@ export function LabResultEntryRow({
   isDirty,
   disabled,
   onChange,
-  onBlur,
+  onCommit,
 }: LabResultEntryRowProps) {
   const t = useTranslations('operations.laboratory.entry');
   const range = preview.range
@@ -82,15 +83,16 @@ export function LabResultEntryRow({
             value={draft.valueNumeric}
             disabled={disabled}
             onChange={(event) => onChange({ ...draft, valueNumeric: event.target.value })}
-            onBlur={onBlur}
+            onBlur={() => onCommit(draft)}
           />
         ) : item.resultType === 'CODED' ? (
           <Select
             value={draft.valueCoded}
             disabled={disabled}
             onValueChange={(value) => {
-              onChange({ ...draft, valueCoded: value });
-              onBlur();
+              const next = { ...draft, valueCoded: value };
+              onChange(next);
+              onCommit(next);
             }}
           >
             <SelectTrigger aria-label={item.name} className="w-44">
@@ -113,7 +115,7 @@ export function LabResultEntryRow({
             placeholder={t('textPlaceholder')}
             disabled={disabled}
             onChange={(event) => onChange({ ...draft, valueText: event.target.value })}
-            onBlur={onBlur}
+            onBlur={() => onCommit(draft)}
           />
         )}
       </TableCell>

@@ -68,7 +68,7 @@ function renderRow(valueNumeric: string): void {
             isDirty={false}
             disabled={false}
             onChange={vi.fn()}
-            onBlur={vi.fn()}
+            onCommit={vi.fn()}
           />
         </tbody>
       </table>

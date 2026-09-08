@@ -57,9 +57,15 @@ export function LabResultEntryForm({ bench, labTestsById }: LabResultEntryFormPr
     setDirtyIds((previous) => new Set(previous).add(itemId));
   }
 
-  async function saveItems(itemIds: readonly string[]): Promise<void> {
-    const entries = itemIds
-      .map((itemId) => toEntry(itemId, items, drafts[itemId]))
+  /**
+   * Saves the given drafts. A row commits its *own* draft rather than what
+   * state holds, because a select fires change and commit in one tick and the
+   * state the closure sees is a render behind — the value would be marked
+   * dirty and never sent.
+   */
+  async function saveDrafts(pending: readonly { itemId: string; draft: LabResultDraft }[]): Promise<void> {
+    const entries = pending
+      .map(({ itemId, draft }) => toEntry(itemId, items, draft))
       .filter((entry): entry is LabResultEntryInput => entry !== null);
     if (entries.length === 0) {
       return;
@@ -116,9 +122,10 @@ export function LabResultEntryForm({ bench, labTestsById }: LabResultEntryFormPr
                 isDirty={dirtyIds.has(item.id)}
                 disabled={saveMutation.isPending}
                 onChange={(next) => updateDraft(item.id, next)}
-                onBlur={() => {
-                  if (dirtyIds.has(item.id)) {
-                    void saveItems([item.id]);
+                onCommit={(next) => {
+                  const saved = toDraft(current.get(item.id));
+                  if (!isSameDraft(saved, next) || dirtyIds.has(item.id)) {
+                    void saveDrafts([{ itemId: item.id, draft: next }]);
                   }
                 }}
               />
@@ -132,7 +139,11 @@ export function LabResultEntryForm({ bench, labTestsById }: LabResultEntryFormPr
         ) : null}
         <Button
           type="button"
-          onClick={() => saveItems([...dirtyIds])}
+          onClick={() =>
+            saveDrafts(
+              [...dirtyIds].map((itemId) => ({ itemId, draft: drafts[itemId] ?? toDraft(undefined) })),
+            )
+          }
           disabled={saveMutation.isPending || dirtyIds.size === 0}
         >
           {saveMutation.isPending ? t('saving') : t('save')}
@@ -152,6 +163,14 @@ function pickCurrentResults(results: readonly LabResultView[]): Map<string, LabR
     }
   }
   return current;
+}
+
+function isSameDraft(left: LabResultDraft, right: LabResultDraft): boolean {
+  return (
+    left.valueNumeric.trim() === right.valueNumeric.trim() &&
+    left.valueText.trim() === right.valueText.trim() &&
+    left.valueCoded === right.valueCoded
+  );
 }
 
 function toDraft(result: LabResultView | undefined): LabResultDraft {
