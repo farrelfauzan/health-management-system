@@ -974,9 +974,9 @@ describe('SatusehatFhirMapper', () => {
       expect(actualObservations).toHaveLength(8);
       const actualCodings = actualObservations.map((observation) => ({
         loincCode: observation.code.coding[0]?.code,
-        value: observation.valueQuantity.value,
-        unit: observation.valueQuantity.unit,
-        ucumCode: observation.valueQuantity.code,
+        value: observation.valueQuantity?.value,
+        unit: observation.valueQuantity?.unit,
+        ucumCode: observation.valueQuantity?.code,
       }));
       expect(actualCodings).toEqual([
         { loincCode: '8302-2', value: 165, unit: 'cm', ucumCode: 'cm' },
@@ -992,7 +992,7 @@ describe('SatusehatFhirMapper', () => {
       expect(firstObservation?.status).toBe('final');
       expect(firstObservation?.category[0]?.coding[0]?.code).toBe('vital-signs');
       expect(firstObservation?.code.coding[0]?.system).toBe('http://loinc.org');
-      expect(firstObservation?.valueQuantity.system).toBe('http://unitsofmeasure.org');
+      expect(firstObservation?.valueQuantity?.system).toBe('http://unitsofmeasure.org');
       expect(firstObservation?.subject).toEqual({ reference: 'Patient/P02478375538' });
       expect(firstObservation?.encounter).toEqual({ reference: 'urn:uuid:encounter-entry' });
       expect(firstObservation?.performer).toEqual([{ reference: 'Practitioner/N10000001' }]);

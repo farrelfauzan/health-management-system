@@ -34,7 +34,10 @@ const doctorId = '1c2d3e4f-5a6b-4c7d-8e9f-0a1b2c3d4e5f';
 function buildSubmission(overrides: Partial<SatusehatSubmissionRecord> = {}): SatusehatSubmissionRecord {
   return {
     id: 'a0b1c2d3-e4f5-4a6b-8c7d-9e0f1a2b3c4d',
+    kind: 'ENCOUNTER',
     encounterId,
+    labOrderId: null,
+    labOrderNumber: null,
     status: 'PENDING',
     attempts: 0,
     lastError: null,

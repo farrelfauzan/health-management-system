@@ -11,8 +11,13 @@ import {
   SatusehatSubmissionPage,
   SatusehatSubmissionPrescription,
   SatusehatSubmissionProcedure,
+  SatusehatLabReportBundleData,
+  SatusehatLabReportResult,
+  SatusehatSubmissionKindValue,
   SatusehatSubmissionRecord,
+  SatusehatSubmissionStatusValue,
   SaveAllergyIhsIdPayload,
+  SaveLabReportIhsIdsPayload,
 } from '@hms/shared-types';
 import { Injectable } from '@nestjs/common';
 
@@ -26,7 +31,10 @@ const MILLISECONDS_PER_SECOND = 1000;
 function toSubmissionRecord(row: ClaimedSubmissionRow): SatusehatSubmissionRecord {
   return {
     id: row.id,
+    kind: row.kind,
     encounterId: row.encounter_id,
+    labOrderId: row.lab_order_id,
+    labOrderNumber: row.lab_order_number,
     status: row.status,
     attempts: row.attempts,
     lastError: row.last_error,
@@ -39,9 +47,58 @@ function toSubmissionRecord(row: ClaimedSubmissionRow): SatusehatSubmissionRecor
   };
 }
 
+/**
+ * The order number is the only thing about a lab order the outbox surfaces —
+ * never a value, never a test name. Kept as one include so every read of a
+ * submission row returns the same shape.
+ */
+const SUBMISSION_ORDER_NUMBER_INCLUDE = {
+  labOrder: { select: { orderNumber: true } },
+} as const;
+
+type SubmissionRowWithOrderNumber = {
+  id: string;
+  kind: SatusehatSubmissionKindValue;
+  encounterId: string | null;
+  labOrderId: string | null;
+  status: SatusehatSubmissionStatusValue;
+  attempts: number;
+  lastError: string | null;
+  nextAttemptAt: Date;
+  lastAttemptAt: Date | null;
+  submittedAt: Date | null;
+  satusehatEncounterId: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+  labOrder: { orderNumber: string } | null;
+};
+
+/** Flattens the joined order number onto the record the services consume. */
+function toSubmissionRecordFromRow(
+  row: SubmissionRowWithOrderNumber,
+): SatusehatSubmissionRecord {
+  const { labOrder, ...rest } = row;
+  return { ...rest, labOrderNumber: labOrder?.orderNumber ?? null };
+}
+
 const MEDICATION_SELECT = {
   select: { id: true, code: true, kfaCode: true, name: true, unit: true },
 } as const;
+
+type LabReportResultRow = {
+  id: string;
+  valueNumeric: unknown;
+  valueText: string | null;
+  valueCoded: string | null;
+  unit: string | null;
+  refLow: unknown;
+  refHigh: unknown;
+  refText: string | null;
+  flag: SatusehatLabReportResult['flag'];
+  amendedFromId: string | null;
+  enteredAt: Date;
+  verifiedAt: Date | null;
+};
 
 type MedicationRow = {
   id: string;
@@ -135,50 +192,107 @@ export class SatusehatSubmissionRepository {
    * already relies on across restarts. The real outcome overwrites the lease:
    * success marks the row SUBMITTED, a transient failure reschedules it on the
    * backoff, a permanent one settles it FAILED.
+   *
+   * A LAB_REPORT row carries one extra condition (P18-T09): its
+   * DiagnosticReport has to reference `Encounter/{ihs}`, so it depends on the
+   * sibling ENCOUNTER row for the same encounter. The claim admits it only
+   * once that sibling has *settled* — SUBMITTED, so the report can be sent, or
+   * FAILED, so it can be parked with a reason an admin can act on.
+   *
+   * A sibling still PENDING (or not yet written, because the visit is open)
+   * leaves the row unclaimed rather than failing it: nothing has gone wrong,
+   * the report is simply early, and a later cycle picks it up with no admin
+   * action. An order with no encounter at all is due immediately — there is no
+   * sibling to wait for, which is the shape P18-T10 introduces.
    */
   async claimDueSubmissions(
     payload: ClaimDueSubmissionsPayload,
   ): Promise<SatusehatSubmissionRecord[]> {
     const leaseSeconds = payload.leaseMs / MILLISECONDS_PER_SECOND;
     const rows = await this.prisma.$queryRaw<ClaimedSubmissionRow[]>`
-      UPDATE "satusehat_submissions"
+      UPDATE "satusehat_submissions" AS "claimed"
       SET "next_attempt_at" = now() + make_interval(secs => ${leaseSeconds}::double precision),
           "updated_at" = now()
-      WHERE "id" IN (
-        SELECT "id"
-        FROM "satusehat_submissions"
-        WHERE "status" = 'PENDING'::"SatusehatSubmissionStatus"
-          AND "next_attempt_at" <= now()
-        ORDER BY "next_attempt_at" ASC
+      WHERE "claimed"."id" IN (
+        SELECT "due"."id"
+        FROM "satusehat_submissions" AS "due"
+        LEFT JOIN "lab_orders" AS "order" ON "order"."id" = "due"."lab_order_id"
+        WHERE "due"."status" = 'PENDING'::"SatusehatSubmissionStatus"
+          AND "due"."next_attempt_at" <= now()
+          AND (
+            "due"."kind" = 'ENCOUNTER'::satusehat_submission_kind
+            OR "order"."encounter_id" IS NULL
+            OR EXISTS (
+              SELECT 1
+              FROM "satusehat_submissions" AS "sibling"
+              WHERE "sibling"."kind" = 'ENCOUNTER'::satusehat_submission_kind
+                AND "sibling"."encounter_id" = "order"."encounter_id"
+                AND "sibling"."status" IN (
+                  'SUBMITTED'::"SatusehatSubmissionStatus",
+                  'FAILED'::"SatusehatSubmissionStatus"
+                )
+            )
+          )
+        ORDER BY "due"."next_attempt_at" ASC
         LIMIT ${payload.limit}::integer
-        FOR UPDATE SKIP LOCKED
+        FOR UPDATE OF "due" SKIP LOCKED
       )
-      RETURNING "id", "encounter_id", "status", "attempts", "last_error",
-                "next_attempt_at", "last_attempt_at", "submitted_at",
-                "satusehat_encounter_id", "created_at", "updated_at"
+      RETURNING "claimed"."id", "claimed"."kind", "claimed"."encounter_id",
+                "claimed"."lab_order_id",
+                (
+                  SELECT "numbered"."order_number"
+                  FROM "lab_orders" AS "numbered"
+                  WHERE "numbered"."id" = "claimed"."lab_order_id"
+                ) AS "lab_order_number",
+                "claimed"."status", "claimed"."attempts",
+                "claimed"."last_error", "claimed"."next_attempt_at",
+                "claimed"."last_attempt_at", "claimed"."submitted_at",
+                "claimed"."satusehat_encounter_id", "claimed"."created_at",
+                "claimed"."updated_at"
     `;
     return rows.map((row) => toSubmissionRecord(row));
   }
 
   async findSubmissionById(id: string): Promise<SatusehatSubmissionRecord | null> {
-    return this.prisma.satusehatSubmission.findUnique({ where: { id } });
+    const row = await this.prisma.satusehatSubmission.findUnique({
+      where: { id },
+      include: SUBMISSION_ORDER_NUMBER_INCLUDE,
+    });
+    return row === null ? null : toSubmissionRecordFromRow(row);
+  }
+
+  /**
+   * Every LAB_REPORT row parked because its encounter never reached the
+   * platform, re-opened (P18-T09). Retrying the encounter is the admin action
+   * that fixes the cause; the reports that were waiting on it should not each
+   * need a second click to follow.
+   */
+  async requeueLabReportsForEncounter(encounterId: string): Promise<number> {
+    const result = await this.prisma.satusehatSubmission.updateMany({
+      where: { kind: 'LAB_REPORT', status: 'FAILED', labOrder: { encounterId } },
+      data: { status: 'PENDING', attempts: 0, nextAttemptAt: new Date() },
+    });
+    return result.count;
   }
 
   async findSubmissionPage(params: ListSatusehatSubmissionsParams): Promise<SatusehatSubmissionPage> {
     const where = {
       ...(params.status ? { status: params.status } : {}),
+      ...(params.kind ? { kind: params.kind } : {}),
       ...(params.encounterId ? { encounterId: params.encounterId } : {}),
+      ...(params.labOrderId ? { labOrderId: params.labOrderId } : {}),
     };
-    const [items, total] = await this.prisma.$transaction([
+    const [rows, total] = await this.prisma.$transaction([
       this.prisma.satusehatSubmission.findMany({
         where,
+        include: SUBMISSION_ORDER_NUMBER_INCLUDE,
         orderBy: { createdAt: 'desc' },
         skip: params.skip,
         take: params.take,
       }),
       this.prisma.satusehatSubmission.count({ where }),
     ]);
-    return { items, total };
+    return { items: rows.map((row) => toSubmissionRecordFromRow(row)), total };
   }
 
   /**
@@ -188,10 +302,12 @@ export class SatusehatSubmissionRepository {
    * attempt overwrites it, so the retry decision stays explainable.
    */
   async requeueSubmission(id: string): Promise<SatusehatSubmissionRecord> {
-    return this.prisma.satusehatSubmission.update({
+    const row = await this.prisma.satusehatSubmission.update({
       where: { id },
       data: { status: 'PENDING', attempts: 0, nextAttemptAt: new Date() },
+      include: SUBMISSION_ORDER_NUMBER_INCLUDE,
     });
+    return toSubmissionRecordFromRow(row);
   }
 
   async findBundleData(encounterId: string): Promise<SatusehatSubmissionBundleData | null> {
@@ -500,6 +616,190 @@ export class SatusehatSubmissionRepository {
    * the platform, which is the one failure mode worth being careful about
    * here (P10-T08).
    */
+  /**
+   * Everything the lab chain is built from, read fresh at submission time the
+   * way the encounter bundle is (P18-T09). No payload snapshot is stored, so a
+   * correction landed before the worker reaches the row is the version that
+   * gets reported — which is the behaviour a clinician expects from a system
+   * that lets values be amended.
+   *
+   * `satusehatEncounterId` comes from the encounter's own outbox row: it is
+   * the national id the DiagnosticReport must reference, and its absence is
+   * exactly the condition the claim gate exists to catch.
+   */
+  async findLabReportBundleData(labOrderId: string): Promise<SatusehatLabReportBundleData | null> {
+    const order = await this.prisma.labOrder.findUnique({
+      where: { id: labOrderId },
+      include: {
+        patient: { select: { id: true, fullName: true, satusehatPatientIdCiphertext: true } },
+        orderedBy: { select: { id: true, fullName: true, satusehatPractitionerId: true } },
+        encounter: {
+          select: {
+            id: true,
+            diagnoses: {
+              where: { deletedAt: null, type: 'PRIMARY' },
+              orderBy: { recordedAt: 'asc' },
+              take: 1,
+              select: { code: true, display: true },
+            },
+            satusehatSubmissions: {
+              where: { kind: 'ENCOUNTER' },
+              take: 1,
+              select: { satusehatEncounterId: true },
+            },
+          },
+        },
+        specimens: {
+          where: { status: { not: 'REJECTED' } },
+          orderBy: { collectedAt: 'asc' },
+          select: {
+            id: true,
+            specimenType: true,
+            accessionNumber: true,
+            collectedAt: true,
+          },
+        },
+        items: {
+          where: { status: { not: 'CANCELLED' } },
+          orderBy: { createdAt: 'asc' },
+          select: {
+            id: true,
+            specimenId: true,
+            labTest: { select: { name: true, loincCode: true, loincDisplay: true } },
+            results: {
+              orderBy: { version: 'desc' },
+              take: 1,
+              select: {
+                id: true,
+                valueNumeric: true,
+                valueText: true,
+                valueCoded: true,
+                unit: true,
+                refLow: true,
+                refHigh: true,
+                refText: true,
+                flag: true,
+                amendedFromId: true,
+                enteredAt: true,
+                verifiedAt: true,
+              },
+            },
+          },
+        },
+      },
+    });
+    if (order === null) {
+      return null;
+    }
+    const primaryDiagnosis = order.encounter?.diagnoses[0] ?? null;
+    return {
+      labOrderId: order.id,
+      orderNumber: order.orderNumber,
+      orderStatus: order.status,
+      orderedAt: order.orderedAt,
+      releasedAt: order.releasedAt,
+      encounterId: order.encounterId,
+      satusehatEncounterId:
+        order.encounter?.satusehatSubmissions[0]?.satusehatEncounterId ?? null,
+      patientId: order.patient.id,
+      patientName: order.patient.fullName,
+      patientIhsNumber: this.decryptOptional(order.patient.satusehatPatientIdCiphertext),
+      doctorId: order.orderedBy.id,
+      doctorName: order.orderedBy.fullName,
+      practitionerIhsNumber: order.orderedBy.satusehatPractitionerId,
+      // Always null today: `LabPanel` carries a local catalog code and a name,
+      // but no LOINC — P18-T01 gave tests one and panels none. Every report
+      // therefore codes as LOINC 11502-2 "Laboratory report", which is the
+      // fallback P18-T09 specifies for a mixed order and is not wrong for a
+      // single-panel one, merely less specific. The mapper already accepts a
+      // panel LOINC, so giving the catalog one is a single change here.
+      singlePanelLoincCode: null,
+      singlePanelLoincDisplay: null,
+      primaryConditionCode: primaryDiagnosis?.code ?? null,
+      primaryConditionDisplay: primaryDiagnosis?.display ?? null,
+      specimens: order.specimens.map((specimen) => ({
+        specimenId: specimen.id,
+        specimenType: specimen.specimenType,
+        accessionNumber: specimen.accessionNumber,
+        collectedAt: specimen.collectedAt,
+      })),
+      items: order.items.map((item, index) => ({
+        labOrderItemId: item.id,
+        // 1-based and taken from creation order, which is the order the items
+        // were written in and never changes — the ServiceRequest identifier
+        // suffix has to survive a resubmission.
+        itemSeq: index + 1,
+        testName: item.labTest.name,
+        loincCode: item.labTest.loincCode,
+        loincDisplay: item.labTest.loincDisplay,
+        specimenId: item.specimenId,
+        result: this.toLabReportResult(item.results[0] ?? null),
+      })),
+    };
+  }
+
+  /**
+   * Only a verified value is reportable. An entered-but-unverified row exists
+   * on a released order when an item was still being worked, and sending it
+   * would publish nationally what the bench has not yet signed off.
+   */
+  private toLabReportResult(row: LabReportResultRow | null): SatusehatLabReportResult | null {
+    if (row === null || row.verifiedAt === null) {
+      return null;
+    }
+    return {
+      labResultId: row.id,
+      valueNumeric: this.toNumberOrNull(row.valueNumeric),
+      valueText: row.valueText,
+      valueCoded: row.valueCoded,
+      unit: row.unit,
+      refLow: this.toNumberOrNull(row.refLow),
+      refHigh: this.toNumberOrNull(row.refHigh),
+      refText: row.refText,
+      flag: row.flag,
+      isAmendment: row.amendedFromId !== null,
+      enteredAt: row.enteredAt,
+    };
+  }
+
+  /**
+   * The IHS ids the platform assigned, written back so a resubmission updates
+   * the same resources rather than creating a second set (P18-T09). One
+   * transaction: a partial write-back would leave the order looking reported
+   * for some of its tests and not others.
+   */
+  async saveLabReportIhsIds(payload: SaveLabReportIhsIdsPayload): Promise<void> {
+    const itemEntries = Object.entries(payload.serviceRequestIdsByItemId);
+    const specimenEntries = Object.entries(payload.specimenIdsBySpecimenId);
+    const resultEntries = Object.entries(payload.observationIdsByResultId);
+    await this.prisma.executeTransaction(async (tx) => {
+      if (payload.diagnosticReportId !== null) {
+        await tx.labOrder.update({
+          where: { id: payload.labOrderId },
+          data: { satusehatDiagnosticReportId: payload.diagnosticReportId },
+        });
+      }
+      for (const [labOrderItemId, satusehatServiceRequestId] of itemEntries) {
+        await tx.labOrderItem.update({
+          where: { id: labOrderItemId },
+          data: { satusehatServiceRequestId },
+        });
+      }
+      for (const [labSpecimenId, satusehatSpecimenId] of specimenEntries) {
+        await tx.labSpecimen.update({
+          where: { id: labSpecimenId },
+          data: { satusehatSpecimenId },
+        });
+      }
+      for (const [labResultId, satusehatObservationId] of resultEntries) {
+        await tx.labResult.update({
+          where: { id: labResultId },
+          data: { satusehatObservationId },
+        });
+      }
+    });
+  }
+
   async saveAllergyIhsIds(payloads: readonly SaveAllergyIhsIdPayload[]): Promise<void> {
     if (payloads.length === 0) {
       return;

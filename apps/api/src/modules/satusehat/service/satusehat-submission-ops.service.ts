@@ -35,7 +35,9 @@ export class SatusehatSubmissionOpsService {
   ): Promise<SatusehatSubmissionsListResult> {
     const page = await this.submissionRepository.findSubmissionPage({
       status: query.status,
+      kind: query.kind,
       encounterId: query.encounterId,
+      labOrderId: query.labOrderId,
       skip: (query.page - 1) * query.limit,
       take: query.limit,
     });
@@ -57,11 +59,37 @@ export class SatusehatSubmissionOpsService {
       resource: SUBMISSION_AUDIT_RESOURCE,
       resourceId: id,
       actorUserId: currentUser.sub,
-      metadata: { encounterId: submission.encounterId, previousAttempts: submission.attempts },
+      metadata: {
+        kind: submission.kind,
+        encounterId: submission.encounterId,
+        labOrderId: submission.labOrderId,
+        previousAttempts: submission.attempts,
+      },
     });
     await this.submissionService.processSubmission(requeued);
     const settled = await this.submissionRepository.findSubmissionById(id);
+    await this.requeueDependentLabReports(settled ?? requeued);
     return this.toSubmissionView(settled ?? requeued);
+  }
+
+  /**
+   * A lab report parks FAILED when the encounter it must reference never
+   * reached the platform (P18-T09). Retrying that encounter is the admin
+   * action that fixes the cause, so the reports waiting on it are re-opened
+   * here rather than needing a second click each. Only on success: an
+   * encounter that failed again leaves them parked, still explaining why.
+   */
+  private async requeueDependentLabReports(
+    submission: SatusehatSubmissionRecord,
+  ): Promise<void> {
+    if (
+      submission.kind !== 'ENCOUNTER' ||
+      submission.status !== 'SUBMITTED' ||
+      submission.encounterId === null
+    ) {
+      return;
+    }
+    await this.submissionRepository.requeueLabReportsForEncounter(submission.encounterId);
   }
 
   private assertRetryable(submission: SatusehatSubmissionRecord): void {
@@ -76,7 +104,10 @@ export class SatusehatSubmissionOpsService {
   private toSubmissionView(record: SatusehatSubmissionRecord): SatusehatSubmissionView {
     return {
       id: record.id,
+      kind: record.kind,
       encounterId: record.encounterId,
+      labOrderId: record.labOrderId,
+      labOrderNumber: record.labOrderNumber,
       status: record.status,
       attempts: record.attempts,
       lastError: record.lastError,

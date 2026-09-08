@@ -9,12 +9,16 @@ import {
 import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from '../../../common/prisma/prisma.service';
+import { PrismaTransactionClient } from '../../../common/prisma/prisma.types';
 import {
   DecimalRow,
   LabResultEntryItemRow,
   LabResultRow,
   PatientLabResultRow,
 } from './lab-result-row.types';
+
+/** Prisma's unique-violation code: the open-row index said no. */
+const UNIQUE_VIOLATION_CODE = 'P2002';
 
 const PATIENT_LAB_RESULT_INCLUDE = {
   labOrderItem: {
@@ -154,6 +158,7 @@ export class LabResultRepository {
         where: { id: payload.labOrderId },
         data: { status: 'RELEASED', releasedAt: payload.verifiedAt },
       });
+      await this.enqueueSatusehatLabReport(tx, payload.labOrderId);
       const rows = await tx.labResult.findMany({
         where: { labOrderItem: { labOrderId: payload.labOrderId } },
         orderBy: { version: 'asc' },
@@ -197,11 +202,44 @@ export class LabResultRepository {
         where: { id: payload.labOrderId },
         data: { status: 'RELEASED', releasedAt: payload.verifiedAt },
       });
+      await this.enqueueSatusehatLabReport(tx, payload.labOrderId);
 
       return created as unknown as LabResultRow;
     });
 
     return this.toLabResultRecord(row);
+  }
+
+  /**
+   * Queues the order for the national record, inside the release transaction
+   * and under the same rule the encounter outbox follows (P18-T09): a report
+   * that is released is a report that will be reported, and a release that
+   * rolls back queues nothing.
+   *
+   * An amendment re-releases the order and enqueues again — unless a row is
+   * still open, in which case the worker has not sent the earlier version yet
+   * and will pick up the corrected values when it does. The database says the
+   * same thing through `satusehat_submissions_lab_order_open_key`; the read
+   * here only spares the common case an exception.
+   */
+  private async enqueueSatusehatLabReport(
+    tx: PrismaTransactionClient,
+    labOrderId: string,
+  ): Promise<void> {
+    const open = await tx.satusehatSubmission.findFirst({
+      where: { kind: 'LAB_REPORT', labOrderId, status: { not: 'SUBMITTED' } },
+      select: { id: true },
+    });
+    if (open !== null) {
+      return;
+    }
+    try {
+      await tx.satusehatSubmission.create({ data: { kind: 'LAB_REPORT', labOrderId } });
+    } catch (caughtError) {
+      if ((caughtError as { code?: unknown }).code !== UNIQUE_VIOLATION_CODE) {
+        throw caughtError;
+      }
+    }
   }
 
   async findLabResultById(id: string): Promise<LabResultRecord | null> {
