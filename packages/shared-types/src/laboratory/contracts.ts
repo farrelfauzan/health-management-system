@@ -3,6 +3,7 @@ import type {
   FulfilmentSiteValue,
   LabOrderItemStatusValue,
   LabOrderPriorityValue,
+  LabOrderSourceValue,
   LabOrderStatusValue,
   LabReportStatusValue,
   LabResultFlagValue,
@@ -99,10 +100,18 @@ export type LabOrderItemView = {
 export type LabOrderView = {
   id: string;
   orderNumber: string;
-  encounterId: string;
+  /** Absent for a request that did not come from a consultation (P18-T10). */
+  encounterId?: string;
+  /** The visit, which every order has whichever way the request arrived. */
+  registrationId: string;
+  source: LabOrderSourceValue;
   patientId: string;
-  orderedById: string;
-  orderedByName: string;
+  /** Absent when nobody at this clinic ordered it. */
+  orderedById?: string;
+  orderedByName?: string;
+  /** Who asked, when it was a doctor elsewhere (EXTERNAL_REFERRAL only). */
+  externalRequesterName?: string;
+  externalRequesterFacility?: string;
   status: LabOrderStatusValue;
   priority: LabOrderPriorityValue;
   clinicalNotes?: string;

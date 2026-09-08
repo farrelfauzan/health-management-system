@@ -42,7 +42,7 @@ export class LabPaymentGateService {
     if (!worklistOrder || !this.isAwaitingPayment(worklistOrder)) {
       return;
     }
-    if (await this.billingService.hasSettledInvoiceForEncounter(order.encounterId)) {
+    if (await this.billingService.hasSettledInvoiceForVisit(order.registrationId)) {
       return;
     }
     throw new ConflictException({
@@ -69,13 +69,13 @@ export class LabPaymentGateService {
     if (candidates.length === 0) {
       return new Set();
     }
-    const settledEncounterIds = await this.billingService.findEncounterIdsWithSettledInvoice(
-      candidates.map((record) => record.encounterId),
+    const settledVisitIds = await this.billingService.findVisitIdsWithSettledInvoice(
+      candidates.map((record) => record.registrationId),
     );
 
     return new Set(
       candidates
-        .filter((record) => !settledEncounterIds.has(record.encounterId))
+        .filter((record) => !settledVisitIds.has(record.registrationId))
         .map((record) => record.id),
     );
   }

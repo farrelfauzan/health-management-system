@@ -4,6 +4,7 @@ import {
   BillingClinicalRequestRecord,
   BillingLabItemRecord,
   BillingSourceEncounterRecord,
+  BillingSourceVisitRecord,
   CashierReportDayRange,
   CashierReportItemRecord,
   CashierReportPaymentRecord,
@@ -67,6 +68,7 @@ export class BillingRepository {
         id: true,
         status: true,
         patientId: true,
+        registrationId: true,
         procedures: {
           where: { deletedAt: null },
           select: { id: true, code: true, display: true },
@@ -175,6 +177,27 @@ export class BillingRepository {
     });
   }
 
+  /** The walk-in visit's live bill, if it already has one (P18-T10). */
+  async findLiveInvoiceByRegistrationId(registrationId: string): Promise<{ id: string } | null> {
+    return this.prisma.invoice.findFirst({
+      where: { registrationId, deletedAt: null, status: { not: 'VOID' } },
+      select: { id: true },
+    });
+  }
+
+  /**
+   * The visit itself, for a bill that has no encounter behind it (P18-T10).
+   * Read rather than trusted from the caller so the invoice can never name a
+   * patient the registration does not.
+   */
+  async findVisitForBilling(registrationId: string): Promise<BillingSourceVisitRecord | null> {
+    const registration = await this.prisma.findFirstActive(this.prisma.registration, {
+      where: { id: registrationId },
+      select: { id: true, patientId: true, type: true, status: true },
+    });
+    return registration ?? null;
+  }
+
   async findLiveInvoiceByAdmissionId(admissionId: string): Promise<{ id: string } | null> {
     return this.prisma.invoice.findFirst({
       where: { admissionId, deletedAt: null, status: { not: 'VOID' } },
@@ -198,6 +221,7 @@ export class BillingRepository {
           invoiceNumber,
           encounterId: payload.encounterId,
           admissionId: payload.admissionId,
+          registrationId: payload.registrationId,
           patientId: payload.patientId,
           createdById: payload.createdById,
           totalAmount: payload.totalAmount,
@@ -391,11 +415,17 @@ export class BillingRepository {
    * charged — and both tariffs come back on every row so the service can price
    * a panel once and a loose test on its own without a second query.
    */
-  async findLabItemsForBilling(encounterId: string): Promise<BillingLabItemRecord[]> {
+  /**
+   * The tests billable for one visit. Keyed on the registration rather than the
+   * encounter (P18-T10) because that is the key every order has: a consultation
+   * visit maps one-to-one to its encounter, and a walk-in has no encounter at
+   * all.
+   */
+  async findLabItemsForBilling(registrationId: string): Promise<BillingLabItemRecord[]> {
     const rows = await this.prisma.labOrderItem.findMany({
       where: {
         status: { not: 'CANCELLED' },
-        labOrder: { encounterId, status: { not: 'CANCELLED' } },
+        labOrder: { registrationId, status: { not: 'CANCELLED' } },
       },
       select: {
         labTestId: true,
@@ -512,12 +542,13 @@ export class BillingRepository {
    * by `canTransitionInvoiceStatus`'s own rule — a voided bill charges nobody —
    * and the partial unique index means at most one live invoice exists anyway.
    */
-  async hasIssuedInvoiceForEncounter(encounterId: string): Promise<boolean> {
+  /** Keyed on the visit, so it answers for a walk-in too (P18-T10). */
+  async hasIssuedInvoiceForVisit(registrationId: string): Promise<boolean> {
     const existing = await this.prisma.invoice.findFirst({
       where: {
-        encounterId,
         status: { in: ['ISSUED', 'PAID'] },
         deletedAt: null,
+        OR: [{ registrationId }, { encounter: { registrationId } }],
       },
       select: { id: true },
     });
@@ -529,21 +560,28 @@ export class BillingRepository {
    * for the whole worklist rather than one per row, and a set rather than rows
    * because the only question asked of it is membership.
    */
-  async findEncounterIdsWithSettledInvoice(
-    encounterIds: readonly string[],
+  /**
+   * Which of these visits have been paid for. Keyed on the registration rather
+   * than the encounter (P18-T10) because that is the key every lab order has,
+   * and it has to match a bill written either way: a consultation visit's
+   * invoice names its encounter, a walk-in's names the registration directly.
+   */
+  async findVisitIdsWithSettledInvoice(
+    registrationIds: readonly string[],
   ): Promise<ReadonlySet<string>> {
+    const ids = [...registrationIds];
     const rows = await this.prisma.invoice.findMany({
       where: {
-        encounterId: { in: [...encounterIds] },
         status: 'PAID',
         deletedAt: null,
+        OR: [{ registrationId: { in: ids } }, { encounter: { registrationId: { in: ids } } }],
       },
-      select: { encounterId: true },
+      select: { registrationId: true, encounter: { select: { registrationId: true } } },
     });
     return new Set(
       rows
-        .map((row) => row.encounterId)
-        .filter((encounterId): encounterId is string => encounterId !== null),
+        .map((row) => row.registrationId ?? row.encounter?.registrationId ?? null)
+        .filter((registrationId): registrationId is string => registrationId !== null),
     );
   }
 

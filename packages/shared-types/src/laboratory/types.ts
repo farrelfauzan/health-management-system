@@ -150,10 +150,18 @@ export type LabSpecimenRecord = {
 export type LabOrderRecord = {
   id: string;
   orderNumber: string;
-  encounterId: string;
+  /** Null for a request that did not come from a consultation (P18-T10). */
+  encounterId: string | null;
+  /** The visit, which every order has whichever way the request arrived. */
+  registrationId: string;
+  source: LabOrderSourceValue;
   patientId: string;
-  orderedById: string;
-  orderedByName: string;
+  /** Null when nobody at this clinic ordered it. */
+  orderedById: string | null;
+  orderedByName: string | null;
+  /** Who asked, when it was a doctor elsewhere (EXTERNAL_REFERRAL only). */
+  externalRequesterName: string | null;
+  externalRequesterFacility: string | null;
   status: LabOrderStatusValue;
   priority: LabOrderPriorityValue;
   clinicalNotes: string | null;
@@ -504,7 +512,8 @@ export type FileLabReportDocumentPayload = {
   pageCount: number | null;
   title: string;
   patientId: string;
-  encounterId: string;
+  /** Null for a report on an order raised outside a consultation (P18-T10). */
+  encounterId: string | null;
   documentDate: Date;
   /** The verifier — the report's uploader and the account that released it to the patient. */
   actorUserId: string;

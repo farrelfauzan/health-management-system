@@ -21,7 +21,7 @@ describe('BillingService', () => {
       Promise.resolve([]),
     ),
     findClinicalRequestsForEncounter: jest.fn(() => Promise.resolve([])),
-    findEncounterIdsWithSettledInvoice: jest.fn(() => Promise.resolve(new Set<string>())),
+    findVisitIdsWithSettledInvoice: jest.fn(() => Promise.resolve(new Set<string>())),
     findLiveInvoiceByEncounterId: jest.fn(),
     createInvoiceWithItems: jest.fn(),
     listInvoices: jest.fn(),

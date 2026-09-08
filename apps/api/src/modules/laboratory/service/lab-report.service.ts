@@ -10,7 +10,7 @@ import {
   LabWorklistOrderRecord,
   TemplateSettingsValue,
 } from '@hms/shared-types';
-import { ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { ConflictException, ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PDFParse } from 'pdf-parse';
 
@@ -360,6 +360,17 @@ export class LabReportService {
   ): Promise<LabOrderRecord> {
     const order = await this.findOrderOrThrow(labOrderId);
     const scope = await this.labOrderAccessService.resolveScopeOrThrow(currentUser, 'read');
+    // An order raised outside a consultation has no attending practitioner for
+    // `:own` to resolve through (P18-T10), so only the clinic-wide grant reaches
+    // its report.
+    if (order.encounterId === null) {
+      if (!scope.hasAny) {
+        throw new ForbiddenException(
+          'You are not allowed to read laboratory reports raised outside an encounter',
+        );
+      }
+      return order;
+    }
     const encounter = await this.labOrderRepository.findEncounterForOrdering(order.encounterId);
     if (!encounter) {
       throw new NotFoundException('Encounter not found');

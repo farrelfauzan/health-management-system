@@ -63,7 +63,7 @@ describe('LabOrderService', () => {
 
   const auditServiceMock = { record: jest.fn() };
 
-  const billingServiceMock = { hasIssuedInvoiceForEncounter: jest.fn() };
+  const billingServiceMock = { hasIssuedInvoiceForVisit: jest.fn() };
 
   const clinicProfileServiceMock = { getProfile: jest.fn() };
 
@@ -94,6 +94,10 @@ describe('LabOrderService', () => {
       patientId,
       orderedById: doctorId,
       orderedByName: 'dr. Andi Wijaya',
+      registrationId: '3a4b5c6d-7e8f-4a9b-8c0d-1e2f3a4b5c6d',
+      source: 'ENCOUNTER' as const,
+      externalRequesterName: null,
+      externalRequesterFacility: null,
       status: 'ORDERED' as const,
       priority: 'ROUTINE' as const,
       clinicalNotes: null,
@@ -123,7 +127,7 @@ describe('LabOrderService', () => {
     labOrderRepositoryMock.createLabOrder.mockResolvedValue(buildOrderRecord());
     labCatalogServiceMock.findOrderableLabTests.mockResolvedValue([]);
     labCatalogServiceMock.findOrderableLabPanels.mockResolvedValue([]);
-    billingServiceMock.hasIssuedInvoiceForEncounter.mockResolvedValue(false);
+    billingServiceMock.hasIssuedInvoiceForVisit.mockResolvedValue(false);
   });
 
   describe('createLabOrder', () => {
@@ -311,7 +315,7 @@ describe('LabOrderService', () => {
       labOrderRepositoryMock.cancelLabOrder.mockResolvedValue(
         buildOrderRecord({ status: 'CANCELLED', cancelReason: 'Sampel tidak memadai' }),
       );
-      billingServiceMock.hasIssuedInvoiceForEncounter.mockResolvedValue(true);
+      billingServiceMock.hasIssuedInvoiceForVisit.mockResolvedValue(true);
 
       const actual = await service.cancelLabOrder(
         labOrderId,

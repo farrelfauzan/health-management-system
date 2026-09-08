@@ -7,6 +7,7 @@ import {
   CreateLabOrderItemPayload,
   CreateWalkInLabOrderInput,
   LabOrderListItem,
+  ActorScopeResolution,
   LabOrderRecord,
   LabOrderSummary,
   LabOrderView,
@@ -15,7 +16,12 @@ import {
   LabTestRecord,
   getStartOfCalendarDateInTimeZone,
 } from '@hms/shared-types';
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 import { AuditService } from '../../../common/audit/audit.service';
@@ -31,6 +37,7 @@ import { LabCatalogService } from './lab-catalog.service';
 import { LabOrderAccessService } from './lab-order-access.service';
 import { RegistrationFlowService } from '../../registration-flow/service/registration-flow.service';
 import { LabOrderMapper } from './lab-order.mapper';
+import { resolveLabRequesterLabel } from './resolve-lab-requester-label';
 
 const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 
@@ -157,8 +164,7 @@ export class LabOrderService {
   async getLabOrderById(id: string, currentUser: CurrentUser): Promise<LabOrderView> {
     const order = await this.findLabOrderOrThrow(id);
     const scope = await this.labOrderAccessService.resolveScopeOrThrow(currentUser, 'read');
-    const encounter = await this.findEncounterOrThrow(order.encounterId);
-    this.labOrderAccessService.assertCanReadEncounterOrders({ encounter, scope, currentUser });
+    await this.assertCanAccessOrder(order, scope, currentUser, 'read');
 
     return this.labOrderMapper.toLabOrderView(order);
   }
@@ -174,8 +180,7 @@ export class LabOrderService {
   ): Promise<{ order: LabOrderView; meta: CancelLabOrderMeta }> {
     const order = await this.findLabOrderOrThrow(id);
     const scope = await this.labOrderAccessService.resolveScopeOrThrow(currentUser, 'write');
-    const encounter = await this.findEncounterOrThrow(order.encounterId);
-    this.labOrderAccessService.assertCanOrderOnEncounter({ encounter, scope, currentUser });
+    await this.assertCanAccessOrder(order, scope, currentUser, 'write');
     this.assertCancellable(order);
     const cancelled = await this.labOrderRepository.cancelLabOrder({
       id: order.id,
@@ -185,8 +190,8 @@ export class LabOrderService {
     // P18-T06: an issued bill is corrected by voiding and reissuing, which is
     // not the laboratory's to do. Say so rather than leave the patient charged
     // for a test nobody ran.
-    const requiresManualCredit = await this.billingService.hasIssuedInvoiceForEncounter(
-      order.encounterId,
+    const requiresManualCredit = await this.billingService.hasIssuedInvoiceForVisit(
+      order.registrationId,
     );
     await this.auditService.record({
       action: 'LAB_ORDER_CANCELLED',
@@ -221,8 +226,7 @@ export class LabOrderService {
   ): Promise<LabOrderView> {
     const order = await this.findLabOrderOrThrow(id);
     const scope = await this.labOrderAccessService.resolveScopeOrThrow(currentUser, 'write');
-    const encounter = await this.findEncounterOrThrow(order.encounterId);
-    this.labOrderAccessService.assertCanOrderOnEncounter({ encounter, scope, currentUser });
+    await this.assertCanAccessOrder(order, scope, currentUser, 'write');
     this.assertDispositionStillOpen(order);
     const updated = await this.labOrderRepository.updateLabOrderDisposition({
       id: order.id,
@@ -265,8 +269,7 @@ export class LabOrderService {
   ): Promise<ClinicalRequestDocumentView> {
     const order = await this.findLabOrderOrThrow(id);
     const scope = await this.labOrderAccessService.resolveScopeOrThrow(currentUser, 'read');
-    const encounter = await this.findEncounterOrThrow(order.encounterId);
-    this.labOrderAccessService.assertCanReadEncounterOrders({ encounter, scope, currentUser });
+    await this.assertCanAccessOrder(order, scope, currentUser, 'read');
     const worklistOrder = await this.labOrderRepository.findWorklistOrderById(order.id);
 
     if (!worklistOrder) {
@@ -275,7 +278,7 @@ export class LabOrderService {
     const context = buildLabRequestContext({
       order,
       patient: worklistOrder.patient,
-      doctorName: order.orderedByName,
+      doctorName: resolveLabRequesterLabel(order),
       doctorLicenseNumber: worklistOrder.orderedByLicenseNumber,
       clinic: await this.clinicProfileService.getProfile(),
       clinicLogoDataUri: null,
@@ -481,6 +484,36 @@ export class LabOrderService {
     });
 
     return this.labOrderMapper.toLabOrderView(created);
+  }
+
+  /**
+   * The access rule for one order, whichever way it was raised (P18-T10).
+   *
+   * An order from a consultation is governed by its encounter, as it always
+   * was. One without an encounter has no attending practitioner for `:own` to
+   * resolve through, so only the clinic-wide grant can reach it — the same
+   * rule that governs raising it.
+   */
+  private async assertCanAccessOrder(
+    order: LabOrderRecord,
+    scope: ActorScopeResolution,
+    currentUser: CurrentUser,
+    action: 'read' | 'write',
+  ): Promise<void> {
+    if (order.encounterId === null) {
+      if (!scope.hasAny) {
+        throw new ForbiddenException(
+          `You are not allowed to ${action} laboratory orders raised outside an encounter`,
+        );
+      }
+      return;
+    }
+    const encounter = await this.findEncounterOrThrow(order.encounterId);
+    if (action === 'read') {
+      this.labOrderAccessService.assertCanReadEncounterOrders({ encounter, scope, currentUser });
+      return;
+    }
+    this.labOrderAccessService.assertCanOrderOnEncounter({ encounter, scope, currentUser });
   }
 
   private async findEncounterOrThrow(encounterId: string) {

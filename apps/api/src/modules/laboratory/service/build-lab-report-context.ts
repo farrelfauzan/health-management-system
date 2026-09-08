@@ -10,6 +10,7 @@ import {
 import { formatIndonesianDateTime } from './format-indonesian-date-time';
 import { formatLabReportNumber } from './format-lab-report-number';
 import { toPatientAgeYears } from './to-patient-age-years';
+import { resolveLabRequesterLabel } from './resolve-lab-requester-label';
 
 const SEX_LABELS: Readonly<Record<string, string>> = {
   MALE: 'Laki-laki',
@@ -110,7 +111,7 @@ export function buildLabReportContext(params: BuildLabReportContextParams): LabR
         timeZone,
         withTime: false,
       }),
-      'doctor.fullName': order.orderedByName,
+      'doctor.fullName': resolveLabRequesterLabel(order),
       'specimen.accessionNumbers': specimens
         .map((specimen) => specimen.accessionNumber)
         .join(ACCESSION_SEPARATOR),
