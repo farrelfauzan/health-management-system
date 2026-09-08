@@ -79,6 +79,8 @@ const GATED_CONTROLLERS: Readonly<Record<string, FeatureKey>> = {
   // order from is not worth showing.
   LabTestController: 'laboratory',
   LabPanelController: 'laboratory',
+  // P18-T05. The rendered report, read under the same feature as the order it renders.
+  LabReportController: 'laboratory',
   // P18-T02/T03. Ordering, the bench's worklist and specimen handling go with
   // the catalog: switching the feature off takes the whole laboratory away,
   // including the routes that hang off an encounter.
