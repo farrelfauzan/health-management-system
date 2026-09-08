@@ -1,6 +1,7 @@
 import { LabOrderRecord, LabWorklistPatientRecord } from '@hms/shared-types';
 
 import { buildLabRequestContext } from './build-lab-request-context';
+import { resolveLabRequesterLabel } from './resolve-lab-requester-label';
 
 /**
  * What the surat pengantar actually says. The letter is rendered from the order
@@ -36,9 +37,13 @@ describe('buildLabRequestContext', () => {
       id: 'order-1',
       orderNumber: 'LAB/20260720/0001',
       encounterId: 'encounter-1',
+      registrationId: 'registration-1',
+      source: 'ENCOUNTER',
       patientId: 'patient-1',
       orderedById: 'doctor-1',
       orderedByName: 'dr. Yusuf Hidayat',
+      externalRequesterName: null,
+      externalRequesterFacility: null,
       status: 'ORDERED',
       priority: 'ROUTINE',
       clinicalNotes: 'Curiga infeksi saluran kemih',
@@ -74,7 +79,7 @@ describe('buildLabRequestContext', () => {
     return buildLabRequestContext({
       order,
       patient,
-      doctorName: order.orderedByName,
+      doctorName: resolveLabRequesterLabel(order),
       doctorLicenseNumber: 'SIP-2026-0005',
       clinic,
       clinicLogoDataUri: null,
