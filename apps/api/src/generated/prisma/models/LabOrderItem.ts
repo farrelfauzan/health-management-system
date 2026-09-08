@@ -36,6 +36,7 @@ export type LabOrderItemMinAggregateOutputType = {
   panelId: string | null
   specimenId: string | null
   status: $Enums.LabOrderItemStatus | null
+  satusehatServiceRequestId: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -47,6 +48,7 @@ export type LabOrderItemMaxAggregateOutputType = {
   panelId: string | null
   specimenId: string | null
   status: $Enums.LabOrderItemStatus | null
+  satusehatServiceRequestId: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -58,6 +60,7 @@ export type LabOrderItemCountAggregateOutputType = {
   panelId: number
   specimenId: number
   status: number
+  satusehatServiceRequestId: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -71,6 +74,7 @@ export type LabOrderItemMinAggregateInputType = {
   panelId?: true
   specimenId?: true
   status?: true
+  satusehatServiceRequestId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -82,6 +86,7 @@ export type LabOrderItemMaxAggregateInputType = {
   panelId?: true
   specimenId?: true
   status?: true
+  satusehatServiceRequestId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -93,6 +98,7 @@ export type LabOrderItemCountAggregateInputType = {
   panelId?: true
   specimenId?: true
   status?: true
+  satusehatServiceRequestId?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -177,6 +183,7 @@ export type LabOrderItemGroupByOutputType = {
   panelId: string | null
   specimenId: string | null
   status: $Enums.LabOrderItemStatus
+  satusehatServiceRequestId: string | null
   createdAt: Date
   updatedAt: Date
   _count: LabOrderItemCountAggregateOutputType | null
@@ -209,6 +216,7 @@ export type LabOrderItemWhereInput = {
   panelId?: Prisma.UuidNullableFilter<"LabOrderItem"> | string | null
   specimenId?: Prisma.UuidNullableFilter<"LabOrderItem"> | string | null
   status?: Prisma.EnumLabOrderItemStatusFilter<"LabOrderItem"> | $Enums.LabOrderItemStatus
+  satusehatServiceRequestId?: Prisma.StringNullableFilter<"LabOrderItem"> | string | null
   createdAt?: Prisma.DateTimeFilter<"LabOrderItem"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"LabOrderItem"> | Date | string
   labOrder?: Prisma.XOR<Prisma.LabOrderScalarRelationFilter, Prisma.LabOrderWhereInput>
@@ -225,6 +233,7 @@ export type LabOrderItemOrderByWithRelationInput = {
   panelId?: Prisma.SortOrderInput | Prisma.SortOrder
   specimenId?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
+  satusehatServiceRequestId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   labOrder?: Prisma.LabOrderOrderByWithRelationInput
@@ -245,6 +254,7 @@ export type LabOrderItemWhereUniqueInput = Prisma.AtLeast<{
   panelId?: Prisma.UuidNullableFilter<"LabOrderItem"> | string | null
   specimenId?: Prisma.UuidNullableFilter<"LabOrderItem"> | string | null
   status?: Prisma.EnumLabOrderItemStatusFilter<"LabOrderItem"> | $Enums.LabOrderItemStatus
+  satusehatServiceRequestId?: Prisma.StringNullableFilter<"LabOrderItem"> | string | null
   createdAt?: Prisma.DateTimeFilter<"LabOrderItem"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"LabOrderItem"> | Date | string
   labOrder?: Prisma.XOR<Prisma.LabOrderScalarRelationFilter, Prisma.LabOrderWhereInput>
@@ -261,6 +271,7 @@ export type LabOrderItemOrderByWithAggregationInput = {
   panelId?: Prisma.SortOrderInput | Prisma.SortOrder
   specimenId?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
+  satusehatServiceRequestId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.LabOrderItemCountOrderByAggregateInput
@@ -278,6 +289,7 @@ export type LabOrderItemScalarWhereWithAggregatesInput = {
   panelId?: Prisma.UuidNullableWithAggregatesFilter<"LabOrderItem"> | string | null
   specimenId?: Prisma.UuidNullableWithAggregatesFilter<"LabOrderItem"> | string | null
   status?: Prisma.EnumLabOrderItemStatusWithAggregatesFilter<"LabOrderItem"> | $Enums.LabOrderItemStatus
+  satusehatServiceRequestId?: Prisma.StringNullableWithAggregatesFilter<"LabOrderItem"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"LabOrderItem"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"LabOrderItem"> | Date | string
 }
@@ -285,6 +297,7 @@ export type LabOrderItemScalarWhereWithAggregatesInput = {
 export type LabOrderItemCreateInput = {
   id?: string
   status?: $Enums.LabOrderItemStatus
+  satusehatServiceRequestId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   labOrder: Prisma.LabOrderCreateNestedOneWithoutItemsInput
@@ -301,6 +314,7 @@ export type LabOrderItemUncheckedCreateInput = {
   panelId?: string | null
   specimenId?: string | null
   status?: $Enums.LabOrderItemStatus
+  satusehatServiceRequestId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   results?: Prisma.LabResultUncheckedCreateNestedManyWithoutLabOrderItemInput
@@ -309,6 +323,7 @@ export type LabOrderItemUncheckedCreateInput = {
 export type LabOrderItemUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumLabOrderItemStatusFieldUpdateOperationsInput | $Enums.LabOrderItemStatus
+  satusehatServiceRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   labOrder?: Prisma.LabOrderUpdateOneRequiredWithoutItemsNestedInput
@@ -325,6 +340,7 @@ export type LabOrderItemUncheckedUpdateInput = {
   panelId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   specimenId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumLabOrderItemStatusFieldUpdateOperationsInput | $Enums.LabOrderItemStatus
+  satusehatServiceRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   results?: Prisma.LabResultUncheckedUpdateManyWithoutLabOrderItemNestedInput
@@ -337,6 +353,7 @@ export type LabOrderItemCreateManyInput = {
   panelId?: string | null
   specimenId?: string | null
   status?: $Enums.LabOrderItemStatus
+  satusehatServiceRequestId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -344,6 +361,7 @@ export type LabOrderItemCreateManyInput = {
 export type LabOrderItemUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumLabOrderItemStatusFieldUpdateOperationsInput | $Enums.LabOrderItemStatus
+  satusehatServiceRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -355,6 +373,7 @@ export type LabOrderItemUncheckedUpdateManyInput = {
   panelId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   specimenId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumLabOrderItemStatusFieldUpdateOperationsInput | $Enums.LabOrderItemStatus
+  satusehatServiceRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -381,6 +400,7 @@ export type LabOrderItemCountOrderByAggregateInput = {
   panelId?: Prisma.SortOrder
   specimenId?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  satusehatServiceRequestId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -392,6 +412,7 @@ export type LabOrderItemMaxOrderByAggregateInput = {
   panelId?: Prisma.SortOrder
   specimenId?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  satusehatServiceRequestId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -403,6 +424,7 @@ export type LabOrderItemMinOrderByAggregateInput = {
   panelId?: Prisma.SortOrder
   specimenId?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  satusehatServiceRequestId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -601,6 +623,7 @@ export type LabOrderItemUpdateOneRequiredWithoutResultsNestedInput = {
 export type LabOrderItemCreateWithoutLabTestInput = {
   id?: string
   status?: $Enums.LabOrderItemStatus
+  satusehatServiceRequestId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   labOrder: Prisma.LabOrderCreateNestedOneWithoutItemsInput
@@ -615,6 +638,7 @@ export type LabOrderItemUncheckedCreateWithoutLabTestInput = {
   panelId?: string | null
   specimenId?: string | null
   status?: $Enums.LabOrderItemStatus
+  satusehatServiceRequestId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   results?: Prisma.LabResultUncheckedCreateNestedManyWithoutLabOrderItemInput
@@ -656,6 +680,7 @@ export type LabOrderItemScalarWhereInput = {
   panelId?: Prisma.UuidNullableFilter<"LabOrderItem"> | string | null
   specimenId?: Prisma.UuidNullableFilter<"LabOrderItem"> | string | null
   status?: Prisma.EnumLabOrderItemStatusFilter<"LabOrderItem"> | $Enums.LabOrderItemStatus
+  satusehatServiceRequestId?: Prisma.StringNullableFilter<"LabOrderItem"> | string | null
   createdAt?: Prisma.DateTimeFilter<"LabOrderItem"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"LabOrderItem"> | Date | string
 }
@@ -663,6 +688,7 @@ export type LabOrderItemScalarWhereInput = {
 export type LabOrderItemCreateWithoutPanelInput = {
   id?: string
   status?: $Enums.LabOrderItemStatus
+  satusehatServiceRequestId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   labOrder: Prisma.LabOrderCreateNestedOneWithoutItemsInput
@@ -677,6 +703,7 @@ export type LabOrderItemUncheckedCreateWithoutPanelInput = {
   labTestId: string
   specimenId?: string | null
   status?: $Enums.LabOrderItemStatus
+  satusehatServiceRequestId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   results?: Prisma.LabResultUncheckedCreateNestedManyWithoutLabOrderItemInput
@@ -711,6 +738,7 @@ export type LabOrderItemUpdateManyWithWhereWithoutPanelInput = {
 export type LabOrderItemCreateWithoutLabOrderInput = {
   id?: string
   status?: $Enums.LabOrderItemStatus
+  satusehatServiceRequestId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   labTest: Prisma.LabTestCreateNestedOneWithoutOrderItemsInput
@@ -725,6 +753,7 @@ export type LabOrderItemUncheckedCreateWithoutLabOrderInput = {
   panelId?: string | null
   specimenId?: string | null
   status?: $Enums.LabOrderItemStatus
+  satusehatServiceRequestId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   results?: Prisma.LabResultUncheckedCreateNestedManyWithoutLabOrderItemInput
@@ -759,6 +788,7 @@ export type LabOrderItemUpdateManyWithWhereWithoutLabOrderInput = {
 export type LabOrderItemCreateWithoutSpecimenInput = {
   id?: string
   status?: $Enums.LabOrderItemStatus
+  satusehatServiceRequestId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   labOrder: Prisma.LabOrderCreateNestedOneWithoutItemsInput
@@ -773,6 +803,7 @@ export type LabOrderItemUncheckedCreateWithoutSpecimenInput = {
   labTestId: string
   panelId?: string | null
   status?: $Enums.LabOrderItemStatus
+  satusehatServiceRequestId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   results?: Prisma.LabResultUncheckedCreateNestedManyWithoutLabOrderItemInput
@@ -807,6 +838,7 @@ export type LabOrderItemUpdateManyWithWhereWithoutSpecimenInput = {
 export type LabOrderItemCreateWithoutResultsInput = {
   id?: string
   status?: $Enums.LabOrderItemStatus
+  satusehatServiceRequestId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   labOrder: Prisma.LabOrderCreateNestedOneWithoutItemsInput
@@ -822,6 +854,7 @@ export type LabOrderItemUncheckedCreateWithoutResultsInput = {
   panelId?: string | null
   specimenId?: string | null
   status?: $Enums.LabOrderItemStatus
+  satusehatServiceRequestId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -845,6 +878,7 @@ export type LabOrderItemUpdateToOneWithWhereWithoutResultsInput = {
 export type LabOrderItemUpdateWithoutResultsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumLabOrderItemStatusFieldUpdateOperationsInput | $Enums.LabOrderItemStatus
+  satusehatServiceRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   labOrder?: Prisma.LabOrderUpdateOneRequiredWithoutItemsNestedInput
@@ -860,6 +894,7 @@ export type LabOrderItemUncheckedUpdateWithoutResultsInput = {
   panelId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   specimenId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumLabOrderItemStatusFieldUpdateOperationsInput | $Enums.LabOrderItemStatus
+  satusehatServiceRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -870,6 +905,7 @@ export type LabOrderItemCreateManyLabTestInput = {
   panelId?: string | null
   specimenId?: string | null
   status?: $Enums.LabOrderItemStatus
+  satusehatServiceRequestId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -877,6 +913,7 @@ export type LabOrderItemCreateManyLabTestInput = {
 export type LabOrderItemUpdateWithoutLabTestInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumLabOrderItemStatusFieldUpdateOperationsInput | $Enums.LabOrderItemStatus
+  satusehatServiceRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   labOrder?: Prisma.LabOrderUpdateOneRequiredWithoutItemsNestedInput
@@ -891,6 +928,7 @@ export type LabOrderItemUncheckedUpdateWithoutLabTestInput = {
   panelId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   specimenId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumLabOrderItemStatusFieldUpdateOperationsInput | $Enums.LabOrderItemStatus
+  satusehatServiceRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   results?: Prisma.LabResultUncheckedUpdateManyWithoutLabOrderItemNestedInput
@@ -902,6 +940,7 @@ export type LabOrderItemUncheckedUpdateManyWithoutLabTestInput = {
   panelId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   specimenId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumLabOrderItemStatusFieldUpdateOperationsInput | $Enums.LabOrderItemStatus
+  satusehatServiceRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -912,6 +951,7 @@ export type LabOrderItemCreateManyPanelInput = {
   labTestId: string
   specimenId?: string | null
   status?: $Enums.LabOrderItemStatus
+  satusehatServiceRequestId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -919,6 +959,7 @@ export type LabOrderItemCreateManyPanelInput = {
 export type LabOrderItemUpdateWithoutPanelInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumLabOrderItemStatusFieldUpdateOperationsInput | $Enums.LabOrderItemStatus
+  satusehatServiceRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   labOrder?: Prisma.LabOrderUpdateOneRequiredWithoutItemsNestedInput
@@ -933,6 +974,7 @@ export type LabOrderItemUncheckedUpdateWithoutPanelInput = {
   labTestId?: Prisma.StringFieldUpdateOperationsInput | string
   specimenId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumLabOrderItemStatusFieldUpdateOperationsInput | $Enums.LabOrderItemStatus
+  satusehatServiceRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   results?: Prisma.LabResultUncheckedUpdateManyWithoutLabOrderItemNestedInput
@@ -944,6 +986,7 @@ export type LabOrderItemUncheckedUpdateManyWithoutPanelInput = {
   labTestId?: Prisma.StringFieldUpdateOperationsInput | string
   specimenId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumLabOrderItemStatusFieldUpdateOperationsInput | $Enums.LabOrderItemStatus
+  satusehatServiceRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -954,6 +997,7 @@ export type LabOrderItemCreateManyLabOrderInput = {
   panelId?: string | null
   specimenId?: string | null
   status?: $Enums.LabOrderItemStatus
+  satusehatServiceRequestId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -961,6 +1005,7 @@ export type LabOrderItemCreateManyLabOrderInput = {
 export type LabOrderItemUpdateWithoutLabOrderInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumLabOrderItemStatusFieldUpdateOperationsInput | $Enums.LabOrderItemStatus
+  satusehatServiceRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   labTest?: Prisma.LabTestUpdateOneRequiredWithoutOrderItemsNestedInput
@@ -975,6 +1020,7 @@ export type LabOrderItemUncheckedUpdateWithoutLabOrderInput = {
   panelId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   specimenId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumLabOrderItemStatusFieldUpdateOperationsInput | $Enums.LabOrderItemStatus
+  satusehatServiceRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   results?: Prisma.LabResultUncheckedUpdateManyWithoutLabOrderItemNestedInput
@@ -986,6 +1032,7 @@ export type LabOrderItemUncheckedUpdateManyWithoutLabOrderInput = {
   panelId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   specimenId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumLabOrderItemStatusFieldUpdateOperationsInput | $Enums.LabOrderItemStatus
+  satusehatServiceRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -996,6 +1043,7 @@ export type LabOrderItemCreateManySpecimenInput = {
   labTestId: string
   panelId?: string | null
   status?: $Enums.LabOrderItemStatus
+  satusehatServiceRequestId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1003,6 +1051,7 @@ export type LabOrderItemCreateManySpecimenInput = {
 export type LabOrderItemUpdateWithoutSpecimenInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumLabOrderItemStatusFieldUpdateOperationsInput | $Enums.LabOrderItemStatus
+  satusehatServiceRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   labOrder?: Prisma.LabOrderUpdateOneRequiredWithoutItemsNestedInput
@@ -1017,6 +1066,7 @@ export type LabOrderItemUncheckedUpdateWithoutSpecimenInput = {
   labTestId?: Prisma.StringFieldUpdateOperationsInput | string
   panelId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumLabOrderItemStatusFieldUpdateOperationsInput | $Enums.LabOrderItemStatus
+  satusehatServiceRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   results?: Prisma.LabResultUncheckedUpdateManyWithoutLabOrderItemNestedInput
@@ -1028,6 +1078,7 @@ export type LabOrderItemUncheckedUpdateManyWithoutSpecimenInput = {
   labTestId?: Prisma.StringFieldUpdateOperationsInput | string
   panelId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumLabOrderItemStatusFieldUpdateOperationsInput | $Enums.LabOrderItemStatus
+  satusehatServiceRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1070,6 +1121,7 @@ export type LabOrderItemSelect<ExtArgs extends runtime.Types.Extensions.Internal
   panelId?: boolean
   specimenId?: boolean
   status?: boolean
+  satusehatServiceRequestId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   labOrder?: boolean | Prisma.LabOrderDefaultArgs<ExtArgs>
@@ -1087,6 +1139,7 @@ export type LabOrderItemSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   panelId?: boolean
   specimenId?: boolean
   status?: boolean
+  satusehatServiceRequestId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   labOrder?: boolean | Prisma.LabOrderDefaultArgs<ExtArgs>
@@ -1102,6 +1155,7 @@ export type LabOrderItemSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   panelId?: boolean
   specimenId?: boolean
   status?: boolean
+  satusehatServiceRequestId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   labOrder?: boolean | Prisma.LabOrderDefaultArgs<ExtArgs>
@@ -1117,11 +1171,12 @@ export type LabOrderItemSelectScalar = {
   panelId?: boolean
   specimenId?: boolean
   status?: boolean
+  satusehatServiceRequestId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type LabOrderItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "labOrderId" | "labTestId" | "panelId" | "specimenId" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["labOrderItem"]>
+export type LabOrderItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "labOrderId" | "labTestId" | "panelId" | "specimenId" | "status" | "satusehatServiceRequestId" | "createdAt" | "updatedAt", ExtArgs["result"]["labOrderItem"]>
 export type LabOrderItemInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   labOrder?: boolean | Prisma.LabOrderDefaultArgs<ExtArgs>
   labTest?: boolean | Prisma.LabTestDefaultArgs<ExtArgs>
@@ -1173,6 +1228,12 @@ export type $LabOrderItemPayload<ExtArgs extends runtime.Types.Extensions.Intern
      */
     specimenId: string | null
     status: $Enums.LabOrderItemStatus
+    /**
+     * IHS id returned by SATUSEHAT for this item's ServiceRequest (P18-T09).
+     * One per item, not per order: a ServiceRequest carries the LOINC of a
+     * single test, so Darah rutin + GDS is six requests and six ids.
+     */
+    satusehatServiceRequestId: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["labOrderItem"]>
@@ -1609,6 +1670,7 @@ export interface LabOrderItemFieldRefs {
   readonly panelId: Prisma.FieldRef<"LabOrderItem", 'String'>
   readonly specimenId: Prisma.FieldRef<"LabOrderItem", 'String'>
   readonly status: Prisma.FieldRef<"LabOrderItem", 'LabOrderItemStatus'>
+  readonly satusehatServiceRequestId: Prisma.FieldRef<"LabOrderItem", 'String'>
   readonly createdAt: Prisma.FieldRef<"LabOrderItem", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"LabOrderItem", 'DateTime'>
 }

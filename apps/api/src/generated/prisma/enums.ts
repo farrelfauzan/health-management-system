@@ -421,6 +421,14 @@ export const EncounterStatus = {
 export type EncounterStatus = (typeof EncounterStatus)[keyof typeof EncounterStatus]
 
 
+export const SatusehatSubmissionKind = {
+  ENCOUNTER: 'ENCOUNTER',
+  LAB_REPORT: 'LAB_REPORT'
+} as const
+
+export type SatusehatSubmissionKind = (typeof SatusehatSubmissionKind)[keyof typeof SatusehatSubmissionKind]
+
+
 export const SatusehatSubmissionStatus = {
   PENDING: 'PENDING',
   SUBMITTED: 'SUBMITTED',

@@ -1082,6 +1082,8 @@ export type UserRoleScalarFieldEnum = (typeof UserRoleScalarFieldEnum)[keyof typ
 export const SatusehatSubmissionScalarFieldEnum = {
   id: 'id',
   encounterId: 'encounterId',
+  kind: 'kind',
+  labOrderId: 'labOrderId',
   status: 'status',
   attempts: 'attempts',
   lastError: 'lastError',
@@ -1794,7 +1796,7 @@ export const LabOrderScalarFieldEnum = {
   cancelledAt: 'cancelledAt',
   cancelReason: 'cancelReason',
   releasedAt: 'releasedAt',
-  satusehatServiceRequestId: 'satusehatServiceRequestId',
+  satusehatDiagnosticReportId: 'satusehatDiagnosticReportId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -1809,6 +1811,7 @@ export const LabOrderItemScalarFieldEnum = {
   panelId: 'panelId',
   specimenId: 'specimenId',
   status: 'status',
+  satusehatServiceRequestId: 'satusehatServiceRequestId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

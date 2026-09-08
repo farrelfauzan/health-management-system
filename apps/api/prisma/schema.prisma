@@ -532,6 +532,18 @@ enum EncounterStatus {
 /// Lifecycle of one SATUSEHAT outbox row. PENDING rows are due (or waiting
 /// for their next backoff slot); SUBMITTED and FAILED are settled — FAILED is
 /// re-opened only by an explicit admin retry (P10-T06), never by the worker.
+/// What one outbox row reports. The visit bundle written when an encounter
+/// closes, or the ServiceRequest/Specimen/Observation/DiagnosticReport chain
+/// written when a lab order is released (P18-T09). Two kinds rather than two
+/// tables: the claim, the lease, the backoff and the admin retry surface are
+/// the same machinery, and only the bundle differs.
+enum SatusehatSubmissionKind {
+  ENCOUNTER
+  LAB_REPORT
+
+  @@map("satusehat_submission_kind")
+}
+
 enum SatusehatSubmissionStatus {
   PENDING
   SUBMITTED
@@ -1870,21 +1882,24 @@ model Encounter {
   /// record never carries an assessment that was not made.
   prognosis  EncounterPrognosis?
 
-  registration        Registration         @relation(fields: [registrationId], references: [id], onDelete: Restrict)
-  patient             PatientProfile       @relation(fields: [patientId], references: [id], onDelete: Restrict)
-  doctor              DoctorProfile        @relation(fields: [doctorId], references: [id], onDelete: Restrict)
-  createdBy           User?                @relation("EncounterCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
-  vitalSigns          VitalSigns[]
-  diagnoses           Diagnosis[]
-  procedures          Procedure[]
-  immunizations       Immunization[]
-  prescriptions       Prescription[]
-  invoices            Invoice[]
-  satusehatSubmission SatusehatSubmission?
-  bpjsReferral        BpjsReferral?
-  admissions          Admission[]
-  clinicalDocuments   Document[]
-  labOrders           LabOrder[]
+  registration         Registration          @relation(fields: [registrationId], references: [id], onDelete: Restrict)
+  patient              PatientProfile        @relation(fields: [patientId], references: [id], onDelete: Restrict)
+  doctor               DoctorProfile         @relation(fields: [doctorId], references: [id], onDelete: Restrict)
+  createdBy            User?                 @relation("EncounterCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  vitalSigns           VitalSigns[]
+  diagnoses            Diagnosis[]
+  procedures           Procedure[]
+  immunizations        Immunization[]
+  prescriptions        Prescription[]
+  invoices             Invoice[]
+  /// A list only because the uniqueness that keeps it to one row is a partial
+  /// index Prisma cannot see (P18-T09). At most one ENCOUNTER row exists per
+  /// encounter, and lab reports never point here.
+  satusehatSubmissions SatusehatSubmission[]
+  bpjsReferral         BpjsReferral?
+  admissions           Admission[]
+  clinicalDocuments    Document[]
+  labOrders            LabOrder[]
 
   @@index([patientId, startedAt])
   @@index([doctorId, startedAt])
@@ -2757,7 +2772,21 @@ model UserRole {
 /// FAILED state is re-opened only by the admin retry surface (P10-T06).
 model SatusehatSubmission {
   id                   String                    @id @default(uuid()) @db.Uuid
-  encounterId          String                    @unique @map("encounter_id") @db.Uuid
+  /// Set on ENCOUNTER rows and null on LAB_REPORT ones: this column says the
+  /// row *is* that encounter's, not that it mentions one. A lab report reaches
+  /// the encounter it must wait for through its order instead.
+  ///
+  /// Uniqueness is a partial index in the migration
+  /// (`satusehat_submissions_encounter_kind_key`, `WHERE kind = 'ENCOUNTER'`)
+  /// because it only holds for one kind — Prisma cannot express the predicate,
+  /// so `@unique` would state something stronger than the database does.
+  encounterId          String?                   @map("encounter_id") @db.Uuid
+  /// Which chain this row reports. See `SatusehatSubmissionKind`.
+  kind                 SatusehatSubmissionKind   @default(ENCOUNTER)
+  /// Set on LAB_REPORT rows and null on ENCOUNTER ones. Constrained the same
+  /// way, by `satusehat_submissions_lab_order_open_key` — one *open* row per
+  /// order, so an amendment can enqueue beside a report already sent.
+  labOrderId           String?                   @map("lab_order_id") @db.Uuid
   status               SatusehatSubmissionStatus @default(PENDING)
   attempts             Int                       @default(0)
   lastError            String?                   @map("last_error")
@@ -2772,9 +2801,11 @@ model SatusehatSubmission {
   createdAt            DateTime                  @default(now()) @map("created_at")
   updatedAt            DateTime                  @updatedAt @map("updated_at")
 
-  encounter Encounter @relation(fields: [encounterId], references: [id], onDelete: Restrict)
+  encounter Encounter? @relation(fields: [encounterId], references: [id], onDelete: Restrict)
+  labOrder  LabOrder?  @relation(fields: [labOrderId], references: [id], onDelete: Restrict)
 
   @@index([status, nextAttemptAt])
+  @@index([labOrderId])
   @@map("satusehat_submissions")
 }
 
@@ -4793,57 +4824,62 @@ model LabOrderCounter {
 /// one — a patient's lab history is one indexed read, and it is the fact that
 /// outlives the visit.
 model LabOrder {
-  id                        String           @id @default(uuid()) @db.Uuid
-  encounterId               String           @map("encounter_id") @db.Uuid
-  patientId                 String           @map("patient_id") @db.Uuid
-  orderedById               String           @map("ordered_by_id") @db.Uuid
+  id                          String           @id @default(uuid()) @db.Uuid
+  encounterId                 String           @map("encounter_id") @db.Uuid
+  patientId                   String           @map("patient_id") @db.Uuid
+  orderedById                 String           @map("ordered_by_id") @db.Uuid
   /// LAB/YYYYMMDD/#### allocated from `LabOrderCounter`. What the analis
   /// writes on the worksheet and what the patient is told to quote.
-  orderNumber               String           @unique @map("order_number")
-  status                    LabOrderStatus   @default(ORDERED)
-  priority                  LabOrderPriority @default(ROUTINE)
+  orderNumber                 String           @unique @map("order_number")
+  status                      LabOrderStatus   @default(ORDERED)
+  priority                    LabOrderPriority @default(ROUTINE)
   /// Why the doctor asked — the only clinical text the lab worklist shows.
   /// A specimen is worked differently when the question is "rule out demam
   /// berdarah" than when it is a routine check, and nothing else from the
   /// encounter is the analis's business (P18-T03).
-  clinicalNotes             String?          @map("clinical_notes")
-  isFasting                 Boolean          @default(false) @map("is_fasting")
+  clinicalNotes               String?          @map("clinical_notes")
+  isFasting                   Boolean          @default(false) @map("is_fasting")
   /// Where the work is run, and who pays for it (P18-T11). Defaulted so every
   /// row written before this ticket keeps exactly the behaviour it had: run
   /// here, billed here.
-  fulfilmentSite            FulfilmentSite   @default(INTERNAL) @map("fulfilment_site")
-  chargeMode                ChargeMode       @default(CLINIC) @map("charge_mode")
+  fulfilmentSite              FulfilmentSite   @default(INTERNAL) @map("fulfilment_site")
+  chargeMode                  ChargeMode       @default(CLINIC) @map("charge_mode")
   /// The lab the patient was sent to, when `fulfilmentSite` is EXTERNAL. Free
   /// text: a klinik pratama refers to whichever lab it has an arrangement
   /// with, and a directory of them is not this ticket.
-  externalFacilityName      String?          @map("external_facility_name")
+  externalFacilityName        String?          @map("external_facility_name")
   /// The surat pengantar rendered for this order (P18-T12). One document per
   /// order, re-rendered on reprint, so "the letter for this order" is one
   /// column read rather than a search. `SetNull` because purging a document
   /// must never take the order with it.
-  requestDocumentId         String?          @unique @map("request_document_id") @db.Uuid
+  requestDocumentId           String?          @unique @map("request_document_id") @db.Uuid
   /// How many times a specimen for this order was rejected and had to be
   /// drawn again (P18-T03). Counted on the order rather than derived from the
   /// specimen rows so the worklist badge is one column read, and because it
   /// is the number the patient experiences: three needles for one request.
-  recollectCount            Int              @default(0) @map("recollect_count")
-  orderedAt                 DateTime         @default(now()) @map("ordered_at")
-  cancelledAt               DateTime?        @map("cancelled_at")
-  cancelReason              String?          @map("cancel_reason")
-  releasedAt                DateTime?        @map("released_at")
-  /// IHS id returned by SATUSEHAT on first successful submission (P18-T09).
-  satusehatServiceRequestId String?          @map("satusehat_service_request_id")
-  createdAt                 DateTime         @default(now()) @map("created_at")
-  updatedAt                 DateTime         @updatedAt @map("updated_at")
+  recollectCount              Int              @default(0) @map("recollect_count")
+  orderedAt                   DateTime         @default(now()) @map("ordered_at")
+  cancelledAt                 DateTime?        @map("cancelled_at")
+  cancelReason                String?          @map("cancel_reason")
+  releasedAt                  DateTime?        @map("released_at")
+  /// IHS id of the DiagnosticReport that gathers this whole request into one
+  /// sheet — the single resource in the chain that is genuinely per-order
+  /// (P18-T09). The ServiceRequest id moved to the item it was asked for.
+  satusehatDiagnosticReportId String?          @map("satusehat_diagnostic_report_id")
+  createdAt                   DateTime         @default(now()) @map("created_at")
+  updatedAt                   DateTime         @updatedAt @map("updated_at")
 
-  encounter       Encounter      @relation(fields: [encounterId], references: [id], onDelete: Restrict)
-  patient         PatientProfile @relation(fields: [patientId], references: [id], onDelete: Restrict)
-  orderedBy       DoctorProfile  @relation(fields: [orderedById], references: [id], onDelete: Restrict)
-  items           LabOrderItem[]
-  specimens       LabSpecimen[]
-  invoiceItems    InvoiceItem[]
-  requestDocument Document?      @relation("LabOrderRequestDocument", fields: [requestDocumentId], references: [id], onDelete: SetNull)
-  reports         LabReport[]
+  encounter            Encounter             @relation(fields: [encounterId], references: [id], onDelete: Restrict)
+  patient              PatientProfile        @relation(fields: [patientId], references: [id], onDelete: Restrict)
+  orderedBy            DoctorProfile         @relation(fields: [orderedById], references: [id], onDelete: Restrict)
+  items                LabOrderItem[]
+  specimens            LabSpecimen[]
+  invoiceItems         InvoiceItem[]
+  requestDocument      Document?             @relation("LabOrderRequestDocument", fields: [requestDocumentId], references: [id], onDelete: SetNull)
+  reports              LabReport[]
+  /// The outbox rows that reported this order nationally: one per release, plus
+  /// one per amendment (P18-T09).
+  satusehatSubmissions SatusehatSubmission[]
 
   @@index([encounterId])
   @@index([patientId, orderedAt])
@@ -4858,20 +4894,24 @@ model LabOrder {
 /// therefore never rewrites what was actually ordered, while billing (P18-T06)
 /// still groups on `panelId` to charge the panel once instead of six times.
 model LabOrderItem {
-  id         String             @id @default(uuid()) @db.Uuid
-  labOrderId String             @map("lab_order_id") @db.Uuid
-  labTestId  String             @map("lab_test_id") @db.Uuid
+  id                        String             @id @default(uuid()) @db.Uuid
+  labOrderId                String             @map("lab_order_id") @db.Uuid
+  labTestId                 String             @map("lab_test_id") @db.Uuid
   /// The panel this row was expanded from, or null when the test was ordered
   /// loose. Provenance *and* pricing key, which is why it is `Restrict`: a
   /// panel that has been ordered is deactivated, never deleted.
-  panelId    String?            @map("panel_id") @db.Uuid
+  panelId                   String?            @map("panel_id") @db.Uuid
   /// The tube that serves this test, set when the specimen is collected
   /// (P18-T03). Null again after a rejection, because the item is waiting for
   /// a fresh draw.
-  specimenId String?            @map("specimen_id") @db.Uuid
-  status     LabOrderItemStatus @default(PENDING)
-  createdAt  DateTime           @default(now()) @map("created_at")
-  updatedAt  DateTime           @updatedAt @map("updated_at")
+  specimenId                String?            @map("specimen_id") @db.Uuid
+  status                    LabOrderItemStatus @default(PENDING)
+  /// IHS id returned by SATUSEHAT for this item's ServiceRequest (P18-T09).
+  /// One per item, not per order: a ServiceRequest carries the LOINC of a
+  /// single test, so Darah rutin + GDS is six requests and six ids.
+  satusehatServiceRequestId String?            @map("satusehat_service_request_id")
+  createdAt                 DateTime           @default(now()) @map("created_at")
+  updatedAt                 DateTime           @updatedAt @map("updated_at")
 
   labOrder LabOrder     @relation(fields: [labOrderId], references: [id], onDelete: Cascade)
   labTest  LabTest      @relation(fields: [labTestId], references: [id], onDelete: Restrict)

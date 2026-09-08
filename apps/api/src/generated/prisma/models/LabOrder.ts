@@ -60,7 +60,7 @@ export type LabOrderMinAggregateOutputType = {
   cancelledAt: Date | null
   cancelReason: string | null
   releasedAt: Date | null
-  satusehatServiceRequestId: string | null
+  satusehatDiagnosticReportId: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -84,7 +84,7 @@ export type LabOrderMaxAggregateOutputType = {
   cancelledAt: Date | null
   cancelReason: string | null
   releasedAt: Date | null
-  satusehatServiceRequestId: string | null
+  satusehatDiagnosticReportId: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -108,7 +108,7 @@ export type LabOrderCountAggregateOutputType = {
   cancelledAt: number
   cancelReason: number
   releasedAt: number
-  satusehatServiceRequestId: number
+  satusehatDiagnosticReportId: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -142,7 +142,7 @@ export type LabOrderMinAggregateInputType = {
   cancelledAt?: true
   cancelReason?: true
   releasedAt?: true
-  satusehatServiceRequestId?: true
+  satusehatDiagnosticReportId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -166,7 +166,7 @@ export type LabOrderMaxAggregateInputType = {
   cancelledAt?: true
   cancelReason?: true
   releasedAt?: true
-  satusehatServiceRequestId?: true
+  satusehatDiagnosticReportId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -190,7 +190,7 @@ export type LabOrderCountAggregateInputType = {
   cancelledAt?: true
   cancelReason?: true
   releasedAt?: true
-  satusehatServiceRequestId?: true
+  satusehatDiagnosticReportId?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -301,7 +301,7 @@ export type LabOrderGroupByOutputType = {
   cancelledAt: Date | null
   cancelReason: string | null
   releasedAt: Date | null
-  satusehatServiceRequestId: string | null
+  satusehatDiagnosticReportId: string | null
   createdAt: Date
   updatedAt: Date
   _count: LabOrderCountAggregateOutputType | null
@@ -348,7 +348,7 @@ export type LabOrderWhereInput = {
   cancelledAt?: Prisma.DateTimeNullableFilter<"LabOrder"> | Date | string | null
   cancelReason?: Prisma.StringNullableFilter<"LabOrder"> | string | null
   releasedAt?: Prisma.DateTimeNullableFilter<"LabOrder"> | Date | string | null
-  satusehatServiceRequestId?: Prisma.StringNullableFilter<"LabOrder"> | string | null
+  satusehatDiagnosticReportId?: Prisma.StringNullableFilter<"LabOrder"> | string | null
   createdAt?: Prisma.DateTimeFilter<"LabOrder"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"LabOrder"> | Date | string
   encounter?: Prisma.XOR<Prisma.EncounterScalarRelationFilter, Prisma.EncounterWhereInput>
@@ -359,6 +359,7 @@ export type LabOrderWhereInput = {
   invoiceItems?: Prisma.InvoiceItemListRelationFilter
   requestDocument?: Prisma.XOR<Prisma.DocumentNullableScalarRelationFilter, Prisma.DocumentWhereInput> | null
   reports?: Prisma.LabReportListRelationFilter
+  satusehatSubmissions?: Prisma.SatusehatSubmissionListRelationFilter
 }
 
 export type LabOrderOrderByWithRelationInput = {
@@ -380,7 +381,7 @@ export type LabOrderOrderByWithRelationInput = {
   cancelledAt?: Prisma.SortOrderInput | Prisma.SortOrder
   cancelReason?: Prisma.SortOrderInput | Prisma.SortOrder
   releasedAt?: Prisma.SortOrderInput | Prisma.SortOrder
-  satusehatServiceRequestId?: Prisma.SortOrderInput | Prisma.SortOrder
+  satusehatDiagnosticReportId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   encounter?: Prisma.EncounterOrderByWithRelationInput
@@ -391,6 +392,7 @@ export type LabOrderOrderByWithRelationInput = {
   invoiceItems?: Prisma.InvoiceItemOrderByRelationAggregateInput
   requestDocument?: Prisma.DocumentOrderByWithRelationInput
   reports?: Prisma.LabReportOrderByRelationAggregateInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionOrderByRelationAggregateInput
 }
 
 export type LabOrderWhereUniqueInput = Prisma.AtLeast<{
@@ -415,7 +417,7 @@ export type LabOrderWhereUniqueInput = Prisma.AtLeast<{
   cancelledAt?: Prisma.DateTimeNullableFilter<"LabOrder"> | Date | string | null
   cancelReason?: Prisma.StringNullableFilter<"LabOrder"> | string | null
   releasedAt?: Prisma.DateTimeNullableFilter<"LabOrder"> | Date | string | null
-  satusehatServiceRequestId?: Prisma.StringNullableFilter<"LabOrder"> | string | null
+  satusehatDiagnosticReportId?: Prisma.StringNullableFilter<"LabOrder"> | string | null
   createdAt?: Prisma.DateTimeFilter<"LabOrder"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"LabOrder"> | Date | string
   encounter?: Prisma.XOR<Prisma.EncounterScalarRelationFilter, Prisma.EncounterWhereInput>
@@ -426,6 +428,7 @@ export type LabOrderWhereUniqueInput = Prisma.AtLeast<{
   invoiceItems?: Prisma.InvoiceItemListRelationFilter
   requestDocument?: Prisma.XOR<Prisma.DocumentNullableScalarRelationFilter, Prisma.DocumentWhereInput> | null
   reports?: Prisma.LabReportListRelationFilter
+  satusehatSubmissions?: Prisma.SatusehatSubmissionListRelationFilter
 }, "id" | "orderNumber" | "requestDocumentId">
 
 export type LabOrderOrderByWithAggregationInput = {
@@ -447,7 +450,7 @@ export type LabOrderOrderByWithAggregationInput = {
   cancelledAt?: Prisma.SortOrderInput | Prisma.SortOrder
   cancelReason?: Prisma.SortOrderInput | Prisma.SortOrder
   releasedAt?: Prisma.SortOrderInput | Prisma.SortOrder
-  satusehatServiceRequestId?: Prisma.SortOrderInput | Prisma.SortOrder
+  satusehatDiagnosticReportId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.LabOrderCountOrderByAggregateInput
@@ -479,7 +482,7 @@ export type LabOrderScalarWhereWithAggregatesInput = {
   cancelledAt?: Prisma.DateTimeNullableWithAggregatesFilter<"LabOrder"> | Date | string | null
   cancelReason?: Prisma.StringNullableWithAggregatesFilter<"LabOrder"> | string | null
   releasedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"LabOrder"> | Date | string | null
-  satusehatServiceRequestId?: Prisma.StringNullableWithAggregatesFilter<"LabOrder"> | string | null
+  satusehatDiagnosticReportId?: Prisma.StringNullableWithAggregatesFilter<"LabOrder"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"LabOrder"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"LabOrder"> | Date | string
 }
@@ -499,7 +502,7 @@ export type LabOrderCreateInput = {
   cancelledAt?: Date | string | null
   cancelReason?: string | null
   releasedAt?: Date | string | null
-  satusehatServiceRequestId?: string | null
+  satusehatDiagnosticReportId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   encounter: Prisma.EncounterCreateNestedOneWithoutLabOrdersInput
@@ -510,6 +513,7 @@ export type LabOrderCreateInput = {
   invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutLabOrderInput
   requestDocument?: Prisma.DocumentCreateNestedOneWithoutLabOrderInput
   reports?: Prisma.LabReportCreateNestedManyWithoutLabOrderInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionCreateNestedManyWithoutLabOrderInput
 }
 
 export type LabOrderUncheckedCreateInput = {
@@ -531,13 +535,14 @@ export type LabOrderUncheckedCreateInput = {
   cancelledAt?: Date | string | null
   cancelReason?: string | null
   releasedAt?: Date | string | null
-  satusehatServiceRequestId?: string | null
+  satusehatDiagnosticReportId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.LabOrderItemUncheckedCreateNestedManyWithoutLabOrderInput
   specimens?: Prisma.LabSpecimenUncheckedCreateNestedManyWithoutLabOrderInput
   invoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutLabOrderInput
   reports?: Prisma.LabReportUncheckedCreateNestedManyWithoutLabOrderInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionUncheckedCreateNestedManyWithoutLabOrderInput
 }
 
 export type LabOrderUpdateInput = {
@@ -555,7 +560,7 @@ export type LabOrderUpdateInput = {
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  satusehatServiceRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  satusehatDiagnosticReportId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   encounter?: Prisma.EncounterUpdateOneRequiredWithoutLabOrdersNestedInput
@@ -566,6 +571,7 @@ export type LabOrderUpdateInput = {
   invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutLabOrderNestedInput
   requestDocument?: Prisma.DocumentUpdateOneWithoutLabOrderNestedInput
   reports?: Prisma.LabReportUpdateManyWithoutLabOrderNestedInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionUpdateManyWithoutLabOrderNestedInput
 }
 
 export type LabOrderUncheckedUpdateInput = {
@@ -587,13 +593,14 @@ export type LabOrderUncheckedUpdateInput = {
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  satusehatServiceRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  satusehatDiagnosticReportId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.LabOrderItemUncheckedUpdateManyWithoutLabOrderNestedInput
   specimens?: Prisma.LabSpecimenUncheckedUpdateManyWithoutLabOrderNestedInput
   invoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutLabOrderNestedInput
   reports?: Prisma.LabReportUncheckedUpdateManyWithoutLabOrderNestedInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionUncheckedUpdateManyWithoutLabOrderNestedInput
 }
 
 export type LabOrderCreateManyInput = {
@@ -615,7 +622,7 @@ export type LabOrderCreateManyInput = {
   cancelledAt?: Date | string | null
   cancelReason?: string | null
   releasedAt?: Date | string | null
-  satusehatServiceRequestId?: string | null
+  satusehatDiagnosticReportId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -635,7 +642,7 @@ export type LabOrderUpdateManyMutationInput = {
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  satusehatServiceRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  satusehatDiagnosticReportId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -659,7 +666,7 @@ export type LabOrderUncheckedUpdateManyInput = {
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  satusehatServiceRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  satusehatDiagnosticReportId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -698,7 +705,7 @@ export type LabOrderCountOrderByAggregateInput = {
   cancelledAt?: Prisma.SortOrder
   cancelReason?: Prisma.SortOrder
   releasedAt?: Prisma.SortOrder
-  satusehatServiceRequestId?: Prisma.SortOrder
+  satusehatDiagnosticReportId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -726,7 +733,7 @@ export type LabOrderMaxOrderByAggregateInput = {
   cancelledAt?: Prisma.SortOrder
   cancelReason?: Prisma.SortOrder
   releasedAt?: Prisma.SortOrder
-  satusehatServiceRequestId?: Prisma.SortOrder
+  satusehatDiagnosticReportId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -750,7 +757,7 @@ export type LabOrderMinOrderByAggregateInput = {
   cancelledAt?: Prisma.SortOrder
   cancelReason?: Prisma.SortOrder
   releasedAt?: Prisma.SortOrder
-  satusehatServiceRequestId?: Prisma.SortOrder
+  satusehatDiagnosticReportId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -906,6 +913,22 @@ export type LabOrderUpdateOneWithoutInvoiceItemsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.LabOrderUpdateToOneWithWhereWithoutInvoiceItemsInput, Prisma.LabOrderUpdateWithoutInvoiceItemsInput>, Prisma.LabOrderUncheckedUpdateWithoutInvoiceItemsInput>
 }
 
+export type LabOrderCreateNestedOneWithoutSatusehatSubmissionsInput = {
+  create?: Prisma.XOR<Prisma.LabOrderCreateWithoutSatusehatSubmissionsInput, Prisma.LabOrderUncheckedCreateWithoutSatusehatSubmissionsInput>
+  connectOrCreate?: Prisma.LabOrderCreateOrConnectWithoutSatusehatSubmissionsInput
+  connect?: Prisma.LabOrderWhereUniqueInput
+}
+
+export type LabOrderUpdateOneWithoutSatusehatSubmissionsNestedInput = {
+  create?: Prisma.XOR<Prisma.LabOrderCreateWithoutSatusehatSubmissionsInput, Prisma.LabOrderUncheckedCreateWithoutSatusehatSubmissionsInput>
+  connectOrCreate?: Prisma.LabOrderCreateOrConnectWithoutSatusehatSubmissionsInput
+  upsert?: Prisma.LabOrderUpsertWithoutSatusehatSubmissionsInput
+  disconnect?: Prisma.LabOrderWhereInput | boolean
+  delete?: Prisma.LabOrderWhereInput | boolean
+  connect?: Prisma.LabOrderWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.LabOrderUpdateToOneWithWhereWithoutSatusehatSubmissionsInput, Prisma.LabOrderUpdateWithoutSatusehatSubmissionsInput>, Prisma.LabOrderUncheckedUpdateWithoutSatusehatSubmissionsInput>
+}
+
 export type LabOrderCreateNestedOneWithoutRequestDocumentInput = {
   create?: Prisma.XOR<Prisma.LabOrderCreateWithoutRequestDocumentInput, Prisma.LabOrderUncheckedCreateWithoutRequestDocumentInput>
   connectOrCreate?: Prisma.LabOrderCreateOrConnectWithoutRequestDocumentInput
@@ -1003,7 +1026,7 @@ export type LabOrderCreateWithoutPatientInput = {
   cancelledAt?: Date | string | null
   cancelReason?: string | null
   releasedAt?: Date | string | null
-  satusehatServiceRequestId?: string | null
+  satusehatDiagnosticReportId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   encounter: Prisma.EncounterCreateNestedOneWithoutLabOrdersInput
@@ -1013,6 +1036,7 @@ export type LabOrderCreateWithoutPatientInput = {
   invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutLabOrderInput
   requestDocument?: Prisma.DocumentCreateNestedOneWithoutLabOrderInput
   reports?: Prisma.LabReportCreateNestedManyWithoutLabOrderInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionCreateNestedManyWithoutLabOrderInput
 }
 
 export type LabOrderUncheckedCreateWithoutPatientInput = {
@@ -1033,13 +1057,14 @@ export type LabOrderUncheckedCreateWithoutPatientInput = {
   cancelledAt?: Date | string | null
   cancelReason?: string | null
   releasedAt?: Date | string | null
-  satusehatServiceRequestId?: string | null
+  satusehatDiagnosticReportId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.LabOrderItemUncheckedCreateNestedManyWithoutLabOrderInput
   specimens?: Prisma.LabSpecimenUncheckedCreateNestedManyWithoutLabOrderInput
   invoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutLabOrderInput
   reports?: Prisma.LabReportUncheckedCreateNestedManyWithoutLabOrderInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionUncheckedCreateNestedManyWithoutLabOrderInput
 }
 
 export type LabOrderCreateOrConnectWithoutPatientInput = {
@@ -1090,7 +1115,7 @@ export type LabOrderScalarWhereInput = {
   cancelledAt?: Prisma.DateTimeNullableFilter<"LabOrder"> | Date | string | null
   cancelReason?: Prisma.StringNullableFilter<"LabOrder"> | string | null
   releasedAt?: Prisma.DateTimeNullableFilter<"LabOrder"> | Date | string | null
-  satusehatServiceRequestId?: Prisma.StringNullableFilter<"LabOrder"> | string | null
+  satusehatDiagnosticReportId?: Prisma.StringNullableFilter<"LabOrder"> | string | null
   createdAt?: Prisma.DateTimeFilter<"LabOrder"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"LabOrder"> | Date | string
 }
@@ -1110,7 +1135,7 @@ export type LabOrderCreateWithoutOrderedByInput = {
   cancelledAt?: Date | string | null
   cancelReason?: string | null
   releasedAt?: Date | string | null
-  satusehatServiceRequestId?: string | null
+  satusehatDiagnosticReportId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   encounter: Prisma.EncounterCreateNestedOneWithoutLabOrdersInput
@@ -1120,6 +1145,7 @@ export type LabOrderCreateWithoutOrderedByInput = {
   invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutLabOrderInput
   requestDocument?: Prisma.DocumentCreateNestedOneWithoutLabOrderInput
   reports?: Prisma.LabReportCreateNestedManyWithoutLabOrderInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionCreateNestedManyWithoutLabOrderInput
 }
 
 export type LabOrderUncheckedCreateWithoutOrderedByInput = {
@@ -1140,13 +1166,14 @@ export type LabOrderUncheckedCreateWithoutOrderedByInput = {
   cancelledAt?: Date | string | null
   cancelReason?: string | null
   releasedAt?: Date | string | null
-  satusehatServiceRequestId?: string | null
+  satusehatDiagnosticReportId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.LabOrderItemUncheckedCreateNestedManyWithoutLabOrderInput
   specimens?: Prisma.LabSpecimenUncheckedCreateNestedManyWithoutLabOrderInput
   invoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutLabOrderInput
   reports?: Prisma.LabReportUncheckedCreateNestedManyWithoutLabOrderInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionUncheckedCreateNestedManyWithoutLabOrderInput
 }
 
 export type LabOrderCreateOrConnectWithoutOrderedByInput = {
@@ -1190,7 +1217,7 @@ export type LabOrderCreateWithoutEncounterInput = {
   cancelledAt?: Date | string | null
   cancelReason?: string | null
   releasedAt?: Date | string | null
-  satusehatServiceRequestId?: string | null
+  satusehatDiagnosticReportId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   patient: Prisma.PatientProfileCreateNestedOneWithoutLabOrdersInput
@@ -1200,6 +1227,7 @@ export type LabOrderCreateWithoutEncounterInput = {
   invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutLabOrderInput
   requestDocument?: Prisma.DocumentCreateNestedOneWithoutLabOrderInput
   reports?: Prisma.LabReportCreateNestedManyWithoutLabOrderInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionCreateNestedManyWithoutLabOrderInput
 }
 
 export type LabOrderUncheckedCreateWithoutEncounterInput = {
@@ -1220,13 +1248,14 @@ export type LabOrderUncheckedCreateWithoutEncounterInput = {
   cancelledAt?: Date | string | null
   cancelReason?: string | null
   releasedAt?: Date | string | null
-  satusehatServiceRequestId?: string | null
+  satusehatDiagnosticReportId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.LabOrderItemUncheckedCreateNestedManyWithoutLabOrderInput
   specimens?: Prisma.LabSpecimenUncheckedCreateNestedManyWithoutLabOrderInput
   invoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutLabOrderInput
   reports?: Prisma.LabReportUncheckedCreateNestedManyWithoutLabOrderInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionUncheckedCreateNestedManyWithoutLabOrderInput
 }
 
 export type LabOrderCreateOrConnectWithoutEncounterInput = {
@@ -1270,7 +1299,7 @@ export type LabOrderCreateWithoutInvoiceItemsInput = {
   cancelledAt?: Date | string | null
   cancelReason?: string | null
   releasedAt?: Date | string | null
-  satusehatServiceRequestId?: string | null
+  satusehatDiagnosticReportId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   encounter: Prisma.EncounterCreateNestedOneWithoutLabOrdersInput
@@ -1280,6 +1309,7 @@ export type LabOrderCreateWithoutInvoiceItemsInput = {
   specimens?: Prisma.LabSpecimenCreateNestedManyWithoutLabOrderInput
   requestDocument?: Prisma.DocumentCreateNestedOneWithoutLabOrderInput
   reports?: Prisma.LabReportCreateNestedManyWithoutLabOrderInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionCreateNestedManyWithoutLabOrderInput
 }
 
 export type LabOrderUncheckedCreateWithoutInvoiceItemsInput = {
@@ -1301,12 +1331,13 @@ export type LabOrderUncheckedCreateWithoutInvoiceItemsInput = {
   cancelledAt?: Date | string | null
   cancelReason?: string | null
   releasedAt?: Date | string | null
-  satusehatServiceRequestId?: string | null
+  satusehatDiagnosticReportId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.LabOrderItemUncheckedCreateNestedManyWithoutLabOrderInput
   specimens?: Prisma.LabSpecimenUncheckedCreateNestedManyWithoutLabOrderInput
   reports?: Prisma.LabReportUncheckedCreateNestedManyWithoutLabOrderInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionUncheckedCreateNestedManyWithoutLabOrderInput
 }
 
 export type LabOrderCreateOrConnectWithoutInvoiceItemsInput = {
@@ -1340,7 +1371,7 @@ export type LabOrderUpdateWithoutInvoiceItemsInput = {
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  satusehatServiceRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  satusehatDiagnosticReportId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   encounter?: Prisma.EncounterUpdateOneRequiredWithoutLabOrdersNestedInput
@@ -1350,6 +1381,7 @@ export type LabOrderUpdateWithoutInvoiceItemsInput = {
   specimens?: Prisma.LabSpecimenUpdateManyWithoutLabOrderNestedInput
   requestDocument?: Prisma.DocumentUpdateOneWithoutLabOrderNestedInput
   reports?: Prisma.LabReportUpdateManyWithoutLabOrderNestedInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionUpdateManyWithoutLabOrderNestedInput
 }
 
 export type LabOrderUncheckedUpdateWithoutInvoiceItemsInput = {
@@ -1371,11 +1403,140 @@ export type LabOrderUncheckedUpdateWithoutInvoiceItemsInput = {
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  satusehatServiceRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  satusehatDiagnosticReportId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.LabOrderItemUncheckedUpdateManyWithoutLabOrderNestedInput
   specimens?: Prisma.LabSpecimenUncheckedUpdateManyWithoutLabOrderNestedInput
+  reports?: Prisma.LabReportUncheckedUpdateManyWithoutLabOrderNestedInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionUncheckedUpdateManyWithoutLabOrderNestedInput
+}
+
+export type LabOrderCreateWithoutSatusehatSubmissionsInput = {
+  id?: string
+  orderNumber: string
+  status?: $Enums.LabOrderStatus
+  priority?: $Enums.LabOrderPriority
+  clinicalNotes?: string | null
+  isFasting?: boolean
+  fulfilmentSite?: $Enums.FulfilmentSite
+  chargeMode?: $Enums.ChargeMode
+  externalFacilityName?: string | null
+  recollectCount?: number
+  orderedAt?: Date | string
+  cancelledAt?: Date | string | null
+  cancelReason?: string | null
+  releasedAt?: Date | string | null
+  satusehatDiagnosticReportId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  encounter: Prisma.EncounterCreateNestedOneWithoutLabOrdersInput
+  patient: Prisma.PatientProfileCreateNestedOneWithoutLabOrdersInput
+  orderedBy: Prisma.DoctorProfileCreateNestedOneWithoutLabOrdersInput
+  items?: Prisma.LabOrderItemCreateNestedManyWithoutLabOrderInput
+  specimens?: Prisma.LabSpecimenCreateNestedManyWithoutLabOrderInput
+  invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutLabOrderInput
+  requestDocument?: Prisma.DocumentCreateNestedOneWithoutLabOrderInput
+  reports?: Prisma.LabReportCreateNestedManyWithoutLabOrderInput
+}
+
+export type LabOrderUncheckedCreateWithoutSatusehatSubmissionsInput = {
+  id?: string
+  encounterId: string
+  patientId: string
+  orderedById: string
+  orderNumber: string
+  status?: $Enums.LabOrderStatus
+  priority?: $Enums.LabOrderPriority
+  clinicalNotes?: string | null
+  isFasting?: boolean
+  fulfilmentSite?: $Enums.FulfilmentSite
+  chargeMode?: $Enums.ChargeMode
+  externalFacilityName?: string | null
+  requestDocumentId?: string | null
+  recollectCount?: number
+  orderedAt?: Date | string
+  cancelledAt?: Date | string | null
+  cancelReason?: string | null
+  releasedAt?: Date | string | null
+  satusehatDiagnosticReportId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  items?: Prisma.LabOrderItemUncheckedCreateNestedManyWithoutLabOrderInput
+  specimens?: Prisma.LabSpecimenUncheckedCreateNestedManyWithoutLabOrderInput
+  invoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutLabOrderInput
+  reports?: Prisma.LabReportUncheckedCreateNestedManyWithoutLabOrderInput
+}
+
+export type LabOrderCreateOrConnectWithoutSatusehatSubmissionsInput = {
+  where: Prisma.LabOrderWhereUniqueInput
+  create: Prisma.XOR<Prisma.LabOrderCreateWithoutSatusehatSubmissionsInput, Prisma.LabOrderUncheckedCreateWithoutSatusehatSubmissionsInput>
+}
+
+export type LabOrderUpsertWithoutSatusehatSubmissionsInput = {
+  update: Prisma.XOR<Prisma.LabOrderUpdateWithoutSatusehatSubmissionsInput, Prisma.LabOrderUncheckedUpdateWithoutSatusehatSubmissionsInput>
+  create: Prisma.XOR<Prisma.LabOrderCreateWithoutSatusehatSubmissionsInput, Prisma.LabOrderUncheckedCreateWithoutSatusehatSubmissionsInput>
+  where?: Prisma.LabOrderWhereInput
+}
+
+export type LabOrderUpdateToOneWithWhereWithoutSatusehatSubmissionsInput = {
+  where?: Prisma.LabOrderWhereInput
+  data: Prisma.XOR<Prisma.LabOrderUpdateWithoutSatusehatSubmissionsInput, Prisma.LabOrderUncheckedUpdateWithoutSatusehatSubmissionsInput>
+}
+
+export type LabOrderUpdateWithoutSatusehatSubmissionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  orderNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumLabOrderStatusFieldUpdateOperationsInput | $Enums.LabOrderStatus
+  priority?: Prisma.EnumLabOrderPriorityFieldUpdateOperationsInput | $Enums.LabOrderPriority
+  clinicalNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFasting?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  fulfilmentSite?: Prisma.EnumFulfilmentSiteFieldUpdateOperationsInput | $Enums.FulfilmentSite
+  chargeMode?: Prisma.EnumChargeModeFieldUpdateOperationsInput | $Enums.ChargeMode
+  externalFacilityName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recollectCount?: Prisma.IntFieldUpdateOperationsInput | number
+  orderedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  satusehatDiagnosticReportId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  encounter?: Prisma.EncounterUpdateOneRequiredWithoutLabOrdersNestedInput
+  patient?: Prisma.PatientProfileUpdateOneRequiredWithoutLabOrdersNestedInput
+  orderedBy?: Prisma.DoctorProfileUpdateOneRequiredWithoutLabOrdersNestedInput
+  items?: Prisma.LabOrderItemUpdateManyWithoutLabOrderNestedInput
+  specimens?: Prisma.LabSpecimenUpdateManyWithoutLabOrderNestedInput
+  invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutLabOrderNestedInput
+  requestDocument?: Prisma.DocumentUpdateOneWithoutLabOrderNestedInput
+  reports?: Prisma.LabReportUpdateManyWithoutLabOrderNestedInput
+}
+
+export type LabOrderUncheckedUpdateWithoutSatusehatSubmissionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  encounterId?: Prisma.StringFieldUpdateOperationsInput | string
+  patientId?: Prisma.StringFieldUpdateOperationsInput | string
+  orderedById?: Prisma.StringFieldUpdateOperationsInput | string
+  orderNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumLabOrderStatusFieldUpdateOperationsInput | $Enums.LabOrderStatus
+  priority?: Prisma.EnumLabOrderPriorityFieldUpdateOperationsInput | $Enums.LabOrderPriority
+  clinicalNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFasting?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  fulfilmentSite?: Prisma.EnumFulfilmentSiteFieldUpdateOperationsInput | $Enums.FulfilmentSite
+  chargeMode?: Prisma.EnumChargeModeFieldUpdateOperationsInput | $Enums.ChargeMode
+  externalFacilityName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recollectCount?: Prisma.IntFieldUpdateOperationsInput | number
+  orderedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  satusehatDiagnosticReportId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  items?: Prisma.LabOrderItemUncheckedUpdateManyWithoutLabOrderNestedInput
+  specimens?: Prisma.LabSpecimenUncheckedUpdateManyWithoutLabOrderNestedInput
+  invoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutLabOrderNestedInput
   reports?: Prisma.LabReportUncheckedUpdateManyWithoutLabOrderNestedInput
 }
 
@@ -1394,7 +1555,7 @@ export type LabOrderCreateWithoutRequestDocumentInput = {
   cancelledAt?: Date | string | null
   cancelReason?: string | null
   releasedAt?: Date | string | null
-  satusehatServiceRequestId?: string | null
+  satusehatDiagnosticReportId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   encounter: Prisma.EncounterCreateNestedOneWithoutLabOrdersInput
@@ -1404,6 +1565,7 @@ export type LabOrderCreateWithoutRequestDocumentInput = {
   specimens?: Prisma.LabSpecimenCreateNestedManyWithoutLabOrderInput
   invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutLabOrderInput
   reports?: Prisma.LabReportCreateNestedManyWithoutLabOrderInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionCreateNestedManyWithoutLabOrderInput
 }
 
 export type LabOrderUncheckedCreateWithoutRequestDocumentInput = {
@@ -1424,13 +1586,14 @@ export type LabOrderUncheckedCreateWithoutRequestDocumentInput = {
   cancelledAt?: Date | string | null
   cancelReason?: string | null
   releasedAt?: Date | string | null
-  satusehatServiceRequestId?: string | null
+  satusehatDiagnosticReportId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.LabOrderItemUncheckedCreateNestedManyWithoutLabOrderInput
   specimens?: Prisma.LabSpecimenUncheckedCreateNestedManyWithoutLabOrderInput
   invoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutLabOrderInput
   reports?: Prisma.LabReportUncheckedCreateNestedManyWithoutLabOrderInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionUncheckedCreateNestedManyWithoutLabOrderInput
 }
 
 export type LabOrderCreateOrConnectWithoutRequestDocumentInput = {
@@ -1464,7 +1627,7 @@ export type LabOrderUpdateWithoutRequestDocumentInput = {
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  satusehatServiceRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  satusehatDiagnosticReportId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   encounter?: Prisma.EncounterUpdateOneRequiredWithoutLabOrdersNestedInput
@@ -1474,6 +1637,7 @@ export type LabOrderUpdateWithoutRequestDocumentInput = {
   specimens?: Prisma.LabSpecimenUpdateManyWithoutLabOrderNestedInput
   invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutLabOrderNestedInput
   reports?: Prisma.LabReportUpdateManyWithoutLabOrderNestedInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionUpdateManyWithoutLabOrderNestedInput
 }
 
 export type LabOrderUncheckedUpdateWithoutRequestDocumentInput = {
@@ -1494,13 +1658,14 @@ export type LabOrderUncheckedUpdateWithoutRequestDocumentInput = {
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  satusehatServiceRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  satusehatDiagnosticReportId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.LabOrderItemUncheckedUpdateManyWithoutLabOrderNestedInput
   specimens?: Prisma.LabSpecimenUncheckedUpdateManyWithoutLabOrderNestedInput
   invoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutLabOrderNestedInput
   reports?: Prisma.LabReportUncheckedUpdateManyWithoutLabOrderNestedInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionUncheckedUpdateManyWithoutLabOrderNestedInput
 }
 
 export type LabOrderCreateWithoutItemsInput = {
@@ -1518,7 +1683,7 @@ export type LabOrderCreateWithoutItemsInput = {
   cancelledAt?: Date | string | null
   cancelReason?: string | null
   releasedAt?: Date | string | null
-  satusehatServiceRequestId?: string | null
+  satusehatDiagnosticReportId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   encounter: Prisma.EncounterCreateNestedOneWithoutLabOrdersInput
@@ -1528,6 +1693,7 @@ export type LabOrderCreateWithoutItemsInput = {
   invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutLabOrderInput
   requestDocument?: Prisma.DocumentCreateNestedOneWithoutLabOrderInput
   reports?: Prisma.LabReportCreateNestedManyWithoutLabOrderInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionCreateNestedManyWithoutLabOrderInput
 }
 
 export type LabOrderUncheckedCreateWithoutItemsInput = {
@@ -1549,12 +1715,13 @@ export type LabOrderUncheckedCreateWithoutItemsInput = {
   cancelledAt?: Date | string | null
   cancelReason?: string | null
   releasedAt?: Date | string | null
-  satusehatServiceRequestId?: string | null
+  satusehatDiagnosticReportId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   specimens?: Prisma.LabSpecimenUncheckedCreateNestedManyWithoutLabOrderInput
   invoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutLabOrderInput
   reports?: Prisma.LabReportUncheckedCreateNestedManyWithoutLabOrderInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionUncheckedCreateNestedManyWithoutLabOrderInput
 }
 
 export type LabOrderCreateOrConnectWithoutItemsInput = {
@@ -1588,7 +1755,7 @@ export type LabOrderUpdateWithoutItemsInput = {
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  satusehatServiceRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  satusehatDiagnosticReportId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   encounter?: Prisma.EncounterUpdateOneRequiredWithoutLabOrdersNestedInput
@@ -1598,6 +1765,7 @@ export type LabOrderUpdateWithoutItemsInput = {
   invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutLabOrderNestedInput
   requestDocument?: Prisma.DocumentUpdateOneWithoutLabOrderNestedInput
   reports?: Prisma.LabReportUpdateManyWithoutLabOrderNestedInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionUpdateManyWithoutLabOrderNestedInput
 }
 
 export type LabOrderUncheckedUpdateWithoutItemsInput = {
@@ -1619,12 +1787,13 @@ export type LabOrderUncheckedUpdateWithoutItemsInput = {
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  satusehatServiceRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  satusehatDiagnosticReportId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   specimens?: Prisma.LabSpecimenUncheckedUpdateManyWithoutLabOrderNestedInput
   invoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutLabOrderNestedInput
   reports?: Prisma.LabReportUncheckedUpdateManyWithoutLabOrderNestedInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionUncheckedUpdateManyWithoutLabOrderNestedInput
 }
 
 export type LabOrderCreateWithoutSpecimensInput = {
@@ -1642,7 +1811,7 @@ export type LabOrderCreateWithoutSpecimensInput = {
   cancelledAt?: Date | string | null
   cancelReason?: string | null
   releasedAt?: Date | string | null
-  satusehatServiceRequestId?: string | null
+  satusehatDiagnosticReportId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   encounter: Prisma.EncounterCreateNestedOneWithoutLabOrdersInput
@@ -1652,6 +1821,7 @@ export type LabOrderCreateWithoutSpecimensInput = {
   invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutLabOrderInput
   requestDocument?: Prisma.DocumentCreateNestedOneWithoutLabOrderInput
   reports?: Prisma.LabReportCreateNestedManyWithoutLabOrderInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionCreateNestedManyWithoutLabOrderInput
 }
 
 export type LabOrderUncheckedCreateWithoutSpecimensInput = {
@@ -1673,12 +1843,13 @@ export type LabOrderUncheckedCreateWithoutSpecimensInput = {
   cancelledAt?: Date | string | null
   cancelReason?: string | null
   releasedAt?: Date | string | null
-  satusehatServiceRequestId?: string | null
+  satusehatDiagnosticReportId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.LabOrderItemUncheckedCreateNestedManyWithoutLabOrderInput
   invoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutLabOrderInput
   reports?: Prisma.LabReportUncheckedCreateNestedManyWithoutLabOrderInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionUncheckedCreateNestedManyWithoutLabOrderInput
 }
 
 export type LabOrderCreateOrConnectWithoutSpecimensInput = {
@@ -1712,7 +1883,7 @@ export type LabOrderUpdateWithoutSpecimensInput = {
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  satusehatServiceRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  satusehatDiagnosticReportId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   encounter?: Prisma.EncounterUpdateOneRequiredWithoutLabOrdersNestedInput
@@ -1722,6 +1893,7 @@ export type LabOrderUpdateWithoutSpecimensInput = {
   invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutLabOrderNestedInput
   requestDocument?: Prisma.DocumentUpdateOneWithoutLabOrderNestedInput
   reports?: Prisma.LabReportUpdateManyWithoutLabOrderNestedInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionUpdateManyWithoutLabOrderNestedInput
 }
 
 export type LabOrderUncheckedUpdateWithoutSpecimensInput = {
@@ -1743,12 +1915,13 @@ export type LabOrderUncheckedUpdateWithoutSpecimensInput = {
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  satusehatServiceRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  satusehatDiagnosticReportId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.LabOrderItemUncheckedUpdateManyWithoutLabOrderNestedInput
   invoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutLabOrderNestedInput
   reports?: Prisma.LabReportUncheckedUpdateManyWithoutLabOrderNestedInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionUncheckedUpdateManyWithoutLabOrderNestedInput
 }
 
 export type LabOrderCreateWithoutReportsInput = {
@@ -1766,7 +1939,7 @@ export type LabOrderCreateWithoutReportsInput = {
   cancelledAt?: Date | string | null
   cancelReason?: string | null
   releasedAt?: Date | string | null
-  satusehatServiceRequestId?: string | null
+  satusehatDiagnosticReportId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   encounter: Prisma.EncounterCreateNestedOneWithoutLabOrdersInput
@@ -1776,6 +1949,7 @@ export type LabOrderCreateWithoutReportsInput = {
   specimens?: Prisma.LabSpecimenCreateNestedManyWithoutLabOrderInput
   invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutLabOrderInput
   requestDocument?: Prisma.DocumentCreateNestedOneWithoutLabOrderInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionCreateNestedManyWithoutLabOrderInput
 }
 
 export type LabOrderUncheckedCreateWithoutReportsInput = {
@@ -1797,12 +1971,13 @@ export type LabOrderUncheckedCreateWithoutReportsInput = {
   cancelledAt?: Date | string | null
   cancelReason?: string | null
   releasedAt?: Date | string | null
-  satusehatServiceRequestId?: string | null
+  satusehatDiagnosticReportId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.LabOrderItemUncheckedCreateNestedManyWithoutLabOrderInput
   specimens?: Prisma.LabSpecimenUncheckedCreateNestedManyWithoutLabOrderInput
   invoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutLabOrderInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionUncheckedCreateNestedManyWithoutLabOrderInput
 }
 
 export type LabOrderCreateOrConnectWithoutReportsInput = {
@@ -1836,7 +2011,7 @@ export type LabOrderUpdateWithoutReportsInput = {
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  satusehatServiceRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  satusehatDiagnosticReportId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   encounter?: Prisma.EncounterUpdateOneRequiredWithoutLabOrdersNestedInput
@@ -1846,6 +2021,7 @@ export type LabOrderUpdateWithoutReportsInput = {
   specimens?: Prisma.LabSpecimenUpdateManyWithoutLabOrderNestedInput
   invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutLabOrderNestedInput
   requestDocument?: Prisma.DocumentUpdateOneWithoutLabOrderNestedInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionUpdateManyWithoutLabOrderNestedInput
 }
 
 export type LabOrderUncheckedUpdateWithoutReportsInput = {
@@ -1867,12 +2043,13 @@ export type LabOrderUncheckedUpdateWithoutReportsInput = {
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  satusehatServiceRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  satusehatDiagnosticReportId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.LabOrderItemUncheckedUpdateManyWithoutLabOrderNestedInput
   specimens?: Prisma.LabSpecimenUncheckedUpdateManyWithoutLabOrderNestedInput
   invoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutLabOrderNestedInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionUncheckedUpdateManyWithoutLabOrderNestedInput
 }
 
 export type LabOrderCreateManyPatientInput = {
@@ -1893,7 +2070,7 @@ export type LabOrderCreateManyPatientInput = {
   cancelledAt?: Date | string | null
   cancelReason?: string | null
   releasedAt?: Date | string | null
-  satusehatServiceRequestId?: string | null
+  satusehatDiagnosticReportId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1913,7 +2090,7 @@ export type LabOrderUpdateWithoutPatientInput = {
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  satusehatServiceRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  satusehatDiagnosticReportId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   encounter?: Prisma.EncounterUpdateOneRequiredWithoutLabOrdersNestedInput
@@ -1923,6 +2100,7 @@ export type LabOrderUpdateWithoutPatientInput = {
   invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutLabOrderNestedInput
   requestDocument?: Prisma.DocumentUpdateOneWithoutLabOrderNestedInput
   reports?: Prisma.LabReportUpdateManyWithoutLabOrderNestedInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionUpdateManyWithoutLabOrderNestedInput
 }
 
 export type LabOrderUncheckedUpdateWithoutPatientInput = {
@@ -1943,13 +2121,14 @@ export type LabOrderUncheckedUpdateWithoutPatientInput = {
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  satusehatServiceRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  satusehatDiagnosticReportId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.LabOrderItemUncheckedUpdateManyWithoutLabOrderNestedInput
   specimens?: Prisma.LabSpecimenUncheckedUpdateManyWithoutLabOrderNestedInput
   invoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutLabOrderNestedInput
   reports?: Prisma.LabReportUncheckedUpdateManyWithoutLabOrderNestedInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionUncheckedUpdateManyWithoutLabOrderNestedInput
 }
 
 export type LabOrderUncheckedUpdateManyWithoutPatientInput = {
@@ -1970,7 +2149,7 @@ export type LabOrderUncheckedUpdateManyWithoutPatientInput = {
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  satusehatServiceRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  satusehatDiagnosticReportId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1993,7 +2172,7 @@ export type LabOrderCreateManyOrderedByInput = {
   cancelledAt?: Date | string | null
   cancelReason?: string | null
   releasedAt?: Date | string | null
-  satusehatServiceRequestId?: string | null
+  satusehatDiagnosticReportId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -2013,7 +2192,7 @@ export type LabOrderUpdateWithoutOrderedByInput = {
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  satusehatServiceRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  satusehatDiagnosticReportId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   encounter?: Prisma.EncounterUpdateOneRequiredWithoutLabOrdersNestedInput
@@ -2023,6 +2202,7 @@ export type LabOrderUpdateWithoutOrderedByInput = {
   invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutLabOrderNestedInput
   requestDocument?: Prisma.DocumentUpdateOneWithoutLabOrderNestedInput
   reports?: Prisma.LabReportUpdateManyWithoutLabOrderNestedInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionUpdateManyWithoutLabOrderNestedInput
 }
 
 export type LabOrderUncheckedUpdateWithoutOrderedByInput = {
@@ -2043,13 +2223,14 @@ export type LabOrderUncheckedUpdateWithoutOrderedByInput = {
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  satusehatServiceRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  satusehatDiagnosticReportId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.LabOrderItemUncheckedUpdateManyWithoutLabOrderNestedInput
   specimens?: Prisma.LabSpecimenUncheckedUpdateManyWithoutLabOrderNestedInput
   invoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutLabOrderNestedInput
   reports?: Prisma.LabReportUncheckedUpdateManyWithoutLabOrderNestedInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionUncheckedUpdateManyWithoutLabOrderNestedInput
 }
 
 export type LabOrderUncheckedUpdateManyWithoutOrderedByInput = {
@@ -2070,7 +2251,7 @@ export type LabOrderUncheckedUpdateManyWithoutOrderedByInput = {
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  satusehatServiceRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  satusehatDiagnosticReportId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -2093,7 +2274,7 @@ export type LabOrderCreateManyEncounterInput = {
   cancelledAt?: Date | string | null
   cancelReason?: string | null
   releasedAt?: Date | string | null
-  satusehatServiceRequestId?: string | null
+  satusehatDiagnosticReportId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -2113,7 +2294,7 @@ export type LabOrderUpdateWithoutEncounterInput = {
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  satusehatServiceRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  satusehatDiagnosticReportId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   patient?: Prisma.PatientProfileUpdateOneRequiredWithoutLabOrdersNestedInput
@@ -2123,6 +2304,7 @@ export type LabOrderUpdateWithoutEncounterInput = {
   invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutLabOrderNestedInput
   requestDocument?: Prisma.DocumentUpdateOneWithoutLabOrderNestedInput
   reports?: Prisma.LabReportUpdateManyWithoutLabOrderNestedInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionUpdateManyWithoutLabOrderNestedInput
 }
 
 export type LabOrderUncheckedUpdateWithoutEncounterInput = {
@@ -2143,13 +2325,14 @@ export type LabOrderUncheckedUpdateWithoutEncounterInput = {
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  satusehatServiceRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  satusehatDiagnosticReportId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.LabOrderItemUncheckedUpdateManyWithoutLabOrderNestedInput
   specimens?: Prisma.LabSpecimenUncheckedUpdateManyWithoutLabOrderNestedInput
   invoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutLabOrderNestedInput
   reports?: Prisma.LabReportUncheckedUpdateManyWithoutLabOrderNestedInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionUncheckedUpdateManyWithoutLabOrderNestedInput
 }
 
 export type LabOrderUncheckedUpdateManyWithoutEncounterInput = {
@@ -2170,7 +2353,7 @@ export type LabOrderUncheckedUpdateManyWithoutEncounterInput = {
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  satusehatServiceRequestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  satusehatDiagnosticReportId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -2185,6 +2368,7 @@ export type LabOrderCountOutputType = {
   specimens: number
   invoiceItems: number
   reports: number
+  satusehatSubmissions: number
 }
 
 export type LabOrderCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2192,6 +2376,7 @@ export type LabOrderCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensio
   specimens?: boolean | LabOrderCountOutputTypeCountSpecimensArgs
   invoiceItems?: boolean | LabOrderCountOutputTypeCountInvoiceItemsArgs
   reports?: boolean | LabOrderCountOutputTypeCountReportsArgs
+  satusehatSubmissions?: boolean | LabOrderCountOutputTypeCountSatusehatSubmissionsArgs
 }
 
 /**
@@ -2232,6 +2417,13 @@ export type LabOrderCountOutputTypeCountReportsArgs<ExtArgs extends runtime.Type
   where?: Prisma.LabReportWhereInput
 }
 
+/**
+ * LabOrderCountOutputType without action
+ */
+export type LabOrderCountOutputTypeCountSatusehatSubmissionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SatusehatSubmissionWhereInput
+}
+
 
 export type LabOrderSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -2252,7 +2444,7 @@ export type LabOrderSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   cancelledAt?: boolean
   cancelReason?: boolean
   releasedAt?: boolean
-  satusehatServiceRequestId?: boolean
+  satusehatDiagnosticReportId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   encounter?: boolean | Prisma.EncounterDefaultArgs<ExtArgs>
@@ -2263,6 +2455,7 @@ export type LabOrderSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   invoiceItems?: boolean | Prisma.LabOrder$invoiceItemsArgs<ExtArgs>
   requestDocument?: boolean | Prisma.LabOrder$requestDocumentArgs<ExtArgs>
   reports?: boolean | Prisma.LabOrder$reportsArgs<ExtArgs>
+  satusehatSubmissions?: boolean | Prisma.LabOrder$satusehatSubmissionsArgs<ExtArgs>
   _count?: boolean | Prisma.LabOrderCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["labOrder"]>
 
@@ -2285,7 +2478,7 @@ export type LabOrderSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   cancelledAt?: boolean
   cancelReason?: boolean
   releasedAt?: boolean
-  satusehatServiceRequestId?: boolean
+  satusehatDiagnosticReportId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   encounter?: boolean | Prisma.EncounterDefaultArgs<ExtArgs>
@@ -2313,7 +2506,7 @@ export type LabOrderSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   cancelledAt?: boolean
   cancelReason?: boolean
   releasedAt?: boolean
-  satusehatServiceRequestId?: boolean
+  satusehatDiagnosticReportId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   encounter?: boolean | Prisma.EncounterDefaultArgs<ExtArgs>
@@ -2341,12 +2534,12 @@ export type LabOrderSelectScalar = {
   cancelledAt?: boolean
   cancelReason?: boolean
   releasedAt?: boolean
-  satusehatServiceRequestId?: boolean
+  satusehatDiagnosticReportId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type LabOrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "encounterId" | "patientId" | "orderedById" | "orderNumber" | "status" | "priority" | "clinicalNotes" | "isFasting" | "fulfilmentSite" | "chargeMode" | "externalFacilityName" | "requestDocumentId" | "recollectCount" | "orderedAt" | "cancelledAt" | "cancelReason" | "releasedAt" | "satusehatServiceRequestId" | "createdAt" | "updatedAt", ExtArgs["result"]["labOrder"]>
+export type LabOrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "encounterId" | "patientId" | "orderedById" | "orderNumber" | "status" | "priority" | "clinicalNotes" | "isFasting" | "fulfilmentSite" | "chargeMode" | "externalFacilityName" | "requestDocumentId" | "recollectCount" | "orderedAt" | "cancelledAt" | "cancelReason" | "releasedAt" | "satusehatDiagnosticReportId" | "createdAt" | "updatedAt", ExtArgs["result"]["labOrder"]>
 export type LabOrderInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   encounter?: boolean | Prisma.EncounterDefaultArgs<ExtArgs>
   patient?: boolean | Prisma.PatientProfileDefaultArgs<ExtArgs>
@@ -2356,6 +2549,7 @@ export type LabOrderInclude<ExtArgs extends runtime.Types.Extensions.InternalArg
   invoiceItems?: boolean | Prisma.LabOrder$invoiceItemsArgs<ExtArgs>
   requestDocument?: boolean | Prisma.LabOrder$requestDocumentArgs<ExtArgs>
   reports?: boolean | Prisma.LabOrder$reportsArgs<ExtArgs>
+  satusehatSubmissions?: boolean | Prisma.LabOrder$satusehatSubmissionsArgs<ExtArgs>
   _count?: boolean | Prisma.LabOrderCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type LabOrderIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2382,6 +2576,11 @@ export type $LabOrderPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     invoiceItems: Prisma.$InvoiceItemPayload<ExtArgs>[]
     requestDocument: Prisma.$DocumentPayload<ExtArgs> | null
     reports: Prisma.$LabReportPayload<ExtArgs>[]
+    /**
+     * The outbox rows that reported this order nationally: one per release, plus
+     * one per amendment (P18-T09).
+     */
+    satusehatSubmissions: Prisma.$SatusehatSubmissionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2435,9 +2634,11 @@ export type $LabOrderPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     cancelReason: string | null
     releasedAt: Date | null
     /**
-     * IHS id returned by SATUSEHAT on first successful submission (P18-T09).
+     * IHS id of the DiagnosticReport that gathers this whole request into one
+     * sheet — the single resource in the chain that is genuinely per-order
+     * (P18-T09). The ServiceRequest id moved to the item it was asked for.
      */
-    satusehatServiceRequestId: string | null
+    satusehatDiagnosticReportId: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["labOrder"]>
@@ -2842,6 +3043,7 @@ export interface Prisma__LabOrderClient<T, Null = never, ExtArgs extends runtime
   invoiceItems<T extends Prisma.LabOrder$invoiceItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.LabOrder$invoiceItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvoiceItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   requestDocument<T extends Prisma.LabOrder$requestDocumentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.LabOrder$requestDocumentArgs<ExtArgs>>): Prisma.Prisma__DocumentClient<runtime.Types.Result.GetResult<Prisma.$DocumentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   reports<T extends Prisma.LabOrder$reportsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.LabOrder$reportsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LabReportPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  satusehatSubmissions<T extends Prisma.LabOrder$satusehatSubmissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.LabOrder$satusehatSubmissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SatusehatSubmissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2889,7 +3091,7 @@ export interface LabOrderFieldRefs {
   readonly cancelledAt: Prisma.FieldRef<"LabOrder", 'DateTime'>
   readonly cancelReason: Prisma.FieldRef<"LabOrder", 'String'>
   readonly releasedAt: Prisma.FieldRef<"LabOrder", 'DateTime'>
-  readonly satusehatServiceRequestId: Prisma.FieldRef<"LabOrder", 'String'>
+  readonly satusehatDiagnosticReportId: Prisma.FieldRef<"LabOrder", 'String'>
   readonly createdAt: Prisma.FieldRef<"LabOrder", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"LabOrder", 'DateTime'>
 }
@@ -3405,6 +3607,30 @@ export type LabOrder$reportsArgs<ExtArgs extends runtime.Types.Extensions.Intern
   take?: number
   skip?: number
   distinct?: Prisma.LabReportScalarFieldEnum | Prisma.LabReportScalarFieldEnum[]
+}
+
+/**
+ * LabOrder.satusehatSubmissions
+ */
+export type LabOrder$satusehatSubmissionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the SatusehatSubmission
+   */
+  select?: Prisma.SatusehatSubmissionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the SatusehatSubmission
+   */
+  omit?: Prisma.SatusehatSubmissionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SatusehatSubmissionInclude<ExtArgs> | null
+  where?: Prisma.SatusehatSubmissionWhereInput
+  orderBy?: Prisma.SatusehatSubmissionOrderByWithRelationInput | Prisma.SatusehatSubmissionOrderByWithRelationInput[]
+  cursor?: Prisma.SatusehatSubmissionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SatusehatSubmissionScalarFieldEnum | Prisma.SatusehatSubmissionScalarFieldEnum[]
 }
 
 /**
