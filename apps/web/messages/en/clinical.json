@@ -196,7 +196,8 @@
       "compactRecord": "Open the detail view for identifiers and full demographics.",
       "tabs": {
         "overview": "Overview",
-        "documents": "Documents"
+        "documents": "Documents",
+        "laboratory": "Laboratory"
       },
       "documents": {
         "title": "Documents",
@@ -917,7 +918,8 @@
           "title": "Cancel this encounter?",
           "description": "Use this only for an encounter opened in error. The record and registration are retracted but remain auditable; the patient must register again.",
           "pending": "Cancelling..."
-        }
+        },
+        "openLabWarning": "{count} laboratory request(s) are still open ({orderNumbers}). Closing the visit is fine — results arrive after the patient has gone home — but nothing here will chase them."
       },
       "immunization": {
         "title": "Immunizations",
@@ -950,6 +952,79 @@
           "LEFT_THIGH": "Left thigh",
           "RIGHT_THIGH": "Right thigh",
           "OTHER": "Other"
+        }
+      },
+      "laboratory": {
+        "title": "Laboratory tests",
+        "empty": "No laboratory work has been requested on this visit.",
+        "form": {
+          "panels": "Panels",
+          "panelsPlaceholder": "Pick a panel",
+          "tests": "Individual tests",
+          "testsPlaceholder": "Pick a test",
+          "search": "Search by name or code",
+          "noMatches": "Nothing matches that search.",
+          "notesPlaceholder": "Why you are asking — the only clinical note the laboratory sees",
+          "urgent": "Cito",
+          "fasting": "Fasting",
+          "submit": "Request tests",
+          "pickSomething": "Pick at least one test or panel.",
+          "error": "The laboratory request could not be sent."
+        },
+        "order": {
+          "summary": "{count} test(s) · requested {orderedAt}",
+          "urgent": "Cito",
+          "cancel": "Withdraw",
+          "cancelled": "Withdrawn. Nothing was run for this request.",
+          "waiting": "Waiting for results."
+        },
+        "step": {
+          "ORDERED": "Requested",
+          "COLLECTED": "Sample taken",
+          "RESULTED": "Results in",
+          "RELEASED": "Signed out"
+        },
+        "cancel": {
+          "title": "Withdraw {orderNumber}",
+          "description": "The reason is kept on the record — it is what answers “why was my test never run”.",
+          "reasonPlaceholder": "Why this request is being withdrawn",
+          "reasonRequired": "Give a reason before withdrawing the request.",
+          "keep": "Keep the request",
+          "confirm": "Withdraw the request",
+          "pending": "Withdrawing…",
+          "error": "The request could not be withdrawn."
+        },
+        "results": {
+          "title": "Laboratory results"
+        },
+        "result": {
+          "range": "Reference {range} {unit}",
+          "noRange": "No reference range for this patient",
+          "releasedAt": "Signed out {releasedAt}",
+          "showTrend": "Trend",
+          "hideTrend": "Hide",
+          "amended": "Corrected (v{version}): {reason}"
+        },
+        "trend": {
+          "title": "{test} — last released values",
+          "sparkline": "Trend of the last released {test} values",
+          "loading": "Loading the trend…",
+          "empty": "No earlier released values for this test.",
+          "undated": "Undated"
+        },
+        "history": {
+          "emptyTitle": "No laboratory results yet",
+          "emptyDescription": "Released values appear here once the laboratory has signed them out.",
+          "filterPlaceholder": "Filter by test name or code",
+          "noMatches": "No test matches that filter."
+        },
+        "flag": {
+          "NORMAL": "Normal",
+          "LOW": "Below the reference range",
+          "HIGH": "Above the reference range",
+          "CRITICAL_LOW": "Critically low",
+          "CRITICAL_HIGH": "Critically high",
+          "ABNORMAL": "Abnormal"
         }
       }
     }

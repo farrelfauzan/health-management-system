@@ -78,6 +78,11 @@ export const ADMIN_PORTAL_ADMIN_RULES: AppRule[] = [
   // losing it to the preset.
   { action: 'read', subject: 'LabTest' },
   { action: 'write', subject: 'LabTest' },
+  // P18-T02/T07. `seed.sql` gives ADMIN both order keys; an admin whose
+  // session hint predates them still sees the ordering card rather than
+  // losing it to the preset.
+  { action: 'read', subject: 'LabOrder' },
+  { action: 'write', subject: 'LabOrder' },
   { action: 'read', subject: 'Invoice' },
   { action: 'write', subject: 'Invoice' },
   // P16-T25. `seed.sql` gives ADMIN the deliver key; an admin whose hint

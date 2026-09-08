@@ -86,6 +86,11 @@ const SUBJECT_BY_RESOURCE: Record<string, AppSubject> = {
   admission: 'Admission',
   'service-tariff': 'ServiceTariff',
   'lab-test': 'LabTest',
+  // P18-T02/T07. Hyphenated single segment, like `service-tariff`:
+  // `lab-order.write:own` → resource `lab-order`, action `write`. Without this
+  // row a doctor's ordering grant resolves to no rule at all and the
+  // Pemeriksaan Lab form never renders — a failure only a browser catches.
+  'lab-order': 'LabOrder',
   invoice: 'Invoice',
   payment: 'Payment',
   'chat.session': 'ChatSession',
