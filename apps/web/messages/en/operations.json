@@ -1609,7 +1609,7 @@
           "READY": "Ready",
           "FAILED": "Failed"
         },
-        "retrying": "Retrying {nextAttemptAt}",
+        "retrying": "Retrying…",
         "failedWith": "Failed: {error}",
         "none": "The report is rendered when the order is released.",
         "requestLetter": "Request letter",
@@ -1617,7 +1617,10 @@
         "printing": "Printing…",
         "printed": "Request letter filed ({count} print(s)).",
         "printError": "The request letter could not be printed.",
-        "loadError": "The documents could not be loaded."
+        "loadError": "The documents could not be loaded.",
+        "retry": "Retry",
+        "retried": "Render requeued.",
+        "retryError": "The render could not be requeued."
       },
       "history": {
         "title": "History",

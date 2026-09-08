@@ -138,6 +138,56 @@ export class LabReportService {
    * 409 while the first render is still queued or has failed — the order
    * detail reads the versions route to say which.
    */
+  /**
+   * Asks the worker to render a version again (P18-T05).
+   *
+   * The worker retries on its own, but only within the attempt budget: after
+   * the last one the row settles FAILED with `nextAttemptAt` null, and nothing
+   * re-opens it. That is the state this exists for — a render that failed for
+   * a reason somebody has since fixed, most often a clinic profile that was
+   * not filled in yet.
+   *
+   * A version still backing off is also accepted: it pulls the next attempt
+   * forward to now rather than making the counter wait out the schedule. One
+   * being rendered right now is refused, because yanking its lease would let
+   * two workers render the same version.
+   */
+  async retryReport(
+    labOrderId: string,
+    reportId: string,
+    currentUser: CurrentUser,
+  ): Promise<LabReportView> {
+    await this.assertCanReadOrder(labOrderId, currentUser);
+    const report = await this.labReportRepository.findById(reportId);
+    if (report === null || report.labOrderId !== labOrderId) {
+      throw new NotFoundException('Laboratory report not found');
+    }
+    if (report.status === 'READY') {
+      throw new ConflictException('That version has already been rendered');
+    }
+    const wasRequeued = await this.labReportRepository.requeueReport(reportId);
+    if (!wasRequeued) {
+      throw new ConflictException(
+        'That version is being rendered right now; wait for it to settle',
+      );
+    }
+    await this.auditService.record({
+      action: 'LAB_REPORT_FILED',
+      resource: 'LabReport',
+      resourceId: reportId,
+      actorUserId: currentUser.sub,
+      metadata: {
+        labOrderId,
+        version: report.version,
+        previousStatus: report.status,
+        previousAttempts: report.attemptCount,
+        trigger: 'MANUAL_RETRY',
+      },
+    });
+
+    return this.listReports(labOrderId, currentUser);
+  }
+
   async createDownloadUrl(
     labOrderId: string,
     currentUser: CurrentUser,

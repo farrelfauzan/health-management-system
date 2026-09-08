@@ -1609,7 +1609,7 @@
           "READY": "Siap",
           "FAILED": "Gagal"
         },
-        "retrying": "Dicoba lagi {nextAttemptAt}",
+        "retrying": "Mengulang…",
         "failedWith": "Gagal: {error}",
         "none": "Laporan dibuat saat permintaan dirilis.",
         "requestLetter": "Surat pengantar",
@@ -1617,7 +1617,10 @@
         "printing": "Mencetak…",
         "printed": "Surat pengantar tersimpan (cetakan ke-{count}).",
         "printError": "Surat pengantar tidak dapat dicetak.",
-        "loadError": "Dokumen tidak dapat dimuat."
+        "loadError": "Dokumen tidak dapat dimuat.",
+        "retry": "Coba lagi",
+        "retried": "Render dimasukkan ke antrean.",
+        "retryError": "Render tidak dapat dimasukkan ke antrean."
       },
       "history": {
         "title": "Riwayat",

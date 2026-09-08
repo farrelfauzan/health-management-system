@@ -39994,6 +39994,198 @@ paths:
         - bearer: []
       summary: List the versions of a laboratory report
       tags: *a56
+  /api/v1/lab-orders/{id}/reports/{reportId}/retry:
+    post:
+      operationId: LabReportController_retryReport_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: reportId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Re-opens a version the worker gave up on, with a fresh attempt
+            budget and due immediately — the case this exists for is a render
+            that failed for a reason since fixed, most often a clinic profile
+            that had not been filled in. A version still backing off is accepted
+            too and has its next attempt pulled forward. 409 when the version is
+            already READY, or is being rendered right now.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      labOrderId:
+                        type: string
+                      current:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          labOrderId:
+                            type: string
+                          version:
+                            type: integer
+                          status:
+                            type: string
+                          isAmended:
+                            type: boolean
+                          releasedAt:
+                            type: string
+                          documentId:
+                            type: string
+                          attemptCount:
+                            type: integer
+                          renderedAt:
+                            type: string
+                          pageCount:
+                            type: integer
+                          requestedById:
+                            type: string
+                          createdAt:
+                            type: string
+                        required:
+                          - id
+                          - labOrderId
+                          - version
+                          - status
+                          - isAmended
+                          - releasedAt
+                          - documentId
+                          - attemptCount
+                          - renderedAt
+                          - pageCount
+                          - requestedById
+                          - createdAt
+                      versions:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            labOrderId:
+                              type: string
+                            version:
+                              type: integer
+                            status:
+                              type: string
+                            isAmended:
+                              type: boolean
+                            releasedAt:
+                              type: string
+                            attemptCount:
+                              type: integer
+                            nextAttemptAt:
+                              type: string
+                            lastError:
+                              type: string
+                            requestedById:
+                              type: string
+                            createdAt:
+                              type: string
+                          required:
+                            - id
+                            - labOrderId
+                            - version
+                            - status
+                            - isAmended
+                            - releasedAt
+                            - attemptCount
+                            - nextAttemptAt
+                            - lastError
+                            - requestedById
+                            - createdAt
+                    required:
+                      - labOrderId
+                      - current
+                      - versions
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    labOrderId: eeeeeeee-5555-4555-8555-eeeeeeeeeeee
+                    current:
+                      id: 77777777-eeee-4eee-8eee-777777777777
+                      labOrderId: eeeeeeee-5555-4555-8555-eeeeeeeeeeee
+                      version: 1
+                      status: READY
+                      isAmended: false
+                      releasedAt: 2026-07-20T08:00:00.000Z
+                      documentId: 88888888-dddd-4ddd-8ddd-888888888888
+                      attemptCount: 1
+                      renderedAt: 2026-07-20T08:00:00.000Z
+                      pageCount: 1
+                      requestedById: 99999999-ffff-4fff-8fff-999999999999
+                      createdAt: 2026-07-20T08:00:00.000Z
+                    versions:
+                      - id: 99999999-eeee-4eee-8eee-999999999999
+                        labOrderId: eeeeeeee-5555-4555-8555-eeeeeeeeeeee
+                        version: 2
+                        status: PENDING
+                        isAmended: true
+                        releasedAt: 2026-07-20T08:00:00.000Z
+                        attemptCount: 1
+                        nextAttemptAt: 2026-07-20T08:00:00.000Z
+                        lastError: "Renderer unavailable: fetch failed"
+                        requestedById: 99999999-ffff-4fff-8fff-999999999999
+                        createdAt: 2026-07-20T08:00:00.000Z
+                      - id: 77777777-eeee-4eee-8eee-777777777777
+                        labOrderId: eeeeeeee-5555-4555-8555-eeeeeeeeeeee
+                        version: 1
+                        status: READY
+                        isAmended: false
+                        releasedAt: 2026-07-20T08:00:00.000Z
+                        documentId: 88888888-dddd-4ddd-8ddd-888888888888
+                        attemptCount: 1
+                        renderedAt: 2026-07-20T08:00:00.000Z
+                        pageCount: 1
+                        requestedById: 99999999-ffff-4fff-8fff-999999999999
+                        createdAt: 2026-07-20T08:00:00.000Z
+                  message: Report render requeued
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Laboratory report not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Laboratory report not found.
+      security:
+        - bearer: []
+      summary: Render a laboratory report version again
+      tags: *a56
   /api/v1/satusehat/patients/{patientId}/link:
     post:
       operationId: SatusehatLinkController_linkPatient_v1

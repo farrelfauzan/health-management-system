@@ -216,6 +216,37 @@ export class LabReportRepository {
    * technician or an administrator prints the account's e-mail, which is the
    * name the clinic knows them by until somebody gives staff a profile.
    */
+  /**
+   * Re-opens a render for another go (P18-T05).
+   *
+   * The attempt budget resets, because the reason a retry is asked for is that
+   * the cause was fixed — a clinic profile filled in, a renderer brought back
+   * — and a row that failed five times should get the full schedule again
+   * rather than one grudging attempt. Due immediately: somebody is waiting at
+   * the counter for the sheet.
+   */
+  async requeueReport(id: string): Promise<boolean> {
+    const result = await this.prisma.labReport.updateMany({
+      where: {
+        id,
+        status: { not: 'READY' },
+        // Never yank a lease a worker is still holding: two workers rendering
+        // one version would file the same sheet twice. The condition lives in
+        // the WHERE rather than in a prior read, so a render that starts
+        // between the check and the write still wins.
+        OR: [{ leasedUntil: null }, { leasedUntil: { lte: new Date() } }],
+      },
+      data: {
+        status: 'PENDING',
+        attemptCount: 0,
+        nextAttemptAt: new Date(),
+        leasedUntil: null,
+        leasedBy: null,
+      },
+    });
+    return result.count === 1;
+  }
+
   async findVerifier(userId: string): Promise<LabReportVerifierRecord | null> {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },

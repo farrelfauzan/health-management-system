@@ -35,6 +35,7 @@ import type {
   LabOrderControllerUpdateDispositionV1200,
   LabReportControllerDownloadReportV1200,
   LabReportControllerListReportsV1200,
+  LabReportControllerRetryReportV1200,
   LabWorklistControllerListWorklistV1200,
   LabWorklistControllerListWorklistV1Params,
   UpdateLabOrderDispositionDto
@@ -1092,6 +1093,105 @@ export function useLabReportControllerListReportsV1<TData = Awaited<ReturnType<t
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getLabReportControllerListReportsV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Render a laboratory report version again
+ */
+export const labReportControllerRetryReportV1 = (
+    id: string,
+    reportId: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<LabReportControllerRetryReportV1200>(
+      {url: `/api/v1/lab-orders/${id}/reports/${reportId}/retry`, method: 'POST', signal
+    },
+      );
+    }
+
+
+
+
+export const getLabReportControllerRetryReportV1QueryKey = (id: string,
+    reportId: string,) => {
+    return [
+    'POST', `/api/v1/lab-orders/${id}/reports/${reportId}/retry`
+    ] as const;
+    }
+
+
+export const getLabReportControllerRetryReportV1QueryOptions = <TData = Awaited<ReturnType<typeof labReportControllerRetryReportV1>>, TError = unknown>(id: string,
+    reportId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof labReportControllerRetryReportV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getLabReportControllerRetryReportV1QueryKey(id,reportId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof labReportControllerRetryReportV1>>> = ({ signal }) => labReportControllerRetryReportV1(id,reportId, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined && reportId !== null && reportId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof labReportControllerRetryReportV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type LabReportControllerRetryReportV1QueryResult = NonNullable<Awaited<ReturnType<typeof labReportControllerRetryReportV1>>>
+export type LabReportControllerRetryReportV1QueryError = unknown
+
+
+export function useLabReportControllerRetryReportV1<TData = Awaited<ReturnType<typeof labReportControllerRetryReportV1>>, TError = unknown>(
+ id: string,
+    reportId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof labReportControllerRetryReportV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof labReportControllerRetryReportV1>>,
+          TError,
+          Awaited<ReturnType<typeof labReportControllerRetryReportV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useLabReportControllerRetryReportV1<TData = Awaited<ReturnType<typeof labReportControllerRetryReportV1>>, TError = unknown>(
+ id: string,
+    reportId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof labReportControllerRetryReportV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof labReportControllerRetryReportV1>>,
+          TError,
+          Awaited<ReturnType<typeof labReportControllerRetryReportV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useLabReportControllerRetryReportV1<TData = Awaited<ReturnType<typeof labReportControllerRetryReportV1>>, TError = unknown>(
+ id: string,
+    reportId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof labReportControllerRetryReportV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Render a laboratory report version again
+ */
+
+export function useLabReportControllerRetryReportV1<TData = Awaited<ReturnType<typeof labReportControllerRetryReportV1>>, TError = unknown>(
+ id: string,
+    reportId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof labReportControllerRetryReportV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getLabReportControllerRetryReportV1QueryOptions(id,reportId,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

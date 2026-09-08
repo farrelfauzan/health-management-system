@@ -37,6 +37,7 @@ describe('LabReportService', () => {
     findCurrentFileByOrderId: jest.fn(),
     fileDocument: jest.fn(),
     rescheduleAttempt: jest.fn(),
+    requeueReport: jest.fn(),
     findVerifier: jest.fn(),
   };
   const labOrderRepositoryMock = {
@@ -396,6 +397,76 @@ describe('LabReportService', () => {
       expect(actual.versions.map((version) => version.version)).toEqual([2, 1]);
       expect(actual.current?.version).toBe(1);
       expect(actual.versions[0]?.lastError).toBe('Renderer unavailable');
+    });
+  });
+  describe('retryReport', () => {
+    const reportId = 'a1b2c3d4-1111-4111-8111-a1b2c3d4e5f6';
+
+    beforeEach(() => {
+      labReportRepositoryMock.requeueReport.mockResolvedValue(true);
+      labReportRepositoryMock.listByOrderId.mockResolvedValue([buildReport()]);
+    });
+
+    it('re-opens a version the worker gave up on', async () => {
+      labReportRepositoryMock.findById.mockResolvedValue(
+        buildReport({
+          id: reportId,
+          labOrderId,
+          status: 'FAILED',
+          attemptCount: 5,
+          nextAttemptAt: null,
+          lastError: 'The clinic profile has not been configured yet',
+        }),
+      );
+
+      await service.retryReport(labOrderId, reportId, currentUser);
+
+      expect(labReportRepositoryMock.requeueReport).toHaveBeenCalledWith(reportId);
+    });
+
+    it('pulls a backing-off version forward rather than making the counter wait', async () => {
+      labReportRepositoryMock.findById.mockResolvedValue(
+        buildReport({ id: reportId, labOrderId, status: 'PENDING', attemptCount: 4 }),
+      );
+
+      await service.retryReport(labOrderId, reportId, currentUser);
+
+      expect(labReportRepositoryMock.requeueReport).toHaveBeenCalledWith(reportId);
+    });
+
+    it('refuses a version that already rendered', async () => {
+      labReportRepositoryMock.findById.mockResolvedValue(
+        buildReport({ id: reportId, labOrderId, status: 'READY' }),
+      );
+
+      await expect(
+        service.retryReport(labOrderId, reportId, currentUser),
+      ).rejects.toBeInstanceOf(ConflictException);
+      expect(labReportRepositoryMock.requeueReport).not.toHaveBeenCalled();
+    });
+
+    it('refuses when a worker is holding the lease', async () => {
+      labReportRepositoryMock.findById.mockResolvedValue(
+        buildReport({ id: reportId, labOrderId, status: 'PENDING' }),
+      );
+      // The write is the guard: a render that starts between the read and the
+      // update still wins, and the requeue matches nothing.
+      labReportRepositoryMock.requeueReport.mockResolvedValue(false);
+
+      await expect(
+        service.retryReport(labOrderId, reportId, currentUser),
+      ).rejects.toBeInstanceOf(ConflictException);
+    });
+
+    it('refuses a version belonging to another order', async () => {
+      labReportRepositoryMock.findById.mockResolvedValue(
+        buildReport({ id: reportId, labOrderId: 'ffffffff-9999-4999-8999-ffffffffffff' }),
+      );
+
+      await expect(
+        service.retryReport(labOrderId, reportId, currentUser),
+      ).rejects.toBeInstanceOf(NotFoundException);
+      expect(labReportRepositoryMock.requeueReport).not.toHaveBeenCalled();
     });
   });
 });

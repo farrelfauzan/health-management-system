@@ -9,6 +9,7 @@ import { labReportControllerDownloadReportV1 } from '#lib/api/generated/laborato
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { parseApiSuccess } from '#lib/api/response';
 import { EmptyState } from '#components/shared/empty-state';
+import { LabReportRetryButton } from '#components/client/laboratory/lab-report-retry-button';
 import { useLabReports } from '#lib/laboratory/use-lab-reports';
 
 const STATUS_CLASSNAMES: Record<LabReportVersionView['status'], string> = {
@@ -105,6 +106,7 @@ export function LabReportVersions({ labOrderId }: LabReportVersionsProps) {
                       })
                     : null}
             </span>
+            <LabReportRetryButton labOrderId={labOrderId} version={version} />
           </li>
         ))}
       </ul>

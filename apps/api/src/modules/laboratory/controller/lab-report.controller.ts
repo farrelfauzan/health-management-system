@@ -1,4 +1,12 @@
-import { Controller, Get, Param, ParseUUIDPipe, UnauthorizedException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpCode,
+  Param,
+  ParseUUIDPipe,
+  Post,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
 import { Audited } from '../../../common/audit/audited.decorator';
@@ -59,6 +67,31 @@ export class LabReportController {
     return {
       data: await this.labReportService.listReports(id, this.assertAuthenticated(currentUser)),
     };
+  }
+
+  @Post(':id/reports/:reportId/retry')
+  @HttpCode(200)
+  @Auth([{ action: 'write', subject: 'LabOrder' }])
+  @Audited({ resource: 'lab-report', action: AuditAction.UPDATE })
+  @ApiEndpoint({
+    summary: 'Render a laboratory report version again',
+    responseDescription:
+      'Re-opens a version the worker gave up on, with a fresh attempt budget and due immediately — the case this exists for is a render that failed for a reason since fixed, most often a clinic profile that had not been filled in. A version still backing off is accepted too and has its next attempt pulled forward. 409 when the version is already READY, or is being rendered right now.',
+    responseExample: { data: LABORATORY_EXAMPLES.labReport.view, message: 'Report render requeued' },
+    notFoundDescription: 'Laboratory report not found.',
+  })
+  async retryReport(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('reportId', new ParseUUIDPipe()) reportId: string,
+    @AuthUser() currentUser?: CurrentUser,
+  ) {
+    const report = await this.labReportService.retryReport(
+      id,
+      reportId,
+      this.assertAuthenticated(currentUser),
+    );
+
+    return { data: report, message: 'Report render requeued' };
   }
 
   private assertAuthenticated(currentUser?: CurrentUser): CurrentUser {
