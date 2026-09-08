@@ -54,6 +54,8 @@ export * from '#bpjs-antrean-ws/types';
 export * from '#laboratory/schemas';
 export * from '#laboratory/contracts';
 export * from '#laboratory/types';
+export * from '#laboratory/compute-lab-flag';
+export * from '#laboratory/resolve-lab-reference-range';
 export * from '#satusehat/schemas';
 export * from '#satusehat/contracts';
 export * from '#satusehat/types';

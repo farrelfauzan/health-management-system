@@ -23,11 +23,20 @@ const PATIENT_PORTAL_PERMISSION = 'portal.patient-access:own';
 const ADMIN_ROLES = ['SUPER_ADMIN', 'ADMIN'];
 const DOCTOR_ROLES = ['DOCTOR'];
 const PHARMACIST_ROLES = ['PHARMACIST'];
+const LAB_TECHNICIAN_ROLES = ['LAB_TECHNICIAN'];
 const PATIENT_ROLES = ['PATIENT'];
 const LOGIN_PATH = '/login';
 const ADMIN_HOME_PATH = '/admin/dashboard';
 const DOCTOR_HOME_PATH = '/doctor/dashboard';
 const PHARMACIST_HOME_PATH = '/admin/pharmacy';
+const LABORATORY_HOME_PATH = '/admin/laboratory';
+/**
+ * P18-T08. The whole of a technician's shell: the worklist and its order
+ * detail, and the catalog they read ranges from. No dashboard — its stat
+ * cards call patient and appointment endpoints a bench account cannot read,
+ * and a home page that greets somebody with three 403s is not a home page.
+ */
+const LAB_TECHNICIAN_PATH_PREFIXES = [LABORATORY_HOME_PATH, '/admin/settings/laboratory'];
 const PORTAL_HOME_PATH = '/portal/registrations';
 const DOCTOR_PATH_PREFIX = '/doctor';
 const PORTAL_PATH_PREFIX = '/portal';
@@ -58,6 +67,16 @@ export function proxy(request: NextRequest) {
     (hasPermission(claims, DOCTOR_PORTAL_PERMISSION) || hasAnyRole(claims, DOCTOR_ROLES));
   const hasPharmacistSession =
     hasValidSession && !hasAdminSession && hasAnyRole(claims, PHARMACIST_ROLES);
+  // P18-T08. A technician holds `portal.admin-access:any` — the bench is an
+  // admin-shell screen — so `hasAdminSession` is true for them and cannot be
+  // the discriminator. The role is: somebody who is *only* a technician gets
+  // the reduced shell, and somebody who is also an admin or a doctor keeps
+  // the full one. Navigation only, as ever: the API refuses every patient,
+  // encounter and billing call from this account whatever the URL says.
+  const hasTechnicianOnlySession =
+    hasValidSession &&
+    hasAnyRole(claims, LAB_TECHNICIAN_ROLES) &&
+    !hasAnyRole(claims, [...ADMIN_ROLES, ...DOCTOR_ROLES, ...PHARMACIST_ROLES]);
   const hasPatientSession =
     hasValidSession &&
     !hasAdminSession &&
@@ -83,6 +102,9 @@ export function proxy(request: NextRequest) {
   function redirectToHome(): NextResponse {
     if (offboardedVaultPath !== null) {
       return NextResponse.redirect(new URL(offboardedVaultPath, request.url));
+    }
+    if (hasTechnicianOnlySession) {
+      return NextResponse.redirect(new URL(LABORATORY_HOME_PATH, request.url));
     }
     if (hasAdminSession) {
       return NextResponse.redirect(new URL(ADMIN_HOME_PATH, request.url));
@@ -127,6 +149,13 @@ export function proxy(request: NextRequest) {
 
   if (pathname === PHARMACIST_HOME_PATH && hasPharmacistSession) {
     return NextResponse.next();
+  }
+
+  if (hasTechnicianOnlySession) {
+    const isLaboratoryPath = LAB_TECHNICIAN_PATH_PREFIXES.some(
+      (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+    );
+    return isLaboratoryPath ? NextResponse.next() : redirectToHome();
   }
 
   // Everything else under the matcher is the admin shell.

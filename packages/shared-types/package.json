@@ -110,7 +110,9 @@
     "#document-delivery/opt-out-keyword": "./src/document-delivery/opt-out-keyword.ts",
     "#laboratory/schemas": "./src/laboratory/schemas.ts",
     "#laboratory/contracts": "./src/laboratory/contracts.ts",
-    "#laboratory/types": "./src/laboratory/types.ts"
+    "#laboratory/types": "./src/laboratory/types.ts",
+    "#laboratory/compute-lab-flag": "./src/laboratory/compute-lab-flag.ts",
+    "#laboratory/resolve-lab-reference-range": "./src/laboratory/resolve-lab-reference-range.ts"
   },
   "main": "./dist/index.cjs",
   "types": "./src/index.ts",

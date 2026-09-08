@@ -275,6 +275,21 @@ export type LabOrderResultsView = {
 };
 
 /**
+ * One order as the bench works it (P18-T08): the order, the person the tubes
+ * belong to in the worklist's own identity shape — name, MRN, sex and age,
+ * nothing clinical — and every value typed so far, released or not.
+ *
+ * Its own read route because nothing else answers "what has been entered on
+ * this order": the trend feed is released values only, and the order view
+ * carries statuses without numbers. The patient block is what the entry form
+ * needs to preview a flag against the right band before the server has
+ * snapshotted one.
+ */
+export type LabOrderBenchView = LabOrderResultsView & {
+  patient: LabWorklistPatient;
+};
+
+/**
  * One point on a test's trend (P18-T04). Released values only: an unverified
  * number is not a data point, and a doctor comparing this month against last
  * must not be shown something nobody has signed.

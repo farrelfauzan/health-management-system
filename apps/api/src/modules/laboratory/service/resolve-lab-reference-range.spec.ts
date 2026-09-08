@@ -1,6 +1,4 @@
-import { LabReferenceRangeRecord } from '@hms/shared-types';
-
-import { resolveLabReferenceRange } from './resolve-lab-reference-range';
+import { LabReferenceRangeRecord, resolveLabReferenceRange } from '@hms/shared-types';
 
 const ADULT_RANGE: LabReferenceRangeRecord = {
   id: 'adult',

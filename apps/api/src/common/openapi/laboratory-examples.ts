@@ -277,6 +277,11 @@ export const LABORATORY_EXAMPLES = {
       verifiedAt: timestamp,
       verifiedUnderSingleOperator: true,
     },
+    bench: {
+      order: { ...labOrderHeader, status: 'IN_PROGRESS' },
+      patient: worklistPatient,
+      results: [labResult],
+    },
     trendItem: {
       ...labResult,
       verifiedById: doctorUserId,

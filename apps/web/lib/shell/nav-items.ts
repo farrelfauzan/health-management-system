@@ -150,14 +150,19 @@ export const ADMIN_NAV_SECTIONS: AdminNavSection[] = [
         ],
       },
       {
-        // P18-T01. The catalog is the whole laboratory surface for now; the
-        // worklist joins it at /admin/laboratory in P18-T08, which is why the
-        // feature owns both hrefs already.
-        href: '/admin/settings/laboratory',
+        // P18-T08. The worklist is the laboratory's front door; the catalog
+        // (P18-T01) is reached from it, and the feature owns both hrefs. Either
+        // read key opens the entry: an analis reads orders, a clerk who only
+        // maintains the catalog still needs the way in and lands on the
+        // catalog link the worklist page shows them.
+        href: '/admin/laboratory',
         label: 'Laboratory',
         labelKey: 'laboratory',
         icon: 'biotech',
-        ability: { action: 'read', subject: 'LabTest' },
+        ability: [
+          { action: 'read', subject: 'LabOrder' },
+          { action: 'read', subject: 'LabTest' },
+        ],
       },
       {
         // P16-T39/T31. The documents module: the registry, the approval

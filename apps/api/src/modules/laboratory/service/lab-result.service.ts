@@ -1,6 +1,7 @@
 import {
   AmendLabResultInput,
   EnterLabResultsInput,
+  LabOrderBenchView,
   LabOrderRecord,
   LabOrderResultsView,
   LabResultEntryInput,
@@ -12,7 +13,9 @@ import {
   LabResultView,
   ListPatientLabResultsQuery,
   PatientLabResultView,
+  computeLabFlag,
   getStartOfCalendarDateInTimeZone,
+  resolveLabReferenceRange,
 } from '@hms/shared-types';
 import {
   ConflictException,
@@ -31,12 +34,11 @@ import { NotificationService } from '../../notification/service/notification.ser
 import { LabOrderRepository } from '../repository/lab-order.repository';
 import { LabResultEntryItemRow } from '../repository/lab-result-row.types';
 import { LabResultRepository } from '../repository/lab-result.repository';
-import { computeLabFlag } from './compute-lab-flag';
 import { LabOrderMapper } from './lab-order.mapper';
 import { LabReportService } from './lab-report.service';
 import { LabResultMapper } from './lab-result.mapper';
 import { LaboratorySettingsService } from './laboratory-settings.service';
-import { resolveLabReferenceRange } from './resolve-lab-reference-range';
+import { toLabWorklistPatient } from './to-lab-worklist-patient';
 
 const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 
@@ -261,6 +263,28 @@ export class LabResultService {
       isAmended,
       releasedAt: order.releasedAt ?? new Date(),
     });
+  }
+
+  /**
+   * One order as the bench works it (P18-T08): every value typed so far,
+   * released or not, with the identity the entry form previews a flag
+   * against. Read under the same rule as the patient's trend — whoever may
+   * read this patient's orders may read what is being typed on them.
+   */
+  async getOrderBench(labOrderId: string, currentUser: CurrentUser): Promise<LabOrderBenchView> {
+    const order = await this.findLabOrderOrThrow(labOrderId);
+    await this.assertCanReadPatientResults(order.patientId, currentUser);
+    const worklistOrder = await this.labOrderRepository.findWorklistOrderById(order.id);
+    if (!worklistOrder) {
+      throw new NotFoundException('Lab order not found');
+    }
+    const results = await this.labResultRepository.findResultsByOrderId(order.id);
+
+    return {
+      order: this.labOrderMapper.toLabOrderView(order),
+      patient: toLabWorklistPatient(worklistOrder),
+      results: results.map((result) => this.labResultMapper.toLabResultView(result)),
+    };
   }
 
   /**

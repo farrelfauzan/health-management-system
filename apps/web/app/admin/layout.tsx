@@ -36,6 +36,12 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
   const rules = resolveAppAbilityRules(claims);
   const isAdmin = hasAnyRole(claims, ['SUPER_ADMIN', 'ADMIN']);
   const isPharmacistOnly = !isAdmin && hasAnyRole(claims, ['PHARMACIST']);
+  // P18-T08. A bench account gets the same treatment as a pharmacist-only
+  // one: the dashboard's stat cards call endpoints it cannot read.
+  const isTechnicianOnly =
+    !isAdmin &&
+    !hasAnyRole(claims, ['DOCTOR', 'PHARMACIST']) &&
+    hasAnyRole(claims, ['LAB_TECHNICIAN']);
   // Two independent reasons to drop a nav entry, combined in one list: a
   // pharmacist-only user has no dashboard, and a feature this client did not
   // buy has no entries at all (IMP-9). Neither is authorization — the API
@@ -45,7 +51,7 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
   // so it is dropped by name, and the assistant launcher goes with it.
   const offboarding = resolveOffboardingSession(claims, 'admin');
   const excludedNavHrefs = [
-    ...(isPharmacistOnly || offboarding ? ['/admin/dashboard'] : []),
+    ...(isPharmacistOnly || isTechnicianOnly || offboarding ? ['/admin/dashboard'] : []),
     ...resolveDisabledNavHrefs(claims),
   ];
   const sections = filterNavSections(buildAppAbility(rules), undefined, excludedNavHrefs);

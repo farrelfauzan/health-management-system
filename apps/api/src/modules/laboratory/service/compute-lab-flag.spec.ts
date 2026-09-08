@@ -1,6 +1,4 @@
-import { LabResultFlagValue, LabResultRangeSnapshot } from '@hms/shared-types';
-
-import { computeLabFlag } from './compute-lab-flag';
+import { LabResultFlagValue, LabResultRangeSnapshot, computeLabFlag } from '@hms/shared-types';
 
 /** The adult female haemoglobin band the ticket is written around. */
 const HAEMOGLOBIN_RANGE: LabResultRangeSnapshot = {

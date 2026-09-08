@@ -1,12 +1,14 @@
-import {
+import type {
   LabReferenceRangeRecord,
   LabResultPatientContext,
   LabResultRangeSnapshot,
-} from '@hms/shared-types';
+} from '#laboratory/types';
 
 /**
  * The band that applied to this patient for this test, at the moment the
- * sample was taken (P18-T04).
+ * sample was taken (P18-T04). Shared with the web since P18-T08 for the same
+ * reason `computeLabFlag` is: the entry form's live preview must pick the
+ * band the server will snapshot.
  *
  * Age is measured **at collection**, not at entry and not today: a sample drawn
  * from a three-week-old and typed in a fortnight later is judged against the

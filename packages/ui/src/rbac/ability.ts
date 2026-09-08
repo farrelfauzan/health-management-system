@@ -40,7 +40,11 @@ export type AppAction =
   // folding this into `write` would erase the one separation the documents
   // module exists to enforce — authoring a document is not signing it
   // (§7.5.9).
-  | 'decide';
+  | 'decide'
+  // P18-T04/T08. The second signature on a laboratory result. Its own verb
+  // rather than `approve`: approving a document and signing out a value are
+  // different acts with different seeded keys.
+  | 'verify';
 export type AppSubject =
   | 'User'
   | 'Role'
@@ -81,6 +85,14 @@ export type AppSubject =
   // `:own`/`:any` suffix, so this decides whether the ordering card renders and
   // the API decides whose encounters it may be used on.
   | 'LabOrder'
+  // P18-T03/T04/T08. The tube, the value, and how the clinic runs its bench.
+  // Three subjects because three seeded keys gate three different buttons:
+  // collect (`lab-specimen.write`), save (`lab-result.write`) and release
+  // (`lab-result.verify`). One subject would let a person who may draw blood
+  // see a Rilis button the API refuses.
+  | 'LabSpecimen'
+  | 'LabResult'
+  | 'LaboratorySettings'
   | 'Invoice'
   | 'Payment'
   | 'ChatSession'
