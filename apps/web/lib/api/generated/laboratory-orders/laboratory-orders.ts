@@ -23,9 +23,11 @@ import type {
 import type {
   CancelLabOrderDto,
   CreateLabOrderDto,
+  CreateWalkInLabOrderDto,
   EncounterLabOrderControllerCreateLabOrderV1201,
   EncounterLabOrderControllerListEncounterLabOrdersV1200,
   LabOrderControllerCancelLabOrderV1200,
+  LabOrderControllerCreateWalkInLabOrderV1200,
   LabOrderControllerGetLabOrderByIdV1200,
   LabOrderControllerListLabOrdersV1200,
   LabOrderControllerListLabOrdersV1Params,
@@ -240,6 +242,100 @@ export function useEncounterLabOrderControllerListEncounterLabOrdersV1<TData = A
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getEncounterLabOrderControllerListEncounterLabOrdersV1QueryOptions(encounterId,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Register a walk-in or external lab request
+ */
+export const labOrderControllerCreateWalkInLabOrderV1 = (
+    createWalkInLabOrderDto: CreateWalkInLabOrderDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<LabOrderControllerCreateWalkInLabOrderV1200>(
+      {url: `/api/v1/lab-orders/intake`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createWalkInLabOrderDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getLabOrderControllerCreateWalkInLabOrderV1QueryKey = (createWalkInLabOrderDto?: CreateWalkInLabOrderDto,) => {
+    return [
+    'POST', `/api/v1/lab-orders/intake`, createWalkInLabOrderDto
+    ] as const;
+    }
+
+
+export const getLabOrderControllerCreateWalkInLabOrderV1QueryOptions = <TData = Awaited<ReturnType<typeof labOrderControllerCreateWalkInLabOrderV1>>, TError = unknown>(createWalkInLabOrderDto: CreateWalkInLabOrderDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof labOrderControllerCreateWalkInLabOrderV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getLabOrderControllerCreateWalkInLabOrderV1QueryKey(createWalkInLabOrderDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof labOrderControllerCreateWalkInLabOrderV1>>> = ({ signal }) => labOrderControllerCreateWalkInLabOrderV1(createWalkInLabOrderDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof labOrderControllerCreateWalkInLabOrderV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type LabOrderControllerCreateWalkInLabOrderV1QueryResult = NonNullable<Awaited<ReturnType<typeof labOrderControllerCreateWalkInLabOrderV1>>>
+export type LabOrderControllerCreateWalkInLabOrderV1QueryError = unknown
+
+
+export function useLabOrderControllerCreateWalkInLabOrderV1<TData = Awaited<ReturnType<typeof labOrderControllerCreateWalkInLabOrderV1>>, TError = unknown>(
+ createWalkInLabOrderDto: CreateWalkInLabOrderDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof labOrderControllerCreateWalkInLabOrderV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof labOrderControllerCreateWalkInLabOrderV1>>,
+          TError,
+          Awaited<ReturnType<typeof labOrderControllerCreateWalkInLabOrderV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useLabOrderControllerCreateWalkInLabOrderV1<TData = Awaited<ReturnType<typeof labOrderControllerCreateWalkInLabOrderV1>>, TError = unknown>(
+ createWalkInLabOrderDto: CreateWalkInLabOrderDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof labOrderControllerCreateWalkInLabOrderV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof labOrderControllerCreateWalkInLabOrderV1>>,
+          TError,
+          Awaited<ReturnType<typeof labOrderControllerCreateWalkInLabOrderV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useLabOrderControllerCreateWalkInLabOrderV1<TData = Awaited<ReturnType<typeof labOrderControllerCreateWalkInLabOrderV1>>, TError = unknown>(
+ createWalkInLabOrderDto: CreateWalkInLabOrderDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof labOrderControllerCreateWalkInLabOrderV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Register a walk-in or external lab request
+ */
+
+export function useLabOrderControllerCreateWalkInLabOrderV1<TData = Awaited<ReturnType<typeof labOrderControllerCreateWalkInLabOrderV1>>, TError = unknown>(
+ createWalkInLabOrderDto: CreateWalkInLabOrderDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof labOrderControllerCreateWalkInLabOrderV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getLabOrderControllerCreateWalkInLabOrderV1QueryOptions(createWalkInLabOrderDto,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

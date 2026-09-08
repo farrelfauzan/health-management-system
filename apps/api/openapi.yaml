@@ -10509,6 +10509,179 @@ paths:
         - bearer: []
       summary: Get an invoice
       tags: *a17
+  /api/v1/invoices/lab-only:
+    post:
+      operationId: InvoiceController_generateLabOnlyInvoice_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GenerateLabOnlyInvoiceDto"
+      responses:
+        "201":
+          description: A DRAFT invoice for a LAB_ONLY visit (P18-T10), collected from the
+            tests ordered on it and nothing else — no consultation fee, because
+            nobody consulted. Unpriced tests are listed in meta.gaps rather than
+            billed at zero. 409 when the visit has an encounter (bill it through
+            that instead), was cancelled, already has a live invoice, or has no
+            tests on it.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      invoiceNumber:
+                        type: string
+                      encounterId:
+                        type: string
+                      patientId:
+                        type: string
+                      patient:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          mrn:
+                            type: string
+                          fullName:
+                            type: string
+                        required:
+                          - id
+                          - mrn
+                          - fullName
+                      status:
+                        type: string
+                      totalAmount:
+                        type: integer
+                      itemCount:
+                        type: integer
+                      issuedAt:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            itemType:
+                              type: string
+                            serviceTariffId:
+                              type: string
+                            description:
+                              type: string
+                            quantity:
+                              type: integer
+                            unitPrice:
+                              type: integer
+                            amount:
+                              type: integer
+                          required:
+                            - id
+                            - itemType
+                            - serviceTariffId
+                            - description
+                            - quantity
+                            - unitPrice
+                            - amount
+                    required:
+                      - id
+                      - invoiceNumber
+                      - encounterId
+                      - patientId
+                      - patient
+                      - status
+                      - totalAmount
+                      - itemCount
+                      - issuedAt
+                      - createdAt
+                      - updatedAt
+                      - items
+                  meta:
+                    type: object
+                    properties:
+                      gaps:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            reason:
+                              type: string
+                            description:
+                              type: string
+                          required:
+                            - reason
+                            - description
+                    required:
+                      - gaps
+                  message:
+                    type: string
+                required:
+                  - data
+                  - meta
+                  - message
+                example:
+                  data:
+                    id: a3f2b1c4-5d6e-4a7b-8c9d-0e1f2a3b4c5d
+                    invoiceNumber: INV/20260728/0001
+                    encounterId: e1d2c3b4-a596-4877-b8a9-c0d1e2f3a4b5
+                    patientId: f5e4d3c2-b1a0-4918-a7b6-c5d4e3f2a1b0
+                    patient:
+                      id: f5e4d3c2-b1a0-4918-a7b6-c5d4e3f2a1b0
+                      mrn: RM-000123
+                      fullName: Budi Santoso
+                    status: DRAFT
+                    totalAmount: 125000
+                    itemCount: 3
+                    issuedAt: 2026-07-28T03:15:00.000Z
+                    createdAt: 2026-07-28T03:10:00.000Z
+                    updatedAt: 2026-07-28T03:15:00.000Z
+                    items:
+                      - id: b4c5d6e7-f8a9-4b0c-9d1e-2f3a4b5c6d7e
+                        itemType: CONSULTATION
+                        serviceTariffId: 7b0c1e58-4f6a-4f6e-9d10-2a9c3f4b5d6e
+                        description: Konsultasi Dokter Umum
+                        quantity: 1
+                        unitPrice: 50000
+                        amount: 50000
+                  meta:
+                    gaps:
+                      - reason: UNPRICED_MEDICATION
+                        description: Paracetamol 500 mg
+                  message: Invoice generated
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Generate an invoice for a laboratory-only visit
+      tags: *a17
   /api/v1/invoices/{id}/items:
     post:
       operationId: InvoiceController_addInvoiceItem_v1
@@ -36803,6 +36976,170 @@ paths:
         - bearer: []
       summary: List an encounter’s laboratory orders
       tags: *a51
+  /api/v1/lab-orders/intake:
+    post:
+      operationId: LabOrderController_createWalkInLabOrder_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateWalkInLabOrderDto"
+      responses:
+        "200":
+          description: "Opens a LAB_ONLY visit for the patient and raises the order
+            against it — no encounter, and no ordering doctor of this clinic.
+            Requires `lab-order.write:any`: a walk-in has no attending
+            practitioner for `:own` to resolve through. An EXTERNAL_REFERRAL
+            must name the doctor who asked; a WALK_IN must not. 400 when the
+            order names no tests or the patient has no current privacy-notice
+            evidence; 409 when the patient already has an open registration."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      orderNumber:
+                        type: string
+                      encounterId:
+                        type: string
+                      patientId:
+                        type: string
+                      orderedById:
+                        type: string
+                      orderedByName:
+                        type: string
+                      status:
+                        type: string
+                      priority:
+                        type: string
+                      clinicalNotes:
+                        type: string
+                      isFasting:
+                        type: boolean
+                      fulfilmentSite:
+                        type: string
+                      chargeMode:
+                        type: string
+                      recollectCount:
+                        type: integer
+                      orderedAt:
+                        type: string
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            labTestId:
+                              type: string
+                            code:
+                              type: string
+                            name:
+                              type: string
+                            specimenType:
+                              type: string
+                            resultType:
+                              type: string
+                            status:
+                              type: string
+                            panelId:
+                              type: string
+                            panelName:
+                              type: string
+                          required:
+                            - id
+                            - labTestId
+                            - code
+                            - name
+                            - specimenType
+                            - resultType
+                            - status
+                            - panelId
+                            - panelName
+                      specimens:
+                        type: array
+                        items: {}
+                    required:
+                      - id
+                      - orderNumber
+                      - encounterId
+                      - patientId
+                      - orderedById
+                      - orderedByName
+                      - status
+                      - priority
+                      - clinicalNotes
+                      - isFasting
+                      - fulfilmentSite
+                      - chargeMode
+                      - recollectCount
+                      - orderedAt
+                      - items
+                      - specimens
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: eeeeeeee-5555-4555-8555-eeeeeeeeeeee
+                    orderNumber: LAB/20260720/0001
+                    encounterId: 11111111-7777-4777-8777-111111111111
+                    patientId: 22222222-8888-4888-8888-222222222222
+                    orderedById: 33333333-9999-4999-8999-333333333333
+                    orderedByName: dr. Andi Wijaya
+                    status: ORDERED
+                    priority: ROUTINE
+                    clinicalNotes: Curiga anemia defisiensi besi
+                    isFasting: false
+                    fulfilmentSite: INTERNAL
+                    chargeMode: CLINIC
+                    recollectCount: 0
+                    orderedAt: 2026-07-20T08:00:00.000Z
+                    items:
+                      - id: 44444444-aaaa-4aaa-8aaa-444444444444
+                        labTestId: aaaaaaaa-1111-4111-8111-aaaaaaaaaaaa
+                        code: HB
+                        name: Hemoglobin
+                        specimenType: WHOLE_BLOOD
+                        resultType: NUMERIC
+                        status: PENDING
+                        panelId: bbbbbbbb-2222-4222-8222-bbbbbbbbbbbb
+                        panelName: Darah Rutin
+                    specimens: []
+                  message: Laboratory request registered
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Register a walk-in or external lab request
+      tags: &a52
+        - Laboratory Orders
   /api/v1/lab-orders:
     get:
       operationId: LabOrderController_listLabOrders_v1
@@ -36985,8 +37322,7 @@ paths:
       security:
         - bearer: []
       summary: List laboratory orders
-      tags: &a52
-        - Laboratory Orders
+      tags: *a52
   /api/v1/lab-orders/{id}:
     get:
       operationId: LabOrderController_getLabOrderById_v1
@@ -44530,6 +44866,14 @@ components:
           format: uuid
       required:
         - encounterId
+    GenerateLabOnlyInvoiceDto:
+      type: object
+      properties:
+        registrationId:
+          type: string
+          format: uuid
+      required:
+        - registrationId
     AddInvoiceItemDto:
       type: object
       properties:
@@ -46876,6 +47220,101 @@ components:
           type: string
           minLength: 1
           maxLength: 200
+    CreateWalkInLabOrderDto:
+      type: object
+      properties:
+        patientId:
+          type: string
+          format: uuid
+        source:
+          type: string
+          enum:
+            - WALK_IN
+            - EXTERNAL_REFERRAL
+        testIds:
+          type: array
+          maxItems: 50
+          items:
+            type: string
+            format: uuid
+        panelIds:
+          type: array
+          maxItems: 50
+          items:
+            type: string
+            format: uuid
+        priority:
+          type: string
+          enum:
+            - ROUTINE
+            - URGENT
+        clinicalNotes:
+          type: string
+          minLength: 1
+          maxLength: 1000
+        isFasting:
+          type: boolean
+        externalRequesterName:
+          type: string
+          minLength: 1
+          maxLength: 200
+        externalRequesterFacility:
+          type: string
+          minLength: 1
+          maxLength: 200
+        requestLetterDocumentId:
+          type: string
+          format: uuid
+        privacyNotice:
+          type: object
+          properties:
+            privacyNoticeVersionId:
+              type: string
+              format: uuid
+            locale:
+              type: string
+              enum:
+                - id
+                - en
+            outcome:
+              type: string
+              enum:
+                - ACKNOWLEDGED
+                - PROVIDED_ACKNOWLEDGEMENT_DECLINED
+                - DEFERRED_EMERGENCY
+                - DEFERRED_REMOTE_REGISTRATION
+            subjectType:
+              type: string
+              enum:
+                - SELF
+                - REPRESENTATIVE
+            representativeName:
+              type: string
+              minLength: 2
+              maxLength: 120
+            representativeRelation:
+              type: string
+              minLength: 2
+              maxLength: 60
+            provenance:
+              type: string
+              enum:
+                - FRONT_DESK
+                - PATIENT_PORTAL
+                - LEGACY_IMPORT
+                - EMERGENCY
+                - BPJS_ANTREAN
+                - CHANNEL_BOOKING
+          required:
+            - privacyNoticeVersionId
+            - locale
+            - outcome
+            - subjectType
+            - provenance
+          x-nestjs_zod-self-required: false
+      required:
+        - patientId
+        - source
     CancelLabOrderDto:
       type: object
       properties:
