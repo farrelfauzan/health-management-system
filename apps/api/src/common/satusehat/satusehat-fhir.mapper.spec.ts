@@ -5,7 +5,11 @@ import { SatusehatError } from './satusehat.error';
 import {
   SatusehatAllergyMapInput,
   SatusehatCompositionSectionInput,
+  SatusehatDiagnosticReportMapInput,
+  SatusehatLabObservationMapInput,
   SatusehatProcedureMapInput,
+  SatusehatServiceRequestMapInput,
+  SatusehatSpecimenMapInput,
   SatusehatVitalSignsMapInput,
 } from './satusehat-fhir.types';
 
@@ -37,6 +41,82 @@ function buildEncounterInput() {
     arrivedAt,
     startedAt,
     endedAt,
+  };
+}
+
+
+const collectedAt = new Date('2026-07-28T01:45:00.000Z');
+const releasedAt = new Date('2026-07-28T04:30:00.000Z');
+
+function buildServiceRequestInput(
+  overrides: Partial<SatusehatServiceRequestMapInput> = {},
+): SatusehatServiceRequestMapInput {
+  return {
+    orderNumber: 'LAB/20260728/0042',
+    itemSeq: 3,
+    loincCode: '2345-7',
+    loincDisplay: 'Glucose [Mass/volume] in Serum or Plasma',
+    patientIhsNumber: 'P02478375538',
+    patientName: 'Budi Santoso',
+    encounterReference: 'Encounter/ihs-encounter-1',
+    orderedAt: startedAt,
+    practitionerIhsNumber: 'N10000001',
+    ...overrides,
+  };
+}
+
+function buildSpecimenInput(
+  overrides: Partial<SatusehatSpecimenMapInput> = {},
+): SatusehatSpecimenMapInput {
+  return {
+    specimenType: 'SERUM',
+    accessionNumber: 'SPC/20260728/0007',
+    collectedAt,
+    patientIhsNumber: 'P02478375538',
+    patientName: 'Budi Santoso',
+    serviceRequestReferences: ['urn:uuid:service-request-1'],
+    ...overrides,
+  };
+}
+
+function buildLabObservationInput(
+  overrides: Partial<SatusehatLabObservationMapInput> = {},
+): SatusehatLabObservationMapInput {
+  return {
+    loincCode: '2345-7',
+    loincDisplay: 'Glucose [Mass/volume] in Serum or Plasma',
+    patientIhsNumber: 'P02478375538',
+    patientName: 'Budi Santoso',
+    encounterReference: 'Encounter/ihs-encounter-1',
+    serviceRequestReference: 'urn:uuid:service-request-1',
+    specimenReference: 'urn:uuid:specimen-1',
+    valueNumeric: 142,
+    unit: 'mg/dL',
+    refLow: 70,
+    refHigh: 100,
+    flag: 'HIGH',
+    isAmendment: false,
+    effectiveAt: collectedAt,
+    issuedAt: releasedAt,
+    ...overrides,
+  };
+}
+
+function buildDiagnosticReportInput(
+  overrides: Partial<SatusehatDiagnosticReportMapInput> = {},
+): SatusehatDiagnosticReportMapInput {
+  return {
+    orderNumber: 'LAB/20260728/0042',
+    patientIhsNumber: 'P02478375538',
+    patientName: 'Budi Santoso',
+    encounterReference: 'Encounter/ihs-encounter-1',
+    serviceRequestReferences: ['urn:uuid:service-request-1'],
+    specimenReferences: ['urn:uuid:specimen-1'],
+    observationReferences: ['urn:uuid:observation-1'],
+    isAmendment: false,
+    effectiveAt: collectedAt,
+    issuedAt: releasedAt,
+    ...overrides,
   };
 }
 
@@ -1023,6 +1103,270 @@ describe('SatusehatFhirMapper', () => {
       );
 
       expect(actualObservations[0]?.performer).toBeUndefined();
+    });
+  });
+  describe('mapLabItemToServiceRequest', () => {
+    it('identifies the request by order number and item sequence', () => {
+      const actualRequest = mapper.mapLabItemToServiceRequest(buildServiceRequestInput());
+
+      expect(actualRequest.identifier).toEqual([
+        {
+          system: 'http://sys-ids.kemkes.go.id/servicerequest/10000004',
+          use: 'official',
+          value: 'LAB/20260728/0042-3',
+        },
+      ]);
+      expect(actualRequest.status).toBe('completed');
+      expect(actualRequest.intent).toBe('original-order');
+      expect(actualRequest.category[0]?.coding[0]).toEqual({
+        system: 'http://snomed.info/sct',
+        code: '108252007',
+        display: 'Laboratory procedure',
+      });
+      expect(actualRequest.code.coding[0]).toEqual({
+        system: 'http://loinc.org',
+        code: '2345-7',
+        display: 'Glucose [Mass/volume] in Serum or Plasma',
+      });
+      expect(actualRequest.requester).toEqual({ reference: 'Practitioner/N10000001' });
+      expect(actualRequest.performer).toEqual([{ reference: 'Organization/10000004' }]);
+      expect(actualRequest.occurrenceDateTime).toBe('2026-07-28T02:00:00.000Z');
+    });
+
+    it('carries the encounter primary diagnosis as the reason, ICD-10 coded', () => {
+      const actualRequest = mapper.mapLabItemToServiceRequest(
+        buildServiceRequestInput({ reasonCode: 'E11.9', reasonDisplay: 'Type 2 diabetes mellitus' }),
+      );
+
+      expect(actualRequest.reasonCode).toEqual([
+        {
+          coding: [
+            {
+              system: 'http://hl7.org/fhir/sid/icd-10',
+              code: 'E11.9',
+              display: 'Type 2 diabetes mellitus',
+            },
+          ],
+        },
+      ]);
+    });
+
+    it('omits the requester when the ordering doctor has no IHS number', () => {
+      const input = buildServiceRequestInput();
+      delete input.practitionerIhsNumber;
+
+      const actualRequest = mapper.mapLabItemToServiceRequest(input);
+
+      expect(actualRequest.requester).toBeUndefined();
+      expect(actualRequest.performer).toEqual([{ reference: 'Organization/10000004' }]);
+    });
+  });
+
+  describe('mapLabSpecimen', () => {
+    it('codes the tube in SNOMED and names the requests it serves', () => {
+      const actualSpecimen = mapper.mapLabSpecimen(
+        buildSpecimenInput({
+          serviceRequestReferences: ['urn:uuid:service-request-1', 'urn:uuid:service-request-2'],
+        }),
+      );
+
+      expect(actualSpecimen.type?.coding[0]).toEqual({
+        system: 'http://snomed.info/sct',
+        code: '119364003',
+        display: 'Serum specimen',
+      });
+      expect(actualSpecimen.accessionIdentifier).toEqual({
+        system: 'http://sys-ids.kemkes.go.id/specimen/10000004',
+        use: 'official',
+        value: 'SPC/20260728/0007',
+      });
+      expect(actualSpecimen.status).toBe('available');
+      expect(actualSpecimen.request).toEqual([
+        { reference: 'urn:uuid:service-request-1' },
+        { reference: 'urn:uuid:service-request-2' },
+      ]);
+      expect(actualSpecimen.collection).toEqual({
+        collectedDateTime: '2026-07-28T01:45:00.000Z',
+      });
+    });
+
+    it.each([
+      ['WHOLE_BLOOD', '258580003'],
+      ['SERUM', '119364003'],
+      ['PLASMA', '119361006'],
+      ['URINE', '122575003'],
+      ['STOOL', '119339001'],
+      ['SPUTUM', '119334006'],
+      ['SWAB', '258529004'],
+    ] as const)('codes %s as SNOMED %s', (inputType, expectedCode) => {
+      const actualSpecimen = mapper.mapLabSpecimen(buildSpecimenInput({ specimenType: inputType }));
+
+      expect(actualSpecimen.type?.coding[0]?.code).toBe(expectedCode);
+    });
+
+    it('omits the type for OTHER rather than inventing a concept for it', () => {
+      const actualSpecimen = mapper.mapLabSpecimen(buildSpecimenInput({ specimenType: 'OTHER' }));
+
+      expect(actualSpecimen.type).toBeUndefined();
+      expect(actualSpecimen.accessionIdentifier?.value).toBe('SPC/20260728/0007');
+    });
+  });
+
+  describe('mapLabResultToObservation', () => {
+    it('passes the catalog UCUM unit through to value and reference range alike', () => {
+      const actualObservation = mapper.mapLabResultToObservation(buildLabObservationInput());
+
+      expect(actualObservation.valueQuantity).toEqual({
+        value: 142,
+        unit: 'mg/dL',
+        system: 'http://unitsofmeasure.org',
+        code: 'mg/dL',
+      });
+      expect(actualObservation.referenceRange).toEqual([
+        {
+          low: { value: 70, unit: 'mg/dL', system: 'http://unitsofmeasure.org', code: 'mg/dL' },
+          high: { value: 100, unit: 'mg/dL', system: 'http://unitsofmeasure.org', code: 'mg/dL' },
+        },
+      ]);
+      expect(actualObservation.category[0]?.coding[0]?.code).toBe('laboratory');
+      expect(actualObservation.performer).toEqual([{ reference: 'Organization/10000004' }]);
+      expect(actualObservation.basedOn).toEqual([{ reference: 'urn:uuid:service-request-1' }]);
+      expect(actualObservation.specimen).toEqual({ reference: 'urn:uuid:specimen-1' });
+      expect(actualObservation.effectiveDateTime).toBe('2026-07-28T01:45:00.000Z');
+      expect(actualObservation.issued).toBe('2026-07-28T04:30:00.000Z');
+    });
+
+    it.each([
+      ['NORMAL', 'N', 'Normal'],
+      ['LOW', 'L', 'Low'],
+      ['HIGH', 'H', 'High'],
+      ['CRITICAL_LOW', 'LL', 'Critical low'],
+      ['CRITICAL_HIGH', 'HH', 'Critical high'],
+      ['ABNORMAL', 'A', 'Abnormal'],
+    ] as const)('maps the %s flag to interpretation %s', (inputFlag, expectedCode, expectedDisplay) => {
+      const actualObservation = mapper.mapLabResultToObservation(
+        buildLabObservationInput({ flag: inputFlag }),
+      );
+
+      expect(actualObservation.interpretation).toEqual([
+        {
+          coding: [
+            {
+              system: 'http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation',
+              code: expectedCode,
+              display: expectedDisplay,
+            },
+          ],
+        },
+      ]);
+    });
+
+    it('sends no interpretation when no reference band applied to this patient', () => {
+      const input = buildLabObservationInput();
+      delete input.flag;
+
+      const actualObservation = mapper.mapLabResultToObservation(input);
+
+      expect(actualObservation.interpretation).toBeUndefined();
+    });
+
+    it('reports a corrected value as amended rather than as a second final', () => {
+      const actualObservation = mapper.mapLabResultToObservation(
+        buildLabObservationInput({ isAmendment: true }),
+      );
+
+      expect(actualObservation.status).toBe('amended');
+    });
+
+    it('sends a qualitative range as text alone, with no bounds to invent', () => {
+      const input = buildLabObservationInput({ valueString: 'Negatif', refText: 'Negatif' });
+      delete input.valueNumeric;
+      delete input.unit;
+      delete input.refLow;
+      delete input.refHigh;
+
+      const actualObservation = mapper.mapLabResultToObservation(input);
+
+      expect(actualObservation.valueString).toBe('Negatif');
+      expect(actualObservation.valueQuantity).toBeUndefined();
+      expect(actualObservation.referenceRange).toEqual([{ text: 'Negatif' }]);
+    });
+
+    it('sends a coded value as a codeable concept carrying the recorded text', () => {
+      const input = buildLabObservationInput({ valueCoded: 'Reaktif' });
+      delete input.valueNumeric;
+
+      const actualObservation = mapper.mapLabResultToObservation(input);
+
+      expect(actualObservation.valueCodeableConcept).toEqual({ text: 'Reaktif' });
+      expect(actualObservation.valueQuantity).toBeUndefined();
+    });
+
+    it('sends a unitless count as the UCUM dimensionless unit rather than dropping it', () => {
+      const input = buildLabObservationInput({ valueNumeric: 5 });
+      delete input.unit;
+      delete input.refLow;
+      delete input.refHigh;
+
+      const actualObservation = mapper.mapLabResultToObservation(input);
+
+      expect(actualObservation.valueQuantity).toEqual({
+        value: 5,
+        unit: '1',
+        system: 'http://unitsofmeasure.org',
+        code: '1',
+      });
+      expect(actualObservation.referenceRange).toBeUndefined();
+    });
+  });
+
+  describe('mapLabOrderToDiagnosticReport', () => {
+    it('codes a mixed order as the generic laboratory report and gathers the chain', () => {
+      const actualReport = mapper.mapLabOrderToDiagnosticReport(buildDiagnosticReportInput());
+
+      expect(actualReport.code.coding[0]).toEqual({
+        system: 'http://loinc.org',
+        code: '11502-2',
+        display: 'Laboratory report',
+      });
+      expect(actualReport.identifier).toEqual([
+        {
+          system: 'http://sys-ids.kemkes.go.id/diagnosticreport/10000004',
+          use: 'official',
+          value: 'LAB/20260728/0042',
+        },
+      ]);
+      expect(actualReport.status).toBe('final');
+      expect(actualReport.category[0]?.coding[0]?.code).toBe('LAB');
+      expect(actualReport.basedOn).toEqual([{ reference: 'urn:uuid:service-request-1' }]);
+      expect(actualReport.specimen).toEqual([{ reference: 'urn:uuid:specimen-1' }]);
+      expect(actualReport.result).toEqual([{ reference: 'urn:uuid:observation-1' }]);
+      expect(actualReport.effectiveDateTime).toBe('2026-07-28T01:45:00.000Z');
+      expect(actualReport.issued).toBe('2026-07-28T04:30:00.000Z');
+      expect(actualReport.performer).toEqual([{ reference: 'Organization/10000004' }]);
+    });
+
+    it('codes a single-panel order as that panel when the catalog supplies a LOINC', () => {
+      const actualReport = mapper.mapLabOrderToDiagnosticReport(
+        buildDiagnosticReportInput({
+          panelLoincCode: '24331-1',
+          panelLoincDisplay: 'Lipid 1996 panel - Serum or Plasma',
+        }),
+      );
+
+      expect(actualReport.code.coding[0]).toEqual({
+        system: 'http://loinc.org',
+        code: '24331-1',
+        display: 'Lipid 1996 panel - Serum or Plasma',
+      });
+    });
+
+    it('reports a reissued sheet as amended', () => {
+      const actualReport = mapper.mapLabOrderToDiagnosticReport(
+        buildDiagnosticReportInput({ isAmendment: true }),
+      );
+
+      expect(actualReport.status).toBe('amended');
     });
   });
 });
