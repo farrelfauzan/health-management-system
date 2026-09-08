@@ -1672,6 +1672,25 @@
         "pickSomething": "Pilih minimal satu pemeriksaan atau paket.",
         "error": "Permintaan tidak dapat didaftarkan.",
         "success": "Permintaan terdaftar sebagai {orderNumber}."
+      },
+      "releasePolicy": {
+        "title": "Kebijakan rilis",
+        "description": "Siapa yang boleh merilis hasil, dan apakah satu orang boleh mengerjakan keduanya.",
+        "technicianMayVerify": {
+          "label": "Analis boleh merilis hasil",
+          "on": "Analis laboratorium dapat merilis hasil sendiri.",
+          "off": "Hanya dokter atau administrator yang merilis hasil."
+        },
+        "singleOperator": {
+          "label": "Satu orang boleh input sekaligus rilis",
+          "on": "Orang yang menginput nilai boleh merilisnya. Setiap hasil yang dirilis begini dicatat sebagaimana adanya.",
+          "off": "Orang kedua yang merilis hasil yang diinput orang lain."
+        },
+        "save": "Simpan kebijakan",
+        "saved": "Kebijakan rilis tersimpan.",
+        "saveError": "Kebijakan rilis tidak dapat disimpan.",
+        "loadError": "Kebijakan rilis tidak dapat dimuat.",
+        "singleOperatorWarning": "Ini menghilangkan pemeriksaan orang kedua pada setiap hasil. Ditujukan untuk klinik dengan satu petugas di bench."
       }
     }
   },

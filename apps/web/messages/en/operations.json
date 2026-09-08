@@ -1672,6 +1672,25 @@
         "pickSomething": "Choose at least one test or panel.",
         "error": "The request could not be registered.",
         "success": "Request registered as {orderNumber}."
+      },
+      "releasePolicy": {
+        "title": "Release policy",
+        "description": "Who may sign a result out, and whether one person may do both halves.",
+        "technicianMayVerify": {
+          "label": "Technicians may release results",
+          "on": "A lab technician can sign a report out on their own.",
+          "off": "Only a doctor or an administrator releases results."
+        },
+        "singleOperator": {
+          "label": "One person may enter and release",
+          "on": "The person who typed a value may also release it. Every result released this way is recorded as such.",
+          "off": "A second person releases what somebody else entered."
+        },
+        "save": "Save policy",
+        "saved": "Release policy saved.",
+        "saveError": "The release policy could not be saved.",
+        "loadError": "The release policy could not be loaded.",
+        "singleOperatorWarning": "This removes the second pair of eyes on every result. Intended for a clinic with one person on the bench."
       }
     }
   },

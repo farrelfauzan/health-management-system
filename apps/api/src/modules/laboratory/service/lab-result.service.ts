@@ -46,10 +46,16 @@ const DAY_IN_MILLISECONDS = 86_400_000;
 
 const DEFAULT_TREND_LIMIT = 20;
 
-/** The roles whose signature releases a report on its own merit. */
-const VERIFIER_ROLES = ['ADMIN', 'DOCTOR'] as const;
+/**
+ * The role *codes* whose signature releases a report on its own merit.
+ *
+ * Codes, not names: `Role.name` is the human label a clinic may rename
+ * ("Dokter"), while `code` is the stable identifier the JWT and every other
+ * role check in this codebase use.
+ */
+const VERIFIER_ROLE_CODES = ['SUPER_ADMIN', 'ADMIN', 'DOCTOR'] as const;
 
-const LAB_TECHNICIAN_ROLE = 'LAB_TECHNICIAN';
+const LAB_TECHNICIAN_ROLE_CODE = 'LAB_TECHNICIAN';
 
 /** Values may be typed once a tube exists and until the order is signed out. */
 const ENTRY_STATUSES = ['COLLECTED', 'IN_PROGRESS', 'RESULTED'] as const;
@@ -546,11 +552,11 @@ export class LabResultService {
       return;
     }
     const actor = await this.authRepository.findUserById(currentUser.sub);
-    const roleNames = (actor?.roles ?? []).map((userRole) => userRole.role.name);
-    const isVerifierRole = roleNames.some((name) =>
-      VERIFIER_ROLES.some((verifier) => verifier === name),
+    const roleCodes = (actor?.roles ?? []).map((userRole) => userRole.role.code);
+    const isVerifierRole = roleCodes.some((code) =>
+      VERIFIER_ROLE_CODES.some((verifier) => verifier === code),
     );
-    if (!isVerifierRole && roleNames.includes(LAB_TECHNICIAN_ROLE)) {
+    if (!isVerifierRole && roleCodes.includes(LAB_TECHNICIAN_ROLE_CODE)) {
       throw new ForbiddenException(
         'This clinic requires a doctor or an administrator to release laboratory results',
       );

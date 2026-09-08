@@ -3,6 +3,7 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
 import { LabCatalogPanel } from '#components/client/laboratory/lab-catalog-panel';
+import { LabReleasePolicyPanel } from '#components/client/laboratory/lab-release-policy-panel';
 import { ACCESS_TOKEN_COOKIE_NAME } from '#lib/auth/access-token-cookie';
 import { resolveSessionClaims } from '#lib/auth/session-claims';
 import { SESSION_HINT_COOKIE_NAME } from '#lib/auth/session-hint-cookie';
@@ -30,5 +31,13 @@ export default async function AdminLaboratorySettingsPage() {
     redirect('/admin/dashboard');
   }
 
-  return <LabCatalogPanel />;
+  // The policy sits above the catalog: it is read far less often but changes
+  // what every release on the bench is allowed to do, and until now it could
+  // only be set by calling the API by hand.
+  return (
+    <div className="space-y-6">
+      {ability.can('read', 'LaboratorySettings') ? <LabReleasePolicyPanel /> : null}
+      <LabCatalogPanel />
+    </div>
+  );
 }
