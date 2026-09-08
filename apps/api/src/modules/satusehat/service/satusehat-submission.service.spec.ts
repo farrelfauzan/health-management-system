@@ -107,6 +107,113 @@ function buildBundleData(overrides: Record<string, unknown> = {}) {
   };
 }
 
+const labOrderId = '7b8c9d0e-1f2a-4b3c-8d4e-5f6a7b8c9d0e';
+const labSpecimenId = '2f3a4b5c-6d7e-4f8a-9b0c-1d2e3f4a5b6c';
+
+/**
+ * A released order for two coded tests drawn into one serum tube, its
+ * encounter already reported. Overrides shape the cases below.
+ */
+function buildLabBundleData(overrides: Record<string, unknown> = {}) {
+  return {
+    labOrderId,
+    orderNumber: 'LAB/20260728/0042',
+    orderStatus: 'RELEASED' as const,
+    orderedAt: new Date('2026-07-28T02:05:00.000Z'),
+    releasedAt: new Date('2026-07-28T04:30:00.000Z'),
+    encounterId,
+    satusehatEncounterId: 'ihs-enc-1',
+    patientId,
+    patientName: 'Budi Santoso',
+    patientIhsNumber: 'P02478375538',
+    doctorId,
+    doctorName: 'dr. Sari Wulandari',
+    practitionerIhsNumber: 'N10000001',
+    singlePanelLoincCode: null,
+    singlePanelLoincDisplay: null,
+    primaryConditionCode: 'E11.9',
+    primaryConditionDisplay: 'Type 2 diabetes mellitus',
+    specimens: [
+      {
+        specimenId: labSpecimenId,
+        specimenType: 'SERUM' as const,
+        accessionNumber: 'SPC/20260728/0007',
+        collectedAt: new Date('2026-07-28T02:30:00.000Z'),
+      },
+    ],
+    items: [
+      {
+        labOrderItemId: 'item-glucose',
+        itemSeq: 1,
+        testName: 'Glukosa Sewaktu',
+        loincCode: '2345-7',
+        loincDisplay: 'Glucose [Mass/volume] in Serum or Plasma',
+        specimenId: labSpecimenId,
+        result: {
+          labResultId: 'result-glucose',
+          valueNumeric: 142,
+          valueText: null,
+          valueCoded: null,
+          unit: 'mg/dL',
+          refLow: 70,
+          refHigh: 100,
+          refText: null,
+          flag: 'HIGH' as const,
+          isAmendment: false,
+          enteredAt: new Date('2026-07-28T04:00:00.000Z'),
+        },
+      },
+      {
+        labOrderItemId: 'item-hba1c',
+        itemSeq: 2,
+        testName: 'HbA1c',
+        loincCode: '4548-4',
+        loincDisplay: 'Hemoglobin A1c',
+        specimenId: labSpecimenId,
+        result: {
+          labResultId: 'result-hba1c',
+          valueNumeric: 8.1,
+          valueText: null,
+          valueCoded: null,
+          unit: '%',
+          refLow: null,
+          refHigh: 5.7,
+          refText: null,
+          flag: 'HIGH' as const,
+          isAmendment: false,
+          enteredAt: new Date('2026-07-28T04:05:00.000Z'),
+        },
+      },
+    ],
+    ...overrides,
+  };
+}
+
+/**
+ * A recorded transaction response for the chain above. Locations are absolute
+ * URLs because that is what the live platform returns — the fixtures that use
+ * relative ones let a parser pass here and fail in production.
+ */
+const LAB_CHAIN_RESPONSE = {
+  entry: [
+    resourceCreated('ServiceRequest', 'ihs-sr-1'),
+    resourceCreated('ServiceRequest', 'ihs-sr-2'),
+    resourceCreated('Specimen', 'ihs-spec-1'),
+    resourceCreated('Observation', 'ihs-obs-1'),
+    resourceCreated('Observation', 'ihs-obs-2'),
+    resourceCreated('DiagnosticReport', 'ihs-dr-1'),
+  ],
+};
+
+function resourceCreated(resourceType: string, id: string) {
+  return {
+    response: {
+      status: '201 Created',
+      location: `https://api-satusehat-stg.dto.kemkes.go.id/fhir-r4/v1/${resourceType}/${id}/_history/1`,
+    },
+  };
+}
+
 const codedProcedure = {
   procedureId: 'proc-coded',
   code: '93.94',
@@ -200,7 +307,9 @@ describe('SatusehatSubmissionService', () => {
   const submissionRepositoryMock = {
     claimDueSubmissions: jest.fn(),
     findBundleData: jest.fn(),
+    findLabReportBundleData: jest.fn(),
     saveAllergyIhsIds: jest.fn(),
+    saveLabReportIhsIds: jest.fn(),
     markSubmitted: jest.fn(),
     scheduleRetry: jest.fn(),
     markFailed: jest.fn(),
@@ -1113,5 +1222,187 @@ describe('SatusehatSubmissionService', () => {
       buildSubmission().id,
       null,
     );
+  });
+  describe('lab report submissions', () => {
+    function buildLabSubmission(overrides: Record<string, unknown> = {}) {
+      return buildSubmission({
+        kind: 'LAB_REPORT',
+        encounterId: null,
+        labOrderId,
+        labOrderNumber: 'LAB/20260728/0042',
+        ...overrides,
+      });
+    }
+
+    it('posts the whole chain in one transaction and writes every assigned id back', async () => {
+      submissionRepositoryMock.findLabReportBundleData.mockResolvedValue(buildLabBundleData());
+      httpClientMock.sendRequest.mockResolvedValue(LAB_CHAIN_RESPONSE);
+      const service = buildService();
+
+      await service.processSubmission(buildLabSubmission());
+
+      expect(httpClientMock.sendRequest).toHaveBeenCalledTimes(1);
+      const sentBundle = (
+        httpClientMock.sendRequest.mock.calls[0]?.[0] as { body: SatusehatFhirTransactionBundle }
+      ).body;
+      expect(sentBundle.entry.map((entry) => entry.request.url)).toEqual([
+        'ServiceRequest',
+        'ServiceRequest',
+        'Specimen',
+        'Observation',
+        'Observation',
+        'DiagnosticReport',
+      ]);
+      // The chain is wired with bundle-local references, so the platform
+      // resolves the links itself rather than needing a second round trip.
+      const [firstRequest, , specimen, firstObservation, , report] = sentBundle.entry;
+      expect((specimen?.resource as { request?: Array<{ reference: string }> }).request).toEqual([
+        { reference: firstRequest?.fullUrl },
+        { reference: sentBundle.entry[1]?.fullUrl },
+      ]);
+      expect(
+        (firstObservation?.resource as { basedOn?: Array<{ reference: string }> }).basedOn,
+      ).toEqual([{ reference: firstRequest?.fullUrl }]);
+      expect(
+        (firstObservation?.resource as { specimen?: { reference: string } }).specimen,
+      ).toEqual({ reference: specimen?.fullUrl });
+      expect((report?.resource as { result?: Array<{ reference: string }> }).result).toEqual([
+        { reference: sentBundle.entry[3]?.fullUrl },
+        { reference: sentBundle.entry[4]?.fullUrl },
+      ]);
+      expect(submissionRepositoryMock.saveLabReportIhsIds).toHaveBeenCalledWith({
+        labOrderId,
+        diagnosticReportId: 'ihs-dr-1',
+        serviceRequestIdsByItemId: { 'item-glucose': 'ihs-sr-1', 'item-hba1c': 'ihs-sr-2' },
+        specimenIdsBySpecimenId: { [labSpecimenId]: 'ihs-spec-1' },
+        observationIdsByResultId: { 'result-glucose': 'ihs-obs-1', 'result-hba1c': 'ihs-obs-2' },
+      });
+      // A lab row records no IHS encounter of its own — it referenced one.
+      expect(submissionRepositoryMock.markSubmitted).toHaveBeenCalledWith(
+        'a0b1c2d3-e4f5-4a6b-8c7d-9e0f1a2b3c4d',
+        null,
+      );
+    });
+
+    it('skips an uncoded test and a value the bench has not verified', async () => {
+      submissionRepositoryMock.findLabReportBundleData.mockResolvedValue(
+        buildLabBundleData({
+          items: [
+            {
+              ...buildLabBundleData().items[0],
+              labOrderItemId: 'item-uncoded',
+              loincCode: null,
+              loincDisplay: null,
+            },
+            {
+              ...buildLabBundleData().items[1],
+              labOrderItemId: 'item-unverified',
+              result: null,
+            },
+            buildLabBundleData().items[0],
+          ],
+        }),
+      );
+      httpClientMock.sendRequest.mockResolvedValue(LAB_CHAIN_RESPONSE);
+      const service = buildService();
+
+      await service.processSubmission(buildLabSubmission());
+
+      const sentBundle = (
+        httpClientMock.sendRequest.mock.calls[0]?.[0] as { body: SatusehatFhirTransactionBundle }
+      ).body;
+      expect(sentBundle.entry.filter((entry) => entry.request.url === 'ServiceRequest')).toHaveLength(
+        1,
+      );
+      expect(sentBundle.entry.filter((entry) => entry.request.url === 'Observation')).toHaveLength(1);
+    });
+
+    it('settles an order with nothing reportable without sending anything', async () => {
+      submissionRepositoryMock.findLabReportBundleData.mockResolvedValue(
+        buildLabBundleData({
+          items: [{ ...buildLabBundleData().items[0], loincCode: null, loincDisplay: null }],
+        }),
+      );
+      const service = buildService();
+
+      await service.processSubmission(buildLabSubmission());
+
+      expect(httpClientMock.sendRequest).not.toHaveBeenCalled();
+      // SUBMITTED, not FAILED: a catalog with no LOINC is not something a
+      // retry can fix, and a permanent red row would say otherwise.
+      expect(submissionRepositoryMock.markSubmitted).toHaveBeenCalledTimes(1);
+      expect(submissionRepositoryMock.markFailed).not.toHaveBeenCalled();
+    });
+
+    it('parks the row when the encounter it must reference was never reported', async () => {
+      submissionRepositoryMock.findLabReportBundleData.mockResolvedValue(
+        buildLabBundleData({ satusehatEncounterId: null }),
+      );
+      const service = buildService();
+
+      await service.processSubmission(buildLabSubmission());
+
+      expect(httpClientMock.sendRequest).not.toHaveBeenCalled();
+      expect(submissionRepositoryMock.markFailed).toHaveBeenCalledWith(
+        expect.objectContaining({
+          lastError: expect.stringContaining('Encounter not reported to SATUSEHAT'),
+        }),
+      );
+    });
+
+    it('refuses to report an order that is not released', async () => {
+      submissionRepositoryMock.findLabReportBundleData.mockResolvedValue(
+        buildLabBundleData({ orderStatus: 'IN_PROGRESS', releasedAt: null }),
+      );
+      const service = buildService();
+
+      await service.processSubmission(buildLabSubmission());
+
+      expect(httpClientMock.sendRequest).not.toHaveBeenCalled();
+      expect(submissionRepositoryMock.markFailed).toHaveBeenCalledWith(
+        expect.objectContaining({ lastError: expect.stringContaining('IN_PROGRESS') }),
+      );
+    });
+
+    it('reports a corrected order as an amended report', async () => {
+      const base = buildLabBundleData();
+      submissionRepositoryMock.findLabReportBundleData.mockResolvedValue(
+        buildLabBundleData({
+          items: [{ ...base.items[0], result: { ...base.items[0]?.result, isAmendment: true } }],
+        }),
+      );
+      httpClientMock.sendRequest.mockResolvedValue(LAB_CHAIN_RESPONSE);
+      const service = buildService();
+
+      await service.processSubmission(buildLabSubmission());
+
+      const sentBundle = (
+        httpClientMock.sendRequest.mock.calls[0]?.[0] as { body: SatusehatFhirTransactionBundle }
+      ).body;
+      const report = sentBundle.entry.find((entry) => entry.request.url === 'DiagnosticReport');
+      expect((report?.resource as { status: string }).status).toBe('amended');
+    });
+
+    it('reports without a requester when the ordering doctor cannot be linked', async () => {
+      submissionRepositoryMock.findLabReportBundleData.mockResolvedValue(
+        buildLabBundleData({ practitionerIhsNumber: null }),
+      );
+      linkRepositoryMock.findDoctorLinkTarget.mockResolvedValue({ id: doctorId, nik: null });
+      httpClientMock.sendRequest.mockResolvedValue(LAB_CHAIN_RESPONSE);
+      const service = buildService();
+
+      await service.processSubmission(buildLabSubmission());
+
+      const sentBundle = (
+        httpClientMock.sendRequest.mock.calls[0]?.[0] as { body: SatusehatFhirTransactionBundle }
+      ).body;
+      const serviceRequest = sentBundle.entry.find(
+        (entry) => entry.request.url === 'ServiceRequest',
+      );
+      // An unlinkable requester costs the chain one element, not the whole
+      // submission: the laboratory is the performer either way.
+      expect((serviceRequest?.resource as { requester?: unknown }).requester).toBeUndefined();
+      expect(submissionRepositoryMock.markSubmitted).toHaveBeenCalledTimes(1);
+    });
   });
 });

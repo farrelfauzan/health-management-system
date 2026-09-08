@@ -5,6 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { AdmissionFlowRepository } from '../admission-flow/repository/admission-flow.repository';
 import { EncounterRepository } from '../emr/repository/encounter.repository';
+import { LabResultRepository } from '../laboratory/repository/lab-result.repository';
 
 /**
  * The outbox guarantee no unit test can prove: a FINISHED close and its
@@ -17,17 +18,26 @@ import { EncounterRepository } from '../emr/repository/encounter.repository';
  * `class: IMP` over admission-to-discharge, and neither is known until the
  * patient leaves. For those the row is written inside the discharge
  * transaction instead, which is what the second half of this suite pins.
+ *
+ * Since P18-T09 there is a third producer with the same guarantee: releasing
+ * a lab order writes a LAB_REPORT row in the release transaction, so a
+ * released result can never silently miss the national record, and an
+ * amendment enqueues again rather than editing what was already sent.
  */
 describe('SATUSEHAT submission outbox against Postgres', () => {
   let prisma: PrismaService;
   let encounterRepository: EncounterRepository;
   let admissionRepository: AdmissionFlowRepository;
+  let labResultRepository: LabResultRepository;
 
   const createdPatientIds: string[] = [];
   const createdDoctorIds: string[] = [];
   const createdRegistrationIds: string[] = [];
   const createdEncounterIds: string[] = [];
   const createdAdmissionIds: string[] = [];
+  const createdLabOrderIds: string[] = [];
+  const createdUserIds: string[] = [];
+  let createdLabTestId: string | null = null;
   let specialtyId: string;
   let wardId: string;
   let roomClassId: string;
@@ -38,6 +48,7 @@ describe('SATUSEHAT submission outbox against Postgres', () => {
     await prisma.$connect();
     encounterRepository = new EncounterRepository(prisma);
     admissionRepository = new AdmissionFlowRepository(prisma);
+    labResultRepository = new LabResultRepository(prisma);
     const specialty = await prisma.specialty.create({
       data: { name: `Outbox Spec ${randomUUID()}` },
     });
@@ -58,8 +69,22 @@ describe('SATUSEHAT submission outbox against Postgres', () => {
 
   afterAll(async () => {
     await prisma.satusehatSubmission.deleteMany({
-      where: { encounterId: { in: createdEncounterIds } },
+      where: {
+        OR: [
+          { encounterId: { in: createdEncounterIds } },
+          { labOrderId: { in: createdLabOrderIds } },
+        ],
+      },
     });
+    await prisma.labResult.deleteMany({
+      where: { labOrderItem: { labOrderId: { in: createdLabOrderIds } } },
+    });
+    await prisma.labOrderItem.deleteMany({ where: { labOrderId: { in: createdLabOrderIds } } });
+    await prisma.labOrder.deleteMany({ where: { id: { in: createdLabOrderIds } } });
+    if (createdLabTestId) {
+      await prisma.labTest.delete({ where: { id: createdLabTestId } });
+    }
+    await prisma.user.deleteMany({ where: { id: { in: createdUserIds } } });
     await prisma.bedAssignment.deleteMany({
       where: { admissionId: { in: createdAdmissionIds } },
     });
@@ -161,7 +186,7 @@ describe('SATUSEHAT submission outbox against Postgres', () => {
       endedAt: new Date(),
     });
 
-    const actualSubmission = await prisma.satusehatSubmission.findUnique({
+    const actualSubmission = await prisma.satusehatSubmission.findFirst({
       where: { encounterId },
     });
     expect(actualSubmission).not.toBeNull();
@@ -182,7 +207,7 @@ describe('SATUSEHAT submission outbox against Postgres', () => {
       endedAt: new Date(),
     });
 
-    const actualSubmission = await prisma.satusehatSubmission.findUnique({
+    const actualSubmission = await prisma.satusehatSubmission.findFirst({
       where: { encounterId: context.encounterId },
     });
     expect(actualSubmission).toBeNull();
@@ -206,7 +231,7 @@ describe('SATUSEHAT submission outbox against Postgres', () => {
       dischargedAt: new Date(),
     });
 
-    const actualSubmission = await prisma.satusehatSubmission.findUnique({
+    const actualSubmission = await prisma.satusehatSubmission.findFirst({
       where: { encounterId: context.encounterId },
     });
     expect(actualSubmission).not.toBeNull();
@@ -224,7 +249,7 @@ describe('SATUSEHAT submission outbox against Postgres', () => {
       dischargedAt: new Date(),
     });
 
-    const actualSubmission = await prisma.satusehatSubmission.findUnique({
+    const actualSubmission = await prisma.satusehatSubmission.findFirst({
       where: { encounterId: context.encounterId },
     });
     expect(actualSubmission).toBeNull();
@@ -248,7 +273,7 @@ describe('SATUSEHAT submission outbox against Postgres', () => {
       endedAt: new Date(),
     });
 
-    const actualSubmission = await prisma.satusehatSubmission.findUnique({
+    const actualSubmission = await prisma.satusehatSubmission.findFirst({
       where: { encounterId: context.encounterId },
     });
     expect(actualSubmission).not.toBeNull();
@@ -270,7 +295,7 @@ describe('SATUSEHAT submission outbox against Postgres', () => {
       endedAt: new Date(),
     });
 
-    const actualSubmission = await prisma.satusehatSubmission.findUnique({
+    const actualSubmission = await prisma.satusehatSubmission.findFirst({
       where: { encounterId: context.encounterId },
     });
     expect(actualSubmission).not.toBeNull();
@@ -300,7 +325,7 @@ describe('SATUSEHAT submission outbox against Postgres', () => {
     ).rejects.toThrow();
 
     const actualAdmission = await prisma.admission.findUnique({ where: { id: stay.admissionId } });
-    const actualSubmission = await prisma.satusehatSubmission.findUnique({
+    const actualSubmission = await prisma.satusehatSubmission.findFirst({
       where: { encounterId: context.encounterId },
     });
     expect(actualAdmission?.status).toBe('ADMITTED');
@@ -318,7 +343,7 @@ describe('SATUSEHAT submission outbox against Postgres', () => {
       endedAt: new Date(),
     });
 
-    const actualSubmission = await prisma.satusehatSubmission.findUnique({
+    const actualSubmission = await prisma.satusehatSubmission.findFirst({
       where: { encounterId },
     });
     expect(actualSubmission).toBeNull();
@@ -341,10 +366,148 @@ describe('SATUSEHAT submission outbox against Postgres', () => {
     ).rejects.toThrow();
 
     const actualEncounter = await prisma.encounter.findUnique({ where: { id: encounterId } });
-    const actualSubmission = await prisma.satusehatSubmission.findUnique({
+    const actualSubmission = await prisma.satusehatSubmission.findFirst({
       where: { encounterId },
     });
     expect(actualEncounter?.status).toBe('IN_PROGRESS');
     expect(actualSubmission).toBeNull();
+  });
+  describe('lab report producer', () => {
+    async function createReleasableLabOrder(): Promise<{
+      labOrderId: string;
+      labOrderItemId: string;
+      labResultId: string;
+      userId: string;
+    }> {
+      const context = await createOpenEncounter();
+      if (createdLabTestId === null) {
+        const labTest = await prisma.labTest.create({
+          data: {
+            code: `OBX-${randomUUID().slice(0, 12)}`,
+            name: 'Outbox Glucose',
+            loincCode: `9${randomUUID().replace(/\D/g, '').slice(0, 5).padEnd(5, '0')}-7`,
+            specimenType: 'SERUM',
+            resultType: 'NUMERIC',
+            unit: 'mg/dL',
+          },
+        });
+        createdLabTestId = labTest.id;
+      }
+      const analyst = await prisma.user.create({
+        data: {
+          email: `outbox-analyst-${randomUUID()}@hms.local`,
+          passwordHash: 'unusable',
+        },
+      });
+      createdUserIds.push(analyst.id);
+      const labOrder = await prisma.labOrder.create({
+        data: {
+          encounterId: context.encounterId,
+          patientId: context.patientId,
+          orderedById: context.doctorId,
+          orderNumber: `LAB/OUTBOX/${randomUUID()}`,
+          status: 'RESULTED',
+          items: { create: [{ labTestId: createdLabTestId }] },
+        },
+        include: { items: true },
+      });
+      createdLabOrderIds.push(labOrder.id);
+      const labOrderItemId = labOrder.items[0]?.id as string;
+      const labResult = await prisma.labResult.create({
+        data: {
+          labOrderItemId,
+          version: 1,
+          valueNumeric: 142,
+          unit: 'mg/dL',
+          enteredById: analyst.id,
+          enteredAt: new Date(),
+        },
+      });
+      return {
+        labOrderId: labOrder.id,
+        labOrderItemId,
+        labResultId: labResult.id,
+        userId: analyst.id,
+      };
+    }
+
+    it('writes a LAB_REPORT row in the same transaction that releases the order', async () => {
+      const { labOrderId, userId } = await createReleasableLabOrder();
+
+      await labResultRepository.releaseLabOrder({
+        labOrderId,
+        verifiedById: userId,
+        verifiedAt: new Date(),
+        verifiedUnderSingleOperator: false,
+      });
+
+      const rows = await prisma.satusehatSubmission.findMany({ where: { labOrderId } });
+      expect(rows).toHaveLength(1);
+      expect(rows[0]?.kind).toBe('LAB_REPORT');
+      expect(rows[0]?.status).toBe('PENDING');
+      // Keyed on the order, never on the encounter: the report reaches its
+      // visit through the order, which is what lets P18-T10 drop the visit.
+      expect(rows[0]?.encounterId).toBeNull();
+    });
+
+    it('does not queue a second row while the first is still unsent', async () => {
+      const { labOrderId, userId } = await createReleasableLabOrder();
+      const releasePayload = {
+        labOrderId,
+        verifiedById: userId,
+        verifiedAt: new Date(),
+        verifiedUnderSingleOperator: false,
+      };
+
+      await labResultRepository.releaseLabOrder(releasePayload);
+      await labResultRepository.releaseLabOrder(releasePayload);
+
+      const rows = await prisma.satusehatSubmission.findMany({ where: { labOrderId } });
+      expect(rows).toHaveLength(1);
+    });
+
+    it('queues an amendment beside a report the platform already accepted', async () => {
+      const { labOrderId, labOrderItemId, labResultId, userId } = await createReleasableLabOrder();
+      await labResultRepository.releaseLabOrder({
+        labOrderId,
+        verifiedById: userId,
+        verifiedAt: new Date(),
+        verifiedUnderSingleOperator: false,
+      });
+      await prisma.satusehatSubmission.updateMany({
+        where: { labOrderId },
+        data: { status: 'SUBMITTED', submittedAt: new Date() },
+      });
+
+      await labResultRepository.amendLabResult({
+        labOrderId,
+        labOrderItemId,
+        version: 2,
+        valueNumeric: 99,
+        valueText: null,
+        valueCoded: null,
+        unit: 'mg/dL',
+        refLow: null,
+        refHigh: null,
+        refCriticalLow: null,
+        refCriticalHigh: null,
+        refText: null,
+        flag: null,
+        enteredById: userId,
+        enteredAt: new Date(),
+        verifiedById: userId,
+        verifiedAt: new Date(),
+        verifiedUnderSingleOperator: false,
+        amendedFromId: labResultId,
+        amendReason: 'Transcription error',
+      });
+
+      const rows = await prisma.satusehatSubmission.findMany({
+        where: { labOrderId },
+        orderBy: { createdAt: 'asc' },
+      });
+      expect(rows).toHaveLength(2);
+      expect(rows.map((row) => row.status)).toEqual(['SUBMITTED', 'PENDING']);
+    });
   });
 });

@@ -126,7 +126,7 @@ describe('SATUSEHAT lab report encounter gate against PostgreSQL', () => {
       data: {
         code: `GATE-${randomUUID()}`.slice(0, 30),
         name: 'Gate Glucose',
-        loincCode: '2345-7',
+        loincCode: `9${randomUUID().replace(/\D/g, '').slice(0, 5).padEnd(5, '0')}-7`,
         specimenType: 'SERUM',
         resultType: 'NUMERIC',
         unit: 'mg/dL',
