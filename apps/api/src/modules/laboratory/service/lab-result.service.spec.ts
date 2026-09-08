@@ -217,7 +217,7 @@ describe('LabResultService', () => {
       updatedAt: null,
     });
     authRepositoryMock.findUserById.mockResolvedValue({
-      roles: [{ role: { name: 'DOCTOR', permissions: [] } }],
+      roles: [{ role: { code: 'DOCTOR', name: 'Doctor', permissions: [] } }],
     });
   });
 
@@ -383,17 +383,40 @@ describe('LabResultService', () => {
     it('refuses a technician where the clinic has not said they may verify', async () => {
       labOrderRepositoryMock.findLabOrderById.mockResolvedValue(buildResultedOrder());
       authRepositoryMock.findUserById.mockResolvedValue({
-        roles: [{ role: { name: 'LAB_TECHNICIAN', permissions: [] } }],
+        roles: [{ role: { code: 'LAB_TECHNICIAN', name: 'Lab Technician', permissions: [] } }],
       });
       await expect(service.releaseLabOrder(labOrderId, doctorUser)).rejects.toBeInstanceOf(
         ForbiddenException,
       );
     });
 
+    it('refuses a technician whose role was renamed — codes decide, not labels', async () => {
+      labOrderRepositoryMock.findLabOrderById.mockResolvedValue(buildResultedOrder());
+      // What the seed actually holds: a human label that looks nothing like the
+      // code. Comparing against `name` let this guard pass its own tests and
+      // never once fire in production.
+      authRepositoryMock.findUserById.mockResolvedValue({
+        roles: [{ role: { code: 'LAB_TECHNICIAN', name: 'Analis Laboratorium', permissions: [] } }],
+      });
+
+      await expect(service.releaseLabOrder(labOrderId, doctorUser)).rejects.toBeInstanceOf(
+        ForbiddenException,
+      );
+    });
+
+    it('lets a super admin release, whatever their role is called', async () => {
+      labOrderRepositoryMock.findLabOrderById.mockResolvedValue(buildResultedOrder());
+      authRepositoryMock.findUserById.mockResolvedValue({
+        roles: [{ role: { code: 'SUPER_ADMIN', name: 'Super Admin', permissions: [] } }],
+      });
+
+      await expect(service.releaseLabOrder(labOrderId, doctorUser)).resolves.toBeDefined();
+    });
+
     it('allows a technician where the clinic has', async () => {
       labOrderRepositoryMock.findLabOrderById.mockResolvedValue(buildResultedOrder());
       authRepositoryMock.findUserById.mockResolvedValue({
-        roles: [{ role: { name: 'LAB_TECHNICIAN', permissions: [] } }],
+        roles: [{ role: { code: 'LAB_TECHNICIAN', name: 'Lab Technician', permissions: [] } }],
       });
       laboratorySettingsServiceMock.getLaboratorySettings.mockResolvedValue({
         technicianMayVerify: true,
@@ -534,7 +557,8 @@ describe('LabResultService', () => {
         roles: [
           {
             role: {
-              name: 'DOCTOR',
+              code: 'DOCTOR',
+              name: 'Doctor',
               permissions: [
                 { permission: { resource: 'LabOrder', action: 'read', scope: 'OWN' } },
               ],
