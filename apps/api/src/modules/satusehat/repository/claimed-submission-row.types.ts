@@ -1,4 +1,7 @@
-import { SatusehatSubmissionStatusValue } from '@hms/shared-types';
+import {
+  SatusehatSubmissionKindValue,
+  SatusehatSubmissionStatusValue,
+} from '@hms/shared-types';
 
 /**
  * Snake-case shape of the claim statement's `RETURNING` clause. Raw SQL bypasses
@@ -9,7 +12,10 @@ import { SatusehatSubmissionStatusValue } from '@hms/shared-types';
  */
 export type ClaimedSubmissionRow = {
   id: string;
-  encounter_id: string;
+  kind: SatusehatSubmissionKindValue;
+  encounter_id: string | null;
+  lab_order_id: string | null;
+  lab_order_number: string | null;
   status: SatusehatSubmissionStatusValue;
   attempts: number;
   last_error: string | null;

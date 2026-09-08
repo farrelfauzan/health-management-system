@@ -33,9 +33,9 @@ export class SatusehatSubmissionController {
   @ApiEndpoint({
     summary: 'List SATUSEHAT submission outbox entries',
     responseDescription:
-      'A paginated view of the submission outbox, newest first, filterable by status and encounter. Rows carry scheduling state only — no clinical payload is stored in the outbox.',
+      'A paginated view of the submission outbox, newest first, filterable by kind, status, encounter and lab order. A row is either the bundle for one closed encounter or the laboratory chain for one released order (P18-T09). Rows carry scheduling state only — no clinical payload is stored in the outbox.',
     responseExample: {
-      data: [SATUSEHAT_EXAMPLES.submission],
+      data: [SATUSEHAT_EXAMPLES.submission, SATUSEHAT_EXAMPLES.labReportSubmission],
       meta: SATUSEHAT_EXAMPLES.submissionListMeta,
     },
   })
@@ -58,7 +58,7 @@ export class SatusehatSubmissionController {
   @ApiEndpoint({
     summary: 'Retry a failed SATUSEHAT submission',
     responseDescription:
-      'The FAILED row was re-opened with a fresh attempt budget and processed immediately; the returned row shows the real outcome (SUBMITTED, PENDING with a scheduled retry, or FAILED again with a new lastError). Rows that are SUBMITTED or already queued return 409.',
+      'The FAILED row was re-opened with a fresh attempt budget and processed immediately; the returned row shows the real outcome (SUBMITTED, PENDING with a scheduled retry, or FAILED again with a new lastError). Retrying an encounter row that then succeeds also re-opens any laboratory reports that were parked waiting on it. Rows that are SUBMITTED or already queued return 409.',
     responseExample: {
       data: SATUSEHAT_EXAMPLES.submissionRetried,
       message: 'Submission retry processed',

@@ -12,6 +12,7 @@ describe('SatusehatSubmissionOpsService', () => {
     findSubmissionById: jest.fn(),
     findSubmissionPage: jest.fn(),
     requeueSubmission: jest.fn(),
+    requeueLabReportsForEncounter: jest.fn(),
   };
   const submissionServiceMock = {
     processSubmission: jest.fn(),
@@ -23,7 +24,10 @@ describe('SatusehatSubmissionOpsService', () => {
 
   const failedRecord: SatusehatSubmissionRecord = {
     id: 'submission-1',
+    kind: 'ENCOUNTER',
     encounterId: 'encounter-1',
+    labOrderId: null,
+    labOrderNumber: null,
     status: 'FAILED',
     attempts: 8,
     lastError: 'SATUSEHAT is unreachable (HTTP 503)',
@@ -61,14 +65,19 @@ describe('SatusehatSubmissionOpsService', () => {
 
       expect(submissionRepositoryMock.findSubmissionPage).toHaveBeenCalledWith({
         status: 'FAILED',
+        kind: undefined,
         encounterId: undefined,
+        labOrderId: undefined,
         skip: 5,
         take: 5,
       });
       expect(actualResult.meta).toEqual({ page: 2, limit: 5, total: 11 });
       expect(actualResult.items[0]).toEqual({
         id: 'submission-1',
+        kind: 'ENCOUNTER',
         encounterId: 'encounter-1',
+        labOrderId: null,
+        labOrderNumber: null,
         status: 'FAILED',
         attempts: 8,
         lastError: 'SATUSEHAT is unreachable (HTTP 503)',
@@ -143,7 +152,12 @@ describe('SatusehatSubmissionOpsService', () => {
         resource: 'SatusehatSubmission',
         resourceId: 'submission-1',
         actorUserId: 'admin-user',
-        metadata: { encounterId: 'encounter-1', previousAttempts: 8 },
+        metadata: {
+          kind: 'ENCOUNTER',
+          encounterId: 'encounter-1',
+          labOrderId: null,
+          previousAttempts: 8,
+        },
       });
       expect(submissionServiceMock.processSubmission).toHaveBeenCalledWith(requeuedRecord);
       expect(actualResult.status).toBe('SUBMITTED');

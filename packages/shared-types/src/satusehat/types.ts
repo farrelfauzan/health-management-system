@@ -1,4 +1,11 @@
-import type { SatusehatSubmissionStatusValue } from '#satusehat/schemas';
+import type {
+  LabResultFlagValue,
+  LabSpecimenTypeValue,
+} from '#laboratory/schemas';
+import type {
+  SatusehatSubmissionKindValue,
+  SatusehatSubmissionStatusValue,
+} from '#satusehat/schemas';
 
 /**
  * Repository projections and payloads for SATUSEHAT linkage. The `nik` fields
@@ -41,7 +48,18 @@ export type SatusehatLinkAuditTarget = {
 
 export type SatusehatSubmissionRecord = {
   id: string;
-  encounterId: string;
+  /** Which chain this row reports; decides the branch that builds its bundle. */
+  kind: SatusehatSubmissionKindValue;
+  /** Set on ENCOUNTER rows only — a lab report reaches its encounter by order. */
+  encounterId: string | null;
+  /** Set on LAB_REPORT rows only. */
+  labOrderId: string | null;
+  /**
+   * `LAB/YYYYMMDD/####` for a LAB_REPORT row — the handle the bench and the
+   * patient both quote, and the only thing about the order the admin surface
+   * needs in order to chase a failure.
+   */
+  labOrderNumber: string | null;
   status: SatusehatSubmissionStatusValue;
   attempts: number;
   lastError: string | null;
@@ -234,6 +252,115 @@ export type SatusehatSubmissionBundleData = {
 };
 
 /**
+ * One ordered test, as the chain reports it: a `ServiceRequest` carrying the
+ * test's LOINC, and — once the value is released — an `Observation` carrying
+ * the measurement (P18-T09).
+ *
+ * `loincCode` is nullable because the catalog does not require one. An item
+ * without it is skipped and gap-reported rather than sent uncoded, which is the
+ * same rule the KFA mapping follows for medications.
+ */
+export type SatusehatLabReportItem = {
+  labOrderItemId: string;
+  /**
+   * Position within the order, 1-based and stable: it is the `-{itemSeq}`
+   * suffix of the ServiceRequest identifier, so it must not be derived from a
+   * sort that a later edit could change.
+   */
+  itemSeq: number;
+  testName: string;
+  loincCode: string | null;
+  loincDisplay: string | null;
+  /** The tube this test was run from, null while the item is uncollected. */
+  specimenId: string | null;
+  /** The released value, or null when the item has none to report. */
+  result: SatusehatLabReportResult | null;
+};
+
+export type SatusehatLabReportResult = {
+  labResultId: string;
+  /** Exactly one of the three is set, decided by the test's `LabResultType`. */
+  valueNumeric: number | null;
+  valueText: string | null;
+  valueCoded: string | null;
+  /** UCUM, snapshotted onto the result when it was entered. */
+  unit: string | null;
+  refLow: number | null;
+  refHigh: number | null;
+  refText: string | null;
+  flag: LabResultFlagValue | null;
+  /** True when this row supersedes an earlier released one. */
+  isAmendment: boolean;
+  enteredAt: Date;
+};
+
+export type SatusehatLabReportSpecimen = {
+  specimenId: string;
+  specimenType: LabSpecimenTypeValue;
+  accessionNumber: string;
+  collectedAt: Date;
+};
+
+/**
+ * Everything the lab chain is built from, read fresh at submission time the
+ * way the encounter bundle is (P18-T09). The outbox stores no payload
+ * snapshot, so a correction landed before the worker reaches the row is the
+ * version that gets reported.
+ */
+export type SatusehatLabReportBundleData = {
+  labOrderId: string;
+  orderNumber: string;
+  orderStatus: 'ORDERED' | 'COLLECTED' | 'IN_PROGRESS' | 'RESULTED' | 'RELEASED' | 'CANCELLED';
+  orderedAt: Date;
+  releasedAt: Date | null;
+  /**
+   * The encounter this order was placed in, and the IHS id its own outbox row
+   * recorded. Null once P18-T10 allows an order without a visit; until then a
+   * null here means the encounter row has not landed and the report waits.
+   */
+  encounterId: string | null;
+  satusehatEncounterId: string | null;
+  patientId: string;
+  patientName: string;
+  patientIhsNumber: string | null;
+  /** Null for an order whose requester is not a doctor of this clinic. */
+  doctorId: string | null;
+  doctorName: string | null;
+  practitionerIhsNumber: string | null;
+  /**
+   * The panel's LOINC when the whole order was one panel — the report would
+   * then code as that panel rather than as a generic laboratory report.
+   *
+   * Null in every case today: the catalog gives tests a LOINC and panels none
+   * (P18-T01). Carried anyway so the day panels gain one, only the read that
+   * fills this in has to change.
+   */
+  singlePanelLoincCode: string | null;
+  singlePanelLoincDisplay: string | null;
+  /**
+   * The encounter's primary diagnosis, carried onto every ServiceRequest as
+   * `reasonCode`. Null when the encounter has none coded yet.
+   */
+  primaryConditionCode: string | null;
+  primaryConditionDisplay: string | null;
+  items: readonly SatusehatLabReportItem[];
+  specimens: readonly SatusehatLabReportSpecimen[];
+};
+
+/**
+ * The IHS ids the platform assigned each resource in the chain, written back
+ * after a successful transaction so a resubmission updates rather than
+ * duplicates (P18-T09).
+ */
+export type SaveLabReportIhsIdsPayload = {
+  labOrderId: string;
+  diagnosticReportId: string | null;
+  serviceRequestIdsByItemId: Readonly<Record<string, string>>;
+  specimenIdsBySpecimenId: Readonly<Record<string, string>>;
+  observationIdsByResultId: Readonly<Record<string, string>>;
+};
+
+/**
  * One allergy row and the IHS id the platform assigned it, written back after
  * a successful transaction so the allergy is never reported twice (P10-T08).
  */
@@ -257,7 +384,9 @@ export type MarkSubmissionFailedPayload = {
 
 export type ListSatusehatSubmissionsParams = {
   status?: SatusehatSubmissionStatusValue;
+  kind?: SatusehatSubmissionKindValue;
   encounterId?: string;
+  labOrderId?: string;
   skip: number;
   take: number;
 };

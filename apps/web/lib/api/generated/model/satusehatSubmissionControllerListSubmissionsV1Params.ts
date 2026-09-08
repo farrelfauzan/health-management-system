@@ -5,6 +5,7 @@
  * Health Management System API
  * OpenAPI spec version: 1.0.0
  */
+import type { SatusehatSubmissionControllerListSubmissionsV1Kind } from './satusehatSubmissionControllerListSubmissionsV1Kind';
 import type { SatusehatSubmissionControllerListSubmissionsV1Status } from './satusehatSubmissionControllerListSubmissionsV1Status';
 
 export type SatusehatSubmissionControllerListSubmissionsV1Params = {
@@ -18,5 +19,7 @@ page?: number;
  */
 limit?: number;
 status?: SatusehatSubmissionControllerListSubmissionsV1Status;
+kind?: SatusehatSubmissionControllerListSubmissionsV1Kind;
 encounterId?: string;
+labOrderId?: string;
 };

@@ -20,6 +20,7 @@ import {
   SatusehatFhirEncounterHospitalization,
   SatusehatFhirCoding,
   SatusehatFhirCondition,
+  SatusehatFhirDiagnosticReport,
   SatusehatFhirImmunization,
   SatusehatFhirEncounter,
   SatusehatFhirMedication,
@@ -27,13 +28,20 @@ import {
   SatusehatFhirMedicationRequest,
   SatusehatImmunizationMapInput,
   SatusehatFhirObservation,
+  SatusehatFhirObservationReferenceRange,
   SatusehatFhirProcedure,
   SatusehatFhirReference,
+  SatusehatFhirServiceRequest,
+  SatusehatFhirSpecimen,
   SatusehatMedicationDispenseMapInput,
   SatusehatCompoundMedicationMapInput,
   SatusehatMedicationMapInput,
   SatusehatMedicationRequestMapInput,
+  SatusehatDiagnosticReportMapInput,
+  SatusehatLabObservationMapInput,
   SatusehatProcedureMapInput,
+  SatusehatServiceRequestMapInput,
+  SatusehatSpecimenMapInput,
   SatusehatVitalSignField,
   SatusehatVitalSignsMapInput,
 } from './satusehat-fhir.types';
@@ -99,6 +107,56 @@ const PROGNOSIS_SNOMED_CODES: Readonly<
   DUBIA_AD_BONAM: { code: '170969009', display: 'Prognosis fair' },
   DUBIA_AD_MALAM: { code: '170970005', display: 'Prognosis poor' },
   MALAM: { code: '170970005', display: 'Prognosis poor' },
+};
+
+const SERVICE_REQUEST_IDENTIFIER_SYSTEM_PREFIX = 'http://sys-ids.kemkes.go.id/servicerequest';
+const SPECIMEN_IDENTIFIER_SYSTEM_PREFIX = 'http://sys-ids.kemkes.go.id/specimen';
+const DIAGNOSTIC_REPORT_IDENTIFIER_SYSTEM_PREFIX = 'http://sys-ids.kemkes.go.id/diagnosticreport';
+const OBSERVATION_INTERPRETATION_SYSTEM =
+  'http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation';
+const DIAGNOSTIC_SERVICE_SECTION_SYSTEM =
+  'http://terminology.hl7.org/CodeSystem/v2-0074';
+const LABORATORY_PROCEDURE_SNOMED_CODE = '108252007';
+const LABORATORY_PROCEDURE_SNOMED_DISPLAY = 'Laboratory procedure';
+/** LOINC "Laboratory report", the code a mixed order reports under. */
+const GENERIC_LAB_REPORT_LOINC_CODE = '11502-2';
+const GENERIC_LAB_REPORT_LOINC_DISPLAY = 'Laboratory report';
+
+/**
+ * SNOMED specimen types for the eight kinds of tube the bench handles. Held
+ * here rather than in the catalog for the same reason the vital-sign LOINC
+ * table is: a coding correction should be an adapter change, not a migration.
+ *
+ * OTHER has no entry on purpose. "A specimen of some other kind" is not a
+ * SNOMED concept, and sending one would be inventing a fact about what was in
+ * the tube — the type is omitted and the rest of the resource still stands.
+ */
+const SPECIMEN_TYPE_SNOMED_CODES: Readonly<
+  Record<string, { code: string; display: string }>
+> = {
+  WHOLE_BLOOD: { code: '258580003', display: 'Whole blood specimen' },
+  SERUM: { code: '119364003', display: 'Serum specimen' },
+  PLASMA: { code: '119361006', display: 'Plasma specimen' },
+  URINE: { code: '122575003', display: 'Urine specimen' },
+  STOOL: { code: '119339001', display: 'Stool specimen' },
+  SPUTUM: { code: '119334006', display: 'Sputum specimen' },
+  SWAB: { code: '258529004', display: 'Swab' },
+};
+
+/**
+ * HL7 v3 interpretation codes for the six flags a result can carry. The pair
+ * of critical flags map to HH/LL — "panic" values — which is what makes a
+ * critical result visible as such nationally and not merely out of range.
+ */
+const RESULT_FLAG_INTERPRETATION_CODES: Readonly<
+  Record<string, { code: string; display: string }>
+> = {
+  NORMAL: { code: 'N', display: 'Normal' },
+  LOW: { code: 'L', display: 'Low' },
+  HIGH: { code: 'H', display: 'High' },
+  CRITICAL_LOW: { code: 'LL', display: 'Critical low' },
+  CRITICAL_HIGH: { code: 'HH', display: 'Critical high' },
+  ABNORMAL: { code: 'A', display: 'Abnormal' },
 };
 
 const LOINC_SYSTEM = 'http://loinc.org';
@@ -760,6 +818,263 @@ export class SatusehatFhirMapper {
       quantity: { value: input.quantity, ...(input.unit ? { unit: input.unit } : {}) },
       whenHandedOver: this.toFhirInstant(input.dispensedAt),
       substitution: { wasSubstituted: false },
+    };
+  }
+
+  /**
+   * Maps one ordered test to a ServiceRequest. `status: completed` and
+   * `intent: original-order` are fixed: the chain is only ever built from an
+   * order whose results have been released, so by the time this is sent the
+   * request has been fulfilled, and it was an original order rather than a
+   * reflex or a repeat.
+   *
+   * The identifier is `{orderNumber}-{itemSeq}` so one national id survives a
+   * resubmission of the same item — the sequence is the item's position in the
+   * order, not its position in a sorted list.
+   */
+  mapLabItemToServiceRequest(input: SatusehatServiceRequestMapInput): SatusehatFhirServiceRequest {
+    const organizationId = this.requireConfigValue(
+      this.satusehatConfig.organizationId,
+      'SATUSEHAT_ORGANIZATION_ID',
+    );
+    return {
+      resourceType: 'ServiceRequest',
+      identifier: [
+        {
+          system: `${SERVICE_REQUEST_IDENTIFIER_SYSTEM_PREFIX}/${organizationId}`,
+          use: 'official',
+          value: `${input.orderNumber}-${input.itemSeq}`,
+        },
+      ],
+      status: 'completed',
+      intent: 'original-order',
+      category: [
+        {
+          coding: [
+            {
+              system: SNOMED_SYSTEM,
+              code: LABORATORY_PROCEDURE_SNOMED_CODE,
+              display: LABORATORY_PROCEDURE_SNOMED_DISPLAY,
+            },
+          ],
+        },
+      ],
+      code: { coding: [this.buildLoincCoding(input.loincCode, input.loincDisplay)] },
+      subject: this.buildReference(`Patient/${input.patientIhsNumber}`, input.patientName),
+      encounter: { reference: input.encounterReference },
+      occurrenceDateTime: this.toFhirInstant(input.orderedAt),
+      ...(input.practitionerIhsNumber
+        ? { requester: { reference: `Practitioner/${input.practitionerIhsNumber}` } }
+        : {}),
+      performer: [{ reference: `Organization/${organizationId}` }],
+      ...(input.reasonCode
+        ? {
+            reasonCode: [
+              {
+                coding: [
+                  {
+                    system: ICD10_SYSTEM,
+                    code: input.reasonCode,
+                    ...(input.reasonDisplay ? { display: input.reasonDisplay } : {}),
+                  },
+                ],
+              },
+            ],
+          }
+        : {}),
+    };
+  }
+
+  /**
+   * Maps one tube to a Specimen. `status: available` because a rejected draw
+   * never reaches this point — its items are waiting for a fresh one, and the
+   * order cannot have been released on it.
+   */
+  mapLabSpecimen(input: SatusehatSpecimenMapInput): SatusehatFhirSpecimen {
+    const organizationId = this.requireConfigValue(
+      this.satusehatConfig.organizationId,
+      'SATUSEHAT_ORGANIZATION_ID',
+    );
+    const specimenType = SPECIMEN_TYPE_SNOMED_CODES[input.specimenType];
+    return {
+      resourceType: 'Specimen',
+      accessionIdentifier: {
+        system: `${SPECIMEN_IDENTIFIER_SYSTEM_PREFIX}/${organizationId}`,
+        use: 'official',
+        value: input.accessionNumber,
+      },
+      status: 'available',
+      ...(specimenType
+        ? {
+            type: {
+              coding: [
+                { system: SNOMED_SYSTEM, code: specimenType.code, display: specimenType.display },
+              ],
+            },
+          }
+        : {}),
+      subject: this.buildReference(`Patient/${input.patientIhsNumber}`, input.patientName),
+      ...(input.serviceRequestReferences.length > 0
+        ? { request: input.serviceRequestReferences.map((reference) => ({ reference })) }
+        : {}),
+      collection: { collectedDateTime: this.toFhirInstant(input.collectedAt) },
+    };
+  }
+
+  /**
+   * Maps one released value to a laboratory Observation.
+   *
+   * `performer` is the Organization, never the analyst: a lab result is issued
+   * by the laboratory, and the analyst is a system user without an IHS
+   * practitioner number — the same reasoning MedicationDispense follows for
+   * the pharmacist.
+   */
+  mapLabResultToObservation(input: SatusehatLabObservationMapInput): SatusehatFhirObservation {
+    const organizationId = this.requireConfigValue(
+      this.satusehatConfig.organizationId,
+      'SATUSEHAT_ORGANIZATION_ID',
+    );
+    const interpretation = input.flag ? RESULT_FLAG_INTERPRETATION_CODES[input.flag] : undefined;
+    const referenceRange = this.buildLabReferenceRange(input);
+    return {
+      resourceType: 'Observation',
+      status: input.isAmendment ? 'amended' : 'final',
+      category: [
+        {
+          coding: [
+            { system: OBSERVATION_CATEGORY_SYSTEM, code: 'laboratory', display: 'Laboratory' },
+          ],
+        },
+      ],
+      code: { coding: [this.buildLoincCoding(input.loincCode, input.loincDisplay)] },
+      subject: this.buildReference(`Patient/${input.patientIhsNumber}`, input.patientName),
+      encounter: { reference: input.encounterReference },
+      basedOn: [{ reference: input.serviceRequestReference }],
+      ...(input.specimenReference ? { specimen: { reference: input.specimenReference } } : {}),
+      effectiveDateTime: this.toFhirInstant(input.effectiveAt),
+      issued: this.toFhirInstant(input.issuedAt),
+      performer: [{ reference: `Organization/${organizationId}` }],
+      ...this.buildLabObservationValue(input),
+      ...(interpretation
+        ? {
+            interpretation: [
+              {
+                coding: [
+                  {
+                    system: OBSERVATION_INTERPRETATION_SYSTEM,
+                    code: interpretation.code,
+                    display: interpretation.display,
+                  },
+                ],
+              },
+            ],
+          }
+        : {}),
+      ...(referenceRange ? { referenceRange: [referenceRange] } : {}),
+    };
+  }
+
+  /**
+   * Maps the order to the DiagnosticReport that gathers it. An order that was
+   * one panel reports under that panel's LOINC; a mixed order reports under
+   * the generic laboratory-report code, because no single LOINC describes
+   * "these particular six tests".
+   */
+  mapLabOrderToDiagnosticReport(
+    input: SatusehatDiagnosticReportMapInput,
+  ): SatusehatFhirDiagnosticReport {
+    const organizationId = this.requireConfigValue(
+      this.satusehatConfig.organizationId,
+      'SATUSEHAT_ORGANIZATION_ID',
+    );
+    return {
+      resourceType: 'DiagnosticReport',
+      identifier: [
+        {
+          system: `${DIAGNOSTIC_REPORT_IDENTIFIER_SYSTEM_PREFIX}/${organizationId}`,
+          use: 'official',
+          value: input.orderNumber,
+        },
+      ],
+      status: input.isAmendment ? 'amended' : 'final',
+      category: [
+        {
+          coding: [{ system: DIAGNOSTIC_SERVICE_SECTION_SYSTEM, code: 'LAB', display: 'Laboratory' }],
+        },
+      ],
+      code: {
+        coding: [
+          input.panelLoincCode
+            ? this.buildLoincCoding(input.panelLoincCode, input.panelLoincDisplay)
+            : this.buildLoincCoding(GENERIC_LAB_REPORT_LOINC_CODE, GENERIC_LAB_REPORT_LOINC_DISPLAY),
+        ],
+      },
+      subject: this.buildReference(`Patient/${input.patientIhsNumber}`, input.patientName),
+      encounter: { reference: input.encounterReference },
+      ...(input.serviceRequestReferences.length > 0
+        ? { basedOn: input.serviceRequestReferences.map((reference) => ({ reference })) }
+        : {}),
+      ...(input.specimenReferences.length > 0
+        ? { specimen: input.specimenReferences.map((reference) => ({ reference })) }
+        : {}),
+      ...(input.observationReferences.length > 0
+        ? { result: input.observationReferences.map((reference) => ({ reference })) }
+        : {}),
+      effectiveDateTime: this.toFhirInstant(input.effectiveAt),
+      issued: this.toFhirInstant(input.issuedAt),
+      performer: [{ reference: `Organization/${organizationId}` }],
+      ...(input.conclusion ? { conclusion: input.conclusion } : {}),
+    };
+  }
+
+  private buildLoincCoding(code: string, display?: string): SatusehatFhirCoding {
+    return { system: LOINC_SYSTEM, code, ...(display ? { display } : {}) };
+  }
+
+  /**
+   * The one value form the test produced. A numeric result without a unit is
+   * still sent as a quantity — UCUM's dimensionless unit `1` says "a count",
+   * which is true, where omitting the value entirely would lose the result.
+   */
+  private buildLabObservationValue(
+    input: SatusehatLabObservationMapInput,
+  ): Pick<SatusehatFhirObservation, 'valueQuantity' | 'valueString' | 'valueCodeableConcept'> {
+    if (input.valueNumeric !== undefined) {
+      const unit = input.unit ?? '1';
+      return {
+        valueQuantity: { value: input.valueNumeric, unit, system: UCUM_SYSTEM, code: unit },
+      };
+    }
+    if (input.valueCoded !== undefined) {
+      return { valueCodeableConcept: { text: input.valueCoded } };
+    }
+    return { valueString: input.valueString ?? '' };
+  }
+
+  /**
+   * The band the value was judged against. A qualitative range is sent as text
+   * alone — "negatif" has no bounds — and a result with no band at all sends
+   * none, rather than an empty one implying a range that did not apply.
+   */
+  private buildLabReferenceRange(
+    input: SatusehatLabObservationMapInput,
+  ): SatusehatFhirObservationReferenceRange | null {
+    const unit = input.unit ?? '1';
+    const low =
+      input.refLow === undefined
+        ? undefined
+        : { value: input.refLow, unit, system: UCUM_SYSTEM, code: unit };
+    const high =
+      input.refHigh === undefined
+        ? undefined
+        : { value: input.refHigh, unit, system: UCUM_SYSTEM, code: unit };
+    if (low === undefined && high === undefined && input.refText === undefined) {
+      return null;
+    }
+    return {
+      ...(low ? { low } : {}),
+      ...(high ? { high } : {}),
+      ...(input.refText ? { text: input.refText } : {}),
     };
   }
 

@@ -124,6 +124,10 @@ describe('Lab result versioning against Postgres', () => {
   });
 
   afterAll(async () => {
+    // Releasing the order queued it for SATUSEHAT (P18-T09), and that row holds
+    // the order with `onDelete: Restrict` — a report the platform has accepted
+    // must not lose the record it points at.
+    await prisma.satusehatSubmission.deleteMany({ where: { labOrderId } });
     await prisma.labResult.deleteMany({ where: { labOrderItem: { labOrderId } } });
     await prisma.labOrderItem.deleteMany({ where: { labOrderId } });
     await prisma.labOrder.deleteMany({ where: { id: labOrderId } });

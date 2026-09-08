@@ -5,6 +5,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type {
   BpjsSubmissionStatusValue,
   BpjsSubmissionTypeValue,
+  SatusehatSubmissionKindValue,
   SatusehatSubmissionStatusValue,
 } from '@hms/shared-types';
 import {
@@ -58,7 +59,12 @@ type StatusFilter = 'ALL' | BpjsSubmissionStatusValue;
 
 type MonitorRow = {
   id: string;
-  localReference: string;
+  /**
+   * The handle an operator works from: a registration or encounter id, or —
+   * for a laboratory chain (P18-T09) — the order number printed on the request
+   * and quoted by the patient. Null when the row carries neither.
+   */
+  localReference: string | null;
   kind: string;
   status: BpjsSubmissionStatusValue | SatusehatSubmissionStatusValue;
   attempts: number;
@@ -68,6 +74,14 @@ type MonitorRow = {
 };
 
 const STATUS_OPTIONS: StatusFilter[] = ['ALL', 'PENDING', 'SUBMITTED', 'FAILED'];
+// The SATUSEHAT outbox drains two chains: the bundle for a closed visit and
+// the laboratory chain for a released order (P18-T09). An operator chasing one
+// is rarely interested in the other.
+const SATUSEHAT_KIND_OPTIONS: Array<'ALL' | SatusehatSubmissionKindValue> = [
+  'ALL',
+  'ENCOUNTER',
+  'LAB_REPORT',
+];
 // Both BPJS integrations drain through one outbox, so this filter spans them:
 // the first four are PCare claims (P11-T05), the ANTREAN_* three are Antrean
 // Online queue publishing (P14-T05). Listed rather than derived from the enum
@@ -110,6 +124,7 @@ export function IntegrationSubmissionMonitor() {
   const [provider, setProvider] = useState<Provider>(canReadBpjs ? 'bpjs' : 'satusehat');
   const [status, setStatus] = useState<StatusFilter>('ALL');
   const [type, setType] = useState<'ALL' | BpjsSubmissionTypeValue>('ALL');
+  const [satusehatKind, setSatusehatKind] = useState<'ALL' | SatusehatSubmissionKindValue>('ALL');
   const [month, setMonth] = useState(currentMonth);
 
   const retryMutation = useMutation({
@@ -145,6 +160,7 @@ export function IntegrationSubmissionMonitor() {
       page: 1,
       limit: 50,
       status: status === 'ALL' ? undefined : status,
+      kind: satusehatKind === 'ALL' ? undefined : satusehatKind,
     },
     canReadSatusehat && provider === 'satusehat',
     retryMutation.isPending,
@@ -166,8 +182,11 @@ export function IntegrationSubmissionMonitor() {
     }
     return satusehatQuery.submissions.map((submission) => ({
       id: submission.id,
-      localReference: submission.encounterId,
-      kind: 'ENCOUNTER',
+      // A lab row is named by its order number rather than the order's UUID:
+      // it is what the bench wrote on the worksheet and what the patient was
+      // told to quote, and the outbox exposes nothing else about the order.
+      localReference: submission.labOrderNumber ?? submission.encounterId,
+      kind: formatStatusLabel(submission.kind),
       status: submission.status,
       attempts: submission.attempts,
       externalReference: submission.satusehatEncounterId,
@@ -197,6 +216,7 @@ export function IntegrationSubmissionMonitor() {
             onValueChange={(value) => {
               setProvider(value as Provider);
               setStatus('ALL');
+              setSatusehatKind('ALL');
             }}
           >
             <TabsList className="gap-2">
@@ -227,6 +247,25 @@ export function IntegrationSubmissionMonitor() {
                 ))}
               </SelectContent>
             </Select>
+            {provider === 'satusehat' ? (
+              <Select
+                value={satusehatKind}
+                onValueChange={(value) =>
+                  setSatusehatKind(value as 'ALL' | SatusehatSubmissionKindValue)
+                }
+              >
+                <SelectTrigger className="w-52" aria-label={t('submissionType')}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {SATUSEHAT_KIND_OPTIONS.map((option) => (
+                    <SelectItem key={option} value={option}>
+                      {option === 'ALL' ? t('allTypes') : formatStatusLabel(option)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            ) : null}
             {provider === 'bpjs' ? (
               <Select
                 value={type}
@@ -292,7 +331,9 @@ export function IntegrationSubmissionMonitor() {
                   ) : (
                     rows.map((row) => (
                       <TableRow key={row.id}>
-                        <TableCell className="font-mono text-xs">{row.localReference}</TableCell>
+                        <TableCell className="font-mono text-xs">
+                          {row.localReference ?? '—'}
+                        </TableCell>
                         <TableCell>{row.kind}</TableCell>
                         <TableCell>
                           <Badge variant="outline" className={statusClass(row.status)}>

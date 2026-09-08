@@ -139,16 +139,105 @@ export type SatusehatFhirImmunization = {
   note?: SatusehatFhirAnnotation[];
 };
 
+/**
+ * One measurement. Serves both the vital-sign observations of the encounter
+ * bundle and the laboratory observations of the lab chain (P18-T09), which is
+ * why so much of it is optional: a vital sign is always a quantity taken
+ * during a visit, while a lab result may be text or a coded value, carries a
+ * reference range and an interpretation, and names the tube it came from.
+ *
+ * `amended` is a lab-only status — a corrected value supersedes one already
+ * reported, and the platform is told so rather than being sent a second
+ * `final` for the same test.
+ */
 export type SatusehatFhirObservation = {
   resourceType: 'Observation';
-  status: 'final';
+  status: 'final' | 'amended';
+  identifier?: SatusehatFhirIdentifier[];
+  category: SatusehatFhirCodeableConcept[];
+  code: SatusehatFhirCodeableConcept;
+  subject: SatusehatFhirReference;
+  encounter?: SatusehatFhirReference;
+  basedOn?: SatusehatFhirReference[];
+  specimen?: SatusehatFhirReference;
+  effectiveDateTime: string;
+  /** When the value was released — the moment it became clinically usable. */
+  issued?: string;
+  performer?: SatusehatFhirReference[];
+  /** Exactly one of the three value forms is set, decided by the test. */
+  valueQuantity?: SatusehatFhirQuantity;
+  valueString?: string;
+  valueCodeableConcept?: SatusehatFhirCodeableConceptWithText;
+  interpretation?: SatusehatFhirCodeableConcept[];
+  referenceRange?: SatusehatFhirObservationReferenceRange[];
+};
+
+/**
+ * The band this patient's value was judged against, snapshotted onto the
+ * result when it was entered. `text` alone is sent for a qualitative range
+ * ("negatif"), where there is no number to bound.
+ */
+export type SatusehatFhirObservationReferenceRange = {
+  low?: SatusehatFhirQuantity;
+  high?: SatusehatFhirQuantity;
+  text?: string;
+};
+
+/**
+ * One ordered test (P18-T09). One per item rather than one per order: a
+ * ServiceRequest carries the LOINC of a single test, so a request for Darah
+ * rutin + GDS is six of these.
+ */
+export type SatusehatFhirServiceRequest = {
+  resourceType: 'ServiceRequest';
+  identifier: SatusehatFhirIdentifier[];
+  status: 'completed';
+  intent: 'original-order';
   category: SatusehatFhirCodeableConcept[];
   code: SatusehatFhirCodeableConcept;
   subject: SatusehatFhirReference;
   encounter: SatusehatFhirReference;
-  effectiveDateTime: string;
+  occurrenceDateTime: string;
+  requester?: SatusehatFhirReference;
   performer?: SatusehatFhirReference[];
-  valueQuantity: SatusehatFhirQuantity;
+  reasonCode?: SatusehatFhirCodeableConcept[];
+};
+
+/** One tube, and the requests it serves (P18-T09). */
+export type SatusehatFhirSpecimen = {
+  resourceType: 'Specimen';
+  identifier?: SatusehatFhirIdentifier[];
+  accessionIdentifier?: SatusehatFhirIdentifier;
+  status: 'available';
+  type?: SatusehatFhirCodeableConcept;
+  subject: SatusehatFhirReference;
+  request?: SatusehatFhirReference[];
+  collection?: SatusehatFhirSpecimenCollection;
+};
+
+export type SatusehatFhirSpecimenCollection = {
+  collectedDateTime: string;
+};
+
+/**
+ * The sheet the whole order becomes (P18-T09) — one per order, gathering the
+ * observations, the tubes they came from and the requests that asked for them.
+ */
+export type SatusehatFhirDiagnosticReport = {
+  resourceType: 'DiagnosticReport';
+  identifier: SatusehatFhirIdentifier[];
+  status: 'final' | 'amended';
+  category: SatusehatFhirCodeableConcept[];
+  code: SatusehatFhirCodeableConcept;
+  subject: SatusehatFhirReference;
+  encounter: SatusehatFhirReference;
+  basedOn?: SatusehatFhirReference[];
+  specimen?: SatusehatFhirReference[];
+  result?: SatusehatFhirReference[];
+  effectiveDateTime: string;
+  issued: string;
+  performer?: SatusehatFhirReference[];
+  conclusion?: string;
 };
 
 /**
@@ -256,6 +345,85 @@ export type SatusehatVitalSignsMapInput = {
   respiratoryRate: number | null;
   temperatureCelsius: number | null;
   oxygenSaturation: number | null;
+};
+
+/**
+ * One ordered test, ready to be coded as a ServiceRequest (P18-T09). The
+ * caller has already skipped items without a LOINC, so `loincCode` is
+ * required here: an uncoded request is gap-reported, never sent.
+ */
+export type SatusehatServiceRequestMapInput = {
+  orderNumber: string;
+  itemSeq: number;
+  loincCode: string;
+  loincDisplay?: string;
+  patientIhsNumber: string;
+  patientName?: string;
+  encounterReference: string;
+  orderedAt: Date;
+  /** Omitted for an order whose requester holds no IHS practitioner number. */
+  practitionerIhsNumber?: string;
+  reasonCode?: string;
+  reasonDisplay?: string;
+};
+
+export type SatusehatSpecimenMapInput = {
+  specimenType: 'WHOLE_BLOOD' | 'SERUM' | 'PLASMA' | 'URINE' | 'STOOL' | 'SPUTUM' | 'SWAB' | 'OTHER';
+  accessionNumber: string;
+  collectedAt: Date;
+  patientIhsNumber: string;
+  patientName?: string;
+  /** Bundle-local `urn:uuid:` references to the requests this tube serves. */
+  serviceRequestReferences: readonly string[];
+};
+
+/**
+ * One released laboratory value (P18-T09). Exactly one of the three value
+ * fields is set, decided by the test's result type; the mapper trusts that and
+ * does not guess.
+ */
+export type SatusehatLabObservationMapInput = {
+  loincCode: string;
+  loincDisplay?: string;
+  patientIhsNumber: string;
+  patientName?: string;
+  encounterReference: string;
+  serviceRequestReference: string;
+  /** Omitted while the item has no tube — a sent-out test, or a rejected draw. */
+  specimenReference?: string;
+  valueNumeric?: number;
+  valueString?: string;
+  valueCoded?: string;
+  /** UCUM, and only meaningful beside `valueNumeric`. */
+  unit?: string;
+  refLow?: number;
+  refHigh?: number;
+  refText?: string;
+  flag?: 'NORMAL' | 'LOW' | 'HIGH' | 'CRITICAL_LOW' | 'CRITICAL_HIGH' | 'ABNORMAL';
+  /** True once this value supersedes one already reported. */
+  isAmendment: boolean;
+  effectiveAt: Date;
+  issuedAt: Date;
+};
+
+export type SatusehatDiagnosticReportMapInput = {
+  orderNumber: string;
+  /**
+   * The panel's LOINC when the whole order was one panel. Omitted otherwise,
+   * and the report codes as a generic laboratory report instead.
+   */
+  panelLoincCode?: string;
+  panelLoincDisplay?: string;
+  patientIhsNumber: string;
+  patientName?: string;
+  encounterReference: string;
+  serviceRequestReferences: readonly string[];
+  specimenReferences: readonly string[];
+  observationReferences: readonly string[];
+  isAmendment: boolean;
+  effectiveAt: Date;
+  issuedAt: Date;
+  conclusion?: string;
 };
 
 export type SatusehatFhirExtension = {
@@ -413,6 +581,9 @@ export type SatusehatFhirBundleEntry = {
     | SatusehatFhirImmunization
     | SatusehatFhirAllergyIntolerance
     | SatusehatFhirObservation
+    | SatusehatFhirServiceRequest
+    | SatusehatFhirSpecimen
+    | SatusehatFhirDiagnosticReport
     | SatusehatFhirComposition
     | SatusehatFhirClinicalImpression
     | SatusehatFhirMedication

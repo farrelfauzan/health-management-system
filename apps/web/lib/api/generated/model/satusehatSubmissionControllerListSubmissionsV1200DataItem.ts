@@ -8,7 +8,10 @@
 
 export type SatusehatSubmissionControllerListSubmissionsV1200DataItem = {
   id: string;
+  kind: string;
   encounterId: string;
+  labOrderId: unknown | null;
+  labOrderNumber: unknown | null;
   status: string;
   attempts: number;
   lastError: string;

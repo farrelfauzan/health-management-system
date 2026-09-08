@@ -1,4 +1,7 @@
-import type { SatusehatSubmissionStatusValue } from '#satusehat/schemas';
+import type {
+  SatusehatSubmissionKindValue,
+  SatusehatSubmissionStatusValue,
+} from '#satusehat/schemas';
 
 /**
  * API response contracts for SATUSEHAT master-data linkage.
@@ -24,11 +27,22 @@ export type SatusehatDoctorLinkResult = {
 /**
  * Admin-facing view of one outbox row (P10-T06). Scheduling state only — the
  * outbox stores no payload snapshot, so the view exposes no clinical data and
- * no patient identifiers beyond the local encounter UUID.
+ * no patient identifiers beyond the local encounter or order UUID.
+ *
+ * A LAB_REPORT row (P18-T09) carries `labOrderId` and the order number the
+ * bench and the patient both quote, and no encounter. Exactly one of the two
+ * ids is set, which is what `kind` says.
  */
 export type SatusehatSubmissionView = {
   id: string;
-  encounterId: string;
+  kind: SatusehatSubmissionKindValue;
+  encounterId: string | null;
+  labOrderId: string | null;
+  /**
+   * `LAB/YYYYMMDD/####` for a LAB_REPORT row — the local handle an admin
+   * chasing a failure works from. Never a value or a patient identifier.
+   */
+  labOrderNumber: string | null;
   status: SatusehatSubmissionStatusValue;
   attempts: number;
   lastError: string | null;

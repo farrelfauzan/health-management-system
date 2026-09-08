@@ -217,10 +217,16 @@ export class AdmissionFlowRepository {
   }
 
   /**
-   * Idempotent by the outbox row's unique encounter id: a stay admitted from
-   * an encounter that was somehow already enqueued (a discharge reversed and
-   * repeated, a cancelled admission re-created) must not queue the visit
-   * twice.
+   * Idempotent on the encounter's outbox row: a stay admitted from an encounter
+   * that was somehow already enqueued (a discharge reversed and repeated, a
+   * cancelled admission re-created) must not queue the visit twice.
+   *
+   * A read-then-create rather than an upsert because the uniqueness is a
+   * partial index Prisma cannot address as a `where` key (P18-T09) — the
+   * outbox now holds lab rows too, and only the ENCOUNTER ones are one per
+   * encounter. The database still has the last word: two callers racing past
+   * the read both reach the index, and the loser's P2002 means the row it
+   * wanted exists, which is the outcome it asked for.
    */
   private async enqueueSatusehatEncounter(
     tx: PrismaTransactionClient,
@@ -236,11 +242,22 @@ export class AdmissionFlowRepository {
     if (encounter?.status !== 'FINISHED') {
       return;
     }
-    await tx.satusehatSubmission.upsert({
-      where: { encounterId: sourceEncounterId },
-      create: { encounterId: sourceEncounterId },
-      update: {},
+    const existing = await tx.satusehatSubmission.findFirst({
+      where: { encounterId: sourceEncounterId, kind: 'ENCOUNTER' },
+      select: { id: true },
     });
+    if (existing !== null) {
+      return;
+    }
+    try {
+      await tx.satusehatSubmission.create({
+        data: { encounterId: sourceEncounterId, kind: 'ENCOUNTER' },
+      });
+    } catch (caughtError) {
+      if ((caughtError as { code?: unknown }).code !== UNIQUE_VIOLATION_CODE) {
+        throw caughtError;
+      }
+    }
   }
 
   /**

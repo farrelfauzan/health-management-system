@@ -39830,7 +39830,21 @@ paths:
               - PENDING
               - SUBMITTED
               - FAILED
+        - name: kind
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - ENCOUNTER
+              - LAB_REPORT
         - name: encounterId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: labOrderId
           required: false
           in: query
           schema:
@@ -39839,8 +39853,10 @@ paths:
       responses:
         "200":
           description: A paginated view of the submission outbox, newest first, filterable
-            by status and encounter. Rows carry scheduling state only — no
-            clinical payload is stored in the outbox.
+            by kind, status, encounter and lab order. A row is either the bundle
+            for one closed encounter or the laboratory chain for one released
+            order (P18-T09). Rows carry scheduling state only — no clinical
+            payload is stored in the outbox.
           content:
             application/json:
               schema:
@@ -39853,8 +39869,14 @@ paths:
                       properties:
                         id:
                           type: string
+                        kind:
+                          type: string
                         encounterId:
                           type: string
+                        labOrderId:
+                          nullable: true
+                        labOrderNumber:
+                          nullable: true
                         status:
                           type: string
                         attempts:
@@ -39875,7 +39897,10 @@ paths:
                           type: string
                       required:
                         - id
+                        - kind
                         - encounterId
+                        - labOrderId
+                        - labOrderNumber
                         - status
                         - attempts
                         - lastError
@@ -39904,7 +39929,10 @@ paths:
                 example:
                   data:
                     - id: 7a8b9c0d-1e2f-4a3b-8c4d-5e6f7a8b9c0d
+                      kind: ENCOUNTER
                       encounterId: 2b3c4d5e-6f7a-4b8c-9d0e-1f2a3b4c5d6e
+                      labOrderId: null
+                      labOrderNumber: null
                       status: FAILED
                       attempts: 8
                       lastError: SATUSEHAT is unreachable (HTTP 503)
@@ -39914,10 +39942,24 @@ paths:
                       satusehatEncounterId: null
                       createdAt: 2026-07-27T10:15:00.000Z
                       updatedAt: 2026-07-28T08:00:00.000Z
+                    - id: 9f0e1d2c-3b4a-4958-8677-8695a4b3c2d1
+                      kind: LAB_REPORT
+                      encounterId: null
+                      labOrderId: 5d6e7f8a-9b0c-4d1e-8f2a-3b4c5d6e7f8a
+                      labOrderNumber: LAB/20260728/0042
+                      status: PENDING
+                      attempts: 0
+                      lastError: null
+                      nextAttemptAt: 2026-07-28T10:30:00.000Z
+                      lastAttemptAt: null
+                      submittedAt: null
+                      satusehatEncounterId: null
+                      createdAt: 2026-07-28T10:30:00.000Z
+                      updatedAt: 2026-07-28T10:30:00.000Z
                   meta:
                     page: 1
                     limit: 10
-                    total: 1
+                    total: 2
         "401":
           description: Authentication is required.
           content:
@@ -39955,8 +39997,9 @@ paths:
           description: The FAILED row was re-opened with a fresh attempt budget and
             processed immediately; the returned row shows the real outcome
             (SUBMITTED, PENDING with a scheduled retry, or FAILED again with a
-            new lastError). Rows that are SUBMITTED or already queued return
-            409.
+            new lastError). Retrying an encounter row that then succeeds also
+            re-opens any laboratory reports that were parked waiting on it. Rows
+            that are SUBMITTED or already queued return 409.
           content:
             application/json:
               schema:
@@ -39967,8 +40010,14 @@ paths:
                     properties:
                       id:
                         type: string
+                      kind:
+                        type: string
                       encounterId:
                         type: string
+                      labOrderId:
+                        nullable: true
+                      labOrderNumber:
+                        nullable: true
                       status:
                         type: string
                       attempts:
@@ -39989,7 +40038,10 @@ paths:
                         type: string
                     required:
                       - id
+                      - kind
                       - encounterId
+                      - labOrderId
+                      - labOrderNumber
                       - status
                       - attempts
                       - lastError
@@ -40007,7 +40059,10 @@ paths:
                 example:
                   data:
                     id: 7a8b9c0d-1e2f-4a3b-8c4d-5e6f7a8b9c0d
+                    kind: ENCOUNTER
                     encounterId: 2b3c4d5e-6f7a-4b8c-9d0e-1f2a3b4c5d6e
+                    labOrderId: null
+                    labOrderNumber: null
                     status: SUBMITTED
                     attempts: 1
                     lastError: null

@@ -46,8 +46,11 @@ describe('SATUSEHAT submission ops integration', () => {
     findSubmissionById: jest.fn(),
     findSubmissionPage: jest.fn(),
     requeueSubmission: jest.fn(),
+    requeueLabReportsForEncounter: jest.fn().mockResolvedValue(0),
     findBundleData: jest.fn(),
+    findLabReportBundleData: jest.fn(),
     saveAllergyIhsIds: jest.fn(),
+    saveLabReportIhsIds: jest.fn(),
     markSubmitted: jest.fn(),
     scheduleRetry: jest.fn(),
     markFailed: jest.fn(),
@@ -81,7 +84,10 @@ describe('SATUSEHAT submission ops integration', () => {
   function buildFailedRow(): SatusehatSubmissionRecord {
     return {
       id: submissionId,
+      kind: 'ENCOUNTER',
       encounterId,
+      labOrderId: null,
+      labOrderNumber: null,
       status: 'FAILED',
       attempts: 8,
       lastError: 'SATUSEHAT upstream failure (HTTP 503)',

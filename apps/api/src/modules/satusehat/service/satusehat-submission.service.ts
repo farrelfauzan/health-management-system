@@ -9,6 +9,8 @@ import {
   SatusehatSubmissionPrescriptionItem,
   SatusehatSubmissionProcedure,
   SatusehatSubmissionRecord,
+  SatusehatLabReportBundleData,
+  SatusehatLabReportItem,
   SaveAllergyIhsIdPayload,
 } from '@hms/shared-types';
 import { Injectable, Logger } from '@nestjs/common';
@@ -21,6 +23,7 @@ import {
   SatusehatCreatedResourceLocation,
   SatusehatFhirBundleEntry,
   SatusehatFhirTransactionBundle,
+  SatusehatLabObservationMapInput,
   SatusehatTransactionResponse,
   SatusehatTransactionResponseEntry,
 } from '../../../common/satusehat/satusehat-fhir.types';
@@ -33,6 +36,27 @@ import { SatusehatConfig } from '../../../common/satusehat/satusehat.types';
 import { SatusehatLinkRepository } from '../repository/satusehat-link.repository';
 import { SatusehatSubmissionRepository } from '../repository/satusehat-submission.repository';
 import { SatusehatSubmissionDataError } from './satusehat-submission-data.error';
+
+/** What {@link SatusehatSubmissionService.buildLabReportTransactionBundle} needs. */
+type LabReportBundleInput = {
+  bundleData: SatusehatLabReportBundleData;
+  reportableItems: readonly SatusehatLabReportItem[];
+  patientIhsNumber: string;
+  practitionerIhsNumber: string | undefined;
+  /** fullUrl → local id, filled as entries are built and read back afterwards. */
+  serviceRequestFullUrls: Map<string, string>;
+  specimenFullUrls: Map<string, string>;
+  observationFullUrls: Map<string, string>;
+};
+
+type LabReportWriteBackInput = {
+  labOrderId: string;
+  bundle: SatusehatFhirTransactionBundle;
+  createdResources: ReadonlyMap<string, SatusehatCreatedResourceLocation>;
+  serviceRequestFullUrls: ReadonlyMap<string, string>;
+  specimenFullUrls: ReadonlyMap<string, string>;
+  observationFullUrls: ReadonlyMap<string, string>;
+};
 
 const PERMANENT_ERROR_CODES: readonly string[] = [
   'SATUSEHAT_NOT_CONFIGURED',
@@ -73,12 +97,38 @@ export class SatusehatSubmissionService {
   async processSubmission(submission: SatusehatSubmissionRecord): Promise<void> {
     const attemptNumber = submission.attempts + 1;
     try {
+      if (submission.kind === 'LAB_REPORT') {
+        await this.processLabReportSubmission(submission);
+        return;
+      }
+      if (submission.encounterId === null) {
+        throw new SatusehatSubmissionDataError('Encounter submission carries no encounter');
+      }
       const satusehatEncounterId = await this.submitEncounterBundle(submission.encounterId);
       await this.submissionRepository.markSubmitted(submission.id, satusehatEncounterId);
       this.logger.log('SATUSEHAT encounter submission succeeded');
     } catch (caughtError) {
       await this.recordFailure(submission, attemptNumber, caughtError);
     }
+  }
+
+  /**
+   * The lab branch (P18-T09). An order whose every test is uncoded settles
+   * SUBMITTED rather than FAILED: there is nothing to send, the gap has been
+   * logged, and leaving the row failing for ever would put a permanent red
+   * mark on the monitor for a catalog decision no retry can change.
+   */
+  private async processLabReportSubmission(submission: SatusehatSubmissionRecord): Promise<void> {
+    if (submission.labOrderId === null) {
+      throw new SatusehatSubmissionDataError('Lab report submission carries no order');
+    }
+    const reported = await this.submitLabReportBundle(submission.labOrderId);
+    await this.submissionRepository.markSubmitted(submission.id, null);
+    this.logger.log(
+      reported
+        ? 'SATUSEHAT lab report submission succeeded'
+        : 'SATUSEHAT lab report had nothing reportable; settled without sending',
+    );
   }
 
   private async submitEncounterBundle(encounterId: string): Promise<string | null> {
@@ -110,6 +160,365 @@ export class SatusehatSubmissionService {
     await this.saveAllergyIhsIds(allergyFullUrls, createdResources);
     const encounterEntry = bundle.entry.find((entry) => entry.request.url === 'Encounter');
     return encounterEntry ? (createdResources.get(encounterEntry.fullUrl)?.id ?? null) : null;
+  }
+
+  /**
+   * Builds and posts the laboratory chain for one released order, then writes
+   * back the ids the platform assigned. Returns false when the order had
+   * nothing reportable.
+   */
+  private async submitLabReportBundle(labOrderId: string): Promise<boolean> {
+    const bundleData = await this.submissionRepository.findLabReportBundleData(labOrderId);
+    if (bundleData === null) {
+      throw new SatusehatSubmissionDataError('Lab order no longer exists');
+    }
+    if (bundleData.orderStatus !== 'RELEASED' || bundleData.releasedAt === null) {
+      throw new SatusehatSubmissionDataError(
+        `Lab order is ${bundleData.orderStatus}; only released orders are reported`,
+      );
+    }
+    if (bundleData.encounterId !== null && bundleData.satusehatEncounterId === null) {
+      // The claim gate only admits a row whose encounter has settled, so
+      // reaching here means that encounter settled FAILED. Parking with the
+      // reason is the honest outcome: the report is not wrong, it simply has
+      // no Encounter to reference until the visit is reported.
+      throw new SatusehatSubmissionDataError(
+        'Encounter not reported to SATUSEHAT, so the lab report has nothing to reference',
+      );
+    }
+    const reportableItems = bundleData.items.filter(
+      (item) => item.loincCode !== null && item.result !== null,
+    );
+    this.logLabReportGaps(bundleData, reportableItems);
+    if (reportableItems.length === 0) {
+      return false;
+    }
+    const patientIhsNumber = await this.resolvePatientIhsNumber(bundleData);
+    const practitionerIhsNumber = await this.resolveLabRequesterIhsNumber(bundleData);
+    const serviceRequestFullUrls = new Map<string, string>();
+    const specimenFullUrls = new Map<string, string>();
+    const observationFullUrls = new Map<string, string>();
+    const bundle = this.buildLabReportTransactionBundle({
+      bundleData,
+      reportableItems,
+      patientIhsNumber,
+      practitionerIhsNumber,
+      serviceRequestFullUrls,
+      specimenFullUrls,
+      observationFullUrls,
+    });
+    const response = await this.httpClient.sendRequest<SatusehatTransactionResponse>({
+      method: 'POST',
+      path: '',
+      body: bundle,
+    });
+    const createdResources = this.extractCreatedResources(bundle, response);
+    await this.saveLabReportIhsIds({
+      labOrderId,
+      bundle,
+      createdResources,
+      serviceRequestFullUrls,
+      specimenFullUrls,
+      observationFullUrls,
+    });
+    return true;
+  }
+
+  /**
+   * Names what the chain left out, and why. An uncoded test is a catalog gap
+   * the clinic can close; an item with no released value is one the bench has
+   * not signed off. Both are silent omissions from the national record unless
+   * they are said out loud here.
+   */
+  private logLabReportGaps(
+    bundleData: SatusehatLabReportBundleData,
+    reportableItems: readonly SatusehatLabReportItem[],
+  ): void {
+    const reportableIds = new Set(reportableItems.map((item) => item.labOrderItemId));
+    const uncodedCount = bundleData.items.filter(
+      (item) => !reportableIds.has(item.labOrderItemId) && item.loincCode === null,
+    ).length;
+    const unreleasedCount = bundleData.items.filter(
+      (item) =>
+        !reportableIds.has(item.labOrderItemId) && item.loincCode !== null && item.result === null,
+    ).length;
+    if (uncodedCount > 0) {
+      this.logger.warn(
+        `SATUSEHAT lab report skipped ${uncodedCount} test(s) with no LOINC code in the catalog`,
+      );
+    }
+    if (unreleasedCount > 0) {
+      this.logger.warn(
+        `SATUSEHAT lab report skipped ${unreleasedCount} test(s) with no verified result`,
+      );
+    }
+  }
+
+  /**
+   * The ordering doctor's IHS number, or none. Unlike an encounter — which
+   * cannot be reported without its attending practitioner — a laboratory
+   * request is performed by the Organization, so an unlinkable requester costs
+   * the chain a `requester` element rather than the whole submission.
+   */
+  private async resolveLabRequesterIhsNumber(
+    bundleData: SatusehatLabReportBundleData,
+  ): Promise<string | undefined> {
+    if (bundleData.practitionerIhsNumber) {
+      return bundleData.practitionerIhsNumber;
+    }
+    if (bundleData.doctorId === null) {
+      return undefined;
+    }
+    try {
+      return await this.resolvePractitionerIhsNumber({
+        doctorId: bundleData.doctorId,
+        practitionerIhsNumber: bundleData.practitionerIhsNumber,
+      });
+    } catch (caughtError) {
+      if (caughtError instanceof SatusehatSubmissionDataError) {
+        this.logger.warn(
+          'SATUSEHAT lab report could not resolve the ordering doctor; reporting without a requester',
+        );
+        return undefined;
+      }
+      throw caughtError;
+    }
+  }
+
+  /**
+   * Assembles the chain as one transaction bundle, wired together with
+   * `urn:uuid:` bundle-local references so the platform resolves the links
+   * itself: a Specimen names the requests it serves, an Observation names the
+   * request it answers and the tube it came from, and the DiagnosticReport
+   * names all three. Nothing here is posted twice — one round trip settles the
+   * whole order.
+   */
+  private buildLabReportTransactionBundle(
+    input: LabReportBundleInput,
+  ): SatusehatFhirTransactionBundle {
+    const {
+      bundleData,
+      reportableItems,
+      patientIhsNumber,
+      practitionerIhsNumber,
+      serviceRequestFullUrls,
+      specimenFullUrls,
+      observationFullUrls,
+    } = input;
+    const encounterReference = `Encounter/${bundleData.satusehatEncounterId}`;
+    const releasedAt = bundleData.releasedAt ?? new Date();
+    const serviceRequestEntries: SatusehatFhirBundleEntry[] = reportableItems.map((item) => {
+      const fullUrl = `urn:uuid:${randomUUID()}`;
+      serviceRequestFullUrls.set(fullUrl, item.labOrderItemId);
+      return {
+        fullUrl,
+        resource: this.fhirMapper.mapLabItemToServiceRequest({
+          orderNumber: bundleData.orderNumber,
+          itemSeq: item.itemSeq,
+          loincCode: item.loincCode ?? '',
+          ...(item.loincDisplay ? { loincDisplay: item.loincDisplay } : {}),
+          patientIhsNumber,
+          patientName: bundleData.patientName,
+          encounterReference,
+          orderedAt: bundleData.orderedAt,
+          ...(practitionerIhsNumber ? { practitionerIhsNumber } : {}),
+          ...(bundleData.primaryConditionCode
+            ? { reasonCode: bundleData.primaryConditionCode }
+            : {}),
+          ...(bundleData.primaryConditionDisplay
+            ? { reasonDisplay: bundleData.primaryConditionDisplay }
+            : {}),
+        }),
+        request: { method: 'POST', url: 'ServiceRequest' },
+      };
+    });
+    const serviceRequestUrlByItemId = new Map(
+      [...serviceRequestFullUrls].map(([fullUrl, itemId]) => [itemId, fullUrl]),
+    );
+    // Only the tubes that actually serve a reported test. A draw taken for an
+    // item that turned out to be uncoded has nothing to attach to, and sending
+    // it would put a specimen on the record with no observation to explain it.
+    const reportedSpecimenIds = new Set(
+      reportableItems
+        .map((item) => item.specimenId)
+        .filter((specimenId): specimenId is string => specimenId !== null),
+    );
+    const specimenEntries: SatusehatFhirBundleEntry[] = bundleData.specimens
+      .filter((specimen) => reportedSpecimenIds.has(specimen.specimenId))
+      .map((specimen) => {
+        const fullUrl = `urn:uuid:${randomUUID()}`;
+        specimenFullUrls.set(fullUrl, specimen.specimenId);
+        return {
+          fullUrl,
+          resource: this.fhirMapper.mapLabSpecimen({
+            specimenType: specimen.specimenType,
+            accessionNumber: specimen.accessionNumber,
+            collectedAt: specimen.collectedAt,
+            patientIhsNumber,
+            patientName: bundleData.patientName,
+            serviceRequestReferences: reportableItems
+              .filter((item) => item.specimenId === specimen.specimenId)
+              .map((item) => serviceRequestUrlByItemId.get(item.labOrderItemId))
+              .filter((reference): reference is string => reference !== undefined),
+          }),
+          request: { method: 'POST', url: 'Specimen' },
+        };
+      });
+    const specimenUrlBySpecimenId = new Map(
+      [...specimenFullUrls].map(([fullUrl, specimenId]) => [specimenId, fullUrl]),
+    );
+    const observationEntries: SatusehatFhirBundleEntry[] = reportableItems.map((item) => {
+      const fullUrl = `urn:uuid:${randomUUID()}`;
+      const result = item.result;
+      if (result === null) {
+        throw new SatusehatSubmissionDataError('Reportable item lost its result');
+      }
+      observationFullUrls.set(fullUrl, result.labResultId);
+      const specimenReference =
+        item.specimenId === null ? undefined : specimenUrlBySpecimenId.get(item.specimenId);
+      return {
+        fullUrl,
+        resource: this.fhirMapper.mapLabResultToObservation({
+          loincCode: item.loincCode ?? '',
+          ...(item.loincDisplay ? { loincDisplay: item.loincDisplay } : {}),
+          patientIhsNumber,
+          patientName: bundleData.patientName,
+          encounterReference,
+          serviceRequestReference: serviceRequestUrlByItemId.get(item.labOrderItemId) ?? '',
+          ...(specimenReference ? { specimenReference } : {}),
+          ...this.buildLabObservationValueInput(result),
+          ...(result.unit !== null ? { unit: result.unit } : {}),
+          ...(result.refLow !== null ? { refLow: result.refLow } : {}),
+          ...(result.refHigh !== null ? { refHigh: result.refHigh } : {}),
+          ...(result.refText !== null ? { refText: result.refText } : {}),
+          ...(result.flag !== null ? { flag: result.flag } : {}),
+          isAmendment: result.isAmendment,
+          effectiveAt: this.resolveLabEffectiveAt(bundleData, item, result.enteredAt),
+          issuedAt: releasedAt,
+        }),
+        request: { method: 'POST', url: 'Observation' },
+      };
+    });
+    const diagnosticReportEntry: SatusehatFhirBundleEntry = {
+      fullUrl: `urn:uuid:${randomUUID()}`,
+      resource: this.fhirMapper.mapLabOrderToDiagnosticReport({
+        orderNumber: bundleData.orderNumber,
+        ...(bundleData.singlePanelLoincCode
+          ? { panelLoincCode: bundleData.singlePanelLoincCode }
+          : {}),
+        ...(bundleData.singlePanelLoincDisplay
+          ? { panelLoincDisplay: bundleData.singlePanelLoincDisplay }
+          : {}),
+        patientIhsNumber,
+        patientName: bundleData.patientName,
+        encounterReference,
+        serviceRequestReferences: serviceRequestEntries.map((entry) => entry.fullUrl),
+        specimenReferences: specimenEntries.map((entry) => entry.fullUrl),
+        observationReferences: observationEntries.map((entry) => entry.fullUrl),
+        // A report is amended when any value on it supersedes one already
+        // released — the whole sheet is reissued, so the sheet's status says so.
+        isAmendment: reportableItems.some((item) => item.result?.isAmendment === true),
+        effectiveAt: this.resolveLabReportEffectiveAt(bundleData, releasedAt),
+        issuedAt: releasedAt,
+      }),
+      request: { method: 'POST', url: 'DiagnosticReport' },
+    };
+    return {
+      resourceType: 'Bundle',
+      type: 'transaction',
+      entry: [
+        ...serviceRequestEntries,
+        ...specimenEntries,
+        ...observationEntries,
+        diagnosticReportEntry,
+      ],
+    };
+  }
+
+  /** The one value form the result carries, as the mapper's input names it. */
+  private buildLabObservationValueInput(
+    result: NonNullable<SatusehatLabReportItem['result']>,
+  ): Pick<SatusehatLabObservationMapInput, 'valueNumeric' | 'valueString' | 'valueCoded'> {
+    if (result.valueNumeric !== null) {
+      return { valueNumeric: result.valueNumeric };
+    }
+    if (result.valueCoded !== null) {
+      return { valueCoded: result.valueCoded };
+    }
+    return { valueString: result.valueText ?? '' };
+  }
+
+  /**
+   * When the measurement applies to: the moment the tube was drawn, which is
+   * the clinically meaningful instant — a fasting glucose describes the
+   * patient at 7am, not at the moment the analyst typed it. Falls back to when
+   * the value was entered for an item with no tube.
+   */
+  private resolveLabEffectiveAt(
+    bundleData: SatusehatLabReportBundleData,
+    item: SatusehatLabReportItem,
+    enteredAt: Date,
+  ): Date {
+    const specimen = bundleData.specimens.find(
+      (candidate) => candidate.specimenId === item.specimenId,
+    );
+    return specimen?.collectedAt ?? enteredAt;
+  }
+
+  /** The earliest draw on the order — when the sheet as a whole applies to. */
+  private resolveLabReportEffectiveAt(
+    bundleData: SatusehatLabReportBundleData,
+    releasedAt: Date,
+  ): Date {
+    const collectedTimes = bundleData.specimens.map((specimen) => specimen.collectedAt.getTime());
+    return collectedTimes.length === 0
+      ? releasedAt
+      : new Date(Math.min(...collectedTimes));
+  }
+
+  /**
+   * Writes the assigned ids back onto the order, its items, its tubes and its
+   * values, so a resubmission updates those resources instead of creating a
+   * second set beside them.
+   */
+  private async saveLabReportIhsIds(input: LabReportWriteBackInput): Promise<void> {
+    const diagnosticReportEntry = input.bundle.entry.find(
+      (entry) => entry.request.url === 'DiagnosticReport',
+    );
+    await this.submissionRepository.saveLabReportIhsIds({
+      labOrderId: input.labOrderId,
+      diagnosticReportId:
+        diagnosticReportEntry === undefined
+          ? null
+          : (input.createdResources.get(diagnosticReportEntry.fullUrl)?.id ?? null),
+      serviceRequestIdsByItemId: this.collectCreatedIds(
+        input.serviceRequestFullUrls,
+        input.createdResources,
+      ),
+      specimenIdsBySpecimenId: this.collectCreatedIds(
+        input.specimenFullUrls,
+        input.createdResources,
+      ),
+      observationIdsByResultId: this.collectCreatedIds(
+        input.observationFullUrls,
+        input.createdResources,
+      ),
+    });
+  }
+
+  /** Local id → assigned IHS id, for the entries the platform did create. */
+  private collectCreatedIds(
+    fullUrlsByLocalId: ReadonlyMap<string, string>,
+    createdResources: ReadonlyMap<string, SatusehatCreatedResourceLocation>,
+  ): Record<string, string> {
+    const assigned: Record<string, string> = {};
+    for (const [fullUrl, localId] of fullUrlsByLocalId) {
+      const created = createdResources.get(fullUrl);
+      if (created !== undefined) {
+        assigned[localId] = created.id;
+      }
+    }
+    return assigned;
   }
 
   private buildTransactionBundle(
@@ -792,9 +1201,10 @@ export class SatusehatSubmissionService {
     });
   }
 
-  private async resolvePatientIhsNumber(
-    bundleData: SatusehatSubmissionBundleData,
-  ): Promise<string> {
+  private async resolvePatientIhsNumber(bundleData: {
+    patientId: string;
+    patientIhsNumber: string | null;
+  }): Promise<string> {
     if (bundleData.patientIhsNumber) {
       return bundleData.patientIhsNumber;
     }
@@ -822,9 +1232,10 @@ export class SatusehatSubmissionService {
     return ihsNumber;
   }
 
-  private async resolvePractitionerIhsNumber(
-    bundleData: SatusehatSubmissionBundleData,
-  ): Promise<string> {
+  private async resolvePractitionerIhsNumber(bundleData: {
+    doctorId: string;
+    practitionerIhsNumber: string | null;
+  }): Promise<string> {
     if (bundleData.practitionerIhsNumber) {
       return bundleData.practitionerIhsNumber;
     }

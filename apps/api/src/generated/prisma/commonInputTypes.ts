@@ -1095,11 +1095,28 @@ export type EnumPermissionScopeWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumPermissionScopeFilter<$PrismaModel>
 }
 
+export type EnumSatusehatSubmissionKindFilter<$PrismaModel = never> = {
+  equals?: $Enums.SatusehatSubmissionKind | Prisma.EnumSatusehatSubmissionKindFieldRefInput<$PrismaModel>
+  in?: $Enums.SatusehatSubmissionKind[] | Prisma.ListEnumSatusehatSubmissionKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SatusehatSubmissionKind[] | Prisma.ListEnumSatusehatSubmissionKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSatusehatSubmissionKindFilter<$PrismaModel> | $Enums.SatusehatSubmissionKind
+}
+
 export type EnumSatusehatSubmissionStatusFilter<$PrismaModel = never> = {
   equals?: $Enums.SatusehatSubmissionStatus | Prisma.EnumSatusehatSubmissionStatusFieldRefInput<$PrismaModel>
   in?: $Enums.SatusehatSubmissionStatus[] | Prisma.ListEnumSatusehatSubmissionStatusFieldRefInput<$PrismaModel>
   notIn?: $Enums.SatusehatSubmissionStatus[] | Prisma.ListEnumSatusehatSubmissionStatusFieldRefInput<$PrismaModel>
   not?: Prisma.NestedEnumSatusehatSubmissionStatusFilter<$PrismaModel> | $Enums.SatusehatSubmissionStatus
+}
+
+export type EnumSatusehatSubmissionKindWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.SatusehatSubmissionKind | Prisma.EnumSatusehatSubmissionKindFieldRefInput<$PrismaModel>
+  in?: $Enums.SatusehatSubmissionKind[] | Prisma.ListEnumSatusehatSubmissionKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SatusehatSubmissionKind[] | Prisma.ListEnumSatusehatSubmissionKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSatusehatSubmissionKindWithAggregatesFilter<$PrismaModel> | $Enums.SatusehatSubmissionKind
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumSatusehatSubmissionKindFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumSatusehatSubmissionKindFilter<$PrismaModel>
 }
 
 export type EnumSatusehatSubmissionStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -3004,11 +3021,28 @@ export type NestedEnumPermissionScopeWithAggregatesFilter<$PrismaModel = never> 
   _max?: Prisma.NestedEnumPermissionScopeFilter<$PrismaModel>
 }
 
+export type NestedEnumSatusehatSubmissionKindFilter<$PrismaModel = never> = {
+  equals?: $Enums.SatusehatSubmissionKind | Prisma.EnumSatusehatSubmissionKindFieldRefInput<$PrismaModel>
+  in?: $Enums.SatusehatSubmissionKind[] | Prisma.ListEnumSatusehatSubmissionKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SatusehatSubmissionKind[] | Prisma.ListEnumSatusehatSubmissionKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSatusehatSubmissionKindFilter<$PrismaModel> | $Enums.SatusehatSubmissionKind
+}
+
 export type NestedEnumSatusehatSubmissionStatusFilter<$PrismaModel = never> = {
   equals?: $Enums.SatusehatSubmissionStatus | Prisma.EnumSatusehatSubmissionStatusFieldRefInput<$PrismaModel>
   in?: $Enums.SatusehatSubmissionStatus[] | Prisma.ListEnumSatusehatSubmissionStatusFieldRefInput<$PrismaModel>
   notIn?: $Enums.SatusehatSubmissionStatus[] | Prisma.ListEnumSatusehatSubmissionStatusFieldRefInput<$PrismaModel>
   not?: Prisma.NestedEnumSatusehatSubmissionStatusFilter<$PrismaModel> | $Enums.SatusehatSubmissionStatus
+}
+
+export type NestedEnumSatusehatSubmissionKindWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.SatusehatSubmissionKind | Prisma.EnumSatusehatSubmissionKindFieldRefInput<$PrismaModel>
+  in?: $Enums.SatusehatSubmissionKind[] | Prisma.ListEnumSatusehatSubmissionKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SatusehatSubmissionKind[] | Prisma.ListEnumSatusehatSubmissionKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSatusehatSubmissionKindWithAggregatesFilter<$PrismaModel> | $Enums.SatusehatSubmissionKind
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumSatusehatSubmissionKindFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumSatusehatSubmissionKindFilter<$PrismaModel>
 }
 
 export type NestedEnumSatusehatSubmissionStatusWithAggregatesFilter<$PrismaModel = never> = {

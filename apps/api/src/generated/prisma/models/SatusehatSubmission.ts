@@ -46,6 +46,8 @@ export type SatusehatSubmissionSumAggregateOutputType = {
 export type SatusehatSubmissionMinAggregateOutputType = {
   id: string | null
   encounterId: string | null
+  kind: $Enums.SatusehatSubmissionKind | null
+  labOrderId: string | null
   status: $Enums.SatusehatSubmissionStatus | null
   attempts: number | null
   lastError: string | null
@@ -60,6 +62,8 @@ export type SatusehatSubmissionMinAggregateOutputType = {
 export type SatusehatSubmissionMaxAggregateOutputType = {
   id: string | null
   encounterId: string | null
+  kind: $Enums.SatusehatSubmissionKind | null
+  labOrderId: string | null
   status: $Enums.SatusehatSubmissionStatus | null
   attempts: number | null
   lastError: string | null
@@ -74,6 +78,8 @@ export type SatusehatSubmissionMaxAggregateOutputType = {
 export type SatusehatSubmissionCountAggregateOutputType = {
   id: number
   encounterId: number
+  kind: number
+  labOrderId: number
   status: number
   attempts: number
   lastError: number
@@ -98,6 +104,8 @@ export type SatusehatSubmissionSumAggregateInputType = {
 export type SatusehatSubmissionMinAggregateInputType = {
   id?: true
   encounterId?: true
+  kind?: true
+  labOrderId?: true
   status?: true
   attempts?: true
   lastError?: true
@@ -112,6 +120,8 @@ export type SatusehatSubmissionMinAggregateInputType = {
 export type SatusehatSubmissionMaxAggregateInputType = {
   id?: true
   encounterId?: true
+  kind?: true
+  labOrderId?: true
   status?: true
   attempts?: true
   lastError?: true
@@ -126,6 +136,8 @@ export type SatusehatSubmissionMaxAggregateInputType = {
 export type SatusehatSubmissionCountAggregateInputType = {
   id?: true
   encounterId?: true
+  kind?: true
+  labOrderId?: true
   status?: true
   attempts?: true
   lastError?: true
@@ -226,7 +238,9 @@ export type SatusehatSubmissionGroupByArgs<ExtArgs extends runtime.Types.Extensi
 
 export type SatusehatSubmissionGroupByOutputType = {
   id: string
-  encounterId: string
+  encounterId: string | null
+  kind: $Enums.SatusehatSubmissionKind
+  labOrderId: string | null
   status: $Enums.SatusehatSubmissionStatus
   attempts: number
   lastError: string | null
@@ -263,7 +277,9 @@ export type SatusehatSubmissionWhereInput = {
   OR?: Prisma.SatusehatSubmissionWhereInput[]
   NOT?: Prisma.SatusehatSubmissionWhereInput | Prisma.SatusehatSubmissionWhereInput[]
   id?: Prisma.UuidFilter<"SatusehatSubmission"> | string
-  encounterId?: Prisma.UuidFilter<"SatusehatSubmission"> | string
+  encounterId?: Prisma.UuidNullableFilter<"SatusehatSubmission"> | string | null
+  kind?: Prisma.EnumSatusehatSubmissionKindFilter<"SatusehatSubmission"> | $Enums.SatusehatSubmissionKind
+  labOrderId?: Prisma.UuidNullableFilter<"SatusehatSubmission"> | string | null
   status?: Prisma.EnumSatusehatSubmissionStatusFilter<"SatusehatSubmission"> | $Enums.SatusehatSubmissionStatus
   attempts?: Prisma.IntFilter<"SatusehatSubmission"> | number
   lastError?: Prisma.StringNullableFilter<"SatusehatSubmission"> | string | null
@@ -273,12 +289,15 @@ export type SatusehatSubmissionWhereInput = {
   satusehatEncounterId?: Prisma.StringNullableFilter<"SatusehatSubmission"> | string | null
   createdAt?: Prisma.DateTimeFilter<"SatusehatSubmission"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"SatusehatSubmission"> | Date | string
-  encounter?: Prisma.XOR<Prisma.EncounterScalarRelationFilter, Prisma.EncounterWhereInput>
+  encounter?: Prisma.XOR<Prisma.EncounterNullableScalarRelationFilter, Prisma.EncounterWhereInput> | null
+  labOrder?: Prisma.XOR<Prisma.LabOrderNullableScalarRelationFilter, Prisma.LabOrderWhereInput> | null
 }
 
 export type SatusehatSubmissionOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  encounterId?: Prisma.SortOrder
+  encounterId?: Prisma.SortOrderInput | Prisma.SortOrder
+  kind?: Prisma.SortOrder
+  labOrderId?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   attempts?: Prisma.SortOrder
   lastError?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -289,14 +308,17 @@ export type SatusehatSubmissionOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   encounter?: Prisma.EncounterOrderByWithRelationInput
+  labOrder?: Prisma.LabOrderOrderByWithRelationInput
 }
 
 export type SatusehatSubmissionWhereUniqueInput = Prisma.AtLeast<{
   id?: string
-  encounterId?: string
   AND?: Prisma.SatusehatSubmissionWhereInput | Prisma.SatusehatSubmissionWhereInput[]
   OR?: Prisma.SatusehatSubmissionWhereInput[]
   NOT?: Prisma.SatusehatSubmissionWhereInput | Prisma.SatusehatSubmissionWhereInput[]
+  encounterId?: Prisma.UuidNullableFilter<"SatusehatSubmission"> | string | null
+  kind?: Prisma.EnumSatusehatSubmissionKindFilter<"SatusehatSubmission"> | $Enums.SatusehatSubmissionKind
+  labOrderId?: Prisma.UuidNullableFilter<"SatusehatSubmission"> | string | null
   status?: Prisma.EnumSatusehatSubmissionStatusFilter<"SatusehatSubmission"> | $Enums.SatusehatSubmissionStatus
   attempts?: Prisma.IntFilter<"SatusehatSubmission"> | number
   lastError?: Prisma.StringNullableFilter<"SatusehatSubmission"> | string | null
@@ -306,12 +328,15 @@ export type SatusehatSubmissionWhereUniqueInput = Prisma.AtLeast<{
   satusehatEncounterId?: Prisma.StringNullableFilter<"SatusehatSubmission"> | string | null
   createdAt?: Prisma.DateTimeFilter<"SatusehatSubmission"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"SatusehatSubmission"> | Date | string
-  encounter?: Prisma.XOR<Prisma.EncounterScalarRelationFilter, Prisma.EncounterWhereInput>
-}, "id" | "encounterId">
+  encounter?: Prisma.XOR<Prisma.EncounterNullableScalarRelationFilter, Prisma.EncounterWhereInput> | null
+  labOrder?: Prisma.XOR<Prisma.LabOrderNullableScalarRelationFilter, Prisma.LabOrderWhereInput> | null
+}, "id">
 
 export type SatusehatSubmissionOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  encounterId?: Prisma.SortOrder
+  encounterId?: Prisma.SortOrderInput | Prisma.SortOrder
+  kind?: Prisma.SortOrder
+  labOrderId?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   attempts?: Prisma.SortOrder
   lastError?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -333,7 +358,9 @@ export type SatusehatSubmissionScalarWhereWithAggregatesInput = {
   OR?: Prisma.SatusehatSubmissionScalarWhereWithAggregatesInput[]
   NOT?: Prisma.SatusehatSubmissionScalarWhereWithAggregatesInput | Prisma.SatusehatSubmissionScalarWhereWithAggregatesInput[]
   id?: Prisma.UuidWithAggregatesFilter<"SatusehatSubmission"> | string
-  encounterId?: Prisma.UuidWithAggregatesFilter<"SatusehatSubmission"> | string
+  encounterId?: Prisma.UuidNullableWithAggregatesFilter<"SatusehatSubmission"> | string | null
+  kind?: Prisma.EnumSatusehatSubmissionKindWithAggregatesFilter<"SatusehatSubmission"> | $Enums.SatusehatSubmissionKind
+  labOrderId?: Prisma.UuidNullableWithAggregatesFilter<"SatusehatSubmission"> | string | null
   status?: Prisma.EnumSatusehatSubmissionStatusWithAggregatesFilter<"SatusehatSubmission"> | $Enums.SatusehatSubmissionStatus
   attempts?: Prisma.IntWithAggregatesFilter<"SatusehatSubmission"> | number
   lastError?: Prisma.StringNullableWithAggregatesFilter<"SatusehatSubmission"> | string | null
@@ -347,6 +374,7 @@ export type SatusehatSubmissionScalarWhereWithAggregatesInput = {
 
 export type SatusehatSubmissionCreateInput = {
   id?: string
+  kind?: $Enums.SatusehatSubmissionKind
   status?: $Enums.SatusehatSubmissionStatus
   attempts?: number
   lastError?: string | null
@@ -356,12 +384,15 @@ export type SatusehatSubmissionCreateInput = {
   satusehatEncounterId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  encounter: Prisma.EncounterCreateNestedOneWithoutSatusehatSubmissionInput
+  encounter?: Prisma.EncounterCreateNestedOneWithoutSatusehatSubmissionsInput
+  labOrder?: Prisma.LabOrderCreateNestedOneWithoutSatusehatSubmissionsInput
 }
 
 export type SatusehatSubmissionUncheckedCreateInput = {
   id?: string
-  encounterId: string
+  encounterId?: string | null
+  kind?: $Enums.SatusehatSubmissionKind
+  labOrderId?: string | null
   status?: $Enums.SatusehatSubmissionStatus
   attempts?: number
   lastError?: string | null
@@ -375,6 +406,7 @@ export type SatusehatSubmissionUncheckedCreateInput = {
 
 export type SatusehatSubmissionUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.EnumSatusehatSubmissionKindFieldUpdateOperationsInput | $Enums.SatusehatSubmissionKind
   status?: Prisma.EnumSatusehatSubmissionStatusFieldUpdateOperationsInput | $Enums.SatusehatSubmissionStatus
   attempts?: Prisma.IntFieldUpdateOperationsInput | number
   lastError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -384,12 +416,15 @@ export type SatusehatSubmissionUpdateInput = {
   satusehatEncounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  encounter?: Prisma.EncounterUpdateOneRequiredWithoutSatusehatSubmissionNestedInput
+  encounter?: Prisma.EncounterUpdateOneWithoutSatusehatSubmissionsNestedInput
+  labOrder?: Prisma.LabOrderUpdateOneWithoutSatusehatSubmissionsNestedInput
 }
 
 export type SatusehatSubmissionUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  encounterId?: Prisma.StringFieldUpdateOperationsInput | string
+  encounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kind?: Prisma.EnumSatusehatSubmissionKindFieldUpdateOperationsInput | $Enums.SatusehatSubmissionKind
+  labOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumSatusehatSubmissionStatusFieldUpdateOperationsInput | $Enums.SatusehatSubmissionStatus
   attempts?: Prisma.IntFieldUpdateOperationsInput | number
   lastError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -403,7 +438,9 @@ export type SatusehatSubmissionUncheckedUpdateInput = {
 
 export type SatusehatSubmissionCreateManyInput = {
   id?: string
-  encounterId: string
+  encounterId?: string | null
+  kind?: $Enums.SatusehatSubmissionKind
+  labOrderId?: string | null
   status?: $Enums.SatusehatSubmissionStatus
   attempts?: number
   lastError?: string | null
@@ -417,6 +454,7 @@ export type SatusehatSubmissionCreateManyInput = {
 
 export type SatusehatSubmissionUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.EnumSatusehatSubmissionKindFieldUpdateOperationsInput | $Enums.SatusehatSubmissionKind
   status?: Prisma.EnumSatusehatSubmissionStatusFieldUpdateOperationsInput | $Enums.SatusehatSubmissionStatus
   attempts?: Prisma.IntFieldUpdateOperationsInput | number
   lastError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -430,7 +468,9 @@ export type SatusehatSubmissionUpdateManyMutationInput = {
 
 export type SatusehatSubmissionUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  encounterId?: Prisma.StringFieldUpdateOperationsInput | string
+  encounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kind?: Prisma.EnumSatusehatSubmissionKindFieldUpdateOperationsInput | $Enums.SatusehatSubmissionKind
+  labOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumSatusehatSubmissionStatusFieldUpdateOperationsInput | $Enums.SatusehatSubmissionStatus
   attempts?: Prisma.IntFieldUpdateOperationsInput | number
   lastError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -442,14 +482,21 @@ export type SatusehatSubmissionUncheckedUpdateManyInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
-export type SatusehatSubmissionNullableScalarRelationFilter = {
-  is?: Prisma.SatusehatSubmissionWhereInput | null
-  isNot?: Prisma.SatusehatSubmissionWhereInput | null
+export type SatusehatSubmissionListRelationFilter = {
+  every?: Prisma.SatusehatSubmissionWhereInput
+  some?: Prisma.SatusehatSubmissionWhereInput
+  none?: Prisma.SatusehatSubmissionWhereInput
+}
+
+export type SatusehatSubmissionOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
 }
 
 export type SatusehatSubmissionCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   encounterId?: Prisma.SortOrder
+  kind?: Prisma.SortOrder
+  labOrderId?: Prisma.SortOrder
   status?: Prisma.SortOrder
   attempts?: Prisma.SortOrder
   lastError?: Prisma.SortOrder
@@ -468,6 +515,8 @@ export type SatusehatSubmissionAvgOrderByAggregateInput = {
 export type SatusehatSubmissionMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   encounterId?: Prisma.SortOrder
+  kind?: Prisma.SortOrder
+  labOrderId?: Prisma.SortOrder
   status?: Prisma.SortOrder
   attempts?: Prisma.SortOrder
   lastError?: Prisma.SortOrder
@@ -482,6 +531,8 @@ export type SatusehatSubmissionMaxOrderByAggregateInput = {
 export type SatusehatSubmissionMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   encounterId?: Prisma.SortOrder
+  kind?: Prisma.SortOrder
+  labOrderId?: Prisma.SortOrder
   status?: Prisma.SortOrder
   attempts?: Prisma.SortOrder
   lastError?: Prisma.SortOrder
@@ -497,44 +548,101 @@ export type SatusehatSubmissionSumOrderByAggregateInput = {
   attempts?: Prisma.SortOrder
 }
 
-export type SatusehatSubmissionCreateNestedOneWithoutEncounterInput = {
-  create?: Prisma.XOR<Prisma.SatusehatSubmissionCreateWithoutEncounterInput, Prisma.SatusehatSubmissionUncheckedCreateWithoutEncounterInput>
-  connectOrCreate?: Prisma.SatusehatSubmissionCreateOrConnectWithoutEncounterInput
-  connect?: Prisma.SatusehatSubmissionWhereUniqueInput
+export type SatusehatSubmissionCreateNestedManyWithoutEncounterInput = {
+  create?: Prisma.XOR<Prisma.SatusehatSubmissionCreateWithoutEncounterInput, Prisma.SatusehatSubmissionUncheckedCreateWithoutEncounterInput> | Prisma.SatusehatSubmissionCreateWithoutEncounterInput[] | Prisma.SatusehatSubmissionUncheckedCreateWithoutEncounterInput[]
+  connectOrCreate?: Prisma.SatusehatSubmissionCreateOrConnectWithoutEncounterInput | Prisma.SatusehatSubmissionCreateOrConnectWithoutEncounterInput[]
+  createMany?: Prisma.SatusehatSubmissionCreateManyEncounterInputEnvelope
+  connect?: Prisma.SatusehatSubmissionWhereUniqueInput | Prisma.SatusehatSubmissionWhereUniqueInput[]
 }
 
-export type SatusehatSubmissionUncheckedCreateNestedOneWithoutEncounterInput = {
-  create?: Prisma.XOR<Prisma.SatusehatSubmissionCreateWithoutEncounterInput, Prisma.SatusehatSubmissionUncheckedCreateWithoutEncounterInput>
-  connectOrCreate?: Prisma.SatusehatSubmissionCreateOrConnectWithoutEncounterInput
-  connect?: Prisma.SatusehatSubmissionWhereUniqueInput
+export type SatusehatSubmissionUncheckedCreateNestedManyWithoutEncounterInput = {
+  create?: Prisma.XOR<Prisma.SatusehatSubmissionCreateWithoutEncounterInput, Prisma.SatusehatSubmissionUncheckedCreateWithoutEncounterInput> | Prisma.SatusehatSubmissionCreateWithoutEncounterInput[] | Prisma.SatusehatSubmissionUncheckedCreateWithoutEncounterInput[]
+  connectOrCreate?: Prisma.SatusehatSubmissionCreateOrConnectWithoutEncounterInput | Prisma.SatusehatSubmissionCreateOrConnectWithoutEncounterInput[]
+  createMany?: Prisma.SatusehatSubmissionCreateManyEncounterInputEnvelope
+  connect?: Prisma.SatusehatSubmissionWhereUniqueInput | Prisma.SatusehatSubmissionWhereUniqueInput[]
 }
 
-export type SatusehatSubmissionUpdateOneWithoutEncounterNestedInput = {
-  create?: Prisma.XOR<Prisma.SatusehatSubmissionCreateWithoutEncounterInput, Prisma.SatusehatSubmissionUncheckedCreateWithoutEncounterInput>
-  connectOrCreate?: Prisma.SatusehatSubmissionCreateOrConnectWithoutEncounterInput
-  upsert?: Prisma.SatusehatSubmissionUpsertWithoutEncounterInput
-  disconnect?: Prisma.SatusehatSubmissionWhereInput | boolean
-  delete?: Prisma.SatusehatSubmissionWhereInput | boolean
-  connect?: Prisma.SatusehatSubmissionWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.SatusehatSubmissionUpdateToOneWithWhereWithoutEncounterInput, Prisma.SatusehatSubmissionUpdateWithoutEncounterInput>, Prisma.SatusehatSubmissionUncheckedUpdateWithoutEncounterInput>
+export type SatusehatSubmissionUpdateManyWithoutEncounterNestedInput = {
+  create?: Prisma.XOR<Prisma.SatusehatSubmissionCreateWithoutEncounterInput, Prisma.SatusehatSubmissionUncheckedCreateWithoutEncounterInput> | Prisma.SatusehatSubmissionCreateWithoutEncounterInput[] | Prisma.SatusehatSubmissionUncheckedCreateWithoutEncounterInput[]
+  connectOrCreate?: Prisma.SatusehatSubmissionCreateOrConnectWithoutEncounterInput | Prisma.SatusehatSubmissionCreateOrConnectWithoutEncounterInput[]
+  upsert?: Prisma.SatusehatSubmissionUpsertWithWhereUniqueWithoutEncounterInput | Prisma.SatusehatSubmissionUpsertWithWhereUniqueWithoutEncounterInput[]
+  createMany?: Prisma.SatusehatSubmissionCreateManyEncounterInputEnvelope
+  set?: Prisma.SatusehatSubmissionWhereUniqueInput | Prisma.SatusehatSubmissionWhereUniqueInput[]
+  disconnect?: Prisma.SatusehatSubmissionWhereUniqueInput | Prisma.SatusehatSubmissionWhereUniqueInput[]
+  delete?: Prisma.SatusehatSubmissionWhereUniqueInput | Prisma.SatusehatSubmissionWhereUniqueInput[]
+  connect?: Prisma.SatusehatSubmissionWhereUniqueInput | Prisma.SatusehatSubmissionWhereUniqueInput[]
+  update?: Prisma.SatusehatSubmissionUpdateWithWhereUniqueWithoutEncounterInput | Prisma.SatusehatSubmissionUpdateWithWhereUniqueWithoutEncounterInput[]
+  updateMany?: Prisma.SatusehatSubmissionUpdateManyWithWhereWithoutEncounterInput | Prisma.SatusehatSubmissionUpdateManyWithWhereWithoutEncounterInput[]
+  deleteMany?: Prisma.SatusehatSubmissionScalarWhereInput | Prisma.SatusehatSubmissionScalarWhereInput[]
 }
 
-export type SatusehatSubmissionUncheckedUpdateOneWithoutEncounterNestedInput = {
-  create?: Prisma.XOR<Prisma.SatusehatSubmissionCreateWithoutEncounterInput, Prisma.SatusehatSubmissionUncheckedCreateWithoutEncounterInput>
-  connectOrCreate?: Prisma.SatusehatSubmissionCreateOrConnectWithoutEncounterInput
-  upsert?: Prisma.SatusehatSubmissionUpsertWithoutEncounterInput
-  disconnect?: Prisma.SatusehatSubmissionWhereInput | boolean
-  delete?: Prisma.SatusehatSubmissionWhereInput | boolean
-  connect?: Prisma.SatusehatSubmissionWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.SatusehatSubmissionUpdateToOneWithWhereWithoutEncounterInput, Prisma.SatusehatSubmissionUpdateWithoutEncounterInput>, Prisma.SatusehatSubmissionUncheckedUpdateWithoutEncounterInput>
+export type SatusehatSubmissionUncheckedUpdateManyWithoutEncounterNestedInput = {
+  create?: Prisma.XOR<Prisma.SatusehatSubmissionCreateWithoutEncounterInput, Prisma.SatusehatSubmissionUncheckedCreateWithoutEncounterInput> | Prisma.SatusehatSubmissionCreateWithoutEncounterInput[] | Prisma.SatusehatSubmissionUncheckedCreateWithoutEncounterInput[]
+  connectOrCreate?: Prisma.SatusehatSubmissionCreateOrConnectWithoutEncounterInput | Prisma.SatusehatSubmissionCreateOrConnectWithoutEncounterInput[]
+  upsert?: Prisma.SatusehatSubmissionUpsertWithWhereUniqueWithoutEncounterInput | Prisma.SatusehatSubmissionUpsertWithWhereUniqueWithoutEncounterInput[]
+  createMany?: Prisma.SatusehatSubmissionCreateManyEncounterInputEnvelope
+  set?: Prisma.SatusehatSubmissionWhereUniqueInput | Prisma.SatusehatSubmissionWhereUniqueInput[]
+  disconnect?: Prisma.SatusehatSubmissionWhereUniqueInput | Prisma.SatusehatSubmissionWhereUniqueInput[]
+  delete?: Prisma.SatusehatSubmissionWhereUniqueInput | Prisma.SatusehatSubmissionWhereUniqueInput[]
+  connect?: Prisma.SatusehatSubmissionWhereUniqueInput | Prisma.SatusehatSubmissionWhereUniqueInput[]
+  update?: Prisma.SatusehatSubmissionUpdateWithWhereUniqueWithoutEncounterInput | Prisma.SatusehatSubmissionUpdateWithWhereUniqueWithoutEncounterInput[]
+  updateMany?: Prisma.SatusehatSubmissionUpdateManyWithWhereWithoutEncounterInput | Prisma.SatusehatSubmissionUpdateManyWithWhereWithoutEncounterInput[]
+  deleteMany?: Prisma.SatusehatSubmissionScalarWhereInput | Prisma.SatusehatSubmissionScalarWhereInput[]
+}
+
+export type EnumSatusehatSubmissionKindFieldUpdateOperationsInput = {
+  set?: $Enums.SatusehatSubmissionKind
 }
 
 export type EnumSatusehatSubmissionStatusFieldUpdateOperationsInput = {
   set?: $Enums.SatusehatSubmissionStatus
 }
 
+export type SatusehatSubmissionCreateNestedManyWithoutLabOrderInput = {
+  create?: Prisma.XOR<Prisma.SatusehatSubmissionCreateWithoutLabOrderInput, Prisma.SatusehatSubmissionUncheckedCreateWithoutLabOrderInput> | Prisma.SatusehatSubmissionCreateWithoutLabOrderInput[] | Prisma.SatusehatSubmissionUncheckedCreateWithoutLabOrderInput[]
+  connectOrCreate?: Prisma.SatusehatSubmissionCreateOrConnectWithoutLabOrderInput | Prisma.SatusehatSubmissionCreateOrConnectWithoutLabOrderInput[]
+  createMany?: Prisma.SatusehatSubmissionCreateManyLabOrderInputEnvelope
+  connect?: Prisma.SatusehatSubmissionWhereUniqueInput | Prisma.SatusehatSubmissionWhereUniqueInput[]
+}
+
+export type SatusehatSubmissionUncheckedCreateNestedManyWithoutLabOrderInput = {
+  create?: Prisma.XOR<Prisma.SatusehatSubmissionCreateWithoutLabOrderInput, Prisma.SatusehatSubmissionUncheckedCreateWithoutLabOrderInput> | Prisma.SatusehatSubmissionCreateWithoutLabOrderInput[] | Prisma.SatusehatSubmissionUncheckedCreateWithoutLabOrderInput[]
+  connectOrCreate?: Prisma.SatusehatSubmissionCreateOrConnectWithoutLabOrderInput | Prisma.SatusehatSubmissionCreateOrConnectWithoutLabOrderInput[]
+  createMany?: Prisma.SatusehatSubmissionCreateManyLabOrderInputEnvelope
+  connect?: Prisma.SatusehatSubmissionWhereUniqueInput | Prisma.SatusehatSubmissionWhereUniqueInput[]
+}
+
+export type SatusehatSubmissionUpdateManyWithoutLabOrderNestedInput = {
+  create?: Prisma.XOR<Prisma.SatusehatSubmissionCreateWithoutLabOrderInput, Prisma.SatusehatSubmissionUncheckedCreateWithoutLabOrderInput> | Prisma.SatusehatSubmissionCreateWithoutLabOrderInput[] | Prisma.SatusehatSubmissionUncheckedCreateWithoutLabOrderInput[]
+  connectOrCreate?: Prisma.SatusehatSubmissionCreateOrConnectWithoutLabOrderInput | Prisma.SatusehatSubmissionCreateOrConnectWithoutLabOrderInput[]
+  upsert?: Prisma.SatusehatSubmissionUpsertWithWhereUniqueWithoutLabOrderInput | Prisma.SatusehatSubmissionUpsertWithWhereUniqueWithoutLabOrderInput[]
+  createMany?: Prisma.SatusehatSubmissionCreateManyLabOrderInputEnvelope
+  set?: Prisma.SatusehatSubmissionWhereUniqueInput | Prisma.SatusehatSubmissionWhereUniqueInput[]
+  disconnect?: Prisma.SatusehatSubmissionWhereUniqueInput | Prisma.SatusehatSubmissionWhereUniqueInput[]
+  delete?: Prisma.SatusehatSubmissionWhereUniqueInput | Prisma.SatusehatSubmissionWhereUniqueInput[]
+  connect?: Prisma.SatusehatSubmissionWhereUniqueInput | Prisma.SatusehatSubmissionWhereUniqueInput[]
+  update?: Prisma.SatusehatSubmissionUpdateWithWhereUniqueWithoutLabOrderInput | Prisma.SatusehatSubmissionUpdateWithWhereUniqueWithoutLabOrderInput[]
+  updateMany?: Prisma.SatusehatSubmissionUpdateManyWithWhereWithoutLabOrderInput | Prisma.SatusehatSubmissionUpdateManyWithWhereWithoutLabOrderInput[]
+  deleteMany?: Prisma.SatusehatSubmissionScalarWhereInput | Prisma.SatusehatSubmissionScalarWhereInput[]
+}
+
+export type SatusehatSubmissionUncheckedUpdateManyWithoutLabOrderNestedInput = {
+  create?: Prisma.XOR<Prisma.SatusehatSubmissionCreateWithoutLabOrderInput, Prisma.SatusehatSubmissionUncheckedCreateWithoutLabOrderInput> | Prisma.SatusehatSubmissionCreateWithoutLabOrderInput[] | Prisma.SatusehatSubmissionUncheckedCreateWithoutLabOrderInput[]
+  connectOrCreate?: Prisma.SatusehatSubmissionCreateOrConnectWithoutLabOrderInput | Prisma.SatusehatSubmissionCreateOrConnectWithoutLabOrderInput[]
+  upsert?: Prisma.SatusehatSubmissionUpsertWithWhereUniqueWithoutLabOrderInput | Prisma.SatusehatSubmissionUpsertWithWhereUniqueWithoutLabOrderInput[]
+  createMany?: Prisma.SatusehatSubmissionCreateManyLabOrderInputEnvelope
+  set?: Prisma.SatusehatSubmissionWhereUniqueInput | Prisma.SatusehatSubmissionWhereUniqueInput[]
+  disconnect?: Prisma.SatusehatSubmissionWhereUniqueInput | Prisma.SatusehatSubmissionWhereUniqueInput[]
+  delete?: Prisma.SatusehatSubmissionWhereUniqueInput | Prisma.SatusehatSubmissionWhereUniqueInput[]
+  connect?: Prisma.SatusehatSubmissionWhereUniqueInput | Prisma.SatusehatSubmissionWhereUniqueInput[]
+  update?: Prisma.SatusehatSubmissionUpdateWithWhereUniqueWithoutLabOrderInput | Prisma.SatusehatSubmissionUpdateWithWhereUniqueWithoutLabOrderInput[]
+  updateMany?: Prisma.SatusehatSubmissionUpdateManyWithWhereWithoutLabOrderInput | Prisma.SatusehatSubmissionUpdateManyWithWhereWithoutLabOrderInput[]
+  deleteMany?: Prisma.SatusehatSubmissionScalarWhereInput | Prisma.SatusehatSubmissionScalarWhereInput[]
+}
+
 export type SatusehatSubmissionCreateWithoutEncounterInput = {
   id?: string
+  kind?: $Enums.SatusehatSubmissionKind
   status?: $Enums.SatusehatSubmissionStatus
   attempts?: number
   lastError?: string | null
@@ -544,10 +652,13 @@ export type SatusehatSubmissionCreateWithoutEncounterInput = {
   satusehatEncounterId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  labOrder?: Prisma.LabOrderCreateNestedOneWithoutSatusehatSubmissionsInput
 }
 
 export type SatusehatSubmissionUncheckedCreateWithoutEncounterInput = {
   id?: string
+  kind?: $Enums.SatusehatSubmissionKind
+  labOrderId?: string | null
   status?: $Enums.SatusehatSubmissionStatus
   attempts?: number
   lastError?: string | null
@@ -564,19 +675,136 @@ export type SatusehatSubmissionCreateOrConnectWithoutEncounterInput = {
   create: Prisma.XOR<Prisma.SatusehatSubmissionCreateWithoutEncounterInput, Prisma.SatusehatSubmissionUncheckedCreateWithoutEncounterInput>
 }
 
-export type SatusehatSubmissionUpsertWithoutEncounterInput = {
-  update: Prisma.XOR<Prisma.SatusehatSubmissionUpdateWithoutEncounterInput, Prisma.SatusehatSubmissionUncheckedUpdateWithoutEncounterInput>
-  create: Prisma.XOR<Prisma.SatusehatSubmissionCreateWithoutEncounterInput, Prisma.SatusehatSubmissionUncheckedCreateWithoutEncounterInput>
-  where?: Prisma.SatusehatSubmissionWhereInput
+export type SatusehatSubmissionCreateManyEncounterInputEnvelope = {
+  data: Prisma.SatusehatSubmissionCreateManyEncounterInput | Prisma.SatusehatSubmissionCreateManyEncounterInput[]
+  skipDuplicates?: boolean
 }
 
-export type SatusehatSubmissionUpdateToOneWithWhereWithoutEncounterInput = {
-  where?: Prisma.SatusehatSubmissionWhereInput
+export type SatusehatSubmissionUpsertWithWhereUniqueWithoutEncounterInput = {
+  where: Prisma.SatusehatSubmissionWhereUniqueInput
+  update: Prisma.XOR<Prisma.SatusehatSubmissionUpdateWithoutEncounterInput, Prisma.SatusehatSubmissionUncheckedUpdateWithoutEncounterInput>
+  create: Prisma.XOR<Prisma.SatusehatSubmissionCreateWithoutEncounterInput, Prisma.SatusehatSubmissionUncheckedCreateWithoutEncounterInput>
+}
+
+export type SatusehatSubmissionUpdateWithWhereUniqueWithoutEncounterInput = {
+  where: Prisma.SatusehatSubmissionWhereUniqueInput
   data: Prisma.XOR<Prisma.SatusehatSubmissionUpdateWithoutEncounterInput, Prisma.SatusehatSubmissionUncheckedUpdateWithoutEncounterInput>
+}
+
+export type SatusehatSubmissionUpdateManyWithWhereWithoutEncounterInput = {
+  where: Prisma.SatusehatSubmissionScalarWhereInput
+  data: Prisma.XOR<Prisma.SatusehatSubmissionUpdateManyMutationInput, Prisma.SatusehatSubmissionUncheckedUpdateManyWithoutEncounterInput>
+}
+
+export type SatusehatSubmissionScalarWhereInput = {
+  AND?: Prisma.SatusehatSubmissionScalarWhereInput | Prisma.SatusehatSubmissionScalarWhereInput[]
+  OR?: Prisma.SatusehatSubmissionScalarWhereInput[]
+  NOT?: Prisma.SatusehatSubmissionScalarWhereInput | Prisma.SatusehatSubmissionScalarWhereInput[]
+  id?: Prisma.UuidFilter<"SatusehatSubmission"> | string
+  encounterId?: Prisma.UuidNullableFilter<"SatusehatSubmission"> | string | null
+  kind?: Prisma.EnumSatusehatSubmissionKindFilter<"SatusehatSubmission"> | $Enums.SatusehatSubmissionKind
+  labOrderId?: Prisma.UuidNullableFilter<"SatusehatSubmission"> | string | null
+  status?: Prisma.EnumSatusehatSubmissionStatusFilter<"SatusehatSubmission"> | $Enums.SatusehatSubmissionStatus
+  attempts?: Prisma.IntFilter<"SatusehatSubmission"> | number
+  lastError?: Prisma.StringNullableFilter<"SatusehatSubmission"> | string | null
+  nextAttemptAt?: Prisma.DateTimeFilter<"SatusehatSubmission"> | Date | string
+  lastAttemptAt?: Prisma.DateTimeNullableFilter<"SatusehatSubmission"> | Date | string | null
+  submittedAt?: Prisma.DateTimeNullableFilter<"SatusehatSubmission"> | Date | string | null
+  satusehatEncounterId?: Prisma.StringNullableFilter<"SatusehatSubmission"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"SatusehatSubmission"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"SatusehatSubmission"> | Date | string
+}
+
+export type SatusehatSubmissionCreateWithoutLabOrderInput = {
+  id?: string
+  kind?: $Enums.SatusehatSubmissionKind
+  status?: $Enums.SatusehatSubmissionStatus
+  attempts?: number
+  lastError?: string | null
+  nextAttemptAt?: Date | string
+  lastAttemptAt?: Date | string | null
+  submittedAt?: Date | string | null
+  satusehatEncounterId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  encounter?: Prisma.EncounterCreateNestedOneWithoutSatusehatSubmissionsInput
+}
+
+export type SatusehatSubmissionUncheckedCreateWithoutLabOrderInput = {
+  id?: string
+  encounterId?: string | null
+  kind?: $Enums.SatusehatSubmissionKind
+  status?: $Enums.SatusehatSubmissionStatus
+  attempts?: number
+  lastError?: string | null
+  nextAttemptAt?: Date | string
+  lastAttemptAt?: Date | string | null
+  submittedAt?: Date | string | null
+  satusehatEncounterId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type SatusehatSubmissionCreateOrConnectWithoutLabOrderInput = {
+  where: Prisma.SatusehatSubmissionWhereUniqueInput
+  create: Prisma.XOR<Prisma.SatusehatSubmissionCreateWithoutLabOrderInput, Prisma.SatusehatSubmissionUncheckedCreateWithoutLabOrderInput>
+}
+
+export type SatusehatSubmissionCreateManyLabOrderInputEnvelope = {
+  data: Prisma.SatusehatSubmissionCreateManyLabOrderInput | Prisma.SatusehatSubmissionCreateManyLabOrderInput[]
+  skipDuplicates?: boolean
+}
+
+export type SatusehatSubmissionUpsertWithWhereUniqueWithoutLabOrderInput = {
+  where: Prisma.SatusehatSubmissionWhereUniqueInput
+  update: Prisma.XOR<Prisma.SatusehatSubmissionUpdateWithoutLabOrderInput, Prisma.SatusehatSubmissionUncheckedUpdateWithoutLabOrderInput>
+  create: Prisma.XOR<Prisma.SatusehatSubmissionCreateWithoutLabOrderInput, Prisma.SatusehatSubmissionUncheckedCreateWithoutLabOrderInput>
+}
+
+export type SatusehatSubmissionUpdateWithWhereUniqueWithoutLabOrderInput = {
+  where: Prisma.SatusehatSubmissionWhereUniqueInput
+  data: Prisma.XOR<Prisma.SatusehatSubmissionUpdateWithoutLabOrderInput, Prisma.SatusehatSubmissionUncheckedUpdateWithoutLabOrderInput>
+}
+
+export type SatusehatSubmissionUpdateManyWithWhereWithoutLabOrderInput = {
+  where: Prisma.SatusehatSubmissionScalarWhereInput
+  data: Prisma.XOR<Prisma.SatusehatSubmissionUpdateManyMutationInput, Prisma.SatusehatSubmissionUncheckedUpdateManyWithoutLabOrderInput>
+}
+
+export type SatusehatSubmissionCreateManyEncounterInput = {
+  id?: string
+  kind?: $Enums.SatusehatSubmissionKind
+  labOrderId?: string | null
+  status?: $Enums.SatusehatSubmissionStatus
+  attempts?: number
+  lastError?: string | null
+  nextAttemptAt?: Date | string
+  lastAttemptAt?: Date | string | null
+  submittedAt?: Date | string | null
+  satusehatEncounterId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type SatusehatSubmissionUpdateWithoutEncounterInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.EnumSatusehatSubmissionKindFieldUpdateOperationsInput | $Enums.SatusehatSubmissionKind
+  status?: Prisma.EnumSatusehatSubmissionStatusFieldUpdateOperationsInput | $Enums.SatusehatSubmissionStatus
+  attempts?: Prisma.IntFieldUpdateOperationsInput | number
+  lastError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nextAttemptAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastAttemptAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  satusehatEncounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  labOrder?: Prisma.LabOrderUpdateOneWithoutSatusehatSubmissionsNestedInput
+}
+
+export type SatusehatSubmissionUncheckedUpdateWithoutEncounterInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.EnumSatusehatSubmissionKindFieldUpdateOperationsInput | $Enums.SatusehatSubmissionKind
+  labOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumSatusehatSubmissionStatusFieldUpdateOperationsInput | $Enums.SatusehatSubmissionStatus
   attempts?: Prisma.IntFieldUpdateOperationsInput | number
   lastError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -588,8 +816,70 @@ export type SatusehatSubmissionUpdateWithoutEncounterInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
-export type SatusehatSubmissionUncheckedUpdateWithoutEncounterInput = {
+export type SatusehatSubmissionUncheckedUpdateManyWithoutEncounterInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.EnumSatusehatSubmissionKindFieldUpdateOperationsInput | $Enums.SatusehatSubmissionKind
+  labOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumSatusehatSubmissionStatusFieldUpdateOperationsInput | $Enums.SatusehatSubmissionStatus
+  attempts?: Prisma.IntFieldUpdateOperationsInput | number
+  lastError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nextAttemptAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastAttemptAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  satusehatEncounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type SatusehatSubmissionCreateManyLabOrderInput = {
+  id?: string
+  encounterId?: string | null
+  kind?: $Enums.SatusehatSubmissionKind
+  status?: $Enums.SatusehatSubmissionStatus
+  attempts?: number
+  lastError?: string | null
+  nextAttemptAt?: Date | string
+  lastAttemptAt?: Date | string | null
+  submittedAt?: Date | string | null
+  satusehatEncounterId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type SatusehatSubmissionUpdateWithoutLabOrderInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.EnumSatusehatSubmissionKindFieldUpdateOperationsInput | $Enums.SatusehatSubmissionKind
+  status?: Prisma.EnumSatusehatSubmissionStatusFieldUpdateOperationsInput | $Enums.SatusehatSubmissionStatus
+  attempts?: Prisma.IntFieldUpdateOperationsInput | number
+  lastError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nextAttemptAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastAttemptAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  satusehatEncounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  encounter?: Prisma.EncounterUpdateOneWithoutSatusehatSubmissionsNestedInput
+}
+
+export type SatusehatSubmissionUncheckedUpdateWithoutLabOrderInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  encounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kind?: Prisma.EnumSatusehatSubmissionKindFieldUpdateOperationsInput | $Enums.SatusehatSubmissionKind
+  status?: Prisma.EnumSatusehatSubmissionStatusFieldUpdateOperationsInput | $Enums.SatusehatSubmissionStatus
+  attempts?: Prisma.IntFieldUpdateOperationsInput | number
+  lastError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nextAttemptAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastAttemptAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  satusehatEncounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type SatusehatSubmissionUncheckedUpdateManyWithoutLabOrderInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  encounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kind?: Prisma.EnumSatusehatSubmissionKindFieldUpdateOperationsInput | $Enums.SatusehatSubmissionKind
   status?: Prisma.EnumSatusehatSubmissionStatusFieldUpdateOperationsInput | $Enums.SatusehatSubmissionStatus
   attempts?: Prisma.IntFieldUpdateOperationsInput | number
   lastError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -606,6 +896,8 @@ export type SatusehatSubmissionUncheckedUpdateWithoutEncounterInput = {
 export type SatusehatSubmissionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   encounterId?: boolean
+  kind?: boolean
+  labOrderId?: boolean
   status?: boolean
   attempts?: boolean
   lastError?: boolean
@@ -615,12 +907,15 @@ export type SatusehatSubmissionSelect<ExtArgs extends runtime.Types.Extensions.I
   satusehatEncounterId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  encounter?: boolean | Prisma.EncounterDefaultArgs<ExtArgs>
+  encounter?: boolean | Prisma.SatusehatSubmission$encounterArgs<ExtArgs>
+  labOrder?: boolean | Prisma.SatusehatSubmission$labOrderArgs<ExtArgs>
 }, ExtArgs["result"]["satusehatSubmission"]>
 
 export type SatusehatSubmissionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   encounterId?: boolean
+  kind?: boolean
+  labOrderId?: boolean
   status?: boolean
   attempts?: boolean
   lastError?: boolean
@@ -630,12 +925,15 @@ export type SatusehatSubmissionSelectCreateManyAndReturn<ExtArgs extends runtime
   satusehatEncounterId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  encounter?: boolean | Prisma.EncounterDefaultArgs<ExtArgs>
+  encounter?: boolean | Prisma.SatusehatSubmission$encounterArgs<ExtArgs>
+  labOrder?: boolean | Prisma.SatusehatSubmission$labOrderArgs<ExtArgs>
 }, ExtArgs["result"]["satusehatSubmission"]>
 
 export type SatusehatSubmissionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   encounterId?: boolean
+  kind?: boolean
+  labOrderId?: boolean
   status?: boolean
   attempts?: boolean
   lastError?: boolean
@@ -645,12 +943,15 @@ export type SatusehatSubmissionSelectUpdateManyAndReturn<ExtArgs extends runtime
   satusehatEncounterId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  encounter?: boolean | Prisma.EncounterDefaultArgs<ExtArgs>
+  encounter?: boolean | Prisma.SatusehatSubmission$encounterArgs<ExtArgs>
+  labOrder?: boolean | Prisma.SatusehatSubmission$labOrderArgs<ExtArgs>
 }, ExtArgs["result"]["satusehatSubmission"]>
 
 export type SatusehatSubmissionSelectScalar = {
   id?: boolean
   encounterId?: boolean
+  kind?: boolean
+  labOrderId?: boolean
   status?: boolean
   attempts?: boolean
   lastError?: boolean
@@ -662,25 +963,49 @@ export type SatusehatSubmissionSelectScalar = {
   updatedAt?: boolean
 }
 
-export type SatusehatSubmissionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "encounterId" | "status" | "attempts" | "lastError" | "nextAttemptAt" | "lastAttemptAt" | "submittedAt" | "satusehatEncounterId" | "createdAt" | "updatedAt", ExtArgs["result"]["satusehatSubmission"]>
+export type SatusehatSubmissionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "encounterId" | "kind" | "labOrderId" | "status" | "attempts" | "lastError" | "nextAttemptAt" | "lastAttemptAt" | "submittedAt" | "satusehatEncounterId" | "createdAt" | "updatedAt", ExtArgs["result"]["satusehatSubmission"]>
 export type SatusehatSubmissionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  encounter?: boolean | Prisma.EncounterDefaultArgs<ExtArgs>
+  encounter?: boolean | Prisma.SatusehatSubmission$encounterArgs<ExtArgs>
+  labOrder?: boolean | Prisma.SatusehatSubmission$labOrderArgs<ExtArgs>
 }
 export type SatusehatSubmissionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  encounter?: boolean | Prisma.EncounterDefaultArgs<ExtArgs>
+  encounter?: boolean | Prisma.SatusehatSubmission$encounterArgs<ExtArgs>
+  labOrder?: boolean | Prisma.SatusehatSubmission$labOrderArgs<ExtArgs>
 }
 export type SatusehatSubmissionIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  encounter?: boolean | Prisma.EncounterDefaultArgs<ExtArgs>
+  encounter?: boolean | Prisma.SatusehatSubmission$encounterArgs<ExtArgs>
+  labOrder?: boolean | Prisma.SatusehatSubmission$labOrderArgs<ExtArgs>
 }
 
 export type $SatusehatSubmissionPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "SatusehatSubmission"
   objects: {
-    encounter: Prisma.$EncounterPayload<ExtArgs>
+    encounter: Prisma.$EncounterPayload<ExtArgs> | null
+    labOrder: Prisma.$LabOrderPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    encounterId: string
+    /**
+     * Set on ENCOUNTER rows and null on LAB_REPORT ones: this column says the
+     * row *is* that encounter's, not that it mentions one. A lab report reaches
+     * the encounter it must wait for through its order instead.
+     * 
+     * Uniqueness is a partial index in the migration
+     * (`satusehat_submissions_encounter_kind_key`, `WHERE kind = 'ENCOUNTER'`)
+     * because it only holds for one kind — Prisma cannot express the predicate,
+     * so `@unique` would state something stronger than the database does.
+     */
+    encounterId: string | null
+    /**
+     * Which chain this row reports. See `SatusehatSubmissionKind`.
+     */
+    kind: $Enums.SatusehatSubmissionKind
+    /**
+     * Set on LAB_REPORT rows and null on ENCOUNTER ones. Constrained the same
+     * way, by `satusehat_submissions_lab_order_open_key` — one *open* row per
+     * order, so an amendment can enqueue beside a report already sent.
+     */
+    labOrderId: string | null
     status: $Enums.SatusehatSubmissionStatus
     attempts: number
     lastError: string | null
@@ -1092,7 +1417,8 @@ readonly fields: SatusehatSubmissionFieldRefs;
  */
 export interface Prisma__SatusehatSubmissionClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  encounter<T extends Prisma.EncounterDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EncounterDefaultArgs<ExtArgs>>): Prisma.Prisma__EncounterClient<runtime.Types.Result.GetResult<Prisma.$EncounterPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  encounter<T extends Prisma.SatusehatSubmission$encounterArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SatusehatSubmission$encounterArgs<ExtArgs>>): Prisma.Prisma__EncounterClient<runtime.Types.Result.GetResult<Prisma.$EncounterPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  labOrder<T extends Prisma.SatusehatSubmission$labOrderArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SatusehatSubmission$labOrderArgs<ExtArgs>>): Prisma.Prisma__LabOrderClient<runtime.Types.Result.GetResult<Prisma.$LabOrderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1124,6 +1450,8 @@ export interface Prisma__SatusehatSubmissionClient<T, Null = never, ExtArgs exte
 export interface SatusehatSubmissionFieldRefs {
   readonly id: Prisma.FieldRef<"SatusehatSubmission", 'String'>
   readonly encounterId: Prisma.FieldRef<"SatusehatSubmission", 'String'>
+  readonly kind: Prisma.FieldRef<"SatusehatSubmission", 'SatusehatSubmissionKind'>
+  readonly labOrderId: Prisma.FieldRef<"SatusehatSubmission", 'String'>
   readonly status: Prisma.FieldRef<"SatusehatSubmission", 'SatusehatSubmissionStatus'>
   readonly attempts: Prisma.FieldRef<"SatusehatSubmission", 'Int'>
   readonly lastError: Prisma.FieldRef<"SatusehatSubmission", 'String'>
@@ -1531,6 +1859,44 @@ export type SatusehatSubmissionDeleteManyArgs<ExtArgs extends runtime.Types.Exte
    * Limit how many SatusehatSubmissions to delete.
    */
   limit?: number
+}
+
+/**
+ * SatusehatSubmission.encounter
+ */
+export type SatusehatSubmission$encounterArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Encounter
+   */
+  select?: Prisma.EncounterSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Encounter
+   */
+  omit?: Prisma.EncounterOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EncounterInclude<ExtArgs> | null
+  where?: Prisma.EncounterWhereInput
+}
+
+/**
+ * SatusehatSubmission.labOrder
+ */
+export type SatusehatSubmission$labOrderArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the LabOrder
+   */
+  select?: Prisma.LabOrderSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the LabOrder
+   */
+  omit?: Prisma.LabOrderOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LabOrderInclude<ExtArgs> | null
+  where?: Prisma.LabOrderWhereInput
 }
 
 /**
