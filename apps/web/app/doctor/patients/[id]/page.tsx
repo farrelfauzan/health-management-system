@@ -29,6 +29,7 @@ export default async function DoctorPatientDetailPage({ params }: DoctorPatientD
     <PatientDetailPanel
       patientId={id}
       isSatusehatEnabled={isFeatureEnabled(claims, 'satusehat')}
+      isLaboratoryEnabled={isFeatureEnabled(claims, 'laboratory')}
     />
   );
 }

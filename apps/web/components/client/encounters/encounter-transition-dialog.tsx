@@ -44,6 +44,13 @@ export function EncounterTransitionDialog({
   const [actionError, setActionError] = useState<string | null>(null);
   const meta = ENCOUNTER_TRANSITION_META[targetStatus];
   const hasPrimaryDiagnosis = encounter.diagnoses.some((diagnosis) => diagnosis.type === 'PRIMARY');
+  // P18-T07. Closing with lab work in flight is allowed — results arrive after
+  // the patient has gone home — so this warns and never blocks. What it stops
+  // is the doctor who closes without knowing there is something to come back
+  // for.
+  const openLabOrders = encounter.labOrders.filter(
+    (order) => order.status !== 'RELEASED' && order.status !== 'CANCELLED',
+  );
   const transitionMutation = useMutation({
     mutationFn: () =>
       targetStatus === 'FINISHED'
@@ -77,6 +84,14 @@ export function EncounterTransitionDialog({
         {targetStatus === 'FINISHED' && !hasPrimaryDiagnosis ? (
           <p className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
             {t('encounters.transition.primaryWarning')}
+          </p>
+        ) : null}
+        {targetStatus === 'FINISHED' && openLabOrders.length > 0 ? (
+          <p className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+            {t('encounters.transition.openLabWarning', {
+              count: openLabOrders.length,
+              orderNumbers: openLabOrders.map((order) => order.orderNumber).join(', '),
+            })}
           </p>
         ) : null}
         {actionError ? (
