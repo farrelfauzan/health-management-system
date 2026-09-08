@@ -38188,6 +38188,220 @@ paths:
       tags:
         - Laboratory Orders
   /api/v1/lab-orders/{id}/results:
+    get:
+      operationId: LabResultController_getOrderBench_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "The order, the patient as the worklist identifies them (name, MRN,
+            sex, age — nothing clinical), and every value typed so far whether
+            or not it has been released (P18-T08). The bench works from this:
+            the entry form shows what a colleague already saved, and the
+            validation screen shows what it is about to sign out. Under
+            `lab-order.read:own` the reader must attend the patient or be the
+            patient."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      order:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          orderNumber:
+                            type: string
+                          encounterId:
+                            type: string
+                          patientId:
+                            type: string
+                          orderedById:
+                            type: string
+                          orderedByName:
+                            type: string
+                          status:
+                            type: string
+                          priority:
+                            type: string
+                          clinicalNotes:
+                            type: string
+                          isFasting:
+                            type: boolean
+                          fulfilmentSite:
+                            type: string
+                          chargeMode:
+                            type: string
+                          recollectCount:
+                            type: integer
+                          orderedAt:
+                            type: string
+                        required:
+                          - id
+                          - orderNumber
+                          - encounterId
+                          - patientId
+                          - orderedById
+                          - orderedByName
+                          - status
+                          - priority
+                          - clinicalNotes
+                          - isFasting
+                          - fulfilmentSite
+                          - chargeMode
+                          - recollectCount
+                          - orderedAt
+                      patient:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          fullName:
+                            type: string
+                          mrn:
+                            type: string
+                          dateOfBirth:
+                            type: string
+                          sex:
+                            type: string
+                          ageYears:
+                            type: integer
+                        required:
+                          - id
+                          - fullName
+                          - mrn
+                          - dateOfBirth
+                          - sex
+                          - ageYears
+                      results:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            labOrderItemId:
+                              type: string
+                            version:
+                              type: integer
+                            valueNumeric:
+                              type: number
+                            unit:
+                              type: string
+                            refLow:
+                              type: integer
+                            refHigh:
+                              type: integer
+                            refCriticalLow:
+                              type: integer
+                            refCriticalHigh:
+                              type: integer
+                            flag:
+                              type: string
+                            enteredById:
+                              type: string
+                            enteredAt:
+                              type: string
+                            verifiedUnderSingleOperator:
+                              type: boolean
+                          required:
+                            - id
+                            - labOrderItemId
+                            - version
+                            - valueNumeric
+                            - unit
+                            - refLow
+                            - refHigh
+                            - refCriticalLow
+                            - refCriticalHigh
+                            - flag
+                            - enteredById
+                            - enteredAt
+                            - verifiedUnderSingleOperator
+                    required:
+                      - order
+                      - patient
+                      - results
+                required:
+                  - data
+                example:
+                  data:
+                    order:
+                      id: eeeeeeee-5555-4555-8555-eeeeeeeeeeee
+                      orderNumber: LAB/20260720/0001
+                      encounterId: 11111111-7777-4777-8777-111111111111
+                      patientId: 22222222-8888-4888-8888-222222222222
+                      orderedById: 33333333-9999-4999-8999-333333333333
+                      orderedByName: dr. Andi Wijaya
+                      status: IN_PROGRESS
+                      priority: ROUTINE
+                      clinicalNotes: Curiga anemia defisiensi besi
+                      isFasting: false
+                      fulfilmentSite: INTERNAL
+                      chargeMode: CLINIC
+                      recollectCount: 0
+                      orderedAt: 2026-07-20T08:00:00.000Z
+                    patient:
+                      id: 22222222-8888-4888-8888-222222222222
+                      fullName: Siti Rahayu
+                      mrn: MRN00000123
+                      dateOfBirth: 1990-04-12
+                      sex: FEMALE
+                      ageYears: 36
+                    results:
+                      - id: 77777777-dddd-4ddd-8ddd-777777777777
+                        labOrderItemId: 44444444-aaaa-4aaa-8aaa-444444444444
+                        version: 1
+                        valueNumeric: 6.8
+                        unit: g/dL
+                        refLow: 12
+                        refHigh: 16
+                        refCriticalLow: 7
+                        refCriticalHigh: 20
+                        flag: CRITICAL_LOW
+                        enteredById: 88888888-eeee-4eee-8eee-888888888888
+                        enteredAt: 2026-07-20T08:00:00.000Z
+                        verifiedUnderSingleOperator: false
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Lab order not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Lab order not found.
+      security:
+        - bearer: []
+      summary: Read the values entered on a laboratory order
+      tags: &a54
+        - Laboratory Results
     put:
       operationId: LabResultController_enterLabResults_v1
       parameters:
@@ -38446,8 +38660,7 @@ paths:
       security:
         - bearer: []
       summary: Enter results for a laboratory order
-      tags: &a54
-        - Laboratory Results
+      tags: *a54
   /api/v1/lab-orders/{id}/release:
     post:
       operationId: LabResultController_releaseLabOrder_v1

@@ -557,6 +557,20 @@ describe('LabResultService', () => {
       ).rejects.toBeInstanceOf(ForbiddenException);
     });
 
+    // P18-T08. The bench view is read under the trend's rule and carries the
+    // worklist identity, not the record.
+    it('answers the bench with every typed value and the patient identity', async () => {
+      authRepositoryMock.findUserById.mockResolvedValue({
+        roles: [{ role: { permissions: [{ permission: { resource: 'LabOrder', action: 'read', scope: 'ANY' } }] } }],
+      });
+      labOrderRepositoryMock.findLabOrderById.mockResolvedValue(buildOrder({ status: 'IN_PROGRESS' }));
+      labResultRepositoryMock.findResultsByOrderId.mockResolvedValue([buildResult()]);
+      const actual = await service.getOrderBench(labOrderId, analystUser);
+      expect(actual.patient).toEqual(expect.objectContaining({ mrn: 'MRN00000123', sex: 'FEMALE' }));
+      expect(actual.results).toHaveLength(1);
+      expect(actual.order.status).toBe('IN_PROGRESS');
+    });
+
     it('lets the patient read their own', async () => {
       labResultRepositoryMock.hasEncounterWithPatient.mockResolvedValue(false);
       labResultRepositoryMock.isPatientOwner.mockResolvedValue(true);

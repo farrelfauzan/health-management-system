@@ -91,6 +91,60 @@ describe('proxy', () => {
     expect(response.headers.get('x-middleware-next')).toBe('1');
   });
 
+  // P18-T08. The technician holds the admin-portal permission, so the tests
+  // give them the permission a real hint would carry and assert the role
+  // still narrows the shell.
+  it('lands a technician on the laboratory worklist', () => {
+    const technicianToken = buildToken({
+      exp: futureUnix(),
+      roles: ['LAB_TECHNICIAN'],
+      permissions: ['portal.admin-access:any'],
+    });
+    const response = proxy(buildRequest('/admin/dashboard', technicianToken));
+
+    expect(response.status).toBe(307);
+    expect(response.headers.get('location')).toBe(`${BASE_URL}/admin/laboratory`);
+  });
+
+  it('allows a technician into the worklist, an order, and the catalog', () => {
+    const technicianToken = buildToken({
+      exp: futureUnix(),
+      roles: ['LAB_TECHNICIAN'],
+      permissions: ['portal.admin-access:any'],
+    });
+
+    for (const path of [
+      '/admin/laboratory',
+      '/admin/laboratory/c4d5e6f7-a8b9-4c0d-9e1f-2a3b4c5d6e7f',
+      '/admin/settings/laboratory',
+    ]) {
+      expect(proxy(buildRequest(path, technicianToken)).headers.get('x-middleware-next')).toBe(
+        '1',
+      );
+    }
+  });
+
+  it('keeps a technician out of patients, encounters and billing', () => {
+    const technicianToken = buildToken({
+      exp: futureUnix(),
+      roles: ['LAB_TECHNICIAN'],
+      permissions: ['portal.admin-access:any'],
+    });
+
+    for (const path of ['/admin/patients', '/admin/encounters', '/admin/billing']) {
+      const response = proxy(buildRequest(path, technicianToken));
+      expect(response.status).toBe(307);
+      expect(response.headers.get('location')).toBe(`${BASE_URL}/admin/laboratory`);
+    }
+  });
+
+  it('keeps the full shell for an admin who is also a technician', () => {
+    const adminToken = buildToken({ exp: futureUnix(), roles: ['ADMIN', 'LAB_TECHNICIAN'] });
+    const response = proxy(buildRequest('/admin/patients', adminToken));
+
+    expect(response.headers.get('x-middleware-next')).toBe('1');
+  });
+
   it('keeps a pharmacist out of unrelated admin routes', () => {
     const pharmacistToken = buildToken({ exp: futureUnix(), roles: ['PHARMACIST'] });
     const response = proxy(buildRequest('/admin/administration', pharmacistToken));

@@ -349,6 +349,24 @@ describe('Laboratory results integration', () => {
     expect(labResultRepositoryMock.releaseLabOrder).not.toHaveBeenCalled();
   });
 
+  // P18-T08. The bench reads what has been typed, released or not, with the
+  // worklist identity — never the record.
+  it('answers the bench view with the patient identity and every typed value', async () => {
+    const token = await buildToken(adminUserId, 'admin@hms.local');
+    mockActorWithPermissions('ADMIN', ADMIN_PERMISSIONS);
+
+    const response = await request(app.getHttpServer())
+      .get(`/api/v1/v1/lab-orders/${labOrderId}/results`)
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.data.patient).toEqual(
+      expect.objectContaining({ mrn: 'MRN00000123', sex: 'FEMALE' }),
+    );
+    expect(response.body.data.results).toHaveLength(1);
+    expect(response.body.data.order.orderNumber).toBe('LAB/20260728/0001');
+  });
+
   it('refuses to release while a test is still waiting for a value', async () => {
     const token = await buildToken(doctorUserId, 'dokter@hms.local');
     mockActorWithPermissions('DOCTOR', DOCTOR_PERMISSIONS);

@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   Param,
   ParseUUIDPipe,
@@ -35,6 +36,25 @@ import { LabResultService } from '../service/lab-result.service';
 @Controller({ version: '1' })
 export class LabResultController {
   constructor(private readonly labResultService: LabResultService) {}
+
+  @Get('lab-orders/:id/results')
+  @Auth([{ action: 'read', subject: 'LabOrder' }])
+  @Audited({ resource: 'lab-result', action: AuditAction.READ })
+  @ApiEndpoint({
+    summary: 'Read the values entered on a laboratory order',
+    responseDescription:
+      'The order, the patient as the worklist identifies them (name, MRN, sex, age — nothing clinical), and every value typed so far whether or not it has been released (P18-T08). The bench works from this: the entry form shows what a colleague already saved, and the validation screen shows what it is about to sign out. Under `lab-order.read:own` the reader must attend the patient or be the patient.',
+    responseExample: { data: LABORATORY_EXAMPLES.labResult.bench },
+    notFoundDescription: 'Lab order not found.',
+  })
+  async getOrderBench(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @AuthUser() currentUser?: CurrentUser,
+  ) {
+    return {
+      data: await this.labResultService.getOrderBench(id, this.assertAuthenticated(currentUser)),
+    };
+  }
 
   @Put('lab-orders/:id/results')
   @Auth([{ action: 'write', subject: 'LabResult' }])

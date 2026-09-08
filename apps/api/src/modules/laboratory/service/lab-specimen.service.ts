@@ -7,7 +7,6 @@ import {
   LabSpecimenTypeValue,
   LabSpecimenView,
   LabWorklistItem,
-  LabWorklistPatient,
   LabWorklistOrderRecord,
   LabWorklistQuery,
   RejectLabSpecimenInput,
@@ -23,7 +22,7 @@ import { LabSpecimenRepository } from '../repository/lab-specimen.repository';
 import { LabOrderMapper } from './lab-order.mapper';
 import { LabPaymentGateService } from './lab-payment-gate.service';
 import { WORKLIST_STATUSES_BY_BUCKET } from './lab-worklist-buckets';
-import { toPatientAgeYears } from './to-patient-age-years';
+import { toLabWorklistPatient } from './to-lab-worklist-patient';
 
 const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 
@@ -178,7 +177,7 @@ export class LabSpecimenService {
       orderNumber: order.orderNumber,
       specimenType: specimen.specimenType,
       collectedAt: specimen.collectedAt.toISOString(),
-      patient: this.toWorklistPatient(order),
+      patient: toLabWorklistPatient(order),
     };
   }
 
@@ -214,23 +213,12 @@ export class LabSpecimenService {
       recollectCount: record.recollectCount,
       orderedAt: record.orderedAt.toISOString(),
       clinicalNotes: record.clinicalNotes ?? undefined,
-      patient: this.toWorklistPatient(record),
+      patient: toLabWorklistPatient(record),
       itemCount: record.itemCount,
       specimens: record.specimens.map((specimen) =>
         this.labOrderMapper.toLabSpecimenView(specimen),
       ),
       isAwaitingPayment,
-    };
-  }
-
-  private toWorklistPatient(record: LabWorklistOrderRecord): LabWorklistPatient {
-    return {
-      id: record.patient.id,
-      fullName: record.patient.fullName,
-      mrn: record.patient.mrn,
-      dateOfBirth: record.patient.dateOfBirth.toISOString().slice(0, 10),
-      sex: record.patient.sex,
-      ageYears: toPatientAgeYears(record.patient.dateOfBirth, new Date()),
     };
   }
 

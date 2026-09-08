@@ -1,8 +1,5 @@
-import {
-  LabResultFlagValue,
-  LabResultRangeSnapshot,
-  LabResultTypeValue,
-} from '@hms/shared-types';
+import type { LabResultFlagValue, LabResultTypeValue } from '#laboratory/schemas';
+import type { LabResultRangeSnapshot } from '#laboratory/types';
 
 /** The value being judged, and the band it is judged against. */
 export type ComputeLabFlagParams = {
@@ -17,12 +14,16 @@ export type ComputeLabFlagParams = {
 /**
  * Whether a measured value is abnormal, and how far (P18-T04).
  *
- * A pure function on purpose, and the most heavily tested thing in this
- * module: it is the one place where a bug becomes a clinical error rather than
- * a rendering one. It reads nothing, writes nothing, and never re-reads the
- * catalog — the band it compares against is the snapshot taken when the value
- * was measured, which is what keeps a range edited in 2027 from re-flagging a
- * 2026 result.
+ * A pure function on purpose, and the most heavily tested thing in the
+ * laboratory: it is the one place where a bug becomes a clinical error rather
+ * than a rendering one. It reads nothing, writes nothing, and never re-reads
+ * the catalog — the band it compares against is the snapshot taken when the
+ * value was measured, which is what keeps a range edited in 2027 from
+ * re-flagging a 2026 result.
+ *
+ * In `@hms/shared-types` rather than the API since P18-T08, because the bench
+ * screen previews the flag as the analis types and the preview has to agree
+ * with the row the server writes a moment later — one function, two callers.
  *
  * The comparisons are deliberately asymmetric: the normal band is **inclusive**
  * (a value exactly on `low` is normal — a range published as 12–16 means twelve

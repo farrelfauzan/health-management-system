@@ -25,6 +25,7 @@ import type {
   EnterLabResultsDto,
   LabResultControllerAmendLabResultV1200,
   LabResultControllerEnterLabResultsV1200,
+  LabResultControllerGetOrderBenchV1200,
   LabResultControllerReleaseLabOrderV1200,
   PatientLabResultControllerListPatientLabResultsV1200,
   PatientLabResultControllerListPatientLabResultsV1Params
@@ -49,6 +50,98 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   }
   return result;
 };
+
+/**
+ * @summary Read the values entered on a laboratory order
+ */
+export const labResultControllerGetOrderBenchV1 = (
+    id: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<LabResultControllerGetOrderBenchV1200>(
+      {url: `/api/v1/lab-orders/${id}/results`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getLabResultControllerGetOrderBenchV1QueryKey = (id: string,) => {
+    return [
+    `/api/v1/lab-orders/${id}/results`
+    ] as const;
+    }
+
+
+export const getLabResultControllerGetOrderBenchV1QueryOptions = <TData = Awaited<ReturnType<typeof labResultControllerGetOrderBenchV1>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof labResultControllerGetOrderBenchV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getLabResultControllerGetOrderBenchV1QueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof labResultControllerGetOrderBenchV1>>> = ({ signal }) => labResultControllerGetOrderBenchV1(id, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof labResultControllerGetOrderBenchV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type LabResultControllerGetOrderBenchV1QueryResult = NonNullable<Awaited<ReturnType<typeof labResultControllerGetOrderBenchV1>>>
+export type LabResultControllerGetOrderBenchV1QueryError = unknown
+
+
+export function useLabResultControllerGetOrderBenchV1<TData = Awaited<ReturnType<typeof labResultControllerGetOrderBenchV1>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof labResultControllerGetOrderBenchV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof labResultControllerGetOrderBenchV1>>,
+          TError,
+          Awaited<ReturnType<typeof labResultControllerGetOrderBenchV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useLabResultControllerGetOrderBenchV1<TData = Awaited<ReturnType<typeof labResultControllerGetOrderBenchV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof labResultControllerGetOrderBenchV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof labResultControllerGetOrderBenchV1>>,
+          TError,
+          Awaited<ReturnType<typeof labResultControllerGetOrderBenchV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useLabResultControllerGetOrderBenchV1<TData = Awaited<ReturnType<typeof labResultControllerGetOrderBenchV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof labResultControllerGetOrderBenchV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Read the values entered on a laboratory order
+ */
+
+export function useLabResultControllerGetOrderBenchV1<TData = Awaited<ReturnType<typeof labResultControllerGetOrderBenchV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof labResultControllerGetOrderBenchV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getLabResultControllerGetOrderBenchV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
 
 /**
  * @summary Enter results for a laboratory order

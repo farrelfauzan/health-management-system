@@ -191,9 +191,7 @@ describe('GlobalSearch', () => {
   it('drops that same link once the shell excludes it', async () => {
     const user = userEvent.setup();
     mockEmptyResponses();
-    renderGlobalSearch([{ action: 'read', subject: 'LabTest' }], [
-      '/admin/settings/laboratory',
-    ]);
+    renderGlobalSearch([{ action: 'read', subject: 'LabTest' }], ['/admin/laboratory']);
 
     await user.keyboard('{Meta>}k{/Meta}');
 

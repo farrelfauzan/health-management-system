@@ -38,6 +38,8 @@ const SUPPORTED_ACTIONS: AppAction[] = [
   'block',
   'merge',
   'release',
+  // P18-T08. `lab-result.verify:any` is the bench's second signature.
+  'verify',
   'share',
   'offboard',
   // P16-T25. Every `invoice.deliver:any` in a session hint was dropped here
@@ -91,6 +93,14 @@ const SUBJECT_BY_RESOURCE: Record<string, AppSubject> = {
   // row a doctor's ordering grant resolves to no rule at all and the
   // Pemeriksaan Lab form never renders — a failure only a browser catches.
   'lab-order': 'LabOrder',
+  // P18-T03/T04/T08. Without these rows a technician's `lab-specimen.write:any`
+  // and `lab-result.*` grants resolve to no rule at all, and the worklist
+  // renders with no Ambil sampel, no Simpan and no Rilis — a failure only a
+  // browser catches. `lab-settings` follows `LaboratorySettings`, the subject
+  // the API seeds it under.
+  'lab-specimen': 'LabSpecimen',
+  'lab-result': 'LabResult',
+  'lab-settings': 'LaboratorySettings',
   invoice: 'Invoice',
   payment: 'Payment',
   'chat.session': 'ChatSession',

@@ -83,6 +83,14 @@ export const ADMIN_PORTAL_ADMIN_RULES: AppRule[] = [
   // losing it to the preset.
   { action: 'read', subject: 'LabOrder' },
   { action: 'write', subject: 'LabOrder' },
+  // P18-T08. `seed.sql` gives ADMIN the specimen, result and settings keys;
+  // an admin whose session hint predates them still sees the bench's
+  // buttons rather than losing them to the preset.
+  { action: 'write', subject: 'LabSpecimen' },
+  { action: 'write', subject: 'LabResult' },
+  { action: 'verify', subject: 'LabResult' },
+  { action: 'read', subject: 'LaboratorySettings' },
+  { action: 'write', subject: 'LaboratorySettings' },
   { action: 'read', subject: 'Invoice' },
   { action: 'write', subject: 'Invoice' },
   // P16-T25. `seed.sql` gives ADMIN the deliver key; an admin whose hint
