@@ -8,7 +8,10 @@
 
 export type SatusehatSubmissionControllerRetrySubmissionV1200Data = {
   id: string;
+  kind: string;
   encounterId: string;
+  labOrderId: unknown | null;
+  labOrderNumber: unknown | null;
   status: string;
   attempts: number;
   lastError: unknown | null;
