@@ -1,9 +1,12 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 import { useFormatter, useTranslations } from 'next-intl';
 import type { NotificationView } from '@hms/shared-types';
 import { DropdownMenuItem, Icon, cn } from '@hms/ui';
+
+import { invalidateEncounterQueries } from '#lib/encounters/invalidate-encounter-queries';
 
 const NOTIFICATION_TYPE_ICONS: Record<string, string> = {
   APPOINTMENT_APPROVED: 'event_available',
@@ -22,6 +25,17 @@ const NOTIFICATION_TYPE_ICONS: Record<string, string> = {
   LAB_RESULT_RELEASED: 'biotech',
 };
 
+/**
+ * P18-T07. These two deep-link into an encounter the doctor may already have
+ * open, where a cached query would show the visit exactly as it was before the
+ * value arrived — which is the one moment this feature exists to prevent.
+ */
+const ENCOUNTER_REFRESHING_TYPES: readonly string[] = [
+  'LAB_RESULT_CRITICAL',
+  'LAB_RESULT_RELEASED',
+  'PATIENT_DOCUMENT_RELEASED',
+];
+
 type NotificationsMenuItemProps = {
   notification: NotificationView;
 };
@@ -30,6 +44,7 @@ export function NotificationsMenuItem({ notification }: NotificationsMenuItemPro
   const t = useTranslations('authShell.shell.notifications');
   const format = useFormatter();
   const router = useRouter();
+  const queryClient = useQueryClient();
   const isUnread = notification.readAt === null;
   const iconName = NOTIFICATION_TYPE_ICONS[notification.type] ?? 'notifications';
   // Rows carry i18n keys, so an older client can meet a key it does not know
@@ -45,9 +60,13 @@ export function NotificationsMenuItem({ notification }: NotificationsMenuItemPro
       : messageKey;
   }
   function handleSelect(): void {
-    if (notification.href) {
-      router.push(notification.href);
+    if (!notification.href) {
+      return;
     }
+    if (ENCOUNTER_REFRESHING_TYPES.includes(notification.type)) {
+      void invalidateEncounterQueries(queryClient);
+    }
+    router.push(notification.href);
   }
   return (
     <DropdownMenuItem className="items-start gap-3 py-2.5" onSelect={handleSelect}>

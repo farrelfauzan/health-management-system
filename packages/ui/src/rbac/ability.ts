@@ -75,6 +75,12 @@ export type AppSubject =
   // person, and splitting them would imply a role that may add a test but not
   // say what its normal range is.
   | 'LabTest'
+  // P18-T02/T07. The request, separate from the catalog it is built from: a
+  // doctor orders tests they may not edit, and an analis reads orders they may
+  // not create. One subject for both scopes — `permissionToRule` drops the
+  // `:own`/`:any` suffix, so this decides whether the ordering card renders and
+  // the API decides whose encounters it may be used on.
+  | 'LabOrder'
   | 'Invoice'
   | 'Payment'
   | 'ChatSession'

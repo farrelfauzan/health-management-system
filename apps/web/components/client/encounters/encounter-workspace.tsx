@@ -8,6 +8,8 @@ import { GenerateInvoiceDialog } from '#components/client/billing/generate-invoi
 import { EncounterDiagnosesCard } from '#components/client/encounters/encounter-diagnoses-card';
 import { EncounterPrescriptionsCard } from '#components/client/encounters/encounter-prescriptions-card';
 import { EncounterImmunizationsCard } from '#components/client/encounters/encounter-immunizations-card';
+import { EncounterLabCard } from '#components/client/encounters/encounter-lab-card';
+import { EncounterLabResultsCard } from '#components/client/encounters/encounter-lab-results-card';
 import { EncounterProceduresCard } from '#components/client/encounters/encounter-procedures-card';
 import { EncounterReferralCard } from '#components/client/encounters/encounter-referral-card';
 import { EncounterDocumentsPanel } from '#components/client/patient-documents/encounter-documents-panel';
@@ -26,6 +28,13 @@ import { useEncounterDetail } from '#lib/encounters/use-encounter-detail';
 type EncounterWorkspaceProps = {
   encounterId: string;
   /**
+   * Resolved on the server page from the session claims, which a client
+   * component cannot read (P18-T07). Visibility only — `FeatureGuard` refuses
+   * every laboratory endpoint for a clinic without the entitlement whatever
+   * this says.
+   */
+  isLaboratoryEnabled?: boolean;
+  /**
    * Breadcrumb root and patient-link shell. A doctor session has no patient
    * directory to reach, so the link is omitted rather than pointing at a route
    * their session cannot open.
@@ -38,6 +47,7 @@ export function EncounterWorkspace({
   encounterId,
   breadcrumbRoot = 'Main Dashboard',
   patientHrefPrefix = '/admin/patients',
+  isLaboratoryEnabled = false,
 }: EncounterWorkspaceProps) {
   const encounterQuery = useEncounterDetail(encounterId);
   const t = useTranslations('clinical');
@@ -133,6 +143,15 @@ export function EncounterWorkspace({
             vitalSigns={encounter.vitalSigns}
             isEditable={isEditable}
           />
+          {/* P18-T07. Released values sit beside the vitals because that is
+              how they are read — a haemoglobin next to a blood pressure, not
+              filed behind the request that produced it. */}
+          {isLaboratoryEnabled ? (
+            <EncounterLabResultsCard
+              patientId={encounter.patientId}
+              labResults={encounter.labResults}
+            />
+          ) : null}
           {/* Beside vitals rather than in the right column: the doctor reads
               the file while taking the history, not while prescribing. */}
           <EncounterDocumentsPanel encounterId={encounter.id} />
@@ -153,6 +172,13 @@ export function EncounterWorkspace({
             immunizations={encounter.immunizations}
             isEditable={isEditable}
           />
+          {isLaboratoryEnabled ? (
+            <EncounterLabCard
+              encounterId={encounter.id}
+              labOrders={encounter.labOrders}
+              isEditable={isEditable}
+            />
+          ) : null}
           <EncounterReferralCard encounterId={encounter.id} isEditable={isEditable} />
           <EncounterPrescriptionsCard
             encounterId={encounter.id}

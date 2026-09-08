@@ -196,7 +196,8 @@
       "compactRecord": "Buka detail untuk identitas dan demografi lengkap.",
       "tabs": {
         "overview": "Ringkasan",
-        "documents": "Dokumen"
+        "documents": "Dokumen",
+        "laboratory": "Riwayat Lab"
       },
       "documents": {
         "title": "Dokumen",
@@ -917,7 +918,8 @@
           "title": "Batalkan kunjungan ini?",
           "description": "Gunakan hanya untuk kunjungan yang dibuka karena kesalahan. Rekam dan pendaftaran ditarik tetapi tetap dapat diaudit; pasien harus mendaftar kembali.",
           "pending": "Membatalkan..."
-        }
+        },
+        "openLabWarning": "{count} permintaan laboratorium masih terbuka ({orderNumbers}). Kunjungan tetap boleh ditutup — hasil datang setelah pasien pulang — tetapi tidak ada yang otomatis menagihnya."
       },
       "immunization": {
         "title": "Imunisasi",
@@ -950,6 +952,79 @@
           "LEFT_THIGH": "Paha kiri",
           "RIGHT_THIGH": "Paha kanan",
           "OTHER": "Lainnya"
+        }
+      },
+      "laboratory": {
+        "title": "Pemeriksaan Lab",
+        "empty": "Belum ada permintaan pemeriksaan laboratorium pada kunjungan ini.",
+        "form": {
+          "panels": "Paket pemeriksaan",
+          "panelsPlaceholder": "Pilih paket",
+          "tests": "Pemeriksaan satuan",
+          "testsPlaceholder": "Pilih pemeriksaan",
+          "search": "Cari nama atau kode",
+          "noMatches": "Tidak ada yang cocok dengan pencarian itu.",
+          "notesPlaceholder": "Alasan pemeriksaan — satu-satunya catatan klinis yang dibaca laboratorium",
+          "urgent": "Cito",
+          "fasting": "Puasa",
+          "submit": "Kirim permintaan",
+          "pickSomething": "Pilih setidaknya satu pemeriksaan atau paket.",
+          "error": "Permintaan laboratorium tidak dapat dikirim."
+        },
+        "order": {
+          "summary": "{count} pemeriksaan · diminta {orderedAt}",
+          "urgent": "Cito",
+          "cancel": "Batalkan",
+          "cancelled": "Dibatalkan. Tidak ada pemeriksaan yang dikerjakan.",
+          "waiting": "Menunggu hasil."
+        },
+        "step": {
+          "ORDERED": "Diminta",
+          "COLLECTED": "Sampel diambil",
+          "RESULTED": "Hasil masuk",
+          "RELEASED": "Divalidasi"
+        },
+        "cancel": {
+          "title": "Batalkan {orderNumber}",
+          "description": "Alasannya disimpan pada rekam medis — inilah yang menjawab “kenapa pemeriksaan saya tidak dikerjakan”.",
+          "reasonPlaceholder": "Alasan permintaan ini dibatalkan",
+          "reasonRequired": "Isi alasan sebelum membatalkan permintaan.",
+          "keep": "Pertahankan permintaan",
+          "confirm": "Batalkan permintaan",
+          "pending": "Membatalkan…",
+          "error": "Permintaan tidak dapat dibatalkan."
+        },
+        "results": {
+          "title": "Hasil Laboratorium"
+        },
+        "result": {
+          "range": "Rujukan {range} {unit}",
+          "noRange": "Tidak ada rentang rujukan untuk pasien ini",
+          "releasedAt": "Divalidasi {releasedAt}",
+          "showTrend": "Tren",
+          "hideTrend": "Sembunyikan",
+          "amended": "Dikoreksi (v{version}): {reason}"
+        },
+        "trend": {
+          "title": "{test} — nilai terakhir yang divalidasi",
+          "sparkline": "Tren nilai {test} yang terakhir divalidasi",
+          "loading": "Memuat tren…",
+          "empty": "Belum ada nilai terdahulu untuk pemeriksaan ini.",
+          "undated": "Tanpa tanggal"
+        },
+        "history": {
+          "emptyTitle": "Belum ada hasil laboratorium",
+          "emptyDescription": "Nilai yang sudah divalidasi laboratorium akan muncul di sini.",
+          "filterPlaceholder": "Saring berdasarkan nama atau kode pemeriksaan",
+          "noMatches": "Tidak ada pemeriksaan yang cocok dengan saringan itu."
+        },
+        "flag": {
+          "NORMAL": "Normal",
+          "LOW": "Di bawah rentang rujukan",
+          "HIGH": "Di atas rentang rujukan",
+          "CRITICAL_LOW": "Kritis rendah",
+          "CRITICAL_HIGH": "Kritis tinggi",
+          "ABNORMAL": "Abnormal"
         }
       }
     }
