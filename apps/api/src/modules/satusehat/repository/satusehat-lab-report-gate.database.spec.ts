@@ -70,6 +70,7 @@ describe('SATUSEHAT lab report encounter gate against PostgreSQL', () => {
     const labOrder = await prisma.labOrder.create({
       data: {
         encounterId: encounter.id,
+        registrationId: registration.id,
         patientId,
         orderedById: doctorId,
         orderNumber: `LAB/GATE/${randomUUID()}`,

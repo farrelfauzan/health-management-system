@@ -107,6 +107,7 @@ describe('Lab result versioning against Postgres', () => {
     const labOrder = await prisma.labOrder.create({
       data: {
         encounterId: encounter.id,
+        registrationId: registration.id,
         patientId: patient.id,
         orderedById: doctor.id,
         orderNumber: `LAB/2099/${suffix.slice(0, 8)}`,

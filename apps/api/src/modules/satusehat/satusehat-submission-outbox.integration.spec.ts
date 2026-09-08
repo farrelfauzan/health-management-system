@@ -403,6 +403,7 @@ describe('SATUSEHAT submission outbox against Postgres', () => {
       const labOrder = await prisma.labOrder.create({
         data: {
           encounterId: context.encounterId,
+          registrationId: context.registrationId,
           patientId: context.patientId,
           orderedById: context.doctorId,
           orderNumber: `LAB/OUTBOX/${randomUUID()}`,
