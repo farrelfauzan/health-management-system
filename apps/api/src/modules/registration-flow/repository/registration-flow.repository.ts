@@ -236,9 +236,12 @@ export class RegistrationFlowRepository {
       // The poli is resolved inside the transaction rather than passed in, so
       // the number and the poli it was drawn from are decided against the same
       // snapshot the row is written from.
-      const specialtyId = payload.appointmentId
-        ? await this.resolveAppointmentSpecialtyId(tx, payload.appointmentId)
-        : null;
+      // A LAB_ONLY visit joins no poli, so it resolves no specialty and draws
+      // no poli number (P18-T10) — there is no doctor's queue to stand in.
+      const specialtyId =
+        payload.appointmentId && payload.type !== 'LAB_ONLY'
+          ? await this.resolveAppointmentSpecialtyId(tx, payload.appointmentId)
+          : null;
       const poliQueueNumber = specialtyId
         ? await this.queueNumberAllocator.allocatePoliQueueNumber(
             tx,
@@ -256,6 +259,7 @@ export class RegistrationFlowRepository {
         data: {
           patientId: payload.patientId,
           appointmentId: payload.appointmentId,
+          type: payload.type ?? 'CONSULTATION',
           createdById: payload.createdById,
           queueNumber,
           queueDate: payload.queueDate,
@@ -271,6 +275,11 @@ export class RegistrationFlowRepository {
     return this.prisma.findManyActive(this.prisma.registration, {
       where: {
         queueDate: params.queueDate,
+        // The board is the doctors' queue. A LAB_ONLY visit holds a daily
+        // antrian number like anyone else but joins no poli and waits for no
+        // doctor (P18-T10), so showing it here would tell a waiting room that
+        // someone is ahead of them who is not.
+        type: 'CONSULTATION',
         ...(params.specialtyId ? { specialtyId: params.specialtyId } : {}),
       },
       orderBy: {

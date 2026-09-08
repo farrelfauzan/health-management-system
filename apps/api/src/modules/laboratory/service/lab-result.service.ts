@@ -55,6 +55,14 @@ const LAB_TECHNICIAN_ROLE = 'LAB_TECHNICIAN';
 const ENTRY_STATUSES = ['COLLECTED', 'IN_PROGRESS', 'RESULTED'] as const;
 
 const DOCTOR_ENCOUNTER_PATH_PREFIX = '/doctor/encounters/';
+/** Where a released order with no ordering doctor is read instead (P18-T10). */
+const ADMIN_LAB_ORDER_PATH_PREFIX = '/admin/laboratory/';
+/**
+ * ADMIN-only by P18-T02's grant table, which is what makes it the right
+ * audience for a result nobody at this clinic asked for: `lab-order.read:any`
+ * would also reach the technicians who released it.
+ */
+const LAB_ORDER_WRITE_ANY_PERMISSION = 'lab-order.write:any';
 
 /**
  * The clinically important part of the laboratory: the value, whether it is
@@ -665,7 +673,28 @@ export class LabResultService {
   ): Promise<void> {
     try {
       const doctorUserId = await this.labResultRepository.findOrderingDoctorUserId(order.id);
-      if (doctorUserId === null || doctorUserId === currentUser.sub) {
+      const href =
+        order.encounterId === null
+          ? `${ADMIN_LAB_ORDER_PATH_PREFIX}${order.id}`
+          : `${DOCTOR_ENCOUNTER_PATH_PREFIX}${order.encounterId}`;
+      // A walk-in or an outside referral has no ordering doctor to tell
+      // (P18-T10), so the result goes to the desk that raised it instead of
+      // going nowhere. Still a notification, because somebody has to hand the
+      // sheet to the patient — and for a critical value, act on it today.
+      if (doctorUserId === null) {
+        await this.notificationService.createForUsersWithPermission(
+          LAB_ORDER_WRITE_ANY_PERMISSION,
+          {
+            type: message.type,
+            titleKey: message.titleKey,
+            bodyKey: message.bodyKey,
+            params: message.params,
+            href,
+          },
+        );
+        return;
+      }
+      if (doctorUserId === currentUser.sub) {
         return;
       }
       await this.notificationService.createForUser({
@@ -674,7 +703,7 @@ export class LabResultService {
         titleKey: message.titleKey,
         bodyKey: message.bodyKey,
         params: message.params,
-        href: `${DOCTOR_ENCOUNTER_PATH_PREFIX}${order.encounterId}`,
+        href,
       });
     } catch (caughtError) {
       this.logger.warn(

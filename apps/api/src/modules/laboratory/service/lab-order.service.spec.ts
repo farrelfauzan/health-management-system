@@ -11,6 +11,7 @@ import { LabCatalogService } from './lab-catalog.service';
 import { LabOrderAccessService } from './lab-order-access.service';
 import { LabOrderMapper } from './lab-order.mapper';
 import { LabOrderService } from './lab-order.service';
+import { RegistrationFlowService } from '../../registration-flow/service/registration-flow.service';
 
 /**
  * The rules that stop a patient being drawn or charged twice, and the ones that
@@ -70,6 +71,8 @@ describe('LabOrderService', () => {
 
   const configServiceMock = { get: jest.fn().mockReturnValue('Asia/Jakarta') };
 
+  const registrationFlowServiceMock = { createLabOnlyRegistration: jest.fn() };
+
   const service = new LabOrderService(
     labOrderRepositoryMock as unknown as LabOrderRepository,
     labCatalogServiceMock as unknown as LabCatalogService,
@@ -79,6 +82,7 @@ describe('LabOrderService', () => {
     billingServiceMock as unknown as BillingService,
     clinicProfileServiceMock as unknown as ClinicProfileService,
     clinicalRequestDocumentServiceMock as unknown as ClinicalRequestDocumentService,
+    registrationFlowServiceMock as unknown as RegistrationFlowService,
     configServiceMock as unknown as ConfigService,
   );
 

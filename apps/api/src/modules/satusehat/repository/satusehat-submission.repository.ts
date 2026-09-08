@@ -631,6 +631,7 @@ export class SatusehatSubmissionRepository {
     const order = await this.prisma.labOrder.findUnique({
       where: { id: labOrderId },
       include: {
+        registration: { select: { id: true, registeredAt: true } },
         patient: { select: { id: true, fullName: true, satusehatPatientIdCiphertext: true } },
         orderedBy: { select: { id: true, fullName: true, satusehatPractitionerId: true } },
         encounter: {
@@ -701,12 +702,17 @@ export class SatusehatSubmissionRepository {
       encounterId: order.encounterId,
       satusehatEncounterId:
         order.encounter?.satusehatSubmissions[0]?.satusehatEncounterId ?? null,
+      registrationId: order.registrationId,
+      visitStartedAt: order.registration.registeredAt,
       patientId: order.patient.id,
       patientName: order.patient.fullName,
       patientIhsNumber: this.decryptOptional(order.patient.satusehatPatientIdCiphertext),
-      doctorId: order.orderedBy.id,
-      doctorName: order.orderedBy.fullName,
-      practitionerIhsNumber: order.orderedBy.satusehatPractitionerId,
+      // Null for a walk-in or an outside referral (P18-T10): nobody at this
+      // clinic ordered it, and the chain reports the Organization as performer
+      // with no `requester` rather than naming a doctor who did not ask.
+      doctorId: order.orderedBy?.id ?? null,
+      doctorName: order.orderedBy?.fullName ?? null,
+      practitionerIhsNumber: order.orderedBy?.satusehatPractitionerId ?? null,
       // Always null today: `LabPanel` carries a local catalog code and a name,
       // but no LOINC — P18-T01 gave tests one and panels none. Every report
       // therefore codes as LOINC 11502-2 "Laboratory report", which is the

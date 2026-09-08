@@ -305,8 +305,27 @@ export class SatusehatSubmissionService {
       specimenFullUrls,
       observationFullUrls,
     } = input;
-    const encounterReference = `Encounter/${bundleData.satusehatEncounterId}`;
     const releasedAt = bundleData.releasedAt ?? new Date();
+    // A laboratory-only visit has no encounter to point at, so the chain sends
+    // one of its own (P18-T10) and the rest of the bundle references it
+    // locally. An order raised during a consultation references the Encounter
+    // that visit already reported.
+    const labOnlyEncounterEntry: SatusehatFhirBundleEntry | null =
+      bundleData.encounterId === null
+        ? {
+            fullUrl: `urn:uuid:${randomUUID()}`,
+            resource: this.fhirMapper.mapLabOnlyVisitToEncounter({
+              registrationId: bundleData.registrationId,
+              patientIhsNumber,
+              patientName: bundleData.patientName,
+              startedAt: bundleData.visitStartedAt,
+              endedAt: releasedAt,
+            }),
+            request: { method: 'POST', url: 'Encounter' },
+          }
+        : null;
+    const encounterReference =
+      labOnlyEncounterEntry?.fullUrl ?? `Encounter/${bundleData.satusehatEncounterId}`;
     const serviceRequestEntries: SatusehatFhirBundleEntry[] = reportableItems.map((item) => {
       const fullUrl = `urn:uuid:${randomUUID()}`;
       serviceRequestFullUrls.set(fullUrl, item.labOrderItemId);
@@ -427,6 +446,8 @@ export class SatusehatSubmissionService {
       resourceType: 'Bundle',
       type: 'transaction',
       entry: [
+        // First, so everything after it can reference a visit that exists.
+        ...(labOnlyEncounterEntry === null ? [] : [labOnlyEncounterEntry]),
         ...serviceRequestEntries,
         ...specimenEntries,
         ...observationEntries,

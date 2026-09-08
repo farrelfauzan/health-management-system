@@ -77,6 +77,7 @@ export class LabOrderRepository {
         status: true,
         patientId: true,
         doctorId: true,
+        registrationId: true,
         doctor: { select: { ownerUserId: true } },
         patient: { select: { ownerUserId: true } },
       },
@@ -89,6 +90,7 @@ export class LabOrderRepository {
       status: encounter.status,
       patientId: encounter.patientId,
       doctorId: encounter.doctorId,
+      registrationId: encounter.registrationId,
       doctorOwnerUserId: encounter.doctor.ownerUserId,
       patientOwnerUserId: encounter.patient.ownerUserId,
     };
@@ -130,8 +132,12 @@ export class LabOrderRepository {
       return tx.labOrder.create({
         data: {
           encounterId: payload.encounterId,
+          registrationId: payload.registrationId,
+          source: payload.source,
           patientId: payload.patientId,
           orderedById: payload.orderedById,
+          externalRequesterName: payload.externalRequesterName,
+          externalRequesterFacility: payload.externalRequesterFacility,
           orderNumber,
           priority: payload.priority,
           clinicalNotes: payload.clinicalNotes,
@@ -139,6 +145,7 @@ export class LabOrderRepository {
           fulfilmentSite: payload.fulfilmentSite,
           chargeMode: payload.chargeMode,
           externalFacilityName: payload.externalFacilityName,
+          requestLetterDocumentId: payload.requestLetterDocumentId ?? null,
           orderedAt: payload.orderedAt,
           items: {
             create: payload.items.map((item) => ({
