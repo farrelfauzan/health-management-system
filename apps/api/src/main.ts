@@ -1,3 +1,4 @@
+import compression from 'compression';
 import { NestFactory } from '@nestjs/core';
 import { ZodValidationPipe } from 'nestjs-zod';
 import { AppModule } from './app.module';
@@ -7,6 +8,9 @@ import { ConfigService } from '@nestjs/config';
 import { Logger } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { stringify } from 'yaml';
+
+/** Below this, gzip's own framing costs more than it saves. */
+const COMPRESSION_THRESHOLD_BYTES = 1024;
 
 async function bootstrap(): Promise<void> {
   // SJ-5: refuse to start when a required secret is missing, before a single
@@ -41,6 +45,19 @@ async function bootstrap(): Promise<void> {
   });
 
   app.setGlobalPrefix('api');
+  // Clinic screens poll (worklists, monitors, a conversation transcript every
+  // five seconds), every response carries `no-store` for the shared-terminal
+  // reason in `NoStoreInterceptor`, and none of it can therefore be absorbed by
+  // a cache in front. Compression is the one lever left on the wire, and JSON
+  // gives most of itself back.
+  //
+  // Safe here despite BREACH: that attack needs a secret and attacker-chosen
+  // text compressed into one response, and these responses are records read
+  // out of the database rather than anything echoed back from the request.
+  // Sessions live in cookies and headers, which are not part of the body being
+  // compressed. `threshold` leaves the small ones alone — an unread count is
+  // bigger gzipped than plain.
+  app.use(compression({ threshold: COMPRESSION_THRESHOLD_BYTES }));
   app.useGlobalPipes(new ZodValidationPipe());
 
   // How many proxy hops in front of the API may be trusted to have appended
