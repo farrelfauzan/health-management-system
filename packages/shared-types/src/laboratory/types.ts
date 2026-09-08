@@ -5,6 +5,7 @@ import type {
   LabOrderPriorityValue,
   LabOrderStatusValue,
   LabReferenceRangeInput,
+  LabReportStatusValue,
   LabResultFlagValue,
   LabResultTypeValue,
   LabSpecimenRejectReasonValue,
@@ -433,4 +434,107 @@ export type UpdateLaboratorySettingsPayload = {
   technicianMayVerify?: boolean;
   singleOperator?: boolean;
   updatedById: string;
+};
+
+/** One rendering of the report, as the repository returns it (P18-T05). */
+export type LabReportRecord = {
+  id: string;
+  labOrderId: string;
+  version: number;
+  status: LabReportStatusValue;
+  isAmended: boolean;
+  releasedAt: Date;
+  documentId: string | null;
+  attemptCount: number;
+  nextAttemptAt: Date | null;
+  lastError: string | null;
+  renderedAt: Date | null;
+  pageCount: number | null;
+  requestedById: string;
+  createdAt: Date;
+};
+
+/**
+ * Queues the next report version for an order. `isAmended` decides the banner;
+ * `releasedAt` is snapshotted here rather than read at render time because the
+ * order may be released again before the worker gets to this row.
+ */
+export type EnqueueLabReportPayload = {
+  labOrderId: string;
+  requestedById: string;
+  isAmended: boolean;
+  releasedAt: Date;
+};
+
+export type ClaimDueLabReportsPayload = {
+  limit: number;
+  leaseMs: number;
+  leasedBy: string;
+};
+
+/** A render that failed and will be tried again, or has run out of tries. */
+export type RescheduleLabReportPayload = {
+  id: string;
+  error: string;
+  nextAttemptAt: Date | null;
+};
+
+/**
+ * Everything the worker files when a render lands: the bytes are already in
+ * object storage, and this creates the patient clinical document and marks the
+ * report row `READY` in one transaction.
+ */
+export type FileLabReportDocumentPayload = {
+  reportId: string;
+  storageKey: string;
+  sizeBytes: number;
+  pageCount: number | null;
+  title: string;
+  patientId: string;
+  encounterId: string;
+  documentDate: Date;
+  /** The verifier — the report's uploader and the account that released it to the patient. */
+  actorUserId: string;
+};
+
+/**
+ * Who signed a report out, for the sheet. A `User` has no display name, so
+ * the repository resolves a doctor's profile name where one exists and falls
+ * back to the account's e-mail — a report signed by nobody is not a report.
+ */
+export type LabReportVerifierRecord = {
+  userId: string;
+  email: string;
+  displayName: string;
+};
+
+/** A `READY` report with the object its document points at, for a signed download. */
+export type LabReportFileRecord = LabReportRecord & {
+  storageKey: string;
+};
+
+/**
+ * The print-ready context the laboratory hands the renderer (P18-T05): every
+ * value already an Indonesian string, one line per test. The same shape the
+ * printed requests use, without a `kind` — there is one report.
+ */
+export type LabReportRenderContext = {
+  title: string;
+  values: Readonly<Record<string, string>>;
+  lines: readonly Readonly<Record<string, string>>[];
+};
+
+/**
+ * The report worker's knobs, read from the environment at boot. The same
+ * shape as the delivery outbox (`P16-T26`) because it is the same pattern:
+ * a lease-claimed sweep that retries a transient sidecar failure with backoff
+ * and parks the row as `FAILED` after the last attempt.
+ */
+export type LabReportWorkerConfig = {
+  readonly workerEnabled: boolean;
+  readonly workerPollIntervalMs: number;
+  readonly workerBatchSize: number;
+  readonly leaseMs: number;
+  readonly maxAttempts: number;
+  readonly retryBaseDelayMs: number;
 };

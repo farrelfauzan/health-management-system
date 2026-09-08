@@ -31,6 +31,8 @@ import type {
   LabOrderControllerListLabOrdersV1Params,
   LabOrderControllerPrintRequestLetterV1200,
   LabOrderControllerUpdateDispositionV1200,
+  LabReportControllerDownloadReportV1200,
+  LabReportControllerListReportsV1200,
   LabWorklistControllerListWorklistV1200,
   LabWorklistControllerListWorklistV1Params,
   UpdateLabOrderDispositionDto
@@ -810,6 +812,190 @@ export function useLabWorklistControllerListWorklistV1<TData = Awaited<ReturnTyp
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getLabWorklistControllerListWorklistV1QueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Download the current laboratory report
+ */
+export const labReportControllerDownloadReportV1 = (
+    id: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<LabReportControllerDownloadReportV1200>(
+      {url: `/api/v1/lab-orders/${id}/report`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getLabReportControllerDownloadReportV1QueryKey = (id: string,) => {
+    return [
+    `/api/v1/lab-orders/${id}/report`
+    ] as const;
+    }
+
+
+export const getLabReportControllerDownloadReportV1QueryOptions = <TData = Awaited<ReturnType<typeof labReportControllerDownloadReportV1>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof labReportControllerDownloadReportV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getLabReportControllerDownloadReportV1QueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof labReportControllerDownloadReportV1>>> = ({ signal }) => labReportControllerDownloadReportV1(id, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof labReportControllerDownloadReportV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type LabReportControllerDownloadReportV1QueryResult = NonNullable<Awaited<ReturnType<typeof labReportControllerDownloadReportV1>>>
+export type LabReportControllerDownloadReportV1QueryError = unknown
+
+
+export function useLabReportControllerDownloadReportV1<TData = Awaited<ReturnType<typeof labReportControllerDownloadReportV1>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof labReportControllerDownloadReportV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof labReportControllerDownloadReportV1>>,
+          TError,
+          Awaited<ReturnType<typeof labReportControllerDownloadReportV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useLabReportControllerDownloadReportV1<TData = Awaited<ReturnType<typeof labReportControllerDownloadReportV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof labReportControllerDownloadReportV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof labReportControllerDownloadReportV1>>,
+          TError,
+          Awaited<ReturnType<typeof labReportControllerDownloadReportV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useLabReportControllerDownloadReportV1<TData = Awaited<ReturnType<typeof labReportControllerDownloadReportV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof labReportControllerDownloadReportV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Download the current laboratory report
+ */
+
+export function useLabReportControllerDownloadReportV1<TData = Awaited<ReturnType<typeof labReportControllerDownloadReportV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof labReportControllerDownloadReportV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getLabReportControllerDownloadReportV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary List the versions of a laboratory report
+ */
+export const labReportControllerListReportsV1 = (
+    id: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<LabReportControllerListReportsV1200>(
+      {url: `/api/v1/lab-orders/${id}/reports`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getLabReportControllerListReportsV1QueryKey = (id: string,) => {
+    return [
+    `/api/v1/lab-orders/${id}/reports`
+    ] as const;
+    }
+
+
+export const getLabReportControllerListReportsV1QueryOptions = <TData = Awaited<ReturnType<typeof labReportControllerListReportsV1>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof labReportControllerListReportsV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getLabReportControllerListReportsV1QueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof labReportControllerListReportsV1>>> = ({ signal }) => labReportControllerListReportsV1(id, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof labReportControllerListReportsV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type LabReportControllerListReportsV1QueryResult = NonNullable<Awaited<ReturnType<typeof labReportControllerListReportsV1>>>
+export type LabReportControllerListReportsV1QueryError = unknown
+
+
+export function useLabReportControllerListReportsV1<TData = Awaited<ReturnType<typeof labReportControllerListReportsV1>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof labReportControllerListReportsV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof labReportControllerListReportsV1>>,
+          TError,
+          Awaited<ReturnType<typeof labReportControllerListReportsV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useLabReportControllerListReportsV1<TData = Awaited<ReturnType<typeof labReportControllerListReportsV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof labReportControllerListReportsV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof labReportControllerListReportsV1>>,
+          TError,
+          Awaited<ReturnType<typeof labReportControllerListReportsV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useLabReportControllerListReportsV1<TData = Awaited<ReturnType<typeof labReportControllerListReportsV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof labReportControllerListReportsV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List the versions of a laboratory report
+ */
+
+export function useLabReportControllerListReportsV1<TData = Awaited<ReturnType<typeof labReportControllerListReportsV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof labReportControllerListReportsV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getLabReportControllerListReportsV1QueryOptions(id,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

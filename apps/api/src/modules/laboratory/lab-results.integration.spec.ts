@@ -10,6 +10,7 @@ import { AuthRepository } from '../auth/repository/auth.repository';
 import { FeatureAvailabilityCacheService } from '../feature-entitlement/service/feature-availability-cache.service';
 import { NotificationService } from '../notification/service/notification.service';
 import { LabOrderRepository } from './repository/lab-order.repository';
+import { LabReportRepository } from './repository/lab-report.repository';
 import { LabResultRepository } from './repository/lab-result.repository';
 import { LaboratorySettingsRepository } from './repository/laboratory-settings.repository';
 
@@ -41,6 +42,15 @@ describe('Laboratory results integration', () => {
   const timestamp = new Date('2026-07-28T03:00:00.000Z');
 
   const authRepositoryMock = { findUserById: jest.fn(), findUserByEmail: jest.fn() };
+
+  // P18-T05: the release queues the report; the worker that renders it is not
+  // under test here, only that the queue write happened with the right facts.
+  const labReportRepositoryMock = {
+    enqueue: jest.fn(),
+    claimDueReports: jest.fn().mockResolvedValue([]),
+    listByOrderId: jest.fn().mockResolvedValue([]),
+    findCurrentFileByOrderId: jest.fn(),
+  };
 
   const labOrderRepositoryMock = {
     findLabOrderById: jest.fn(),
@@ -263,6 +273,8 @@ describe('Laboratory results integration', () => {
       .useValue(labResultRepositoryMock)
       .overrideProvider(LaboratorySettingsRepository)
       .useValue(laboratorySettingsRepositoryMock)
+      .overrideProvider(LabReportRepository)
+      .useValue(labReportRepositoryMock)
       .overrideProvider(NotificationService)
       .useValue(notificationServiceMock)
       .overrideProvider(PrismaService)
@@ -394,6 +406,10 @@ describe('Laboratory results integration', () => {
         verifiedById: analystUserId,
         verifiedUnderSingleOperator: true,
       }),
+    );
+    // P18-T05: signing out queues the sheet, and does not wait for it.
+    expect(labReportRepositoryMock.enqueue).toHaveBeenCalledWith(
+      expect.objectContaining({ labOrderId, requestedById: analystUserId, isAmended: false }),
     );
   });
 

@@ -38,12 +38,18 @@ export type TemplateVariable = {
 };
 
 /**
- * Which document a registry belongs to. Invoices (`P16-T04`) and the two
- * printed clinical requests (`P18-T12`) — the surat pengantar laboratorium and
- * the resep — each get their own set, which is why the route takes a kind
- * rather than answering with one global list. Agreements (`E5`) follow.
+ * Which document a registry belongs to. Invoices (`P16-T04`), the two printed
+ * clinical requests (`P18-T12`) — the surat pengantar laboratorium and the
+ * resep — and the lab report (`P18-T05`) each get their own set, which is why
+ * the route takes a kind rather than answering with one global list.
+ * Agreements (`E5`) follow.
  */
-export const TEMPLATE_VARIABLE_KINDS = ['INVOICE', 'LAB_REQUEST', 'PRESCRIPTION'] as const;
+export const TEMPLATE_VARIABLE_KINDS = [
+  'INVOICE',
+  'LAB_REQUEST',
+  'PRESCRIPTION',
+  'LAB_REPORT',
+] as const;
 
 export type TemplateVariableKind = (typeof TEMPLATE_VARIABLE_KINDS)[number];
 
@@ -595,10 +601,177 @@ export const PRESCRIPTION_TEMPLATE_VARIABLES: readonly TemplateVariable[] = [
   },
 ];
 
+/**
+ * The hasil laboratorium (`P18-T05`) — the sheet the patient leaves with, and
+ * the file the record keeps as the same artefact.
+ *
+ * It shares the clinical letterhead and patient block with the two requests,
+ * but not `doctor.licenseNumber` or `request.issuedAt`: a report is signed by
+ * whoever verified it, not by the doctor who asked for it, and it is dated by
+ * the release. **No NIK token, masked or otherwise** — a report travels on
+ * WhatsApp locked with a date of birth, and the identifier has no business on
+ * it.
+ *
+ * `results` is the load-bearing block: one row per test, with the value, the
+ * flag marker and the band it was judged against, snapshotted at entry rather
+ * than read from today's catalog (`P18-T04`).
+ */
+export const LAB_REPORT_TEMPLATE_VARIABLES: readonly TemplateVariable[] = [
+  ...CLINIC_IDENTITY_VARIABLES,
+  {
+    token: 'patient.fullName',
+    labelId: 'Nama pasien',
+    labelEn: 'Patient name',
+    type: 'text',
+    sample: 'Arsyila Layla Safiya',
+  },
+  {
+    token: 'patient.mrn',
+    labelId: 'Nomor rekam medis',
+    labelEn: 'Medical record number',
+    type: 'text',
+    sample: '00000447',
+  },
+  {
+    token: 'patient.dateOfBirth',
+    labelId: 'Tanggal lahir',
+    labelEn: 'Date of birth',
+    type: 'date',
+    sample: '12 April 1990',
+  },
+  {
+    token: 'patient.sex',
+    labelId: 'Jenis kelamin',
+    labelEn: 'Sex',
+    type: 'enum',
+    sample: 'Perempuan',
+  },
+  {
+    token: 'patient.age',
+    labelId: 'Umur',
+    labelEn: 'Age',
+    type: 'text',
+    sample: '36 tahun',
+  },
+  {
+    token: 'order.number',
+    labelId: 'Nomor permintaan',
+    labelEn: 'Order number',
+    type: 'text',
+    sample: 'LAB/20260907/0001',
+  },
+  {
+    token: 'order.orderedAt',
+    labelId: 'Tanggal permintaan',
+    labelEn: 'Ordered on',
+    type: 'date',
+    sample: '7 September 2026',
+  },
+  {
+    token: 'doctor.fullName',
+    labelId: 'Dokter pengirim',
+    labelEn: 'Requesting doctor',
+    type: 'text',
+    sample: 'dr. Yusuf Hidayat',
+  },
+  {
+    // Every accession number drawn for the order, comma-separated. One token
+    // rather than a block: a report lists its tubes in a line, not a table.
+    token: 'specimen.accessionNumbers',
+    labelId: 'Nomor spesimen',
+    labelEn: 'Specimen accession numbers',
+    type: 'text',
+    sample: 'SPC/20260907/0001, SPC/20260907/0002',
+  },
+  {
+    token: 'specimen.collectedAt',
+    labelId: 'Waktu pengambilan',
+    labelEn: 'Collected at',
+    type: 'date',
+    sample: '7 September 2026, 08:15',
+  },
+  {
+    token: 'report.releasedAt',
+    labelId: 'Waktu rilis',
+    labelEn: 'Released at',
+    type: 'date',
+    sample: '7 September 2026, 11:40',
+  },
+  {
+    token: 'report.verifierName',
+    labelId: 'Diverifikasi oleh',
+    labelEn: 'Verified by',
+    type: 'text',
+    sample: 'dr. Yusuf Hidayat',
+  },
+  {
+    // The banner a corrected report carries, or nothing. A token rather than a
+    // fixed heading so a clinic may restyle it, and a required one on the
+    // built-in layout so nobody can restyle it away.
+    token: 'report.amendmentNotice',
+    labelId: 'Keterangan revisi',
+    labelEn: 'Amendment notice',
+    type: 'text',
+    sample: 'AMENDED — menggantikan laporan tanggal 7 September 2026, 11:40',
+  },
+  {
+    token: 'results',
+    labelId: 'Hasil pemeriksaan',
+    labelEn: 'Results',
+    type: 'block',
+    sample: '10 pemeriksaan',
+  },
+  {
+    token: 'result.no',
+    labelId: 'No. baris hasil',
+    labelEn: 'Result row number',
+    type: 'number',
+    sample: '1',
+  },
+  {
+    token: 'result.test',
+    labelId: 'Pemeriksaan',
+    labelEn: 'Test',
+    type: 'text',
+    sample: 'Hemoglobin',
+  },
+  {
+    token: 'result.value',
+    labelId: 'Hasil',
+    labelEn: 'Value',
+    type: 'text',
+    sample: '11,2',
+  },
+  {
+    token: 'result.unit',
+    labelId: 'Satuan',
+    labelEn: 'Unit',
+    type: 'text',
+    sample: 'g/dL',
+  },
+  {
+    // ▲ high, ▼ low, doubled when critical, * for a non-numeric abnormal. A
+    // marker column rather than colour: the sheet is photocopied and faxed.
+    token: 'result.flag',
+    labelId: 'Tanda',
+    labelEn: 'Flag',
+    type: 'text',
+    sample: '▼',
+  },
+  {
+    token: 'result.referenceRange',
+    labelId: 'Nilai rujukan',
+    labelEn: 'Reference range',
+    type: 'text',
+    sample: '12,0 – 16,0',
+  },
+];
+
 export const TEMPLATE_VARIABLES_BY_KIND: Readonly<
   Record<TemplateVariableKind, readonly TemplateVariable[]>
 > = {
   INVOICE: INVOICE_TEMPLATE_VARIABLES,
   LAB_REQUEST: LAB_REQUEST_TEMPLATE_VARIABLES,
   PRESCRIPTION: PRESCRIPTION_TEMPLATE_VARIABLES,
+  LAB_REPORT: LAB_REPORT_TEMPLATE_VARIABLES,
 };

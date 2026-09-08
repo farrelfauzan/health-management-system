@@ -33,6 +33,7 @@ import { LabResultEntryItemRow } from '../repository/lab-result-row.types';
 import { LabResultRepository } from '../repository/lab-result.repository';
 import { computeLabFlag } from './compute-lab-flag';
 import { LabOrderMapper } from './lab-order.mapper';
+import { LabReportService } from './lab-report.service';
 import { LabResultMapper } from './lab-result.mapper';
 import { LaboratorySettingsService } from './laboratory-settings.service';
 import { resolveLabReferenceRange } from './resolve-lab-reference-range';
@@ -86,6 +87,7 @@ export class LabResultService {
     private readonly authRepository: AuthRepository,
     private readonly notificationService: NotificationService,
     private readonly auditService: AuditService,
+    private readonly labReportService: LabReportService,
     configService: ConfigService,
   ) {
     this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
@@ -168,6 +170,7 @@ export class LabResultService {
       },
     });
     await this.notifyRelease(order, currentUser);
+    await this.enqueueReport(order.id, currentUser, false);
 
     return this.toOrderResultsView(order.id);
   }
@@ -234,8 +237,30 @@ export class LabResultService {
       },
     });
     await this.notifyAmendment(order, amended, currentUser);
+    await this.enqueueReport(order.id, currentUser, true);
 
     return this.labResultMapper.toLabResultView(amended);
+  }
+
+  /**
+   * P18-T05: the sheet is rendered *after* the signature, by a worker, so
+   * signing out never waits on the PDF sidecar. Queued against the order's
+   * release time as it now stands — an amendment re-releases the order — and
+   * best-effort like the bell: a queue write that failed does not un-sign a
+   * report.
+   */
+  private async enqueueReport(
+    labOrderId: string,
+    currentUser: CurrentUser,
+    isAmended: boolean,
+  ): Promise<void> {
+    const order = await this.findLabOrderOrThrow(labOrderId);
+    await this.labReportService.enqueueForOrder({
+      labOrderId,
+      requestedById: currentUser.sub,
+      isAmended,
+      releasedAt: order.releasedAt ?? new Date(),
+    });
   }
 
   /**

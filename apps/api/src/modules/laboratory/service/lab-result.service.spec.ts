@@ -7,6 +7,7 @@ import { NotificationService } from '../../notification/service/notification.ser
 import { LabOrderRepository } from '../repository/lab-order.repository';
 import { LabResultRepository } from '../repository/lab-result.repository';
 import { LabOrderMapper } from './lab-order.mapper';
+import { LabReportService } from './lab-report.service';
 import { LabResultMapper } from './lab-result.mapper';
 import { LabResultService } from './lab-result.service';
 import { LaboratorySettingsService } from './laboratory-settings.service';
@@ -56,6 +57,8 @@ describe('LabResultService', () => {
 
   const auditServiceMock = { record: jest.fn() };
 
+  const labReportServiceMock = { enqueueForOrder: jest.fn().mockResolvedValue(null) };
+
   const configServiceMock = { get: jest.fn().mockReturnValue('Asia/Jakarta') };
 
   const service = new LabResultService(
@@ -67,6 +70,7 @@ describe('LabResultService', () => {
     authRepositoryMock as unknown as AuthRepository,
     notificationServiceMock as unknown as NotificationService,
     auditServiceMock as unknown as AuditService,
+    labReportServiceMock as unknown as LabReportService,
     configServiceMock as unknown as ConfigService,
   );
 
@@ -426,6 +430,17 @@ describe('LabResultService', () => {
         expect.objectContaining({ type: 'LAB_RESULT_RELEASED', userId: doctorUserId }),
       );
     });
+
+    // P18-T05: the sheet is queued by the signature and rendered later. The
+    // release answers before any PDF exists.
+    it('queues the report for the worker rather than rendering it here', async () => {
+      labOrderRepositoryMock.findLabOrderById.mockResolvedValue(buildResultedOrder());
+      labResultRepositoryMock.releaseLabOrder.mockResolvedValue([buildResult()]);
+      await service.releaseLabOrder(labOrderId, doctorUser);
+      expect(labReportServiceMock.enqueueForOrder).toHaveBeenCalledWith(
+        expect.objectContaining({ labOrderId, requestedById: doctorUser.sub, isAmended: false }),
+      );
+    });
   });
 
   describe('amending', () => {
@@ -461,6 +476,17 @@ describe('LabResultService', () => {
           amendReason: 'Salah ketik',
           verifiedUnderSingleOperator: true,
         }),
+      );
+    });
+
+    it('queues an amended report version beside the original', async () => {
+      await service.amendLabResult(
+        '77777777-dddd-4ddd-8ddd-777777777777',
+        { valueNumeric: 8.6, reason: 'Salah ketik' },
+        doctorUser,
+      );
+      expect(labReportServiceMock.enqueueForOrder).toHaveBeenCalledWith(
+        expect.objectContaining({ labOrderId, requestedById: doctorUser.sub, isAmended: true }),
       );
     });
 
