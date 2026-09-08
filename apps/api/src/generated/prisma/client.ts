@@ -1356,6 +1356,27 @@ export type LabResult = Prisma.LabResultModel
  */
 export type LaboratorySettings = Prisma.LaboratorySettingsModel
 /**
+ * Model LabReport
+ * One rendering of the hasil laboratorium for one order (P18-T05).
+ * 
+ * A row per version rather than a column on the order, and a row that is
+ * never overwritten: the sheet a patient was handed is the sheet the record
+ * has to be able to show, beside the corrected one an amendment produced.
+ * Version 1 is queued by the release; every amendment queues the next.
+ * 
+ * It is a job row as much as a record. Release must not wait on the
+ * Gotenberg sidecar, so the release writes `PENDING` and a lease-claimed
+ * worker (the `P16-T26` pattern) renders, uploads, files the `Document` and
+ * marks `READY` — or retries with backoff and parks the row `FAILED` after
+ * the last attempt, where the order detail can show why there is no PDF.
+ * 
+ * `document_id` is the ordinary patient clinical file (`PATIENT_CLINICAL`,
+ * category `LAB_RESULT`) the render became. SET NULL on the file: a
+ * retention purge that removes the PDF must not take the fact that a report
+ * was issued with it.
+ */
+export type LabReport = Prisma.LabReportModel
+/**
  * Model Immunization
  * One vaccination given during a visit.
  * 

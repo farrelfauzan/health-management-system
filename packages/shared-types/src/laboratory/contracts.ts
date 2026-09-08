@@ -4,6 +4,7 @@ import type {
   LabOrderItemStatusValue,
   LabOrderPriorityValue,
   LabOrderStatusValue,
+  LabReportStatusValue,
   LabResultFlagValue,
   LabResultTypeValue,
   LabSpecimenRejectReasonValue,
@@ -294,4 +295,53 @@ export type LaboratorySettingsView = {
   singleOperator: boolean;
   updatedById?: string;
   updatedAt?: string;
+};
+
+/**
+ * One rendering of the hasil laboratorium (P18-T05). A version per release and
+ * per amendment, never overwritten: the sheet a patient was handed on Monday
+ * must still be the sheet the record shows on Tuesday, beside the corrected
+ * one. `documentId` is the patient clinical file (`LAB_RESULT`) once the
+ * render has landed; a `FAILED` row carries `lastError` so the order detail
+ * can say why there is no PDF yet.
+ */
+export type LabReportVersionView = {
+  id: string;
+  labOrderId: string;
+  version: number;
+  status: LabReportStatusValue;
+  /** True when this version was produced by a correction rather than the release. */
+  isAmended: boolean;
+  /** The order's release time this version reports — its `documentDate`. */
+  releasedAt: string;
+  documentId?: string;
+  attemptCount: number;
+  nextAttemptAt?: string;
+  lastError?: string;
+  renderedAt?: string;
+  pageCount?: number;
+  requestedById: string;
+  createdAt: string;
+};
+
+/**
+ * The report versions of one order, newest first. `current` is the latest
+ * `READY` one — what "the report" means to a download — and is absent while
+ * the first render is still queued or has failed.
+ */
+export type LabReportView = {
+  labOrderId: string;
+  current?: LabReportVersionView;
+  versions: LabReportVersionView[];
+};
+
+/** A short-lived signed URL for the current report PDF. */
+export type LabReportDownloadView = {
+  documentId: string;
+  version: number;
+  isAmended: boolean;
+  renderedAt: string;
+  fileName: string;
+  url: string;
+  expiresAt: string;
 };

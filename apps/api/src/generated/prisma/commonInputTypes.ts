@@ -1890,6 +1890,23 @@ export type EnumLabResultFlagNullableWithAggregatesFilter<$PrismaModel = never> 
   _max?: Prisma.NestedEnumLabResultFlagNullableFilter<$PrismaModel>
 }
 
+export type EnumLabReportStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.LabReportStatus | Prisma.EnumLabReportStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.LabReportStatus[] | Prisma.ListEnumLabReportStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.LabReportStatus[] | Prisma.ListEnumLabReportStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumLabReportStatusFilter<$PrismaModel> | $Enums.LabReportStatus
+}
+
+export type EnumLabReportStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.LabReportStatus | Prisma.EnumLabReportStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.LabReportStatus[] | Prisma.ListEnumLabReportStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.LabReportStatus[] | Prisma.ListEnumLabReportStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumLabReportStatusWithAggregatesFilter<$PrismaModel> | $Enums.LabReportStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumLabReportStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumLabReportStatusFilter<$PrismaModel>
+}
+
 export type EnumImmunizationRouteNullableFilter<$PrismaModel = never> = {
   equals?: $Enums.ImmunizationRoute | Prisma.EnumImmunizationRouteFieldRefInput<$PrismaModel> | null
   in?: $Enums.ImmunizationRoute[] | Prisma.ListEnumImmunizationRouteFieldRefInput<$PrismaModel> | null
@@ -3753,6 +3770,23 @@ export type NestedEnumLabResultFlagNullableWithAggregatesFilter<$PrismaModel = n
   _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
   _min?: Prisma.NestedEnumLabResultFlagNullableFilter<$PrismaModel>
   _max?: Prisma.NestedEnumLabResultFlagNullableFilter<$PrismaModel>
+}
+
+export type NestedEnumLabReportStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.LabReportStatus | Prisma.EnumLabReportStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.LabReportStatus[] | Prisma.ListEnumLabReportStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.LabReportStatus[] | Prisma.ListEnumLabReportStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumLabReportStatusFilter<$PrismaModel> | $Enums.LabReportStatus
+}
+
+export type NestedEnumLabReportStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.LabReportStatus | Prisma.EnumLabReportStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.LabReportStatus[] | Prisma.ListEnumLabReportStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.LabReportStatus[] | Prisma.ListEnumLabReportStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumLabReportStatusWithAggregatesFilter<$PrismaModel> | $Enums.LabReportStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumLabReportStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumLabReportStatusFilter<$PrismaModel>
 }
 
 export type NestedEnumImmunizationRouteNullableFilter<$PrismaModel = never> = {

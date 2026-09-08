@@ -87,6 +87,40 @@ const labResult = {
  * orders (`P18-T02`), the specimens drawn for them (`P18-T03`) and the values
  * measured against them (`P18-T04`).
  */
+const labReportDocumentId = '88888888-dddd-4ddd-8ddd-888888888888';
+
+const labReportVersion = {
+  id: '77777777-eeee-4eee-8eee-777777777777',
+  labOrderId,
+  version: 1,
+  status: 'READY',
+  isAmended: false,
+  releasedAt: timestamp,
+  documentId: labReportDocumentId,
+  attemptCount: 1,
+  renderedAt: timestamp,
+  pageCount: 1,
+  requestedById: doctorUserId,
+  createdAt: timestamp,
+};
+
+// Built without the READY-only keys rather than with them set to `undefined`:
+// the schema inferrer turns an `undefined` value into `type: undefined`, which
+// no OpenAPI parser accepts.
+const labReportPendingVersion = {
+  id: '99999999-eeee-4eee-8eee-999999999999',
+  labOrderId,
+  version: 2,
+  status: 'PENDING',
+  isAmended: true,
+  releasedAt: timestamp,
+  attemptCount: 1,
+  nextAttemptAt: timestamp,
+  lastError: 'Renderer unavailable: fetch failed',
+  requestedById: doctorUserId,
+  createdAt: timestamp,
+};
+
 export const LABORATORY_EXAMPLES = {
   labTest: {
     view: {
@@ -254,6 +288,23 @@ export const LABORATORY_EXAMPLES = {
       resultType: 'NUMERIC',
       collectedAt: timestamp,
       releasedAt: timestamp,
+    },
+  },
+  labReport: {
+    version: labReportVersion,
+    view: {
+      labOrderId,
+      current: labReportVersion,
+      versions: [labReportPendingVersion, labReportVersion],
+    },
+    download: {
+      documentId: labReportDocumentId,
+      version: 1,
+      isAmended: false,
+      renderedAt: timestamp,
+      fileName: 'hasil-lab-LAB-20260720-0001-v1.pdf',
+      url: 'https://storage.example.com/lab-report/document/2026/07/abc.pdf?X-Amz-Signature=…',
+      expiresAt: '2026-07-20T08:15:00.000Z',
     },
   },
   laboratorySettings: {

@@ -140,7 +140,8 @@ export const AuditAction = {
   PRESCRIPTION_PRINTED: 'PRESCRIPTION_PRINTED',
   LAB_RESULT_ENTERED: 'LAB_RESULT_ENTERED',
   LAB_RESULT_RELEASED: 'LAB_RESULT_RELEASED',
-  LAB_RESULT_AMENDED: 'LAB_RESULT_AMENDED'
+  LAB_RESULT_AMENDED: 'LAB_RESULT_AMENDED',
+  LAB_REPORT_FILED: 'LAB_REPORT_FILED'
 } as const
 
 export type AuditAction = (typeof AuditAction)[keyof typeof AuditAction]
@@ -540,7 +541,8 @@ export type PaymentMethod = (typeof PaymentMethod)[keyof typeof PaymentMethod]
 export const DocumentTemplateKind = {
   INVOICE: 'INVOICE',
   LAB_REQUEST: 'LAB_REQUEST',
-  PRESCRIPTION: 'PRESCRIPTION'
+  PRESCRIPTION: 'PRESCRIPTION',
+  LAB_REPORT: 'LAB_REPORT'
 } as const
 
 export type DocumentTemplateKind = (typeof DocumentTemplateKind)[keyof typeof DocumentTemplateKind]
@@ -961,3 +963,12 @@ export const LabResultFlag = {
 } as const
 
 export type LabResultFlag = (typeof LabResultFlag)[keyof typeof LabResultFlag]
+
+
+export const LabReportStatus = {
+  PENDING: 'PENDING',
+  READY: 'READY',
+  FAILED: 'FAILED'
+} as const
+
+export type LabReportStatus = (typeof LabReportStatus)[keyof typeof LabReportStatus]
