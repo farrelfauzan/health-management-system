@@ -537,6 +537,29 @@ enum EncounterStatus {
 /// written when a lab order is released (P18-T09). Two kinds rather than two
 /// tables: the claim, the lease, the backoff and the admin retry surface are
 /// the same machinery, and only the bundle differs.
+/// Where a lab request came from (P18-T10). ENCOUNTER is a doctor of this
+/// clinic ordering during a visit; WALK_IN is a patient asking for a panel with
+/// no consultation; EXTERNAL_REFERRAL is a patient arriving with a request
+/// letter from a doctor elsewhere. The last two are separated because only one
+/// of them has an outside requester to name and to print on the report.
+enum LabOrderSource {
+  ENCOUNTER
+  WALK_IN
+  EXTERNAL_REFERRAL
+
+  @@map("lab_order_source")
+}
+
+/// What a visit is for (P18-T10). A LAB_ONLY registration exists for the MRN,
+/// the bill and the audit trail; it takes no poli queue number and opens no
+/// encounter, because no doctor sees the patient.
+enum RegistrationType {
+  CONSULTATION
+  LAB_ONLY
+
+  @@map("registration_type")
+}
+
 enum SatusehatSubmissionKind {
   ENCOUNTER
   LAB_REPORT
@@ -1788,6 +1811,9 @@ model Registration {
   id              String             @id @default(uuid()) @db.Uuid
   patientId       String             @map("patient_id") @db.Uuid
   appointmentId   String?            @unique @map("appointment_id") @db.Uuid
+  /// What the visit is for. A LAB_ONLY visit skips the poli queue and never
+  /// opens an encounter (P18-T10).
+  type            RegistrationType   @default(CONSULTATION)
   status          RegistrationStatus @default(PENDING)
   /// Daily antrian ticket, allocated from `QueueCounter` when the
   /// registration is created. Nullable only because rows predate the queue;
@@ -1827,6 +1853,8 @@ model Registration {
   createdBy       User?            @relation("RegistrationCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
   encounter       Encounter?
   bpjsSubmissions BpjsSubmission[]
+  labOrders       LabOrder[]
+  invoices        Invoice[]
 
   @@unique([queueDate, queueNumber])
   @@unique([queueDate, specialtyId, poliQueueNumber])
@@ -2442,43 +2470,51 @@ model InvoiceCounter {
 /// silently change if a tariff or item row is touched later. The service
 /// recomputes it from items on every write while the invoice is DRAFT.
 model Invoice {
-  id            String        @id @default(uuid()) @db.Uuid
-  invoiceNumber String        @unique @map("invoice_number")
+  id             String        @id @default(uuid()) @db.Uuid
+  invoiceNumber  String        @unique @map("invoice_number")
   /// Null for an inpatient bill. Exactly one of `encounterId` and
   /// `admissionId` is set, enforced by a CHECK in the migration — an invoice
   /// always says which episode of care it bills, and never two.
-  encounterId   String?       @map("encounter_id") @db.Uuid
+  encounterId    String?       @map("encounter_id") @db.Uuid
   /// The stay this bill is for (IMP-15). Nullable and not `@unique` for the
   /// same reason as `encounterId`: a wrongly issued invoice is voided and
   /// replaced, and a partial unique index keeps at most one live invoice per
   /// admission while letting voided ones accumulate.
-  admissionId   String?       @map("admission_id") @db.Uuid
-  patientId     String        @map("patient_id") @db.Uuid
-  status        InvoiceStatus @default(DRAFT)
-  totalAmount   Decimal       @default(0) @map("total_amount") @db.Decimal(12, 2)
-  issuedAt      DateTime?     @map("issued_at")
-  voidedAt      DateTime?     @map("voided_at")
-  voidReason    String?       @map("void_reason")
-  voidedById    String?       @map("voided_by_id") @db.Uuid
-  createdById   String?       @map("created_by_id") @db.Uuid
-  createdAt     DateTime      @default(now()) @map("created_at")
-  updatedAt     DateTime      @updatedAt @map("updated_at")
-  deletedAt     DateTime?     @map("deleted_at")
+  admissionId    String?       @map("admission_id") @db.Uuid
+  /// The walk-in visit this bill is for (P18-T10). A LAB_ONLY registration has
+  /// neither an encounter nor a stay, but it still owes money for the panel
+  /// that was run. Exactly one of the three is set, enforced by
+  /// `invoices_one_episode_check`; `invoices_registration_id_live_key` keeps at
+  /// most one live invoice per visit, as the other two keys do.
+  registrationId String?       @map("registration_id") @db.Uuid
+  patientId      String        @map("patient_id") @db.Uuid
+  status         InvoiceStatus @default(DRAFT)
+  totalAmount    Decimal       @default(0) @map("total_amount") @db.Decimal(12, 2)
+  issuedAt       DateTime?     @map("issued_at")
+  voidedAt       DateTime?     @map("voided_at")
+  voidReason     String?       @map("void_reason")
+  voidedById     String?       @map("voided_by_id") @db.Uuid
+  createdById    String?       @map("created_by_id") @db.Uuid
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @updatedAt @map("updated_at")
+  deletedAt      DateTime?     @map("deleted_at")
 
-  encounter  Encounter?         @relation(fields: [encounterId], references: [id], onDelete: Restrict)
-  admission  Admission?         @relation(fields: [admissionId], references: [id], onDelete: Restrict)
-  patient    PatientProfile     @relation(fields: [patientId], references: [id], onDelete: Restrict)
-  voidedBy   User?              @relation("InvoiceVoidedBy", fields: [voidedById], references: [id], onDelete: SetNull)
-  createdBy  User?              @relation("InvoiceCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
-  items      InvoiceItem[]
-  payment    Payment?
-  documents  InvoiceDocument[]
-  deliveries DocumentDelivery[]
+  encounter    Encounter?         @relation(fields: [encounterId], references: [id], onDelete: Restrict)
+  admission    Admission?         @relation(fields: [admissionId], references: [id], onDelete: Restrict)
+  registration Registration?      @relation(fields: [registrationId], references: [id], onDelete: Restrict)
+  patient      PatientProfile     @relation(fields: [patientId], references: [id], onDelete: Restrict)
+  voidedBy     User?              @relation("InvoiceVoidedBy", fields: [voidedById], references: [id], onDelete: SetNull)
+  createdBy    User?              @relation("InvoiceCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  items        InvoiceItem[]
+  payment      Payment?
+  documents    InvoiceDocument[]
+  deliveries   DocumentDelivery[]
 
   managedDocuments ManagedDocument[]
 
   @@index([encounterId])
   @@index([admissionId])
+  @@index([registrationId])
   @@index([patientId, createdAt])
   @@index([status, issuedAt])
   @@index([deletedAt])
@@ -3377,9 +3413,13 @@ model Document {
   /// The clinical request this file is the printout of (P18-T12). Back-links
   /// for the one-to-one on the order and prescription side; a document reached
   /// through the patient's file list carries no such link and needs none.
-  labOrder     LabOrder?     @relation("LabOrderRequestDocument")
-  labReport    LabReport?    @relation("LabReportDocument")
-  prescription Prescription? @relation("PrescriptionDocument")
+  labOrder              LabOrder?     @relation("LabOrderRequestDocument")
+  /// The order whose incoming surat pengantar this document is (P18-T10) — the
+  /// letter an outside doctor wrote, as opposed to the request this clinic
+  /// printed, which is `labOrder` above.
+  labOrderRequestLetter LabOrder?     @relation("LabOrderRequestLetter")
+  labReport             LabReport?    @relation("LabReportDocument")
+  prescription          Prescription? @relation("PrescriptionDocument")
 
   vaultExpiryNotices VaultDocumentExpiryNotice[]
   vaultShares        VaultDocumentShare[]
@@ -4825,9 +4865,33 @@ model LabOrderCounter {
 /// outlives the visit.
 model LabOrder {
   id                          String           @id @default(uuid()) @db.Uuid
-  encounterId                 String           @map("encounter_id") @db.Uuid
+  /// Null for a request that did not come from a consultation (P18-T10).
+  /// `Encounter.doctorId` is NOT NULL, so there is no honest minimal encounter
+  /// to write for a walk-in: the visit is the registration instead.
+  encounterId                 String?          @map("encounter_id") @db.Uuid
+  /// The visit this order belongs to, denormalised exactly as `patientId` is.
+  /// The one key every order has, whichever way the request arrived, so the
+  /// worklist and the bill read it rather than branching on the encounter.
+  registrationId              String           @map("registration_id") @db.Uuid
+  /// Where the request came from; decides which of the keys above and which of
+  /// the requester fields below are set. Enforced by
+  /// `lab_orders_source_keys_check`.
+  source                      LabOrderSource   @default(ENCOUNTER)
   patientId                   String           @map("patient_id") @db.Uuid
-  orderedById                 String           @map("ordered_by_id") @db.Uuid
+  /// Null when nobody at this clinic ordered it. Nullable rather than pointed
+  /// at a placeholder profile: a fabricated requester is what P18-T10 exists to
+  /// avoid.
+  orderedById                 String?          @map("ordered_by_id") @db.Uuid
+  /// Who asked, when it was a doctor elsewhere. Free text, for the same reason
+  /// `externalFacilityName` is — and not to be confused with it: that one names
+  /// the lab we send work *out* to (P18-T11), this one names the practice the
+  /// request came *in* from.
+  externalRequesterName       String?          @map("external_requester_name")
+  externalRequesterFacility   String?          @map("external_requester_facility")
+  /// The surat pengantar the patient handed over, filed as their document
+  /// (category REFERRAL_LETTER). `SetNull` for the same reason
+  /// `requestDocumentId` is.
+  requestLetterDocumentId     String?          @unique @map("request_letter_document_id") @db.Uuid
   /// LAB/YYYYMMDD/#### allocated from `LabOrderCounter`. What the analis
   /// writes on the worksheet and what the patient is told to quote.
   orderNumber                 String           @unique @map("order_number")
@@ -4869,9 +4933,11 @@ model LabOrder {
   createdAt                   DateTime         @default(now()) @map("created_at")
   updatedAt                   DateTime         @updatedAt @map("updated_at")
 
-  encounter            Encounter             @relation(fields: [encounterId], references: [id], onDelete: Restrict)
+  encounter            Encounter?            @relation(fields: [encounterId], references: [id], onDelete: Restrict)
   patient              PatientProfile        @relation(fields: [patientId], references: [id], onDelete: Restrict)
-  orderedBy            DoctorProfile         @relation(fields: [orderedById], references: [id], onDelete: Restrict)
+  orderedBy            DoctorProfile?        @relation(fields: [orderedById], references: [id], onDelete: Restrict)
+  registration         Registration          @relation(fields: [registrationId], references: [id], onDelete: Restrict)
+  requestLetter        Document?             @relation("LabOrderRequestLetter", fields: [requestLetterDocumentId], references: [id], onDelete: SetNull)
   items                LabOrderItem[]
   specimens            LabSpecimen[]
   invoiceItems         InvoiceItem[]
@@ -4882,6 +4948,8 @@ model LabOrder {
   satusehatSubmissions SatusehatSubmission[]
 
   @@index([encounterId])
+  @@index([registrationId])
+  @@index([source, orderedAt])
   @@index([patientId, orderedAt])
   @@index([status, orderedAt])
   @@map("lab_orders")

@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { privacyNoticeEvidenceSchema } from '#patient-management/schemas';
+
 const MAX_CODE_LENGTH = 32;
 const MAX_NAME_LENGTH = 200;
 const MAX_UNIT_LENGTH = 32;
@@ -151,6 +153,16 @@ export const listLabTestsQuerySchema = z.object({
 
 export const listLabPanelsQuerySchema = listLabTestsQuerySchema;
 
+/**
+ * Where a lab request came from (P18-T10). Only EXTERNAL_REFERRAL carries an
+ * outside requester to name.
+ */
+export const LAB_ORDER_SOURCES = ['ENCOUNTER', 'WALK_IN', 'EXTERNAL_REFERRAL'] as const;
+
+export const labOrderSourceSchema = z.enum(LAB_ORDER_SOURCES);
+
+export type LabOrderSourceValue = z.infer<typeof labOrderSourceSchema>;
+
 export type LabResultTypeValue = z.infer<typeof labResultTypeSchema>;
 export type LabSpecimenTypeValue = z.infer<typeof labSpecimenTypeSchema>;
 export type CreateLabTestInput = z.infer<typeof createLabTestSchema>;
@@ -218,6 +230,54 @@ export const createLabOrderSchema = z
     {
       path: ['externalFacilityName'],
       message: 'Work done here cannot name an outside facility',
+    },
+  );
+
+/**
+ * A request that did not come from a consultation (P18-T10): the front desk
+ * opens a LAB_ONLY visit for the patient and orders against it directly.
+ *
+ * `source` is required rather than inferred, because the difference matters to
+ * the report and to the patient: a WALK_IN is the clinic's own check-up panel,
+ * an EXTERNAL_REFERRAL was asked for by a doctor who has to be named on the
+ * sheet the result goes back on.
+ */
+export const createWalkInLabOrderSchema = z
+  .object({
+    patientId: z.string().uuid(),
+    source: z.enum(['WALK_IN', 'EXTERNAL_REFERRAL']),
+    testIds: z.array(z.string().uuid()).max(MAX_ORDER_ENTRIES).optional(),
+    panelIds: z.array(z.string().uuid()).max(MAX_ORDER_ENTRIES).optional(),
+    priority: labOrderPrioritySchema.optional(),
+    clinicalNotes: z.string().trim().min(1).max(MAX_NOTES_LENGTH).optional(),
+    isFasting: z.boolean().optional(),
+    externalRequesterName: z.string().trim().min(1).max(MAX_FACILITY_NAME_LENGTH).optional(),
+    externalRequesterFacility: z.string().trim().min(1).max(MAX_FACILITY_NAME_LENGTH).optional(),
+    /** The scanned surat pengantar, already filed as the patient's document. */
+    requestLetterDocumentId: z.string().uuid().optional(),
+    /**
+     * Captured here for the same reason the consultation flow captures it: a
+     * visit that produces a record needs current consent evidence, and coming
+     * in only for a blood draw is not an exemption.
+     */
+    privacyNotice: privacyNoticeEvidenceSchema.optional(),
+  })
+  .refine((payload) => (payload.testIds ?? []).length + (payload.panelIds ?? []).length > 0, {
+    path: ['testIds'],
+    message: 'An order needs at least one test or panel',
+  })
+  .refine(
+    (payload) => payload.source !== 'EXTERNAL_REFERRAL' || Boolean(payload.externalRequesterName),
+    {
+      path: ['externalRequesterName'],
+      message: 'Name the doctor who asked for the test',
+    },
+  )
+  .refine(
+    (payload) => payload.source === 'EXTERNAL_REFERRAL' || !payload.externalRequesterName,
+    {
+      path: ['externalRequesterName'],
+      message: 'A walk-in has no outside requester to name',
     },
   );
 
@@ -294,6 +354,7 @@ export type LabOrderStatusValue = z.infer<typeof labOrderStatusSchema>;
 export type LabOrderItemStatusValue = z.infer<typeof labOrderItemStatusSchema>;
 export type LabOrderPriorityValue = z.infer<typeof labOrderPrioritySchema>;
 export type CreateLabOrderInput = z.infer<typeof createLabOrderSchema>;
+export type CreateWalkInLabOrderInput = z.infer<typeof createWalkInLabOrderSchema>;
 export type CancelLabOrderInput = z.infer<typeof cancelLabOrderSchema>;
 export type ListLabOrdersQuery = z.infer<typeof listLabOrdersQuerySchema>;
 export type LabSpecimenStatusValue = z.infer<typeof labSpecimenStatusSchema>;

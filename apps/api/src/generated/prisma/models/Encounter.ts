@@ -971,10 +971,12 @@ export type EncounterCreateNestedOneWithoutLabOrdersInput = {
   connect?: Prisma.EncounterWhereUniqueInput
 }
 
-export type EncounterUpdateOneRequiredWithoutLabOrdersNestedInput = {
+export type EncounterUpdateOneWithoutLabOrdersNestedInput = {
   create?: Prisma.XOR<Prisma.EncounterCreateWithoutLabOrdersInput, Prisma.EncounterUncheckedCreateWithoutLabOrdersInput>
   connectOrCreate?: Prisma.EncounterCreateOrConnectWithoutLabOrdersInput
   upsert?: Prisma.EncounterUpsertWithoutLabOrdersInput
+  disconnect?: Prisma.EncounterWhereInput | boolean
+  delete?: Prisma.EncounterWhereInput | boolean
   connect?: Prisma.EncounterWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.EncounterUpdateToOneWithWhereWithoutLabOrdersInput, Prisma.EncounterUpdateWithoutLabOrdersInput>, Prisma.EncounterUncheckedUpdateWithoutLabOrdersInput>
 }

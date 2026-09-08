@@ -123,6 +123,8 @@ function buildLabBundleData(overrides: Record<string, unknown> = {}) {
     releasedAt: new Date('2026-07-28T04:30:00.000Z'),
     encounterId,
     satusehatEncounterId: 'ihs-enc-1',
+    registrationId: '6c7d8e9f-0a1b-4c2d-8e3f-4a5b6c7d8e9f',
+    visitStartedAt: new Date('2026-07-28T01:30:00.000Z'),
     patientId,
     patientName: 'Budi Santoso',
     patientIhsNumber: 'P02478375538',
@@ -1282,6 +1284,61 @@ describe('SatusehatSubmissionService', () => {
         'a0b1c2d3-e4f5-4a6b-8c7d-9e0f1a2b3c4d',
         null,
       );
+    });
+
+    it('sends a minimal Encounter of its own for a visit that had no consultation', async () => {
+      submissionRepositoryMock.findLabReportBundleData.mockResolvedValue(
+        buildLabBundleData({ encounterId: null, satusehatEncounterId: null }),
+      );
+      httpClientMock.sendRequest.mockResolvedValue({
+        entry: [resourceCreated('Encounter', 'ihs-enc-walkin'), ...LAB_CHAIN_RESPONSE.entry],
+      });
+      const service = buildService();
+
+      await service.processSubmission(buildLabSubmission());
+
+      const sentBundle = (
+        httpClientMock.sendRequest.mock.calls[0]?.[0] as { body: SatusehatFhirTransactionBundle }
+      ).body;
+      const encounterEntry = sentBundle.entry[0];
+      expect(encounterEntry?.request.url).toBe('Encounter');
+      const encounterResource = encounterEntry?.resource as {
+        class: { code: string };
+        participant?: unknown;
+        serviceProvider: { reference: string };
+        identifier: Array<{ value: string }>;
+      };
+      expect(encounterResource.class.code).toBe('AMB');
+      // Nobody attended, and the national record should say so rather than
+      // name a practitioner who never saw the patient.
+      expect(encounterResource.participant).toBeUndefined();
+      expect(encounterResource.serviceProvider.reference).toMatch(/^Organization\//);
+      expect(encounterResource.identifier[0]?.value).toBe(
+        '6c7d8e9f-0a1b-4c2d-8e3f-4a5b6c7d8e9f',
+      );
+      // And the rest of the chain points at it locally, not at a national id
+      // that does not exist yet.
+      const serviceRequest = sentBundle.entry.find(
+        (entry) => entry.request.url === 'ServiceRequest',
+      );
+      expect((serviceRequest?.resource as { encounter: { reference: string } }).encounter).toEqual({
+        reference: encounterEntry?.fullUrl,
+      });
+    });
+
+    it('does not park a walk-in report for want of an encounter it never had', async () => {
+      submissionRepositoryMock.findLabReportBundleData.mockResolvedValue(
+        buildLabBundleData({ encounterId: null, satusehatEncounterId: null }),
+      );
+      httpClientMock.sendRequest.mockResolvedValue({
+        entry: [resourceCreated('Encounter', 'ihs-enc-walkin'), ...LAB_CHAIN_RESPONSE.entry],
+      });
+      const service = buildService();
+
+      await service.processSubmission(buildLabSubmission());
+
+      expect(submissionRepositoryMock.markFailed).not.toHaveBeenCalled();
+      expect(submissionRepositoryMock.markSubmitted).toHaveBeenCalledTimes(1);
     });
 
     it('skips an uncoded test and a value the bench has not verified', async () => {

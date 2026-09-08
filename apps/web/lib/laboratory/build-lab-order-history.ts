@@ -1,4 +1,5 @@
 import type { LabOrderView, LabResultView } from '@hms/shared-types';
+import { resolveLabRequesterLabel } from './resolve-lab-requester-label';
 
 export type LabOrderHistoryEventKind =
   | 'ORDERED'
@@ -33,7 +34,7 @@ export function buildLabOrderHistory(params: BuildLabOrderHistoryParams): LabOrd
   const { order, results } = params;
   const testNames = new Map(order.items.map((item) => [item.id, item.name]));
   const events: LabOrderHistoryEvent[] = [
-    { key: 'ordered', kind: 'ORDERED', at: order.orderedAt, values: { actor: order.orderedByName } },
+    { key: 'ordered', kind: 'ORDERED', at: order.orderedAt, values: { actor: resolveLabRequesterLabel(order) } },
   ];
   for (const specimen of order.specimens) {
     events.push({

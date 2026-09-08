@@ -21,6 +21,7 @@ import { ApiEndpoint } from '../../../common/openapi/api-endpoint.decorator';
 import { LABORATORY_EXAMPLES } from '../../../common/openapi/laboratory-examples';
 import { AuditAction } from '../../../generated/prisma/client';
 import { CancelLabOrderDto } from '../dto/cancel-lab-order.dto';
+import { CreateWalkInLabOrderDto } from '../dto/create-walk-in-lab-order.dto';
 import { ListLabOrdersQueryDto } from '../dto/list-lab-orders-query.dto';
 import { UpdateLabOrderDispositionDto } from '../dto/update-lab-order-disposition.dto';
 import { LabOrderService } from '../service/lab-order.service';
@@ -34,6 +35,28 @@ import { LabOrderService } from '../service/lab-order.service';
 @Controller({ version: '1', path: 'lab-orders' })
 export class LabOrderController {
   constructor(private readonly labOrderService: LabOrderService) {}
+
+  @Post('intake')
+  @Auth([{ action: 'write', subject: 'LabOrder' }])
+  @Audited({ resource: 'lab-order', action: AuditAction.CREATE, idParam: null })
+  @ApiEndpoint({
+    summary: 'Register a walk-in or external lab request',
+    responseDescription:
+      'Opens a LAB_ONLY visit for the patient and raises the order against it — no encounter, and no ordering doctor of this clinic. Requires `lab-order.write:any`: a walk-in has no attending practitioner for `:own` to resolve through. An EXTERNAL_REFERRAL must name the doctor who asked; a WALK_IN must not. 400 when the order names no tests or the patient has no current privacy-notice evidence; 409 when the patient already has an open registration.',
+    responseExample: {
+      data: LABORATORY_EXAMPLES.labOrder.view,
+      message: 'Laboratory request registered',
+    },
+  })
+  async createWalkInLabOrder(
+    @Body() payload: CreateWalkInLabOrderDto,
+    @AuthUser() currentUser?: CurrentUser,
+  ) {
+    const actor = this.assertAuthenticated(currentUser);
+    const order = await this.labOrderService.createWalkInLabOrder(payload, actor);
+
+    return { data: order, message: 'Laboratory request registered' };
+  }
 
   @Get()
   @Auth([{ action: 'read', subject: 'LabOrder' }])

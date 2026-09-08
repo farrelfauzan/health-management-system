@@ -5,6 +5,7 @@ import {
   QueueBoardCounts,
   QueueBoardEntry,
   QueueBoardPoliSummary,
+  PrivacyNoticeEvidenceInput,
   QueueBoardResponse,
   RegistrationListItem,
   RegistrationPoli,
@@ -173,6 +174,48 @@ export class RegistrationFlowService {
     }
 
     return this.toRegistrationListItem(created);
+  }
+
+  /**
+   * Opens a LAB_ONLY visit for a patient who came only for a test (P18-T10).
+   *
+   * Staff-only by construction rather than by a flag on the public create
+   * schema: a patient self-registering must not be able to declare their own
+   * visit type, and the front desk is the only caller. The privacy-notice rule
+   * is the same one every other visit obeys — arriving for a blood draw is not
+   * a reason to skip it.
+   */
+  async createLabOnlyRegistration(params: {
+    patientId: string;
+    privacyNotice?: PrivacyNoticeEvidenceInput;
+    currentUser: CurrentUser;
+  }): Promise<{ registrationId: string; patientId: string }> {
+    const patient = await this.registrationFlowRepository.findActivePatientById(params.patientId);
+    if (!patient) {
+      throw new BadRequestException('Patient not found or inactive');
+    }
+    const openRegistration = await this.registrationFlowRepository.findOpenRegistrationByPatientId({
+      patientId: params.patientId,
+    });
+    if (openRegistration) {
+      throw new ConflictException('Patient already has an open registration');
+    }
+    try {
+      const created = await this.registrationFlowRepository.createRegistration({
+        patientId: params.patientId,
+        type: 'LAB_ONLY',
+        createdById: params.currentUser.sub,
+        actorUserId: params.currentUser.sub,
+        queueDate: this.resolveClinicToday(),
+        privacyNotice: params.privacyNotice,
+      });
+      return { registrationId: created.id, patientId: params.patientId };
+    } catch (error) {
+      if (error instanceof CurrentPrivacyNoticeEvidenceRequiredError) {
+        throw new BadRequestException(error.message);
+      }
+      throw error;
+    }
   }
 
   async getQueueBoard(query: QueueBoardQueryDto, currentUser: CurrentUser): Promise<QueueBoardResponse> {

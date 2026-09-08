@@ -188,6 +188,14 @@ export const listServiceTariffsQuerySchema = z.object({
  * tariff exists — with a single one the server picks it, and with none the
  * consultation line is skipped and reported as a gap.
  */
+/**
+ * Billing a visit that had no consultation (P18-T10). No consultation tariff to
+ * name: there was no consultation to charge for.
+ */
+export const generateLabOnlyInvoiceSchema = z.object({
+  registrationId: z.string().uuid(),
+});
+
 export const generateInvoiceSchema = z.object({
   encounterId: z.string().uuid(),
   consultationTariffId: z.string().uuid().optional(),
@@ -248,6 +256,9 @@ export const cashierDailyReportQuerySchema = z.object({
 export type CreateServiceTariffInput = z.infer<typeof createServiceTariffSchema>;
 export type UpdateServiceTariffInput = z.infer<typeof updateServiceTariffSchema>;
 export type ListServiceTariffsQueryInput = z.infer<typeof listServiceTariffsQuerySchema>;
+export type GenerateLabOnlyInvoiceInput = z.infer<
+  typeof generateLabOnlyInvoiceSchema
+>;
 export type GenerateInvoiceInput = z.infer<typeof generateInvoiceSchema>;
 export type AddInvoiceItemInput = z.infer<typeof addInvoiceItemSchema>;
 export type RecordPaymentInput = z.infer<typeof recordPaymentSchema>;

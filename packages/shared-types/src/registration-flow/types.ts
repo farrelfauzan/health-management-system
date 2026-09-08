@@ -1,5 +1,8 @@
 import type { AppointmentStatusValue } from '#appointment-management/schemas';
-import type { RegistrationStatusValue } from '#registration-flow/schemas';
+import type {
+  RegistrationStatusValue,
+  RegistrationTypeValue,
+} from '#registration-flow/schemas';
 import type { PrivacyNoticeEvidenceInput } from '#patient-management/schemas';
 
 export type ListRegistrationsParams = {
@@ -35,6 +38,12 @@ export type RegistrationScopeActor = {
 export type CreateRegistrationRecordPayload = {
   patientId: string;
   appointmentId?: string;
+  /**
+   * What the visit is for (P18-T10). A LAB_ONLY visit still draws the daily
+   * antrian number — the patient queues at the front desk like anyone else —
+   * but joins no poli, because no doctor sees them.
+   */
+  type?: RegistrationTypeValue;
   createdById: string;
   queueDate: Date;
   privacyNotice?: PrivacyNoticeEvidenceInput;

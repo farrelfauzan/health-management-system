@@ -48,6 +48,13 @@ export function canTransitionRegistrationStatus(
   return REGISTRATION_STATUS_TRANSITIONS[fromStatus].includes(toStatus);
 }
 
+/** What a visit is for. A LAB_ONLY visit opens no encounter (P18-T10). */
+export const REGISTRATION_TYPES = ['CONSULTATION', 'LAB_ONLY'] as const;
+
+export const registrationTypeSchema = z.enum(REGISTRATION_TYPES);
+
+export type RegistrationTypeValue = z.infer<typeof registrationTypeSchema>;
+
 export const createRegistrationSchema = z.object({
   patientId: z.string().uuid(),
   appointmentId: z.string().uuid().optional(),

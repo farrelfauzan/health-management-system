@@ -421,6 +421,23 @@ export const EncounterStatus = {
 export type EncounterStatus = (typeof EncounterStatus)[keyof typeof EncounterStatus]
 
 
+export const LabOrderSource = {
+  ENCOUNTER: 'ENCOUNTER',
+  WALK_IN: 'WALK_IN',
+  EXTERNAL_REFERRAL: 'EXTERNAL_REFERRAL'
+} as const
+
+export type LabOrderSource = (typeof LabOrderSource)[keyof typeof LabOrderSource]
+
+
+export const RegistrationType = {
+  CONSULTATION: 'CONSULTATION',
+  LAB_ONLY: 'LAB_ONLY'
+} as const
+
+export type RegistrationType = (typeof RegistrationType)[keyof typeof RegistrationType]
+
+
 export const SatusehatSubmissionKind = {
   ENCOUNTER: 'ENCOUNTER',
   LAB_REPORT: 'LAB_REPORT'

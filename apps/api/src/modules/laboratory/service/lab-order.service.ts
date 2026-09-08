@@ -5,7 +5,9 @@ import {
   ClinicalRequestDocumentView,
   CreateLabOrderInput,
   CreateLabOrderItemPayload,
+  CreateWalkInLabOrderInput,
   LabOrderListItem,
+  ActorScopeResolution,
   LabOrderRecord,
   LabOrderSummary,
   LabOrderView,
@@ -14,7 +16,12 @@ import {
   LabTestRecord,
   getStartOfCalendarDateInTimeZone,
 } from '@hms/shared-types';
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 import { AuditService } from '../../../common/audit/audit.service';
@@ -28,7 +35,9 @@ import { ListLabOrdersQueryDto } from '../dto/list-lab-orders-query.dto';
 import { LabOrderRepository } from '../repository/lab-order.repository';
 import { LabCatalogService } from './lab-catalog.service';
 import { LabOrderAccessService } from './lab-order-access.service';
+import { RegistrationFlowService } from '../../registration-flow/service/registration-flow.service';
 import { LabOrderMapper } from './lab-order.mapper';
+import { resolveLabRequesterLabel } from './resolve-lab-requester-label';
 
 const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 
@@ -63,6 +72,7 @@ export class LabOrderService {
     private readonly billingService: BillingService,
     private readonly clinicProfileService: ClinicProfileService,
     private readonly clinicalRequestDocumentService: ClinicalRequestDocumentService,
+    private readonly registrationFlowService: RegistrationFlowService,
     configService: ConfigService,
   ) {
     this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
@@ -81,8 +91,12 @@ export class LabOrderService {
     await this.assertTestsNotAlreadyOrdered(encounterId, items);
     const created = await this.labOrderRepository.createLabOrder({
       encounterId,
+      registrationId: encounter.registrationId,
+      source: 'ENCOUNTER',
       patientId: encounter.patientId,
       orderedById: encounter.doctorId,
+      externalRequesterName: null,
+      externalRequesterFacility: null,
       priority: payload.priority ?? 'ROUTINE',
       clinicalNotes: payload.clinicalNotes ?? null,
       isFasting: payload.isFasting ?? false,
@@ -150,8 +164,7 @@ export class LabOrderService {
   async getLabOrderById(id: string, currentUser: CurrentUser): Promise<LabOrderView> {
     const order = await this.findLabOrderOrThrow(id);
     const scope = await this.labOrderAccessService.resolveScopeOrThrow(currentUser, 'read');
-    const encounter = await this.findEncounterOrThrow(order.encounterId);
-    this.labOrderAccessService.assertCanReadEncounterOrders({ encounter, scope, currentUser });
+    await this.assertCanAccessOrder(order, scope, currentUser, 'read');
 
     return this.labOrderMapper.toLabOrderView(order);
   }
@@ -167,8 +180,7 @@ export class LabOrderService {
   ): Promise<{ order: LabOrderView; meta: CancelLabOrderMeta }> {
     const order = await this.findLabOrderOrThrow(id);
     const scope = await this.labOrderAccessService.resolveScopeOrThrow(currentUser, 'write');
-    const encounter = await this.findEncounterOrThrow(order.encounterId);
-    this.labOrderAccessService.assertCanOrderOnEncounter({ encounter, scope, currentUser });
+    await this.assertCanAccessOrder(order, scope, currentUser, 'write');
     this.assertCancellable(order);
     const cancelled = await this.labOrderRepository.cancelLabOrder({
       id: order.id,
@@ -178,8 +190,8 @@ export class LabOrderService {
     // P18-T06: an issued bill is corrected by voiding and reissuing, which is
     // not the laboratory's to do. Say so rather than leave the patient charged
     // for a test nobody ran.
-    const requiresManualCredit = await this.billingService.hasIssuedInvoiceForEncounter(
-      order.encounterId,
+    const requiresManualCredit = await this.billingService.hasIssuedInvoiceForVisit(
+      order.registrationId,
     );
     await this.auditService.record({
       action: 'LAB_ORDER_CANCELLED',
@@ -214,8 +226,7 @@ export class LabOrderService {
   ): Promise<LabOrderView> {
     const order = await this.findLabOrderOrThrow(id);
     const scope = await this.labOrderAccessService.resolveScopeOrThrow(currentUser, 'write');
-    const encounter = await this.findEncounterOrThrow(order.encounterId);
-    this.labOrderAccessService.assertCanOrderOnEncounter({ encounter, scope, currentUser });
+    await this.assertCanAccessOrder(order, scope, currentUser, 'write');
     this.assertDispositionStillOpen(order);
     const updated = await this.labOrderRepository.updateLabOrderDisposition({
       id: order.id,
@@ -258,8 +269,7 @@ export class LabOrderService {
   ): Promise<ClinicalRequestDocumentView> {
     const order = await this.findLabOrderOrThrow(id);
     const scope = await this.labOrderAccessService.resolveScopeOrThrow(currentUser, 'read');
-    const encounter = await this.findEncounterOrThrow(order.encounterId);
-    this.labOrderAccessService.assertCanReadEncounterOrders({ encounter, scope, currentUser });
+    await this.assertCanAccessOrder(order, scope, currentUser, 'read');
     const worklistOrder = await this.labOrderRepository.findWorklistOrderById(order.id);
 
     if (!worklistOrder) {
@@ -268,7 +278,7 @@ export class LabOrderService {
     const context = buildLabRequestContext({
       order,
       patient: worklistOrder.patient,
-      doctorName: order.orderedByName,
+      doctorName: resolveLabRequesterLabel(order),
       doctorLicenseNumber: worklistOrder.orderedByLicenseNumber,
       clinic: await this.clinicProfileService.getProfile(),
       clinicLogoDataUri: null,
@@ -411,6 +421,99 @@ export class LabOrderService {
         `Lab order ${order.orderNumber} is ${order.status} and can no longer be cancelled`,
       );
     }
+  }
+
+  /**
+   * Opens a LAB_ONLY visit and orders against it in one front-desk action
+   * (P18-T10) — the patient who arrived with a letter from another doctor, or
+   * who wants a check-up panel without seeing anyone.
+   *
+   * Two steps rather than one transaction, deliberately: the registration is
+   * written first and the order second, so a failure in the second leaves a
+   * visit with no tests on it. That is a state the front desk can see and
+   * retry or cancel, where the reverse — an order belonging to no visit — is
+   * one the schema forbids outright.
+   */
+  async createWalkInLabOrder(
+    payload: CreateWalkInLabOrderInput,
+    currentUser: CurrentUser,
+  ): Promise<LabOrderView> {
+    // `:any` only. Ordering for oneself is what an appointment is for, and a
+    // patient must not be able to raise a request in a doctor's name.
+    await this.labOrderAccessService.resolveAnyScopeOrThrow(currentUser, 'write');
+    const items = await this.buildOrderItems({
+      testIds: payload.testIds,
+      panelIds: payload.panelIds,
+    });
+    const visit = await this.registrationFlowService.createLabOnlyRegistration({
+      patientId: payload.patientId,
+      privacyNotice: payload.privacyNotice,
+      currentUser,
+    });
+    const created = await this.labOrderRepository.createLabOrder({
+      encounterId: null,
+      registrationId: visit.registrationId,
+      source: payload.source,
+      patientId: visit.patientId,
+      orderedById: null,
+      externalRequesterName: payload.externalRequesterName ?? null,
+      externalRequesterFacility: payload.externalRequesterFacility ?? null,
+      priority: payload.priority ?? 'ROUTINE',
+      clinicalNotes: payload.clinicalNotes ?? null,
+      isFasting: payload.isFasting ?? false,
+      fulfilmentSite: 'INTERNAL',
+      chargeMode: 'CLINIC',
+      externalFacilityName: null,
+      requestLetterDocumentId: payload.requestLetterDocumentId ?? null,
+      orderedAt: new Date(),
+      items,
+    });
+    await this.auditService.record({
+      action: 'LAB_ORDER_CREATED',
+      resource: 'LabOrder',
+      resourceId: created.id,
+      actorUserId: currentUser.sub,
+      patientId: visit.patientId,
+      metadata: {
+        orderNumber: created.orderNumber,
+        source: payload.source,
+        registrationId: visit.registrationId,
+        itemCount: created.items.length,
+        priority: created.priority,
+      },
+    });
+
+    return this.labOrderMapper.toLabOrderView(created);
+  }
+
+  /**
+   * The access rule for one order, whichever way it was raised (P18-T10).
+   *
+   * An order from a consultation is governed by its encounter, as it always
+   * was. One without an encounter has no attending practitioner for `:own` to
+   * resolve through, so only the clinic-wide grant can reach it — the same
+   * rule that governs raising it.
+   */
+  private async assertCanAccessOrder(
+    order: LabOrderRecord,
+    scope: ActorScopeResolution,
+    currentUser: CurrentUser,
+    action: 'read' | 'write',
+  ): Promise<void> {
+    if (order.encounterId === null) {
+      if (!scope.hasAny) {
+        throw new ForbiddenException(
+          `You are not allowed to ${action} laboratory orders raised outside an encounter`,
+        );
+      }
+      return;
+    }
+    const encounter = await this.findEncounterOrThrow(order.encounterId);
+    if (action === 'read') {
+      this.labOrderAccessService.assertCanReadEncounterOrders({ encounter, scope, currentUser });
+      return;
+    }
+    this.labOrderAccessService.assertCanOrderOnEncounter({ encounter, scope, currentUser });
   }
 
   private async findEncounterOrThrow(encounterId: string) {

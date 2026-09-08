@@ -40,6 +40,26 @@ export class LabOrderAccessService {
   }
 
   /**
+   * The front desk's scope, for a request that belongs to no encounter
+   * (P18-T10). `:own` cannot answer here — it resolves through the attending
+   * practitioner, and a walk-in has none — so the clinic-wide grant is the only
+   * one that means anything, and a patient holding `:own` must not be able to
+   * raise a request in a doctor's name.
+   */
+  async resolveAnyScopeOrThrow(
+    currentUser: CurrentUser,
+    action: 'read' | 'write',
+  ): Promise<ActorScopeResolution> {
+    const scope = await this.resolveScopeOrThrow(currentUser, action);
+    if (!scope.hasAny) {
+      throw new ForbiddenException(
+        `You are not allowed to ${action} laboratory orders outside an encounter`,
+      );
+    }
+    return scope;
+  }
+
+  /**
    * Ordering is the attending practitioner's act. A covering doctor who wants
    * a test opens their own encounter, exactly as they would to write a note.
    */

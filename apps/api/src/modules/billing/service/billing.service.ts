@@ -31,6 +31,7 @@ import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
 import { AddInvoiceItemDto } from '../dto/add-invoice-item.dto';
 import { GenerateInvoiceDto } from '../dto/generate-invoice.dto';
+import { GenerateLabOnlyInvoiceDto } from '../dto/generate-lab-only-invoice.dto';
 import { ListInvoicesQueryDto } from '../dto/list-invoices-query.dto';
 import { RecordPaymentDto } from '../dto/record-payment.dto';
 import { VoidInvoiceDto } from '../dto/void-invoice.dto';
@@ -110,7 +111,7 @@ export class BillingService {
     const dispensedItems = await this.billingRepository.findDispensedItemsByEncounterId(
       encounter.id,
     );
-    const labItems = await this.billingRepository.findLabItemsForBilling(encounter.id);
+    const labItems = await this.billingRepository.findLabItemsForBilling(encounter.registrationId);
     const collected = await this.collectInvoiceItems({
       encounter,
       dispensedItems,
@@ -121,6 +122,55 @@ export class BillingService {
     const created = await this.billingRepository.createInvoiceWithItems({
       encounterId: encounter.id,
       patientId: encounter.patientId,
+      createdById: currentUser.sub,
+      invoiceDate: this.resolveClinicToday(),
+      totalAmount: toRupiah(totalCents),
+      items: collected.items,
+    });
+
+    return { invoice: await this.toInvoiceDetail(created), gaps: collected.gaps };
+  }
+
+  /**
+   * Bills a LAB_ONLY visit (P18-T10) — a patient who came only for a test.
+   *
+   * Nothing but the tests: no consultation fee, because nobody consulted; no
+   * procedures, immunizations or dispensed items, because those all hang off an
+   * encounter this visit never had. The same live-invoice rule applies, and the
+   * same tariff gaps are reported, so an unpriced panel is named rather than
+   * silently billed at zero.
+   */
+  async generateLabOnlyInvoice(
+    payload: GenerateLabOnlyInvoiceDto,
+    currentUser: CurrentUser,
+  ): Promise<{ invoice: InvoiceDetail; gaps: InvoiceGenerationGap[] }> {
+    const visit = await this.billingRepository.findVisitForBilling(payload.registrationId);
+    if (!visit) {
+      throw new BadRequestException('Registration not found');
+    }
+    if (visit.type !== 'LAB_ONLY') {
+      throw new ConflictException(
+        'This visit has an encounter; bill it through the encounter so the consultation is charged',
+      );
+    }
+    if (visit.status === 'CANCELLED') {
+      throw new ConflictException('A cancelled visit can not be billed');
+    }
+    const existing = await this.billingRepository.findLiveInvoiceByRegistrationId(visit.id);
+    if (existing) {
+      throw new ConflictException(
+        'Visit already has a live invoice; void it before generating a replacement',
+      );
+    }
+    const labItems = await this.billingRepository.findLabItemsForBilling(visit.id);
+    const collected = this.collectLabItems(labItems);
+    if (collected.items.length === 0 && collected.gaps.length === 0) {
+      throw new ConflictException('This visit has no laboratory tests to bill');
+    }
+    const totalCents = collected.items.reduce((sum, item) => sum + toCents(item.amount), 0);
+    const created = await this.billingRepository.createInvoiceWithItems({
+      registrationId: visit.id,
+      patientId: visit.patientId,
       createdById: currentUser.sub,
       invoiceDate: this.resolveClinicToday(),
       totalAmount: toRupiah(totalCents),
@@ -310,10 +360,10 @@ export class BillingService {
    * (P18-T06). A service method rather than a repository call across modules,
    * so the laboratory cannot form its own opinion of what "paid" means.
    */
-  async hasSettledInvoiceForEncounter(encounterId: string): Promise<boolean> {
-    const settled = await this.billingRepository.findEncounterIdsWithSettledInvoice([encounterId]);
+  async hasSettledInvoiceForVisit(registrationId: string): Promise<boolean> {
+    const settled = await this.billingRepository.findVisitIdsWithSettledInvoice([registrationId]);
 
-    return settled.has(encounterId);
+    return settled.has(registrationId);
   }
 
   /**
@@ -322,19 +372,19 @@ export class BillingService {
    * something the laboratory may do, so the cancel response says a manual
    * credit is needed instead of silently leaving the patient charged.
    */
-  async hasIssuedInvoiceForEncounter(encounterId: string): Promise<boolean> {
-    return this.billingRepository.hasIssuedInvoiceForEncounter(encounterId);
+  async hasIssuedInvoiceForVisit(registrationId: string): Promise<boolean> {
+    return this.billingRepository.hasIssuedInvoiceForVisit(registrationId);
   }
 
   /** The same question asked of a whole worklist at once. */
-  async findEncounterIdsWithSettledInvoice(
-    encounterIds: readonly string[],
+  async findVisitIdsWithSettledInvoice(
+    registrationIds: readonly string[],
   ): Promise<ReadonlySet<string>> {
-    if (encounterIds.length === 0) {
+    if (registrationIds.length === 0) {
       return new Set();
     }
 
-    return this.billingRepository.findEncounterIdsWithSettledInvoice(encounterIds);
+    return this.billingRepository.findVisitIdsWithSettledInvoice(registrationIds);
   }
 
   /**

@@ -160,6 +160,8 @@ export type BillingSourceEncounterRecord = {
   id: string;
   status: EncounterStatusValue;
   patientId: string;
+  /** The visit, which is how the bill finds the tests ordered on it (P18-T10). */
+  registrationId: string;
   procedures: Array<{ id: string; code: string; display: string }>;
   /**
    * Vaccinations given on the visit (P10-T16). Priced from a `ServiceTariff`
@@ -214,11 +216,21 @@ export type CreateInvoiceRecordPayload = {
   /** Exactly one of these is set — the CHECK constraint says the same thing. */
   encounterId?: string;
   admissionId?: string;
+  /** A LAB_ONLY visit, which has neither of the other two (P18-T10). */
+  registrationId?: string;
   patientId: string;
   createdById: string;
   invoiceDate: Date;
   totalAmount: number;
   items: CreateInvoiceItemPayload[];
+};
+
+/** The walk-in visit being billed, and the patient who owes for it. */
+export type BillingSourceVisitRecord = {
+  id: string;
+  patientId: string;
+  type: 'CONSULTATION' | 'LAB_ONLY';
+  status: 'PENDING' | 'CHECKED_IN' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
 };
 
 export type RecordPaymentRecordPayload = {

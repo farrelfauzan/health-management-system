@@ -165,7 +165,7 @@ describe('SatusehatFhirMapper', () => {
         reference: 'Patient/P02478375538',
         display: 'Budi Santoso',
       });
-      expect(actualEncounter.participant[0]?.individual).toEqual({
+      expect(actualEncounter.participant?.[0]?.individual).toEqual({
         reference: 'Practitioner/N10000001',
         display: 'dr. Sari Wulandari',
       });

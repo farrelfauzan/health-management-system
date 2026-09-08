@@ -23,8 +23,10 @@ import type {
 import type {
   AddInvoiceItemDto,
   GenerateInvoiceDto,
+  GenerateLabOnlyInvoiceDto,
   InvoiceControllerAddInvoiceItemV1200,
   InvoiceControllerGenerateInvoiceV1201,
+  InvoiceControllerGenerateLabOnlyInvoiceV1201,
   InvoiceControllerGetInvoiceByIdV1200,
   InvoiceControllerIssueInvoiceV1200,
   InvoiceControllerListInvoicesV1200,
@@ -327,6 +329,100 @@ export function useInvoiceControllerGetInvoiceByIdV1<TData = Awaited<ReturnType<
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getInvoiceControllerGetInvoiceByIdV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Generate an invoice for a laboratory-only visit
+ */
+export const invoiceControllerGenerateLabOnlyInvoiceV1 = (
+    generateLabOnlyInvoiceDto: GenerateLabOnlyInvoiceDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<InvoiceControllerGenerateLabOnlyInvoiceV1201>(
+      {url: `/api/v1/invoices/lab-only`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: generateLabOnlyInvoiceDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getInvoiceControllerGenerateLabOnlyInvoiceV1QueryKey = (generateLabOnlyInvoiceDto?: GenerateLabOnlyInvoiceDto,) => {
+    return [
+    'POST', `/api/v1/invoices/lab-only`, generateLabOnlyInvoiceDto
+    ] as const;
+    }
+
+
+export const getInvoiceControllerGenerateLabOnlyInvoiceV1QueryOptions = <TData = Awaited<ReturnType<typeof invoiceControllerGenerateLabOnlyInvoiceV1>>, TError = unknown>(generateLabOnlyInvoiceDto: GenerateLabOnlyInvoiceDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof invoiceControllerGenerateLabOnlyInvoiceV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getInvoiceControllerGenerateLabOnlyInvoiceV1QueryKey(generateLabOnlyInvoiceDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof invoiceControllerGenerateLabOnlyInvoiceV1>>> = ({ signal }) => invoiceControllerGenerateLabOnlyInvoiceV1(generateLabOnlyInvoiceDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof invoiceControllerGenerateLabOnlyInvoiceV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type InvoiceControllerGenerateLabOnlyInvoiceV1QueryResult = NonNullable<Awaited<ReturnType<typeof invoiceControllerGenerateLabOnlyInvoiceV1>>>
+export type InvoiceControllerGenerateLabOnlyInvoiceV1QueryError = unknown
+
+
+export function useInvoiceControllerGenerateLabOnlyInvoiceV1<TData = Awaited<ReturnType<typeof invoiceControllerGenerateLabOnlyInvoiceV1>>, TError = unknown>(
+ generateLabOnlyInvoiceDto: GenerateLabOnlyInvoiceDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof invoiceControllerGenerateLabOnlyInvoiceV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof invoiceControllerGenerateLabOnlyInvoiceV1>>,
+          TError,
+          Awaited<ReturnType<typeof invoiceControllerGenerateLabOnlyInvoiceV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useInvoiceControllerGenerateLabOnlyInvoiceV1<TData = Awaited<ReturnType<typeof invoiceControllerGenerateLabOnlyInvoiceV1>>, TError = unknown>(
+ generateLabOnlyInvoiceDto: GenerateLabOnlyInvoiceDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof invoiceControllerGenerateLabOnlyInvoiceV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof invoiceControllerGenerateLabOnlyInvoiceV1>>,
+          TError,
+          Awaited<ReturnType<typeof invoiceControllerGenerateLabOnlyInvoiceV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useInvoiceControllerGenerateLabOnlyInvoiceV1<TData = Awaited<ReturnType<typeof invoiceControllerGenerateLabOnlyInvoiceV1>>, TError = unknown>(
+ generateLabOnlyInvoiceDto: GenerateLabOnlyInvoiceDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof invoiceControllerGenerateLabOnlyInvoiceV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Generate an invoice for a laboratory-only visit
+ */
+
+export function useInvoiceControllerGenerateLabOnlyInvoiceV1<TData = Awaited<ReturnType<typeof invoiceControllerGenerateLabOnlyInvoiceV1>>, TError = unknown>(
+ generateLabOnlyInvoiceDto: GenerateLabOnlyInvoiceDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof invoiceControllerGenerateLabOnlyInvoiceV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getInvoiceControllerGenerateLabOnlyInvoiceV1QueryOptions(generateLabOnlyInvoiceDto,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

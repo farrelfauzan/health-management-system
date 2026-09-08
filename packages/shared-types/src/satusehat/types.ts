@@ -320,6 +320,14 @@ export type SatusehatLabReportBundleData = {
    */
   encounterId: string | null;
   satusehatEncounterId: string | null;
+  /**
+   * The visit, which every order has. When there is no encounter (P18-T10) the
+   * chain sends a minimal Encounter for this registration inside its own
+   * bundle, identified by this id so a resubmission updates it rather than
+   * creating a second visit for one blood draw.
+   */
+  registrationId: string;
+  visitStartedAt: Date;
   patientId: string;
   patientName: string;
   patientIhsNumber: string | null;

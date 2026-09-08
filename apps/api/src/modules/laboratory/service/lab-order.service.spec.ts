@@ -11,6 +11,7 @@ import { LabCatalogService } from './lab-catalog.service';
 import { LabOrderAccessService } from './lab-order-access.service';
 import { LabOrderMapper } from './lab-order.mapper';
 import { LabOrderService } from './lab-order.service';
+import { RegistrationFlowService } from '../../registration-flow/service/registration-flow.service';
 
 /**
  * The rules that stop a patient being drawn or charged twice, and the ones that
@@ -58,17 +59,20 @@ describe('LabOrderService', () => {
     resolveScopeOrThrow: jest.fn(),
     assertCanOrderOnEncounter: jest.fn(),
     assertCanReadEncounterOrders: jest.fn(),
+    resolveAnyScopeOrThrow: jest.fn(),
   };
 
   const auditServiceMock = { record: jest.fn() };
 
-  const billingServiceMock = { hasIssuedInvoiceForEncounter: jest.fn() };
+  const billingServiceMock = { hasIssuedInvoiceForVisit: jest.fn() };
 
   const clinicProfileServiceMock = { getProfile: jest.fn() };
 
   const clinicalRequestDocumentServiceMock = { renderAndFile: jest.fn() };
 
   const configServiceMock = { get: jest.fn().mockReturnValue('Asia/Jakarta') };
+
+  const registrationFlowServiceMock = { createLabOnlyRegistration: jest.fn() };
 
   const service = new LabOrderService(
     labOrderRepositoryMock as unknown as LabOrderRepository,
@@ -79,6 +83,7 @@ describe('LabOrderService', () => {
     billingServiceMock as unknown as BillingService,
     clinicProfileServiceMock as unknown as ClinicProfileService,
     clinicalRequestDocumentServiceMock as unknown as ClinicalRequestDocumentService,
+    registrationFlowServiceMock as unknown as RegistrationFlowService,
     configServiceMock as unknown as ConfigService,
   );
 
@@ -90,6 +95,10 @@ describe('LabOrderService', () => {
       patientId,
       orderedById: doctorId,
       orderedByName: 'dr. Andi Wijaya',
+      registrationId: '3a4b5c6d-7e8f-4a9b-8c0d-1e2f3a4b5c6d',
+      source: 'ENCOUNTER' as const,
+      externalRequesterName: null,
+      externalRequesterFacility: null,
       status: 'ORDERED' as const,
       priority: 'ROUTINE' as const,
       clinicalNotes: null,
@@ -119,7 +128,7 @@ describe('LabOrderService', () => {
     labOrderRepositoryMock.createLabOrder.mockResolvedValue(buildOrderRecord());
     labCatalogServiceMock.findOrderableLabTests.mockResolvedValue([]);
     labCatalogServiceMock.findOrderableLabPanels.mockResolvedValue([]);
-    billingServiceMock.hasIssuedInvoiceForEncounter.mockResolvedValue(false);
+    billingServiceMock.hasIssuedInvoiceForVisit.mockResolvedValue(false);
   });
 
   describe('createLabOrder', () => {
@@ -307,7 +316,7 @@ describe('LabOrderService', () => {
       labOrderRepositoryMock.cancelLabOrder.mockResolvedValue(
         buildOrderRecord({ status: 'CANCELLED', cancelReason: 'Sampel tidak memadai' }),
       );
-      billingServiceMock.hasIssuedInvoiceForEncounter.mockResolvedValue(true);
+      billingServiceMock.hasIssuedInvoiceForVisit.mockResolvedValue(true);
 
       const actual = await service.cancelLabOrder(
         labOrderId,
@@ -422,6 +431,83 @@ describe('LabOrderService', () => {
       const actual = await service.findOpenOrdersForEncounter(encounterId);
 
       expect(actual.map((summary) => summary.status)).toEqual(['COLLECTED']);
+    });
+  });
+  describe('createWalkInLabOrder', () => {
+    const registrationId = '3a4b5c6d-7e8f-4a9b-8c0d-1e2f3a4b5c6d';
+
+    beforeEach(() => {
+      labOrderAccessServiceMock.resolveAnyScopeOrThrow.mockResolvedValue({
+        hasAny: true,
+        hasOwn: false,
+      });
+      registrationFlowServiceMock.createLabOnlyRegistration.mockResolvedValue({
+        registrationId,
+        patientId,
+      });
+      labCatalogServiceMock.findOrderableLabTests.mockResolvedValue([]);
+      labCatalogServiceMock.findOrderableLabPanels.mockResolvedValue([
+        { id: darahRutinId, members: [{ labTestId: hemoglobinId }] },
+      ]);
+      labOrderRepositoryMock.createLabOrder.mockResolvedValue(
+        buildOrderRecord({ encounterId: null, orderedById: null, orderedByName: null }),
+      );
+    });
+
+    it('opens a lab-only visit and raises the order against it, with no doctor', async () => {
+      await service.createWalkInLabOrder(
+        { patientId, source: 'WALK_IN', panelIds: [darahRutinId] },
+        doctorUser,
+      );
+
+      expect(registrationFlowServiceMock.createLabOnlyRegistration).toHaveBeenCalledWith(
+        expect.objectContaining({ patientId }),
+      );
+      expect(labOrderRepositoryMock.createLabOrder).toHaveBeenCalledWith(
+        expect.objectContaining({
+          encounterId: null,
+          registrationId,
+          source: 'WALK_IN',
+          orderedById: null,
+          externalRequesterName: null,
+        }),
+      );
+    });
+
+    it('records who asked, when the request came from a doctor elsewhere', async () => {
+      await service.createWalkInLabOrder(
+        {
+          patientId,
+          source: 'EXTERNAL_REFERRAL',
+          panelIds: [darahRutinId],
+          externalRequesterName: 'dr. Rina Kartika',
+          externalRequesterFacility: 'Klinik Sehat Bersama',
+        },
+        doctorUser,
+      );
+
+      expect(labOrderRepositoryMock.createLabOrder).toHaveBeenCalledWith(
+        expect.objectContaining({
+          source: 'EXTERNAL_REFERRAL',
+          externalRequesterName: 'dr. Rina Kartika',
+          externalRequesterFacility: 'Klinik Sehat Bersama',
+        }),
+      );
+    });
+
+    it('refuses a caller who only holds the own-scope grant', async () => {
+      labOrderAccessServiceMock.resolveAnyScopeOrThrow.mockRejectedValue(
+        new ForbiddenException('nope'),
+      );
+
+      await expect(
+        service.createWalkInLabOrder(
+          { patientId, source: 'WALK_IN', panelIds: [darahRutinId] },
+          doctorUser,
+        ),
+      ).rejects.toBeInstanceOf(ForbiddenException);
+      // The visit must not be opened for a caller who cannot order.
+      expect(registrationFlowServiceMock.createLabOnlyRegistration).not.toHaveBeenCalled();
     });
   });
 });

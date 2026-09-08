@@ -7,6 +7,8 @@ const order: LabOrderView = {
   id: 'o1',
   orderNumber: 'LAB/20260907/0001',
   encounterId: 'e1',
+  registrationId: 'r1',
+  source: 'ENCOUNTER' as const,
   patientId: 'p1',
   orderedById: 'd1',
   orderedByName: 'dr. Andi Wijaya',

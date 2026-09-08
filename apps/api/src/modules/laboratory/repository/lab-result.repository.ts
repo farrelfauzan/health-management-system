@@ -371,7 +371,9 @@ export class LabResultRepository {
       select: { orderedBy: { select: { ownerUserId: true } } },
     });
 
-    return row?.orderedBy.ownerUserId ?? null;
+    // Null when nobody at this clinic ordered it (P18-T10) — the release
+    // notification then goes to the ADMIN role instead of to a doctor.
+    return row?.orderedBy?.ownerUserId ?? null;
   }
 
   /**

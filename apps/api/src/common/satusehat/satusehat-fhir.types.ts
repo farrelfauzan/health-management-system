@@ -66,10 +66,16 @@ export type SatusehatFhirEncounter = {
   status: 'finished';
   class: SatusehatFhirCoding;
   subject: SatusehatFhirReference;
-  participant: Array<{
+  /**
+   * Omitted for a laboratory-only visit (P18-T10): nobody attended it, and an
+   * Encounter naming a practitioner who never saw the patient is the fiction
+   * that ticket exists to prevent.
+   */
+  participant?: Array<{
     type: SatusehatFhirCodeableConcept[];
     individual: SatusehatFhirReference;
   }>;
+  serviceType?: SatusehatFhirCodeableConcept;
   period: SatusehatFhirPeriod;
   location: Array<{ location: SatusehatFhirReference }>;
   statusHistory: SatusehatEncounterStatusHistoryEntry[];
@@ -352,6 +358,20 @@ export type SatusehatVitalSignsMapInput = {
  * caller has already skipped items without a LOINC, so `loincCode` is
  * required here: an uncoded request is gap-reported, never sent.
  */
+/**
+ * A visit that exists only so a specimen could be taken (P18-T10). The chain
+ * still needs an Encounter to reference, so one is sent inside the same bundle
+ * — ambulatory, laboratory, performed by the Organization, and attended by
+ * nobody.
+ */
+export type SatusehatLabOnlyEncounterMapInput = {
+  registrationId: string;
+  patientIhsNumber: string;
+  patientName?: string;
+  startedAt: Date;
+  endedAt: Date;
+};
+
 export type SatusehatServiceRequestMapInput = {
   orderNumber: string;
   itemSeq: number;

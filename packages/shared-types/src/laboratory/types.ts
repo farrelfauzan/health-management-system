@@ -3,6 +3,7 @@ import type {
   FulfilmentSiteValue,
   LabOrderItemStatusValue,
   LabOrderPriorityValue,
+  LabOrderSourceValue,
   LabOrderStatusValue,
   LabReferenceRangeInput,
   LabReportStatusValue,
@@ -149,10 +150,18 @@ export type LabSpecimenRecord = {
 export type LabOrderRecord = {
   id: string;
   orderNumber: string;
-  encounterId: string;
+  /** Null for a request that did not come from a consultation (P18-T10). */
+  encounterId: string | null;
+  /** The visit, which every order has whichever way the request arrived. */
+  registrationId: string;
+  source: LabOrderSourceValue;
   patientId: string;
-  orderedById: string;
-  orderedByName: string;
+  /** Null when nobody at this clinic ordered it. */
+  orderedById: string | null;
+  orderedByName: string | null;
+  /** Who asked, when it was a doctor elsewhere (EXTERNAL_REFERRAL only). */
+  externalRequesterName: string | null;
+  externalRequesterFacility: string | null;
   status: LabOrderStatusValue;
   priority: LabOrderPriorityValue;
   clinicalNotes: string | null;
@@ -186,6 +195,8 @@ export type LabOrderEncounterRecord = {
   status: 'IN_PROGRESS' | 'FINISHED' | 'CANCELLED';
   patientId: string;
   doctorId: string;
+  /** The visit, carried onto every order the encounter produces (P18-T10). */
+  registrationId: string;
   doctorOwnerUserId: string | null;
   patientOwnerUserId: string | null;
 };
@@ -202,15 +213,25 @@ export type CreateLabOrderItemPayload = {
 };
 
 export type CreateLabOrderPayload = {
-  encounterId: string;
+  /** Null for a request that did not come from a consultation (P18-T10). */
+  encounterId: string | null;
+  /** The visit, which every order has whichever way the request arrived. */
+  registrationId: string;
+  source: LabOrderSourceValue;
   patientId: string;
-  orderedById: string;
+  /** Null when nobody at this clinic ordered it. */
+  orderedById: string | null;
+  /** Set only for an EXTERNAL_REFERRAL — who signed the letter, and where. */
+  externalRequesterName: string | null;
+  externalRequesterFacility: string | null;
   priority: LabOrderPriorityValue;
   clinicalNotes: string | null;
   isFasting: boolean;
   fulfilmentSite: FulfilmentSiteValue;
   chargeMode: ChargeModeValue;
   externalFacilityName: string | null;
+  /** The incoming surat pengantar, already filed as the patient's document. */
+  requestLetterDocumentId?: string | null;
   orderedAt: Date;
   items: readonly CreateLabOrderItemPayload[];
 };
@@ -491,7 +512,8 @@ export type FileLabReportDocumentPayload = {
   pageCount: number | null;
   title: string;
   patientId: string;
-  encounterId: string;
+  /** Null for a report on an order raised outside a consultation (P18-T10). */
+  encounterId: string | null;
   documentDate: Date;
   /** The verifier — the report's uploader and the account that released it to the patient. */
   actorUserId: string;

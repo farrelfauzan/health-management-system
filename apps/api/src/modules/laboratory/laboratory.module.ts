@@ -8,6 +8,7 @@ import { ClinicalRequestDocumentModule } from '../clinical-request-document/clin
 import { DocumentDeliveryModule } from '../document-delivery/document-delivery.module';
 import { DocumentTemplateModule } from '../document-template/document-template.module';
 import { NotificationModule } from '../notification/notification.module';
+import { RegistrationFlowModule } from '../registration-flow/registration-flow.module';
 import { EncounterLabOrderController } from './controller/encounter-lab-order.controller';
 import { LabOrderController } from './controller/lab-order.controller';
 import { LabPanelController } from './controller/lab-panel.controller';
@@ -69,6 +70,7 @@ import { LaboratorySettingsService } from './service/laboratory-settings.service
     BillingModule,
     ClinicalRequestDocumentModule,
     NotificationModule,
+    RegistrationFlowModule,
     PdfModule,
     StorageModule,
     DocumentTemplateModule,

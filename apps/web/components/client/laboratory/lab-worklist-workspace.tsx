@@ -89,6 +89,14 @@ export function LabWorklistWorkspace({ initialQuery }: LabWorklistWorkspaceProps
               {t('anyDay')}
             </Button>
           ) : null}
+          {ability.can('write', 'LabOrder') ? (
+            <Button asChild type="button" size="sm" variant="ghost">
+              <Link href="/admin/laboratory/intake">
+                <Icon name="add" size={16} />
+                {t('intakeLink')}
+              </Link>
+            </Button>
+          ) : null}
           {ability.can('read', 'LabTest') ? (
             <Button asChild type="button" size="sm" variant="ghost">
               <Link href="/admin/settings/laboratory">

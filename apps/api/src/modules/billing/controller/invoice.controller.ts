@@ -19,6 +19,7 @@ import { ApiEndpoint } from '../../../common/openapi/api-endpoint.decorator';
 import { BILLING_EXAMPLES } from '../../../common/openapi/billing-examples';
 import { AddInvoiceItemDto } from '../dto/add-invoice-item.dto';
 import { GenerateInvoiceDto } from '../dto/generate-invoice.dto';
+import { GenerateLabOnlyInvoiceDto } from '../dto/generate-lab-only-invoice.dto';
 import { ListInvoicesQueryDto } from '../dto/list-invoices-query.dto';
 import { RecordPaymentDto } from '../dto/record-payment.dto';
 import { VoidInvoiceDto } from '../dto/void-invoice.dto';
@@ -98,6 +99,39 @@ export class InvoiceController {
   ) {
     const actor = this.assertAuthenticated(currentUser);
     const result = await this.billingService.generateInvoice(payload, actor);
+
+    return {
+      data: result.invoice,
+      meta: { gaps: result.gaps },
+      message: 'Invoice generated',
+    };
+  }
+
+  @Post('lab-only')
+  @HttpCode(201)
+  @Auth([{ action: 'write', subject: 'Invoice' }])
+  @ApiEndpoint({
+    summary: 'Generate an invoice for a laboratory-only visit',
+    responseDescription:
+      'A DRAFT invoice for a LAB_ONLY visit (P18-T10), collected from the tests ordered on it and nothing else — no consultation fee, because nobody consulted. Unpriced tests are listed in meta.gaps rather than billed at zero. 409 when the visit has an encounter (bill it through that instead), was cancelled, already has a live invoice, or has no tests on it.',
+    responseExample: {
+      data: {
+        ...BILLING_EXAMPLES.invoice.listItem,
+        status: 'DRAFT',
+        items: BILLING_EXAMPLES.invoice.detailItems,
+      },
+      meta: { gaps: BILLING_EXAMPLES.invoice.generationGaps },
+      message: 'Invoice generated',
+    },
+    requestType: GenerateLabOnlyInvoiceDto,
+    successStatus: 201,
+  })
+  async generateLabOnlyInvoice(
+    @Body() payload: GenerateLabOnlyInvoiceDto,
+    @AuthUser() currentUser?: CurrentUser,
+  ) {
+    const actor = this.assertAuthenticated(currentUser);
+    const result = await this.billingService.generateLabOnlyInvoice(payload, actor);
 
     return {
       data: result.invoice,

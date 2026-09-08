@@ -39,6 +39,7 @@ import {
   SatusehatMedicationRequestMapInput,
   SatusehatDiagnosticReportMapInput,
   SatusehatLabObservationMapInput,
+  SatusehatLabOnlyEncounterMapInput,
   SatusehatProcedureMapInput,
   SatusehatServiceRequestMapInput,
   SatusehatSpecimenMapInput,
@@ -108,6 +109,10 @@ const PROGNOSIS_SNOMED_CODES: Readonly<
   DUBIA_AD_MALAM: { code: '170970005', display: 'Prognosis poor' },
   MALAM: { code: '170970005', display: 'Prognosis poor' },
 };
+
+/** SNOMED "Laboratory service", the kind of service a lab-only visit is. */
+const LABORATORY_SERVICE_SNOMED_CODE = '108252007';
+const LABORATORY_SERVICE_SNOMED_DISPLAY = 'Laboratory procedure';
 
 const SERVICE_REQUEST_IDENTIFIER_SYSTEM_PREFIX = 'http://sys-ids.kemkes.go.id/servicerequest';
 const SPECIMEN_IDENTIFIER_SYSTEM_PREFIX = 'http://sys-ids.kemkes.go.id/specimen';
@@ -1024,6 +1029,63 @@ export class SatusehatFhirMapper {
       issued: this.toFhirInstant(input.issuedAt),
       performer: [{ reference: `Organization/${organizationId}` }],
       ...(input.conclusion ? { conclusion: input.conclusion } : {}),
+    };
+  }
+
+  /**
+   * Maps a laboratory-only visit to a minimal Encounter (P18-T10), sent inside
+   * the lab bundle rather than referenced from it.
+   *
+   * `participant` is omitted, not filled with a stand-in: nobody attended, and
+   * the national record should say so rather than name a practitioner who
+   * never saw the patient. The Organization is the serviceProvider, which is
+   * true — the clinic did perform the work.
+   *
+   * The identifier is the registration, so a resubmission updates the same
+   * Encounter rather than creating a second visit for one blood draw.
+   */
+  mapLabOnlyVisitToEncounter(
+    input: SatusehatLabOnlyEncounterMapInput,
+  ): SatusehatFhirEncounter {
+    const organizationId = this.requireConfigValue(
+      this.satusehatConfig.organizationId,
+      'SATUSEHAT_ORGANIZATION_ID',
+    );
+    const locationId = this.requireConfigValue(
+      this.satusehatConfig.locationId,
+      'SATUSEHAT_LOCATION_ID',
+    );
+    const period = {
+      start: this.toFhirInstant(input.startedAt),
+      end: this.toFhirInstant(input.endedAt),
+    };
+    return {
+      resourceType: 'Encounter',
+      identifier: [
+        {
+          system: `${ENCOUNTER_IDENTIFIER_SYSTEM_PREFIX}/${organizationId}`,
+          use: 'official',
+          value: input.registrationId,
+        },
+      ],
+      status: 'finished',
+      class: { system: ACT_ENCOUNTER_CODE_SYSTEM, code: 'AMB', display: 'ambulatory' },
+      serviceType: {
+        coding: [
+          {
+            system: SNOMED_SYSTEM,
+            code: LABORATORY_SERVICE_SNOMED_CODE,
+            display: LABORATORY_SERVICE_SNOMED_DISPLAY,
+          },
+        ],
+      },
+      subject: this.buildReference(`Patient/${input.patientIhsNumber}`, input.patientName),
+      period,
+      location: [{ location: { reference: `Location/${locationId}` } }],
+      // Arrived and finished, with nothing in between: there was no
+      // consultation to be in progress during.
+      statusHistory: [{ status: 'finished', period }],
+      serviceProvider: { reference: `Organization/${organizationId}` },
     };
   }
 

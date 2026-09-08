@@ -3,6 +3,7 @@ import {
   FulfilmentSiteValue,
   LabOrderItemStatusValue,
   LabOrderPriorityValue,
+  LabOrderSourceValue,
   LabOrderStatusValue,
   LabResultTypeValue,
   LabSpecimenRejectReasonValue,
@@ -49,9 +50,13 @@ export type LabOrderItemRow = {
 export type LabOrderRow = {
   id: string;
   orderNumber: string;
-  encounterId: string;
+  encounterId: string | null;
+  registrationId: string;
+  source: LabOrderSourceValue;
   patientId: string;
-  orderedById: string;
+  orderedById: string | null;
+  externalRequesterName: string | null;
+  externalRequesterFacility: string | null;
   status: LabOrderStatusValue;
   priority: LabOrderPriorityValue;
   clinicalNotes: string | null;
@@ -64,7 +69,7 @@ export type LabOrderRow = {
   cancelledAt: Date | null;
   cancelReason: string | null;
   releasedAt: Date | null;
-  orderedBy: { fullName: string; licenseNumber?: string | null };
+  orderedBy: { fullName: string; licenseNumber?: string | null } | null;
   items: LabOrderItemRow[];
   specimens: LabSpecimenRow[];
 };
