@@ -441,6 +441,7 @@ export type DocumentWhereInput = {
   releasedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   chunks?: Prisma.DocumentChunkListRelationFilter
   labOrder?: Prisma.XOR<Prisma.LabOrderNullableScalarRelationFilter, Prisma.LabOrderWhereInput> | null
+  labOrderRequestLetter?: Prisma.XOR<Prisma.LabOrderNullableScalarRelationFilter, Prisma.LabOrderWhereInput> | null
   labReport?: Prisma.XOR<Prisma.LabReportNullableScalarRelationFilter, Prisma.LabReportWhereInput> | null
   prescription?: Prisma.XOR<Prisma.PrescriptionNullableScalarRelationFilter, Prisma.PrescriptionWhereInput> | null
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeListRelationFilter
@@ -489,6 +490,7 @@ export type DocumentOrderByWithRelationInput = {
   releasedBy?: Prisma.UserOrderByWithRelationInput
   chunks?: Prisma.DocumentChunkOrderByRelationAggregateInput
   labOrder?: Prisma.LabOrderOrderByWithRelationInput
+  labOrderRequestLetter?: Prisma.LabOrderOrderByWithRelationInput
   labReport?: Prisma.LabReportOrderByWithRelationInput
   prescription?: Prisma.PrescriptionOrderByWithRelationInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeOrderByRelationAggregateInput
@@ -540,6 +542,7 @@ export type DocumentWhereUniqueInput = Prisma.AtLeast<{
   releasedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   chunks?: Prisma.DocumentChunkListRelationFilter
   labOrder?: Prisma.XOR<Prisma.LabOrderNullableScalarRelationFilter, Prisma.LabOrderWhereInput> | null
+  labOrderRequestLetter?: Prisma.XOR<Prisma.LabOrderNullableScalarRelationFilter, Prisma.LabOrderWhereInput> | null
   labReport?: Prisma.XOR<Prisma.LabReportNullableScalarRelationFilter, Prisma.LabReportWhereInput> | null
   prescription?: Prisma.XOR<Prisma.PrescriptionNullableScalarRelationFilter, Prisma.PrescriptionWhereInput> | null
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeListRelationFilter
@@ -658,6 +661,7 @@ export type DocumentCreateInput = {
   releasedBy?: Prisma.UserCreateNestedOneWithoutReleasedDocumentsInput
   chunks?: Prisma.DocumentChunkCreateNestedManyWithoutDocumentInput
   labOrder?: Prisma.LabOrderCreateNestedOneWithoutRequestDocumentInput
+  labOrderRequestLetter?: Prisma.LabOrderCreateNestedOneWithoutRequestLetterInput
   labReport?: Prisma.LabReportCreateNestedOneWithoutDocumentInput
   prescription?: Prisma.PrescriptionCreateNestedOneWithoutDocumentInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeCreateNestedManyWithoutDocumentInput
@@ -700,6 +704,7 @@ export type DocumentUncheckedCreateInput = {
   deletedAt?: Date | string | null
   chunks?: Prisma.DocumentChunkUncheckedCreateNestedManyWithoutDocumentInput
   labOrder?: Prisma.LabOrderUncheckedCreateNestedOneWithoutRequestDocumentInput
+  labOrderRequestLetter?: Prisma.LabOrderUncheckedCreateNestedOneWithoutRequestLetterInput
   labReport?: Prisma.LabReportUncheckedCreateNestedOneWithoutDocumentInput
   prescription?: Prisma.PrescriptionUncheckedCreateNestedOneWithoutDocumentInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedCreateNestedManyWithoutDocumentInput
@@ -742,6 +747,7 @@ export type DocumentUpdateInput = {
   releasedBy?: Prisma.UserUpdateOneWithoutReleasedDocumentsNestedInput
   chunks?: Prisma.DocumentChunkUpdateManyWithoutDocumentNestedInput
   labOrder?: Prisma.LabOrderUpdateOneWithoutRequestDocumentNestedInput
+  labOrderRequestLetter?: Prisma.LabOrderUpdateOneWithoutRequestLetterNestedInput
   labReport?: Prisma.LabReportUpdateOneWithoutDocumentNestedInput
   prescription?: Prisma.PrescriptionUpdateOneWithoutDocumentNestedInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUpdateManyWithoutDocumentNestedInput
@@ -784,6 +790,7 @@ export type DocumentUncheckedUpdateInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   chunks?: Prisma.DocumentChunkUncheckedUpdateManyWithoutDocumentNestedInput
   labOrder?: Prisma.LabOrderUncheckedUpdateOneWithoutRequestDocumentNestedInput
+  labOrderRequestLetter?: Prisma.LabOrderUncheckedUpdateOneWithoutRequestLetterNestedInput
   labReport?: Prisma.LabReportUncheckedUpdateOneWithoutDocumentNestedInput
   prescription?: Prisma.PrescriptionUncheckedUpdateOneWithoutDocumentNestedInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedUpdateManyWithoutDocumentNestedInput
@@ -1388,10 +1395,26 @@ export type DocumentUpdateOneWithoutManagedDocumentsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.DocumentUpdateToOneWithWhereWithoutManagedDocumentsInput, Prisma.DocumentUpdateWithoutManagedDocumentsInput>, Prisma.DocumentUncheckedUpdateWithoutManagedDocumentsInput>
 }
 
+export type DocumentCreateNestedOneWithoutLabOrderRequestLetterInput = {
+  create?: Prisma.XOR<Prisma.DocumentCreateWithoutLabOrderRequestLetterInput, Prisma.DocumentUncheckedCreateWithoutLabOrderRequestLetterInput>
+  connectOrCreate?: Prisma.DocumentCreateOrConnectWithoutLabOrderRequestLetterInput
+  connect?: Prisma.DocumentWhereUniqueInput
+}
+
 export type DocumentCreateNestedOneWithoutLabOrderInput = {
   create?: Prisma.XOR<Prisma.DocumentCreateWithoutLabOrderInput, Prisma.DocumentUncheckedCreateWithoutLabOrderInput>
   connectOrCreate?: Prisma.DocumentCreateOrConnectWithoutLabOrderInput
   connect?: Prisma.DocumentWhereUniqueInput
+}
+
+export type DocumentUpdateOneWithoutLabOrderRequestLetterNestedInput = {
+  create?: Prisma.XOR<Prisma.DocumentCreateWithoutLabOrderRequestLetterInput, Prisma.DocumentUncheckedCreateWithoutLabOrderRequestLetterInput>
+  connectOrCreate?: Prisma.DocumentCreateOrConnectWithoutLabOrderRequestLetterInput
+  upsert?: Prisma.DocumentUpsertWithoutLabOrderRequestLetterInput
+  disconnect?: Prisma.DocumentWhereInput | boolean
+  delete?: Prisma.DocumentWhereInput | boolean
+  connect?: Prisma.DocumentWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.DocumentUpdateToOneWithWhereWithoutLabOrderRequestLetterInput, Prisma.DocumentUpdateWithoutLabOrderRequestLetterInput>, Prisma.DocumentUncheckedUpdateWithoutLabOrderRequestLetterInput>
 }
 
 export type DocumentUpdateOneWithoutLabOrderNestedInput = {
@@ -1453,6 +1476,7 @@ export type DocumentCreateWithoutUploadedByInput = {
   releasedBy?: Prisma.UserCreateNestedOneWithoutReleasedDocumentsInput
   chunks?: Prisma.DocumentChunkCreateNestedManyWithoutDocumentInput
   labOrder?: Prisma.LabOrderCreateNestedOneWithoutRequestDocumentInput
+  labOrderRequestLetter?: Prisma.LabOrderCreateNestedOneWithoutRequestLetterInput
   labReport?: Prisma.LabReportCreateNestedOneWithoutDocumentInput
   prescription?: Prisma.PrescriptionCreateNestedOneWithoutDocumentInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeCreateNestedManyWithoutDocumentInput
@@ -1494,6 +1518,7 @@ export type DocumentUncheckedCreateWithoutUploadedByInput = {
   deletedAt?: Date | string | null
   chunks?: Prisma.DocumentChunkUncheckedCreateNestedManyWithoutDocumentInput
   labOrder?: Prisma.LabOrderUncheckedCreateNestedOneWithoutRequestDocumentInput
+  labOrderRequestLetter?: Prisma.LabOrderUncheckedCreateNestedOneWithoutRequestLetterInput
   labReport?: Prisma.LabReportUncheckedCreateNestedOneWithoutDocumentInput
   prescription?: Prisma.PrescriptionUncheckedCreateNestedOneWithoutDocumentInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedCreateNestedManyWithoutDocumentInput
@@ -1545,6 +1570,7 @@ export type DocumentCreateWithoutOwnerInput = {
   releasedBy?: Prisma.UserCreateNestedOneWithoutReleasedDocumentsInput
   chunks?: Prisma.DocumentChunkCreateNestedManyWithoutDocumentInput
   labOrder?: Prisma.LabOrderCreateNestedOneWithoutRequestDocumentInput
+  labOrderRequestLetter?: Prisma.LabOrderCreateNestedOneWithoutRequestLetterInput
   labReport?: Prisma.LabReportCreateNestedOneWithoutDocumentInput
   prescription?: Prisma.PrescriptionCreateNestedOneWithoutDocumentInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeCreateNestedManyWithoutDocumentInput
@@ -1586,6 +1612,7 @@ export type DocumentUncheckedCreateWithoutOwnerInput = {
   deletedAt?: Date | string | null
   chunks?: Prisma.DocumentChunkUncheckedCreateNestedManyWithoutDocumentInput
   labOrder?: Prisma.LabOrderUncheckedCreateNestedOneWithoutRequestDocumentInput
+  labOrderRequestLetter?: Prisma.LabOrderUncheckedCreateNestedOneWithoutRequestLetterInput
   labReport?: Prisma.LabReportUncheckedCreateNestedOneWithoutDocumentInput
   prescription?: Prisma.PrescriptionUncheckedCreateNestedOneWithoutDocumentInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedCreateNestedManyWithoutDocumentInput
@@ -1637,6 +1664,7 @@ export type DocumentCreateWithoutReleasedByInput = {
   admission?: Prisma.AdmissionCreateNestedOneWithoutClinicalDocumentsInput
   chunks?: Prisma.DocumentChunkCreateNestedManyWithoutDocumentInput
   labOrder?: Prisma.LabOrderCreateNestedOneWithoutRequestDocumentInput
+  labOrderRequestLetter?: Prisma.LabOrderCreateNestedOneWithoutRequestLetterInput
   labReport?: Prisma.LabReportCreateNestedOneWithoutDocumentInput
   prescription?: Prisma.PrescriptionCreateNestedOneWithoutDocumentInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeCreateNestedManyWithoutDocumentInput
@@ -1678,6 +1706,7 @@ export type DocumentUncheckedCreateWithoutReleasedByInput = {
   deletedAt?: Date | string | null
   chunks?: Prisma.DocumentChunkUncheckedCreateNestedManyWithoutDocumentInput
   labOrder?: Prisma.LabOrderUncheckedCreateNestedOneWithoutRequestDocumentInput
+  labOrderRequestLetter?: Prisma.LabOrderUncheckedCreateNestedOneWithoutRequestLetterInput
   labReport?: Prisma.LabReportUncheckedCreateNestedOneWithoutDocumentInput
   prescription?: Prisma.PrescriptionUncheckedCreateNestedOneWithoutDocumentInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedCreateNestedManyWithoutDocumentInput
@@ -1814,6 +1843,7 @@ export type DocumentCreateWithoutPatientInput = {
   releasedBy?: Prisma.UserCreateNestedOneWithoutReleasedDocumentsInput
   chunks?: Prisma.DocumentChunkCreateNestedManyWithoutDocumentInput
   labOrder?: Prisma.LabOrderCreateNestedOneWithoutRequestDocumentInput
+  labOrderRequestLetter?: Prisma.LabOrderCreateNestedOneWithoutRequestLetterInput
   labReport?: Prisma.LabReportCreateNestedOneWithoutDocumentInput
   prescription?: Prisma.PrescriptionCreateNestedOneWithoutDocumentInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeCreateNestedManyWithoutDocumentInput
@@ -1855,6 +1885,7 @@ export type DocumentUncheckedCreateWithoutPatientInput = {
   deletedAt?: Date | string | null
   chunks?: Prisma.DocumentChunkUncheckedCreateNestedManyWithoutDocumentInput
   labOrder?: Prisma.LabOrderUncheckedCreateNestedOneWithoutRequestDocumentInput
+  labOrderRequestLetter?: Prisma.LabOrderUncheckedCreateNestedOneWithoutRequestLetterInput
   labReport?: Prisma.LabReportUncheckedCreateNestedOneWithoutDocumentInput
   prescription?: Prisma.PrescriptionUncheckedCreateNestedOneWithoutDocumentInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedCreateNestedManyWithoutDocumentInput
@@ -1923,6 +1954,7 @@ export type DocumentCreateWithoutDeliveriesInput = {
   releasedBy?: Prisma.UserCreateNestedOneWithoutReleasedDocumentsInput
   chunks?: Prisma.DocumentChunkCreateNestedManyWithoutDocumentInput
   labOrder?: Prisma.LabOrderCreateNestedOneWithoutRequestDocumentInput
+  labOrderRequestLetter?: Prisma.LabOrderCreateNestedOneWithoutRequestLetterInput
   labReport?: Prisma.LabReportCreateNestedOneWithoutDocumentInput
   prescription?: Prisma.PrescriptionCreateNestedOneWithoutDocumentInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeCreateNestedManyWithoutDocumentInput
@@ -1964,6 +1996,7 @@ export type DocumentUncheckedCreateWithoutDeliveriesInput = {
   deletedAt?: Date | string | null
   chunks?: Prisma.DocumentChunkUncheckedCreateNestedManyWithoutDocumentInput
   labOrder?: Prisma.LabOrderUncheckedCreateNestedOneWithoutRequestDocumentInput
+  labOrderRequestLetter?: Prisma.LabOrderUncheckedCreateNestedOneWithoutRequestLetterInput
   labReport?: Prisma.LabReportUncheckedCreateNestedOneWithoutDocumentInput
   prescription?: Prisma.PrescriptionUncheckedCreateNestedOneWithoutDocumentInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedCreateNestedManyWithoutDocumentInput
@@ -2021,6 +2054,7 @@ export type DocumentUpdateWithoutDeliveriesInput = {
   releasedBy?: Prisma.UserUpdateOneWithoutReleasedDocumentsNestedInput
   chunks?: Prisma.DocumentChunkUpdateManyWithoutDocumentNestedInput
   labOrder?: Prisma.LabOrderUpdateOneWithoutRequestDocumentNestedInput
+  labOrderRequestLetter?: Prisma.LabOrderUpdateOneWithoutRequestLetterNestedInput
   labReport?: Prisma.LabReportUpdateOneWithoutDocumentNestedInput
   prescription?: Prisma.PrescriptionUpdateOneWithoutDocumentNestedInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUpdateManyWithoutDocumentNestedInput
@@ -2062,6 +2096,7 @@ export type DocumentUncheckedUpdateWithoutDeliveriesInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   chunks?: Prisma.DocumentChunkUncheckedUpdateManyWithoutDocumentNestedInput
   labOrder?: Prisma.LabOrderUncheckedUpdateOneWithoutRequestDocumentNestedInput
+  labOrderRequestLetter?: Prisma.LabOrderUncheckedUpdateOneWithoutRequestLetterNestedInput
   labReport?: Prisma.LabReportUncheckedUpdateOneWithoutDocumentNestedInput
   prescription?: Prisma.PrescriptionUncheckedUpdateOneWithoutDocumentNestedInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedUpdateManyWithoutDocumentNestedInput
@@ -2102,6 +2137,7 @@ export type DocumentCreateWithoutEncounterInput = {
   releasedBy?: Prisma.UserCreateNestedOneWithoutReleasedDocumentsInput
   chunks?: Prisma.DocumentChunkCreateNestedManyWithoutDocumentInput
   labOrder?: Prisma.LabOrderCreateNestedOneWithoutRequestDocumentInput
+  labOrderRequestLetter?: Prisma.LabOrderCreateNestedOneWithoutRequestLetterInput
   labReport?: Prisma.LabReportCreateNestedOneWithoutDocumentInput
   prescription?: Prisma.PrescriptionCreateNestedOneWithoutDocumentInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeCreateNestedManyWithoutDocumentInput
@@ -2143,6 +2179,7 @@ export type DocumentUncheckedCreateWithoutEncounterInput = {
   deletedAt?: Date | string | null
   chunks?: Prisma.DocumentChunkUncheckedCreateNestedManyWithoutDocumentInput
   labOrder?: Prisma.LabOrderUncheckedCreateNestedOneWithoutRequestDocumentInput
+  labOrderRequestLetter?: Prisma.LabOrderUncheckedCreateNestedOneWithoutRequestLetterInput
   labReport?: Prisma.LabReportUncheckedCreateNestedOneWithoutDocumentInput
   prescription?: Prisma.PrescriptionUncheckedCreateNestedOneWithoutDocumentInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedCreateNestedManyWithoutDocumentInput
@@ -2211,6 +2248,7 @@ export type DocumentCreateWithoutPrescriptionInput = {
   releasedBy?: Prisma.UserCreateNestedOneWithoutReleasedDocumentsInput
   chunks?: Prisma.DocumentChunkCreateNestedManyWithoutDocumentInput
   labOrder?: Prisma.LabOrderCreateNestedOneWithoutRequestDocumentInput
+  labOrderRequestLetter?: Prisma.LabOrderCreateNestedOneWithoutRequestLetterInput
   labReport?: Prisma.LabReportCreateNestedOneWithoutDocumentInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeCreateNestedManyWithoutDocumentInput
   vaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutDocumentInput
@@ -2252,6 +2290,7 @@ export type DocumentUncheckedCreateWithoutPrescriptionInput = {
   deletedAt?: Date | string | null
   chunks?: Prisma.DocumentChunkUncheckedCreateNestedManyWithoutDocumentInput
   labOrder?: Prisma.LabOrderUncheckedCreateNestedOneWithoutRequestDocumentInput
+  labOrderRequestLetter?: Prisma.LabOrderUncheckedCreateNestedOneWithoutRequestLetterInput
   labReport?: Prisma.LabReportUncheckedCreateNestedOneWithoutDocumentInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedCreateNestedManyWithoutDocumentInput
   vaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutDocumentInput
@@ -2309,6 +2348,7 @@ export type DocumentUpdateWithoutPrescriptionInput = {
   releasedBy?: Prisma.UserUpdateOneWithoutReleasedDocumentsNestedInput
   chunks?: Prisma.DocumentChunkUpdateManyWithoutDocumentNestedInput
   labOrder?: Prisma.LabOrderUpdateOneWithoutRequestDocumentNestedInput
+  labOrderRequestLetter?: Prisma.LabOrderUpdateOneWithoutRequestLetterNestedInput
   labReport?: Prisma.LabReportUpdateOneWithoutDocumentNestedInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUpdateManyWithoutDocumentNestedInput
   vaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutDocumentNestedInput
@@ -2350,6 +2390,7 @@ export type DocumentUncheckedUpdateWithoutPrescriptionInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   chunks?: Prisma.DocumentChunkUncheckedUpdateManyWithoutDocumentNestedInput
   labOrder?: Prisma.LabOrderUncheckedUpdateOneWithoutRequestDocumentNestedInput
+  labOrderRequestLetter?: Prisma.LabOrderUncheckedUpdateOneWithoutRequestLetterNestedInput
   labReport?: Prisma.LabReportUncheckedUpdateOneWithoutDocumentNestedInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedUpdateManyWithoutDocumentNestedInput
   vaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutDocumentNestedInput
@@ -2391,6 +2432,7 @@ export type DocumentCreateWithoutVaultExpiryNoticesInput = {
   releasedBy?: Prisma.UserCreateNestedOneWithoutReleasedDocumentsInput
   chunks?: Prisma.DocumentChunkCreateNestedManyWithoutDocumentInput
   labOrder?: Prisma.LabOrderCreateNestedOneWithoutRequestDocumentInput
+  labOrderRequestLetter?: Prisma.LabOrderCreateNestedOneWithoutRequestLetterInput
   labReport?: Prisma.LabReportCreateNestedOneWithoutDocumentInput
   prescription?: Prisma.PrescriptionCreateNestedOneWithoutDocumentInput
   vaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutDocumentInput
@@ -2432,6 +2474,7 @@ export type DocumentUncheckedCreateWithoutVaultExpiryNoticesInput = {
   deletedAt?: Date | string | null
   chunks?: Prisma.DocumentChunkUncheckedCreateNestedManyWithoutDocumentInput
   labOrder?: Prisma.LabOrderUncheckedCreateNestedOneWithoutRequestDocumentInput
+  labOrderRequestLetter?: Prisma.LabOrderUncheckedCreateNestedOneWithoutRequestLetterInput
   labReport?: Prisma.LabReportUncheckedCreateNestedOneWithoutDocumentInput
   prescription?: Prisma.PrescriptionUncheckedCreateNestedOneWithoutDocumentInput
   vaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutDocumentInput
@@ -2489,6 +2532,7 @@ export type DocumentUpdateWithoutVaultExpiryNoticesInput = {
   releasedBy?: Prisma.UserUpdateOneWithoutReleasedDocumentsNestedInput
   chunks?: Prisma.DocumentChunkUpdateManyWithoutDocumentNestedInput
   labOrder?: Prisma.LabOrderUpdateOneWithoutRequestDocumentNestedInput
+  labOrderRequestLetter?: Prisma.LabOrderUpdateOneWithoutRequestLetterNestedInput
   labReport?: Prisma.LabReportUpdateOneWithoutDocumentNestedInput
   prescription?: Prisma.PrescriptionUpdateOneWithoutDocumentNestedInput
   vaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutDocumentNestedInput
@@ -2530,6 +2574,7 @@ export type DocumentUncheckedUpdateWithoutVaultExpiryNoticesInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   chunks?: Prisma.DocumentChunkUncheckedUpdateManyWithoutDocumentNestedInput
   labOrder?: Prisma.LabOrderUncheckedUpdateOneWithoutRequestDocumentNestedInput
+  labOrderRequestLetter?: Prisma.LabOrderUncheckedUpdateOneWithoutRequestLetterNestedInput
   labReport?: Prisma.LabReportUncheckedUpdateOneWithoutDocumentNestedInput
   prescription?: Prisma.PrescriptionUncheckedUpdateOneWithoutDocumentNestedInput
   vaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutDocumentNestedInput
@@ -2571,6 +2616,7 @@ export type DocumentCreateWithoutVaultSharesInput = {
   releasedBy?: Prisma.UserCreateNestedOneWithoutReleasedDocumentsInput
   chunks?: Prisma.DocumentChunkCreateNestedManyWithoutDocumentInput
   labOrder?: Prisma.LabOrderCreateNestedOneWithoutRequestDocumentInput
+  labOrderRequestLetter?: Prisma.LabOrderCreateNestedOneWithoutRequestLetterInput
   labReport?: Prisma.LabReportCreateNestedOneWithoutDocumentInput
   prescription?: Prisma.PrescriptionCreateNestedOneWithoutDocumentInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeCreateNestedManyWithoutDocumentInput
@@ -2612,6 +2658,7 @@ export type DocumentUncheckedCreateWithoutVaultSharesInput = {
   deletedAt?: Date | string | null
   chunks?: Prisma.DocumentChunkUncheckedCreateNestedManyWithoutDocumentInput
   labOrder?: Prisma.LabOrderUncheckedCreateNestedOneWithoutRequestDocumentInput
+  labOrderRequestLetter?: Prisma.LabOrderUncheckedCreateNestedOneWithoutRequestLetterInput
   labReport?: Prisma.LabReportUncheckedCreateNestedOneWithoutDocumentInput
   prescription?: Prisma.PrescriptionUncheckedCreateNestedOneWithoutDocumentInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedCreateNestedManyWithoutDocumentInput
@@ -2669,6 +2716,7 @@ export type DocumentUpdateWithoutVaultSharesInput = {
   releasedBy?: Prisma.UserUpdateOneWithoutReleasedDocumentsNestedInput
   chunks?: Prisma.DocumentChunkUpdateManyWithoutDocumentNestedInput
   labOrder?: Prisma.LabOrderUpdateOneWithoutRequestDocumentNestedInput
+  labOrderRequestLetter?: Prisma.LabOrderUpdateOneWithoutRequestLetterNestedInput
   labReport?: Prisma.LabReportUpdateOneWithoutDocumentNestedInput
   prescription?: Prisma.PrescriptionUpdateOneWithoutDocumentNestedInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUpdateManyWithoutDocumentNestedInput
@@ -2710,6 +2758,7 @@ export type DocumentUncheckedUpdateWithoutVaultSharesInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   chunks?: Prisma.DocumentChunkUncheckedUpdateManyWithoutDocumentNestedInput
   labOrder?: Prisma.LabOrderUncheckedUpdateOneWithoutRequestDocumentNestedInput
+  labOrderRequestLetter?: Prisma.LabOrderUncheckedUpdateOneWithoutRequestLetterNestedInput
   labReport?: Prisma.LabReportUncheckedUpdateOneWithoutDocumentNestedInput
   prescription?: Prisma.PrescriptionUncheckedUpdateOneWithoutDocumentNestedInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedUpdateManyWithoutDocumentNestedInput
@@ -2750,6 +2799,7 @@ export type DocumentCreateWithoutChunksInput = {
   admission?: Prisma.AdmissionCreateNestedOneWithoutClinicalDocumentsInput
   releasedBy?: Prisma.UserCreateNestedOneWithoutReleasedDocumentsInput
   labOrder?: Prisma.LabOrderCreateNestedOneWithoutRequestDocumentInput
+  labOrderRequestLetter?: Prisma.LabOrderCreateNestedOneWithoutRequestLetterInput
   labReport?: Prisma.LabReportCreateNestedOneWithoutDocumentInput
   prescription?: Prisma.PrescriptionCreateNestedOneWithoutDocumentInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeCreateNestedManyWithoutDocumentInput
@@ -2791,6 +2841,7 @@ export type DocumentUncheckedCreateWithoutChunksInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   labOrder?: Prisma.LabOrderUncheckedCreateNestedOneWithoutRequestDocumentInput
+  labOrderRequestLetter?: Prisma.LabOrderUncheckedCreateNestedOneWithoutRequestLetterInput
   labReport?: Prisma.LabReportUncheckedCreateNestedOneWithoutDocumentInput
   prescription?: Prisma.PrescriptionUncheckedCreateNestedOneWithoutDocumentInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedCreateNestedManyWithoutDocumentInput
@@ -2848,6 +2899,7 @@ export type DocumentUpdateWithoutChunksInput = {
   admission?: Prisma.AdmissionUpdateOneWithoutClinicalDocumentsNestedInput
   releasedBy?: Prisma.UserUpdateOneWithoutReleasedDocumentsNestedInput
   labOrder?: Prisma.LabOrderUpdateOneWithoutRequestDocumentNestedInput
+  labOrderRequestLetter?: Prisma.LabOrderUpdateOneWithoutRequestLetterNestedInput
   labReport?: Prisma.LabReportUpdateOneWithoutDocumentNestedInput
   prescription?: Prisma.PrescriptionUpdateOneWithoutDocumentNestedInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUpdateManyWithoutDocumentNestedInput
@@ -2889,6 +2941,7 @@ export type DocumentUncheckedUpdateWithoutChunksInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   labOrder?: Prisma.LabOrderUncheckedUpdateOneWithoutRequestDocumentNestedInput
+  labOrderRequestLetter?: Prisma.LabOrderUncheckedUpdateOneWithoutRequestLetterNestedInput
   labReport?: Prisma.LabReportUncheckedUpdateOneWithoutDocumentNestedInput
   prescription?: Prisma.PrescriptionUncheckedUpdateOneWithoutDocumentNestedInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedUpdateManyWithoutDocumentNestedInput
@@ -2930,6 +2983,7 @@ export type DocumentCreateWithoutAdmissionInput = {
   releasedBy?: Prisma.UserCreateNestedOneWithoutReleasedDocumentsInput
   chunks?: Prisma.DocumentChunkCreateNestedManyWithoutDocumentInput
   labOrder?: Prisma.LabOrderCreateNestedOneWithoutRequestDocumentInput
+  labOrderRequestLetter?: Prisma.LabOrderCreateNestedOneWithoutRequestLetterInput
   labReport?: Prisma.LabReportCreateNestedOneWithoutDocumentInput
   prescription?: Prisma.PrescriptionCreateNestedOneWithoutDocumentInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeCreateNestedManyWithoutDocumentInput
@@ -2971,6 +3025,7 @@ export type DocumentUncheckedCreateWithoutAdmissionInput = {
   deletedAt?: Date | string | null
   chunks?: Prisma.DocumentChunkUncheckedCreateNestedManyWithoutDocumentInput
   labOrder?: Prisma.LabOrderUncheckedCreateNestedOneWithoutRequestDocumentInput
+  labOrderRequestLetter?: Prisma.LabOrderUncheckedCreateNestedOneWithoutRequestLetterInput
   labReport?: Prisma.LabReportUncheckedCreateNestedOneWithoutDocumentInput
   prescription?: Prisma.PrescriptionUncheckedCreateNestedOneWithoutDocumentInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedCreateNestedManyWithoutDocumentInput
@@ -3039,6 +3094,7 @@ export type DocumentCreateWithoutManagedDocumentsInput = {
   releasedBy?: Prisma.UserCreateNestedOneWithoutReleasedDocumentsInput
   chunks?: Prisma.DocumentChunkCreateNestedManyWithoutDocumentInput
   labOrder?: Prisma.LabOrderCreateNestedOneWithoutRequestDocumentInput
+  labOrderRequestLetter?: Prisma.LabOrderCreateNestedOneWithoutRequestLetterInput
   labReport?: Prisma.LabReportCreateNestedOneWithoutDocumentInput
   prescription?: Prisma.PrescriptionCreateNestedOneWithoutDocumentInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeCreateNestedManyWithoutDocumentInput
@@ -3080,6 +3136,7 @@ export type DocumentUncheckedCreateWithoutManagedDocumentsInput = {
   deletedAt?: Date | string | null
   chunks?: Prisma.DocumentChunkUncheckedCreateNestedManyWithoutDocumentInput
   labOrder?: Prisma.LabOrderUncheckedCreateNestedOneWithoutRequestDocumentInput
+  labOrderRequestLetter?: Prisma.LabOrderUncheckedCreateNestedOneWithoutRequestLetterInput
   labReport?: Prisma.LabReportUncheckedCreateNestedOneWithoutDocumentInput
   prescription?: Prisma.PrescriptionUncheckedCreateNestedOneWithoutDocumentInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedCreateNestedManyWithoutDocumentInput
@@ -3137,6 +3194,7 @@ export type DocumentUpdateWithoutManagedDocumentsInput = {
   releasedBy?: Prisma.UserUpdateOneWithoutReleasedDocumentsNestedInput
   chunks?: Prisma.DocumentChunkUpdateManyWithoutDocumentNestedInput
   labOrder?: Prisma.LabOrderUpdateOneWithoutRequestDocumentNestedInput
+  labOrderRequestLetter?: Prisma.LabOrderUpdateOneWithoutRequestLetterNestedInput
   labReport?: Prisma.LabReportUpdateOneWithoutDocumentNestedInput
   prescription?: Prisma.PrescriptionUpdateOneWithoutDocumentNestedInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUpdateManyWithoutDocumentNestedInput
@@ -3178,11 +3236,101 @@ export type DocumentUncheckedUpdateWithoutManagedDocumentsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   chunks?: Prisma.DocumentChunkUncheckedUpdateManyWithoutDocumentNestedInput
   labOrder?: Prisma.LabOrderUncheckedUpdateOneWithoutRequestDocumentNestedInput
+  labOrderRequestLetter?: Prisma.LabOrderUncheckedUpdateOneWithoutRequestLetterNestedInput
   labReport?: Prisma.LabReportUncheckedUpdateOneWithoutDocumentNestedInput
   prescription?: Prisma.PrescriptionUncheckedUpdateOneWithoutDocumentNestedInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedUpdateManyWithoutDocumentNestedInput
   vaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutDocumentNestedInput
   deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutDocumentNestedInput
+}
+
+export type DocumentCreateWithoutLabOrderRequestLetterInput = {
+  id?: string
+  ownerType: $Enums.DocumentOwnerType
+  purpose: $Enums.DocumentPurpose
+  title: string
+  storageKey: string
+  mimeType: string
+  sizeBytes: number
+  visibility?: $Enums.DocumentVisibility
+  language?: $Enums.DocumentLanguage
+  ingestStatus?: $Enums.DocumentIngestStatus
+  ingestError?: string | null
+  ingestedAt?: Date | string | null
+  category?: $Enums.DocumentCategory | null
+  documentDate?: Date | string | null
+  notes?: string | null
+  releasedToPatient?: boolean
+  releasedAt?: Date | string | null
+  deleteReason?: string | null
+  vaultCategory?: $Enums.VaultDocumentCategory | null
+  referenceNumber?: string | null
+  issuedAt?: Date | string | null
+  expiresAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  uploadedBy: Prisma.UserCreateNestedOneWithoutUploadedDocumentsInput
+  owner?: Prisma.UserCreateNestedOneWithoutOwnedDocumentsInput
+  patient?: Prisma.PatientProfileCreateNestedOneWithoutClinicalDocumentsInput
+  encounter?: Prisma.EncounterCreateNestedOneWithoutClinicalDocumentsInput
+  admission?: Prisma.AdmissionCreateNestedOneWithoutClinicalDocumentsInput
+  releasedBy?: Prisma.UserCreateNestedOneWithoutReleasedDocumentsInput
+  chunks?: Prisma.DocumentChunkCreateNestedManyWithoutDocumentInput
+  labOrder?: Prisma.LabOrderCreateNestedOneWithoutRequestDocumentInput
+  labReport?: Prisma.LabReportCreateNestedOneWithoutDocumentInput
+  prescription?: Prisma.PrescriptionCreateNestedOneWithoutDocumentInput
+  vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeCreateNestedManyWithoutDocumentInput
+  vaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutDocumentInput
+  deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutDocumentInput
+  managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutSubjectDocumentInput
+}
+
+export type DocumentUncheckedCreateWithoutLabOrderRequestLetterInput = {
+  id?: string
+  ownerType: $Enums.DocumentOwnerType
+  ownerId?: string | null
+  purpose: $Enums.DocumentPurpose
+  title: string
+  storageKey: string
+  mimeType: string
+  sizeBytes: number
+  visibility?: $Enums.DocumentVisibility
+  language?: $Enums.DocumentLanguage
+  ingestStatus?: $Enums.DocumentIngestStatus
+  ingestError?: string | null
+  ingestedAt?: Date | string | null
+  uploadedById: string
+  patientId?: string | null
+  encounterId?: string | null
+  admissionId?: string | null
+  category?: $Enums.DocumentCategory | null
+  documentDate?: Date | string | null
+  notes?: string | null
+  releasedToPatient?: boolean
+  releasedAt?: Date | string | null
+  releasedById?: string | null
+  deleteReason?: string | null
+  vaultCategory?: $Enums.VaultDocumentCategory | null
+  referenceNumber?: string | null
+  issuedAt?: Date | string | null
+  expiresAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  chunks?: Prisma.DocumentChunkUncheckedCreateNestedManyWithoutDocumentInput
+  labOrder?: Prisma.LabOrderUncheckedCreateNestedOneWithoutRequestDocumentInput
+  labReport?: Prisma.LabReportUncheckedCreateNestedOneWithoutDocumentInput
+  prescription?: Prisma.PrescriptionUncheckedCreateNestedOneWithoutDocumentInput
+  vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedCreateNestedManyWithoutDocumentInput
+  vaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutDocumentInput
+  deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutDocumentInput
+  managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutSubjectDocumentInput
+}
+
+export type DocumentCreateOrConnectWithoutLabOrderRequestLetterInput = {
+  where: Prisma.DocumentWhereUniqueInput
+  create: Prisma.XOR<Prisma.DocumentCreateWithoutLabOrderRequestLetterInput, Prisma.DocumentUncheckedCreateWithoutLabOrderRequestLetterInput>
 }
 
 export type DocumentCreateWithoutLabOrderInput = {
@@ -3218,6 +3366,7 @@ export type DocumentCreateWithoutLabOrderInput = {
   admission?: Prisma.AdmissionCreateNestedOneWithoutClinicalDocumentsInput
   releasedBy?: Prisma.UserCreateNestedOneWithoutReleasedDocumentsInput
   chunks?: Prisma.DocumentChunkCreateNestedManyWithoutDocumentInput
+  labOrderRequestLetter?: Prisma.LabOrderCreateNestedOneWithoutRequestLetterInput
   labReport?: Prisma.LabReportCreateNestedOneWithoutDocumentInput
   prescription?: Prisma.PrescriptionCreateNestedOneWithoutDocumentInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeCreateNestedManyWithoutDocumentInput
@@ -3259,6 +3408,7 @@ export type DocumentUncheckedCreateWithoutLabOrderInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   chunks?: Prisma.DocumentChunkUncheckedCreateNestedManyWithoutDocumentInput
+  labOrderRequestLetter?: Prisma.LabOrderUncheckedCreateNestedOneWithoutRequestLetterInput
   labReport?: Prisma.LabReportUncheckedCreateNestedOneWithoutDocumentInput
   prescription?: Prisma.PrescriptionUncheckedCreateNestedOneWithoutDocumentInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedCreateNestedManyWithoutDocumentInput
@@ -3270,6 +3420,101 @@ export type DocumentUncheckedCreateWithoutLabOrderInput = {
 export type DocumentCreateOrConnectWithoutLabOrderInput = {
   where: Prisma.DocumentWhereUniqueInput
   create: Prisma.XOR<Prisma.DocumentCreateWithoutLabOrderInput, Prisma.DocumentUncheckedCreateWithoutLabOrderInput>
+}
+
+export type DocumentUpsertWithoutLabOrderRequestLetterInput = {
+  update: Prisma.XOR<Prisma.DocumentUpdateWithoutLabOrderRequestLetterInput, Prisma.DocumentUncheckedUpdateWithoutLabOrderRequestLetterInput>
+  create: Prisma.XOR<Prisma.DocumentCreateWithoutLabOrderRequestLetterInput, Prisma.DocumentUncheckedCreateWithoutLabOrderRequestLetterInput>
+  where?: Prisma.DocumentWhereInput
+}
+
+export type DocumentUpdateToOneWithWhereWithoutLabOrderRequestLetterInput = {
+  where?: Prisma.DocumentWhereInput
+  data: Prisma.XOR<Prisma.DocumentUpdateWithoutLabOrderRequestLetterInput, Prisma.DocumentUncheckedUpdateWithoutLabOrderRequestLetterInput>
+}
+
+export type DocumentUpdateWithoutLabOrderRequestLetterInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  ownerType?: Prisma.EnumDocumentOwnerTypeFieldUpdateOperationsInput | $Enums.DocumentOwnerType
+  purpose?: Prisma.EnumDocumentPurposeFieldUpdateOperationsInput | $Enums.DocumentPurpose
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  storageKey?: Prisma.StringFieldUpdateOperationsInput | string
+  mimeType?: Prisma.StringFieldUpdateOperationsInput | string
+  sizeBytes?: Prisma.IntFieldUpdateOperationsInput | number
+  visibility?: Prisma.EnumDocumentVisibilityFieldUpdateOperationsInput | $Enums.DocumentVisibility
+  language?: Prisma.EnumDocumentLanguageFieldUpdateOperationsInput | $Enums.DocumentLanguage
+  ingestStatus?: Prisma.EnumDocumentIngestStatusFieldUpdateOperationsInput | $Enums.DocumentIngestStatus
+  ingestError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ingestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  category?: Prisma.NullableEnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory | null
+  documentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releasedToPatient?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vaultCategory?: Prisma.NullableEnumVaultDocumentCategoryFieldUpdateOperationsInput | $Enums.VaultDocumentCategory | null
+  referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  uploadedBy?: Prisma.UserUpdateOneRequiredWithoutUploadedDocumentsNestedInput
+  owner?: Prisma.UserUpdateOneWithoutOwnedDocumentsNestedInput
+  patient?: Prisma.PatientProfileUpdateOneWithoutClinicalDocumentsNestedInput
+  encounter?: Prisma.EncounterUpdateOneWithoutClinicalDocumentsNestedInput
+  admission?: Prisma.AdmissionUpdateOneWithoutClinicalDocumentsNestedInput
+  releasedBy?: Prisma.UserUpdateOneWithoutReleasedDocumentsNestedInput
+  chunks?: Prisma.DocumentChunkUpdateManyWithoutDocumentNestedInput
+  labOrder?: Prisma.LabOrderUpdateOneWithoutRequestDocumentNestedInput
+  labReport?: Prisma.LabReportUpdateOneWithoutDocumentNestedInput
+  prescription?: Prisma.PrescriptionUpdateOneWithoutDocumentNestedInput
+  vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUpdateManyWithoutDocumentNestedInput
+  vaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutDocumentNestedInput
+  deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutDocumentNestedInput
+  managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutSubjectDocumentNestedInput
+}
+
+export type DocumentUncheckedUpdateWithoutLabOrderRequestLetterInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  ownerType?: Prisma.EnumDocumentOwnerTypeFieldUpdateOperationsInput | $Enums.DocumentOwnerType
+  ownerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  purpose?: Prisma.EnumDocumentPurposeFieldUpdateOperationsInput | $Enums.DocumentPurpose
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  storageKey?: Prisma.StringFieldUpdateOperationsInput | string
+  mimeType?: Prisma.StringFieldUpdateOperationsInput | string
+  sizeBytes?: Prisma.IntFieldUpdateOperationsInput | number
+  visibility?: Prisma.EnumDocumentVisibilityFieldUpdateOperationsInput | $Enums.DocumentVisibility
+  language?: Prisma.EnumDocumentLanguageFieldUpdateOperationsInput | $Enums.DocumentLanguage
+  ingestStatus?: Prisma.EnumDocumentIngestStatusFieldUpdateOperationsInput | $Enums.DocumentIngestStatus
+  ingestError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ingestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  uploadedById?: Prisma.StringFieldUpdateOperationsInput | string
+  patientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  encounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableEnumDocumentCategoryFieldUpdateOperationsInput | $Enums.DocumentCategory | null
+  documentDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releasedToPatient?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  releasedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vaultCategory?: Prisma.NullableEnumVaultDocumentCategoryFieldUpdateOperationsInput | $Enums.VaultDocumentCategory | null
+  referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  chunks?: Prisma.DocumentChunkUncheckedUpdateManyWithoutDocumentNestedInput
+  labOrder?: Prisma.LabOrderUncheckedUpdateOneWithoutRequestDocumentNestedInput
+  labReport?: Prisma.LabReportUncheckedUpdateOneWithoutDocumentNestedInput
+  prescription?: Prisma.PrescriptionUncheckedUpdateOneWithoutDocumentNestedInput
+  vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedUpdateManyWithoutDocumentNestedInput
+  vaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutDocumentNestedInput
+  deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutDocumentNestedInput
+  managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutSubjectDocumentNestedInput
 }
 
 export type DocumentUpsertWithoutLabOrderInput = {
@@ -3316,6 +3561,7 @@ export type DocumentUpdateWithoutLabOrderInput = {
   admission?: Prisma.AdmissionUpdateOneWithoutClinicalDocumentsNestedInput
   releasedBy?: Prisma.UserUpdateOneWithoutReleasedDocumentsNestedInput
   chunks?: Prisma.DocumentChunkUpdateManyWithoutDocumentNestedInput
+  labOrderRequestLetter?: Prisma.LabOrderUpdateOneWithoutRequestLetterNestedInput
   labReport?: Prisma.LabReportUpdateOneWithoutDocumentNestedInput
   prescription?: Prisma.PrescriptionUpdateOneWithoutDocumentNestedInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUpdateManyWithoutDocumentNestedInput
@@ -3357,6 +3603,7 @@ export type DocumentUncheckedUpdateWithoutLabOrderInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   chunks?: Prisma.DocumentChunkUncheckedUpdateManyWithoutDocumentNestedInput
+  labOrderRequestLetter?: Prisma.LabOrderUncheckedUpdateOneWithoutRequestLetterNestedInput
   labReport?: Prisma.LabReportUncheckedUpdateOneWithoutDocumentNestedInput
   prescription?: Prisma.PrescriptionUncheckedUpdateOneWithoutDocumentNestedInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedUpdateManyWithoutDocumentNestedInput
@@ -3399,6 +3646,7 @@ export type DocumentCreateWithoutLabReportInput = {
   releasedBy?: Prisma.UserCreateNestedOneWithoutReleasedDocumentsInput
   chunks?: Prisma.DocumentChunkCreateNestedManyWithoutDocumentInput
   labOrder?: Prisma.LabOrderCreateNestedOneWithoutRequestDocumentInput
+  labOrderRequestLetter?: Prisma.LabOrderCreateNestedOneWithoutRequestLetterInput
   prescription?: Prisma.PrescriptionCreateNestedOneWithoutDocumentInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeCreateNestedManyWithoutDocumentInput
   vaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutDocumentInput
@@ -3440,6 +3688,7 @@ export type DocumentUncheckedCreateWithoutLabReportInput = {
   deletedAt?: Date | string | null
   chunks?: Prisma.DocumentChunkUncheckedCreateNestedManyWithoutDocumentInput
   labOrder?: Prisma.LabOrderUncheckedCreateNestedOneWithoutRequestDocumentInput
+  labOrderRequestLetter?: Prisma.LabOrderUncheckedCreateNestedOneWithoutRequestLetterInput
   prescription?: Prisma.PrescriptionUncheckedCreateNestedOneWithoutDocumentInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedCreateNestedManyWithoutDocumentInput
   vaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutDocumentInput
@@ -3497,6 +3746,7 @@ export type DocumentUpdateWithoutLabReportInput = {
   releasedBy?: Prisma.UserUpdateOneWithoutReleasedDocumentsNestedInput
   chunks?: Prisma.DocumentChunkUpdateManyWithoutDocumentNestedInput
   labOrder?: Prisma.LabOrderUpdateOneWithoutRequestDocumentNestedInput
+  labOrderRequestLetter?: Prisma.LabOrderUpdateOneWithoutRequestLetterNestedInput
   prescription?: Prisma.PrescriptionUpdateOneWithoutDocumentNestedInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUpdateManyWithoutDocumentNestedInput
   vaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutDocumentNestedInput
@@ -3538,6 +3788,7 @@ export type DocumentUncheckedUpdateWithoutLabReportInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   chunks?: Prisma.DocumentChunkUncheckedUpdateManyWithoutDocumentNestedInput
   labOrder?: Prisma.LabOrderUncheckedUpdateOneWithoutRequestDocumentNestedInput
+  labOrderRequestLetter?: Prisma.LabOrderUncheckedUpdateOneWithoutRequestLetterNestedInput
   prescription?: Prisma.PrescriptionUncheckedUpdateOneWithoutDocumentNestedInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedUpdateManyWithoutDocumentNestedInput
   vaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutDocumentNestedInput
@@ -3677,6 +3928,7 @@ export type DocumentUpdateWithoutUploadedByInput = {
   releasedBy?: Prisma.UserUpdateOneWithoutReleasedDocumentsNestedInput
   chunks?: Prisma.DocumentChunkUpdateManyWithoutDocumentNestedInput
   labOrder?: Prisma.LabOrderUpdateOneWithoutRequestDocumentNestedInput
+  labOrderRequestLetter?: Prisma.LabOrderUpdateOneWithoutRequestLetterNestedInput
   labReport?: Prisma.LabReportUpdateOneWithoutDocumentNestedInput
   prescription?: Prisma.PrescriptionUpdateOneWithoutDocumentNestedInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUpdateManyWithoutDocumentNestedInput
@@ -3718,6 +3970,7 @@ export type DocumentUncheckedUpdateWithoutUploadedByInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   chunks?: Prisma.DocumentChunkUncheckedUpdateManyWithoutDocumentNestedInput
   labOrder?: Prisma.LabOrderUncheckedUpdateOneWithoutRequestDocumentNestedInput
+  labOrderRequestLetter?: Prisma.LabOrderUncheckedUpdateOneWithoutRequestLetterNestedInput
   labReport?: Prisma.LabReportUncheckedUpdateOneWithoutDocumentNestedInput
   prescription?: Prisma.PrescriptionUncheckedUpdateOneWithoutDocumentNestedInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedUpdateManyWithoutDocumentNestedInput
@@ -3792,6 +4045,7 @@ export type DocumentUpdateWithoutOwnerInput = {
   releasedBy?: Prisma.UserUpdateOneWithoutReleasedDocumentsNestedInput
   chunks?: Prisma.DocumentChunkUpdateManyWithoutDocumentNestedInput
   labOrder?: Prisma.LabOrderUpdateOneWithoutRequestDocumentNestedInput
+  labOrderRequestLetter?: Prisma.LabOrderUpdateOneWithoutRequestLetterNestedInput
   labReport?: Prisma.LabReportUpdateOneWithoutDocumentNestedInput
   prescription?: Prisma.PrescriptionUpdateOneWithoutDocumentNestedInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUpdateManyWithoutDocumentNestedInput
@@ -3833,6 +4087,7 @@ export type DocumentUncheckedUpdateWithoutOwnerInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   chunks?: Prisma.DocumentChunkUncheckedUpdateManyWithoutDocumentNestedInput
   labOrder?: Prisma.LabOrderUncheckedUpdateOneWithoutRequestDocumentNestedInput
+  labOrderRequestLetter?: Prisma.LabOrderUncheckedUpdateOneWithoutRequestLetterNestedInput
   labReport?: Prisma.LabReportUncheckedUpdateOneWithoutDocumentNestedInput
   prescription?: Prisma.PrescriptionUncheckedUpdateOneWithoutDocumentNestedInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedUpdateManyWithoutDocumentNestedInput
@@ -3907,6 +4162,7 @@ export type DocumentUpdateWithoutReleasedByInput = {
   admission?: Prisma.AdmissionUpdateOneWithoutClinicalDocumentsNestedInput
   chunks?: Prisma.DocumentChunkUpdateManyWithoutDocumentNestedInput
   labOrder?: Prisma.LabOrderUpdateOneWithoutRequestDocumentNestedInput
+  labOrderRequestLetter?: Prisma.LabOrderUpdateOneWithoutRequestLetterNestedInput
   labReport?: Prisma.LabReportUpdateOneWithoutDocumentNestedInput
   prescription?: Prisma.PrescriptionUpdateOneWithoutDocumentNestedInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUpdateManyWithoutDocumentNestedInput
@@ -3948,6 +4204,7 @@ export type DocumentUncheckedUpdateWithoutReleasedByInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   chunks?: Prisma.DocumentChunkUncheckedUpdateManyWithoutDocumentNestedInput
   labOrder?: Prisma.LabOrderUncheckedUpdateOneWithoutRequestDocumentNestedInput
+  labOrderRequestLetter?: Prisma.LabOrderUncheckedUpdateOneWithoutRequestLetterNestedInput
   labReport?: Prisma.LabReportUncheckedUpdateOneWithoutDocumentNestedInput
   prescription?: Prisma.PrescriptionUncheckedUpdateOneWithoutDocumentNestedInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedUpdateManyWithoutDocumentNestedInput
@@ -4055,6 +4312,7 @@ export type DocumentUpdateWithoutPatientInput = {
   releasedBy?: Prisma.UserUpdateOneWithoutReleasedDocumentsNestedInput
   chunks?: Prisma.DocumentChunkUpdateManyWithoutDocumentNestedInput
   labOrder?: Prisma.LabOrderUpdateOneWithoutRequestDocumentNestedInput
+  labOrderRequestLetter?: Prisma.LabOrderUpdateOneWithoutRequestLetterNestedInput
   labReport?: Prisma.LabReportUpdateOneWithoutDocumentNestedInput
   prescription?: Prisma.PrescriptionUpdateOneWithoutDocumentNestedInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUpdateManyWithoutDocumentNestedInput
@@ -4096,6 +4354,7 @@ export type DocumentUncheckedUpdateWithoutPatientInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   chunks?: Prisma.DocumentChunkUncheckedUpdateManyWithoutDocumentNestedInput
   labOrder?: Prisma.LabOrderUncheckedUpdateOneWithoutRequestDocumentNestedInput
+  labOrderRequestLetter?: Prisma.LabOrderUncheckedUpdateOneWithoutRequestLetterNestedInput
   labReport?: Prisma.LabReportUncheckedUpdateOneWithoutDocumentNestedInput
   prescription?: Prisma.PrescriptionUncheckedUpdateOneWithoutDocumentNestedInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedUpdateManyWithoutDocumentNestedInput
@@ -4203,6 +4462,7 @@ export type DocumentUpdateWithoutEncounterInput = {
   releasedBy?: Prisma.UserUpdateOneWithoutReleasedDocumentsNestedInput
   chunks?: Prisma.DocumentChunkUpdateManyWithoutDocumentNestedInput
   labOrder?: Prisma.LabOrderUpdateOneWithoutRequestDocumentNestedInput
+  labOrderRequestLetter?: Prisma.LabOrderUpdateOneWithoutRequestLetterNestedInput
   labReport?: Prisma.LabReportUpdateOneWithoutDocumentNestedInput
   prescription?: Prisma.PrescriptionUpdateOneWithoutDocumentNestedInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUpdateManyWithoutDocumentNestedInput
@@ -4244,6 +4504,7 @@ export type DocumentUncheckedUpdateWithoutEncounterInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   chunks?: Prisma.DocumentChunkUncheckedUpdateManyWithoutDocumentNestedInput
   labOrder?: Prisma.LabOrderUncheckedUpdateOneWithoutRequestDocumentNestedInput
+  labOrderRequestLetter?: Prisma.LabOrderUncheckedUpdateOneWithoutRequestLetterNestedInput
   labReport?: Prisma.LabReportUncheckedUpdateOneWithoutDocumentNestedInput
   prescription?: Prisma.PrescriptionUncheckedUpdateOneWithoutDocumentNestedInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedUpdateManyWithoutDocumentNestedInput
@@ -4351,6 +4612,7 @@ export type DocumentUpdateWithoutAdmissionInput = {
   releasedBy?: Prisma.UserUpdateOneWithoutReleasedDocumentsNestedInput
   chunks?: Prisma.DocumentChunkUpdateManyWithoutDocumentNestedInput
   labOrder?: Prisma.LabOrderUpdateOneWithoutRequestDocumentNestedInput
+  labOrderRequestLetter?: Prisma.LabOrderUpdateOneWithoutRequestLetterNestedInput
   labReport?: Prisma.LabReportUpdateOneWithoutDocumentNestedInput
   prescription?: Prisma.PrescriptionUpdateOneWithoutDocumentNestedInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUpdateManyWithoutDocumentNestedInput
@@ -4392,6 +4654,7 @@ export type DocumentUncheckedUpdateWithoutAdmissionInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   chunks?: Prisma.DocumentChunkUncheckedUpdateManyWithoutDocumentNestedInput
   labOrder?: Prisma.LabOrderUncheckedUpdateOneWithoutRequestDocumentNestedInput
+  labOrderRequestLetter?: Prisma.LabOrderUncheckedUpdateOneWithoutRequestLetterNestedInput
   labReport?: Prisma.LabReportUncheckedUpdateOneWithoutDocumentNestedInput
   prescription?: Prisma.PrescriptionUncheckedUpdateOneWithoutDocumentNestedInput
   vaultExpiryNotices?: Prisma.VaultDocumentExpiryNoticeUncheckedUpdateManyWithoutDocumentNestedInput
@@ -4540,6 +4803,7 @@ export type DocumentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   releasedBy?: boolean | Prisma.Document$releasedByArgs<ExtArgs>
   chunks?: boolean | Prisma.Document$chunksArgs<ExtArgs>
   labOrder?: boolean | Prisma.Document$labOrderArgs<ExtArgs>
+  labOrderRequestLetter?: boolean | Prisma.Document$labOrderRequestLetterArgs<ExtArgs>
   labReport?: boolean | Prisma.Document$labReportArgs<ExtArgs>
   prescription?: boolean | Prisma.Document$prescriptionArgs<ExtArgs>
   vaultExpiryNotices?: boolean | Prisma.Document$vaultExpiryNoticesArgs<ExtArgs>
@@ -4673,6 +4937,7 @@ export type DocumentInclude<ExtArgs extends runtime.Types.Extensions.InternalArg
   releasedBy?: boolean | Prisma.Document$releasedByArgs<ExtArgs>
   chunks?: boolean | Prisma.Document$chunksArgs<ExtArgs>
   labOrder?: boolean | Prisma.Document$labOrderArgs<ExtArgs>
+  labOrderRequestLetter?: boolean | Prisma.Document$labOrderRequestLetterArgs<ExtArgs>
   labReport?: boolean | Prisma.Document$labReportArgs<ExtArgs>
   prescription?: boolean | Prisma.Document$prescriptionArgs<ExtArgs>
   vaultExpiryNotices?: boolean | Prisma.Document$vaultExpiryNoticesArgs<ExtArgs>
@@ -4714,6 +4979,12 @@ export type $DocumentPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
      * through the patient's file list carries no such link and needs none.
      */
     labOrder: Prisma.$LabOrderPayload<ExtArgs> | null
+    /**
+     * The order whose incoming surat pengantar this document is (P18-T10) — the
+     * letter an outside doctor wrote, as opposed to the request this clinic
+     * printed, which is `labOrder` above.
+     */
+    labOrderRequestLetter: Prisma.$LabOrderPayload<ExtArgs> | null
     labReport: Prisma.$LabReportPayload<ExtArgs> | null
     prescription: Prisma.$PrescriptionPayload<ExtArgs> | null
     vaultExpiryNotices: Prisma.$VaultDocumentExpiryNoticePayload<ExtArgs>[]
@@ -5194,6 +5465,7 @@ export interface Prisma__DocumentClient<T, Null = never, ExtArgs extends runtime
   releasedBy<T extends Prisma.Document$releasedByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Document$releasedByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   chunks<T extends Prisma.Document$chunksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Document$chunksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DocumentChunkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   labOrder<T extends Prisma.Document$labOrderArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Document$labOrderArgs<ExtArgs>>): Prisma.Prisma__LabOrderClient<runtime.Types.Result.GetResult<Prisma.$LabOrderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  labOrderRequestLetter<T extends Prisma.Document$labOrderRequestLetterArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Document$labOrderRequestLetterArgs<ExtArgs>>): Prisma.Prisma__LabOrderClient<runtime.Types.Result.GetResult<Prisma.$LabOrderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   labReport<T extends Prisma.Document$labReportArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Document$labReportArgs<ExtArgs>>): Prisma.Prisma__LabReportClient<runtime.Types.Result.GetResult<Prisma.$LabReportPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   prescription<T extends Prisma.Document$prescriptionArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Document$prescriptionArgs<ExtArgs>>): Prisma.Prisma__PrescriptionClient<runtime.Types.Result.GetResult<Prisma.$PrescriptionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   vaultExpiryNotices<T extends Prisma.Document$vaultExpiryNoticesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Document$vaultExpiryNoticesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$VaultDocumentExpiryNoticePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -5783,6 +6055,25 @@ export type Document$chunksArgs<ExtArgs extends runtime.Types.Extensions.Interna
  * Document.labOrder
  */
 export type Document$labOrderArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the LabOrder
+   */
+  select?: Prisma.LabOrderSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the LabOrder
+   */
+  omit?: Prisma.LabOrderOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LabOrderInclude<ExtArgs> | null
+  where?: Prisma.LabOrderWhereInput
+}
+
+/**
+ * Document.labOrderRequestLetter
+ */
+export type Document$labOrderRequestLetterArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
    * Select specific fields to fetch from the LabOrder
    */

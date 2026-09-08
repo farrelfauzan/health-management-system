@@ -40,6 +40,7 @@ export type RegistrationMinAggregateOutputType = {
   id: string | null
   patientId: string | null
   appointmentId: string | null
+  type: $Enums.RegistrationType | null
   status: $Enums.RegistrationStatus | null
   queueNumber: number | null
   queueDate: Date | null
@@ -58,6 +59,7 @@ export type RegistrationMaxAggregateOutputType = {
   id: string | null
   patientId: string | null
   appointmentId: string | null
+  type: $Enums.RegistrationType | null
   status: $Enums.RegistrationStatus | null
   queueNumber: number | null
   queueDate: Date | null
@@ -76,6 +78,7 @@ export type RegistrationCountAggregateOutputType = {
   id: number
   patientId: number
   appointmentId: number
+  type: number
   status: number
   queueNumber: number
   queueDate: number
@@ -106,6 +109,7 @@ export type RegistrationMinAggregateInputType = {
   id?: true
   patientId?: true
   appointmentId?: true
+  type?: true
   status?: true
   queueNumber?: true
   queueDate?: true
@@ -124,6 +128,7 @@ export type RegistrationMaxAggregateInputType = {
   id?: true
   patientId?: true
   appointmentId?: true
+  type?: true
   status?: true
   queueNumber?: true
   queueDate?: true
@@ -142,6 +147,7 @@ export type RegistrationCountAggregateInputType = {
   id?: true
   patientId?: true
   appointmentId?: true
+  type?: true
   status?: true
   queueNumber?: true
   queueDate?: true
@@ -247,6 +253,7 @@ export type RegistrationGroupByOutputType = {
   id: string
   patientId: string
   appointmentId: string | null
+  type: $Enums.RegistrationType
   status: $Enums.RegistrationStatus
   queueNumber: number | null
   queueDate: Date | null
@@ -288,6 +295,7 @@ export type RegistrationWhereInput = {
   id?: Prisma.UuidFilter<"Registration"> | string
   patientId?: Prisma.UuidFilter<"Registration"> | string
   appointmentId?: Prisma.UuidNullableFilter<"Registration"> | string | null
+  type?: Prisma.EnumRegistrationTypeFilter<"Registration"> | $Enums.RegistrationType
   status?: Prisma.EnumRegistrationStatusFilter<"Registration"> | $Enums.RegistrationStatus
   queueNumber?: Prisma.IntNullableFilter<"Registration"> | number | null
   queueDate?: Prisma.DateTimeNullableFilter<"Registration"> | Date | string | null
@@ -306,12 +314,15 @@ export type RegistrationWhereInput = {
   createdBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   encounter?: Prisma.XOR<Prisma.EncounterNullableScalarRelationFilter, Prisma.EncounterWhereInput> | null
   bpjsSubmissions?: Prisma.BpjsSubmissionListRelationFilter
+  labOrders?: Prisma.LabOrderListRelationFilter
+  invoices?: Prisma.InvoiceListRelationFilter
 }
 
 export type RegistrationOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   patientId?: Prisma.SortOrder
   appointmentId?: Prisma.SortOrderInput | Prisma.SortOrder
+  type?: Prisma.SortOrder
   status?: Prisma.SortOrder
   queueNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   queueDate?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -330,6 +341,8 @@ export type RegistrationOrderByWithRelationInput = {
   createdBy?: Prisma.UserOrderByWithRelationInput
   encounter?: Prisma.EncounterOrderByWithRelationInput
   bpjsSubmissions?: Prisma.BpjsSubmissionOrderByRelationAggregateInput
+  labOrders?: Prisma.LabOrderOrderByRelationAggregateInput
+  invoices?: Prisma.InvoiceOrderByRelationAggregateInput
 }
 
 export type RegistrationWhereUniqueInput = Prisma.AtLeast<{
@@ -341,6 +354,7 @@ export type RegistrationWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.RegistrationWhereInput[]
   NOT?: Prisma.RegistrationWhereInput | Prisma.RegistrationWhereInput[]
   patientId?: Prisma.UuidFilter<"Registration"> | string
+  type?: Prisma.EnumRegistrationTypeFilter<"Registration"> | $Enums.RegistrationType
   status?: Prisma.EnumRegistrationStatusFilter<"Registration"> | $Enums.RegistrationStatus
   queueNumber?: Prisma.IntNullableFilter<"Registration"> | number | null
   queueDate?: Prisma.DateTimeNullableFilter<"Registration"> | Date | string | null
@@ -359,12 +373,15 @@ export type RegistrationWhereUniqueInput = Prisma.AtLeast<{
   createdBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   encounter?: Prisma.XOR<Prisma.EncounterNullableScalarRelationFilter, Prisma.EncounterWhereInput> | null
   bpjsSubmissions?: Prisma.BpjsSubmissionListRelationFilter
+  labOrders?: Prisma.LabOrderListRelationFilter
+  invoices?: Prisma.InvoiceListRelationFilter
 }, "id" | "appointmentId" | "queueDate_queueNumber" | "queueDate_specialtyId_poliQueueNumber">
 
 export type RegistrationOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   patientId?: Prisma.SortOrder
   appointmentId?: Prisma.SortOrderInput | Prisma.SortOrder
+  type?: Prisma.SortOrder
   status?: Prisma.SortOrder
   queueNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   queueDate?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -391,6 +408,7 @@ export type RegistrationScalarWhereWithAggregatesInput = {
   id?: Prisma.UuidWithAggregatesFilter<"Registration"> | string
   patientId?: Prisma.UuidWithAggregatesFilter<"Registration"> | string
   appointmentId?: Prisma.UuidNullableWithAggregatesFilter<"Registration"> | string | null
+  type?: Prisma.EnumRegistrationTypeWithAggregatesFilter<"Registration"> | $Enums.RegistrationType
   status?: Prisma.EnumRegistrationStatusWithAggregatesFilter<"Registration"> | $Enums.RegistrationStatus
   queueNumber?: Prisma.IntNullableWithAggregatesFilter<"Registration"> | number | null
   queueDate?: Prisma.DateTimeNullableWithAggregatesFilter<"Registration"> | Date | string | null
@@ -407,6 +425,7 @@ export type RegistrationScalarWhereWithAggregatesInput = {
 
 export type RegistrationCreateInput = {
   id?: string
+  type?: $Enums.RegistrationType
   status?: $Enums.RegistrationStatus
   queueNumber?: number | null
   queueDate?: Date | string | null
@@ -423,12 +442,15 @@ export type RegistrationCreateInput = {
   createdBy?: Prisma.UserCreateNestedOneWithoutCreatedRegistrationsInput
   encounter?: Prisma.EncounterCreateNestedOneWithoutRegistrationInput
   bpjsSubmissions?: Prisma.BpjsSubmissionCreateNestedManyWithoutRegistrationInput
+  labOrders?: Prisma.LabOrderCreateNestedManyWithoutRegistrationInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutRegistrationInput
 }
 
 export type RegistrationUncheckedCreateInput = {
   id?: string
   patientId: string
   appointmentId?: string | null
+  type?: $Enums.RegistrationType
   status?: $Enums.RegistrationStatus
   queueNumber?: number | null
   queueDate?: Date | string | null
@@ -443,10 +465,13 @@ export type RegistrationUncheckedCreateInput = {
   deletedAt?: Date | string | null
   encounter?: Prisma.EncounterUncheckedCreateNestedOneWithoutRegistrationInput
   bpjsSubmissions?: Prisma.BpjsSubmissionUncheckedCreateNestedManyWithoutRegistrationInput
+  labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutRegistrationInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutRegistrationInput
 }
 
 export type RegistrationUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumRegistrationTypeFieldUpdateOperationsInput | $Enums.RegistrationType
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -463,12 +488,15 @@ export type RegistrationUpdateInput = {
   createdBy?: Prisma.UserUpdateOneWithoutCreatedRegistrationsNestedInput
   encounter?: Prisma.EncounterUpdateOneWithoutRegistrationNestedInput
   bpjsSubmissions?: Prisma.BpjsSubmissionUpdateManyWithoutRegistrationNestedInput
+  labOrders?: Prisma.LabOrderUpdateManyWithoutRegistrationNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutRegistrationNestedInput
 }
 
 export type RegistrationUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   patientId?: Prisma.StringFieldUpdateOperationsInput | string
   appointmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.EnumRegistrationTypeFieldUpdateOperationsInput | $Enums.RegistrationType
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -483,12 +511,15 @@ export type RegistrationUncheckedUpdateInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   encounter?: Prisma.EncounterUncheckedUpdateOneWithoutRegistrationNestedInput
   bpjsSubmissions?: Prisma.BpjsSubmissionUncheckedUpdateManyWithoutRegistrationNestedInput
+  labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutRegistrationNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutRegistrationNestedInput
 }
 
 export type RegistrationCreateManyInput = {
   id?: string
   patientId: string
   appointmentId?: string | null
+  type?: $Enums.RegistrationType
   status?: $Enums.RegistrationStatus
   queueNumber?: number | null
   queueDate?: Date | string | null
@@ -505,6 +536,7 @@ export type RegistrationCreateManyInput = {
 
 export type RegistrationUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumRegistrationTypeFieldUpdateOperationsInput | $Enums.RegistrationType
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -521,6 +553,7 @@ export type RegistrationUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   patientId?: Prisma.StringFieldUpdateOperationsInput | string
   appointmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.EnumRegistrationTypeFieldUpdateOperationsInput | $Enums.RegistrationType
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -565,6 +598,7 @@ export type RegistrationCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   patientId?: Prisma.SortOrder
   appointmentId?: Prisma.SortOrder
+  type?: Prisma.SortOrder
   status?: Prisma.SortOrder
   queueNumber?: Prisma.SortOrder
   queueDate?: Prisma.SortOrder
@@ -588,6 +622,7 @@ export type RegistrationMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   patientId?: Prisma.SortOrder
   appointmentId?: Prisma.SortOrder
+  type?: Prisma.SortOrder
   status?: Prisma.SortOrder
   queueNumber?: Prisma.SortOrder
   queueDate?: Prisma.SortOrder
@@ -606,6 +641,7 @@ export type RegistrationMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   patientId?: Prisma.SortOrder
   appointmentId?: Prisma.SortOrder
+  type?: Prisma.SortOrder
   status?: Prisma.SortOrder
   queueNumber?: Prisma.SortOrder
   queueDate?: Prisma.SortOrder
@@ -788,6 +824,10 @@ export type RegistrationUncheckedUpdateOneWithoutAppointmentNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.RegistrationUpdateToOneWithWhereWithoutAppointmentInput, Prisma.RegistrationUpdateWithoutAppointmentInput>, Prisma.RegistrationUncheckedUpdateWithoutAppointmentInput>
 }
 
+export type EnumRegistrationTypeFieldUpdateOperationsInput = {
+  set?: $Enums.RegistrationType
+}
+
 export type EnumRegistrationStatusFieldUpdateOperationsInput = {
   set?: $Enums.RegistrationStatus
 }
@@ -806,6 +846,22 @@ export type RegistrationUpdateOneRequiredWithoutEncounterNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.RegistrationUpdateToOneWithWhereWithoutEncounterInput, Prisma.RegistrationUpdateWithoutEncounterInput>, Prisma.RegistrationUncheckedUpdateWithoutEncounterInput>
 }
 
+export type RegistrationCreateNestedOneWithoutInvoicesInput = {
+  create?: Prisma.XOR<Prisma.RegistrationCreateWithoutInvoicesInput, Prisma.RegistrationUncheckedCreateWithoutInvoicesInput>
+  connectOrCreate?: Prisma.RegistrationCreateOrConnectWithoutInvoicesInput
+  connect?: Prisma.RegistrationWhereUniqueInput
+}
+
+export type RegistrationUpdateOneWithoutInvoicesNestedInput = {
+  create?: Prisma.XOR<Prisma.RegistrationCreateWithoutInvoicesInput, Prisma.RegistrationUncheckedCreateWithoutInvoicesInput>
+  connectOrCreate?: Prisma.RegistrationCreateOrConnectWithoutInvoicesInput
+  upsert?: Prisma.RegistrationUpsertWithoutInvoicesInput
+  disconnect?: Prisma.RegistrationWhereInput | boolean
+  delete?: Prisma.RegistrationWhereInput | boolean
+  connect?: Prisma.RegistrationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.RegistrationUpdateToOneWithWhereWithoutInvoicesInput, Prisma.RegistrationUpdateWithoutInvoicesInput>, Prisma.RegistrationUncheckedUpdateWithoutInvoicesInput>
+}
+
 export type RegistrationCreateNestedOneWithoutBpjsSubmissionsInput = {
   create?: Prisma.XOR<Prisma.RegistrationCreateWithoutBpjsSubmissionsInput, Prisma.RegistrationUncheckedCreateWithoutBpjsSubmissionsInput>
   connectOrCreate?: Prisma.RegistrationCreateOrConnectWithoutBpjsSubmissionsInput
@@ -820,8 +876,23 @@ export type RegistrationUpdateOneRequiredWithoutBpjsSubmissionsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.RegistrationUpdateToOneWithWhereWithoutBpjsSubmissionsInput, Prisma.RegistrationUpdateWithoutBpjsSubmissionsInput>, Prisma.RegistrationUncheckedUpdateWithoutBpjsSubmissionsInput>
 }
 
+export type RegistrationCreateNestedOneWithoutLabOrdersInput = {
+  create?: Prisma.XOR<Prisma.RegistrationCreateWithoutLabOrdersInput, Prisma.RegistrationUncheckedCreateWithoutLabOrdersInput>
+  connectOrCreate?: Prisma.RegistrationCreateOrConnectWithoutLabOrdersInput
+  connect?: Prisma.RegistrationWhereUniqueInput
+}
+
+export type RegistrationUpdateOneRequiredWithoutLabOrdersNestedInput = {
+  create?: Prisma.XOR<Prisma.RegistrationCreateWithoutLabOrdersInput, Prisma.RegistrationUncheckedCreateWithoutLabOrdersInput>
+  connectOrCreate?: Prisma.RegistrationCreateOrConnectWithoutLabOrdersInput
+  upsert?: Prisma.RegistrationUpsertWithoutLabOrdersInput
+  connect?: Prisma.RegistrationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.RegistrationUpdateToOneWithWhereWithoutLabOrdersInput, Prisma.RegistrationUpdateWithoutLabOrdersInput>, Prisma.RegistrationUncheckedUpdateWithoutLabOrdersInput>
+}
+
 export type RegistrationCreateWithoutCreatedByInput = {
   id?: string
+  type?: $Enums.RegistrationType
   status?: $Enums.RegistrationStatus
   queueNumber?: number | null
   queueDate?: Date | string | null
@@ -837,12 +908,15 @@ export type RegistrationCreateWithoutCreatedByInput = {
   specialty?: Prisma.SpecialtyCreateNestedOneWithoutRegistrationsInput
   encounter?: Prisma.EncounterCreateNestedOneWithoutRegistrationInput
   bpjsSubmissions?: Prisma.BpjsSubmissionCreateNestedManyWithoutRegistrationInput
+  labOrders?: Prisma.LabOrderCreateNestedManyWithoutRegistrationInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutRegistrationInput
 }
 
 export type RegistrationUncheckedCreateWithoutCreatedByInput = {
   id?: string
   patientId: string
   appointmentId?: string | null
+  type?: $Enums.RegistrationType
   status?: $Enums.RegistrationStatus
   queueNumber?: number | null
   queueDate?: Date | string | null
@@ -856,6 +930,8 @@ export type RegistrationUncheckedCreateWithoutCreatedByInput = {
   deletedAt?: Date | string | null
   encounter?: Prisma.EncounterUncheckedCreateNestedOneWithoutRegistrationInput
   bpjsSubmissions?: Prisma.BpjsSubmissionUncheckedCreateNestedManyWithoutRegistrationInput
+  labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutRegistrationInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutRegistrationInput
 }
 
 export type RegistrationCreateOrConnectWithoutCreatedByInput = {
@@ -891,6 +967,7 @@ export type RegistrationScalarWhereInput = {
   id?: Prisma.UuidFilter<"Registration"> | string
   patientId?: Prisma.UuidFilter<"Registration"> | string
   appointmentId?: Prisma.UuidNullableFilter<"Registration"> | string | null
+  type?: Prisma.EnumRegistrationTypeFilter<"Registration"> | $Enums.RegistrationType
   status?: Prisma.EnumRegistrationStatusFilter<"Registration"> | $Enums.RegistrationStatus
   queueNumber?: Prisma.IntNullableFilter<"Registration"> | number | null
   queueDate?: Prisma.DateTimeNullableFilter<"Registration"> | Date | string | null
@@ -907,6 +984,7 @@ export type RegistrationScalarWhereInput = {
 
 export type RegistrationCreateWithoutPatientInput = {
   id?: string
+  type?: $Enums.RegistrationType
   status?: $Enums.RegistrationStatus
   queueNumber?: number | null
   queueDate?: Date | string | null
@@ -922,11 +1000,14 @@ export type RegistrationCreateWithoutPatientInput = {
   createdBy?: Prisma.UserCreateNestedOneWithoutCreatedRegistrationsInput
   encounter?: Prisma.EncounterCreateNestedOneWithoutRegistrationInput
   bpjsSubmissions?: Prisma.BpjsSubmissionCreateNestedManyWithoutRegistrationInput
+  labOrders?: Prisma.LabOrderCreateNestedManyWithoutRegistrationInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutRegistrationInput
 }
 
 export type RegistrationUncheckedCreateWithoutPatientInput = {
   id?: string
   appointmentId?: string | null
+  type?: $Enums.RegistrationType
   status?: $Enums.RegistrationStatus
   queueNumber?: number | null
   queueDate?: Date | string | null
@@ -941,6 +1022,8 @@ export type RegistrationUncheckedCreateWithoutPatientInput = {
   deletedAt?: Date | string | null
   encounter?: Prisma.EncounterUncheckedCreateNestedOneWithoutRegistrationInput
   bpjsSubmissions?: Prisma.BpjsSubmissionUncheckedCreateNestedManyWithoutRegistrationInput
+  labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutRegistrationInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutRegistrationInput
 }
 
 export type RegistrationCreateOrConnectWithoutPatientInput = {
@@ -971,6 +1054,7 @@ export type RegistrationUpdateManyWithWhereWithoutPatientInput = {
 
 export type RegistrationCreateWithoutSpecialtyInput = {
   id?: string
+  type?: $Enums.RegistrationType
   status?: $Enums.RegistrationStatus
   queueNumber?: number | null
   queueDate?: Date | string | null
@@ -986,12 +1070,15 @@ export type RegistrationCreateWithoutSpecialtyInput = {
   createdBy?: Prisma.UserCreateNestedOneWithoutCreatedRegistrationsInput
   encounter?: Prisma.EncounterCreateNestedOneWithoutRegistrationInput
   bpjsSubmissions?: Prisma.BpjsSubmissionCreateNestedManyWithoutRegistrationInput
+  labOrders?: Prisma.LabOrderCreateNestedManyWithoutRegistrationInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutRegistrationInput
 }
 
 export type RegistrationUncheckedCreateWithoutSpecialtyInput = {
   id?: string
   patientId: string
   appointmentId?: string | null
+  type?: $Enums.RegistrationType
   status?: $Enums.RegistrationStatus
   queueNumber?: number | null
   queueDate?: Date | string | null
@@ -1005,6 +1092,8 @@ export type RegistrationUncheckedCreateWithoutSpecialtyInput = {
   deletedAt?: Date | string | null
   encounter?: Prisma.EncounterUncheckedCreateNestedOneWithoutRegistrationInput
   bpjsSubmissions?: Prisma.BpjsSubmissionUncheckedCreateNestedManyWithoutRegistrationInput
+  labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutRegistrationInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutRegistrationInput
 }
 
 export type RegistrationCreateOrConnectWithoutSpecialtyInput = {
@@ -1035,6 +1124,7 @@ export type RegistrationUpdateManyWithWhereWithoutSpecialtyInput = {
 
 export type RegistrationCreateWithoutAppointmentInput = {
   id?: string
+  type?: $Enums.RegistrationType
   status?: $Enums.RegistrationStatus
   queueNumber?: number | null
   queueDate?: Date | string | null
@@ -1050,11 +1140,14 @@ export type RegistrationCreateWithoutAppointmentInput = {
   createdBy?: Prisma.UserCreateNestedOneWithoutCreatedRegistrationsInput
   encounter?: Prisma.EncounterCreateNestedOneWithoutRegistrationInput
   bpjsSubmissions?: Prisma.BpjsSubmissionCreateNestedManyWithoutRegistrationInput
+  labOrders?: Prisma.LabOrderCreateNestedManyWithoutRegistrationInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutRegistrationInput
 }
 
 export type RegistrationUncheckedCreateWithoutAppointmentInput = {
   id?: string
   patientId: string
+  type?: $Enums.RegistrationType
   status?: $Enums.RegistrationStatus
   queueNumber?: number | null
   queueDate?: Date | string | null
@@ -1069,6 +1162,8 @@ export type RegistrationUncheckedCreateWithoutAppointmentInput = {
   deletedAt?: Date | string | null
   encounter?: Prisma.EncounterUncheckedCreateNestedOneWithoutRegistrationInput
   bpjsSubmissions?: Prisma.BpjsSubmissionUncheckedCreateNestedManyWithoutRegistrationInput
+  labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutRegistrationInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutRegistrationInput
 }
 
 export type RegistrationCreateOrConnectWithoutAppointmentInput = {
@@ -1089,6 +1184,7 @@ export type RegistrationUpdateToOneWithWhereWithoutAppointmentInput = {
 
 export type RegistrationUpdateWithoutAppointmentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumRegistrationTypeFieldUpdateOperationsInput | $Enums.RegistrationType
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1104,11 +1200,14 @@ export type RegistrationUpdateWithoutAppointmentInput = {
   createdBy?: Prisma.UserUpdateOneWithoutCreatedRegistrationsNestedInput
   encounter?: Prisma.EncounterUpdateOneWithoutRegistrationNestedInput
   bpjsSubmissions?: Prisma.BpjsSubmissionUpdateManyWithoutRegistrationNestedInput
+  labOrders?: Prisma.LabOrderUpdateManyWithoutRegistrationNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutRegistrationNestedInput
 }
 
 export type RegistrationUncheckedUpdateWithoutAppointmentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   patientId?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumRegistrationTypeFieldUpdateOperationsInput | $Enums.RegistrationType
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1123,10 +1222,13 @@ export type RegistrationUncheckedUpdateWithoutAppointmentInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   encounter?: Prisma.EncounterUncheckedUpdateOneWithoutRegistrationNestedInput
   bpjsSubmissions?: Prisma.BpjsSubmissionUncheckedUpdateManyWithoutRegistrationNestedInput
+  labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutRegistrationNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutRegistrationNestedInput
 }
 
 export type RegistrationCreateWithoutEncounterInput = {
   id?: string
+  type?: $Enums.RegistrationType
   status?: $Enums.RegistrationStatus
   queueNumber?: number | null
   queueDate?: Date | string | null
@@ -1142,12 +1244,15 @@ export type RegistrationCreateWithoutEncounterInput = {
   specialty?: Prisma.SpecialtyCreateNestedOneWithoutRegistrationsInput
   createdBy?: Prisma.UserCreateNestedOneWithoutCreatedRegistrationsInput
   bpjsSubmissions?: Prisma.BpjsSubmissionCreateNestedManyWithoutRegistrationInput
+  labOrders?: Prisma.LabOrderCreateNestedManyWithoutRegistrationInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutRegistrationInput
 }
 
 export type RegistrationUncheckedCreateWithoutEncounterInput = {
   id?: string
   patientId: string
   appointmentId?: string | null
+  type?: $Enums.RegistrationType
   status?: $Enums.RegistrationStatus
   queueNumber?: number | null
   queueDate?: Date | string | null
@@ -1161,6 +1266,8 @@ export type RegistrationUncheckedCreateWithoutEncounterInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   bpjsSubmissions?: Prisma.BpjsSubmissionUncheckedCreateNestedManyWithoutRegistrationInput
+  labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutRegistrationInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutRegistrationInput
 }
 
 export type RegistrationCreateOrConnectWithoutEncounterInput = {
@@ -1181,6 +1288,7 @@ export type RegistrationUpdateToOneWithWhereWithoutEncounterInput = {
 
 export type RegistrationUpdateWithoutEncounterInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumRegistrationTypeFieldUpdateOperationsInput | $Enums.RegistrationType
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1196,12 +1304,15 @@ export type RegistrationUpdateWithoutEncounterInput = {
   specialty?: Prisma.SpecialtyUpdateOneWithoutRegistrationsNestedInput
   createdBy?: Prisma.UserUpdateOneWithoutCreatedRegistrationsNestedInput
   bpjsSubmissions?: Prisma.BpjsSubmissionUpdateManyWithoutRegistrationNestedInput
+  labOrders?: Prisma.LabOrderUpdateManyWithoutRegistrationNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutRegistrationNestedInput
 }
 
 export type RegistrationUncheckedUpdateWithoutEncounterInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   patientId?: Prisma.StringFieldUpdateOperationsInput | string
   appointmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.EnumRegistrationTypeFieldUpdateOperationsInput | $Enums.RegistrationType
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1215,10 +1326,13 @@ export type RegistrationUncheckedUpdateWithoutEncounterInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   bpjsSubmissions?: Prisma.BpjsSubmissionUncheckedUpdateManyWithoutRegistrationNestedInput
+  labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutRegistrationNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutRegistrationNestedInput
 }
 
-export type RegistrationCreateWithoutBpjsSubmissionsInput = {
+export type RegistrationCreateWithoutInvoicesInput = {
   id?: string
+  type?: $Enums.RegistrationType
   status?: $Enums.RegistrationStatus
   queueNumber?: number | null
   queueDate?: Date | string | null
@@ -1234,12 +1348,15 @@ export type RegistrationCreateWithoutBpjsSubmissionsInput = {
   specialty?: Prisma.SpecialtyCreateNestedOneWithoutRegistrationsInput
   createdBy?: Prisma.UserCreateNestedOneWithoutCreatedRegistrationsInput
   encounter?: Prisma.EncounterCreateNestedOneWithoutRegistrationInput
+  bpjsSubmissions?: Prisma.BpjsSubmissionCreateNestedManyWithoutRegistrationInput
+  labOrders?: Prisma.LabOrderCreateNestedManyWithoutRegistrationInput
 }
 
-export type RegistrationUncheckedCreateWithoutBpjsSubmissionsInput = {
+export type RegistrationUncheckedCreateWithoutInvoicesInput = {
   id?: string
   patientId: string
   appointmentId?: string | null
+  type?: $Enums.RegistrationType
   status?: $Enums.RegistrationStatus
   queueNumber?: number | null
   queueDate?: Date | string | null
@@ -1253,6 +1370,112 @@ export type RegistrationUncheckedCreateWithoutBpjsSubmissionsInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   encounter?: Prisma.EncounterUncheckedCreateNestedOneWithoutRegistrationInput
+  bpjsSubmissions?: Prisma.BpjsSubmissionUncheckedCreateNestedManyWithoutRegistrationInput
+  labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutRegistrationInput
+}
+
+export type RegistrationCreateOrConnectWithoutInvoicesInput = {
+  where: Prisma.RegistrationWhereUniqueInput
+  create: Prisma.XOR<Prisma.RegistrationCreateWithoutInvoicesInput, Prisma.RegistrationUncheckedCreateWithoutInvoicesInput>
+}
+
+export type RegistrationUpsertWithoutInvoicesInput = {
+  update: Prisma.XOR<Prisma.RegistrationUpdateWithoutInvoicesInput, Prisma.RegistrationUncheckedUpdateWithoutInvoicesInput>
+  create: Prisma.XOR<Prisma.RegistrationCreateWithoutInvoicesInput, Prisma.RegistrationUncheckedCreateWithoutInvoicesInput>
+  where?: Prisma.RegistrationWhereInput
+}
+
+export type RegistrationUpdateToOneWithWhereWithoutInvoicesInput = {
+  where?: Prisma.RegistrationWhereInput
+  data: Prisma.XOR<Prisma.RegistrationUpdateWithoutInvoicesInput, Prisma.RegistrationUncheckedUpdateWithoutInvoicesInput>
+}
+
+export type RegistrationUpdateWithoutInvoicesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumRegistrationTypeFieldUpdateOperationsInput | $Enums.RegistrationType
+  status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
+  queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  poliQueueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  registeredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patient?: Prisma.PatientProfileUpdateOneRequiredWithoutRegistrationsNestedInput
+  appointment?: Prisma.AppointmentUpdateOneWithoutRegistrationNestedInput
+  specialty?: Prisma.SpecialtyUpdateOneWithoutRegistrationsNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutCreatedRegistrationsNestedInput
+  encounter?: Prisma.EncounterUpdateOneWithoutRegistrationNestedInput
+  bpjsSubmissions?: Prisma.BpjsSubmissionUpdateManyWithoutRegistrationNestedInput
+  labOrders?: Prisma.LabOrderUpdateManyWithoutRegistrationNestedInput
+}
+
+export type RegistrationUncheckedUpdateWithoutInvoicesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  patientId?: Prisma.StringFieldUpdateOperationsInput | string
+  appointmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.EnumRegistrationTypeFieldUpdateOperationsInput | $Enums.RegistrationType
+  status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
+  queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  specialtyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  poliQueueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  registeredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  encounter?: Prisma.EncounterUncheckedUpdateOneWithoutRegistrationNestedInput
+  bpjsSubmissions?: Prisma.BpjsSubmissionUncheckedUpdateManyWithoutRegistrationNestedInput
+  labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutRegistrationNestedInput
+}
+
+export type RegistrationCreateWithoutBpjsSubmissionsInput = {
+  id?: string
+  type?: $Enums.RegistrationType
+  status?: $Enums.RegistrationStatus
+  queueNumber?: number | null
+  queueDate?: Date | string | null
+  poliQueueNumber?: number | null
+  registeredAt?: Date | string
+  checkedInAt?: Date | string | null
+  completedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  patient: Prisma.PatientProfileCreateNestedOneWithoutRegistrationsInput
+  appointment?: Prisma.AppointmentCreateNestedOneWithoutRegistrationInput
+  specialty?: Prisma.SpecialtyCreateNestedOneWithoutRegistrationsInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutCreatedRegistrationsInput
+  encounter?: Prisma.EncounterCreateNestedOneWithoutRegistrationInput
+  labOrders?: Prisma.LabOrderCreateNestedManyWithoutRegistrationInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutRegistrationInput
+}
+
+export type RegistrationUncheckedCreateWithoutBpjsSubmissionsInput = {
+  id?: string
+  patientId: string
+  appointmentId?: string | null
+  type?: $Enums.RegistrationType
+  status?: $Enums.RegistrationStatus
+  queueNumber?: number | null
+  queueDate?: Date | string | null
+  specialtyId?: string | null
+  poliQueueNumber?: number | null
+  registeredAt?: Date | string
+  checkedInAt?: Date | string | null
+  completedAt?: Date | string | null
+  createdById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  encounter?: Prisma.EncounterUncheckedCreateNestedOneWithoutRegistrationInput
+  labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutRegistrationInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutRegistrationInput
 }
 
 export type RegistrationCreateOrConnectWithoutBpjsSubmissionsInput = {
@@ -1273,6 +1496,7 @@ export type RegistrationUpdateToOneWithWhereWithoutBpjsSubmissionsInput = {
 
 export type RegistrationUpdateWithoutBpjsSubmissionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumRegistrationTypeFieldUpdateOperationsInput | $Enums.RegistrationType
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1288,12 +1512,15 @@ export type RegistrationUpdateWithoutBpjsSubmissionsInput = {
   specialty?: Prisma.SpecialtyUpdateOneWithoutRegistrationsNestedInput
   createdBy?: Prisma.UserUpdateOneWithoutCreatedRegistrationsNestedInput
   encounter?: Prisma.EncounterUpdateOneWithoutRegistrationNestedInput
+  labOrders?: Prisma.LabOrderUpdateManyWithoutRegistrationNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutRegistrationNestedInput
 }
 
 export type RegistrationUncheckedUpdateWithoutBpjsSubmissionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   patientId?: Prisma.StringFieldUpdateOperationsInput | string
   appointmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.EnumRegistrationTypeFieldUpdateOperationsInput | $Enums.RegistrationType
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1307,12 +1534,119 @@ export type RegistrationUncheckedUpdateWithoutBpjsSubmissionsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   encounter?: Prisma.EncounterUncheckedUpdateOneWithoutRegistrationNestedInput
+  labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutRegistrationNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutRegistrationNestedInput
+}
+
+export type RegistrationCreateWithoutLabOrdersInput = {
+  id?: string
+  type?: $Enums.RegistrationType
+  status?: $Enums.RegistrationStatus
+  queueNumber?: number | null
+  queueDate?: Date | string | null
+  poliQueueNumber?: number | null
+  registeredAt?: Date | string
+  checkedInAt?: Date | string | null
+  completedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  patient: Prisma.PatientProfileCreateNestedOneWithoutRegistrationsInput
+  appointment?: Prisma.AppointmentCreateNestedOneWithoutRegistrationInput
+  specialty?: Prisma.SpecialtyCreateNestedOneWithoutRegistrationsInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutCreatedRegistrationsInput
+  encounter?: Prisma.EncounterCreateNestedOneWithoutRegistrationInput
+  bpjsSubmissions?: Prisma.BpjsSubmissionCreateNestedManyWithoutRegistrationInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutRegistrationInput
+}
+
+export type RegistrationUncheckedCreateWithoutLabOrdersInput = {
+  id?: string
+  patientId: string
+  appointmentId?: string | null
+  type?: $Enums.RegistrationType
+  status?: $Enums.RegistrationStatus
+  queueNumber?: number | null
+  queueDate?: Date | string | null
+  specialtyId?: string | null
+  poliQueueNumber?: number | null
+  registeredAt?: Date | string
+  checkedInAt?: Date | string | null
+  completedAt?: Date | string | null
+  createdById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  encounter?: Prisma.EncounterUncheckedCreateNestedOneWithoutRegistrationInput
+  bpjsSubmissions?: Prisma.BpjsSubmissionUncheckedCreateNestedManyWithoutRegistrationInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutRegistrationInput
+}
+
+export type RegistrationCreateOrConnectWithoutLabOrdersInput = {
+  where: Prisma.RegistrationWhereUniqueInput
+  create: Prisma.XOR<Prisma.RegistrationCreateWithoutLabOrdersInput, Prisma.RegistrationUncheckedCreateWithoutLabOrdersInput>
+}
+
+export type RegistrationUpsertWithoutLabOrdersInput = {
+  update: Prisma.XOR<Prisma.RegistrationUpdateWithoutLabOrdersInput, Prisma.RegistrationUncheckedUpdateWithoutLabOrdersInput>
+  create: Prisma.XOR<Prisma.RegistrationCreateWithoutLabOrdersInput, Prisma.RegistrationUncheckedCreateWithoutLabOrdersInput>
+  where?: Prisma.RegistrationWhereInput
+}
+
+export type RegistrationUpdateToOneWithWhereWithoutLabOrdersInput = {
+  where?: Prisma.RegistrationWhereInput
+  data: Prisma.XOR<Prisma.RegistrationUpdateWithoutLabOrdersInput, Prisma.RegistrationUncheckedUpdateWithoutLabOrdersInput>
+}
+
+export type RegistrationUpdateWithoutLabOrdersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumRegistrationTypeFieldUpdateOperationsInput | $Enums.RegistrationType
+  status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
+  queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  poliQueueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  registeredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patient?: Prisma.PatientProfileUpdateOneRequiredWithoutRegistrationsNestedInput
+  appointment?: Prisma.AppointmentUpdateOneWithoutRegistrationNestedInput
+  specialty?: Prisma.SpecialtyUpdateOneWithoutRegistrationsNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutCreatedRegistrationsNestedInput
+  encounter?: Prisma.EncounterUpdateOneWithoutRegistrationNestedInput
+  bpjsSubmissions?: Prisma.BpjsSubmissionUpdateManyWithoutRegistrationNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutRegistrationNestedInput
+}
+
+export type RegistrationUncheckedUpdateWithoutLabOrdersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  patientId?: Prisma.StringFieldUpdateOperationsInput | string
+  appointmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.EnumRegistrationTypeFieldUpdateOperationsInput | $Enums.RegistrationType
+  status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
+  queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  specialtyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  poliQueueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  registeredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  encounter?: Prisma.EncounterUncheckedUpdateOneWithoutRegistrationNestedInput
+  bpjsSubmissions?: Prisma.BpjsSubmissionUncheckedUpdateManyWithoutRegistrationNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutRegistrationNestedInput
 }
 
 export type RegistrationCreateManyCreatedByInput = {
   id?: string
   patientId: string
   appointmentId?: string | null
+  type?: $Enums.RegistrationType
   status?: $Enums.RegistrationStatus
   queueNumber?: number | null
   queueDate?: Date | string | null
@@ -1328,6 +1662,7 @@ export type RegistrationCreateManyCreatedByInput = {
 
 export type RegistrationUpdateWithoutCreatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumRegistrationTypeFieldUpdateOperationsInput | $Enums.RegistrationType
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1343,12 +1678,15 @@ export type RegistrationUpdateWithoutCreatedByInput = {
   specialty?: Prisma.SpecialtyUpdateOneWithoutRegistrationsNestedInput
   encounter?: Prisma.EncounterUpdateOneWithoutRegistrationNestedInput
   bpjsSubmissions?: Prisma.BpjsSubmissionUpdateManyWithoutRegistrationNestedInput
+  labOrders?: Prisma.LabOrderUpdateManyWithoutRegistrationNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutRegistrationNestedInput
 }
 
 export type RegistrationUncheckedUpdateWithoutCreatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   patientId?: Prisma.StringFieldUpdateOperationsInput | string
   appointmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.EnumRegistrationTypeFieldUpdateOperationsInput | $Enums.RegistrationType
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1362,12 +1700,15 @@ export type RegistrationUncheckedUpdateWithoutCreatedByInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   encounter?: Prisma.EncounterUncheckedUpdateOneWithoutRegistrationNestedInput
   bpjsSubmissions?: Prisma.BpjsSubmissionUncheckedUpdateManyWithoutRegistrationNestedInput
+  labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutRegistrationNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutRegistrationNestedInput
 }
 
 export type RegistrationUncheckedUpdateManyWithoutCreatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   patientId?: Prisma.StringFieldUpdateOperationsInput | string
   appointmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.EnumRegistrationTypeFieldUpdateOperationsInput | $Enums.RegistrationType
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1384,6 +1725,7 @@ export type RegistrationUncheckedUpdateManyWithoutCreatedByInput = {
 export type RegistrationCreateManyPatientInput = {
   id?: string
   appointmentId?: string | null
+  type?: $Enums.RegistrationType
   status?: $Enums.RegistrationStatus
   queueNumber?: number | null
   queueDate?: Date | string | null
@@ -1400,6 +1742,7 @@ export type RegistrationCreateManyPatientInput = {
 
 export type RegistrationUpdateWithoutPatientInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumRegistrationTypeFieldUpdateOperationsInput | $Enums.RegistrationType
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1415,11 +1758,14 @@ export type RegistrationUpdateWithoutPatientInput = {
   createdBy?: Prisma.UserUpdateOneWithoutCreatedRegistrationsNestedInput
   encounter?: Prisma.EncounterUpdateOneWithoutRegistrationNestedInput
   bpjsSubmissions?: Prisma.BpjsSubmissionUpdateManyWithoutRegistrationNestedInput
+  labOrders?: Prisma.LabOrderUpdateManyWithoutRegistrationNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutRegistrationNestedInput
 }
 
 export type RegistrationUncheckedUpdateWithoutPatientInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   appointmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.EnumRegistrationTypeFieldUpdateOperationsInput | $Enums.RegistrationType
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1434,11 +1780,14 @@ export type RegistrationUncheckedUpdateWithoutPatientInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   encounter?: Prisma.EncounterUncheckedUpdateOneWithoutRegistrationNestedInput
   bpjsSubmissions?: Prisma.BpjsSubmissionUncheckedUpdateManyWithoutRegistrationNestedInput
+  labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutRegistrationNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutRegistrationNestedInput
 }
 
 export type RegistrationUncheckedUpdateManyWithoutPatientInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   appointmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.EnumRegistrationTypeFieldUpdateOperationsInput | $Enums.RegistrationType
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1457,6 +1806,7 @@ export type RegistrationCreateManySpecialtyInput = {
   id?: string
   patientId: string
   appointmentId?: string | null
+  type?: $Enums.RegistrationType
   status?: $Enums.RegistrationStatus
   queueNumber?: number | null
   queueDate?: Date | string | null
@@ -1472,6 +1822,7 @@ export type RegistrationCreateManySpecialtyInput = {
 
 export type RegistrationUpdateWithoutSpecialtyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumRegistrationTypeFieldUpdateOperationsInput | $Enums.RegistrationType
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1487,12 +1838,15 @@ export type RegistrationUpdateWithoutSpecialtyInput = {
   createdBy?: Prisma.UserUpdateOneWithoutCreatedRegistrationsNestedInput
   encounter?: Prisma.EncounterUpdateOneWithoutRegistrationNestedInput
   bpjsSubmissions?: Prisma.BpjsSubmissionUpdateManyWithoutRegistrationNestedInput
+  labOrders?: Prisma.LabOrderUpdateManyWithoutRegistrationNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutRegistrationNestedInput
 }
 
 export type RegistrationUncheckedUpdateWithoutSpecialtyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   patientId?: Prisma.StringFieldUpdateOperationsInput | string
   appointmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.EnumRegistrationTypeFieldUpdateOperationsInput | $Enums.RegistrationType
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1506,12 +1860,15 @@ export type RegistrationUncheckedUpdateWithoutSpecialtyInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   encounter?: Prisma.EncounterUncheckedUpdateOneWithoutRegistrationNestedInput
   bpjsSubmissions?: Prisma.BpjsSubmissionUncheckedUpdateManyWithoutRegistrationNestedInput
+  labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutRegistrationNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutRegistrationNestedInput
 }
 
 export type RegistrationUncheckedUpdateManyWithoutSpecialtyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   patientId?: Prisma.StringFieldUpdateOperationsInput | string
   appointmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.EnumRegistrationTypeFieldUpdateOperationsInput | $Enums.RegistrationType
   status?: Prisma.EnumRegistrationStatusFieldUpdateOperationsInput | $Enums.RegistrationStatus
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1532,10 +1889,14 @@ export type RegistrationUncheckedUpdateManyWithoutSpecialtyInput = {
 
 export type RegistrationCountOutputType = {
   bpjsSubmissions: number
+  labOrders: number
+  invoices: number
 }
 
 export type RegistrationCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   bpjsSubmissions?: boolean | RegistrationCountOutputTypeCountBpjsSubmissionsArgs
+  labOrders?: boolean | RegistrationCountOutputTypeCountLabOrdersArgs
+  invoices?: boolean | RegistrationCountOutputTypeCountInvoicesArgs
 }
 
 /**
@@ -1555,11 +1916,26 @@ export type RegistrationCountOutputTypeCountBpjsSubmissionsArgs<ExtArgs extends 
   where?: Prisma.BpjsSubmissionWhereInput
 }
 
+/**
+ * RegistrationCountOutputType without action
+ */
+export type RegistrationCountOutputTypeCountLabOrdersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.LabOrderWhereInput
+}
+
+/**
+ * RegistrationCountOutputType without action
+ */
+export type RegistrationCountOutputTypeCountInvoicesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.InvoiceWhereInput
+}
+
 
 export type RegistrationSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   patientId?: boolean
   appointmentId?: boolean
+  type?: boolean
   status?: boolean
   queueNumber?: boolean
   queueDate?: boolean
@@ -1578,6 +1954,8 @@ export type RegistrationSelect<ExtArgs extends runtime.Types.Extensions.Internal
   createdBy?: boolean | Prisma.Registration$createdByArgs<ExtArgs>
   encounter?: boolean | Prisma.Registration$encounterArgs<ExtArgs>
   bpjsSubmissions?: boolean | Prisma.Registration$bpjsSubmissionsArgs<ExtArgs>
+  labOrders?: boolean | Prisma.Registration$labOrdersArgs<ExtArgs>
+  invoices?: boolean | Prisma.Registration$invoicesArgs<ExtArgs>
   _count?: boolean | Prisma.RegistrationCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["registration"]>
 
@@ -1585,6 +1963,7 @@ export type RegistrationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   id?: boolean
   patientId?: boolean
   appointmentId?: boolean
+  type?: boolean
   status?: boolean
   queueNumber?: boolean
   queueDate?: boolean
@@ -1607,6 +1986,7 @@ export type RegistrationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   id?: boolean
   patientId?: boolean
   appointmentId?: boolean
+  type?: boolean
   status?: boolean
   queueNumber?: boolean
   queueDate?: boolean
@@ -1629,6 +2009,7 @@ export type RegistrationSelectScalar = {
   id?: boolean
   patientId?: boolean
   appointmentId?: boolean
+  type?: boolean
   status?: boolean
   queueNumber?: boolean
   queueDate?: boolean
@@ -1643,7 +2024,7 @@ export type RegistrationSelectScalar = {
   deletedAt?: boolean
 }
 
-export type RegistrationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "patientId" | "appointmentId" | "status" | "queueNumber" | "queueDate" | "specialtyId" | "poliQueueNumber" | "registeredAt" | "checkedInAt" | "completedAt" | "createdById" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["registration"]>
+export type RegistrationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "patientId" | "appointmentId" | "type" | "status" | "queueNumber" | "queueDate" | "specialtyId" | "poliQueueNumber" | "registeredAt" | "checkedInAt" | "completedAt" | "createdById" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["registration"]>
 export type RegistrationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   patient?: boolean | Prisma.PatientProfileDefaultArgs<ExtArgs>
   appointment?: boolean | Prisma.Registration$appointmentArgs<ExtArgs>
@@ -1651,6 +2032,8 @@ export type RegistrationInclude<ExtArgs extends runtime.Types.Extensions.Interna
   createdBy?: boolean | Prisma.Registration$createdByArgs<ExtArgs>
   encounter?: boolean | Prisma.Registration$encounterArgs<ExtArgs>
   bpjsSubmissions?: boolean | Prisma.Registration$bpjsSubmissionsArgs<ExtArgs>
+  labOrders?: boolean | Prisma.Registration$labOrdersArgs<ExtArgs>
+  invoices?: boolean | Prisma.Registration$invoicesArgs<ExtArgs>
   _count?: boolean | Prisma.RegistrationCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type RegistrationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1675,11 +2058,18 @@ export type $RegistrationPayload<ExtArgs extends runtime.Types.Extensions.Intern
     createdBy: Prisma.$UserPayload<ExtArgs> | null
     encounter: Prisma.$EncounterPayload<ExtArgs> | null
     bpjsSubmissions: Prisma.$BpjsSubmissionPayload<ExtArgs>[]
+    labOrders: Prisma.$LabOrderPayload<ExtArgs>[]
+    invoices: Prisma.$InvoicePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     patientId: string
     appointmentId: string | null
+    /**
+     * What the visit is for. A LAB_ONLY visit skips the poli queue and never
+     * opens an encounter (P18-T10).
+     */
+    type: $Enums.RegistrationType
     status: $Enums.RegistrationStatus
     /**
      * Daily antrian ticket, allocated from `QueueCounter` when the
@@ -2120,6 +2510,8 @@ export interface Prisma__RegistrationClient<T, Null = never, ExtArgs extends run
   createdBy<T extends Prisma.Registration$createdByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Registration$createdByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   encounter<T extends Prisma.Registration$encounterArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Registration$encounterArgs<ExtArgs>>): Prisma.Prisma__EncounterClient<runtime.Types.Result.GetResult<Prisma.$EncounterPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   bpjsSubmissions<T extends Prisma.Registration$bpjsSubmissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Registration$bpjsSubmissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BpjsSubmissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  labOrders<T extends Prisma.Registration$labOrdersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Registration$labOrdersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LabOrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  invoices<T extends Prisma.Registration$invoicesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Registration$invoicesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvoicePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2152,6 +2544,7 @@ export interface RegistrationFieldRefs {
   readonly id: Prisma.FieldRef<"Registration", 'String'>
   readonly patientId: Prisma.FieldRef<"Registration", 'String'>
   readonly appointmentId: Prisma.FieldRef<"Registration", 'String'>
+  readonly type: Prisma.FieldRef<"Registration", 'RegistrationType'>
   readonly status: Prisma.FieldRef<"Registration", 'RegistrationStatus'>
   readonly queueNumber: Prisma.FieldRef<"Registration", 'Int'>
   readonly queueDate: Prisma.FieldRef<"Registration", 'DateTime'>
@@ -2662,6 +3055,54 @@ export type Registration$bpjsSubmissionsArgs<ExtArgs extends runtime.Types.Exten
   take?: number
   skip?: number
   distinct?: Prisma.BpjsSubmissionScalarFieldEnum | Prisma.BpjsSubmissionScalarFieldEnum[]
+}
+
+/**
+ * Registration.labOrders
+ */
+export type Registration$labOrdersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the LabOrder
+   */
+  select?: Prisma.LabOrderSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the LabOrder
+   */
+  omit?: Prisma.LabOrderOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LabOrderInclude<ExtArgs> | null
+  where?: Prisma.LabOrderWhereInput
+  orderBy?: Prisma.LabOrderOrderByWithRelationInput | Prisma.LabOrderOrderByWithRelationInput[]
+  cursor?: Prisma.LabOrderWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.LabOrderScalarFieldEnum | Prisma.LabOrderScalarFieldEnum[]
+}
+
+/**
+ * Registration.invoices
+ */
+export type Registration$invoicesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Invoice
+   */
+  select?: Prisma.InvoiceSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Invoice
+   */
+  omit?: Prisma.InvoiceOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.InvoiceInclude<ExtArgs> | null
+  where?: Prisma.InvoiceWhereInput
+  orderBy?: Prisma.InvoiceOrderByWithRelationInput | Prisma.InvoiceOrderByWithRelationInput[]
+  cursor?: Prisma.InvoiceWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.InvoiceScalarFieldEnum | Prisma.InvoiceScalarFieldEnum[]
 }
 
 /**

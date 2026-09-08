@@ -8683,6 +8683,7 @@ export const RegistrationScalarFieldEnum = {
   id: 'id',
   patientId: 'patientId',
   appointmentId: 'appointmentId',
+  type: 'type',
   status: 'status',
   queueNumber: 'queueNumber',
   queueDate: 'queueDate',
@@ -8989,6 +8990,7 @@ export const InvoiceScalarFieldEnum = {
   invoiceNumber: 'invoiceNumber',
   encounterId: 'encounterId',
   admissionId: 'admissionId',
+  registrationId: 'registrationId',
   patientId: 'patientId',
   status: 'status',
   totalAmount: 'totalAmount',
@@ -9849,8 +9851,13 @@ export type LabOrderCounterScalarFieldEnum = (typeof LabOrderCounterScalarFieldE
 export const LabOrderScalarFieldEnum = {
   id: 'id',
   encounterId: 'encounterId',
+  registrationId: 'registrationId',
+  source: 'source',
   patientId: 'patientId',
   orderedById: 'orderedById',
+  externalRequesterName: 'externalRequesterName',
+  externalRequesterFacility: 'externalRequesterFacility',
+  requestLetterDocumentId: 'requestLetterDocumentId',
   orderNumber: 'orderNumber',
   status: 'status',
   priority: 'priority',
@@ -10414,6 +10421,20 @@ export type EnumAppointmentStatusFieldRefInput<$PrismaModel> = FieldRefInputType
  * Reference to a field of type 'AppointmentStatus[]'
  */
 export type ListEnumAppointmentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AppointmentStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'RegistrationType'
+ */
+export type EnumRegistrationTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RegistrationType'>
+    
+
+
+/**
+ * Reference to a field of type 'RegistrationType[]'
+ */
+export type ListEnumRegistrationTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RegistrationType[]'>
     
 
 
@@ -11198,6 +11219,20 @@ export type EnumLabResultTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$Pr
  * Reference to a field of type 'LabResultType[]'
  */
 export type ListEnumLabResultTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'LabResultType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'LabOrderSource'
+ */
+export type EnumLabOrderSourceFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'LabOrderSource'>
+    
+
+
+/**
+ * Reference to a field of type 'LabOrderSource[]'
+ */
+export type ListEnumLabOrderSourceFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'LabOrderSource[]'>
     
 
 

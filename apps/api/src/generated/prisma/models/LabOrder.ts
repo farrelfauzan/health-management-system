@@ -44,8 +44,13 @@ export type LabOrderSumAggregateOutputType = {
 export type LabOrderMinAggregateOutputType = {
   id: string | null
   encounterId: string | null
+  registrationId: string | null
+  source: $Enums.LabOrderSource | null
   patientId: string | null
   orderedById: string | null
+  externalRequesterName: string | null
+  externalRequesterFacility: string | null
+  requestLetterDocumentId: string | null
   orderNumber: string | null
   status: $Enums.LabOrderStatus | null
   priority: $Enums.LabOrderPriority | null
@@ -68,8 +73,13 @@ export type LabOrderMinAggregateOutputType = {
 export type LabOrderMaxAggregateOutputType = {
   id: string | null
   encounterId: string | null
+  registrationId: string | null
+  source: $Enums.LabOrderSource | null
   patientId: string | null
   orderedById: string | null
+  externalRequesterName: string | null
+  externalRequesterFacility: string | null
+  requestLetterDocumentId: string | null
   orderNumber: string | null
   status: $Enums.LabOrderStatus | null
   priority: $Enums.LabOrderPriority | null
@@ -92,8 +102,13 @@ export type LabOrderMaxAggregateOutputType = {
 export type LabOrderCountAggregateOutputType = {
   id: number
   encounterId: number
+  registrationId: number
+  source: number
   patientId: number
   orderedById: number
+  externalRequesterName: number
+  externalRequesterFacility: number
+  requestLetterDocumentId: number
   orderNumber: number
   status: number
   priority: number
@@ -126,8 +141,13 @@ export type LabOrderSumAggregateInputType = {
 export type LabOrderMinAggregateInputType = {
   id?: true
   encounterId?: true
+  registrationId?: true
+  source?: true
   patientId?: true
   orderedById?: true
+  externalRequesterName?: true
+  externalRequesterFacility?: true
+  requestLetterDocumentId?: true
   orderNumber?: true
   status?: true
   priority?: true
@@ -150,8 +170,13 @@ export type LabOrderMinAggregateInputType = {
 export type LabOrderMaxAggregateInputType = {
   id?: true
   encounterId?: true
+  registrationId?: true
+  source?: true
   patientId?: true
   orderedById?: true
+  externalRequesterName?: true
+  externalRequesterFacility?: true
+  requestLetterDocumentId?: true
   orderNumber?: true
   status?: true
   priority?: true
@@ -174,8 +199,13 @@ export type LabOrderMaxAggregateInputType = {
 export type LabOrderCountAggregateInputType = {
   id?: true
   encounterId?: true
+  registrationId?: true
+  source?: true
   patientId?: true
   orderedById?: true
+  externalRequesterName?: true
+  externalRequesterFacility?: true
+  requestLetterDocumentId?: true
   orderNumber?: true
   status?: true
   priority?: true
@@ -284,9 +314,14 @@ export type LabOrderGroupByArgs<ExtArgs extends runtime.Types.Extensions.Interna
 
 export type LabOrderGroupByOutputType = {
   id: string
-  encounterId: string
+  encounterId: string | null
+  registrationId: string
+  source: $Enums.LabOrderSource
   patientId: string
-  orderedById: string
+  orderedById: string | null
+  externalRequesterName: string | null
+  externalRequesterFacility: string | null
+  requestLetterDocumentId: string | null
   orderNumber: string
   status: $Enums.LabOrderStatus
   priority: $Enums.LabOrderPriority
@@ -331,9 +366,14 @@ export type LabOrderWhereInput = {
   OR?: Prisma.LabOrderWhereInput[]
   NOT?: Prisma.LabOrderWhereInput | Prisma.LabOrderWhereInput[]
   id?: Prisma.UuidFilter<"LabOrder"> | string
-  encounterId?: Prisma.UuidFilter<"LabOrder"> | string
+  encounterId?: Prisma.UuidNullableFilter<"LabOrder"> | string | null
+  registrationId?: Prisma.UuidFilter<"LabOrder"> | string
+  source?: Prisma.EnumLabOrderSourceFilter<"LabOrder"> | $Enums.LabOrderSource
   patientId?: Prisma.UuidFilter<"LabOrder"> | string
-  orderedById?: Prisma.UuidFilter<"LabOrder"> | string
+  orderedById?: Prisma.UuidNullableFilter<"LabOrder"> | string | null
+  externalRequesterName?: Prisma.StringNullableFilter<"LabOrder"> | string | null
+  externalRequesterFacility?: Prisma.StringNullableFilter<"LabOrder"> | string | null
+  requestLetterDocumentId?: Prisma.UuidNullableFilter<"LabOrder"> | string | null
   orderNumber?: Prisma.StringFilter<"LabOrder"> | string
   status?: Prisma.EnumLabOrderStatusFilter<"LabOrder"> | $Enums.LabOrderStatus
   priority?: Prisma.EnumLabOrderPriorityFilter<"LabOrder"> | $Enums.LabOrderPriority
@@ -351,9 +391,11 @@ export type LabOrderWhereInput = {
   satusehatDiagnosticReportId?: Prisma.StringNullableFilter<"LabOrder"> | string | null
   createdAt?: Prisma.DateTimeFilter<"LabOrder"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"LabOrder"> | Date | string
-  encounter?: Prisma.XOR<Prisma.EncounterScalarRelationFilter, Prisma.EncounterWhereInput>
+  encounter?: Prisma.XOR<Prisma.EncounterNullableScalarRelationFilter, Prisma.EncounterWhereInput> | null
   patient?: Prisma.XOR<Prisma.PatientProfileScalarRelationFilter, Prisma.PatientProfileWhereInput>
-  orderedBy?: Prisma.XOR<Prisma.DoctorProfileScalarRelationFilter, Prisma.DoctorProfileWhereInput>
+  orderedBy?: Prisma.XOR<Prisma.DoctorProfileNullableScalarRelationFilter, Prisma.DoctorProfileWhereInput> | null
+  registration?: Prisma.XOR<Prisma.RegistrationScalarRelationFilter, Prisma.RegistrationWhereInput>
+  requestLetter?: Prisma.XOR<Prisma.DocumentNullableScalarRelationFilter, Prisma.DocumentWhereInput> | null
   items?: Prisma.LabOrderItemListRelationFilter
   specimens?: Prisma.LabSpecimenListRelationFilter
   invoiceItems?: Prisma.InvoiceItemListRelationFilter
@@ -364,9 +406,14 @@ export type LabOrderWhereInput = {
 
 export type LabOrderOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  encounterId?: Prisma.SortOrder
+  encounterId?: Prisma.SortOrderInput | Prisma.SortOrder
+  registrationId?: Prisma.SortOrder
+  source?: Prisma.SortOrder
   patientId?: Prisma.SortOrder
-  orderedById?: Prisma.SortOrder
+  orderedById?: Prisma.SortOrderInput | Prisma.SortOrder
+  externalRequesterName?: Prisma.SortOrderInput | Prisma.SortOrder
+  externalRequesterFacility?: Prisma.SortOrderInput | Prisma.SortOrder
+  requestLetterDocumentId?: Prisma.SortOrderInput | Prisma.SortOrder
   orderNumber?: Prisma.SortOrder
   status?: Prisma.SortOrder
   priority?: Prisma.SortOrder
@@ -387,6 +434,8 @@ export type LabOrderOrderByWithRelationInput = {
   encounter?: Prisma.EncounterOrderByWithRelationInput
   patient?: Prisma.PatientProfileOrderByWithRelationInput
   orderedBy?: Prisma.DoctorProfileOrderByWithRelationInput
+  registration?: Prisma.RegistrationOrderByWithRelationInput
+  requestLetter?: Prisma.DocumentOrderByWithRelationInput
   items?: Prisma.LabOrderItemOrderByRelationAggregateInput
   specimens?: Prisma.LabSpecimenOrderByRelationAggregateInput
   invoiceItems?: Prisma.InvoiceItemOrderByRelationAggregateInput
@@ -397,14 +446,19 @@ export type LabOrderOrderByWithRelationInput = {
 
 export type LabOrderWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  requestLetterDocumentId?: string
   orderNumber?: string
   requestDocumentId?: string
   AND?: Prisma.LabOrderWhereInput | Prisma.LabOrderWhereInput[]
   OR?: Prisma.LabOrderWhereInput[]
   NOT?: Prisma.LabOrderWhereInput | Prisma.LabOrderWhereInput[]
-  encounterId?: Prisma.UuidFilter<"LabOrder"> | string
+  encounterId?: Prisma.UuidNullableFilter<"LabOrder"> | string | null
+  registrationId?: Prisma.UuidFilter<"LabOrder"> | string
+  source?: Prisma.EnumLabOrderSourceFilter<"LabOrder"> | $Enums.LabOrderSource
   patientId?: Prisma.UuidFilter<"LabOrder"> | string
-  orderedById?: Prisma.UuidFilter<"LabOrder"> | string
+  orderedById?: Prisma.UuidNullableFilter<"LabOrder"> | string | null
+  externalRequesterName?: Prisma.StringNullableFilter<"LabOrder"> | string | null
+  externalRequesterFacility?: Prisma.StringNullableFilter<"LabOrder"> | string | null
   status?: Prisma.EnumLabOrderStatusFilter<"LabOrder"> | $Enums.LabOrderStatus
   priority?: Prisma.EnumLabOrderPriorityFilter<"LabOrder"> | $Enums.LabOrderPriority
   clinicalNotes?: Prisma.StringNullableFilter<"LabOrder"> | string | null
@@ -420,22 +474,29 @@ export type LabOrderWhereUniqueInput = Prisma.AtLeast<{
   satusehatDiagnosticReportId?: Prisma.StringNullableFilter<"LabOrder"> | string | null
   createdAt?: Prisma.DateTimeFilter<"LabOrder"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"LabOrder"> | Date | string
-  encounter?: Prisma.XOR<Prisma.EncounterScalarRelationFilter, Prisma.EncounterWhereInput>
+  encounter?: Prisma.XOR<Prisma.EncounterNullableScalarRelationFilter, Prisma.EncounterWhereInput> | null
   patient?: Prisma.XOR<Prisma.PatientProfileScalarRelationFilter, Prisma.PatientProfileWhereInput>
-  orderedBy?: Prisma.XOR<Prisma.DoctorProfileScalarRelationFilter, Prisma.DoctorProfileWhereInput>
+  orderedBy?: Prisma.XOR<Prisma.DoctorProfileNullableScalarRelationFilter, Prisma.DoctorProfileWhereInput> | null
+  registration?: Prisma.XOR<Prisma.RegistrationScalarRelationFilter, Prisma.RegistrationWhereInput>
+  requestLetter?: Prisma.XOR<Prisma.DocumentNullableScalarRelationFilter, Prisma.DocumentWhereInput> | null
   items?: Prisma.LabOrderItemListRelationFilter
   specimens?: Prisma.LabSpecimenListRelationFilter
   invoiceItems?: Prisma.InvoiceItemListRelationFilter
   requestDocument?: Prisma.XOR<Prisma.DocumentNullableScalarRelationFilter, Prisma.DocumentWhereInput> | null
   reports?: Prisma.LabReportListRelationFilter
   satusehatSubmissions?: Prisma.SatusehatSubmissionListRelationFilter
-}, "id" | "orderNumber" | "requestDocumentId">
+}, "id" | "requestLetterDocumentId" | "orderNumber" | "requestDocumentId">
 
 export type LabOrderOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  encounterId?: Prisma.SortOrder
+  encounterId?: Prisma.SortOrderInput | Prisma.SortOrder
+  registrationId?: Prisma.SortOrder
+  source?: Prisma.SortOrder
   patientId?: Prisma.SortOrder
-  orderedById?: Prisma.SortOrder
+  orderedById?: Prisma.SortOrderInput | Prisma.SortOrder
+  externalRequesterName?: Prisma.SortOrderInput | Prisma.SortOrder
+  externalRequesterFacility?: Prisma.SortOrderInput | Prisma.SortOrder
+  requestLetterDocumentId?: Prisma.SortOrderInput | Prisma.SortOrder
   orderNumber?: Prisma.SortOrder
   status?: Prisma.SortOrder
   priority?: Prisma.SortOrder
@@ -465,9 +526,14 @@ export type LabOrderScalarWhereWithAggregatesInput = {
   OR?: Prisma.LabOrderScalarWhereWithAggregatesInput[]
   NOT?: Prisma.LabOrderScalarWhereWithAggregatesInput | Prisma.LabOrderScalarWhereWithAggregatesInput[]
   id?: Prisma.UuidWithAggregatesFilter<"LabOrder"> | string
-  encounterId?: Prisma.UuidWithAggregatesFilter<"LabOrder"> | string
+  encounterId?: Prisma.UuidNullableWithAggregatesFilter<"LabOrder"> | string | null
+  registrationId?: Prisma.UuidWithAggregatesFilter<"LabOrder"> | string
+  source?: Prisma.EnumLabOrderSourceWithAggregatesFilter<"LabOrder"> | $Enums.LabOrderSource
   patientId?: Prisma.UuidWithAggregatesFilter<"LabOrder"> | string
-  orderedById?: Prisma.UuidWithAggregatesFilter<"LabOrder"> | string
+  orderedById?: Prisma.UuidNullableWithAggregatesFilter<"LabOrder"> | string | null
+  externalRequesterName?: Prisma.StringNullableWithAggregatesFilter<"LabOrder"> | string | null
+  externalRequesterFacility?: Prisma.StringNullableWithAggregatesFilter<"LabOrder"> | string | null
+  requestLetterDocumentId?: Prisma.UuidNullableWithAggregatesFilter<"LabOrder"> | string | null
   orderNumber?: Prisma.StringWithAggregatesFilter<"LabOrder"> | string
   status?: Prisma.EnumLabOrderStatusWithAggregatesFilter<"LabOrder"> | $Enums.LabOrderStatus
   priority?: Prisma.EnumLabOrderPriorityWithAggregatesFilter<"LabOrder"> | $Enums.LabOrderPriority
@@ -489,6 +555,9 @@ export type LabOrderScalarWhereWithAggregatesInput = {
 
 export type LabOrderCreateInput = {
   id?: string
+  source?: $Enums.LabOrderSource
+  externalRequesterName?: string | null
+  externalRequesterFacility?: string | null
   orderNumber: string
   status?: $Enums.LabOrderStatus
   priority?: $Enums.LabOrderPriority
@@ -505,9 +574,11 @@ export type LabOrderCreateInput = {
   satusehatDiagnosticReportId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  encounter: Prisma.EncounterCreateNestedOneWithoutLabOrdersInput
+  encounter?: Prisma.EncounterCreateNestedOneWithoutLabOrdersInput
   patient: Prisma.PatientProfileCreateNestedOneWithoutLabOrdersInput
-  orderedBy: Prisma.DoctorProfileCreateNestedOneWithoutLabOrdersInput
+  orderedBy?: Prisma.DoctorProfileCreateNestedOneWithoutLabOrdersInput
+  registration: Prisma.RegistrationCreateNestedOneWithoutLabOrdersInput
+  requestLetter?: Prisma.DocumentCreateNestedOneWithoutLabOrderRequestLetterInput
   items?: Prisma.LabOrderItemCreateNestedManyWithoutLabOrderInput
   specimens?: Prisma.LabSpecimenCreateNestedManyWithoutLabOrderInput
   invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutLabOrderInput
@@ -518,9 +589,14 @@ export type LabOrderCreateInput = {
 
 export type LabOrderUncheckedCreateInput = {
   id?: string
-  encounterId: string
+  encounterId?: string | null
+  registrationId: string
+  source?: $Enums.LabOrderSource
   patientId: string
-  orderedById: string
+  orderedById?: string | null
+  externalRequesterName?: string | null
+  externalRequesterFacility?: string | null
+  requestLetterDocumentId?: string | null
   orderNumber: string
   status?: $Enums.LabOrderStatus
   priority?: $Enums.LabOrderPriority
@@ -547,6 +623,9 @@ export type LabOrderUncheckedCreateInput = {
 
 export type LabOrderUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumLabOrderSourceFieldUpdateOperationsInput | $Enums.LabOrderSource
+  externalRequesterName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  externalRequesterFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderNumber?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumLabOrderStatusFieldUpdateOperationsInput | $Enums.LabOrderStatus
   priority?: Prisma.EnumLabOrderPriorityFieldUpdateOperationsInput | $Enums.LabOrderPriority
@@ -563,9 +642,11 @@ export type LabOrderUpdateInput = {
   satusehatDiagnosticReportId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  encounter?: Prisma.EncounterUpdateOneRequiredWithoutLabOrdersNestedInput
+  encounter?: Prisma.EncounterUpdateOneWithoutLabOrdersNestedInput
   patient?: Prisma.PatientProfileUpdateOneRequiredWithoutLabOrdersNestedInput
-  orderedBy?: Prisma.DoctorProfileUpdateOneRequiredWithoutLabOrdersNestedInput
+  orderedBy?: Prisma.DoctorProfileUpdateOneWithoutLabOrdersNestedInput
+  registration?: Prisma.RegistrationUpdateOneRequiredWithoutLabOrdersNestedInput
+  requestLetter?: Prisma.DocumentUpdateOneWithoutLabOrderRequestLetterNestedInput
   items?: Prisma.LabOrderItemUpdateManyWithoutLabOrderNestedInput
   specimens?: Prisma.LabSpecimenUpdateManyWithoutLabOrderNestedInput
   invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutLabOrderNestedInput
@@ -576,9 +657,14 @@ export type LabOrderUpdateInput = {
 
 export type LabOrderUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  encounterId?: Prisma.StringFieldUpdateOperationsInput | string
+  encounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  registrationId?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumLabOrderSourceFieldUpdateOperationsInput | $Enums.LabOrderSource
   patientId?: Prisma.StringFieldUpdateOperationsInput | string
-  orderedById?: Prisma.StringFieldUpdateOperationsInput | string
+  orderedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  externalRequesterName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  externalRequesterFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestLetterDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderNumber?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumLabOrderStatusFieldUpdateOperationsInput | $Enums.LabOrderStatus
   priority?: Prisma.EnumLabOrderPriorityFieldUpdateOperationsInput | $Enums.LabOrderPriority
@@ -605,9 +691,14 @@ export type LabOrderUncheckedUpdateInput = {
 
 export type LabOrderCreateManyInput = {
   id?: string
-  encounterId: string
+  encounterId?: string | null
+  registrationId: string
+  source?: $Enums.LabOrderSource
   patientId: string
-  orderedById: string
+  orderedById?: string | null
+  externalRequesterName?: string | null
+  externalRequesterFacility?: string | null
+  requestLetterDocumentId?: string | null
   orderNumber: string
   status?: $Enums.LabOrderStatus
   priority?: $Enums.LabOrderPriority
@@ -629,6 +720,9 @@ export type LabOrderCreateManyInput = {
 
 export type LabOrderUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumLabOrderSourceFieldUpdateOperationsInput | $Enums.LabOrderSource
+  externalRequesterName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  externalRequesterFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderNumber?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumLabOrderStatusFieldUpdateOperationsInput | $Enums.LabOrderStatus
   priority?: Prisma.EnumLabOrderPriorityFieldUpdateOperationsInput | $Enums.LabOrderPriority
@@ -649,9 +743,14 @@ export type LabOrderUpdateManyMutationInput = {
 
 export type LabOrderUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  encounterId?: Prisma.StringFieldUpdateOperationsInput | string
+  encounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  registrationId?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumLabOrderSourceFieldUpdateOperationsInput | $Enums.LabOrderSource
   patientId?: Prisma.StringFieldUpdateOperationsInput | string
-  orderedById?: Prisma.StringFieldUpdateOperationsInput | string
+  orderedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  externalRequesterName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  externalRequesterFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestLetterDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderNumber?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumLabOrderStatusFieldUpdateOperationsInput | $Enums.LabOrderStatus
   priority?: Prisma.EnumLabOrderPriorityFieldUpdateOperationsInput | $Enums.LabOrderPriority
@@ -689,8 +788,13 @@ export type LabOrderNullableScalarRelationFilter = {
 export type LabOrderCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   encounterId?: Prisma.SortOrder
+  registrationId?: Prisma.SortOrder
+  source?: Prisma.SortOrder
   patientId?: Prisma.SortOrder
   orderedById?: Prisma.SortOrder
+  externalRequesterName?: Prisma.SortOrder
+  externalRequesterFacility?: Prisma.SortOrder
+  requestLetterDocumentId?: Prisma.SortOrder
   orderNumber?: Prisma.SortOrder
   status?: Prisma.SortOrder
   priority?: Prisma.SortOrder
@@ -717,8 +821,13 @@ export type LabOrderAvgOrderByAggregateInput = {
 export type LabOrderMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   encounterId?: Prisma.SortOrder
+  registrationId?: Prisma.SortOrder
+  source?: Prisma.SortOrder
   patientId?: Prisma.SortOrder
   orderedById?: Prisma.SortOrder
+  externalRequesterName?: Prisma.SortOrder
+  externalRequesterFacility?: Prisma.SortOrder
+  requestLetterDocumentId?: Prisma.SortOrder
   orderNumber?: Prisma.SortOrder
   status?: Prisma.SortOrder
   priority?: Prisma.SortOrder
@@ -741,8 +850,13 @@ export type LabOrderMaxOrderByAggregateInput = {
 export type LabOrderMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   encounterId?: Prisma.SortOrder
+  registrationId?: Prisma.SortOrder
+  source?: Prisma.SortOrder
   patientId?: Prisma.SortOrder
   orderedById?: Prisma.SortOrder
+  externalRequesterName?: Prisma.SortOrder
+  externalRequesterFacility?: Prisma.SortOrder
+  requestLetterDocumentId?: Prisma.SortOrder
   orderNumber?: Prisma.SortOrder
   status?: Prisma.SortOrder
   priority?: Prisma.SortOrder
@@ -855,6 +969,48 @@ export type LabOrderUncheckedUpdateManyWithoutOrderedByNestedInput = {
   deleteMany?: Prisma.LabOrderScalarWhereInput | Prisma.LabOrderScalarWhereInput[]
 }
 
+export type LabOrderCreateNestedManyWithoutRegistrationInput = {
+  create?: Prisma.XOR<Prisma.LabOrderCreateWithoutRegistrationInput, Prisma.LabOrderUncheckedCreateWithoutRegistrationInput> | Prisma.LabOrderCreateWithoutRegistrationInput[] | Prisma.LabOrderUncheckedCreateWithoutRegistrationInput[]
+  connectOrCreate?: Prisma.LabOrderCreateOrConnectWithoutRegistrationInput | Prisma.LabOrderCreateOrConnectWithoutRegistrationInput[]
+  createMany?: Prisma.LabOrderCreateManyRegistrationInputEnvelope
+  connect?: Prisma.LabOrderWhereUniqueInput | Prisma.LabOrderWhereUniqueInput[]
+}
+
+export type LabOrderUncheckedCreateNestedManyWithoutRegistrationInput = {
+  create?: Prisma.XOR<Prisma.LabOrderCreateWithoutRegistrationInput, Prisma.LabOrderUncheckedCreateWithoutRegistrationInput> | Prisma.LabOrderCreateWithoutRegistrationInput[] | Prisma.LabOrderUncheckedCreateWithoutRegistrationInput[]
+  connectOrCreate?: Prisma.LabOrderCreateOrConnectWithoutRegistrationInput | Prisma.LabOrderCreateOrConnectWithoutRegistrationInput[]
+  createMany?: Prisma.LabOrderCreateManyRegistrationInputEnvelope
+  connect?: Prisma.LabOrderWhereUniqueInput | Prisma.LabOrderWhereUniqueInput[]
+}
+
+export type LabOrderUpdateManyWithoutRegistrationNestedInput = {
+  create?: Prisma.XOR<Prisma.LabOrderCreateWithoutRegistrationInput, Prisma.LabOrderUncheckedCreateWithoutRegistrationInput> | Prisma.LabOrderCreateWithoutRegistrationInput[] | Prisma.LabOrderUncheckedCreateWithoutRegistrationInput[]
+  connectOrCreate?: Prisma.LabOrderCreateOrConnectWithoutRegistrationInput | Prisma.LabOrderCreateOrConnectWithoutRegistrationInput[]
+  upsert?: Prisma.LabOrderUpsertWithWhereUniqueWithoutRegistrationInput | Prisma.LabOrderUpsertWithWhereUniqueWithoutRegistrationInput[]
+  createMany?: Prisma.LabOrderCreateManyRegistrationInputEnvelope
+  set?: Prisma.LabOrderWhereUniqueInput | Prisma.LabOrderWhereUniqueInput[]
+  disconnect?: Prisma.LabOrderWhereUniqueInput | Prisma.LabOrderWhereUniqueInput[]
+  delete?: Prisma.LabOrderWhereUniqueInput | Prisma.LabOrderWhereUniqueInput[]
+  connect?: Prisma.LabOrderWhereUniqueInput | Prisma.LabOrderWhereUniqueInput[]
+  update?: Prisma.LabOrderUpdateWithWhereUniqueWithoutRegistrationInput | Prisma.LabOrderUpdateWithWhereUniqueWithoutRegistrationInput[]
+  updateMany?: Prisma.LabOrderUpdateManyWithWhereWithoutRegistrationInput | Prisma.LabOrderUpdateManyWithWhereWithoutRegistrationInput[]
+  deleteMany?: Prisma.LabOrderScalarWhereInput | Prisma.LabOrderScalarWhereInput[]
+}
+
+export type LabOrderUncheckedUpdateManyWithoutRegistrationNestedInput = {
+  create?: Prisma.XOR<Prisma.LabOrderCreateWithoutRegistrationInput, Prisma.LabOrderUncheckedCreateWithoutRegistrationInput> | Prisma.LabOrderCreateWithoutRegistrationInput[] | Prisma.LabOrderUncheckedCreateWithoutRegistrationInput[]
+  connectOrCreate?: Prisma.LabOrderCreateOrConnectWithoutRegistrationInput | Prisma.LabOrderCreateOrConnectWithoutRegistrationInput[]
+  upsert?: Prisma.LabOrderUpsertWithWhereUniqueWithoutRegistrationInput | Prisma.LabOrderUpsertWithWhereUniqueWithoutRegistrationInput[]
+  createMany?: Prisma.LabOrderCreateManyRegistrationInputEnvelope
+  set?: Prisma.LabOrderWhereUniqueInput | Prisma.LabOrderWhereUniqueInput[]
+  disconnect?: Prisma.LabOrderWhereUniqueInput | Prisma.LabOrderWhereUniqueInput[]
+  delete?: Prisma.LabOrderWhereUniqueInput | Prisma.LabOrderWhereUniqueInput[]
+  connect?: Prisma.LabOrderWhereUniqueInput | Prisma.LabOrderWhereUniqueInput[]
+  update?: Prisma.LabOrderUpdateWithWhereUniqueWithoutRegistrationInput | Prisma.LabOrderUpdateWithWhereUniqueWithoutRegistrationInput[]
+  updateMany?: Prisma.LabOrderUpdateManyWithWhereWithoutRegistrationInput | Prisma.LabOrderUpdateManyWithWhereWithoutRegistrationInput[]
+  deleteMany?: Prisma.LabOrderScalarWhereInput | Prisma.LabOrderScalarWhereInput[]
+}
+
 export type LabOrderCreateNestedManyWithoutEncounterInput = {
   create?: Prisma.XOR<Prisma.LabOrderCreateWithoutEncounterInput, Prisma.LabOrderUncheckedCreateWithoutEncounterInput> | Prisma.LabOrderCreateWithoutEncounterInput[] | Prisma.LabOrderUncheckedCreateWithoutEncounterInput[]
   connectOrCreate?: Prisma.LabOrderCreateOrConnectWithoutEncounterInput | Prisma.LabOrderCreateOrConnectWithoutEncounterInput[]
@@ -935,9 +1091,21 @@ export type LabOrderCreateNestedOneWithoutRequestDocumentInput = {
   connect?: Prisma.LabOrderWhereUniqueInput
 }
 
+export type LabOrderCreateNestedOneWithoutRequestLetterInput = {
+  create?: Prisma.XOR<Prisma.LabOrderCreateWithoutRequestLetterInput, Prisma.LabOrderUncheckedCreateWithoutRequestLetterInput>
+  connectOrCreate?: Prisma.LabOrderCreateOrConnectWithoutRequestLetterInput
+  connect?: Prisma.LabOrderWhereUniqueInput
+}
+
 export type LabOrderUncheckedCreateNestedOneWithoutRequestDocumentInput = {
   create?: Prisma.XOR<Prisma.LabOrderCreateWithoutRequestDocumentInput, Prisma.LabOrderUncheckedCreateWithoutRequestDocumentInput>
   connectOrCreate?: Prisma.LabOrderCreateOrConnectWithoutRequestDocumentInput
+  connect?: Prisma.LabOrderWhereUniqueInput
+}
+
+export type LabOrderUncheckedCreateNestedOneWithoutRequestLetterInput = {
+  create?: Prisma.XOR<Prisma.LabOrderCreateWithoutRequestLetterInput, Prisma.LabOrderUncheckedCreateWithoutRequestLetterInput>
+  connectOrCreate?: Prisma.LabOrderCreateOrConnectWithoutRequestLetterInput
   connect?: Prisma.LabOrderWhereUniqueInput
 }
 
@@ -951,6 +1119,16 @@ export type LabOrderUpdateOneWithoutRequestDocumentNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.LabOrderUpdateToOneWithWhereWithoutRequestDocumentInput, Prisma.LabOrderUpdateWithoutRequestDocumentInput>, Prisma.LabOrderUncheckedUpdateWithoutRequestDocumentInput>
 }
 
+export type LabOrderUpdateOneWithoutRequestLetterNestedInput = {
+  create?: Prisma.XOR<Prisma.LabOrderCreateWithoutRequestLetterInput, Prisma.LabOrderUncheckedCreateWithoutRequestLetterInput>
+  connectOrCreate?: Prisma.LabOrderCreateOrConnectWithoutRequestLetterInput
+  upsert?: Prisma.LabOrderUpsertWithoutRequestLetterInput
+  disconnect?: Prisma.LabOrderWhereInput | boolean
+  delete?: Prisma.LabOrderWhereInput | boolean
+  connect?: Prisma.LabOrderWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.LabOrderUpdateToOneWithWhereWithoutRequestLetterInput, Prisma.LabOrderUpdateWithoutRequestLetterInput>, Prisma.LabOrderUncheckedUpdateWithoutRequestLetterInput>
+}
+
 export type LabOrderUncheckedUpdateOneWithoutRequestDocumentNestedInput = {
   create?: Prisma.XOR<Prisma.LabOrderCreateWithoutRequestDocumentInput, Prisma.LabOrderUncheckedCreateWithoutRequestDocumentInput>
   connectOrCreate?: Prisma.LabOrderCreateOrConnectWithoutRequestDocumentInput
@@ -959,6 +1137,20 @@ export type LabOrderUncheckedUpdateOneWithoutRequestDocumentNestedInput = {
   delete?: Prisma.LabOrderWhereInput | boolean
   connect?: Prisma.LabOrderWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.LabOrderUpdateToOneWithWhereWithoutRequestDocumentInput, Prisma.LabOrderUpdateWithoutRequestDocumentInput>, Prisma.LabOrderUncheckedUpdateWithoutRequestDocumentInput>
+}
+
+export type LabOrderUncheckedUpdateOneWithoutRequestLetterNestedInput = {
+  create?: Prisma.XOR<Prisma.LabOrderCreateWithoutRequestLetterInput, Prisma.LabOrderUncheckedCreateWithoutRequestLetterInput>
+  connectOrCreate?: Prisma.LabOrderCreateOrConnectWithoutRequestLetterInput
+  upsert?: Prisma.LabOrderUpsertWithoutRequestLetterInput
+  disconnect?: Prisma.LabOrderWhereInput | boolean
+  delete?: Prisma.LabOrderWhereInput | boolean
+  connect?: Prisma.LabOrderWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.LabOrderUpdateToOneWithWhereWithoutRequestLetterInput, Prisma.LabOrderUpdateWithoutRequestLetterInput>, Prisma.LabOrderUncheckedUpdateWithoutRequestLetterInput>
+}
+
+export type EnumLabOrderSourceFieldUpdateOperationsInput = {
+  set?: $Enums.LabOrderSource
 }
 
 export type EnumLabOrderStatusFieldUpdateOperationsInput = {
@@ -1013,6 +1205,9 @@ export type LabOrderUpdateOneRequiredWithoutReportsNestedInput = {
 
 export type LabOrderCreateWithoutPatientInput = {
   id?: string
+  source?: $Enums.LabOrderSource
+  externalRequesterName?: string | null
+  externalRequesterFacility?: string | null
   orderNumber: string
   status?: $Enums.LabOrderStatus
   priority?: $Enums.LabOrderPriority
@@ -1029,8 +1224,10 @@ export type LabOrderCreateWithoutPatientInput = {
   satusehatDiagnosticReportId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  encounter: Prisma.EncounterCreateNestedOneWithoutLabOrdersInput
-  orderedBy: Prisma.DoctorProfileCreateNestedOneWithoutLabOrdersInput
+  encounter?: Prisma.EncounterCreateNestedOneWithoutLabOrdersInput
+  orderedBy?: Prisma.DoctorProfileCreateNestedOneWithoutLabOrdersInput
+  registration: Prisma.RegistrationCreateNestedOneWithoutLabOrdersInput
+  requestLetter?: Prisma.DocumentCreateNestedOneWithoutLabOrderRequestLetterInput
   items?: Prisma.LabOrderItemCreateNestedManyWithoutLabOrderInput
   specimens?: Prisma.LabSpecimenCreateNestedManyWithoutLabOrderInput
   invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutLabOrderInput
@@ -1041,8 +1238,13 @@ export type LabOrderCreateWithoutPatientInput = {
 
 export type LabOrderUncheckedCreateWithoutPatientInput = {
   id?: string
-  encounterId: string
-  orderedById: string
+  encounterId?: string | null
+  registrationId: string
+  source?: $Enums.LabOrderSource
+  orderedById?: string | null
+  externalRequesterName?: string | null
+  externalRequesterFacility?: string | null
+  requestLetterDocumentId?: string | null
   orderNumber: string
   status?: $Enums.LabOrderStatus
   priority?: $Enums.LabOrderPriority
@@ -1098,9 +1300,14 @@ export type LabOrderScalarWhereInput = {
   OR?: Prisma.LabOrderScalarWhereInput[]
   NOT?: Prisma.LabOrderScalarWhereInput | Prisma.LabOrderScalarWhereInput[]
   id?: Prisma.UuidFilter<"LabOrder"> | string
-  encounterId?: Prisma.UuidFilter<"LabOrder"> | string
+  encounterId?: Prisma.UuidNullableFilter<"LabOrder"> | string | null
+  registrationId?: Prisma.UuidFilter<"LabOrder"> | string
+  source?: Prisma.EnumLabOrderSourceFilter<"LabOrder"> | $Enums.LabOrderSource
   patientId?: Prisma.UuidFilter<"LabOrder"> | string
-  orderedById?: Prisma.UuidFilter<"LabOrder"> | string
+  orderedById?: Prisma.UuidNullableFilter<"LabOrder"> | string | null
+  externalRequesterName?: Prisma.StringNullableFilter<"LabOrder"> | string | null
+  externalRequesterFacility?: Prisma.StringNullableFilter<"LabOrder"> | string | null
+  requestLetterDocumentId?: Prisma.UuidNullableFilter<"LabOrder"> | string | null
   orderNumber?: Prisma.StringFilter<"LabOrder"> | string
   status?: Prisma.EnumLabOrderStatusFilter<"LabOrder"> | $Enums.LabOrderStatus
   priority?: Prisma.EnumLabOrderPriorityFilter<"LabOrder"> | $Enums.LabOrderPriority
@@ -1122,6 +1329,9 @@ export type LabOrderScalarWhereInput = {
 
 export type LabOrderCreateWithoutOrderedByInput = {
   id?: string
+  source?: $Enums.LabOrderSource
+  externalRequesterName?: string | null
+  externalRequesterFacility?: string | null
   orderNumber: string
   status?: $Enums.LabOrderStatus
   priority?: $Enums.LabOrderPriority
@@ -1138,8 +1348,10 @@ export type LabOrderCreateWithoutOrderedByInput = {
   satusehatDiagnosticReportId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  encounter: Prisma.EncounterCreateNestedOneWithoutLabOrdersInput
+  encounter?: Prisma.EncounterCreateNestedOneWithoutLabOrdersInput
   patient: Prisma.PatientProfileCreateNestedOneWithoutLabOrdersInput
+  registration: Prisma.RegistrationCreateNestedOneWithoutLabOrdersInput
+  requestLetter?: Prisma.DocumentCreateNestedOneWithoutLabOrderRequestLetterInput
   items?: Prisma.LabOrderItemCreateNestedManyWithoutLabOrderInput
   specimens?: Prisma.LabSpecimenCreateNestedManyWithoutLabOrderInput
   invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutLabOrderInput
@@ -1150,8 +1362,13 @@ export type LabOrderCreateWithoutOrderedByInput = {
 
 export type LabOrderUncheckedCreateWithoutOrderedByInput = {
   id?: string
-  encounterId: string
+  encounterId?: string | null
+  registrationId: string
+  source?: $Enums.LabOrderSource
   patientId: string
+  externalRequesterName?: string | null
+  externalRequesterFacility?: string | null
+  requestLetterDocumentId?: string | null
   orderNumber: string
   status?: $Enums.LabOrderStatus
   priority?: $Enums.LabOrderPriority
@@ -1202,8 +1419,103 @@ export type LabOrderUpdateManyWithWhereWithoutOrderedByInput = {
   data: Prisma.XOR<Prisma.LabOrderUpdateManyMutationInput, Prisma.LabOrderUncheckedUpdateManyWithoutOrderedByInput>
 }
 
+export type LabOrderCreateWithoutRegistrationInput = {
+  id?: string
+  source?: $Enums.LabOrderSource
+  externalRequesterName?: string | null
+  externalRequesterFacility?: string | null
+  orderNumber: string
+  status?: $Enums.LabOrderStatus
+  priority?: $Enums.LabOrderPriority
+  clinicalNotes?: string | null
+  isFasting?: boolean
+  fulfilmentSite?: $Enums.FulfilmentSite
+  chargeMode?: $Enums.ChargeMode
+  externalFacilityName?: string | null
+  recollectCount?: number
+  orderedAt?: Date | string
+  cancelledAt?: Date | string | null
+  cancelReason?: string | null
+  releasedAt?: Date | string | null
+  satusehatDiagnosticReportId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  encounter?: Prisma.EncounterCreateNestedOneWithoutLabOrdersInput
+  patient: Prisma.PatientProfileCreateNestedOneWithoutLabOrdersInput
+  orderedBy?: Prisma.DoctorProfileCreateNestedOneWithoutLabOrdersInput
+  requestLetter?: Prisma.DocumentCreateNestedOneWithoutLabOrderRequestLetterInput
+  items?: Prisma.LabOrderItemCreateNestedManyWithoutLabOrderInput
+  specimens?: Prisma.LabSpecimenCreateNestedManyWithoutLabOrderInput
+  invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutLabOrderInput
+  requestDocument?: Prisma.DocumentCreateNestedOneWithoutLabOrderInput
+  reports?: Prisma.LabReportCreateNestedManyWithoutLabOrderInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionCreateNestedManyWithoutLabOrderInput
+}
+
+export type LabOrderUncheckedCreateWithoutRegistrationInput = {
+  id?: string
+  encounterId?: string | null
+  source?: $Enums.LabOrderSource
+  patientId: string
+  orderedById?: string | null
+  externalRequesterName?: string | null
+  externalRequesterFacility?: string | null
+  requestLetterDocumentId?: string | null
+  orderNumber: string
+  status?: $Enums.LabOrderStatus
+  priority?: $Enums.LabOrderPriority
+  clinicalNotes?: string | null
+  isFasting?: boolean
+  fulfilmentSite?: $Enums.FulfilmentSite
+  chargeMode?: $Enums.ChargeMode
+  externalFacilityName?: string | null
+  requestDocumentId?: string | null
+  recollectCount?: number
+  orderedAt?: Date | string
+  cancelledAt?: Date | string | null
+  cancelReason?: string | null
+  releasedAt?: Date | string | null
+  satusehatDiagnosticReportId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  items?: Prisma.LabOrderItemUncheckedCreateNestedManyWithoutLabOrderInput
+  specimens?: Prisma.LabSpecimenUncheckedCreateNestedManyWithoutLabOrderInput
+  invoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutLabOrderInput
+  reports?: Prisma.LabReportUncheckedCreateNestedManyWithoutLabOrderInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionUncheckedCreateNestedManyWithoutLabOrderInput
+}
+
+export type LabOrderCreateOrConnectWithoutRegistrationInput = {
+  where: Prisma.LabOrderWhereUniqueInput
+  create: Prisma.XOR<Prisma.LabOrderCreateWithoutRegistrationInput, Prisma.LabOrderUncheckedCreateWithoutRegistrationInput>
+}
+
+export type LabOrderCreateManyRegistrationInputEnvelope = {
+  data: Prisma.LabOrderCreateManyRegistrationInput | Prisma.LabOrderCreateManyRegistrationInput[]
+  skipDuplicates?: boolean
+}
+
+export type LabOrderUpsertWithWhereUniqueWithoutRegistrationInput = {
+  where: Prisma.LabOrderWhereUniqueInput
+  update: Prisma.XOR<Prisma.LabOrderUpdateWithoutRegistrationInput, Prisma.LabOrderUncheckedUpdateWithoutRegistrationInput>
+  create: Prisma.XOR<Prisma.LabOrderCreateWithoutRegistrationInput, Prisma.LabOrderUncheckedCreateWithoutRegistrationInput>
+}
+
+export type LabOrderUpdateWithWhereUniqueWithoutRegistrationInput = {
+  where: Prisma.LabOrderWhereUniqueInput
+  data: Prisma.XOR<Prisma.LabOrderUpdateWithoutRegistrationInput, Prisma.LabOrderUncheckedUpdateWithoutRegistrationInput>
+}
+
+export type LabOrderUpdateManyWithWhereWithoutRegistrationInput = {
+  where: Prisma.LabOrderScalarWhereInput
+  data: Prisma.XOR<Prisma.LabOrderUpdateManyMutationInput, Prisma.LabOrderUncheckedUpdateManyWithoutRegistrationInput>
+}
+
 export type LabOrderCreateWithoutEncounterInput = {
   id?: string
+  source?: $Enums.LabOrderSource
+  externalRequesterName?: string | null
+  externalRequesterFacility?: string | null
   orderNumber: string
   status?: $Enums.LabOrderStatus
   priority?: $Enums.LabOrderPriority
@@ -1221,7 +1533,9 @@ export type LabOrderCreateWithoutEncounterInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   patient: Prisma.PatientProfileCreateNestedOneWithoutLabOrdersInput
-  orderedBy: Prisma.DoctorProfileCreateNestedOneWithoutLabOrdersInput
+  orderedBy?: Prisma.DoctorProfileCreateNestedOneWithoutLabOrdersInput
+  registration: Prisma.RegistrationCreateNestedOneWithoutLabOrdersInput
+  requestLetter?: Prisma.DocumentCreateNestedOneWithoutLabOrderRequestLetterInput
   items?: Prisma.LabOrderItemCreateNestedManyWithoutLabOrderInput
   specimens?: Prisma.LabSpecimenCreateNestedManyWithoutLabOrderInput
   invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutLabOrderInput
@@ -1232,8 +1546,13 @@ export type LabOrderCreateWithoutEncounterInput = {
 
 export type LabOrderUncheckedCreateWithoutEncounterInput = {
   id?: string
+  registrationId: string
+  source?: $Enums.LabOrderSource
   patientId: string
-  orderedById: string
+  orderedById?: string | null
+  externalRequesterName?: string | null
+  externalRequesterFacility?: string | null
+  requestLetterDocumentId?: string | null
   orderNumber: string
   status?: $Enums.LabOrderStatus
   priority?: $Enums.LabOrderPriority
@@ -1286,6 +1605,9 @@ export type LabOrderUpdateManyWithWhereWithoutEncounterInput = {
 
 export type LabOrderCreateWithoutInvoiceItemsInput = {
   id?: string
+  source?: $Enums.LabOrderSource
+  externalRequesterName?: string | null
+  externalRequesterFacility?: string | null
   orderNumber: string
   status?: $Enums.LabOrderStatus
   priority?: $Enums.LabOrderPriority
@@ -1302,9 +1624,11 @@ export type LabOrderCreateWithoutInvoiceItemsInput = {
   satusehatDiagnosticReportId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  encounter: Prisma.EncounterCreateNestedOneWithoutLabOrdersInput
+  encounter?: Prisma.EncounterCreateNestedOneWithoutLabOrdersInput
   patient: Prisma.PatientProfileCreateNestedOneWithoutLabOrdersInput
-  orderedBy: Prisma.DoctorProfileCreateNestedOneWithoutLabOrdersInput
+  orderedBy?: Prisma.DoctorProfileCreateNestedOneWithoutLabOrdersInput
+  registration: Prisma.RegistrationCreateNestedOneWithoutLabOrdersInput
+  requestLetter?: Prisma.DocumentCreateNestedOneWithoutLabOrderRequestLetterInput
   items?: Prisma.LabOrderItemCreateNestedManyWithoutLabOrderInput
   specimens?: Prisma.LabSpecimenCreateNestedManyWithoutLabOrderInput
   requestDocument?: Prisma.DocumentCreateNestedOneWithoutLabOrderInput
@@ -1314,9 +1638,14 @@ export type LabOrderCreateWithoutInvoiceItemsInput = {
 
 export type LabOrderUncheckedCreateWithoutInvoiceItemsInput = {
   id?: string
-  encounterId: string
+  encounterId?: string | null
+  registrationId: string
+  source?: $Enums.LabOrderSource
   patientId: string
-  orderedById: string
+  orderedById?: string | null
+  externalRequesterName?: string | null
+  externalRequesterFacility?: string | null
+  requestLetterDocumentId?: string | null
   orderNumber: string
   status?: $Enums.LabOrderStatus
   priority?: $Enums.LabOrderPriority
@@ -1358,6 +1687,9 @@ export type LabOrderUpdateToOneWithWhereWithoutInvoiceItemsInput = {
 
 export type LabOrderUpdateWithoutInvoiceItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumLabOrderSourceFieldUpdateOperationsInput | $Enums.LabOrderSource
+  externalRequesterName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  externalRequesterFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderNumber?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumLabOrderStatusFieldUpdateOperationsInput | $Enums.LabOrderStatus
   priority?: Prisma.EnumLabOrderPriorityFieldUpdateOperationsInput | $Enums.LabOrderPriority
@@ -1374,9 +1706,11 @@ export type LabOrderUpdateWithoutInvoiceItemsInput = {
   satusehatDiagnosticReportId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  encounter?: Prisma.EncounterUpdateOneRequiredWithoutLabOrdersNestedInput
+  encounter?: Prisma.EncounterUpdateOneWithoutLabOrdersNestedInput
   patient?: Prisma.PatientProfileUpdateOneRequiredWithoutLabOrdersNestedInput
-  orderedBy?: Prisma.DoctorProfileUpdateOneRequiredWithoutLabOrdersNestedInput
+  orderedBy?: Prisma.DoctorProfileUpdateOneWithoutLabOrdersNestedInput
+  registration?: Prisma.RegistrationUpdateOneRequiredWithoutLabOrdersNestedInput
+  requestLetter?: Prisma.DocumentUpdateOneWithoutLabOrderRequestLetterNestedInput
   items?: Prisma.LabOrderItemUpdateManyWithoutLabOrderNestedInput
   specimens?: Prisma.LabSpecimenUpdateManyWithoutLabOrderNestedInput
   requestDocument?: Prisma.DocumentUpdateOneWithoutLabOrderNestedInput
@@ -1386,9 +1720,14 @@ export type LabOrderUpdateWithoutInvoiceItemsInput = {
 
 export type LabOrderUncheckedUpdateWithoutInvoiceItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  encounterId?: Prisma.StringFieldUpdateOperationsInput | string
+  encounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  registrationId?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumLabOrderSourceFieldUpdateOperationsInput | $Enums.LabOrderSource
   patientId?: Prisma.StringFieldUpdateOperationsInput | string
-  orderedById?: Prisma.StringFieldUpdateOperationsInput | string
+  orderedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  externalRequesterName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  externalRequesterFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestLetterDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderNumber?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumLabOrderStatusFieldUpdateOperationsInput | $Enums.LabOrderStatus
   priority?: Prisma.EnumLabOrderPriorityFieldUpdateOperationsInput | $Enums.LabOrderPriority
@@ -1414,6 +1753,9 @@ export type LabOrderUncheckedUpdateWithoutInvoiceItemsInput = {
 
 export type LabOrderCreateWithoutSatusehatSubmissionsInput = {
   id?: string
+  source?: $Enums.LabOrderSource
+  externalRequesterName?: string | null
+  externalRequesterFacility?: string | null
   orderNumber: string
   status?: $Enums.LabOrderStatus
   priority?: $Enums.LabOrderPriority
@@ -1430,9 +1772,11 @@ export type LabOrderCreateWithoutSatusehatSubmissionsInput = {
   satusehatDiagnosticReportId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  encounter: Prisma.EncounterCreateNestedOneWithoutLabOrdersInput
+  encounter?: Prisma.EncounterCreateNestedOneWithoutLabOrdersInput
   patient: Prisma.PatientProfileCreateNestedOneWithoutLabOrdersInput
-  orderedBy: Prisma.DoctorProfileCreateNestedOneWithoutLabOrdersInput
+  orderedBy?: Prisma.DoctorProfileCreateNestedOneWithoutLabOrdersInput
+  registration: Prisma.RegistrationCreateNestedOneWithoutLabOrdersInput
+  requestLetter?: Prisma.DocumentCreateNestedOneWithoutLabOrderRequestLetterInput
   items?: Prisma.LabOrderItemCreateNestedManyWithoutLabOrderInput
   specimens?: Prisma.LabSpecimenCreateNestedManyWithoutLabOrderInput
   invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutLabOrderInput
@@ -1442,9 +1786,14 @@ export type LabOrderCreateWithoutSatusehatSubmissionsInput = {
 
 export type LabOrderUncheckedCreateWithoutSatusehatSubmissionsInput = {
   id?: string
-  encounterId: string
+  encounterId?: string | null
+  registrationId: string
+  source?: $Enums.LabOrderSource
   patientId: string
-  orderedById: string
+  orderedById?: string | null
+  externalRequesterName?: string | null
+  externalRequesterFacility?: string | null
+  requestLetterDocumentId?: string | null
   orderNumber: string
   status?: $Enums.LabOrderStatus
   priority?: $Enums.LabOrderPriority
@@ -1486,6 +1835,9 @@ export type LabOrderUpdateToOneWithWhereWithoutSatusehatSubmissionsInput = {
 
 export type LabOrderUpdateWithoutSatusehatSubmissionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumLabOrderSourceFieldUpdateOperationsInput | $Enums.LabOrderSource
+  externalRequesterName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  externalRequesterFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderNumber?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumLabOrderStatusFieldUpdateOperationsInput | $Enums.LabOrderStatus
   priority?: Prisma.EnumLabOrderPriorityFieldUpdateOperationsInput | $Enums.LabOrderPriority
@@ -1502,9 +1854,11 @@ export type LabOrderUpdateWithoutSatusehatSubmissionsInput = {
   satusehatDiagnosticReportId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  encounter?: Prisma.EncounterUpdateOneRequiredWithoutLabOrdersNestedInput
+  encounter?: Prisma.EncounterUpdateOneWithoutLabOrdersNestedInput
   patient?: Prisma.PatientProfileUpdateOneRequiredWithoutLabOrdersNestedInput
-  orderedBy?: Prisma.DoctorProfileUpdateOneRequiredWithoutLabOrdersNestedInput
+  orderedBy?: Prisma.DoctorProfileUpdateOneWithoutLabOrdersNestedInput
+  registration?: Prisma.RegistrationUpdateOneRequiredWithoutLabOrdersNestedInput
+  requestLetter?: Prisma.DocumentUpdateOneWithoutLabOrderRequestLetterNestedInput
   items?: Prisma.LabOrderItemUpdateManyWithoutLabOrderNestedInput
   specimens?: Prisma.LabSpecimenUpdateManyWithoutLabOrderNestedInput
   invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutLabOrderNestedInput
@@ -1514,9 +1868,14 @@ export type LabOrderUpdateWithoutSatusehatSubmissionsInput = {
 
 export type LabOrderUncheckedUpdateWithoutSatusehatSubmissionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  encounterId?: Prisma.StringFieldUpdateOperationsInput | string
+  encounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  registrationId?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumLabOrderSourceFieldUpdateOperationsInput | $Enums.LabOrderSource
   patientId?: Prisma.StringFieldUpdateOperationsInput | string
-  orderedById?: Prisma.StringFieldUpdateOperationsInput | string
+  orderedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  externalRequesterName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  externalRequesterFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestLetterDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderNumber?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumLabOrderStatusFieldUpdateOperationsInput | $Enums.LabOrderStatus
   priority?: Prisma.EnumLabOrderPriorityFieldUpdateOperationsInput | $Enums.LabOrderPriority
@@ -1542,6 +1901,9 @@ export type LabOrderUncheckedUpdateWithoutSatusehatSubmissionsInput = {
 
 export type LabOrderCreateWithoutRequestDocumentInput = {
   id?: string
+  source?: $Enums.LabOrderSource
+  externalRequesterName?: string | null
+  externalRequesterFacility?: string | null
   orderNumber: string
   status?: $Enums.LabOrderStatus
   priority?: $Enums.LabOrderPriority
@@ -1558,9 +1920,11 @@ export type LabOrderCreateWithoutRequestDocumentInput = {
   satusehatDiagnosticReportId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  encounter: Prisma.EncounterCreateNestedOneWithoutLabOrdersInput
+  encounter?: Prisma.EncounterCreateNestedOneWithoutLabOrdersInput
   patient: Prisma.PatientProfileCreateNestedOneWithoutLabOrdersInput
-  orderedBy: Prisma.DoctorProfileCreateNestedOneWithoutLabOrdersInput
+  orderedBy?: Prisma.DoctorProfileCreateNestedOneWithoutLabOrdersInput
+  registration: Prisma.RegistrationCreateNestedOneWithoutLabOrdersInput
+  requestLetter?: Prisma.DocumentCreateNestedOneWithoutLabOrderRequestLetterInput
   items?: Prisma.LabOrderItemCreateNestedManyWithoutLabOrderInput
   specimens?: Prisma.LabSpecimenCreateNestedManyWithoutLabOrderInput
   invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutLabOrderInput
@@ -1570,9 +1934,14 @@ export type LabOrderCreateWithoutRequestDocumentInput = {
 
 export type LabOrderUncheckedCreateWithoutRequestDocumentInput = {
   id?: string
-  encounterId: string
+  encounterId?: string | null
+  registrationId: string
+  source?: $Enums.LabOrderSource
   patientId: string
-  orderedById: string
+  orderedById?: string | null
+  externalRequesterName?: string | null
+  externalRequesterFacility?: string | null
+  requestLetterDocumentId?: string | null
   orderNumber: string
   status?: $Enums.LabOrderStatus
   priority?: $Enums.LabOrderPriority
@@ -1601,6 +1970,77 @@ export type LabOrderCreateOrConnectWithoutRequestDocumentInput = {
   create: Prisma.XOR<Prisma.LabOrderCreateWithoutRequestDocumentInput, Prisma.LabOrderUncheckedCreateWithoutRequestDocumentInput>
 }
 
+export type LabOrderCreateWithoutRequestLetterInput = {
+  id?: string
+  source?: $Enums.LabOrderSource
+  externalRequesterName?: string | null
+  externalRequesterFacility?: string | null
+  orderNumber: string
+  status?: $Enums.LabOrderStatus
+  priority?: $Enums.LabOrderPriority
+  clinicalNotes?: string | null
+  isFasting?: boolean
+  fulfilmentSite?: $Enums.FulfilmentSite
+  chargeMode?: $Enums.ChargeMode
+  externalFacilityName?: string | null
+  recollectCount?: number
+  orderedAt?: Date | string
+  cancelledAt?: Date | string | null
+  cancelReason?: string | null
+  releasedAt?: Date | string | null
+  satusehatDiagnosticReportId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  encounter?: Prisma.EncounterCreateNestedOneWithoutLabOrdersInput
+  patient: Prisma.PatientProfileCreateNestedOneWithoutLabOrdersInput
+  orderedBy?: Prisma.DoctorProfileCreateNestedOneWithoutLabOrdersInput
+  registration: Prisma.RegistrationCreateNestedOneWithoutLabOrdersInput
+  items?: Prisma.LabOrderItemCreateNestedManyWithoutLabOrderInput
+  specimens?: Prisma.LabSpecimenCreateNestedManyWithoutLabOrderInput
+  invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutLabOrderInput
+  requestDocument?: Prisma.DocumentCreateNestedOneWithoutLabOrderInput
+  reports?: Prisma.LabReportCreateNestedManyWithoutLabOrderInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionCreateNestedManyWithoutLabOrderInput
+}
+
+export type LabOrderUncheckedCreateWithoutRequestLetterInput = {
+  id?: string
+  encounterId?: string | null
+  registrationId: string
+  source?: $Enums.LabOrderSource
+  patientId: string
+  orderedById?: string | null
+  externalRequesterName?: string | null
+  externalRequesterFacility?: string | null
+  orderNumber: string
+  status?: $Enums.LabOrderStatus
+  priority?: $Enums.LabOrderPriority
+  clinicalNotes?: string | null
+  isFasting?: boolean
+  fulfilmentSite?: $Enums.FulfilmentSite
+  chargeMode?: $Enums.ChargeMode
+  externalFacilityName?: string | null
+  requestDocumentId?: string | null
+  recollectCount?: number
+  orderedAt?: Date | string
+  cancelledAt?: Date | string | null
+  cancelReason?: string | null
+  releasedAt?: Date | string | null
+  satusehatDiagnosticReportId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  items?: Prisma.LabOrderItemUncheckedCreateNestedManyWithoutLabOrderInput
+  specimens?: Prisma.LabSpecimenUncheckedCreateNestedManyWithoutLabOrderInput
+  invoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutLabOrderInput
+  reports?: Prisma.LabReportUncheckedCreateNestedManyWithoutLabOrderInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionUncheckedCreateNestedManyWithoutLabOrderInput
+}
+
+export type LabOrderCreateOrConnectWithoutRequestLetterInput = {
+  where: Prisma.LabOrderWhereUniqueInput
+  create: Prisma.XOR<Prisma.LabOrderCreateWithoutRequestLetterInput, Prisma.LabOrderUncheckedCreateWithoutRequestLetterInput>
+}
+
 export type LabOrderUpsertWithoutRequestDocumentInput = {
   update: Prisma.XOR<Prisma.LabOrderUpdateWithoutRequestDocumentInput, Prisma.LabOrderUncheckedUpdateWithoutRequestDocumentInput>
   create: Prisma.XOR<Prisma.LabOrderCreateWithoutRequestDocumentInput, Prisma.LabOrderUncheckedCreateWithoutRequestDocumentInput>
@@ -1614,6 +2054,9 @@ export type LabOrderUpdateToOneWithWhereWithoutRequestDocumentInput = {
 
 export type LabOrderUpdateWithoutRequestDocumentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumLabOrderSourceFieldUpdateOperationsInput | $Enums.LabOrderSource
+  externalRequesterName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  externalRequesterFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderNumber?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumLabOrderStatusFieldUpdateOperationsInput | $Enums.LabOrderStatus
   priority?: Prisma.EnumLabOrderPriorityFieldUpdateOperationsInput | $Enums.LabOrderPriority
@@ -1630,9 +2073,11 @@ export type LabOrderUpdateWithoutRequestDocumentInput = {
   satusehatDiagnosticReportId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  encounter?: Prisma.EncounterUpdateOneRequiredWithoutLabOrdersNestedInput
+  encounter?: Prisma.EncounterUpdateOneWithoutLabOrdersNestedInput
   patient?: Prisma.PatientProfileUpdateOneRequiredWithoutLabOrdersNestedInput
-  orderedBy?: Prisma.DoctorProfileUpdateOneRequiredWithoutLabOrdersNestedInput
+  orderedBy?: Prisma.DoctorProfileUpdateOneWithoutLabOrdersNestedInput
+  registration?: Prisma.RegistrationUpdateOneRequiredWithoutLabOrdersNestedInput
+  requestLetter?: Prisma.DocumentUpdateOneWithoutLabOrderRequestLetterNestedInput
   items?: Prisma.LabOrderItemUpdateManyWithoutLabOrderNestedInput
   specimens?: Prisma.LabSpecimenUpdateManyWithoutLabOrderNestedInput
   invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutLabOrderNestedInput
@@ -1642,9 +2087,14 @@ export type LabOrderUpdateWithoutRequestDocumentInput = {
 
 export type LabOrderUncheckedUpdateWithoutRequestDocumentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  encounterId?: Prisma.StringFieldUpdateOperationsInput | string
+  encounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  registrationId?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumLabOrderSourceFieldUpdateOperationsInput | $Enums.LabOrderSource
   patientId?: Prisma.StringFieldUpdateOperationsInput | string
-  orderedById?: Prisma.StringFieldUpdateOperationsInput | string
+  orderedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  externalRequesterName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  externalRequesterFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestLetterDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderNumber?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumLabOrderStatusFieldUpdateOperationsInput | $Enums.LabOrderStatus
   priority?: Prisma.EnumLabOrderPriorityFieldUpdateOperationsInput | $Enums.LabOrderPriority
@@ -1668,8 +2118,88 @@ export type LabOrderUncheckedUpdateWithoutRequestDocumentInput = {
   satusehatSubmissions?: Prisma.SatusehatSubmissionUncheckedUpdateManyWithoutLabOrderNestedInput
 }
 
+export type LabOrderUpsertWithoutRequestLetterInput = {
+  update: Prisma.XOR<Prisma.LabOrderUpdateWithoutRequestLetterInput, Prisma.LabOrderUncheckedUpdateWithoutRequestLetterInput>
+  create: Prisma.XOR<Prisma.LabOrderCreateWithoutRequestLetterInput, Prisma.LabOrderUncheckedCreateWithoutRequestLetterInput>
+  where?: Prisma.LabOrderWhereInput
+}
+
+export type LabOrderUpdateToOneWithWhereWithoutRequestLetterInput = {
+  where?: Prisma.LabOrderWhereInput
+  data: Prisma.XOR<Prisma.LabOrderUpdateWithoutRequestLetterInput, Prisma.LabOrderUncheckedUpdateWithoutRequestLetterInput>
+}
+
+export type LabOrderUpdateWithoutRequestLetterInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumLabOrderSourceFieldUpdateOperationsInput | $Enums.LabOrderSource
+  externalRequesterName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  externalRequesterFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  orderNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumLabOrderStatusFieldUpdateOperationsInput | $Enums.LabOrderStatus
+  priority?: Prisma.EnumLabOrderPriorityFieldUpdateOperationsInput | $Enums.LabOrderPriority
+  clinicalNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFasting?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  fulfilmentSite?: Prisma.EnumFulfilmentSiteFieldUpdateOperationsInput | $Enums.FulfilmentSite
+  chargeMode?: Prisma.EnumChargeModeFieldUpdateOperationsInput | $Enums.ChargeMode
+  externalFacilityName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recollectCount?: Prisma.IntFieldUpdateOperationsInput | number
+  orderedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  satusehatDiagnosticReportId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  encounter?: Prisma.EncounterUpdateOneWithoutLabOrdersNestedInput
+  patient?: Prisma.PatientProfileUpdateOneRequiredWithoutLabOrdersNestedInput
+  orderedBy?: Prisma.DoctorProfileUpdateOneWithoutLabOrdersNestedInput
+  registration?: Prisma.RegistrationUpdateOneRequiredWithoutLabOrdersNestedInput
+  items?: Prisma.LabOrderItemUpdateManyWithoutLabOrderNestedInput
+  specimens?: Prisma.LabSpecimenUpdateManyWithoutLabOrderNestedInput
+  invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutLabOrderNestedInput
+  requestDocument?: Prisma.DocumentUpdateOneWithoutLabOrderNestedInput
+  reports?: Prisma.LabReportUpdateManyWithoutLabOrderNestedInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionUpdateManyWithoutLabOrderNestedInput
+}
+
+export type LabOrderUncheckedUpdateWithoutRequestLetterInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  encounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  registrationId?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumLabOrderSourceFieldUpdateOperationsInput | $Enums.LabOrderSource
+  patientId?: Prisma.StringFieldUpdateOperationsInput | string
+  orderedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  externalRequesterName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  externalRequesterFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  orderNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumLabOrderStatusFieldUpdateOperationsInput | $Enums.LabOrderStatus
+  priority?: Prisma.EnumLabOrderPriorityFieldUpdateOperationsInput | $Enums.LabOrderPriority
+  clinicalNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFasting?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  fulfilmentSite?: Prisma.EnumFulfilmentSiteFieldUpdateOperationsInput | $Enums.FulfilmentSite
+  chargeMode?: Prisma.EnumChargeModeFieldUpdateOperationsInput | $Enums.ChargeMode
+  externalFacilityName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recollectCount?: Prisma.IntFieldUpdateOperationsInput | number
+  orderedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  satusehatDiagnosticReportId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  items?: Prisma.LabOrderItemUncheckedUpdateManyWithoutLabOrderNestedInput
+  specimens?: Prisma.LabSpecimenUncheckedUpdateManyWithoutLabOrderNestedInput
+  invoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutLabOrderNestedInput
+  reports?: Prisma.LabReportUncheckedUpdateManyWithoutLabOrderNestedInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionUncheckedUpdateManyWithoutLabOrderNestedInput
+}
+
 export type LabOrderCreateWithoutItemsInput = {
   id?: string
+  source?: $Enums.LabOrderSource
+  externalRequesterName?: string | null
+  externalRequesterFacility?: string | null
   orderNumber: string
   status?: $Enums.LabOrderStatus
   priority?: $Enums.LabOrderPriority
@@ -1686,9 +2216,11 @@ export type LabOrderCreateWithoutItemsInput = {
   satusehatDiagnosticReportId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  encounter: Prisma.EncounterCreateNestedOneWithoutLabOrdersInput
+  encounter?: Prisma.EncounterCreateNestedOneWithoutLabOrdersInput
   patient: Prisma.PatientProfileCreateNestedOneWithoutLabOrdersInput
-  orderedBy: Prisma.DoctorProfileCreateNestedOneWithoutLabOrdersInput
+  orderedBy?: Prisma.DoctorProfileCreateNestedOneWithoutLabOrdersInput
+  registration: Prisma.RegistrationCreateNestedOneWithoutLabOrdersInput
+  requestLetter?: Prisma.DocumentCreateNestedOneWithoutLabOrderRequestLetterInput
   specimens?: Prisma.LabSpecimenCreateNestedManyWithoutLabOrderInput
   invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutLabOrderInput
   requestDocument?: Prisma.DocumentCreateNestedOneWithoutLabOrderInput
@@ -1698,9 +2230,14 @@ export type LabOrderCreateWithoutItemsInput = {
 
 export type LabOrderUncheckedCreateWithoutItemsInput = {
   id?: string
-  encounterId: string
+  encounterId?: string | null
+  registrationId: string
+  source?: $Enums.LabOrderSource
   patientId: string
-  orderedById: string
+  orderedById?: string | null
+  externalRequesterName?: string | null
+  externalRequesterFacility?: string | null
+  requestLetterDocumentId?: string | null
   orderNumber: string
   status?: $Enums.LabOrderStatus
   priority?: $Enums.LabOrderPriority
@@ -1742,6 +2279,9 @@ export type LabOrderUpdateToOneWithWhereWithoutItemsInput = {
 
 export type LabOrderUpdateWithoutItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumLabOrderSourceFieldUpdateOperationsInput | $Enums.LabOrderSource
+  externalRequesterName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  externalRequesterFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderNumber?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumLabOrderStatusFieldUpdateOperationsInput | $Enums.LabOrderStatus
   priority?: Prisma.EnumLabOrderPriorityFieldUpdateOperationsInput | $Enums.LabOrderPriority
@@ -1758,9 +2298,11 @@ export type LabOrderUpdateWithoutItemsInput = {
   satusehatDiagnosticReportId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  encounter?: Prisma.EncounterUpdateOneRequiredWithoutLabOrdersNestedInput
+  encounter?: Prisma.EncounterUpdateOneWithoutLabOrdersNestedInput
   patient?: Prisma.PatientProfileUpdateOneRequiredWithoutLabOrdersNestedInput
-  orderedBy?: Prisma.DoctorProfileUpdateOneRequiredWithoutLabOrdersNestedInput
+  orderedBy?: Prisma.DoctorProfileUpdateOneWithoutLabOrdersNestedInput
+  registration?: Prisma.RegistrationUpdateOneRequiredWithoutLabOrdersNestedInput
+  requestLetter?: Prisma.DocumentUpdateOneWithoutLabOrderRequestLetterNestedInput
   specimens?: Prisma.LabSpecimenUpdateManyWithoutLabOrderNestedInput
   invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutLabOrderNestedInput
   requestDocument?: Prisma.DocumentUpdateOneWithoutLabOrderNestedInput
@@ -1770,9 +2312,14 @@ export type LabOrderUpdateWithoutItemsInput = {
 
 export type LabOrderUncheckedUpdateWithoutItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  encounterId?: Prisma.StringFieldUpdateOperationsInput | string
+  encounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  registrationId?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumLabOrderSourceFieldUpdateOperationsInput | $Enums.LabOrderSource
   patientId?: Prisma.StringFieldUpdateOperationsInput | string
-  orderedById?: Prisma.StringFieldUpdateOperationsInput | string
+  orderedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  externalRequesterName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  externalRequesterFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestLetterDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderNumber?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumLabOrderStatusFieldUpdateOperationsInput | $Enums.LabOrderStatus
   priority?: Prisma.EnumLabOrderPriorityFieldUpdateOperationsInput | $Enums.LabOrderPriority
@@ -1798,6 +2345,9 @@ export type LabOrderUncheckedUpdateWithoutItemsInput = {
 
 export type LabOrderCreateWithoutSpecimensInput = {
   id?: string
+  source?: $Enums.LabOrderSource
+  externalRequesterName?: string | null
+  externalRequesterFacility?: string | null
   orderNumber: string
   status?: $Enums.LabOrderStatus
   priority?: $Enums.LabOrderPriority
@@ -1814,9 +2364,11 @@ export type LabOrderCreateWithoutSpecimensInput = {
   satusehatDiagnosticReportId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  encounter: Prisma.EncounterCreateNestedOneWithoutLabOrdersInput
+  encounter?: Prisma.EncounterCreateNestedOneWithoutLabOrdersInput
   patient: Prisma.PatientProfileCreateNestedOneWithoutLabOrdersInput
-  orderedBy: Prisma.DoctorProfileCreateNestedOneWithoutLabOrdersInput
+  orderedBy?: Prisma.DoctorProfileCreateNestedOneWithoutLabOrdersInput
+  registration: Prisma.RegistrationCreateNestedOneWithoutLabOrdersInput
+  requestLetter?: Prisma.DocumentCreateNestedOneWithoutLabOrderRequestLetterInput
   items?: Prisma.LabOrderItemCreateNestedManyWithoutLabOrderInput
   invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutLabOrderInput
   requestDocument?: Prisma.DocumentCreateNestedOneWithoutLabOrderInput
@@ -1826,9 +2378,14 @@ export type LabOrderCreateWithoutSpecimensInput = {
 
 export type LabOrderUncheckedCreateWithoutSpecimensInput = {
   id?: string
-  encounterId: string
+  encounterId?: string | null
+  registrationId: string
+  source?: $Enums.LabOrderSource
   patientId: string
-  orderedById: string
+  orderedById?: string | null
+  externalRequesterName?: string | null
+  externalRequesterFacility?: string | null
+  requestLetterDocumentId?: string | null
   orderNumber: string
   status?: $Enums.LabOrderStatus
   priority?: $Enums.LabOrderPriority
@@ -1870,6 +2427,9 @@ export type LabOrderUpdateToOneWithWhereWithoutSpecimensInput = {
 
 export type LabOrderUpdateWithoutSpecimensInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumLabOrderSourceFieldUpdateOperationsInput | $Enums.LabOrderSource
+  externalRequesterName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  externalRequesterFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderNumber?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumLabOrderStatusFieldUpdateOperationsInput | $Enums.LabOrderStatus
   priority?: Prisma.EnumLabOrderPriorityFieldUpdateOperationsInput | $Enums.LabOrderPriority
@@ -1886,9 +2446,11 @@ export type LabOrderUpdateWithoutSpecimensInput = {
   satusehatDiagnosticReportId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  encounter?: Prisma.EncounterUpdateOneRequiredWithoutLabOrdersNestedInput
+  encounter?: Prisma.EncounterUpdateOneWithoutLabOrdersNestedInput
   patient?: Prisma.PatientProfileUpdateOneRequiredWithoutLabOrdersNestedInput
-  orderedBy?: Prisma.DoctorProfileUpdateOneRequiredWithoutLabOrdersNestedInput
+  orderedBy?: Prisma.DoctorProfileUpdateOneWithoutLabOrdersNestedInput
+  registration?: Prisma.RegistrationUpdateOneRequiredWithoutLabOrdersNestedInput
+  requestLetter?: Prisma.DocumentUpdateOneWithoutLabOrderRequestLetterNestedInput
   items?: Prisma.LabOrderItemUpdateManyWithoutLabOrderNestedInput
   invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutLabOrderNestedInput
   requestDocument?: Prisma.DocumentUpdateOneWithoutLabOrderNestedInput
@@ -1898,9 +2460,14 @@ export type LabOrderUpdateWithoutSpecimensInput = {
 
 export type LabOrderUncheckedUpdateWithoutSpecimensInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  encounterId?: Prisma.StringFieldUpdateOperationsInput | string
+  encounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  registrationId?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumLabOrderSourceFieldUpdateOperationsInput | $Enums.LabOrderSource
   patientId?: Prisma.StringFieldUpdateOperationsInput | string
-  orderedById?: Prisma.StringFieldUpdateOperationsInput | string
+  orderedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  externalRequesterName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  externalRequesterFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestLetterDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderNumber?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumLabOrderStatusFieldUpdateOperationsInput | $Enums.LabOrderStatus
   priority?: Prisma.EnumLabOrderPriorityFieldUpdateOperationsInput | $Enums.LabOrderPriority
@@ -1926,6 +2493,9 @@ export type LabOrderUncheckedUpdateWithoutSpecimensInput = {
 
 export type LabOrderCreateWithoutReportsInput = {
   id?: string
+  source?: $Enums.LabOrderSource
+  externalRequesterName?: string | null
+  externalRequesterFacility?: string | null
   orderNumber: string
   status?: $Enums.LabOrderStatus
   priority?: $Enums.LabOrderPriority
@@ -1942,9 +2512,11 @@ export type LabOrderCreateWithoutReportsInput = {
   satusehatDiagnosticReportId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  encounter: Prisma.EncounterCreateNestedOneWithoutLabOrdersInput
+  encounter?: Prisma.EncounterCreateNestedOneWithoutLabOrdersInput
   patient: Prisma.PatientProfileCreateNestedOneWithoutLabOrdersInput
-  orderedBy: Prisma.DoctorProfileCreateNestedOneWithoutLabOrdersInput
+  orderedBy?: Prisma.DoctorProfileCreateNestedOneWithoutLabOrdersInput
+  registration: Prisma.RegistrationCreateNestedOneWithoutLabOrdersInput
+  requestLetter?: Prisma.DocumentCreateNestedOneWithoutLabOrderRequestLetterInput
   items?: Prisma.LabOrderItemCreateNestedManyWithoutLabOrderInput
   specimens?: Prisma.LabSpecimenCreateNestedManyWithoutLabOrderInput
   invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutLabOrderInput
@@ -1954,9 +2526,14 @@ export type LabOrderCreateWithoutReportsInput = {
 
 export type LabOrderUncheckedCreateWithoutReportsInput = {
   id?: string
-  encounterId: string
+  encounterId?: string | null
+  registrationId: string
+  source?: $Enums.LabOrderSource
   patientId: string
-  orderedById: string
+  orderedById?: string | null
+  externalRequesterName?: string | null
+  externalRequesterFacility?: string | null
+  requestLetterDocumentId?: string | null
   orderNumber: string
   status?: $Enums.LabOrderStatus
   priority?: $Enums.LabOrderPriority
@@ -1998,6 +2575,9 @@ export type LabOrderUpdateToOneWithWhereWithoutReportsInput = {
 
 export type LabOrderUpdateWithoutReportsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumLabOrderSourceFieldUpdateOperationsInput | $Enums.LabOrderSource
+  externalRequesterName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  externalRequesterFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderNumber?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumLabOrderStatusFieldUpdateOperationsInput | $Enums.LabOrderStatus
   priority?: Prisma.EnumLabOrderPriorityFieldUpdateOperationsInput | $Enums.LabOrderPriority
@@ -2014,9 +2594,11 @@ export type LabOrderUpdateWithoutReportsInput = {
   satusehatDiagnosticReportId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  encounter?: Prisma.EncounterUpdateOneRequiredWithoutLabOrdersNestedInput
+  encounter?: Prisma.EncounterUpdateOneWithoutLabOrdersNestedInput
   patient?: Prisma.PatientProfileUpdateOneRequiredWithoutLabOrdersNestedInput
-  orderedBy?: Prisma.DoctorProfileUpdateOneRequiredWithoutLabOrdersNestedInput
+  orderedBy?: Prisma.DoctorProfileUpdateOneWithoutLabOrdersNestedInput
+  registration?: Prisma.RegistrationUpdateOneRequiredWithoutLabOrdersNestedInput
+  requestLetter?: Prisma.DocumentUpdateOneWithoutLabOrderRequestLetterNestedInput
   items?: Prisma.LabOrderItemUpdateManyWithoutLabOrderNestedInput
   specimens?: Prisma.LabSpecimenUpdateManyWithoutLabOrderNestedInput
   invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutLabOrderNestedInput
@@ -2026,9 +2608,14 @@ export type LabOrderUpdateWithoutReportsInput = {
 
 export type LabOrderUncheckedUpdateWithoutReportsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  encounterId?: Prisma.StringFieldUpdateOperationsInput | string
+  encounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  registrationId?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumLabOrderSourceFieldUpdateOperationsInput | $Enums.LabOrderSource
   patientId?: Prisma.StringFieldUpdateOperationsInput | string
-  orderedById?: Prisma.StringFieldUpdateOperationsInput | string
+  orderedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  externalRequesterName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  externalRequesterFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestLetterDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderNumber?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumLabOrderStatusFieldUpdateOperationsInput | $Enums.LabOrderStatus
   priority?: Prisma.EnumLabOrderPriorityFieldUpdateOperationsInput | $Enums.LabOrderPriority
@@ -2054,8 +2641,13 @@ export type LabOrderUncheckedUpdateWithoutReportsInput = {
 
 export type LabOrderCreateManyPatientInput = {
   id?: string
-  encounterId: string
-  orderedById: string
+  encounterId?: string | null
+  registrationId: string
+  source?: $Enums.LabOrderSource
+  orderedById?: string | null
+  externalRequesterName?: string | null
+  externalRequesterFacility?: string | null
+  requestLetterDocumentId?: string | null
   orderNumber: string
   status?: $Enums.LabOrderStatus
   priority?: $Enums.LabOrderPriority
@@ -2077,6 +2669,9 @@ export type LabOrderCreateManyPatientInput = {
 
 export type LabOrderUpdateWithoutPatientInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumLabOrderSourceFieldUpdateOperationsInput | $Enums.LabOrderSource
+  externalRequesterName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  externalRequesterFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderNumber?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumLabOrderStatusFieldUpdateOperationsInput | $Enums.LabOrderStatus
   priority?: Prisma.EnumLabOrderPriorityFieldUpdateOperationsInput | $Enums.LabOrderPriority
@@ -2093,8 +2688,10 @@ export type LabOrderUpdateWithoutPatientInput = {
   satusehatDiagnosticReportId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  encounter?: Prisma.EncounterUpdateOneRequiredWithoutLabOrdersNestedInput
-  orderedBy?: Prisma.DoctorProfileUpdateOneRequiredWithoutLabOrdersNestedInput
+  encounter?: Prisma.EncounterUpdateOneWithoutLabOrdersNestedInput
+  orderedBy?: Prisma.DoctorProfileUpdateOneWithoutLabOrdersNestedInput
+  registration?: Prisma.RegistrationUpdateOneRequiredWithoutLabOrdersNestedInput
+  requestLetter?: Prisma.DocumentUpdateOneWithoutLabOrderRequestLetterNestedInput
   items?: Prisma.LabOrderItemUpdateManyWithoutLabOrderNestedInput
   specimens?: Prisma.LabSpecimenUpdateManyWithoutLabOrderNestedInput
   invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutLabOrderNestedInput
@@ -2105,8 +2702,13 @@ export type LabOrderUpdateWithoutPatientInput = {
 
 export type LabOrderUncheckedUpdateWithoutPatientInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  encounterId?: Prisma.StringFieldUpdateOperationsInput | string
-  orderedById?: Prisma.StringFieldUpdateOperationsInput | string
+  encounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  registrationId?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumLabOrderSourceFieldUpdateOperationsInput | $Enums.LabOrderSource
+  orderedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  externalRequesterName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  externalRequesterFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestLetterDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderNumber?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumLabOrderStatusFieldUpdateOperationsInput | $Enums.LabOrderStatus
   priority?: Prisma.EnumLabOrderPriorityFieldUpdateOperationsInput | $Enums.LabOrderPriority
@@ -2133,8 +2735,13 @@ export type LabOrderUncheckedUpdateWithoutPatientInput = {
 
 export type LabOrderUncheckedUpdateManyWithoutPatientInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  encounterId?: Prisma.StringFieldUpdateOperationsInput | string
-  orderedById?: Prisma.StringFieldUpdateOperationsInput | string
+  encounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  registrationId?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumLabOrderSourceFieldUpdateOperationsInput | $Enums.LabOrderSource
+  orderedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  externalRequesterName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  externalRequesterFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestLetterDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderNumber?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumLabOrderStatusFieldUpdateOperationsInput | $Enums.LabOrderStatus
   priority?: Prisma.EnumLabOrderPriorityFieldUpdateOperationsInput | $Enums.LabOrderPriority
@@ -2156,8 +2763,13 @@ export type LabOrderUncheckedUpdateManyWithoutPatientInput = {
 
 export type LabOrderCreateManyOrderedByInput = {
   id?: string
-  encounterId: string
+  encounterId?: string | null
+  registrationId: string
+  source?: $Enums.LabOrderSource
   patientId: string
+  externalRequesterName?: string | null
+  externalRequesterFacility?: string | null
+  requestLetterDocumentId?: string | null
   orderNumber: string
   status?: $Enums.LabOrderStatus
   priority?: $Enums.LabOrderPriority
@@ -2179,6 +2791,9 @@ export type LabOrderCreateManyOrderedByInput = {
 
 export type LabOrderUpdateWithoutOrderedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumLabOrderSourceFieldUpdateOperationsInput | $Enums.LabOrderSource
+  externalRequesterName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  externalRequesterFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderNumber?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumLabOrderStatusFieldUpdateOperationsInput | $Enums.LabOrderStatus
   priority?: Prisma.EnumLabOrderPriorityFieldUpdateOperationsInput | $Enums.LabOrderPriority
@@ -2195,8 +2810,10 @@ export type LabOrderUpdateWithoutOrderedByInput = {
   satusehatDiagnosticReportId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  encounter?: Prisma.EncounterUpdateOneRequiredWithoutLabOrdersNestedInput
+  encounter?: Prisma.EncounterUpdateOneWithoutLabOrdersNestedInput
   patient?: Prisma.PatientProfileUpdateOneRequiredWithoutLabOrdersNestedInput
+  registration?: Prisma.RegistrationUpdateOneRequiredWithoutLabOrdersNestedInput
+  requestLetter?: Prisma.DocumentUpdateOneWithoutLabOrderRequestLetterNestedInput
   items?: Prisma.LabOrderItemUpdateManyWithoutLabOrderNestedInput
   specimens?: Prisma.LabSpecimenUpdateManyWithoutLabOrderNestedInput
   invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutLabOrderNestedInput
@@ -2207,8 +2824,13 @@ export type LabOrderUpdateWithoutOrderedByInput = {
 
 export type LabOrderUncheckedUpdateWithoutOrderedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  encounterId?: Prisma.StringFieldUpdateOperationsInput | string
+  encounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  registrationId?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumLabOrderSourceFieldUpdateOperationsInput | $Enums.LabOrderSource
   patientId?: Prisma.StringFieldUpdateOperationsInput | string
+  externalRequesterName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  externalRequesterFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestLetterDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderNumber?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumLabOrderStatusFieldUpdateOperationsInput | $Enums.LabOrderStatus
   priority?: Prisma.EnumLabOrderPriorityFieldUpdateOperationsInput | $Enums.LabOrderPriority
@@ -2235,8 +2857,135 @@ export type LabOrderUncheckedUpdateWithoutOrderedByInput = {
 
 export type LabOrderUncheckedUpdateManyWithoutOrderedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  encounterId?: Prisma.StringFieldUpdateOperationsInput | string
+  encounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  registrationId?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumLabOrderSourceFieldUpdateOperationsInput | $Enums.LabOrderSource
   patientId?: Prisma.StringFieldUpdateOperationsInput | string
+  externalRequesterName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  externalRequesterFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestLetterDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  orderNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumLabOrderStatusFieldUpdateOperationsInput | $Enums.LabOrderStatus
+  priority?: Prisma.EnumLabOrderPriorityFieldUpdateOperationsInput | $Enums.LabOrderPriority
+  clinicalNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFasting?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  fulfilmentSite?: Prisma.EnumFulfilmentSiteFieldUpdateOperationsInput | $Enums.FulfilmentSite
+  chargeMode?: Prisma.EnumChargeModeFieldUpdateOperationsInput | $Enums.ChargeMode
+  externalFacilityName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recollectCount?: Prisma.IntFieldUpdateOperationsInput | number
+  orderedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  satusehatDiagnosticReportId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type LabOrderCreateManyRegistrationInput = {
+  id?: string
+  encounterId?: string | null
+  source?: $Enums.LabOrderSource
+  patientId: string
+  orderedById?: string | null
+  externalRequesterName?: string | null
+  externalRequesterFacility?: string | null
+  requestLetterDocumentId?: string | null
+  orderNumber: string
+  status?: $Enums.LabOrderStatus
+  priority?: $Enums.LabOrderPriority
+  clinicalNotes?: string | null
+  isFasting?: boolean
+  fulfilmentSite?: $Enums.FulfilmentSite
+  chargeMode?: $Enums.ChargeMode
+  externalFacilityName?: string | null
+  requestDocumentId?: string | null
+  recollectCount?: number
+  orderedAt?: Date | string
+  cancelledAt?: Date | string | null
+  cancelReason?: string | null
+  releasedAt?: Date | string | null
+  satusehatDiagnosticReportId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type LabOrderUpdateWithoutRegistrationInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumLabOrderSourceFieldUpdateOperationsInput | $Enums.LabOrderSource
+  externalRequesterName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  externalRequesterFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  orderNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumLabOrderStatusFieldUpdateOperationsInput | $Enums.LabOrderStatus
+  priority?: Prisma.EnumLabOrderPriorityFieldUpdateOperationsInput | $Enums.LabOrderPriority
+  clinicalNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFasting?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  fulfilmentSite?: Prisma.EnumFulfilmentSiteFieldUpdateOperationsInput | $Enums.FulfilmentSite
+  chargeMode?: Prisma.EnumChargeModeFieldUpdateOperationsInput | $Enums.ChargeMode
+  externalFacilityName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recollectCount?: Prisma.IntFieldUpdateOperationsInput | number
+  orderedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  satusehatDiagnosticReportId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  encounter?: Prisma.EncounterUpdateOneWithoutLabOrdersNestedInput
+  patient?: Prisma.PatientProfileUpdateOneRequiredWithoutLabOrdersNestedInput
+  orderedBy?: Prisma.DoctorProfileUpdateOneWithoutLabOrdersNestedInput
+  requestLetter?: Prisma.DocumentUpdateOneWithoutLabOrderRequestLetterNestedInput
+  items?: Prisma.LabOrderItemUpdateManyWithoutLabOrderNestedInput
+  specimens?: Prisma.LabSpecimenUpdateManyWithoutLabOrderNestedInput
+  invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutLabOrderNestedInput
+  requestDocument?: Prisma.DocumentUpdateOneWithoutLabOrderNestedInput
+  reports?: Prisma.LabReportUpdateManyWithoutLabOrderNestedInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionUpdateManyWithoutLabOrderNestedInput
+}
+
+export type LabOrderUncheckedUpdateWithoutRegistrationInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  encounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source?: Prisma.EnumLabOrderSourceFieldUpdateOperationsInput | $Enums.LabOrderSource
+  patientId?: Prisma.StringFieldUpdateOperationsInput | string
+  orderedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  externalRequesterName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  externalRequesterFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestLetterDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  orderNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumLabOrderStatusFieldUpdateOperationsInput | $Enums.LabOrderStatus
+  priority?: Prisma.EnumLabOrderPriorityFieldUpdateOperationsInput | $Enums.LabOrderPriority
+  clinicalNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isFasting?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  fulfilmentSite?: Prisma.EnumFulfilmentSiteFieldUpdateOperationsInput | $Enums.FulfilmentSite
+  chargeMode?: Prisma.EnumChargeModeFieldUpdateOperationsInput | $Enums.ChargeMode
+  externalFacilityName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recollectCount?: Prisma.IntFieldUpdateOperationsInput | number
+  orderedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releasedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  satusehatDiagnosticReportId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  items?: Prisma.LabOrderItemUncheckedUpdateManyWithoutLabOrderNestedInput
+  specimens?: Prisma.LabSpecimenUncheckedUpdateManyWithoutLabOrderNestedInput
+  invoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutLabOrderNestedInput
+  reports?: Prisma.LabReportUncheckedUpdateManyWithoutLabOrderNestedInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionUncheckedUpdateManyWithoutLabOrderNestedInput
+}
+
+export type LabOrderUncheckedUpdateManyWithoutRegistrationInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  encounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source?: Prisma.EnumLabOrderSourceFieldUpdateOperationsInput | $Enums.LabOrderSource
+  patientId?: Prisma.StringFieldUpdateOperationsInput | string
+  orderedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  externalRequesterName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  externalRequesterFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestLetterDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderNumber?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumLabOrderStatusFieldUpdateOperationsInput | $Enums.LabOrderStatus
   priority?: Prisma.EnumLabOrderPriorityFieldUpdateOperationsInput | $Enums.LabOrderPriority
@@ -2258,8 +3007,13 @@ export type LabOrderUncheckedUpdateManyWithoutOrderedByInput = {
 
 export type LabOrderCreateManyEncounterInput = {
   id?: string
+  registrationId: string
+  source?: $Enums.LabOrderSource
   patientId: string
-  orderedById: string
+  orderedById?: string | null
+  externalRequesterName?: string | null
+  externalRequesterFacility?: string | null
+  requestLetterDocumentId?: string | null
   orderNumber: string
   status?: $Enums.LabOrderStatus
   priority?: $Enums.LabOrderPriority
@@ -2281,6 +3035,9 @@ export type LabOrderCreateManyEncounterInput = {
 
 export type LabOrderUpdateWithoutEncounterInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumLabOrderSourceFieldUpdateOperationsInput | $Enums.LabOrderSource
+  externalRequesterName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  externalRequesterFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderNumber?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumLabOrderStatusFieldUpdateOperationsInput | $Enums.LabOrderStatus
   priority?: Prisma.EnumLabOrderPriorityFieldUpdateOperationsInput | $Enums.LabOrderPriority
@@ -2298,7 +3055,9 @@ export type LabOrderUpdateWithoutEncounterInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   patient?: Prisma.PatientProfileUpdateOneRequiredWithoutLabOrdersNestedInput
-  orderedBy?: Prisma.DoctorProfileUpdateOneRequiredWithoutLabOrdersNestedInput
+  orderedBy?: Prisma.DoctorProfileUpdateOneWithoutLabOrdersNestedInput
+  registration?: Prisma.RegistrationUpdateOneRequiredWithoutLabOrdersNestedInput
+  requestLetter?: Prisma.DocumentUpdateOneWithoutLabOrderRequestLetterNestedInput
   items?: Prisma.LabOrderItemUpdateManyWithoutLabOrderNestedInput
   specimens?: Prisma.LabSpecimenUpdateManyWithoutLabOrderNestedInput
   invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutLabOrderNestedInput
@@ -2309,8 +3068,13 @@ export type LabOrderUpdateWithoutEncounterInput = {
 
 export type LabOrderUncheckedUpdateWithoutEncounterInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  registrationId?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumLabOrderSourceFieldUpdateOperationsInput | $Enums.LabOrderSource
   patientId?: Prisma.StringFieldUpdateOperationsInput | string
-  orderedById?: Prisma.StringFieldUpdateOperationsInput | string
+  orderedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  externalRequesterName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  externalRequesterFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestLetterDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderNumber?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumLabOrderStatusFieldUpdateOperationsInput | $Enums.LabOrderStatus
   priority?: Prisma.EnumLabOrderPriorityFieldUpdateOperationsInput | $Enums.LabOrderPriority
@@ -2337,8 +3101,13 @@ export type LabOrderUncheckedUpdateWithoutEncounterInput = {
 
 export type LabOrderUncheckedUpdateManyWithoutEncounterInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  registrationId?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumLabOrderSourceFieldUpdateOperationsInput | $Enums.LabOrderSource
   patientId?: Prisma.StringFieldUpdateOperationsInput | string
-  orderedById?: Prisma.StringFieldUpdateOperationsInput | string
+  orderedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  externalRequesterName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  externalRequesterFacility?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestLetterDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderNumber?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumLabOrderStatusFieldUpdateOperationsInput | $Enums.LabOrderStatus
   priority?: Prisma.EnumLabOrderPriorityFieldUpdateOperationsInput | $Enums.LabOrderPriority
@@ -2428,8 +3197,13 @@ export type LabOrderCountOutputTypeCountSatusehatSubmissionsArgs<ExtArgs extends
 export type LabOrderSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   encounterId?: boolean
+  registrationId?: boolean
+  source?: boolean
   patientId?: boolean
   orderedById?: boolean
+  externalRequesterName?: boolean
+  externalRequesterFacility?: boolean
+  requestLetterDocumentId?: boolean
   orderNumber?: boolean
   status?: boolean
   priority?: boolean
@@ -2447,9 +3221,11 @@ export type LabOrderSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   satusehatDiagnosticReportId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  encounter?: boolean | Prisma.EncounterDefaultArgs<ExtArgs>
+  encounter?: boolean | Prisma.LabOrder$encounterArgs<ExtArgs>
   patient?: boolean | Prisma.PatientProfileDefaultArgs<ExtArgs>
-  orderedBy?: boolean | Prisma.DoctorProfileDefaultArgs<ExtArgs>
+  orderedBy?: boolean | Prisma.LabOrder$orderedByArgs<ExtArgs>
+  registration?: boolean | Prisma.RegistrationDefaultArgs<ExtArgs>
+  requestLetter?: boolean | Prisma.LabOrder$requestLetterArgs<ExtArgs>
   items?: boolean | Prisma.LabOrder$itemsArgs<ExtArgs>
   specimens?: boolean | Prisma.LabOrder$specimensArgs<ExtArgs>
   invoiceItems?: boolean | Prisma.LabOrder$invoiceItemsArgs<ExtArgs>
@@ -2462,8 +3238,13 @@ export type LabOrderSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
 export type LabOrderSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   encounterId?: boolean
+  registrationId?: boolean
+  source?: boolean
   patientId?: boolean
   orderedById?: boolean
+  externalRequesterName?: boolean
+  externalRequesterFacility?: boolean
+  requestLetterDocumentId?: boolean
   orderNumber?: boolean
   status?: boolean
   priority?: boolean
@@ -2481,17 +3262,24 @@ export type LabOrderSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   satusehatDiagnosticReportId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  encounter?: boolean | Prisma.EncounterDefaultArgs<ExtArgs>
+  encounter?: boolean | Prisma.LabOrder$encounterArgs<ExtArgs>
   patient?: boolean | Prisma.PatientProfileDefaultArgs<ExtArgs>
-  orderedBy?: boolean | Prisma.DoctorProfileDefaultArgs<ExtArgs>
+  orderedBy?: boolean | Prisma.LabOrder$orderedByArgs<ExtArgs>
+  registration?: boolean | Prisma.RegistrationDefaultArgs<ExtArgs>
+  requestLetter?: boolean | Prisma.LabOrder$requestLetterArgs<ExtArgs>
   requestDocument?: boolean | Prisma.LabOrder$requestDocumentArgs<ExtArgs>
 }, ExtArgs["result"]["labOrder"]>
 
 export type LabOrderSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   encounterId?: boolean
+  registrationId?: boolean
+  source?: boolean
   patientId?: boolean
   orderedById?: boolean
+  externalRequesterName?: boolean
+  externalRequesterFacility?: boolean
+  requestLetterDocumentId?: boolean
   orderNumber?: boolean
   status?: boolean
   priority?: boolean
@@ -2509,17 +3297,24 @@ export type LabOrderSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   satusehatDiagnosticReportId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  encounter?: boolean | Prisma.EncounterDefaultArgs<ExtArgs>
+  encounter?: boolean | Prisma.LabOrder$encounterArgs<ExtArgs>
   patient?: boolean | Prisma.PatientProfileDefaultArgs<ExtArgs>
-  orderedBy?: boolean | Prisma.DoctorProfileDefaultArgs<ExtArgs>
+  orderedBy?: boolean | Prisma.LabOrder$orderedByArgs<ExtArgs>
+  registration?: boolean | Prisma.RegistrationDefaultArgs<ExtArgs>
+  requestLetter?: boolean | Prisma.LabOrder$requestLetterArgs<ExtArgs>
   requestDocument?: boolean | Prisma.LabOrder$requestDocumentArgs<ExtArgs>
 }, ExtArgs["result"]["labOrder"]>
 
 export type LabOrderSelectScalar = {
   id?: boolean
   encounterId?: boolean
+  registrationId?: boolean
+  source?: boolean
   patientId?: boolean
   orderedById?: boolean
+  externalRequesterName?: boolean
+  externalRequesterFacility?: boolean
+  requestLetterDocumentId?: boolean
   orderNumber?: boolean
   status?: boolean
   priority?: boolean
@@ -2539,11 +3334,13 @@ export type LabOrderSelectScalar = {
   updatedAt?: boolean
 }
 
-export type LabOrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "encounterId" | "patientId" | "orderedById" | "orderNumber" | "status" | "priority" | "clinicalNotes" | "isFasting" | "fulfilmentSite" | "chargeMode" | "externalFacilityName" | "requestDocumentId" | "recollectCount" | "orderedAt" | "cancelledAt" | "cancelReason" | "releasedAt" | "satusehatDiagnosticReportId" | "createdAt" | "updatedAt", ExtArgs["result"]["labOrder"]>
+export type LabOrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "encounterId" | "registrationId" | "source" | "patientId" | "orderedById" | "externalRequesterName" | "externalRequesterFacility" | "requestLetterDocumentId" | "orderNumber" | "status" | "priority" | "clinicalNotes" | "isFasting" | "fulfilmentSite" | "chargeMode" | "externalFacilityName" | "requestDocumentId" | "recollectCount" | "orderedAt" | "cancelledAt" | "cancelReason" | "releasedAt" | "satusehatDiagnosticReportId" | "createdAt" | "updatedAt", ExtArgs["result"]["labOrder"]>
 export type LabOrderInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  encounter?: boolean | Prisma.EncounterDefaultArgs<ExtArgs>
+  encounter?: boolean | Prisma.LabOrder$encounterArgs<ExtArgs>
   patient?: boolean | Prisma.PatientProfileDefaultArgs<ExtArgs>
-  orderedBy?: boolean | Prisma.DoctorProfileDefaultArgs<ExtArgs>
+  orderedBy?: boolean | Prisma.LabOrder$orderedByArgs<ExtArgs>
+  registration?: boolean | Prisma.RegistrationDefaultArgs<ExtArgs>
+  requestLetter?: boolean | Prisma.LabOrder$requestLetterArgs<ExtArgs>
   items?: boolean | Prisma.LabOrder$itemsArgs<ExtArgs>
   specimens?: boolean | Prisma.LabOrder$specimensArgs<ExtArgs>
   invoiceItems?: boolean | Prisma.LabOrder$invoiceItemsArgs<ExtArgs>
@@ -2553,24 +3350,30 @@ export type LabOrderInclude<ExtArgs extends runtime.Types.Extensions.InternalArg
   _count?: boolean | Prisma.LabOrderCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type LabOrderIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  encounter?: boolean | Prisma.EncounterDefaultArgs<ExtArgs>
+  encounter?: boolean | Prisma.LabOrder$encounterArgs<ExtArgs>
   patient?: boolean | Prisma.PatientProfileDefaultArgs<ExtArgs>
-  orderedBy?: boolean | Prisma.DoctorProfileDefaultArgs<ExtArgs>
+  orderedBy?: boolean | Prisma.LabOrder$orderedByArgs<ExtArgs>
+  registration?: boolean | Prisma.RegistrationDefaultArgs<ExtArgs>
+  requestLetter?: boolean | Prisma.LabOrder$requestLetterArgs<ExtArgs>
   requestDocument?: boolean | Prisma.LabOrder$requestDocumentArgs<ExtArgs>
 }
 export type LabOrderIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  encounter?: boolean | Prisma.EncounterDefaultArgs<ExtArgs>
+  encounter?: boolean | Prisma.LabOrder$encounterArgs<ExtArgs>
   patient?: boolean | Prisma.PatientProfileDefaultArgs<ExtArgs>
-  orderedBy?: boolean | Prisma.DoctorProfileDefaultArgs<ExtArgs>
+  orderedBy?: boolean | Prisma.LabOrder$orderedByArgs<ExtArgs>
+  registration?: boolean | Prisma.RegistrationDefaultArgs<ExtArgs>
+  requestLetter?: boolean | Prisma.LabOrder$requestLetterArgs<ExtArgs>
   requestDocument?: boolean | Prisma.LabOrder$requestDocumentArgs<ExtArgs>
 }
 
 export type $LabOrderPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "LabOrder"
   objects: {
-    encounter: Prisma.$EncounterPayload<ExtArgs>
+    encounter: Prisma.$EncounterPayload<ExtArgs> | null
     patient: Prisma.$PatientProfilePayload<ExtArgs>
-    orderedBy: Prisma.$DoctorProfilePayload<ExtArgs>
+    orderedBy: Prisma.$DoctorProfilePayload<ExtArgs> | null
+    registration: Prisma.$RegistrationPayload<ExtArgs>
+    requestLetter: Prisma.$DocumentPayload<ExtArgs> | null
     items: Prisma.$LabOrderItemPayload<ExtArgs>[]
     specimens: Prisma.$LabSpecimenPayload<ExtArgs>[]
     invoiceItems: Prisma.$InvoiceItemPayload<ExtArgs>[]
@@ -2584,9 +3387,45 @@ export type $LabOrderPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    encounterId: string
+    /**
+     * Null for a request that did not come from a consultation (P18-T10).
+     * `Encounter.doctorId` is NOT NULL, so there is no honest minimal encounter
+     * to write for a walk-in: the visit is the registration instead.
+     */
+    encounterId: string | null
+    /**
+     * The visit this order belongs to, denormalised exactly as `patientId` is.
+     * The one key every order has, whichever way the request arrived, so the
+     * worklist and the bill read it rather than branching on the encounter.
+     */
+    registrationId: string
+    /**
+     * Where the request came from; decides which of the keys above and which of
+     * the requester fields below are set. Enforced by
+     * `lab_orders_source_keys_check`.
+     */
+    source: $Enums.LabOrderSource
     patientId: string
-    orderedById: string
+    /**
+     * Null when nobody at this clinic ordered it. Nullable rather than pointed
+     * at a placeholder profile: a fabricated requester is what P18-T10 exists to
+     * avoid.
+     */
+    orderedById: string | null
+    /**
+     * Who asked, when it was a doctor elsewhere. Free text, for the same reason
+     * `externalFacilityName` is — and not to be confused with it: that one names
+     * the lab we send work *out* to (P18-T11), this one names the practice the
+     * request came *in* from.
+     */
+    externalRequesterName: string | null
+    externalRequesterFacility: string | null
+    /**
+     * The surat pengantar the patient handed over, filed as their document
+     * (category REFERRAL_LETTER). `SetNull` for the same reason
+     * `requestDocumentId` is.
+     */
+    requestLetterDocumentId: string | null
     /**
      * LAB/YYYYMMDD/#### allocated from `LabOrderCounter`. What the analis
      * writes on the worksheet and what the patient is told to quote.
@@ -3035,9 +3874,11 @@ readonly fields: LabOrderFieldRefs;
  */
 export interface Prisma__LabOrderClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  encounter<T extends Prisma.EncounterDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EncounterDefaultArgs<ExtArgs>>): Prisma.Prisma__EncounterClient<runtime.Types.Result.GetResult<Prisma.$EncounterPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  encounter<T extends Prisma.LabOrder$encounterArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.LabOrder$encounterArgs<ExtArgs>>): Prisma.Prisma__EncounterClient<runtime.Types.Result.GetResult<Prisma.$EncounterPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   patient<T extends Prisma.PatientProfileDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PatientProfileDefaultArgs<ExtArgs>>): Prisma.Prisma__PatientProfileClient<runtime.Types.Result.GetResult<Prisma.$PatientProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  orderedBy<T extends Prisma.DoctorProfileDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DoctorProfileDefaultArgs<ExtArgs>>): Prisma.Prisma__DoctorProfileClient<runtime.Types.Result.GetResult<Prisma.$DoctorProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  orderedBy<T extends Prisma.LabOrder$orderedByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.LabOrder$orderedByArgs<ExtArgs>>): Prisma.Prisma__DoctorProfileClient<runtime.Types.Result.GetResult<Prisma.$DoctorProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  registration<T extends Prisma.RegistrationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RegistrationDefaultArgs<ExtArgs>>): Prisma.Prisma__RegistrationClient<runtime.Types.Result.GetResult<Prisma.$RegistrationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  requestLetter<T extends Prisma.LabOrder$requestLetterArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.LabOrder$requestLetterArgs<ExtArgs>>): Prisma.Prisma__DocumentClient<runtime.Types.Result.GetResult<Prisma.$DocumentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   items<T extends Prisma.LabOrder$itemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.LabOrder$itemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LabOrderItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   specimens<T extends Prisma.LabOrder$specimensArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.LabOrder$specimensArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LabSpecimenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   invoiceItems<T extends Prisma.LabOrder$invoiceItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.LabOrder$invoiceItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvoiceItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -3075,8 +3916,13 @@ export interface Prisma__LabOrderClient<T, Null = never, ExtArgs extends runtime
 export interface LabOrderFieldRefs {
   readonly id: Prisma.FieldRef<"LabOrder", 'String'>
   readonly encounterId: Prisma.FieldRef<"LabOrder", 'String'>
+  readonly registrationId: Prisma.FieldRef<"LabOrder", 'String'>
+  readonly source: Prisma.FieldRef<"LabOrder", 'LabOrderSource'>
   readonly patientId: Prisma.FieldRef<"LabOrder", 'String'>
   readonly orderedById: Prisma.FieldRef<"LabOrder", 'String'>
+  readonly externalRequesterName: Prisma.FieldRef<"LabOrder", 'String'>
+  readonly externalRequesterFacility: Prisma.FieldRef<"LabOrder", 'String'>
+  readonly requestLetterDocumentId: Prisma.FieldRef<"LabOrder", 'String'>
   readonly orderNumber: Prisma.FieldRef<"LabOrder", 'String'>
   readonly status: Prisma.FieldRef<"LabOrder", 'LabOrderStatus'>
   readonly priority: Prisma.FieldRef<"LabOrder", 'LabOrderPriority'>
@@ -3492,6 +4338,63 @@ export type LabOrderDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Inte
    * Limit how many LabOrders to delete.
    */
   limit?: number
+}
+
+/**
+ * LabOrder.encounter
+ */
+export type LabOrder$encounterArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Encounter
+   */
+  select?: Prisma.EncounterSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Encounter
+   */
+  omit?: Prisma.EncounterOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EncounterInclude<ExtArgs> | null
+  where?: Prisma.EncounterWhereInput
+}
+
+/**
+ * LabOrder.orderedBy
+ */
+export type LabOrder$orderedByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the DoctorProfile
+   */
+  select?: Prisma.DoctorProfileSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the DoctorProfile
+   */
+  omit?: Prisma.DoctorProfileOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DoctorProfileInclude<ExtArgs> | null
+  where?: Prisma.DoctorProfileWhereInput
+}
+
+/**
+ * LabOrder.requestLetter
+ */
+export type LabOrder$requestLetterArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Document
+   */
+  select?: Prisma.DocumentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Document
+   */
+  omit?: Prisma.DocumentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DocumentInclude<ExtArgs> | null
+  where?: Prisma.DocumentWhereInput
 }
 
 /**

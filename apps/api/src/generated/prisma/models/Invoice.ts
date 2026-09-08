@@ -51,6 +51,7 @@ export type InvoiceMinAggregateOutputType = {
   invoiceNumber: string | null
   encounterId: string | null
   admissionId: string | null
+  registrationId: string | null
   patientId: string | null
   status: $Enums.InvoiceStatus | null
   totalAmount: runtime.Decimal | null
@@ -69,6 +70,7 @@ export type InvoiceMaxAggregateOutputType = {
   invoiceNumber: string | null
   encounterId: string | null
   admissionId: string | null
+  registrationId: string | null
   patientId: string | null
   status: $Enums.InvoiceStatus | null
   totalAmount: runtime.Decimal | null
@@ -87,6 +89,7 @@ export type InvoiceCountAggregateOutputType = {
   invoiceNumber: number
   encounterId: number
   admissionId: number
+  registrationId: number
   patientId: number
   status: number
   totalAmount: number
@@ -115,6 +118,7 @@ export type InvoiceMinAggregateInputType = {
   invoiceNumber?: true
   encounterId?: true
   admissionId?: true
+  registrationId?: true
   patientId?: true
   status?: true
   totalAmount?: true
@@ -133,6 +137,7 @@ export type InvoiceMaxAggregateInputType = {
   invoiceNumber?: true
   encounterId?: true
   admissionId?: true
+  registrationId?: true
   patientId?: true
   status?: true
   totalAmount?: true
@@ -151,6 +156,7 @@ export type InvoiceCountAggregateInputType = {
   invoiceNumber?: true
   encounterId?: true
   admissionId?: true
+  registrationId?: true
   patientId?: true
   status?: true
   totalAmount?: true
@@ -256,6 +262,7 @@ export type InvoiceGroupByOutputType = {
   invoiceNumber: string
   encounterId: string | null
   admissionId: string | null
+  registrationId: string | null
   patientId: string
   status: $Enums.InvoiceStatus
   totalAmount: runtime.Decimal
@@ -297,6 +304,7 @@ export type InvoiceWhereInput = {
   invoiceNumber?: Prisma.StringFilter<"Invoice"> | string
   encounterId?: Prisma.UuidNullableFilter<"Invoice"> | string | null
   admissionId?: Prisma.UuidNullableFilter<"Invoice"> | string | null
+  registrationId?: Prisma.UuidNullableFilter<"Invoice"> | string | null
   patientId?: Prisma.UuidFilter<"Invoice"> | string
   status?: Prisma.EnumInvoiceStatusFilter<"Invoice"> | $Enums.InvoiceStatus
   totalAmount?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -310,6 +318,7 @@ export type InvoiceWhereInput = {
   deletedAt?: Prisma.DateTimeNullableFilter<"Invoice"> | Date | string | null
   encounter?: Prisma.XOR<Prisma.EncounterNullableScalarRelationFilter, Prisma.EncounterWhereInput> | null
   admission?: Prisma.XOR<Prisma.AdmissionNullableScalarRelationFilter, Prisma.AdmissionWhereInput> | null
+  registration?: Prisma.XOR<Prisma.RegistrationNullableScalarRelationFilter, Prisma.RegistrationWhereInput> | null
   patient?: Prisma.XOR<Prisma.PatientProfileScalarRelationFilter, Prisma.PatientProfileWhereInput>
   voidedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   createdBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
@@ -325,6 +334,7 @@ export type InvoiceOrderByWithRelationInput = {
   invoiceNumber?: Prisma.SortOrder
   encounterId?: Prisma.SortOrderInput | Prisma.SortOrder
   admissionId?: Prisma.SortOrderInput | Prisma.SortOrder
+  registrationId?: Prisma.SortOrderInput | Prisma.SortOrder
   patientId?: Prisma.SortOrder
   status?: Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
@@ -338,6 +348,7 @@ export type InvoiceOrderByWithRelationInput = {
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   encounter?: Prisma.EncounterOrderByWithRelationInput
   admission?: Prisma.AdmissionOrderByWithRelationInput
+  registration?: Prisma.RegistrationOrderByWithRelationInput
   patient?: Prisma.PatientProfileOrderByWithRelationInput
   voidedBy?: Prisma.UserOrderByWithRelationInput
   createdBy?: Prisma.UserOrderByWithRelationInput
@@ -356,6 +367,7 @@ export type InvoiceWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.InvoiceWhereInput | Prisma.InvoiceWhereInput[]
   encounterId?: Prisma.UuidNullableFilter<"Invoice"> | string | null
   admissionId?: Prisma.UuidNullableFilter<"Invoice"> | string | null
+  registrationId?: Prisma.UuidNullableFilter<"Invoice"> | string | null
   patientId?: Prisma.UuidFilter<"Invoice"> | string
   status?: Prisma.EnumInvoiceStatusFilter<"Invoice"> | $Enums.InvoiceStatus
   totalAmount?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -369,6 +381,7 @@ export type InvoiceWhereUniqueInput = Prisma.AtLeast<{
   deletedAt?: Prisma.DateTimeNullableFilter<"Invoice"> | Date | string | null
   encounter?: Prisma.XOR<Prisma.EncounterNullableScalarRelationFilter, Prisma.EncounterWhereInput> | null
   admission?: Prisma.XOR<Prisma.AdmissionNullableScalarRelationFilter, Prisma.AdmissionWhereInput> | null
+  registration?: Prisma.XOR<Prisma.RegistrationNullableScalarRelationFilter, Prisma.RegistrationWhereInput> | null
   patient?: Prisma.XOR<Prisma.PatientProfileScalarRelationFilter, Prisma.PatientProfileWhereInput>
   voidedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   createdBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
@@ -384,6 +397,7 @@ export type InvoiceOrderByWithAggregationInput = {
   invoiceNumber?: Prisma.SortOrder
   encounterId?: Prisma.SortOrderInput | Prisma.SortOrder
   admissionId?: Prisma.SortOrderInput | Prisma.SortOrder
+  registrationId?: Prisma.SortOrderInput | Prisma.SortOrder
   patientId?: Prisma.SortOrder
   status?: Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
@@ -410,6 +424,7 @@ export type InvoiceScalarWhereWithAggregatesInput = {
   invoiceNumber?: Prisma.StringWithAggregatesFilter<"Invoice"> | string
   encounterId?: Prisma.UuidNullableWithAggregatesFilter<"Invoice"> | string | null
   admissionId?: Prisma.UuidNullableWithAggregatesFilter<"Invoice"> | string | null
+  registrationId?: Prisma.UuidNullableWithAggregatesFilter<"Invoice"> | string | null
   patientId?: Prisma.UuidWithAggregatesFilter<"Invoice"> | string
   status?: Prisma.EnumInvoiceStatusWithAggregatesFilter<"Invoice"> | $Enums.InvoiceStatus
   totalAmount?: Prisma.DecimalWithAggregatesFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -436,6 +451,7 @@ export type InvoiceCreateInput = {
   deletedAt?: Date | string | null
   encounter?: Prisma.EncounterCreateNestedOneWithoutInvoicesInput
   admission?: Prisma.AdmissionCreateNestedOneWithoutInvoicesInput
+  registration?: Prisma.RegistrationCreateNestedOneWithoutInvoicesInput
   patient: Prisma.PatientProfileCreateNestedOneWithoutInvoicesInput
   voidedBy?: Prisma.UserCreateNestedOneWithoutVoidedInvoicesInput
   createdBy?: Prisma.UserCreateNestedOneWithoutCreatedInvoicesInput
@@ -451,6 +467,7 @@ export type InvoiceUncheckedCreateInput = {
   invoiceNumber: string
   encounterId?: string | null
   admissionId?: string | null
+  registrationId?: string | null
   patientId: string
   status?: $Enums.InvoiceStatus
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -482,6 +499,7 @@ export type InvoiceUpdateInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   encounter?: Prisma.EncounterUpdateOneWithoutInvoicesNestedInput
   admission?: Prisma.AdmissionUpdateOneWithoutInvoicesNestedInput
+  registration?: Prisma.RegistrationUpdateOneWithoutInvoicesNestedInput
   patient?: Prisma.PatientProfileUpdateOneRequiredWithoutInvoicesNestedInput
   voidedBy?: Prisma.UserUpdateOneWithoutVoidedInvoicesNestedInput
   createdBy?: Prisma.UserUpdateOneWithoutCreatedInvoicesNestedInput
@@ -497,6 +515,7 @@ export type InvoiceUncheckedUpdateInput = {
   invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
   encounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   admissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  registrationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   patientId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -520,6 +539,7 @@ export type InvoiceCreateManyInput = {
   invoiceNumber: string
   encounterId?: string | null
   admissionId?: string | null
+  registrationId?: string | null
   patientId: string
   status?: $Enums.InvoiceStatus
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -551,6 +571,7 @@ export type InvoiceUncheckedUpdateManyInput = {
   invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
   encounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   admissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  registrationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   patientId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -584,6 +605,7 @@ export type InvoiceCountOrderByAggregateInput = {
   invoiceNumber?: Prisma.SortOrder
   encounterId?: Prisma.SortOrder
   admissionId?: Prisma.SortOrder
+  registrationId?: Prisma.SortOrder
   patientId?: Prisma.SortOrder
   status?: Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
@@ -606,6 +628,7 @@ export type InvoiceMaxOrderByAggregateInput = {
   invoiceNumber?: Prisma.SortOrder
   encounterId?: Prisma.SortOrder
   admissionId?: Prisma.SortOrder
+  registrationId?: Prisma.SortOrder
   patientId?: Prisma.SortOrder
   status?: Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
@@ -624,6 +647,7 @@ export type InvoiceMinOrderByAggregateInput = {
   invoiceNumber?: Prisma.SortOrder
   encounterId?: Prisma.SortOrder
   admissionId?: Prisma.SortOrder
+  registrationId?: Prisma.SortOrder
   patientId?: Prisma.SortOrder
   status?: Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
@@ -788,6 +812,48 @@ export type InvoiceUpdateOneWithoutDeliveriesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.InvoiceUpdateToOneWithWhereWithoutDeliveriesInput, Prisma.InvoiceUpdateWithoutDeliveriesInput>, Prisma.InvoiceUncheckedUpdateWithoutDeliveriesInput>
 }
 
+export type InvoiceCreateNestedManyWithoutRegistrationInput = {
+  create?: Prisma.XOR<Prisma.InvoiceCreateWithoutRegistrationInput, Prisma.InvoiceUncheckedCreateWithoutRegistrationInput> | Prisma.InvoiceCreateWithoutRegistrationInput[] | Prisma.InvoiceUncheckedCreateWithoutRegistrationInput[]
+  connectOrCreate?: Prisma.InvoiceCreateOrConnectWithoutRegistrationInput | Prisma.InvoiceCreateOrConnectWithoutRegistrationInput[]
+  createMany?: Prisma.InvoiceCreateManyRegistrationInputEnvelope
+  connect?: Prisma.InvoiceWhereUniqueInput | Prisma.InvoiceWhereUniqueInput[]
+}
+
+export type InvoiceUncheckedCreateNestedManyWithoutRegistrationInput = {
+  create?: Prisma.XOR<Prisma.InvoiceCreateWithoutRegistrationInput, Prisma.InvoiceUncheckedCreateWithoutRegistrationInput> | Prisma.InvoiceCreateWithoutRegistrationInput[] | Prisma.InvoiceUncheckedCreateWithoutRegistrationInput[]
+  connectOrCreate?: Prisma.InvoiceCreateOrConnectWithoutRegistrationInput | Prisma.InvoiceCreateOrConnectWithoutRegistrationInput[]
+  createMany?: Prisma.InvoiceCreateManyRegistrationInputEnvelope
+  connect?: Prisma.InvoiceWhereUniqueInput | Prisma.InvoiceWhereUniqueInput[]
+}
+
+export type InvoiceUpdateManyWithoutRegistrationNestedInput = {
+  create?: Prisma.XOR<Prisma.InvoiceCreateWithoutRegistrationInput, Prisma.InvoiceUncheckedCreateWithoutRegistrationInput> | Prisma.InvoiceCreateWithoutRegistrationInput[] | Prisma.InvoiceUncheckedCreateWithoutRegistrationInput[]
+  connectOrCreate?: Prisma.InvoiceCreateOrConnectWithoutRegistrationInput | Prisma.InvoiceCreateOrConnectWithoutRegistrationInput[]
+  upsert?: Prisma.InvoiceUpsertWithWhereUniqueWithoutRegistrationInput | Prisma.InvoiceUpsertWithWhereUniqueWithoutRegistrationInput[]
+  createMany?: Prisma.InvoiceCreateManyRegistrationInputEnvelope
+  set?: Prisma.InvoiceWhereUniqueInput | Prisma.InvoiceWhereUniqueInput[]
+  disconnect?: Prisma.InvoiceWhereUniqueInput | Prisma.InvoiceWhereUniqueInput[]
+  delete?: Prisma.InvoiceWhereUniqueInput | Prisma.InvoiceWhereUniqueInput[]
+  connect?: Prisma.InvoiceWhereUniqueInput | Prisma.InvoiceWhereUniqueInput[]
+  update?: Prisma.InvoiceUpdateWithWhereUniqueWithoutRegistrationInput | Prisma.InvoiceUpdateWithWhereUniqueWithoutRegistrationInput[]
+  updateMany?: Prisma.InvoiceUpdateManyWithWhereWithoutRegistrationInput | Prisma.InvoiceUpdateManyWithWhereWithoutRegistrationInput[]
+  deleteMany?: Prisma.InvoiceScalarWhereInput | Prisma.InvoiceScalarWhereInput[]
+}
+
+export type InvoiceUncheckedUpdateManyWithoutRegistrationNestedInput = {
+  create?: Prisma.XOR<Prisma.InvoiceCreateWithoutRegistrationInput, Prisma.InvoiceUncheckedCreateWithoutRegistrationInput> | Prisma.InvoiceCreateWithoutRegistrationInput[] | Prisma.InvoiceUncheckedCreateWithoutRegistrationInput[]
+  connectOrCreate?: Prisma.InvoiceCreateOrConnectWithoutRegistrationInput | Prisma.InvoiceCreateOrConnectWithoutRegistrationInput[]
+  upsert?: Prisma.InvoiceUpsertWithWhereUniqueWithoutRegistrationInput | Prisma.InvoiceUpsertWithWhereUniqueWithoutRegistrationInput[]
+  createMany?: Prisma.InvoiceCreateManyRegistrationInputEnvelope
+  set?: Prisma.InvoiceWhereUniqueInput | Prisma.InvoiceWhereUniqueInput[]
+  disconnect?: Prisma.InvoiceWhereUniqueInput | Prisma.InvoiceWhereUniqueInput[]
+  delete?: Prisma.InvoiceWhereUniqueInput | Prisma.InvoiceWhereUniqueInput[]
+  connect?: Prisma.InvoiceWhereUniqueInput | Prisma.InvoiceWhereUniqueInput[]
+  update?: Prisma.InvoiceUpdateWithWhereUniqueWithoutRegistrationInput | Prisma.InvoiceUpdateWithWhereUniqueWithoutRegistrationInput[]
+  updateMany?: Prisma.InvoiceUpdateManyWithWhereWithoutRegistrationInput | Prisma.InvoiceUpdateManyWithWhereWithoutRegistrationInput[]
+  deleteMany?: Prisma.InvoiceScalarWhereInput | Prisma.InvoiceScalarWhereInput[]
+}
+
 export type InvoiceCreateNestedManyWithoutEncounterInput = {
   create?: Prisma.XOR<Prisma.InvoiceCreateWithoutEncounterInput, Prisma.InvoiceUncheckedCreateWithoutEncounterInput> | Prisma.InvoiceCreateWithoutEncounterInput[] | Prisma.InvoiceUncheckedCreateWithoutEncounterInput[]
   connectOrCreate?: Prisma.InvoiceCreateOrConnectWithoutEncounterInput | Prisma.InvoiceCreateOrConnectWithoutEncounterInput[]
@@ -947,6 +1013,7 @@ export type InvoiceCreateWithoutCreatedByInput = {
   deletedAt?: Date | string | null
   encounter?: Prisma.EncounterCreateNestedOneWithoutInvoicesInput
   admission?: Prisma.AdmissionCreateNestedOneWithoutInvoicesInput
+  registration?: Prisma.RegistrationCreateNestedOneWithoutInvoicesInput
   patient: Prisma.PatientProfileCreateNestedOneWithoutInvoicesInput
   voidedBy?: Prisma.UserCreateNestedOneWithoutVoidedInvoicesInput
   items?: Prisma.InvoiceItemCreateNestedManyWithoutInvoiceInput
@@ -961,6 +1028,7 @@ export type InvoiceUncheckedCreateWithoutCreatedByInput = {
   invoiceNumber: string
   encounterId?: string | null
   admissionId?: string | null
+  registrationId?: string | null
   patientId: string
   status?: $Enums.InvoiceStatus
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1001,6 +1069,7 @@ export type InvoiceCreateWithoutVoidedByInput = {
   deletedAt?: Date | string | null
   encounter?: Prisma.EncounterCreateNestedOneWithoutInvoicesInput
   admission?: Prisma.AdmissionCreateNestedOneWithoutInvoicesInput
+  registration?: Prisma.RegistrationCreateNestedOneWithoutInvoicesInput
   patient: Prisma.PatientProfileCreateNestedOneWithoutInvoicesInput
   createdBy?: Prisma.UserCreateNestedOneWithoutCreatedInvoicesInput
   items?: Prisma.InvoiceItemCreateNestedManyWithoutInvoiceInput
@@ -1015,6 +1084,7 @@ export type InvoiceUncheckedCreateWithoutVoidedByInput = {
   invoiceNumber: string
   encounterId?: string | null
   admissionId?: string | null
+  registrationId?: string | null
   patientId: string
   status?: $Enums.InvoiceStatus
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1066,6 +1136,7 @@ export type InvoiceScalarWhereInput = {
   invoiceNumber?: Prisma.StringFilter<"Invoice"> | string
   encounterId?: Prisma.UuidNullableFilter<"Invoice"> | string | null
   admissionId?: Prisma.UuidNullableFilter<"Invoice"> | string | null
+  registrationId?: Prisma.UuidNullableFilter<"Invoice"> | string | null
   patientId?: Prisma.UuidFilter<"Invoice"> | string
   status?: Prisma.EnumInvoiceStatusFilter<"Invoice"> | $Enums.InvoiceStatus
   totalAmount?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1108,6 +1179,7 @@ export type InvoiceCreateWithoutPatientInput = {
   deletedAt?: Date | string | null
   encounter?: Prisma.EncounterCreateNestedOneWithoutInvoicesInput
   admission?: Prisma.AdmissionCreateNestedOneWithoutInvoicesInput
+  registration?: Prisma.RegistrationCreateNestedOneWithoutInvoicesInput
   voidedBy?: Prisma.UserCreateNestedOneWithoutVoidedInvoicesInput
   createdBy?: Prisma.UserCreateNestedOneWithoutCreatedInvoicesInput
   items?: Prisma.InvoiceItemCreateNestedManyWithoutInvoiceInput
@@ -1122,6 +1194,7 @@ export type InvoiceUncheckedCreateWithoutPatientInput = {
   invoiceNumber: string
   encounterId?: string | null
   admissionId?: string | null
+  registrationId?: string | null
   status?: $Enums.InvoiceStatus
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Date | string | null
@@ -1178,6 +1251,7 @@ export type InvoiceCreateWithoutDeliveriesInput = {
   deletedAt?: Date | string | null
   encounter?: Prisma.EncounterCreateNestedOneWithoutInvoicesInput
   admission?: Prisma.AdmissionCreateNestedOneWithoutInvoicesInput
+  registration?: Prisma.RegistrationCreateNestedOneWithoutInvoicesInput
   patient: Prisma.PatientProfileCreateNestedOneWithoutInvoicesInput
   voidedBy?: Prisma.UserCreateNestedOneWithoutVoidedInvoicesInput
   createdBy?: Prisma.UserCreateNestedOneWithoutCreatedInvoicesInput
@@ -1192,6 +1266,7 @@ export type InvoiceUncheckedCreateWithoutDeliveriesInput = {
   invoiceNumber: string
   encounterId?: string | null
   admissionId?: string | null
+  registrationId?: string | null
   patientId: string
   status?: $Enums.InvoiceStatus
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1238,6 +1313,7 @@ export type InvoiceUpdateWithoutDeliveriesInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   encounter?: Prisma.EncounterUpdateOneWithoutInvoicesNestedInput
   admission?: Prisma.AdmissionUpdateOneWithoutInvoicesNestedInput
+  registration?: Prisma.RegistrationUpdateOneWithoutInvoicesNestedInput
   patient?: Prisma.PatientProfileUpdateOneRequiredWithoutInvoicesNestedInput
   voidedBy?: Prisma.UserUpdateOneWithoutVoidedInvoicesNestedInput
   createdBy?: Prisma.UserUpdateOneWithoutCreatedInvoicesNestedInput
@@ -1252,6 +1328,7 @@ export type InvoiceUncheckedUpdateWithoutDeliveriesInput = {
   invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
   encounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   admissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  registrationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   patientId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1269,6 +1346,78 @@ export type InvoiceUncheckedUpdateWithoutDeliveriesInput = {
   managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutSubjectInvoiceNestedInput
 }
 
+export type InvoiceCreateWithoutRegistrationInput = {
+  id?: string
+  invoiceNumber: string
+  status?: $Enums.InvoiceStatus
+  totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  issuedAt?: Date | string | null
+  voidedAt?: Date | string | null
+  voidReason?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  encounter?: Prisma.EncounterCreateNestedOneWithoutInvoicesInput
+  admission?: Prisma.AdmissionCreateNestedOneWithoutInvoicesInput
+  patient: Prisma.PatientProfileCreateNestedOneWithoutInvoicesInput
+  voidedBy?: Prisma.UserCreateNestedOneWithoutVoidedInvoicesInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutCreatedInvoicesInput
+  items?: Prisma.InvoiceItemCreateNestedManyWithoutInvoiceInput
+  payment?: Prisma.PaymentCreateNestedOneWithoutInvoiceInput
+  documents?: Prisma.InvoiceDocumentCreateNestedManyWithoutInvoiceInput
+  deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutInvoiceInput
+  managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutSubjectInvoiceInput
+}
+
+export type InvoiceUncheckedCreateWithoutRegistrationInput = {
+  id?: string
+  invoiceNumber: string
+  encounterId?: string | null
+  admissionId?: string | null
+  patientId: string
+  status?: $Enums.InvoiceStatus
+  totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  issuedAt?: Date | string | null
+  voidedAt?: Date | string | null
+  voidReason?: string | null
+  voidedById?: string | null
+  createdById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  items?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutInvoiceInput
+  payment?: Prisma.PaymentUncheckedCreateNestedOneWithoutInvoiceInput
+  documents?: Prisma.InvoiceDocumentUncheckedCreateNestedManyWithoutInvoiceInput
+  deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutInvoiceInput
+  managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutSubjectInvoiceInput
+}
+
+export type InvoiceCreateOrConnectWithoutRegistrationInput = {
+  where: Prisma.InvoiceWhereUniqueInput
+  create: Prisma.XOR<Prisma.InvoiceCreateWithoutRegistrationInput, Prisma.InvoiceUncheckedCreateWithoutRegistrationInput>
+}
+
+export type InvoiceCreateManyRegistrationInputEnvelope = {
+  data: Prisma.InvoiceCreateManyRegistrationInput | Prisma.InvoiceCreateManyRegistrationInput[]
+  skipDuplicates?: boolean
+}
+
+export type InvoiceUpsertWithWhereUniqueWithoutRegistrationInput = {
+  where: Prisma.InvoiceWhereUniqueInput
+  update: Prisma.XOR<Prisma.InvoiceUpdateWithoutRegistrationInput, Prisma.InvoiceUncheckedUpdateWithoutRegistrationInput>
+  create: Prisma.XOR<Prisma.InvoiceCreateWithoutRegistrationInput, Prisma.InvoiceUncheckedCreateWithoutRegistrationInput>
+}
+
+export type InvoiceUpdateWithWhereUniqueWithoutRegistrationInput = {
+  where: Prisma.InvoiceWhereUniqueInput
+  data: Prisma.XOR<Prisma.InvoiceUpdateWithoutRegistrationInput, Prisma.InvoiceUncheckedUpdateWithoutRegistrationInput>
+}
+
+export type InvoiceUpdateManyWithWhereWithoutRegistrationInput = {
+  where: Prisma.InvoiceScalarWhereInput
+  data: Prisma.XOR<Prisma.InvoiceUpdateManyMutationInput, Prisma.InvoiceUncheckedUpdateManyWithoutRegistrationInput>
+}
+
 export type InvoiceCreateWithoutEncounterInput = {
   id?: string
   invoiceNumber: string
@@ -1281,6 +1430,7 @@ export type InvoiceCreateWithoutEncounterInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   admission?: Prisma.AdmissionCreateNestedOneWithoutInvoicesInput
+  registration?: Prisma.RegistrationCreateNestedOneWithoutInvoicesInput
   patient: Prisma.PatientProfileCreateNestedOneWithoutInvoicesInput
   voidedBy?: Prisma.UserCreateNestedOneWithoutVoidedInvoicesInput
   createdBy?: Prisma.UserCreateNestedOneWithoutCreatedInvoicesInput
@@ -1295,6 +1445,7 @@ export type InvoiceUncheckedCreateWithoutEncounterInput = {
   id?: string
   invoiceNumber: string
   admissionId?: string | null
+  registrationId?: string | null
   patientId: string
   status?: $Enums.InvoiceStatus
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1352,6 +1503,7 @@ export type InvoiceCreateWithoutItemsInput = {
   deletedAt?: Date | string | null
   encounter?: Prisma.EncounterCreateNestedOneWithoutInvoicesInput
   admission?: Prisma.AdmissionCreateNestedOneWithoutInvoicesInput
+  registration?: Prisma.RegistrationCreateNestedOneWithoutInvoicesInput
   patient: Prisma.PatientProfileCreateNestedOneWithoutInvoicesInput
   voidedBy?: Prisma.UserCreateNestedOneWithoutVoidedInvoicesInput
   createdBy?: Prisma.UserCreateNestedOneWithoutCreatedInvoicesInput
@@ -1366,6 +1518,7 @@ export type InvoiceUncheckedCreateWithoutItemsInput = {
   invoiceNumber: string
   encounterId?: string | null
   admissionId?: string | null
+  registrationId?: string | null
   patientId: string
   status?: $Enums.InvoiceStatus
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1412,6 +1565,7 @@ export type InvoiceUpdateWithoutItemsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   encounter?: Prisma.EncounterUpdateOneWithoutInvoicesNestedInput
   admission?: Prisma.AdmissionUpdateOneWithoutInvoicesNestedInput
+  registration?: Prisma.RegistrationUpdateOneWithoutInvoicesNestedInput
   patient?: Prisma.PatientProfileUpdateOneRequiredWithoutInvoicesNestedInput
   voidedBy?: Prisma.UserUpdateOneWithoutVoidedInvoicesNestedInput
   createdBy?: Prisma.UserUpdateOneWithoutCreatedInvoicesNestedInput
@@ -1426,6 +1580,7 @@ export type InvoiceUncheckedUpdateWithoutItemsInput = {
   invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
   encounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   admissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  registrationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   patientId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1456,6 +1611,7 @@ export type InvoiceCreateWithoutPaymentInput = {
   deletedAt?: Date | string | null
   encounter?: Prisma.EncounterCreateNestedOneWithoutInvoicesInput
   admission?: Prisma.AdmissionCreateNestedOneWithoutInvoicesInput
+  registration?: Prisma.RegistrationCreateNestedOneWithoutInvoicesInput
   patient: Prisma.PatientProfileCreateNestedOneWithoutInvoicesInput
   voidedBy?: Prisma.UserCreateNestedOneWithoutVoidedInvoicesInput
   createdBy?: Prisma.UserCreateNestedOneWithoutCreatedInvoicesInput
@@ -1470,6 +1626,7 @@ export type InvoiceUncheckedCreateWithoutPaymentInput = {
   invoiceNumber: string
   encounterId?: string | null
   admissionId?: string | null
+  registrationId?: string | null
   patientId: string
   status?: $Enums.InvoiceStatus
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1516,6 +1673,7 @@ export type InvoiceUpdateWithoutPaymentInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   encounter?: Prisma.EncounterUpdateOneWithoutInvoicesNestedInput
   admission?: Prisma.AdmissionUpdateOneWithoutInvoicesNestedInput
+  registration?: Prisma.RegistrationUpdateOneWithoutInvoicesNestedInput
   patient?: Prisma.PatientProfileUpdateOneRequiredWithoutInvoicesNestedInput
   voidedBy?: Prisma.UserUpdateOneWithoutVoidedInvoicesNestedInput
   createdBy?: Prisma.UserUpdateOneWithoutCreatedInvoicesNestedInput
@@ -1530,6 +1688,7 @@ export type InvoiceUncheckedUpdateWithoutPaymentInput = {
   invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
   encounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   admissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  registrationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   patientId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1560,6 +1719,7 @@ export type InvoiceCreateWithoutDocumentsInput = {
   deletedAt?: Date | string | null
   encounter?: Prisma.EncounterCreateNestedOneWithoutInvoicesInput
   admission?: Prisma.AdmissionCreateNestedOneWithoutInvoicesInput
+  registration?: Prisma.RegistrationCreateNestedOneWithoutInvoicesInput
   patient: Prisma.PatientProfileCreateNestedOneWithoutInvoicesInput
   voidedBy?: Prisma.UserCreateNestedOneWithoutVoidedInvoicesInput
   createdBy?: Prisma.UserCreateNestedOneWithoutCreatedInvoicesInput
@@ -1574,6 +1734,7 @@ export type InvoiceUncheckedCreateWithoutDocumentsInput = {
   invoiceNumber: string
   encounterId?: string | null
   admissionId?: string | null
+  registrationId?: string | null
   patientId: string
   status?: $Enums.InvoiceStatus
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1620,6 +1781,7 @@ export type InvoiceUpdateWithoutDocumentsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   encounter?: Prisma.EncounterUpdateOneWithoutInvoicesNestedInput
   admission?: Prisma.AdmissionUpdateOneWithoutInvoicesNestedInput
+  registration?: Prisma.RegistrationUpdateOneWithoutInvoicesNestedInput
   patient?: Prisma.PatientProfileUpdateOneRequiredWithoutInvoicesNestedInput
   voidedBy?: Prisma.UserUpdateOneWithoutVoidedInvoicesNestedInput
   createdBy?: Prisma.UserUpdateOneWithoutCreatedInvoicesNestedInput
@@ -1634,6 +1796,7 @@ export type InvoiceUncheckedUpdateWithoutDocumentsInput = {
   invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
   encounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   admissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  registrationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   patientId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1663,6 +1826,7 @@ export type InvoiceCreateWithoutAdmissionInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   encounter?: Prisma.EncounterCreateNestedOneWithoutInvoicesInput
+  registration?: Prisma.RegistrationCreateNestedOneWithoutInvoicesInput
   patient: Prisma.PatientProfileCreateNestedOneWithoutInvoicesInput
   voidedBy?: Prisma.UserCreateNestedOneWithoutVoidedInvoicesInput
   createdBy?: Prisma.UserCreateNestedOneWithoutCreatedInvoicesInput
@@ -1677,6 +1841,7 @@ export type InvoiceUncheckedCreateWithoutAdmissionInput = {
   id?: string
   invoiceNumber: string
   encounterId?: string | null
+  registrationId?: string | null
   patientId: string
   status?: $Enums.InvoiceStatus
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1734,6 +1899,7 @@ export type InvoiceCreateWithoutManagedDocumentsInput = {
   deletedAt?: Date | string | null
   encounter?: Prisma.EncounterCreateNestedOneWithoutInvoicesInput
   admission?: Prisma.AdmissionCreateNestedOneWithoutInvoicesInput
+  registration?: Prisma.RegistrationCreateNestedOneWithoutInvoicesInput
   patient: Prisma.PatientProfileCreateNestedOneWithoutInvoicesInput
   voidedBy?: Prisma.UserCreateNestedOneWithoutVoidedInvoicesInput
   createdBy?: Prisma.UserCreateNestedOneWithoutCreatedInvoicesInput
@@ -1748,6 +1914,7 @@ export type InvoiceUncheckedCreateWithoutManagedDocumentsInput = {
   invoiceNumber: string
   encounterId?: string | null
   admissionId?: string | null
+  registrationId?: string | null
   patientId: string
   status?: $Enums.InvoiceStatus
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1794,6 +1961,7 @@ export type InvoiceUpdateWithoutManagedDocumentsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   encounter?: Prisma.EncounterUpdateOneWithoutInvoicesNestedInput
   admission?: Prisma.AdmissionUpdateOneWithoutInvoicesNestedInput
+  registration?: Prisma.RegistrationUpdateOneWithoutInvoicesNestedInput
   patient?: Prisma.PatientProfileUpdateOneRequiredWithoutInvoicesNestedInput
   voidedBy?: Prisma.UserUpdateOneWithoutVoidedInvoicesNestedInput
   createdBy?: Prisma.UserUpdateOneWithoutCreatedInvoicesNestedInput
@@ -1808,6 +1976,7 @@ export type InvoiceUncheckedUpdateWithoutManagedDocumentsInput = {
   invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
   encounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   admissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  registrationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   patientId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1830,6 +1999,7 @@ export type InvoiceCreateManyCreatedByInput = {
   invoiceNumber: string
   encounterId?: string | null
   admissionId?: string | null
+  registrationId?: string | null
   patientId: string
   status?: $Enums.InvoiceStatus
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1847,6 +2017,7 @@ export type InvoiceCreateManyVoidedByInput = {
   invoiceNumber: string
   encounterId?: string | null
   admissionId?: string | null
+  registrationId?: string | null
   patientId: string
   status?: $Enums.InvoiceStatus
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1872,6 +2043,7 @@ export type InvoiceUpdateWithoutCreatedByInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   encounter?: Prisma.EncounterUpdateOneWithoutInvoicesNestedInput
   admission?: Prisma.AdmissionUpdateOneWithoutInvoicesNestedInput
+  registration?: Prisma.RegistrationUpdateOneWithoutInvoicesNestedInput
   patient?: Prisma.PatientProfileUpdateOneRequiredWithoutInvoicesNestedInput
   voidedBy?: Prisma.UserUpdateOneWithoutVoidedInvoicesNestedInput
   items?: Prisma.InvoiceItemUpdateManyWithoutInvoiceNestedInput
@@ -1886,6 +2058,7 @@ export type InvoiceUncheckedUpdateWithoutCreatedByInput = {
   invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
   encounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   admissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  registrationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   patientId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1908,6 +2081,7 @@ export type InvoiceUncheckedUpdateManyWithoutCreatedByInput = {
   invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
   encounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   admissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  registrationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   patientId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1933,6 +2107,7 @@ export type InvoiceUpdateWithoutVoidedByInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   encounter?: Prisma.EncounterUpdateOneWithoutInvoicesNestedInput
   admission?: Prisma.AdmissionUpdateOneWithoutInvoicesNestedInput
+  registration?: Prisma.RegistrationUpdateOneWithoutInvoicesNestedInput
   patient?: Prisma.PatientProfileUpdateOneRequiredWithoutInvoicesNestedInput
   createdBy?: Prisma.UserUpdateOneWithoutCreatedInvoicesNestedInput
   items?: Prisma.InvoiceItemUpdateManyWithoutInvoiceNestedInput
@@ -1947,6 +2122,7 @@ export type InvoiceUncheckedUpdateWithoutVoidedByInput = {
   invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
   encounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   admissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  registrationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   patientId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1969,6 +2145,7 @@ export type InvoiceUncheckedUpdateManyWithoutVoidedByInput = {
   invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
   encounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   admissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  registrationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   patientId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1986,6 +2163,7 @@ export type InvoiceCreateManyPatientInput = {
   invoiceNumber: string
   encounterId?: string | null
   admissionId?: string | null
+  registrationId?: string | null
   status?: $Enums.InvoiceStatus
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Date | string | null
@@ -2011,6 +2189,7 @@ export type InvoiceUpdateWithoutPatientInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   encounter?: Prisma.EncounterUpdateOneWithoutInvoicesNestedInput
   admission?: Prisma.AdmissionUpdateOneWithoutInvoicesNestedInput
+  registration?: Prisma.RegistrationUpdateOneWithoutInvoicesNestedInput
   voidedBy?: Prisma.UserUpdateOneWithoutVoidedInvoicesNestedInput
   createdBy?: Prisma.UserUpdateOneWithoutCreatedInvoicesNestedInput
   items?: Prisma.InvoiceItemUpdateManyWithoutInvoiceNestedInput
@@ -2025,6 +2204,7 @@ export type InvoiceUncheckedUpdateWithoutPatientInput = {
   invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
   encounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   admissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  registrationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2047,6 +2227,89 @@ export type InvoiceUncheckedUpdateManyWithoutPatientInput = {
   invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
   encounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   admissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  registrationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
+  totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voidedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+}
+
+export type InvoiceCreateManyRegistrationInput = {
+  id?: string
+  invoiceNumber: string
+  encounterId?: string | null
+  admissionId?: string | null
+  patientId: string
+  status?: $Enums.InvoiceStatus
+  totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  issuedAt?: Date | string | null
+  voidedAt?: Date | string | null
+  voidReason?: string | null
+  voidedById?: string | null
+  createdById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+}
+
+export type InvoiceUpdateWithoutRegistrationInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
+  totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  encounter?: Prisma.EncounterUpdateOneWithoutInvoicesNestedInput
+  admission?: Prisma.AdmissionUpdateOneWithoutInvoicesNestedInput
+  patient?: Prisma.PatientProfileUpdateOneRequiredWithoutInvoicesNestedInput
+  voidedBy?: Prisma.UserUpdateOneWithoutVoidedInvoicesNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutCreatedInvoicesNestedInput
+  items?: Prisma.InvoiceItemUpdateManyWithoutInvoiceNestedInput
+  payment?: Prisma.PaymentUpdateOneWithoutInvoiceNestedInput
+  documents?: Prisma.InvoiceDocumentUpdateManyWithoutInvoiceNestedInput
+  deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutInvoiceNestedInput
+  managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutSubjectInvoiceNestedInput
+}
+
+export type InvoiceUncheckedUpdateWithoutRegistrationInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  encounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  patientId?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
+  totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voidedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  items?: Prisma.InvoiceItemUncheckedUpdateManyWithoutInvoiceNestedInput
+  payment?: Prisma.PaymentUncheckedUpdateOneWithoutInvoiceNestedInput
+  documents?: Prisma.InvoiceDocumentUncheckedUpdateManyWithoutInvoiceNestedInput
+  deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutInvoiceNestedInput
+  managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutSubjectInvoiceNestedInput
+}
+
+export type InvoiceUncheckedUpdateManyWithoutRegistrationInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  encounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  patientId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2063,6 +2326,7 @@ export type InvoiceCreateManyEncounterInput = {
   id?: string
   invoiceNumber: string
   admissionId?: string | null
+  registrationId?: string | null
   patientId: string
   status?: $Enums.InvoiceStatus
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -2088,6 +2352,7 @@ export type InvoiceUpdateWithoutEncounterInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   admission?: Prisma.AdmissionUpdateOneWithoutInvoicesNestedInput
+  registration?: Prisma.RegistrationUpdateOneWithoutInvoicesNestedInput
   patient?: Prisma.PatientProfileUpdateOneRequiredWithoutInvoicesNestedInput
   voidedBy?: Prisma.UserUpdateOneWithoutVoidedInvoicesNestedInput
   createdBy?: Prisma.UserUpdateOneWithoutCreatedInvoicesNestedInput
@@ -2102,6 +2367,7 @@ export type InvoiceUncheckedUpdateWithoutEncounterInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
   admissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  registrationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   patientId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -2124,6 +2390,7 @@ export type InvoiceUncheckedUpdateManyWithoutEncounterInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
   admissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  registrationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   patientId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -2141,6 +2408,7 @@ export type InvoiceCreateManyAdmissionInput = {
   id?: string
   invoiceNumber: string
   encounterId?: string | null
+  registrationId?: string | null
   patientId: string
   status?: $Enums.InvoiceStatus
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -2166,6 +2434,7 @@ export type InvoiceUpdateWithoutAdmissionInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   encounter?: Prisma.EncounterUpdateOneWithoutInvoicesNestedInput
+  registration?: Prisma.RegistrationUpdateOneWithoutInvoicesNestedInput
   patient?: Prisma.PatientProfileUpdateOneRequiredWithoutInvoicesNestedInput
   voidedBy?: Prisma.UserUpdateOneWithoutVoidedInvoicesNestedInput
   createdBy?: Prisma.UserUpdateOneWithoutCreatedInvoicesNestedInput
@@ -2180,6 +2449,7 @@ export type InvoiceUncheckedUpdateWithoutAdmissionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
   encounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  registrationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   patientId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -2202,6 +2472,7 @@ export type InvoiceUncheckedUpdateManyWithoutAdmissionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
   encounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  registrationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   patientId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -2278,6 +2549,7 @@ export type InvoiceSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   invoiceNumber?: boolean
   encounterId?: boolean
   admissionId?: boolean
+  registrationId?: boolean
   patientId?: boolean
   status?: boolean
   totalAmount?: boolean
@@ -2291,6 +2563,7 @@ export type InvoiceSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   deletedAt?: boolean
   encounter?: boolean | Prisma.Invoice$encounterArgs<ExtArgs>
   admission?: boolean | Prisma.Invoice$admissionArgs<ExtArgs>
+  registration?: boolean | Prisma.Invoice$registrationArgs<ExtArgs>
   patient?: boolean | Prisma.PatientProfileDefaultArgs<ExtArgs>
   voidedBy?: boolean | Prisma.Invoice$voidedByArgs<ExtArgs>
   createdBy?: boolean | Prisma.Invoice$createdByArgs<ExtArgs>
@@ -2307,6 +2580,7 @@ export type InvoiceSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   invoiceNumber?: boolean
   encounterId?: boolean
   admissionId?: boolean
+  registrationId?: boolean
   patientId?: boolean
   status?: boolean
   totalAmount?: boolean
@@ -2320,6 +2594,7 @@ export type InvoiceSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   deletedAt?: boolean
   encounter?: boolean | Prisma.Invoice$encounterArgs<ExtArgs>
   admission?: boolean | Prisma.Invoice$admissionArgs<ExtArgs>
+  registration?: boolean | Prisma.Invoice$registrationArgs<ExtArgs>
   patient?: boolean | Prisma.PatientProfileDefaultArgs<ExtArgs>
   voidedBy?: boolean | Prisma.Invoice$voidedByArgs<ExtArgs>
   createdBy?: boolean | Prisma.Invoice$createdByArgs<ExtArgs>
@@ -2330,6 +2605,7 @@ export type InvoiceSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   invoiceNumber?: boolean
   encounterId?: boolean
   admissionId?: boolean
+  registrationId?: boolean
   patientId?: boolean
   status?: boolean
   totalAmount?: boolean
@@ -2343,6 +2619,7 @@ export type InvoiceSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   deletedAt?: boolean
   encounter?: boolean | Prisma.Invoice$encounterArgs<ExtArgs>
   admission?: boolean | Prisma.Invoice$admissionArgs<ExtArgs>
+  registration?: boolean | Prisma.Invoice$registrationArgs<ExtArgs>
   patient?: boolean | Prisma.PatientProfileDefaultArgs<ExtArgs>
   voidedBy?: boolean | Prisma.Invoice$voidedByArgs<ExtArgs>
   createdBy?: boolean | Prisma.Invoice$createdByArgs<ExtArgs>
@@ -2353,6 +2630,7 @@ export type InvoiceSelectScalar = {
   invoiceNumber?: boolean
   encounterId?: boolean
   admissionId?: boolean
+  registrationId?: boolean
   patientId?: boolean
   status?: boolean
   totalAmount?: boolean
@@ -2366,10 +2644,11 @@ export type InvoiceSelectScalar = {
   deletedAt?: boolean
 }
 
-export type InvoiceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "invoiceNumber" | "encounterId" | "admissionId" | "patientId" | "status" | "totalAmount" | "issuedAt" | "voidedAt" | "voidReason" | "voidedById" | "createdById" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["invoice"]>
+export type InvoiceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "invoiceNumber" | "encounterId" | "admissionId" | "registrationId" | "patientId" | "status" | "totalAmount" | "issuedAt" | "voidedAt" | "voidReason" | "voidedById" | "createdById" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["invoice"]>
 export type InvoiceInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   encounter?: boolean | Prisma.Invoice$encounterArgs<ExtArgs>
   admission?: boolean | Prisma.Invoice$admissionArgs<ExtArgs>
+  registration?: boolean | Prisma.Invoice$registrationArgs<ExtArgs>
   patient?: boolean | Prisma.PatientProfileDefaultArgs<ExtArgs>
   voidedBy?: boolean | Prisma.Invoice$voidedByArgs<ExtArgs>
   createdBy?: boolean | Prisma.Invoice$createdByArgs<ExtArgs>
@@ -2383,6 +2662,7 @@ export type InvoiceInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
 export type InvoiceIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   encounter?: boolean | Prisma.Invoice$encounterArgs<ExtArgs>
   admission?: boolean | Prisma.Invoice$admissionArgs<ExtArgs>
+  registration?: boolean | Prisma.Invoice$registrationArgs<ExtArgs>
   patient?: boolean | Prisma.PatientProfileDefaultArgs<ExtArgs>
   voidedBy?: boolean | Prisma.Invoice$voidedByArgs<ExtArgs>
   createdBy?: boolean | Prisma.Invoice$createdByArgs<ExtArgs>
@@ -2390,6 +2670,7 @@ export type InvoiceIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
 export type InvoiceIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   encounter?: boolean | Prisma.Invoice$encounterArgs<ExtArgs>
   admission?: boolean | Prisma.Invoice$admissionArgs<ExtArgs>
+  registration?: boolean | Prisma.Invoice$registrationArgs<ExtArgs>
   patient?: boolean | Prisma.PatientProfileDefaultArgs<ExtArgs>
   voidedBy?: boolean | Prisma.Invoice$voidedByArgs<ExtArgs>
   createdBy?: boolean | Prisma.Invoice$createdByArgs<ExtArgs>
@@ -2400,6 +2681,7 @@ export type $InvoicePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   objects: {
     encounter: Prisma.$EncounterPayload<ExtArgs> | null
     admission: Prisma.$AdmissionPayload<ExtArgs> | null
+    registration: Prisma.$RegistrationPayload<ExtArgs> | null
     patient: Prisma.$PatientProfilePayload<ExtArgs>
     voidedBy: Prisma.$UserPayload<ExtArgs> | null
     createdBy: Prisma.$UserPayload<ExtArgs> | null
@@ -2425,6 +2707,14 @@ export type $InvoicePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
      * admission while letting voided ones accumulate.
      */
     admissionId: string | null
+    /**
+     * The walk-in visit this bill is for (P18-T10). A LAB_ONLY registration has
+     * neither an encounter nor a stay, but it still owes money for the panel
+     * that was run. Exactly one of the three is set, enforced by
+     * `invoices_one_episode_check`; `invoices_registration_id_live_key` keeps at
+     * most one live invoice per visit, as the other two keys do.
+     */
+    registrationId: string | null
     patientId: string
     status: $Enums.InvoiceStatus
     totalAmount: runtime.Decimal
@@ -2832,6 +3122,7 @@ export interface Prisma__InvoiceClient<T, Null = never, ExtArgs extends runtime.
   readonly [Symbol.toStringTag]: "PrismaPromise"
   encounter<T extends Prisma.Invoice$encounterArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Invoice$encounterArgs<ExtArgs>>): Prisma.Prisma__EncounterClient<runtime.Types.Result.GetResult<Prisma.$EncounterPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   admission<T extends Prisma.Invoice$admissionArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Invoice$admissionArgs<ExtArgs>>): Prisma.Prisma__AdmissionClient<runtime.Types.Result.GetResult<Prisma.$AdmissionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  registration<T extends Prisma.Invoice$registrationArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Invoice$registrationArgs<ExtArgs>>): Prisma.Prisma__RegistrationClient<runtime.Types.Result.GetResult<Prisma.$RegistrationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   patient<T extends Prisma.PatientProfileDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PatientProfileDefaultArgs<ExtArgs>>): Prisma.Prisma__PatientProfileClient<runtime.Types.Result.GetResult<Prisma.$PatientProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   voidedBy<T extends Prisma.Invoice$voidedByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Invoice$voidedByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   createdBy<T extends Prisma.Invoice$createdByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Invoice$createdByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
@@ -2873,6 +3164,7 @@ export interface InvoiceFieldRefs {
   readonly invoiceNumber: Prisma.FieldRef<"Invoice", 'String'>
   readonly encounterId: Prisma.FieldRef<"Invoice", 'String'>
   readonly admissionId: Prisma.FieldRef<"Invoice", 'String'>
+  readonly registrationId: Prisma.FieldRef<"Invoice", 'String'>
   readonly patientId: Prisma.FieldRef<"Invoice", 'String'>
   readonly status: Prisma.FieldRef<"Invoice", 'InvoiceStatus'>
   readonly totalAmount: Prisma.FieldRef<"Invoice", 'Decimal'>
@@ -3320,6 +3612,25 @@ export type Invoice$admissionArgs<ExtArgs extends runtime.Types.Extensions.Inter
    */
   include?: Prisma.AdmissionInclude<ExtArgs> | null
   where?: Prisma.AdmissionWhereInput
+}
+
+/**
+ * Invoice.registration
+ */
+export type Invoice$registrationArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Registration
+   */
+  select?: Prisma.RegistrationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Registration
+   */
+  omit?: Prisma.RegistrationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RegistrationInclude<ExtArgs> | null
+  where?: Prisma.RegistrationWhereInput
 }
 
 /**

@@ -667,11 +667,28 @@ export type EnumAppointmentStatusWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumAppointmentStatusFilter<$PrismaModel>
 }
 
+export type EnumRegistrationTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.RegistrationType | Prisma.EnumRegistrationTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.RegistrationType[] | Prisma.ListEnumRegistrationTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RegistrationType[] | Prisma.ListEnumRegistrationTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRegistrationTypeFilter<$PrismaModel> | $Enums.RegistrationType
+}
+
 export type EnumRegistrationStatusFilter<$PrismaModel = never> = {
   equals?: $Enums.RegistrationStatus | Prisma.EnumRegistrationStatusFieldRefInput<$PrismaModel>
   in?: $Enums.RegistrationStatus[] | Prisma.ListEnumRegistrationStatusFieldRefInput<$PrismaModel>
   notIn?: $Enums.RegistrationStatus[] | Prisma.ListEnumRegistrationStatusFieldRefInput<$PrismaModel>
   not?: Prisma.NestedEnumRegistrationStatusFilter<$PrismaModel> | $Enums.RegistrationStatus
+}
+
+export type EnumRegistrationTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.RegistrationType | Prisma.EnumRegistrationTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.RegistrationType[] | Prisma.ListEnumRegistrationTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RegistrationType[] | Prisma.ListEnumRegistrationTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRegistrationTypeWithAggregatesFilter<$PrismaModel> | $Enums.RegistrationType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumRegistrationTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumRegistrationTypeFilter<$PrismaModel>
 }
 
 export type EnumRegistrationStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -1805,6 +1822,13 @@ export type EnumPatientSexNullableWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumPatientSexNullableFilter<$PrismaModel>
 }
 
+export type EnumLabOrderSourceFilter<$PrismaModel = never> = {
+  equals?: $Enums.LabOrderSource | Prisma.EnumLabOrderSourceFieldRefInput<$PrismaModel>
+  in?: $Enums.LabOrderSource[] | Prisma.ListEnumLabOrderSourceFieldRefInput<$PrismaModel>
+  notIn?: $Enums.LabOrderSource[] | Prisma.ListEnumLabOrderSourceFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumLabOrderSourceFilter<$PrismaModel> | $Enums.LabOrderSource
+}
+
 export type EnumLabOrderStatusFilter<$PrismaModel = never> = {
   equals?: $Enums.LabOrderStatus | Prisma.EnumLabOrderStatusFieldRefInput<$PrismaModel>
   in?: $Enums.LabOrderStatus[] | Prisma.ListEnumLabOrderStatusFieldRefInput<$PrismaModel>
@@ -1817,6 +1841,16 @@ export type EnumLabOrderPriorityFilter<$PrismaModel = never> = {
   in?: $Enums.LabOrderPriority[] | Prisma.ListEnumLabOrderPriorityFieldRefInput<$PrismaModel>
   notIn?: $Enums.LabOrderPriority[] | Prisma.ListEnumLabOrderPriorityFieldRefInput<$PrismaModel>
   not?: Prisma.NestedEnumLabOrderPriorityFilter<$PrismaModel> | $Enums.LabOrderPriority
+}
+
+export type EnumLabOrderSourceWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.LabOrderSource | Prisma.EnumLabOrderSourceFieldRefInput<$PrismaModel>
+  in?: $Enums.LabOrderSource[] | Prisma.ListEnumLabOrderSourceFieldRefInput<$PrismaModel>
+  notIn?: $Enums.LabOrderSource[] | Prisma.ListEnumLabOrderSourceFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumLabOrderSourceWithAggregatesFilter<$PrismaModel> | $Enums.LabOrderSource
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumLabOrderSourceFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumLabOrderSourceFilter<$PrismaModel>
 }
 
 export type EnumLabOrderStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -2620,11 +2654,28 @@ export type NestedEnumAppointmentStatusWithAggregatesFilter<$PrismaModel = never
   _max?: Prisma.NestedEnumAppointmentStatusFilter<$PrismaModel>
 }
 
+export type NestedEnumRegistrationTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.RegistrationType | Prisma.EnumRegistrationTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.RegistrationType[] | Prisma.ListEnumRegistrationTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RegistrationType[] | Prisma.ListEnumRegistrationTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRegistrationTypeFilter<$PrismaModel> | $Enums.RegistrationType
+}
+
 export type NestedEnumRegistrationStatusFilter<$PrismaModel = never> = {
   equals?: $Enums.RegistrationStatus | Prisma.EnumRegistrationStatusFieldRefInput<$PrismaModel>
   in?: $Enums.RegistrationStatus[] | Prisma.ListEnumRegistrationStatusFieldRefInput<$PrismaModel>
   notIn?: $Enums.RegistrationStatus[] | Prisma.ListEnumRegistrationStatusFieldRefInput<$PrismaModel>
   not?: Prisma.NestedEnumRegistrationStatusFilter<$PrismaModel> | $Enums.RegistrationStatus
+}
+
+export type NestedEnumRegistrationTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.RegistrationType | Prisma.EnumRegistrationTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.RegistrationType[] | Prisma.ListEnumRegistrationTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RegistrationType[] | Prisma.ListEnumRegistrationTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRegistrationTypeWithAggregatesFilter<$PrismaModel> | $Enums.RegistrationType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumRegistrationTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumRegistrationTypeFilter<$PrismaModel>
 }
 
 export type NestedEnumRegistrationStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -3704,6 +3755,13 @@ export type NestedEnumPatientSexNullableWithAggregatesFilter<$PrismaModel = neve
   _max?: Prisma.NestedEnumPatientSexNullableFilter<$PrismaModel>
 }
 
+export type NestedEnumLabOrderSourceFilter<$PrismaModel = never> = {
+  equals?: $Enums.LabOrderSource | Prisma.EnumLabOrderSourceFieldRefInput<$PrismaModel>
+  in?: $Enums.LabOrderSource[] | Prisma.ListEnumLabOrderSourceFieldRefInput<$PrismaModel>
+  notIn?: $Enums.LabOrderSource[] | Prisma.ListEnumLabOrderSourceFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumLabOrderSourceFilter<$PrismaModel> | $Enums.LabOrderSource
+}
+
 export type NestedEnumLabOrderStatusFilter<$PrismaModel = never> = {
   equals?: $Enums.LabOrderStatus | Prisma.EnumLabOrderStatusFieldRefInput<$PrismaModel>
   in?: $Enums.LabOrderStatus[] | Prisma.ListEnumLabOrderStatusFieldRefInput<$PrismaModel>
@@ -3716,6 +3774,16 @@ export type NestedEnumLabOrderPriorityFilter<$PrismaModel = never> = {
   in?: $Enums.LabOrderPriority[] | Prisma.ListEnumLabOrderPriorityFieldRefInput<$PrismaModel>
   notIn?: $Enums.LabOrderPriority[] | Prisma.ListEnumLabOrderPriorityFieldRefInput<$PrismaModel>
   not?: Prisma.NestedEnumLabOrderPriorityFilter<$PrismaModel> | $Enums.LabOrderPriority
+}
+
+export type NestedEnumLabOrderSourceWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.LabOrderSource | Prisma.EnumLabOrderSourceFieldRefInput<$PrismaModel>
+  in?: $Enums.LabOrderSource[] | Prisma.ListEnumLabOrderSourceFieldRefInput<$PrismaModel>
+  notIn?: $Enums.LabOrderSource[] | Prisma.ListEnumLabOrderSourceFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumLabOrderSourceWithAggregatesFilter<$PrismaModel> | $Enums.LabOrderSource
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumLabOrderSourceFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumLabOrderSourceFilter<$PrismaModel>
 }
 
 export type NestedEnumLabOrderStatusWithAggregatesFilter<$PrismaModel = never> = {
