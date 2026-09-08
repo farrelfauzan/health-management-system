@@ -354,6 +354,12 @@ export class LabReportService {
         reportId: report.id,
         attempt: attemptNumber,
         error: caughtError instanceof Error ? caughtError.name : 'unknown',
+        // The class alone sends the reader hunting for the wrong missing row:
+        // a render that cannot find the *clinic profile* logs
+        // `NotFoundException`, which reads as a missing report. This is the
+        // same string already stored in `lastError` and shown on the versions
+        // list, so it is no wider an exposure than the screen already is.
+        reason,
       }),
     );
     await this.labReportRepository.rescheduleAttempt({
