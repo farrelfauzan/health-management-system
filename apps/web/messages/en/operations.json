@@ -1452,7 +1452,8 @@
           "minutes": "{count} min",
           "hours": "{count} h",
           "days": "{count} d"
-        }
+        },
+        "intakeLink": "New walk-in request"
       },
       "collect": {
         "title": "Collect {orderNumber}",
@@ -1631,6 +1632,46 @@
           "AMENDED": "{test} amended (v{version})",
           "CANCELLED": "Order cancelled"
         }
+      },
+      "intake": {
+        "title": "Walk-in laboratory request",
+        "subtitle": "Register a patient who came only for a test, and raise the order in one step.",
+        "backToWorklist": "Back to worklist",
+        "patient": {
+          "legend": "Patient",
+          "searchLabel": "Find the patient",
+          "searchPlaceholder": "Name or medical record number",
+          "loading": "Searching…",
+          "noResults": "No patient matches that. Register them first, then come back.",
+          "selected": "Selected",
+          "change": "Change patient"
+        },
+        "source": {
+          "legend": "Where the request came from",
+          "WALK_IN": "The patient asked for it",
+          "WALK_IN_HINT": "A check-up panel with no doctor behind it.",
+          "EXTERNAL_REFERRAL": "A doctor elsewhere asked for it",
+          "EXTERNAL_REFERRAL_HINT": "The patient arrived with a request letter."
+        },
+        "requester": {
+          "legend": "Who asked",
+          "nameLabel": "Doctor's name",
+          "namePlaceholder": "dr. Rina Kartika",
+          "facilityLabel": "Their practice or clinic",
+          "facilityPlaceholder": "Klinik Sehat Bersama",
+          "required": "Name the doctor who asked for the test."
+        },
+        "tests": {
+          "legend": "What to run"
+        },
+        "notesPlaceholder": "Why the test was asked for",
+        "urgent": "Cito",
+        "fasting": "Fasting",
+        "submit": "Register request",
+        "pickPatient": "Choose a patient first.",
+        "pickSomething": "Choose at least one test or panel.",
+        "error": "The request could not be registered.",
+        "success": "Request registered as {orderNumber}."
       }
     }
   },

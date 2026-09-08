@@ -1452,7 +1452,8 @@
           "minutes": "{count} mnt",
           "hours": "{count} jam",
           "days": "{count} hr"
-        }
+        },
+        "intakeLink": "Permintaan tanpa konsultasi"
       },
       "collect": {
         "title": "Ambil sampel {orderNumber}",
@@ -1631,6 +1632,46 @@
           "AMENDED": "{test} diamendemen (v{version})",
           "CANCELLED": "Permintaan dibatalkan"
         }
+      },
+      "intake": {
+        "title": "Permintaan laboratorium tanpa konsultasi",
+        "subtitle": "Daftarkan pasien yang datang hanya untuk pemeriksaan, sekaligus buat permintaannya.",
+        "backToWorklist": "Kembali ke daftar kerja",
+        "patient": {
+          "legend": "Pasien",
+          "searchLabel": "Cari pasien",
+          "searchPlaceholder": "Nama atau nomor rekam medis",
+          "loading": "Mencari…",
+          "noResults": "Tidak ada pasien yang cocok. Daftarkan dulu, lalu kembali ke sini.",
+          "selected": "Dipilih",
+          "change": "Ganti pasien"
+        },
+        "source": {
+          "legend": "Asal permintaan",
+          "WALK_IN": "Atas permintaan pasien",
+          "WALK_IN_HINT": "Paket pemeriksaan tanpa rujukan dokter.",
+          "EXTERNAL_REFERRAL": "Atas permintaan dokter lain",
+          "EXTERNAL_REFERRAL_HINT": "Pasien datang membawa surat pengantar."
+        },
+        "requester": {
+          "legend": "Yang meminta",
+          "nameLabel": "Nama dokter",
+          "namePlaceholder": "dr. Rina Kartika",
+          "facilityLabel": "Praktik atau kliniknya",
+          "facilityPlaceholder": "Klinik Sehat Bersama",
+          "required": "Sebutkan nama dokter yang meminta pemeriksaan."
+        },
+        "tests": {
+          "legend": "Pemeriksaan yang diminta"
+        },
+        "notesPlaceholder": "Alasan pemeriksaan diminta",
+        "urgent": "Cito",
+        "fasting": "Puasa",
+        "submit": "Daftarkan permintaan",
+        "pickPatient": "Pilih pasien terlebih dahulu.",
+        "pickSomething": "Pilih minimal satu pemeriksaan atau paket.",
+        "error": "Permintaan tidak dapat didaftarkan.",
+        "success": "Permintaan terdaftar sebagai {orderNumber}."
       }
     }
   },
