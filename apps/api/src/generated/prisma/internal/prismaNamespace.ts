@@ -486,6 +486,7 @@ export const ModelName = {
   LabSpecimen: 'LabSpecimen',
   LabResult: 'LabResult',
   LaboratorySettings: 'LaboratorySettings',
+  LabReport: 'LabReport',
   Immunization: 'Immunization'
 } as const
 
@@ -502,7 +503,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientDeliveryConsent" | "documentDelivery" | "documentDeliveryLink" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorLicenseExpiryNotice" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "prescriptionItemComponent" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "vaultDocumentExpiryNotice" | "vaultDocumentShare" | "userOffboardingNotice" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit" | "documentType" | "documentTypeApprover" | "managedDocument" | "documentApprovalRequest" | "documentApprovalApprover" | "documentApprovalDecision" | "labTest" | "labReferenceRange" | "labPanel" | "labPanelMember" | "labOrderCounter" | "labOrder" | "labOrderItem" | "labSpecimenCounter" | "labSpecimen" | "labResult" | "laboratorySettings" | "immunization"
+    modelProps: "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientDeliveryConsent" | "documentDelivery" | "documentDeliveryLink" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorLicenseExpiryNotice" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "prescriptionItemComponent" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "vaultDocumentExpiryNotice" | "vaultDocumentShare" | "userOffboardingNotice" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit" | "documentType" | "documentTypeApprover" | "managedDocument" | "documentApprovalRequest" | "documentApprovalApprover" | "documentApprovalDecision" | "labTest" | "labReferenceRange" | "labPanel" | "labPanelMember" | "labOrderCounter" | "labOrder" | "labOrderItem" | "labSpecimenCounter" | "labSpecimen" | "labResult" | "laboratorySettings" | "labReport" | "immunization"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -8054,6 +8055,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    LabReport: {
+      payload: Prisma.$LabReportPayload<ExtArgs>
+      fields: Prisma.LabReportFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.LabReportFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabReportPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.LabReportFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabReportPayload>
+        }
+        findFirst: {
+          args: Prisma.LabReportFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabReportPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.LabReportFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabReportPayload>
+        }
+        findMany: {
+          args: Prisma.LabReportFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabReportPayload>[]
+        }
+        create: {
+          args: Prisma.LabReportCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabReportPayload>
+        }
+        createMany: {
+          args: Prisma.LabReportCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.LabReportCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabReportPayload>[]
+        }
+        delete: {
+          args: Prisma.LabReportDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabReportPayload>
+        }
+        update: {
+          args: Prisma.LabReportUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabReportPayload>
+        }
+        deleteMany: {
+          args: Prisma.LabReportDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.LabReportUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.LabReportUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabReportPayload>[]
+        }
+        upsert: {
+          args: Prisma.LabReportUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LabReportPayload>
+        }
+        aggregate: {
+          args: Prisma.LabReportAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateLabReport>
+        }
+        groupBy: {
+          args: Prisma.LabReportGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.LabReportGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.LabReportCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.LabReportCountAggregateOutputType> | number
+        }
+      }
+    }
     Immunization: {
       payload: Prisma.$ImmunizationPayload<ExtArgs>
       fields: Prisma.ImmunizationFieldRefs
@@ -9882,6 +9957,30 @@ export const LaboratorySettingsScalarFieldEnum = {
 export type LaboratorySettingsScalarFieldEnum = (typeof LaboratorySettingsScalarFieldEnum)[keyof typeof LaboratorySettingsScalarFieldEnum]
 
 
+export const LabReportScalarFieldEnum = {
+  id: 'id',
+  labOrderId: 'labOrderId',
+  version: 'version',
+  status: 'status',
+  isAmended: 'isAmended',
+  releasedAt: 'releasedAt',
+  documentId: 'documentId',
+  templateVersionId: 'templateVersionId',
+  attemptCount: 'attemptCount',
+  nextAttemptAt: 'nextAttemptAt',
+  leasedUntil: 'leasedUntil',
+  leasedBy: 'leasedBy',
+  lastError: 'lastError',
+  renderedAt: 'renderedAt',
+  pageCount: 'pageCount',
+  requestedById: 'requestedById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type LabReportScalarFieldEnum = (typeof LabReportScalarFieldEnum)[keyof typeof LabReportScalarFieldEnum]
+
+
 export const ImmunizationScalarFieldEnum = {
   id: 'id',
   encounterId: 'encounterId',
@@ -11170,6 +11269,20 @@ export type ListEnumLabResultFlagFieldRefInput<$PrismaModel> = FieldRefInputType
 
 
 /**
+ * Reference to a field of type 'LabReportStatus'
+ */
+export type EnumLabReportStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'LabReportStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'LabReportStatus[]'
+ */
+export type ListEnumLabReportStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'LabReportStatus[]'>
+    
+
+
+/**
  * Reference to a field of type 'ImmunizationRoute'
  */
 export type EnumImmunizationRouteFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ImmunizationRoute'>
@@ -11422,6 +11535,7 @@ export type GlobalOmitConfig = {
   labSpecimen?: Prisma.LabSpecimenOmit
   labResult?: Prisma.LabResultOmit
   laboratorySettings?: Prisma.LaboratorySettingsOmit
+  labReport?: Prisma.LabReportOmit
   immunization?: Prisma.ImmunizationOmit
 }
 

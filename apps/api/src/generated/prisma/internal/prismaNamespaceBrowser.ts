@@ -153,6 +153,7 @@ export const ModelName = {
   LabSpecimen: 'LabSpecimen',
   LabResult: 'LabResult',
   LaboratorySettings: 'LaboratorySettings',
+  LabReport: 'LabReport',
   Immunization: 'Immunization'
 } as const
 
@@ -1885,6 +1886,30 @@ export const LaboratorySettingsScalarFieldEnum = {
 } as const
 
 export type LaboratorySettingsScalarFieldEnum = (typeof LaboratorySettingsScalarFieldEnum)[keyof typeof LaboratorySettingsScalarFieldEnum]
+
+
+export const LabReportScalarFieldEnum = {
+  id: 'id',
+  labOrderId: 'labOrderId',
+  version: 'version',
+  status: 'status',
+  isAmended: 'isAmended',
+  releasedAt: 'releasedAt',
+  documentId: 'documentId',
+  templateVersionId: 'templateVersionId',
+  attemptCount: 'attemptCount',
+  nextAttemptAt: 'nextAttemptAt',
+  leasedUntil: 'leasedUntil',
+  leasedBy: 'leasedBy',
+  lastError: 'lastError',
+  renderedAt: 'renderedAt',
+  pageCount: 'pageCount',
+  requestedById: 'requestedById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type LabReportScalarFieldEnum = (typeof LabReportScalarFieldEnum)[keyof typeof LabReportScalarFieldEnum]
 
 
 export const ImmunizationScalarFieldEnum = {

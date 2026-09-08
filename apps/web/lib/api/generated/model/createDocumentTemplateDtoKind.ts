@@ -13,4 +13,5 @@ export const CreateDocumentTemplateDtoKind = {
   INVOICE: 'INVOICE',
   LAB_REQUEST: 'LAB_REQUEST',
   PRESCRIPTION: 'PRESCRIPTION',
+  LAB_REPORT: 'LAB_REPORT',
 } as const;

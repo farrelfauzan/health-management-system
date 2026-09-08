@@ -267,6 +267,11 @@ enum AuditAction {
   LAB_RESULT_ENTERED
   LAB_RESULT_RELEASED
   LAB_RESULT_AMENDED
+  /// The rendered hasil laboratorium landed in the patient's file (P18-T05).
+  /// One row per version: a filed report and the amended one that replaced it
+  /// are two events, and the audit trail is how "which sheet did the patient
+  /// get" is answered.
+  LAB_REPORT_FILED
 }
 
 enum BpjsSubmissionType {
@@ -645,6 +650,10 @@ enum DocumentTemplateKind {
   /// The resep the patient carries to an apotek — the clinic's own or an
   /// outside one.
   PRESCRIPTION
+  /// The hasil laboratorium (P18-T05): rendered from the released results on
+  /// release, filed as the patient's LAB_RESULT document, and re-rendered as a
+  /// new version on every amendment.
+  LAB_REPORT
 }
 
 /// Where a template sits in its lifecycle. DRAFT until the first immutable
@@ -790,6 +799,7 @@ model User {
   collectedLabSpecimens     LabSpecimen[]              @relation("LabSpecimenCollectedBy")
   enteredLabResults         LabResult[]                @relation("LabResultEnteredBy")
   verifiedLabResults        LabResult[]                @relation("LabResultVerifiedBy")
+  requestedLabReports       LabReport[]                @relation("LabReportRequestedBy")
   updatedLaboratorySettings LaboratorySettings[]       @relation("LaboratorySettingsUpdatedBy")
 
   @@index([organizationUnitId])
@@ -2610,6 +2620,7 @@ model DocumentTemplateVersion {
   publishedBy      User?                     @relation("DocumentTemplateVersionPublishedBy", fields: [publishedById], references: [id], onDelete: SetNull)
   approvalDecision DocumentApprovalDecision? @relation(fields: [approvalDecisionId], references: [id], onDelete: SetNull)
   renders          InvoiceDocument[]
+  labReports       LabReport[]
 
   @@unique([templateId, versionNumber])
   @@index([publishedById])
@@ -3336,6 +3347,7 @@ model Document {
   /// for the one-to-one on the order and prescription side; a document reached
   /// through the patient's file list carries no such link and needs none.
   labOrder     LabOrder?     @relation("LabOrderRequestDocument")
+  labReport    LabReport?    @relation("LabReportDocument")
   prescription Prescription? @relation("PrescriptionDocument")
 
   vaultExpiryNotices VaultDocumentExpiryNotice[]
@@ -4831,6 +4843,7 @@ model LabOrder {
   specimens       LabSpecimen[]
   invoiceItems    InvoiceItem[]
   requestDocument Document?      @relation("LabOrderRequestDocument", fields: [requestDocumentId], references: [id], onDelete: SetNull)
+  reports         LabReport[]
 
   @@index([encounterId])
   @@index([patientId, orderedAt])
@@ -5072,6 +5085,74 @@ model LaboratorySettings {
   updatedBy User? @relation("LaboratorySettingsUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
 
   @@map("laboratory_settings")
+}
+
+/// Where one rendering of the report is on its way to the file (P18-T05).
+enum LabReportStatus {
+  PENDING
+  READY
+  FAILED
+
+  @@map("lab_report_status")
+}
+
+/// One rendering of the hasil laboratorium for one order (P18-T05).
+///
+/// A row per version rather than a column on the order, and a row that is
+/// never overwritten: the sheet a patient was handed is the sheet the record
+/// has to be able to show, beside the corrected one an amendment produced.
+/// Version 1 is queued by the release; every amendment queues the next.
+///
+/// It is a job row as much as a record. Release must not wait on the
+/// Gotenberg sidecar, so the release writes `PENDING` and a lease-claimed
+/// worker (the `P16-T26` pattern) renders, uploads, files the `Document` and
+/// marks `READY` — or retries with backoff and parks the row `FAILED` after
+/// the last attempt, where the order detail can show why there is no PDF.
+///
+/// `document_id` is the ordinary patient clinical file (`PATIENT_CLINICAL`,
+/// category `LAB_RESULT`) the render became. SET NULL on the file: a
+/// retention purge that removes the PDF must not take the fact that a report
+/// was issued with it.
+model LabReport {
+  id                String          @id @default(uuid()) @db.Uuid
+  labOrderId        String          @map("lab_order_id") @db.Uuid
+  version           Int
+  status            LabReportStatus @default(PENDING)
+  /// True when this version was produced by a correction, and carries the
+  /// AMENDED banner naming the release it replaces.
+  isAmended         Boolean         @default(false) @map("is_amended")
+  /// The order's release time this version reports, snapshotted when it was
+  /// queued — the order may be released again before the worker reaches it.
+  releasedAt        DateTime        @map("released_at")
+  documentId        String?         @unique @map("document_id") @db.Uuid
+  /// The clinic-published layout the render used, null for the built-in.
+  templateVersionId String?         @map("template_version_id") @db.Uuid
+  attemptCount      Int             @default(0) @map("attempt_count")
+  nextAttemptAt     DateTime?       @map("next_attempt_at")
+  leasedUntil       DateTime?       @map("leased_until")
+  leasedBy          String?         @map("leased_by")
+  lastError         String?         @map("last_error")
+  renderedAt        DateTime?       @map("rendered_at")
+  pageCount         Int?            @map("page_count")
+  /// The verifier whose signature queued this version — the file's uploader
+  /// and the account that released it to the patient.
+  requestedById     String          @map("requested_by_id") @db.Uuid
+  createdAt         DateTime        @default(now()) @map("created_at")
+  updatedAt         DateTime        @updatedAt @map("updated_at")
+
+  labOrder        LabOrder                 @relation(fields: [labOrderId], references: [id], onDelete: Cascade)
+  document        Document?                @relation("LabReportDocument", fields: [documentId], references: [id], onDelete: SetNull)
+  templateVersion DocumentTemplateVersion? @relation(fields: [templateVersionId], references: [id], onDelete: Restrict)
+  requestedBy     User                     @relation("LabReportRequestedBy", fields: [requestedById], references: [id], onDelete: Restrict)
+
+  /// One row per version per order: a release and an amendment racing cannot
+  /// both claim v2.
+  @@unique([labOrderId, version])
+  @@index([labOrderId, createdAt])
+  @@index([status, nextAttemptAt])
+  @@index([templateVersionId])
+  @@index([requestedById])
+  @@map("lab_reports")
 }
 
 /// One vaccination given during a visit.

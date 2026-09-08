@@ -12131,6 +12131,7 @@ paths:
               - INVOICE
               - LAB_REQUEST
               - PRESCRIPTION
+              - LAB_REPORT
       responses:
         "200":
           description: Every live template of the kind, default first, each with its
@@ -13535,6 +13536,7 @@ paths:
               - INVOICE
               - LAB_REQUEST
               - PRESCRIPTION
+              - LAB_REPORT
       responses:
         "200":
           description: Every token the editor may offer and publish-time validation will
@@ -39171,6 +39173,278 @@ paths:
         - bearer: []
       summary: Change the laboratory verification settings
       tags: *a55
+  /api/v1/lab-orders/{id}/report:
+    get:
+      operationId: LabReportController_downloadReport_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A short-lived signed URL for the newest rendered version of the
+            hasil laboratorium — the PDF filed on the visit as the patient’s
+            LAB_RESULT document. 404 when nothing has rendered yet for an order
+            never released; 409 while the first render is still queued or has
+            failed, so a client polls the versions route rather than retrying
+            blind. Older versions stay in the encounter’s document list.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      documentId:
+                        type: string
+                      version:
+                        type: integer
+                      isAmended:
+                        type: boolean
+                      renderedAt:
+                        type: string
+                      fileName:
+                        type: string
+                      url:
+                        type: string
+                      expiresAt:
+                        type: string
+                    required:
+                      - documentId
+                      - version
+                      - isAmended
+                      - renderedAt
+                      - fileName
+                      - url
+                      - expiresAt
+                required:
+                  - data
+                example:
+                  data:
+                    documentId: 88888888-dddd-4ddd-8ddd-888888888888
+                    version: 1
+                    isAmended: false
+                    renderedAt: 2026-07-20T08:00:00.000Z
+                    fileName: hasil-lab-LAB-20260720-0001-v1.pdf
+                    url: https://storage.example.com/lab-report/document/2026/07/abc.pdf?X-Amz-Signature=…
+                    expiresAt: 2026-07-20T08:15:00.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Lab order not found, or no report has been rendered for it.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Lab order not found, or no report has been rendered for it.
+      security:
+        - bearer: []
+      summary: Download the current laboratory report
+      tags: &a56
+        - Laboratory Orders
+  /api/v1/lab-orders/{id}/reports:
+    get:
+      operationId: LabReportController_listReports_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Every rendering of the order’s report, newest first, with where
+            each is: PENDING while the worker has it, READY with the document it
+            became, FAILED with the reason after the last retry. `current` is
+            the newest READY one. A release queues version 1; every amendment
+            queues the next, and the previous one is never overwritten."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      labOrderId:
+                        type: string
+                      current:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          labOrderId:
+                            type: string
+                          version:
+                            type: integer
+                          status:
+                            type: string
+                          isAmended:
+                            type: boolean
+                          releasedAt:
+                            type: string
+                          documentId:
+                            type: string
+                          attemptCount:
+                            type: integer
+                          renderedAt:
+                            type: string
+                          pageCount:
+                            type: integer
+                          requestedById:
+                            type: string
+                          createdAt:
+                            type: string
+                        required:
+                          - id
+                          - labOrderId
+                          - version
+                          - status
+                          - isAmended
+                          - releasedAt
+                          - documentId
+                          - attemptCount
+                          - renderedAt
+                          - pageCount
+                          - requestedById
+                          - createdAt
+                      versions:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            labOrderId:
+                              type: string
+                            version:
+                              type: integer
+                            status:
+                              type: string
+                            isAmended:
+                              type: boolean
+                            releasedAt:
+                              type: string
+                            attemptCount:
+                              type: integer
+                            nextAttemptAt:
+                              type: string
+                            lastError:
+                              type: string
+                            requestedById:
+                              type: string
+                            createdAt:
+                              type: string
+                          required:
+                            - id
+                            - labOrderId
+                            - version
+                            - status
+                            - isAmended
+                            - releasedAt
+                            - attemptCount
+                            - nextAttemptAt
+                            - lastError
+                            - requestedById
+                            - createdAt
+                    required:
+                      - labOrderId
+                      - current
+                      - versions
+                required:
+                  - data
+                example:
+                  data:
+                    labOrderId: eeeeeeee-5555-4555-8555-eeeeeeeeeeee
+                    current:
+                      id: 77777777-eeee-4eee-8eee-777777777777
+                      labOrderId: eeeeeeee-5555-4555-8555-eeeeeeeeeeee
+                      version: 1
+                      status: READY
+                      isAmended: false
+                      releasedAt: 2026-07-20T08:00:00.000Z
+                      documentId: 88888888-dddd-4ddd-8ddd-888888888888
+                      attemptCount: 1
+                      renderedAt: 2026-07-20T08:00:00.000Z
+                      pageCount: 1
+                      requestedById: 99999999-ffff-4fff-8fff-999999999999
+                      createdAt: 2026-07-20T08:00:00.000Z
+                    versions:
+                      - id: 99999999-eeee-4eee-8eee-999999999999
+                        labOrderId: eeeeeeee-5555-4555-8555-eeeeeeeeeeee
+                        version: 2
+                        status: PENDING
+                        isAmended: true
+                        releasedAt: 2026-07-20T08:00:00.000Z
+                        attemptCount: 1
+                        nextAttemptAt: 2026-07-20T08:00:00.000Z
+                        lastError: "Renderer unavailable: fetch failed"
+                        requestedById: 99999999-ffff-4fff-8fff-999999999999
+                        createdAt: 2026-07-20T08:00:00.000Z
+                      - id: 77777777-eeee-4eee-8eee-777777777777
+                        labOrderId: eeeeeeee-5555-4555-8555-eeeeeeeeeeee
+                        version: 1
+                        status: READY
+                        isAmended: false
+                        releasedAt: 2026-07-20T08:00:00.000Z
+                        documentId: 88888888-dddd-4ddd-8ddd-888888888888
+                        attemptCount: 1
+                        renderedAt: 2026-07-20T08:00:00.000Z
+                        pageCount: 1
+                        requestedById: 99999999-ffff-4fff-8fff-999999999999
+                        createdAt: 2026-07-20T08:00:00.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Lab order not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Lab order not found.
+      security:
+        - bearer: []
+      summary: List the versions of a laboratory report
+      tags: *a56
   /api/v1/satusehat/patients/{patientId}/link:
     post:
       operationId: SatusehatLinkController_linkPatient_v1
@@ -39240,7 +39514,7 @@ paths:
       security:
         - bearer: []
       summary: Link a patient to their SATUSEHAT IHS number
-      tags: &a56
+      tags: &a57
         - SATUSEHAT
   /api/v1/satusehat/doctors/{doctorId}/link:
     post:
@@ -39311,7 +39585,7 @@ paths:
       security:
         - bearer: []
       summary: Link a doctor to their SATUSEHAT IHS practitioner number
-      tags: *a56
+      tags: *a57
   /api/v1/satusehat/submissions:
     get:
       operationId: SatusehatSubmissionController_listSubmissions_v1
@@ -39452,7 +39726,7 @@ paths:
       security:
         - bearer: []
       summary: List SATUSEHAT submission outbox entries
-      tags: &a57
+      tags: &a58
         - SATUSEHAT
   /api/v1/satusehat/submissions/{id}/retry:
     post:
@@ -39561,7 +39835,7 @@ paths:
       security:
         - bearer: []
       summary: Retry a failed SATUSEHAT submission
-      tags: *a57
+      tags: *a58
   /api/v1/bpjs/config:
     get:
       operationId: BpjsPcareConfigController_getConfig_v1
@@ -39675,7 +39949,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS PCare bridging configuration
-      tags: &a58
+      tags: &a59
         - BPJS PCare
     put:
       operationId: BpjsPcareConfigController_upsertConfig_v1
@@ -39813,7 +40087,7 @@ paths:
       security:
         - bearer: []
       summary: Create or replace the BPJS PCare bridging configuration
-      tags: *a58
+      tags: *a59
     delete:
       operationId: BpjsPcareConfigController_deleteConfig_v1
       parameters: []
@@ -39872,7 +40146,7 @@ paths:
       security:
         - bearer: []
       summary: Delete the BPJS PCare bridging configuration
-      tags: *a58
+      tags: *a59
   /api/v1/bpjs/config/test-connection:
     post:
       operationId: BpjsPcareConfigController_testConnection_v1
@@ -39938,7 +40212,7 @@ paths:
       security:
         - bearer: []
       summary: Test the stored BPJS PCare credentials
-      tags: *a58
+      tags: *a59
   /api/v1/bpjs/reference/sync:
     post:
       operationId: BpjsReferenceController_syncCatalogs_v1
@@ -40026,7 +40300,7 @@ paths:
       security:
         - bearer: []
       summary: Sync the enumerable BPJS PCare reference catalogs
-      tags: &a59
+      tags: &a60
         - BPJS PCare
   /api/v1/bpjs/reference/status:
     get:
@@ -40093,7 +40367,7 @@ paths:
       security:
         - bearer: []
       summary: Read per-catalog BPJS reference sync status
-      tags: *a59
+      tags: *a60
   /api/v1/bpjs/reference/{catalog}:
     get:
       operationId: BpjsReferenceController_searchCatalog_v1
@@ -40187,7 +40461,7 @@ paths:
       security:
         - bearer: []
       summary: Search a synced BPJS reference catalog locally
-      tags: *a59
+      tags: *a60
   /api/v1/bpjs/reference/{catalog}/search:
     post:
       operationId: BpjsReferenceController_searchCatalogRemote_v1
@@ -40293,7 +40567,7 @@ paths:
       security:
         - bearer: []
       summary: Search a keyword-only BPJS catalog live and cache the results
-      tags: *a59
+      tags: *a60
   /api/v1/bpjs/mappings:
     get:
       operationId: BpjsMappingController_getOverview_v1
@@ -40381,7 +40655,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS mapping overview
-      tags: &a60
+      tags: &a61
         - BPJS PCare
   /api/v1/bpjs/mappings/doctors/{doctorId}:
     put:
@@ -40475,7 +40749,7 @@ paths:
       security:
         - bearer: []
       summary: Set or clear a doctor’s BPJS kdDokter mapping
-      tags: *a60
+      tags: *a61
   /api/v1/bpjs/mappings/specialties/{specialtyId}:
     put:
       operationId: BpjsMappingController_setSpecialtyMapping_v1
@@ -40564,7 +40838,7 @@ paths:
       security:
         - bearer: []
       summary: Set or clear a specialty’s BPJS kdPoli mapping
-      tags: *a60
+      tags: *a61
   /api/v1/bpjs/mappings/medications/{medicationId}:
     put:
       operationId: BpjsMappingController_setMedicationMapping_v1
@@ -40658,7 +40932,7 @@ paths:
       security:
         - bearer: []
       summary: Link or unlink a medication’s DPHO code
-      tags: *a60
+      tags: *a61
   /api/v1/bpjs/eligibility/patients/{patientId}/check:
     post:
       operationId: BpjsEligibilityController_checkEligibility_v1
@@ -40958,7 +41232,7 @@ paths:
       security:
         - bearer: []
       summary: List BPJS PCare submission outbox entries
-      tags: &a61
+      tags: &a62
         - BPJS PCare
   /api/v1/bpjs/submissions/{id}/retry:
     post:
@@ -41067,7 +41341,7 @@ paths:
       security:
         - bearer: []
       summary: Retry a failed BPJS PCare submission
-      tags: *a61
+      tags: *a62
   /api/v1/bpjs/reports/monthly:
     get:
       operationId: BpjsReportController_getMonthlyReport_v1
@@ -41314,7 +41588,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS Antrean Online bridging configuration
-      tags: &a62
+      tags: &a63
         - BPJS Antrean
     put:
       operationId: BpjsAntreanConfigController_upsertConfig_v1
@@ -41455,7 +41729,7 @@ paths:
       security:
         - bearer: []
       summary: Create or replace the BPJS Antrean Online bridging configuration
-      tags: *a62
+      tags: *a63
     delete:
       operationId: BpjsAntreanConfigController_deleteConfig_v1
       parameters: []
@@ -41514,7 +41788,7 @@ paths:
       security:
         - bearer: []
       summary: Delete the BPJS Antrean Online bridging configuration
-      tags: *a62
+      tags: *a63
   /api/v1/bpjs/antrean/config/test-connection:
     post:
       operationId: BpjsAntreanConfigController_testConnection_v1
@@ -41580,7 +41854,7 @@ paths:
       security:
         - bearer: []
       summary: Test the stored BPJS Antrean credentials
-      tags: *a62
+      tags: *a63
   /api/v1/bpjs/antrean/inbound-readiness:
     get:
       operationId: BpjsAntreanConfigController_getInboundReadiness_v1
@@ -41650,7 +41924,7 @@ paths:
       security:
         - bearer: []
       summary: Report whether the inbound Antrean web services can serve BPJS
-      tags: *a62
+      tags: *a63
   /api/v1/bpjs/antrean/hfis-reconciliation:
     get:
       operationId: BpjsAntreanConfigController_getHfisReconciliation_v1
@@ -41752,7 +42026,7 @@ paths:
       security:
         - bearer: []
       summary: Compare HFIS against HMS and report the disagreements
-      tags: *a62
+      tags: *a63
   /api/v1/admin/features:
     get:
       operationId: FeatureAdminController_getEntitlements_v1
@@ -41831,7 +42105,7 @@ paths:
       security:
         - bearer: []
       summary: List every feature and whether this client has it
-      tags: &a63
+      tags: &a64
         - Feature Entitlements
   /api/v1/admin/features/{key}:
     put:
@@ -41948,7 +42222,7 @@ paths:
       security:
         - bearer: []
       summary: Switch a feature on or off for this client
-      tags: *a63
+      tags: *a64
   /api/v1/features/availability:
     get:
       operationId: FeatureAvailabilityController_getAvailability_v1
@@ -42071,7 +42345,7 @@ paths:
       security:
         - bearer: []
       summary: List active roles
-      tags: &a64
+      tags: &a65
         - RBAC
     post:
       operationId: RbacController_createRole_v1
@@ -42158,7 +42432,7 @@ paths:
       security:
         - bearer: []
       summary: Create a custom role
-      tags: *a64
+      tags: *a65
   /api/v1/rbac/permissions:
     get:
       operationId: RbacController_getPermissionCatalog_v1
@@ -42238,7 +42512,7 @@ paths:
       security:
         - bearer: []
       summary: List the permission catalog
-      tags: *a64
+      tags: *a65
   /api/v1/rbac/roles/{id}:
     get:
       operationId: RbacController_getRoleById_v1
@@ -42357,7 +42631,7 @@ paths:
       security:
         - bearer: []
       summary: Get a role with its permissions and member count
-      tags: *a64
+      tags: *a65
     patch:
       operationId: RbacController_updateRole_v1
       parameters:
@@ -42456,7 +42730,7 @@ paths:
       security:
         - bearer: []
       summary: Update a role name or description
-      tags: *a64
+      tags: *a65
     delete:
       operationId: RbacController_deleteRole_v1
       parameters:
@@ -42532,7 +42806,7 @@ paths:
       security:
         - bearer: []
       summary: Soft-delete a role
-      tags: *a64
+      tags: *a65
   /api/v1/rbac/roles/{id}/permissions:
     put:
       operationId: RbacController_setRolePermissions_v1
@@ -42678,7 +42952,7 @@ paths:
       security:
         - bearer: []
       summary: Replace the permission set attached to a role
-      tags: *a64
+      tags: *a65
   /api/v1/rbac/assign-role:
     post:
       operationId: RbacController_assignRole_v1
@@ -42770,7 +43044,7 @@ paths:
       security:
         - bearer: []
       summary: Assign a role to a user
-      tags: *a64
+      tags: *a65
   /api/v1/rbac/unassign-role:
     post:
       operationId: RbacController_unassignRole_v1
@@ -42862,7 +43136,7 @@ paths:
       security:
         - bearer: []
       summary: Unassign a role from a user
-      tags: *a64
+      tags: *a65
   /api/v1/health:
     get:
       operationId: HealthController_getHealth_v1
@@ -44103,6 +44377,7 @@ components:
             - INVOICE
             - LAB_REQUEST
             - PRESCRIPTION
+            - LAB_REPORT
         name:
           type: string
           minLength: 1

@@ -452,3 +452,13 @@ export const clinicalRequestDispositionSchema = z
 export type FulfilmentSiteValue = z.infer<typeof fulfilmentSiteSchema>;
 export type ChargeModeValue = z.infer<typeof chargeModeSchema>;
 export type ClinicalRequestDispositionInput = z.infer<typeof clinicalRequestDispositionSchema>;
+
+/**
+ * Where one rendering of the hasil laboratorium is on its way to the file
+ * (P18-T05). Mirrors the Prisma `LabReportStatus` enum. `PENDING` is a row the
+ * worker will claim; `FAILED` is one it gave up on after the last retry —
+ * visible on the order, and re-enqueued by the next amendment.
+ */
+export const labReportStatusSchema = z.enum(['PENDING', 'READY', 'FAILED']);
+
+export type LabReportStatusValue = z.infer<typeof labReportStatusSchema>;
