@@ -5,6 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import { AuditService } from '../../../common/audit/audit.service';
 import { AddInvoiceItemDto } from '../dto/add-invoice-item.dto';
 import { GenerateInvoiceDto } from '../dto/generate-invoice.dto';
+import { GenerateLabOnlyInvoiceDto } from '../dto/generate-lab-only-invoice.dto';
 import { RecordPaymentDto } from '../dto/record-payment.dto';
 import { VoidInvoiceDto } from '../dto/void-invoice.dto';
 import { BillingRepository } from '../repository/billing.repository';
@@ -23,6 +24,8 @@ describe('BillingService', () => {
     findClinicalRequestsForEncounter: jest.fn(() => Promise.resolve([])),
     findVisitIdsWithSettledInvoice: jest.fn(() => Promise.resolve(new Set<string>())),
     findLiveInvoiceByEncounterId: jest.fn(),
+    findLiveInvoiceByRegistrationId: jest.fn(),
+    findVisitForBilling: jest.fn(),
     createInvoiceWithItems: jest.fn(),
     listInvoices: jest.fn(),
     findInvoiceWithRelationsById: jest.fn(),
@@ -179,6 +182,80 @@ describe('BillingService', () => {
       consultationTariff,
     ]);
     serviceTariffRepositoryMock.findActiveTariffsByIcd9cmCodes.mockResolvedValue([procedureTariff]);
+  });
+
+  describe('generateLabOnlyInvoice', () => {
+    const registrationId = '9f8e7d6c-5b4a-4390-8271-6a5b4c3d2e1f';
+    const inputPayload = { registrationId } as GenerateLabOnlyInvoiceDto;
+
+    beforeEach(() => {
+      billingRepositoryMock.findVisitForBilling.mockResolvedValue({
+        id: registrationId,
+        patientId,
+        type: 'LAB_ONLY',
+        status: 'COMPLETED',
+      });
+      billingRepositoryMock.findLiveInvoiceByRegistrationId.mockResolvedValue(null);
+      billingRepositoryMock.findLabItemsForBilling.mockResolvedValue([
+        {
+          labOrderId: 'lab-order-1',
+          orderNumber: 'LAB/20260728/0042',
+          chargeMode: 'CLINIC',
+          labTestId: 'lab-test-1',
+          testCode: 'GDS',
+          testName: 'Glukosa Darah Sewaktu',
+          testTariffId: 'tariff-lab-1',
+          testPrice: 35000,
+          panelId: null,
+          panelName: null,
+          panelTariffId: null,
+          panelPrice: null,
+        },
+      ] as BillingLabItemRecord[]);
+    });
+
+    it('bills the tests and nothing else — there was no consultation to charge for', async () => {
+      await service.generateLabOnlyInvoice(inputPayload, cashierUser);
+
+      const createPayload = billingRepositoryMock.createInvoiceWithItems.mock.calls.at(-1)?.[0];
+      expect(createPayload.registrationId).toBe(registrationId);
+      expect(createPayload.encounterId).toBeUndefined();
+      expect(createPayload.items).toHaveLength(1);
+      expect(createPayload.items[0]).toEqual(
+        expect.objectContaining({ itemType: 'LAB', serviceTariffId: 'tariff-lab-1' }),
+      );
+      // The lab is asked for the visit's tests, not an encounter's.
+      expect(billingRepositoryMock.findLabItemsForBilling).toHaveBeenCalledWith(registrationId);
+    });
+
+    it('refuses a visit that has an encounter, so the consultation is not lost', async () => {
+      billingRepositoryMock.findVisitForBilling.mockResolvedValue({
+        id: registrationId,
+        patientId,
+        type: 'CONSULTATION',
+        status: 'COMPLETED',
+      });
+
+      await expect(service.generateLabOnlyInvoice(inputPayload, cashierUser)).rejects.toBeInstanceOf(
+        ConflictException,
+      );
+    });
+
+    it('refuses a second live invoice for the same visit', async () => {
+      billingRepositoryMock.findLiveInvoiceByRegistrationId.mockResolvedValue({ id: 'invoice-1' });
+
+      await expect(service.generateLabOnlyInvoice(inputPayload, cashierUser)).rejects.toBeInstanceOf(
+        ConflictException,
+      );
+    });
+
+    it('refuses a visit with nothing on it to bill', async () => {
+      billingRepositoryMock.findLabItemsForBilling.mockResolvedValue([]);
+
+      await expect(service.generateLabOnlyInvoice(inputPayload, cashierUser)).rejects.toBeInstanceOf(
+        ConflictException,
+      );
+    });
   });
 
   describe('generateInvoice', () => {
