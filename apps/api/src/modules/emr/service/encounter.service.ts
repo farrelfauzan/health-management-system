@@ -23,6 +23,7 @@ import { OpenEncounterDto } from '../dto/open-encounter.dto';
 import { UpdateEncounterSoapDto } from '../dto/update-encounter-soap.dto';
 import { EncounterRepository } from '../repository/encounter.repository';
 import { LabOrderService } from '../../laboratory/service/lab-order.service';
+import { LabResultService } from '../../laboratory/service/lab-result.service';
 import { EncounterAccessService } from './encounter-access.service';
 import { EncounterMapper } from './encounter.mapper';
 
@@ -45,6 +46,7 @@ export class EncounterService {
     private readonly encounterAccessService: EncounterAccessService,
     private readonly encounterMapper: EncounterMapper,
     private readonly labOrderService: LabOrderService,
+    private readonly labResultService: LabResultService,
   ) {}
 
   async listEncounters(
@@ -87,8 +89,11 @@ export class EncounterService {
     // detail include: the laboratory is an optional feature, and a clinic
     // without it gets an empty list rather than a query it cannot use.
     const labOrders = await this.labOrderService.findOpenOrdersForEncounter(id);
+    // P18-T04. The values themselves, for the same reason and by the same
+    // route: released only, so nothing unsigned reaches a clinical screen.
+    const labResults = await this.labResultService.findReleasedResultsForEncounter(id);
 
-    return { ...this.encounterMapper.toEncounterDetail(detail), labOrders };
+    return { ...this.encounterMapper.toEncounterDetail(detail), labOrders, labResults };
   }
 
   /**

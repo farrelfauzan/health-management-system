@@ -38185,6 +38185,992 @@ paths:
       summary: List the laboratory worklist
       tags:
         - Laboratory Orders
+  /api/v1/lab-orders/{id}/results:
+    put:
+      operationId: LabResultController_enterLabResults_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EnterLabResultsDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  items:
+                    - labOrderItemId: 44444444-aaaa-4aaa-8aaa-444444444444
+                      valueNumeric: 6.8
+      responses:
+        "200":
+          description: Saves a worksheet against the order. Each value is flagged on the
+            way in, against the reference band that applied to this patient’s
+            sex and age **at collection** — snapshotted onto the row, so a later
+            catalog edit never re-flags it. A value with no applicable band is
+            recorded unflagged rather than judged against a range meant for
+            somebody else. A critical value notifies the ordering doctor
+            immediately, before anybody verifies it. Saving again re-states the
+            same values; versioning begins only once the order is released.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      order:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          orderNumber:
+                            type: string
+                          encounterId:
+                            type: string
+                          patientId:
+                            type: string
+                          orderedById:
+                            type: string
+                          orderedByName:
+                            type: string
+                          status:
+                            type: string
+                          priority:
+                            type: string
+                          clinicalNotes:
+                            type: string
+                          isFasting:
+                            type: boolean
+                          fulfilmentSite:
+                            type: string
+                          chargeMode:
+                            type: string
+                          recollectCount:
+                            type: integer
+                          orderedAt:
+                            type: string
+                          items:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                id:
+                                  type: string
+                                labTestId:
+                                  type: string
+                                code:
+                                  type: string
+                                name:
+                                  type: string
+                                specimenType:
+                                  type: string
+                                resultType:
+                                  type: string
+                                status:
+                                  type: string
+                                panelId:
+                                  type: string
+                                panelName:
+                                  type: string
+                              required:
+                                - id
+                                - labTestId
+                                - code
+                                - name
+                                - specimenType
+                                - resultType
+                                - status
+                                - panelId
+                                - panelName
+                          specimens:
+                            type: array
+                            items: {}
+                        required:
+                          - id
+                          - orderNumber
+                          - encounterId
+                          - patientId
+                          - orderedById
+                          - orderedByName
+                          - status
+                          - priority
+                          - clinicalNotes
+                          - isFasting
+                          - fulfilmentSite
+                          - chargeMode
+                          - recollectCount
+                          - orderedAt
+                          - items
+                          - specimens
+                      results:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            labOrderItemId:
+                              type: string
+                            version:
+                              type: integer
+                            valueNumeric:
+                              type: number
+                            unit:
+                              type: string
+                            refLow:
+                              type: integer
+                            refHigh:
+                              type: integer
+                            refCriticalLow:
+                              type: integer
+                            refCriticalHigh:
+                              type: integer
+                            flag:
+                              type: string
+                            enteredById:
+                              type: string
+                            enteredAt:
+                              type: string
+                            verifiedUnderSingleOperator:
+                              type: boolean
+                          required:
+                            - id
+                            - labOrderItemId
+                            - version
+                            - valueNumeric
+                            - unit
+                            - refLow
+                            - refHigh
+                            - refCriticalLow
+                            - refCriticalHigh
+                            - flag
+                            - enteredById
+                            - enteredAt
+                            - verifiedUnderSingleOperator
+                    required:
+                      - order
+                      - results
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    order:
+                      id: eeeeeeee-5555-4555-8555-eeeeeeeeeeee
+                      orderNumber: LAB/20260720/0001
+                      encounterId: 11111111-7777-4777-8777-111111111111
+                      patientId: 22222222-8888-4888-8888-222222222222
+                      orderedById: 33333333-9999-4999-8999-333333333333
+                      orderedByName: dr. Andi Wijaya
+                      status: RESULTED
+                      priority: ROUTINE
+                      clinicalNotes: Curiga anemia defisiensi besi
+                      isFasting: false
+                      fulfilmentSite: INTERNAL
+                      chargeMode: CLINIC
+                      recollectCount: 0
+                      orderedAt: 2026-07-20T08:00:00.000Z
+                      items:
+                        - id: 44444444-aaaa-4aaa-8aaa-444444444444
+                          labTestId: aaaaaaaa-1111-4111-8111-aaaaaaaaaaaa
+                          code: HB
+                          name: Hemoglobin
+                          specimenType: WHOLE_BLOOD
+                          resultType: NUMERIC
+                          status: PENDING
+                          panelId: bbbbbbbb-2222-4222-8222-bbbbbbbbbbbb
+                          panelName: Darah Rutin
+                      specimens: []
+                    results:
+                      - id: 77777777-dddd-4ddd-8ddd-777777777777
+                        labOrderItemId: 44444444-aaaa-4aaa-8aaa-444444444444
+                        version: 1
+                        valueNumeric: 6.8
+                        unit: g/dL
+                        refLow: 12
+                        refHigh: 16
+                        refCriticalLow: 7
+                        refCriticalHigh: 20
+                        flag: CRITICAL_LOW
+                        enteredById: 88888888-eeee-4eee-8eee-888888888888
+                        enteredAt: 2026-07-20T08:00:00.000Z
+                        verifiedUnderSingleOperator: false
+                  message: Lab results saved
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Lab order not found, or that test is not on this order.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Lab order not found, or that test is not on this order.
+      security:
+        - bearer: []
+      summary: Enter results for a laboratory order
+      tags: &a54
+        - Laboratory Results
+  /api/v1/lab-orders/{id}/release:
+    post:
+      operationId: LabResultController_releaseLabOrder_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The second signature, applied to the whole order — a report is
+            signed out as one document. Refused while any test is still waiting
+            for a value, and refused when the verifier is the person who entered
+            it unless this clinic has `singleOperator` on; every released row
+            records which of the two it was. A LAB_TECHNICIAN may release only
+            where `technicianMayVerify` is on. Releasing notifies the ordering
+            doctor.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      order:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          orderNumber:
+                            type: string
+                          encounterId:
+                            type: string
+                          patientId:
+                            type: string
+                          orderedById:
+                            type: string
+                          orderedByName:
+                            type: string
+                          status:
+                            type: string
+                          priority:
+                            type: string
+                          clinicalNotes:
+                            type: string
+                          isFasting:
+                            type: boolean
+                          fulfilmentSite:
+                            type: string
+                          chargeMode:
+                            type: string
+                          recollectCount:
+                            type: integer
+                          orderedAt:
+                            type: string
+                          items:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                id:
+                                  type: string
+                                labTestId:
+                                  type: string
+                                code:
+                                  type: string
+                                name:
+                                  type: string
+                                specimenType:
+                                  type: string
+                                resultType:
+                                  type: string
+                                status:
+                                  type: string
+                                panelId:
+                                  type: string
+                                panelName:
+                                  type: string
+                              required:
+                                - id
+                                - labTestId
+                                - code
+                                - name
+                                - specimenType
+                                - resultType
+                                - status
+                                - panelId
+                                - panelName
+                          specimens:
+                            type: array
+                            items: {}
+                        required:
+                          - id
+                          - orderNumber
+                          - encounterId
+                          - patientId
+                          - orderedById
+                          - orderedByName
+                          - status
+                          - priority
+                          - clinicalNotes
+                          - isFasting
+                          - fulfilmentSite
+                          - chargeMode
+                          - recollectCount
+                          - orderedAt
+                          - items
+                          - specimens
+                      results:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            labOrderItemId:
+                              type: string
+                            version:
+                              type: integer
+                            valueNumeric:
+                              type: number
+                            unit:
+                              type: string
+                            refLow:
+                              type: integer
+                            refHigh:
+                              type: integer
+                            refCriticalLow:
+                              type: integer
+                            refCriticalHigh:
+                              type: integer
+                            flag:
+                              type: string
+                            enteredById:
+                              type: string
+                            enteredAt:
+                              type: string
+                            verifiedUnderSingleOperator:
+                              type: boolean
+                            verifiedById:
+                              type: string
+                            verifiedAt:
+                              type: string
+                          required:
+                            - id
+                            - labOrderItemId
+                            - version
+                            - valueNumeric
+                            - unit
+                            - refLow
+                            - refHigh
+                            - refCriticalLow
+                            - refCriticalHigh
+                            - flag
+                            - enteredById
+                            - enteredAt
+                            - verifiedUnderSingleOperator
+                            - verifiedById
+                            - verifiedAt
+                    required:
+                      - order
+                      - results
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    order:
+                      id: eeeeeeee-5555-4555-8555-eeeeeeeeeeee
+                      orderNumber: LAB/20260720/0001
+                      encounterId: 11111111-7777-4777-8777-111111111111
+                      patientId: 22222222-8888-4888-8888-222222222222
+                      orderedById: 33333333-9999-4999-8999-333333333333
+                      orderedByName: dr. Andi Wijaya
+                      status: RELEASED
+                      priority: ROUTINE
+                      clinicalNotes: Curiga anemia defisiensi besi
+                      isFasting: false
+                      fulfilmentSite: INTERNAL
+                      chargeMode: CLINIC
+                      recollectCount: 0
+                      orderedAt: 2026-07-20T08:00:00.000Z
+                      items:
+                        - id: 44444444-aaaa-4aaa-8aaa-444444444444
+                          labTestId: aaaaaaaa-1111-4111-8111-aaaaaaaaaaaa
+                          code: HB
+                          name: Hemoglobin
+                          specimenType: WHOLE_BLOOD
+                          resultType: NUMERIC
+                          status: PENDING
+                          panelId: bbbbbbbb-2222-4222-8222-bbbbbbbbbbbb
+                          panelName: Darah Rutin
+                      specimens: []
+                    results:
+                      - id: 77777777-dddd-4ddd-8ddd-777777777777
+                        labOrderItemId: 44444444-aaaa-4aaa-8aaa-444444444444
+                        version: 1
+                        valueNumeric: 6.8
+                        unit: g/dL
+                        refLow: 12
+                        refHigh: 16
+                        refCriticalLow: 7
+                        refCriticalHigh: 20
+                        flag: CRITICAL_LOW
+                        enteredById: 88888888-eeee-4eee-8eee-888888888888
+                        enteredAt: 2026-07-20T08:00:00.000Z
+                        verifiedUnderSingleOperator: false
+                        verifiedById: 99999999-ffff-4fff-8fff-999999999999
+                        verifiedAt: 2026-07-20T08:00:00.000Z
+                  message: Lab order released
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Lab order not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Lab order not found.
+      security:
+        - bearer: []
+      summary: Release a laboratory order
+      tags: *a54
+  /api/v1/lab-results/{id}/amend:
+    post:
+      operationId: LabResultController_amendLabResult_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AmendLabResultDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  valueNumeric: 8.6
+                  reason: "Salah ketik: 6.8 seharusnya 8.6, dikoreksi dari worksheet"
+      responses:
+        "200":
+          description: Writes the correction as the next version beside the value it
+            replaces; the superseded row stays readable for ever, because
+            somebody may have treated a patient on the strength of it. The order
+            is released again with a new timestamp and the ordering doctor is
+            told. Only the current version of a value can be amended, and the
+            reason is mandatory — it is what the amended report shows the person
+            who acted on the old number.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      labOrderItemId:
+                        type: string
+                      version:
+                        type: integer
+                      valueNumeric:
+                        type: number
+                      unit:
+                        type: string
+                      refLow:
+                        type: integer
+                      refHigh:
+                        type: integer
+                      refCriticalLow:
+                        type: integer
+                      refCriticalHigh:
+                        type: integer
+                      flag:
+                        type: string
+                      enteredById:
+                        type: string
+                      enteredAt:
+                        type: string
+                      verifiedUnderSingleOperator:
+                        type: boolean
+                      amendedFromId:
+                        type: string
+                      amendReason:
+                        type: string
+                      verifiedById:
+                        type: string
+                      verifiedAt:
+                        type: string
+                    required:
+                      - id
+                      - labOrderItemId
+                      - version
+                      - valueNumeric
+                      - unit
+                      - refLow
+                      - refHigh
+                      - refCriticalLow
+                      - refCriticalHigh
+                      - flag
+                      - enteredById
+                      - enteredAt
+                      - verifiedUnderSingleOperator
+                      - amendedFromId
+                      - amendReason
+                      - verifiedById
+                      - verifiedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: aaaaaaaa-dddd-4ddd-8ddd-aaaaaaaaaaaa
+                    labOrderItemId: 44444444-aaaa-4aaa-8aaa-444444444444
+                    version: 2
+                    valueNumeric: 8.6
+                    unit: g/dL
+                    refLow: 12
+                    refHigh: 16
+                    refCriticalLow: 7
+                    refCriticalHigh: 20
+                    flag: LOW
+                    enteredById: 88888888-eeee-4eee-8eee-888888888888
+                    enteredAt: 2026-07-20T08:00:00.000Z
+                    verifiedUnderSingleOperator: true
+                    amendedFromId: 77777777-dddd-4ddd-8ddd-777777777777
+                    amendReason: "Salah ketik: 6.8 seharusnya 8.6, dikoreksi dari worksheet"
+                    verifiedById: 99999999-ffff-4fff-8fff-999999999999
+                    verifiedAt: 2026-07-20T08:00:00.000Z
+                  message: Lab result amended
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Lab result not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Lab result not found.
+      security:
+        - bearer: []
+      summary: Amend a released laboratory result
+      tags: *a54
+  /api/v1/patients/{id}/lab-results:
+    get:
+      operationId: PatientLabResultController_listPatientLabResults_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: testCode
+          required: false
+          in: query
+          schema:
+            minLength: 1
+            maxLength: 32
+            type: string
+        - name: from
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: to
+          required: false
+          in: query
+          schema:
+            type: string
+        - name: limit
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            exclusiveMaximum: false
+            exclusiveMinimum: false
+            type: integer
+      responses:
+        "200":
+          description: "Released values only, newest first — an unverified number is not a
+            data point, and a doctor comparing this month against last must
+            never be shown something nobody has signed. Superseded versions are
+            left out: a corrected value replaces the first rather than joining
+            it. Narrow to one test with `testCode`; each row carries the
+            reference band it was judged against, which may differ from the
+            catalog’s current band."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        labOrderItemId:
+                          type: string
+                        version:
+                          type: integer
+                        valueNumeric:
+                          type: number
+                        unit:
+                          type: string
+                        refLow:
+                          type: integer
+                        refHigh:
+                          type: integer
+                        refCriticalLow:
+                          type: integer
+                        refCriticalHigh:
+                          type: integer
+                        flag:
+                          type: string
+                        enteredById:
+                          type: string
+                        enteredAt:
+                          type: string
+                        verifiedUnderSingleOperator:
+                          type: boolean
+                        verifiedById:
+                          type: string
+                        verifiedAt:
+                          type: string
+                        labOrderId:
+                          type: string
+                        orderNumber:
+                          type: string
+                        testCode:
+                          type: string
+                        testName:
+                          type: string
+                        resultType:
+                          type: string
+                        collectedAt:
+                          type: string
+                        releasedAt:
+                          type: string
+                      required:
+                        - id
+                        - labOrderItemId
+                        - version
+                        - valueNumeric
+                        - unit
+                        - refLow
+                        - refHigh
+                        - refCriticalLow
+                        - refCriticalHigh
+                        - flag
+                        - enteredById
+                        - enteredAt
+                        - verifiedUnderSingleOperator
+                        - verifiedById
+                        - verifiedAt
+                        - labOrderId
+                        - orderNumber
+                        - testCode
+                        - testName
+                        - resultType
+                        - collectedAt
+                        - releasedAt
+                required:
+                  - data
+                example:
+                  data:
+                    - id: 77777777-dddd-4ddd-8ddd-777777777777
+                      labOrderItemId: 44444444-aaaa-4aaa-8aaa-444444444444
+                      version: 1
+                      valueNumeric: 6.8
+                      unit: g/dL
+                      refLow: 12
+                      refHigh: 16
+                      refCriticalLow: 7
+                      refCriticalHigh: 20
+                      flag: CRITICAL_LOW
+                      enteredById: 88888888-eeee-4eee-8eee-888888888888
+                      enteredAt: 2026-07-20T08:00:00.000Z
+                      verifiedUnderSingleOperator: false
+                      verifiedById: 99999999-ffff-4fff-8fff-999999999999
+                      verifiedAt: 2026-07-20T08:00:00.000Z
+                      labOrderId: eeeeeeee-5555-4555-8555-eeeeeeeeeeee
+                      orderNumber: LAB/20260720/0001
+                      testCode: HB
+                      testName: Hemoglobin
+                      resultType: NUMERIC
+                      collectedAt: 2026-07-20T08:00:00.000Z
+                      releasedAt: 2026-07-20T08:00:00.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Patient not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Patient not found.
+      security:
+        - bearer: []
+      summary: List a patient’s released laboratory results
+      tags:
+        - Laboratory Results
+  /api/v1/laboratory/settings:
+    get:
+      operationId: LaboratorySettingsController_getLaboratorySettings_v1
+      parameters: []
+      responses:
+        "200":
+          description: "Both flags default to the strict posture, and a clinic that has
+            never touched them reads the same defaults: two different people
+            sign a result out, and a technician is not one of them."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      technicianMayVerify:
+                        type: boolean
+                      singleOperator:
+                        type: boolean
+                      updatedById:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - technicianMayVerify
+                      - singleOperator
+                      - updatedById
+                      - updatedAt
+                required:
+                  - data
+                example:
+                  data:
+                    technicianMayVerify: false
+                    singleOperator: false
+                    updatedById: 99999999-ffff-4fff-8fff-999999999999
+                    updatedAt: 2026-07-20T08:00:00.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Read the laboratory verification settings
+      tags: &a55
+        - Laboratory Settings
+    patch:
+      operationId: LaboratorySettingsController_updateLaboratorySettings_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateLaboratorySettingsDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  technicianMayVerify: true
+      responses:
+        "200":
+          description: Names one flag or both; whatever is not named is left exactly as it
+            was, so turning one on never quietly turns the other on with it. The
+            change is audited with both the old and the new value — a released
+            result records which rules were in force when it was signed, and
+            this is the other half of that record.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      technicianMayVerify:
+                        type: boolean
+                      singleOperator:
+                        type: boolean
+                      updatedById:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - technicianMayVerify
+                      - singleOperator
+                      - updatedById
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    technicianMayVerify: true
+                    singleOperator: false
+                    updatedById: 99999999-ffff-4fff-8fff-999999999999
+                    updatedAt: 2026-07-20T08:00:00.000Z
+                  message: Laboratory settings updated
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Change the laboratory verification settings
+      tags: *a55
   /api/v1/satusehat/patients/{patientId}/link:
     post:
       operationId: SatusehatLinkController_linkPatient_v1
@@ -38254,7 +39240,7 @@ paths:
       security:
         - bearer: []
       summary: Link a patient to their SATUSEHAT IHS number
-      tags: &a54
+      tags: &a56
         - SATUSEHAT
   /api/v1/satusehat/doctors/{doctorId}/link:
     post:
@@ -38325,7 +39311,7 @@ paths:
       security:
         - bearer: []
       summary: Link a doctor to their SATUSEHAT IHS practitioner number
-      tags: *a54
+      tags: *a56
   /api/v1/satusehat/submissions:
     get:
       operationId: SatusehatSubmissionController_listSubmissions_v1
@@ -38466,7 +39452,7 @@ paths:
       security:
         - bearer: []
       summary: List SATUSEHAT submission outbox entries
-      tags: &a55
+      tags: &a57
         - SATUSEHAT
   /api/v1/satusehat/submissions/{id}/retry:
     post:
@@ -38575,7 +39561,7 @@ paths:
       security:
         - bearer: []
       summary: Retry a failed SATUSEHAT submission
-      tags: *a55
+      tags: *a57
   /api/v1/bpjs/config:
     get:
       operationId: BpjsPcareConfigController_getConfig_v1
@@ -38689,7 +39675,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS PCare bridging configuration
-      tags: &a56
+      tags: &a58
         - BPJS PCare
     put:
       operationId: BpjsPcareConfigController_upsertConfig_v1
@@ -38827,7 +39813,7 @@ paths:
       security:
         - bearer: []
       summary: Create or replace the BPJS PCare bridging configuration
-      tags: *a56
+      tags: *a58
     delete:
       operationId: BpjsPcareConfigController_deleteConfig_v1
       parameters: []
@@ -38886,7 +39872,7 @@ paths:
       security:
         - bearer: []
       summary: Delete the BPJS PCare bridging configuration
-      tags: *a56
+      tags: *a58
   /api/v1/bpjs/config/test-connection:
     post:
       operationId: BpjsPcareConfigController_testConnection_v1
@@ -38952,7 +39938,7 @@ paths:
       security:
         - bearer: []
       summary: Test the stored BPJS PCare credentials
-      tags: *a56
+      tags: *a58
   /api/v1/bpjs/reference/sync:
     post:
       operationId: BpjsReferenceController_syncCatalogs_v1
@@ -39040,7 +40026,7 @@ paths:
       security:
         - bearer: []
       summary: Sync the enumerable BPJS PCare reference catalogs
-      tags: &a57
+      tags: &a59
         - BPJS PCare
   /api/v1/bpjs/reference/status:
     get:
@@ -39107,7 +40093,7 @@ paths:
       security:
         - bearer: []
       summary: Read per-catalog BPJS reference sync status
-      tags: *a57
+      tags: *a59
   /api/v1/bpjs/reference/{catalog}:
     get:
       operationId: BpjsReferenceController_searchCatalog_v1
@@ -39201,7 +40187,7 @@ paths:
       security:
         - bearer: []
       summary: Search a synced BPJS reference catalog locally
-      tags: *a57
+      tags: *a59
   /api/v1/bpjs/reference/{catalog}/search:
     post:
       operationId: BpjsReferenceController_searchCatalogRemote_v1
@@ -39307,7 +40293,7 @@ paths:
       security:
         - bearer: []
       summary: Search a keyword-only BPJS catalog live and cache the results
-      tags: *a57
+      tags: *a59
   /api/v1/bpjs/mappings:
     get:
       operationId: BpjsMappingController_getOverview_v1
@@ -39395,7 +40381,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS mapping overview
-      tags: &a58
+      tags: &a60
         - BPJS PCare
   /api/v1/bpjs/mappings/doctors/{doctorId}:
     put:
@@ -39489,7 +40475,7 @@ paths:
       security:
         - bearer: []
       summary: Set or clear a doctor’s BPJS kdDokter mapping
-      tags: *a58
+      tags: *a60
   /api/v1/bpjs/mappings/specialties/{specialtyId}:
     put:
       operationId: BpjsMappingController_setSpecialtyMapping_v1
@@ -39578,7 +40564,7 @@ paths:
       security:
         - bearer: []
       summary: Set or clear a specialty’s BPJS kdPoli mapping
-      tags: *a58
+      tags: *a60
   /api/v1/bpjs/mappings/medications/{medicationId}:
     put:
       operationId: BpjsMappingController_setMedicationMapping_v1
@@ -39672,7 +40658,7 @@ paths:
       security:
         - bearer: []
       summary: Link or unlink a medication’s DPHO code
-      tags: *a58
+      tags: *a60
   /api/v1/bpjs/eligibility/patients/{patientId}/check:
     post:
       operationId: BpjsEligibilityController_checkEligibility_v1
@@ -39972,7 +40958,7 @@ paths:
       security:
         - bearer: []
       summary: List BPJS PCare submission outbox entries
-      tags: &a59
+      tags: &a61
         - BPJS PCare
   /api/v1/bpjs/submissions/{id}/retry:
     post:
@@ -40081,7 +41067,7 @@ paths:
       security:
         - bearer: []
       summary: Retry a failed BPJS PCare submission
-      tags: *a59
+      tags: *a61
   /api/v1/bpjs/reports/monthly:
     get:
       operationId: BpjsReportController_getMonthlyReport_v1
@@ -40328,7 +41314,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS Antrean Online bridging configuration
-      tags: &a60
+      tags: &a62
         - BPJS Antrean
     put:
       operationId: BpjsAntreanConfigController_upsertConfig_v1
@@ -40469,7 +41455,7 @@ paths:
       security:
         - bearer: []
       summary: Create or replace the BPJS Antrean Online bridging configuration
-      tags: *a60
+      tags: *a62
     delete:
       operationId: BpjsAntreanConfigController_deleteConfig_v1
       parameters: []
@@ -40528,7 +41514,7 @@ paths:
       security:
         - bearer: []
       summary: Delete the BPJS Antrean Online bridging configuration
-      tags: *a60
+      tags: *a62
   /api/v1/bpjs/antrean/config/test-connection:
     post:
       operationId: BpjsAntreanConfigController_testConnection_v1
@@ -40594,7 +41580,7 @@ paths:
       security:
         - bearer: []
       summary: Test the stored BPJS Antrean credentials
-      tags: *a60
+      tags: *a62
   /api/v1/bpjs/antrean/inbound-readiness:
     get:
       operationId: BpjsAntreanConfigController_getInboundReadiness_v1
@@ -40664,7 +41650,7 @@ paths:
       security:
         - bearer: []
       summary: Report whether the inbound Antrean web services can serve BPJS
-      tags: *a60
+      tags: *a62
   /api/v1/bpjs/antrean/hfis-reconciliation:
     get:
       operationId: BpjsAntreanConfigController_getHfisReconciliation_v1
@@ -40766,7 +41752,7 @@ paths:
       security:
         - bearer: []
       summary: Compare HFIS against HMS and report the disagreements
-      tags: *a60
+      tags: *a62
   /api/v1/admin/features:
     get:
       operationId: FeatureAdminController_getEntitlements_v1
@@ -40845,7 +41831,7 @@ paths:
       security:
         - bearer: []
       summary: List every feature and whether this client has it
-      tags: &a61
+      tags: &a63
         - Feature Entitlements
   /api/v1/admin/features/{key}:
     put:
@@ -40962,7 +41948,7 @@ paths:
       security:
         - bearer: []
       summary: Switch a feature on or off for this client
-      tags: *a61
+      tags: *a63
   /api/v1/features/availability:
     get:
       operationId: FeatureAvailabilityController_getAvailability_v1
@@ -41085,7 +42071,7 @@ paths:
       security:
         - bearer: []
       summary: List active roles
-      tags: &a62
+      tags: &a64
         - RBAC
     post:
       operationId: RbacController_createRole_v1
@@ -41172,7 +42158,7 @@ paths:
       security:
         - bearer: []
       summary: Create a custom role
-      tags: *a62
+      tags: *a64
   /api/v1/rbac/permissions:
     get:
       operationId: RbacController_getPermissionCatalog_v1
@@ -41252,7 +42238,7 @@ paths:
       security:
         - bearer: []
       summary: List the permission catalog
-      tags: *a62
+      tags: *a64
   /api/v1/rbac/roles/{id}:
     get:
       operationId: RbacController_getRoleById_v1
@@ -41371,7 +42357,7 @@ paths:
       security:
         - bearer: []
       summary: Get a role with its permissions and member count
-      tags: *a62
+      tags: *a64
     patch:
       operationId: RbacController_updateRole_v1
       parameters:
@@ -41470,7 +42456,7 @@ paths:
       security:
         - bearer: []
       summary: Update a role name or description
-      tags: *a62
+      tags: *a64
     delete:
       operationId: RbacController_deleteRole_v1
       parameters:
@@ -41546,7 +42532,7 @@ paths:
       security:
         - bearer: []
       summary: Soft-delete a role
-      tags: *a62
+      tags: *a64
   /api/v1/rbac/roles/{id}/permissions:
     put:
       operationId: RbacController_setRolePermissions_v1
@@ -41692,7 +42678,7 @@ paths:
       security:
         - bearer: []
       summary: Replace the permission set attached to a role
-      tags: *a62
+      tags: *a64
   /api/v1/rbac/assign-role:
     post:
       operationId: RbacController_assignRole_v1
@@ -41784,7 +42770,7 @@ paths:
       security:
         - bearer: []
       summary: Assign a role to a user
-      tags: *a62
+      tags: *a64
   /api/v1/rbac/unassign-role:
     post:
       operationId: RbacController_unassignRole_v1
@@ -41876,7 +42862,7 @@ paths:
       security:
         - bearer: []
       summary: Unassign a role from a user
-      tags: *a62
+      tags: *a64
   /api/v1/health:
     get:
       operationId: HealthController_getHealth_v1
@@ -45405,6 +46391,65 @@ components:
           maxLength: 1000
       required:
         - reason
+    EnterLabResultsDto:
+      type: object
+      properties:
+        items:
+          type: array
+          minItems: 1
+          maxItems: 50
+          items:
+            type: object
+            properties:
+              valueNumeric:
+                type: number
+                nullable: true
+              valueText:
+                type: string
+                minLength: 1
+                maxLength: 1000
+                nullable: true
+              valueCoded:
+                type: string
+                minLength: 1
+                maxLength: 200
+                nullable: true
+              labOrderItemId:
+                type: string
+                format: uuid
+            required:
+              - labOrderItemId
+      required:
+        - items
+    AmendLabResultDto:
+      type: object
+      properties:
+        valueNumeric:
+          type: number
+          nullable: true
+        valueText:
+          type: string
+          minLength: 1
+          maxLength: 1000
+          nullable: true
+        valueCoded:
+          type: string
+          minLength: 1
+          maxLength: 200
+          nullable: true
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 1000
+      required:
+        - reason
+    UpdateLaboratorySettingsDto:
+      type: object
+      properties:
+        technicianMayVerify:
+          type: boolean
+        singleOperator:
+          type: boolean
     UpsertBpjsPcareConfigDto:
       type: object
       properties:

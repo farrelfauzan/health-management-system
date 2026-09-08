@@ -185,6 +185,18 @@
         "patientDocumentReleased": {
           "title": "Hasil dilepas ke pasien Anda",
           "body": "{category} atas nama {patientName} kini terlihat oleh pasien dan ada di panel Dokumen kunjungan."
+        },
+        "labResultCritical": {
+          "title": "Nilai kritis laboratorium",
+          "body": "{testCount} pemeriksaan pada {orderNumber} bernilai kritis dan perlu ditindaklanjuti sekarang."
+        },
+        "labResultReleased": {
+          "title": "Hasil laboratorium telah dikeluarkan",
+          "body": "Hasil untuk {orderNumber} sudah divalidasi dan tersedia pada kunjungan."
+        },
+        "labResultAmended": {
+          "title": "Hasil laboratorium dikoreksi",
+          "body": "Nilai yang sudah dikeluarkan pada {orderNumber} telah dikoreksi. Periksa kembali sebelum bertindak atas nilai sebelumnya."
         }
       },
       "profile": {

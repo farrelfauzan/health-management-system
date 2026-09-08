@@ -16,6 +16,10 @@ const NOTIFICATION_TYPE_ICONS: Record<string, string> = {
   LICENCE_EXPIRING: 'gpp_maybe',
   LICENCE_EXPIRED: 'gpp_bad',
   PATIENT_DOCUMENT_RELEASED: 'lab_profile',
+  // P18-T04. The critical value gets the alarm icon rather than the flask: the
+  // point of the row is that somebody has to act now.
+  LAB_RESULT_CRITICAL: 'priority_high',
+  LAB_RESULT_RELEASED: 'biotech',
 };
 
 type NotificationsMenuItemProps = {

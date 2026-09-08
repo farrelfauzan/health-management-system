@@ -215,6 +215,7 @@ export type LabOrderItemWhereInput = {
   labTest?: Prisma.XOR<Prisma.LabTestScalarRelationFilter, Prisma.LabTestWhereInput>
   panel?: Prisma.XOR<Prisma.LabPanelNullableScalarRelationFilter, Prisma.LabPanelWhereInput> | null
   specimen?: Prisma.XOR<Prisma.LabSpecimenNullableScalarRelationFilter, Prisma.LabSpecimenWhereInput> | null
+  results?: Prisma.LabResultListRelationFilter
 }
 
 export type LabOrderItemOrderByWithRelationInput = {
@@ -230,6 +231,7 @@ export type LabOrderItemOrderByWithRelationInput = {
   labTest?: Prisma.LabTestOrderByWithRelationInput
   panel?: Prisma.LabPanelOrderByWithRelationInput
   specimen?: Prisma.LabSpecimenOrderByWithRelationInput
+  results?: Prisma.LabResultOrderByRelationAggregateInput
 }
 
 export type LabOrderItemWhereUniqueInput = Prisma.AtLeast<{
@@ -249,6 +251,7 @@ export type LabOrderItemWhereUniqueInput = Prisma.AtLeast<{
   labTest?: Prisma.XOR<Prisma.LabTestScalarRelationFilter, Prisma.LabTestWhereInput>
   panel?: Prisma.XOR<Prisma.LabPanelNullableScalarRelationFilter, Prisma.LabPanelWhereInput> | null
   specimen?: Prisma.XOR<Prisma.LabSpecimenNullableScalarRelationFilter, Prisma.LabSpecimenWhereInput> | null
+  results?: Prisma.LabResultListRelationFilter
 }, "id" | "labOrderId_labTestId">
 
 export type LabOrderItemOrderByWithAggregationInput = {
@@ -288,6 +291,7 @@ export type LabOrderItemCreateInput = {
   labTest: Prisma.LabTestCreateNestedOneWithoutOrderItemsInput
   panel?: Prisma.LabPanelCreateNestedOneWithoutOrderItemsInput
   specimen?: Prisma.LabSpecimenCreateNestedOneWithoutItemsInput
+  results?: Prisma.LabResultCreateNestedManyWithoutLabOrderItemInput
 }
 
 export type LabOrderItemUncheckedCreateInput = {
@@ -299,6 +303,7 @@ export type LabOrderItemUncheckedCreateInput = {
   status?: $Enums.LabOrderItemStatus
   createdAt?: Date | string
   updatedAt?: Date | string
+  results?: Prisma.LabResultUncheckedCreateNestedManyWithoutLabOrderItemInput
 }
 
 export type LabOrderItemUpdateInput = {
@@ -310,6 +315,7 @@ export type LabOrderItemUpdateInput = {
   labTest?: Prisma.LabTestUpdateOneRequiredWithoutOrderItemsNestedInput
   panel?: Prisma.LabPanelUpdateOneWithoutOrderItemsNestedInput
   specimen?: Prisma.LabSpecimenUpdateOneWithoutItemsNestedInput
+  results?: Prisma.LabResultUpdateManyWithoutLabOrderItemNestedInput
 }
 
 export type LabOrderItemUncheckedUpdateInput = {
@@ -321,6 +327,7 @@ export type LabOrderItemUncheckedUpdateInput = {
   status?: Prisma.EnumLabOrderItemStatusFieldUpdateOperationsInput | $Enums.LabOrderItemStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  results?: Prisma.LabResultUncheckedUpdateManyWithoutLabOrderItemNestedInput
 }
 
 export type LabOrderItemCreateManyInput = {
@@ -398,6 +405,11 @@ export type LabOrderItemMinOrderByAggregateInput = {
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type LabOrderItemScalarRelationFilter = {
+  is?: Prisma.LabOrderItemWhereInput
+  isNot?: Prisma.LabOrderItemWhereInput
 }
 
 export type LabOrderItemCreateNestedManyWithoutLabTestInput = {
@@ -572,6 +584,20 @@ export type LabOrderItemUncheckedUpdateManyWithoutSpecimenNestedInput = {
   deleteMany?: Prisma.LabOrderItemScalarWhereInput | Prisma.LabOrderItemScalarWhereInput[]
 }
 
+export type LabOrderItemCreateNestedOneWithoutResultsInput = {
+  create?: Prisma.XOR<Prisma.LabOrderItemCreateWithoutResultsInput, Prisma.LabOrderItemUncheckedCreateWithoutResultsInput>
+  connectOrCreate?: Prisma.LabOrderItemCreateOrConnectWithoutResultsInput
+  connect?: Prisma.LabOrderItemWhereUniqueInput
+}
+
+export type LabOrderItemUpdateOneRequiredWithoutResultsNestedInput = {
+  create?: Prisma.XOR<Prisma.LabOrderItemCreateWithoutResultsInput, Prisma.LabOrderItemUncheckedCreateWithoutResultsInput>
+  connectOrCreate?: Prisma.LabOrderItemCreateOrConnectWithoutResultsInput
+  upsert?: Prisma.LabOrderItemUpsertWithoutResultsInput
+  connect?: Prisma.LabOrderItemWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.LabOrderItemUpdateToOneWithWhereWithoutResultsInput, Prisma.LabOrderItemUpdateWithoutResultsInput>, Prisma.LabOrderItemUncheckedUpdateWithoutResultsInput>
+}
+
 export type LabOrderItemCreateWithoutLabTestInput = {
   id?: string
   status?: $Enums.LabOrderItemStatus
@@ -580,6 +606,7 @@ export type LabOrderItemCreateWithoutLabTestInput = {
   labOrder: Prisma.LabOrderCreateNestedOneWithoutItemsInput
   panel?: Prisma.LabPanelCreateNestedOneWithoutOrderItemsInput
   specimen?: Prisma.LabSpecimenCreateNestedOneWithoutItemsInput
+  results?: Prisma.LabResultCreateNestedManyWithoutLabOrderItemInput
 }
 
 export type LabOrderItemUncheckedCreateWithoutLabTestInput = {
@@ -590,6 +617,7 @@ export type LabOrderItemUncheckedCreateWithoutLabTestInput = {
   status?: $Enums.LabOrderItemStatus
   createdAt?: Date | string
   updatedAt?: Date | string
+  results?: Prisma.LabResultUncheckedCreateNestedManyWithoutLabOrderItemInput
 }
 
 export type LabOrderItemCreateOrConnectWithoutLabTestInput = {
@@ -640,6 +668,7 @@ export type LabOrderItemCreateWithoutPanelInput = {
   labOrder: Prisma.LabOrderCreateNestedOneWithoutItemsInput
   labTest: Prisma.LabTestCreateNestedOneWithoutOrderItemsInput
   specimen?: Prisma.LabSpecimenCreateNestedOneWithoutItemsInput
+  results?: Prisma.LabResultCreateNestedManyWithoutLabOrderItemInput
 }
 
 export type LabOrderItemUncheckedCreateWithoutPanelInput = {
@@ -650,6 +679,7 @@ export type LabOrderItemUncheckedCreateWithoutPanelInput = {
   status?: $Enums.LabOrderItemStatus
   createdAt?: Date | string
   updatedAt?: Date | string
+  results?: Prisma.LabResultUncheckedCreateNestedManyWithoutLabOrderItemInput
 }
 
 export type LabOrderItemCreateOrConnectWithoutPanelInput = {
@@ -686,6 +716,7 @@ export type LabOrderItemCreateWithoutLabOrderInput = {
   labTest: Prisma.LabTestCreateNestedOneWithoutOrderItemsInput
   panel?: Prisma.LabPanelCreateNestedOneWithoutOrderItemsInput
   specimen?: Prisma.LabSpecimenCreateNestedOneWithoutItemsInput
+  results?: Prisma.LabResultCreateNestedManyWithoutLabOrderItemInput
 }
 
 export type LabOrderItemUncheckedCreateWithoutLabOrderInput = {
@@ -696,6 +727,7 @@ export type LabOrderItemUncheckedCreateWithoutLabOrderInput = {
   status?: $Enums.LabOrderItemStatus
   createdAt?: Date | string
   updatedAt?: Date | string
+  results?: Prisma.LabResultUncheckedCreateNestedManyWithoutLabOrderItemInput
 }
 
 export type LabOrderItemCreateOrConnectWithoutLabOrderInput = {
@@ -732,6 +764,7 @@ export type LabOrderItemCreateWithoutSpecimenInput = {
   labOrder: Prisma.LabOrderCreateNestedOneWithoutItemsInput
   labTest: Prisma.LabTestCreateNestedOneWithoutOrderItemsInput
   panel?: Prisma.LabPanelCreateNestedOneWithoutOrderItemsInput
+  results?: Prisma.LabResultCreateNestedManyWithoutLabOrderItemInput
 }
 
 export type LabOrderItemUncheckedCreateWithoutSpecimenInput = {
@@ -742,6 +775,7 @@ export type LabOrderItemUncheckedCreateWithoutSpecimenInput = {
   status?: $Enums.LabOrderItemStatus
   createdAt?: Date | string
   updatedAt?: Date | string
+  results?: Prisma.LabResultUncheckedCreateNestedManyWithoutLabOrderItemInput
 }
 
 export type LabOrderItemCreateOrConnectWithoutSpecimenInput = {
@@ -770,6 +804,66 @@ export type LabOrderItemUpdateManyWithWhereWithoutSpecimenInput = {
   data: Prisma.XOR<Prisma.LabOrderItemUpdateManyMutationInput, Prisma.LabOrderItemUncheckedUpdateManyWithoutSpecimenInput>
 }
 
+export type LabOrderItemCreateWithoutResultsInput = {
+  id?: string
+  status?: $Enums.LabOrderItemStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  labOrder: Prisma.LabOrderCreateNestedOneWithoutItemsInput
+  labTest: Prisma.LabTestCreateNestedOneWithoutOrderItemsInput
+  panel?: Prisma.LabPanelCreateNestedOneWithoutOrderItemsInput
+  specimen?: Prisma.LabSpecimenCreateNestedOneWithoutItemsInput
+}
+
+export type LabOrderItemUncheckedCreateWithoutResultsInput = {
+  id?: string
+  labOrderId: string
+  labTestId: string
+  panelId?: string | null
+  specimenId?: string | null
+  status?: $Enums.LabOrderItemStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type LabOrderItemCreateOrConnectWithoutResultsInput = {
+  where: Prisma.LabOrderItemWhereUniqueInput
+  create: Prisma.XOR<Prisma.LabOrderItemCreateWithoutResultsInput, Prisma.LabOrderItemUncheckedCreateWithoutResultsInput>
+}
+
+export type LabOrderItemUpsertWithoutResultsInput = {
+  update: Prisma.XOR<Prisma.LabOrderItemUpdateWithoutResultsInput, Prisma.LabOrderItemUncheckedUpdateWithoutResultsInput>
+  create: Prisma.XOR<Prisma.LabOrderItemCreateWithoutResultsInput, Prisma.LabOrderItemUncheckedCreateWithoutResultsInput>
+  where?: Prisma.LabOrderItemWhereInput
+}
+
+export type LabOrderItemUpdateToOneWithWhereWithoutResultsInput = {
+  where?: Prisma.LabOrderItemWhereInput
+  data: Prisma.XOR<Prisma.LabOrderItemUpdateWithoutResultsInput, Prisma.LabOrderItemUncheckedUpdateWithoutResultsInput>
+}
+
+export type LabOrderItemUpdateWithoutResultsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumLabOrderItemStatusFieldUpdateOperationsInput | $Enums.LabOrderItemStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  labOrder?: Prisma.LabOrderUpdateOneRequiredWithoutItemsNestedInput
+  labTest?: Prisma.LabTestUpdateOneRequiredWithoutOrderItemsNestedInput
+  panel?: Prisma.LabPanelUpdateOneWithoutOrderItemsNestedInput
+  specimen?: Prisma.LabSpecimenUpdateOneWithoutItemsNestedInput
+}
+
+export type LabOrderItemUncheckedUpdateWithoutResultsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  labOrderId?: Prisma.StringFieldUpdateOperationsInput | string
+  labTestId?: Prisma.StringFieldUpdateOperationsInput | string
+  panelId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  specimenId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumLabOrderItemStatusFieldUpdateOperationsInput | $Enums.LabOrderItemStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type LabOrderItemCreateManyLabTestInput = {
   id?: string
   labOrderId: string
@@ -788,6 +882,7 @@ export type LabOrderItemUpdateWithoutLabTestInput = {
   labOrder?: Prisma.LabOrderUpdateOneRequiredWithoutItemsNestedInput
   panel?: Prisma.LabPanelUpdateOneWithoutOrderItemsNestedInput
   specimen?: Prisma.LabSpecimenUpdateOneWithoutItemsNestedInput
+  results?: Prisma.LabResultUpdateManyWithoutLabOrderItemNestedInput
 }
 
 export type LabOrderItemUncheckedUpdateWithoutLabTestInput = {
@@ -798,6 +893,7 @@ export type LabOrderItemUncheckedUpdateWithoutLabTestInput = {
   status?: Prisma.EnumLabOrderItemStatusFieldUpdateOperationsInput | $Enums.LabOrderItemStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  results?: Prisma.LabResultUncheckedUpdateManyWithoutLabOrderItemNestedInput
 }
 
 export type LabOrderItemUncheckedUpdateManyWithoutLabTestInput = {
@@ -828,6 +924,7 @@ export type LabOrderItemUpdateWithoutPanelInput = {
   labOrder?: Prisma.LabOrderUpdateOneRequiredWithoutItemsNestedInput
   labTest?: Prisma.LabTestUpdateOneRequiredWithoutOrderItemsNestedInput
   specimen?: Prisma.LabSpecimenUpdateOneWithoutItemsNestedInput
+  results?: Prisma.LabResultUpdateManyWithoutLabOrderItemNestedInput
 }
 
 export type LabOrderItemUncheckedUpdateWithoutPanelInput = {
@@ -838,6 +935,7 @@ export type LabOrderItemUncheckedUpdateWithoutPanelInput = {
   status?: Prisma.EnumLabOrderItemStatusFieldUpdateOperationsInput | $Enums.LabOrderItemStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  results?: Prisma.LabResultUncheckedUpdateManyWithoutLabOrderItemNestedInput
 }
 
 export type LabOrderItemUncheckedUpdateManyWithoutPanelInput = {
@@ -868,6 +966,7 @@ export type LabOrderItemUpdateWithoutLabOrderInput = {
   labTest?: Prisma.LabTestUpdateOneRequiredWithoutOrderItemsNestedInput
   panel?: Prisma.LabPanelUpdateOneWithoutOrderItemsNestedInput
   specimen?: Prisma.LabSpecimenUpdateOneWithoutItemsNestedInput
+  results?: Prisma.LabResultUpdateManyWithoutLabOrderItemNestedInput
 }
 
 export type LabOrderItemUncheckedUpdateWithoutLabOrderInput = {
@@ -878,6 +977,7 @@ export type LabOrderItemUncheckedUpdateWithoutLabOrderInput = {
   status?: Prisma.EnumLabOrderItemStatusFieldUpdateOperationsInput | $Enums.LabOrderItemStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  results?: Prisma.LabResultUncheckedUpdateManyWithoutLabOrderItemNestedInput
 }
 
 export type LabOrderItemUncheckedUpdateManyWithoutLabOrderInput = {
@@ -908,6 +1008,7 @@ export type LabOrderItemUpdateWithoutSpecimenInput = {
   labOrder?: Prisma.LabOrderUpdateOneRequiredWithoutItemsNestedInput
   labTest?: Prisma.LabTestUpdateOneRequiredWithoutOrderItemsNestedInput
   panel?: Prisma.LabPanelUpdateOneWithoutOrderItemsNestedInput
+  results?: Prisma.LabResultUpdateManyWithoutLabOrderItemNestedInput
 }
 
 export type LabOrderItemUncheckedUpdateWithoutSpecimenInput = {
@@ -918,6 +1019,7 @@ export type LabOrderItemUncheckedUpdateWithoutSpecimenInput = {
   status?: Prisma.EnumLabOrderItemStatusFieldUpdateOperationsInput | $Enums.LabOrderItemStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  results?: Prisma.LabResultUncheckedUpdateManyWithoutLabOrderItemNestedInput
 }
 
 export type LabOrderItemUncheckedUpdateManyWithoutSpecimenInput = {
@@ -930,6 +1032,35 @@ export type LabOrderItemUncheckedUpdateManyWithoutSpecimenInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
+
+/**
+ * Count Type LabOrderItemCountOutputType
+ */
+
+export type LabOrderItemCountOutputType = {
+  results: number
+}
+
+export type LabOrderItemCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  results?: boolean | LabOrderItemCountOutputTypeCountResultsArgs
+}
+
+/**
+ * LabOrderItemCountOutputType without action
+ */
+export type LabOrderItemCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the LabOrderItemCountOutputType
+   */
+  select?: Prisma.LabOrderItemCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * LabOrderItemCountOutputType without action
+ */
+export type LabOrderItemCountOutputTypeCountResultsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.LabResultWhereInput
+}
 
 
 export type LabOrderItemSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -945,6 +1076,8 @@ export type LabOrderItemSelect<ExtArgs extends runtime.Types.Extensions.Internal
   labTest?: boolean | Prisma.LabTestDefaultArgs<ExtArgs>
   panel?: boolean | Prisma.LabOrderItem$panelArgs<ExtArgs>
   specimen?: boolean | Prisma.LabOrderItem$specimenArgs<ExtArgs>
+  results?: boolean | Prisma.LabOrderItem$resultsArgs<ExtArgs>
+  _count?: boolean | Prisma.LabOrderItemCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["labOrderItem"]>
 
 export type LabOrderItemSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -994,6 +1127,8 @@ export type LabOrderItemInclude<ExtArgs extends runtime.Types.Extensions.Interna
   labTest?: boolean | Prisma.LabTestDefaultArgs<ExtArgs>
   panel?: boolean | Prisma.LabOrderItem$panelArgs<ExtArgs>
   specimen?: boolean | Prisma.LabOrderItem$specimenArgs<ExtArgs>
+  results?: boolean | Prisma.LabOrderItem$resultsArgs<ExtArgs>
+  _count?: boolean | Prisma.LabOrderItemCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type LabOrderItemIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   labOrder?: boolean | Prisma.LabOrderDefaultArgs<ExtArgs>
@@ -1015,6 +1150,11 @@ export type $LabOrderItemPayload<ExtArgs extends runtime.Types.Extensions.Intern
     labTest: Prisma.$LabTestPayload<ExtArgs>
     panel: Prisma.$LabPanelPayload<ExtArgs> | null
     specimen: Prisma.$LabSpecimenPayload<ExtArgs> | null
+    /**
+     * Every version of this test's value, newest last (P18-T04). A list rather
+     * than one row because an amendment supersedes without erasing.
+     */
+    results: Prisma.$LabResultPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1433,6 +1573,7 @@ export interface Prisma__LabOrderItemClient<T, Null = never, ExtArgs extends run
   labTest<T extends Prisma.LabTestDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.LabTestDefaultArgs<ExtArgs>>): Prisma.Prisma__LabTestClient<runtime.Types.Result.GetResult<Prisma.$LabTestPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   panel<T extends Prisma.LabOrderItem$panelArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.LabOrderItem$panelArgs<ExtArgs>>): Prisma.Prisma__LabPanelClient<runtime.Types.Result.GetResult<Prisma.$LabPanelPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   specimen<T extends Prisma.LabOrderItem$specimenArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.LabOrderItem$specimenArgs<ExtArgs>>): Prisma.Prisma__LabSpecimenClient<runtime.Types.Result.GetResult<Prisma.$LabSpecimenPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  results<T extends Prisma.LabOrderItem$resultsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.LabOrderItem$resultsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LabResultPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1906,6 +2047,30 @@ export type LabOrderItem$specimenArgs<ExtArgs extends runtime.Types.Extensions.I
    */
   include?: Prisma.LabSpecimenInclude<ExtArgs> | null
   where?: Prisma.LabSpecimenWhereInput
+}
+
+/**
+ * LabOrderItem.results
+ */
+export type LabOrderItem$resultsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the LabResult
+   */
+  select?: Prisma.LabResultSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the LabResult
+   */
+  omit?: Prisma.LabResultOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LabResultInclude<ExtArgs> | null
+  where?: Prisma.LabResultWhereInput
+  orderBy?: Prisma.LabResultOrderByWithRelationInput | Prisma.LabResultOrderByWithRelationInput[]
+  cursor?: Prisma.LabResultWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.LabResultScalarFieldEnum | Prisma.LabResultScalarFieldEnum[]
 }
 
 /**

@@ -96,6 +96,24 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     -- bench act performed on whoever is in the chair, and there is no version
     -- of it scoped to one person's own records.
     ('lab-specimen.write:any', 'LabSpecimen', 'write', 'ANY', 'Collect, receive and reject laboratory specimens'),
+    -- P18-T04. `write` types a value; `verify` signs it out. Two keys and not
+    -- one, because they are the two halves of a two-person rule: whoever holds
+    -- only `write` can never be the second signature on their own number.
+    --
+    -- `verify` is granted to LAB_TECHNICIAN as well as to ADMIN and DOCTOR,
+    -- and the clinic's `technicianMayVerify` setting decides whether they may
+    -- actually use it. A seeded grant cannot depend on a runtime row, so the
+    -- capability is seeded and the policy is enforced in `LabResultService` —
+    -- the same split as a feature entitlement, where the grant exists and the
+    -- switch decides.
+    ('lab-result.write:any', 'LabResult', 'write', 'ANY', 'Enter laboratory results'),
+    ('lab-result.verify:any', 'LabResult', 'verify', 'ANY', 'Verify and release laboratory results, and amend a released one'),
+    -- Who may sign a result out is a governance choice, so changing it is an
+    -- administrative act and never a bench one: ADMIN alone, and read is
+    -- separate from write because the bench UI has to know which rules are in
+    -- force without being able to change them.
+    ('lab-settings.read:any', 'LaboratorySettings', 'read', 'ANY', 'Read the laboratory verification settings'),
+    ('lab-settings.write:any', 'LaboratorySettings', 'write', 'ANY', 'Change the laboratory verification settings'),
     ('portal.patient-access:own', 'Portal', 'patient-access', 'OWN', 'Access the patient portal'),
     ('role.assign:any', 'Role', 'assign', 'ANY', 'Assign roles to users'),
     ('role.read:any', 'Role', 'read', 'ANY', 'Read role catalog'),
@@ -497,6 +515,10 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('ADMIN', 'lab-order.read:any'),
     ('ADMIN', 'lab-order.write:any'),
     ('ADMIN', 'lab-specimen.write:any'),
+    ('ADMIN', 'lab-result.write:any'),
+    ('ADMIN', 'lab-result.verify:any'),
+    ('ADMIN', 'lab-settings.read:any'),
+    ('ADMIN', 'lab-settings.write:any'),
     ('ADMIN', 'invoice.read:any'),
     ('ADMIN', 'invoice.write:any'),
     ('ADMIN', 'invoice.deliver:any'),
@@ -645,6 +667,12 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     -- what comes back is the work on their own visits.
     ('DOCTOR', 'lab-order.read:own'),
     ('DOCTOR', 'lab-order.write:own'),
+    -- P18-T04. The second signature, and no `write` key: a doctor releases a
+    -- result, and a doctor who also typed it is refused unless the clinic runs
+    -- single-operator. Read on the settings so the release screen can say
+    -- which rules are in force.
+    ('DOCTOR', 'lab-result.verify:any'),
+    ('DOCTOR', 'lab-settings.read:any'),
     ('DOCTOR', 'prescription.read:own'),
     ('DOCTOR', 'prescription.write:own'),
     ('DOCTOR', 'chat.session.create:own'),
@@ -692,6 +720,13 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     -- analis runs what was asked for and never decides what was asked for.
     ('LAB_TECHNICIAN', 'lab-order.read:any'),
     ('LAB_TECHNICIAN', 'lab-specimen.write:any'),
+    -- P18-T04. Entering values is the analis's own work. `verify` is held too,
+    -- but it only does anything where the clinic has turned
+    -- `technicianMayVerify` on — a solo klinik with no doctor at the bench —
+    -- and `LabResultService` is what refuses it everywhere else.
+    ('LAB_TECHNICIAN', 'lab-result.write:any'),
+    ('LAB_TECHNICIAN', 'lab-result.verify:any'),
+    ('LAB_TECHNICIAN', 'lab-settings.read:any'),
     -- Read only, and only because a specimen label and a lab report carry the
     -- clinic's identity — the same reason PHARMACIST and DOCTOR have it.
     ('LAB_TECHNICIAN', 'clinic-profile.read:any'),

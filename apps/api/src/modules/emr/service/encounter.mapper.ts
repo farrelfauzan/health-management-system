@@ -74,6 +74,7 @@ export class EncounterMapper {
       // P18-T02. Filled by the service from the module that owns lab orders;
       // the mapper has no lab record to map and must not invent one.
       labOrders: [],
+      labResults: [],
     };
   }
 

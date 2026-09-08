@@ -48,6 +48,16 @@ export const NOTIFICATION_TYPES = [
    */
   'PATIENT_DOCUMENT_RELEASED',
   /**
+   * Laboratory results (P18-T04), both addressed to the ordering doctor.
+   * `CRITICAL` fires on **entry**, before anybody has verified the value: a
+   * result that has to be telephoned does not wait for a second signature.
+   * `RELEASED` fires when the order is signed out, and again when a released
+   * value is amended. Neither carries the number — a feed row is read on a
+   * shared terminal.
+   */
+  'LAB_RESULT_CRITICAL',
+  'LAB_RESULT_RELEASED',
+  /**
    * Document approval (P16-T30, FR-E5-25/26). Six kinds because each has a
    * different audience and a different sentence: `REQUESTED` goes to every
    * named approver, the next three to the drafter, and the last two back to
