@@ -1,4 +1,6 @@
-import { PatientsDirectoryPanel } from '#components/client/patients/patients-directory-panel';
+import { PatientsWorkspace } from '#components/client/patients/patients-workspace';
+import { parseTabSearchParam } from '#lib/navigation/parse-tab-search-param';
+import { PATIENTS_TABS } from '#lib/patients/patients-tabs';
 import { parsePatientsSearchParams } from '#lib/patients/search-params';
 
 type AdminPatientsPageProps = {
@@ -6,7 +8,13 @@ type AdminPatientsPageProps = {
 };
 
 export default async function AdminPatientsPage({ searchParams }: AdminPatientsPageProps) {
-  const query = parsePatientsSearchParams(await searchParams);
+  const params = await searchParams;
+  const query = parsePatientsSearchParams(params);
 
-  return <PatientsDirectoryPanel initialQuery={query} />;
+  return (
+    <PatientsWorkspace
+      initialQuery={query}
+      initialTab={parseTabSearchParam(params.tab, PATIENTS_TABS)}
+    />
+  );
 }

@@ -27,7 +27,13 @@ import { useProspectiveMatchCandidates } from '#lib/prospective-arrivals/use-pro
 type ProspectiveArrivalDrawerProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  arrival: ChannelArrivalView;
+  /**
+   * Only the name and number the person booked with: everything the drawer
+   * shows about them. Narrowed from the whole arrival view (`P19-T08`) so the
+   * patients page can open it from a prospective row, which has no booking
+   * reference or session of its own.
+   */
+  arrival: Pick<ChannelArrivalView, 'patientFullName' | 'patientPhoneNumber'>;
   /**
    * Passed explicitly rather than read off `arrival`, which carries it as
    * nullable: this drawer is only ever opened for a prospective booking, and

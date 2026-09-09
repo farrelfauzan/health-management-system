@@ -2,19 +2,17 @@
 
 import { useState } from 'react';
 import type { PatientListItem } from '@hms/shared-types';
-import { Button, Can, Card, CardContent, Icon } from '@hms/ui';
+import { Card, CardContent } from '@hms/ui';
 import { usePathname, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 
 import { AssignDoctorDialog } from '#components/client/patients/assign-doctor-dialog';
-import { PatientFormDialog } from '#components/client/patients/patient-form-dialog';
 import {
   PatientsFilterCard,
   type PatientsFilterValues,
 } from '#components/client/patients/patients-filter-card';
 import { PatientsTable } from '#components/client/patients/patients-table';
 import { NumberedPagination } from '#components/client/shared/numbered-pagination';
-import { PageHeader } from '#components/shared/page-header';
 import { buildPatientsCsv } from '#lib/patients/build-patients-csv';
 import { buildPatientsSearchParams, type PatientsSearchParams } from '#lib/patients/search-params';
 import { usePatientsList } from '#lib/patients/use-patients-list';
@@ -37,7 +35,6 @@ export function PatientsDirectoryPanel({
   const pathname = usePathname();
   const t = useTranslations('clinical');
   const patientsQuery = usePatientsList(initialQuery);
-  const [isFormDialogOpen, setIsFormDialogOpen] = useState<boolean>(false);
   const [assigningPatient, setAssigningPatient] = useState<PatientListItem | null>(null);
 
   function navigateWithParams(next: PatientsSearchParams): void {
@@ -71,34 +68,14 @@ export function PatientsDirectoryPanel({
     });
   }
 
-  function handleOpenCreateDialog(): void {
-    setIsFormDialogOpen(true);
-  }
-
   function handleViewPatient(patientId: string): void {
     router.push(`${patientDetailBasePath}/${patientId}`);
   }
 
+  // The page header lives in `PatientsPageHeader` (`P19-T08`), above the tab
+  // strip on the admin page; this panel is the directory tab's body only.
   return (
     <div className="space-y-6">
-      <PageHeader
-        title={t('patients.title')}
-        subtitle={t('patients.subtitle')}
-        breadcrumbs={[t('patients.dashboard'), t('patients.title')]}
-        actions={
-          <Can action="create" subject="Patient">
-            <Button
-              type="button"
-              className="bg-primary-container hover:bg-primary"
-              onClick={handleOpenCreateDialog}
-            >
-              <Icon name="person_add" size={18} />
-              {t('patients.add')}
-            </Button>
-          </Can>
-        }
-      />
-
       <PatientsFilterCard
         key={`${initialQuery.search ?? ''}|${initialQuery.status ?? ''}|${initialQuery.createdFrom ?? ''}|${initialQuery.createdTo ?? ''}`}
         initialQuery={initialQuery}
@@ -134,14 +111,6 @@ export function PatientsDirectoryPanel({
           />
         </CardContent>
       </Card>
-
-      {isFormDialogOpen ? (
-        <PatientFormDialog
-          key="create"
-          open={isFormDialogOpen}
-          onOpenChange={setIsFormDialogOpen}
-        />
-      ) : null}
 
       {assigningPatient ? (
         <AssignDoctorDialog

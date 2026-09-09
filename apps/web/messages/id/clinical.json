@@ -384,7 +384,9 @@
         "unreachable": "SATUSEHAT tidak dapat dihubungi. Coba lagi."
       },
       "noImmunizations": "Belum ada imunisasi tercatat untuk pasien ini.",
-      "loadingImmunizations": "Memuat riwayat imunisasi..."
+      "loadingImmunizations": "Memuat riwayat imunisasi...",
+      "directoryTab": "Direktori",
+      "fromChatTab": "Dari chat"
     },
     "privacyNotice": {
       "title": "Pemberitahuan Privasi Pasien",

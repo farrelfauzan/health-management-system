@@ -384,7 +384,9 @@
         "unreachable": "SATUSEHAT could not be reached. Try again."
       },
       "noImmunizations": "No vaccination recorded for this patient.",
-      "loadingImmunizations": "Loading the immunisation history..."
+      "loadingImmunizations": "Loading the immunisation history...",
+      "directoryTab": "Directory",
+      "fromChatTab": "From chat"
     },
     "privacyNotice": {
       "title": "Patient Privacy Notice",
