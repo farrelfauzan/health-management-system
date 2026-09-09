@@ -68,7 +68,8 @@
     },
     "form": {
       "required": "wajib diisi",
-      "requiredLegend": "Wajib diisi"
+      "requiredLegend": "Wajib diisi",
+      "moreAbout": "Selengkapnya tentang {field}"
     }
   }
 }
