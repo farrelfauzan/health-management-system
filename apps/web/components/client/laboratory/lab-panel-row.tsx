@@ -1,17 +1,20 @@
 'use client';
 
 import type { LabPanelView } from '@hms/shared-types';
-import { Badge, TableCell, TableRow } from '@hms/ui';
+import { Badge, Button, TableCell, TableRow } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
 import { formatRupiah } from '#lib/billing/format-rupiah';
 
 type LabPanelRowProps = {
   labPanel: LabPanelView;
+  /** Present only for somebody who may edit the catalog (`P18-T15`). */
+  onEdit?: (labPanel: LabPanelView) => void;
 };
 
-export function LabPanelRow({ labPanel }: LabPanelRowProps) {
+export function LabPanelRow({ labPanel, onEdit }: LabPanelRowProps) {
   const t = useTranslations('operations.laboratory');
+  const tCommon = useTranslations('operations.common');
 
   return (
     <TableRow>
@@ -48,6 +51,13 @@ export function LabPanelRow({ labPanel }: LabPanelRowProps) {
           {labPanel.isActive ? t('active') : t('inactive')}
         </Badge>
       </TableCell>
+      {onEdit ? (
+        <TableCell className="text-right">
+          <Button type="button" size="sm" variant="outline" onClick={() => onEdit(labPanel)}>
+            {tCommon('edit')}
+          </Button>
+        </TableCell>
+      ) : null}
     </TableRow>
   );
 }
