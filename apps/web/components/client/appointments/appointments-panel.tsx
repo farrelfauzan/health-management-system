@@ -42,6 +42,7 @@ import {
   parseDateParam,
 } from '#lib/appointments/week-range';
 import { useDoctorsList } from '#lib/doctors/use-doctors-list';
+import { useShellBreadcrumbRoot } from '#lib/navigation/use-shell-breadcrumb-root';
 
 const CALENDAR_PAGE = 1;
 const CALENDAR_LIMIT = 100;
@@ -57,6 +58,7 @@ export function AppointmentsPanel({
   isOwnScheduleView = false,
 }: AppointmentsPanelProps) {
   const t = useTranslations('operations.appointments');
+  const root = useShellBreadcrumbRoot();
   const format = useFormatter();
   const router = useRouter();
   const pathname = usePathname();
@@ -181,7 +183,11 @@ export function AppointmentsPanel({
 
   return (
     <div className="space-y-6">
-      <PageHeader title={t('title')} subtitle={t('subtitle')} breadcrumbs={[t('title')]} />
+      <PageHeader
+        title={t('title')}
+        subtitle={t('subtitle')}
+        breadcrumbs={[root, { label: t('title') }]}
+      />
 
       {appointmentsQuery.error && appointmentsQuery.appointments.length > 0 ? (
         <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">

@@ -36,6 +36,7 @@ export default async function DoctorPatientDetailPage({
     <PatientDetailPanel
       patientId={id}
       initialTab={parseTabSearchParam(query.tab, PATIENT_DETAIL_TABS)}
+      patientsHref="/doctor/patients"
       isSatusehatEnabled={isFeatureEnabled(claims, 'satusehat')}
       isLaboratoryEnabled={isFeatureEnabled(claims, 'laboratory')}
     />

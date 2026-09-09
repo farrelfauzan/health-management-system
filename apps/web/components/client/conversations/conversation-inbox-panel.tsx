@@ -14,6 +14,7 @@ import {
 import { ConversationsTable } from '#components/client/conversations/conversations-table';
 import { PageHeader } from '#components/shared/page-header';
 import { useConversations } from '#lib/conversations/use-conversations';
+import { useShellBreadcrumbRoot } from '#lib/navigation/use-shell-breadcrumb-root';
 
 /** Below this the API rejects the search rather than matching everything. */
 const MIN_SEARCH_LENGTH = 2;
@@ -29,6 +30,7 @@ const MIN_SEARCH_LENGTH = 2;
  */
 export function ConversationInboxPanel() {
   const t = useTranslations('conversations');
+  const root = useShellBreadcrumbRoot();
   const [filter, setFilter] = useState<ConversationInboxFilterValue>('HANDOFF');
   const [channel, setChannel] = useState<ChannelKindValue | typeof CONVERSATION_CHANNEL_ALL>(
     CONVERSATION_CHANNEL_ALL,
@@ -46,7 +48,7 @@ export function ConversationInboxPanel() {
       <PageHeader
         title={t('header.title')}
         subtitle={t('header.subtitle')}
-        breadcrumbs={[t('header.breadcrumbs.assistant'), t('header.breadcrumbs.conversations')]}
+        breadcrumbs={[root, { label: t('header.breadcrumbs.conversations') }]}
       />
       <ConversationHandoffSummaryCard />
       {/* §8.4's metrics, under the live queue rather than above it: the queue

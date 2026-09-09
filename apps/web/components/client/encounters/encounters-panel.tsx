@@ -16,6 +16,7 @@ import {
   type EncountersSearchParams,
 } from '#lib/encounters/search-params';
 import { useEncountersList } from '#lib/encounters/use-encounters-list';
+import { useShellBreadcrumbRoot } from '#lib/navigation/use-shell-breadcrumb-root';
 
 type EncountersPanelProps = {
   initialQuery: EncountersSearchParams;
@@ -30,6 +31,7 @@ export function EncountersPanel({
   const router = useRouter();
   const pathname = usePathname();
   const t = useTranslations('clinical');
+  const root = useShellBreadcrumbRoot();
   const encountersQuery = useEncountersList(initialQuery);
 
   function navigateWithParams(next: EncountersSearchParams): void {
@@ -55,7 +57,7 @@ export function EncountersPanel({
       <PageHeader
         title={t('encounters.title')}
         subtitle={t('encounters.subtitle')}
-        breadcrumbs={[t('patients.dashboard'), t('encounters.title')]}
+        breadcrumbs={[root, { label: t('encounters.title') }]}
       />
 
       <EncountersFilterCard

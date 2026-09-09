@@ -26,6 +26,7 @@ import {
   type AdminUsersSearchParams,
 } from '#lib/admin-users/search-params';
 import { useAdminUsersList } from '#lib/admin-users/use-admin-users-list';
+import { useShellBreadcrumbRoot } from '#lib/navigation/use-shell-breadcrumb-root';
 
 type AdminUsersPanelProps = {
   initialQuery: AdminUsersSearchParams;
@@ -33,6 +34,7 @@ type AdminUsersPanelProps = {
 
 export function AdminUsersPanel({ initialQuery }: AdminUsersPanelProps) {
   const t = useTranslations('operations.administration');
+  const root = useShellBreadcrumbRoot();
   const router = useRouter();
   const pathname = usePathname();
   const queryClient = useQueryClient();
@@ -83,7 +85,7 @@ export function AdminUsersPanel({ initialQuery }: AdminUsersPanelProps) {
       <PageHeader
         title={t('title')}
         subtitle={t('subtitle')}
-        breadcrumbs={[t('title')]}
+        breadcrumbs={[root, { label: t('title') }]}
         actions={
           <Can action="create" subject="User">
             <Button

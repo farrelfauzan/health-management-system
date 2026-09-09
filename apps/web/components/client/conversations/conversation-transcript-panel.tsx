@@ -11,6 +11,7 @@ import { ConversationStateBadge } from '#components/client/conversations/convers
 import { ConversationTranscriptMessage } from '#components/client/conversations/conversation-transcript-message';
 import { PageHeader } from '#components/shared/page-header';
 import { useConversationTranscript } from '#lib/conversations/use-conversation-transcript';
+import { useShellBreadcrumbRoot } from '#lib/navigation/use-shell-breadcrumb-root';
 
 type ConversationTranscriptPanelProps = {
   conversationId: string;
@@ -26,10 +27,9 @@ type ConversationTranscriptPanelProps = {
  * ascending order keeps the cursor pointing at *older* messages, which is the
  * only direction this list ever grows in.
  */
-export function ConversationTranscriptPanel({
-  conversationId,
-}: ConversationTranscriptPanelProps) {
+export function ConversationTranscriptPanel({ conversationId }: ConversationTranscriptPanelProps) {
   const t = useTranslations('conversations.transcript');
+  const root = useShellBreadcrumbRoot();
   const [notice, setNotice] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const transcriptQuery = useConversationTranscript(conversationId);
@@ -60,7 +60,11 @@ export function ConversationTranscriptPanel({
       <PageHeader
         title={conversation.senderDisplayName ?? t('unnamed')}
         subtitle={`${conversation.channel} · ${conversation.externalChatId}`}
-        breadcrumbs={[t('breadcrumbs.assistant'), t('breadcrumbs.conversations')]}
+        breadcrumbs={[
+          root,
+          { label: t('breadcrumbs.conversations'), href: '/admin/conversations' },
+          { label: conversation.senderDisplayName ?? t('unnamed') },
+        ]}
         actions={
           <ConversationHandoffActions
             conversation={conversation}
@@ -70,10 +74,7 @@ export function ConversationTranscriptPanel({
         }
       />
       <div className="flex flex-wrap items-center gap-3">
-        <ConversationStateBadge
-          state={conversation.state}
-          isBlocked={conversation.isBlocked}
-        />
+        <ConversationStateBadge state={conversation.state} isBlocked={conversation.isBlocked} />
         <Link
           href="/admin/conversations"
           className="text-sm text-slate-600 underline-offset-4 hover:underline"

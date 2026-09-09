@@ -2,7 +2,16 @@
 
 import { useMemo } from 'react';
 import type { LabTestView } from '@hms/shared-types';
-import { Button, Icon, Skeleton, Tabs, TabsContent, TabsList, TabsTrigger, useAbility } from '@hms/ui';
+import {
+  Button,
+  Icon,
+  Skeleton,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+  useAbility,
+} from '@hms/ui';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 
@@ -18,6 +27,7 @@ import { LAB_ORDER_TABS, type LabOrderTab } from '#lib/laboratory/lab-order-tabs
 import { useLabOrderBench } from '#lib/laboratory/use-lab-order-bench';
 import { useLabTests } from '#lib/laboratory/use-lab-tests';
 import { useLaboratorySettings } from '#lib/laboratory/use-laboratory-settings';
+import { useShellBreadcrumbRoot } from '#lib/navigation/use-shell-breadcrumb-root';
 import { useTabSearchParam } from '#lib/navigation/use-tab-search-param';
 
 const ENTRY_STATUSES = ['COLLECTED', 'IN_PROGRESS', 'RESULTED'] as const;
@@ -45,6 +55,7 @@ export function LabOrderDetailPanel({
   const t = useTranslations('operations.laboratory.order');
   const tEntry = useTranslations('operations.laboratory.entry');
   const tWorklist = useTranslations('operations.laboratory.worklist');
+  const root = useShellBreadcrumbRoot();
   const ability = useAbility();
   const canWriteResults = ability.can('write', 'LabResult');
   const canVerify = ability.can('verify', 'LabResult');
@@ -61,8 +72,7 @@ export function LabOrderDetailPanel({
     canWriteResults &&
     loadedOrder?.fulfilmentSite === 'INTERNAL' &&
     ENTRY_STATUSES.some((status) => status === loadedOrder.status);
-  const isValidationOpen =
-    loadedOrder?.status === 'RESULTED' || loadedOrder?.status === 'RELEASED';
+  const isValidationOpen = loadedOrder?.status === 'RESULTED' || loadedOrder?.status === 'RELEASED';
   // Before the order arrives the fallback is the first tab; once it has, the
   // status decides, exactly as the uncontrolled default did. The hook reads
   // the URL on every render, so the switch happens without any stored state.
@@ -91,7 +101,11 @@ export function LabOrderDetailPanel({
     <div className="space-y-6">
       <PageHeader
         title={t('title', { orderNumber: order.orderNumber })}
-        breadcrumbs={[tWorklist('title'), order.orderNumber]}
+        breadcrumbs={[
+          root,
+          { label: tWorklist('title'), href: '/admin/laboratory' },
+          { label: order.orderNumber },
+        ]}
         actions={
           <Button asChild type="button" variant="outline" size="sm">
             <Link href="/admin/laboratory">

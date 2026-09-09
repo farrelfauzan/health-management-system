@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { LicenseExpiryBucketCard } from '#components/client/doctors/license-expiry-bucket-card';
 import { PageHeader } from '#components/shared/page-header';
 import { useDoctorLicenseExpiry } from '#lib/doctors/use-doctor-license-expiry';
+import { useShellBreadcrumbRoot } from '#lib/navigation/use-shell-breadcrumb-root';
 
 /**
  * The clinic's licence expiry dashboard (P16-T19, FR-E3-33).
@@ -19,6 +20,7 @@ import { useDoctorLicenseExpiry } from '#lib/doctors/use-doctor-license-expiry';
  */
 export function LicenseExpiryPanel() {
   const t = useTranslations('clinical');
+  const root = useShellBreadcrumbRoot();
   const expiryQuery = useDoctorLicenseExpiry();
   const { buckets } = expiryQuery;
 
@@ -27,7 +29,11 @@ export function LicenseExpiryPanel() {
       <PageHeader
         title={t('licenceExpiry.title')}
         subtitle={t('licenceExpiry.subtitle')}
-        breadcrumbs={[t('doctors.dashboard'), t('doctors.title'), t('licenceExpiry.breadcrumb')]}
+        breadcrumbs={[
+          root,
+          { label: t('doctors.title'), href: '/admin/doctors' },
+          { label: t('licenceExpiry.breadcrumb') },
+        ]}
       />
 
       {expiryQuery.isError ? (
