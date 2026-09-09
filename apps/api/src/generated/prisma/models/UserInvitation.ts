@@ -53,6 +53,7 @@ export type UserInvitationMinAggregateOutputType = {
   revokedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
+  doctorProfileId: string | null
 }
 
 export type UserInvitationMaxAggregateOutputType = {
@@ -65,6 +66,7 @@ export type UserInvitationMaxAggregateOutputType = {
   revokedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
+  doctorProfileId: string | null
 }
 
 export type UserInvitationCountAggregateOutputType = {
@@ -78,6 +80,7 @@ export type UserInvitationCountAggregateOutputType = {
   revokedAt: number
   createdAt: number
   updatedAt: number
+  doctorProfileId: number
   _all: number
 }
 
@@ -92,6 +95,7 @@ export type UserInvitationMinAggregateInputType = {
   revokedAt?: true
   createdAt?: true
   updatedAt?: true
+  doctorProfileId?: true
 }
 
 export type UserInvitationMaxAggregateInputType = {
@@ -104,6 +108,7 @@ export type UserInvitationMaxAggregateInputType = {
   revokedAt?: true
   createdAt?: true
   updatedAt?: true
+  doctorProfileId?: true
 }
 
 export type UserInvitationCountAggregateInputType = {
@@ -117,6 +122,7 @@ export type UserInvitationCountAggregateInputType = {
   revokedAt?: true
   createdAt?: true
   updatedAt?: true
+  doctorProfileId?: true
   _all?: true
 }
 
@@ -203,6 +209,7 @@ export type UserInvitationGroupByOutputType = {
   revokedAt: Date | null
   createdAt: Date
   updatedAt: Date
+  doctorProfileId: string | null
   _count: UserInvitationCountAggregateOutputType | null
   _min: UserInvitationMinAggregateOutputType | null
   _max: UserInvitationMaxAggregateOutputType | null
@@ -237,7 +244,9 @@ export type UserInvitationWhereInput = {
   revokedAt?: Prisma.DateTimeNullableFilter<"UserInvitation"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"UserInvitation"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"UserInvitation"> | Date | string
+  doctorProfileId?: Prisma.UuidNullableFilter<"UserInvitation"> | string | null
   invitedBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  doctorProfile?: Prisma.XOR<Prisma.DoctorProfileNullableScalarRelationFilter, Prisma.DoctorProfileWhereInput> | null
 }
 
 export type UserInvitationOrderByWithRelationInput = {
@@ -251,7 +260,9 @@ export type UserInvitationOrderByWithRelationInput = {
   revokedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  doctorProfileId?: Prisma.SortOrderInput | Prisma.SortOrder
   invitedBy?: Prisma.UserOrderByWithRelationInput
+  doctorProfile?: Prisma.DoctorProfileOrderByWithRelationInput
 }
 
 export type UserInvitationWhereUniqueInput = Prisma.AtLeast<{
@@ -268,7 +279,9 @@ export type UserInvitationWhereUniqueInput = Prisma.AtLeast<{
   revokedAt?: Prisma.DateTimeNullableFilter<"UserInvitation"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"UserInvitation"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"UserInvitation"> | Date | string
+  doctorProfileId?: Prisma.UuidNullableFilter<"UserInvitation"> | string | null
   invitedBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  doctorProfile?: Prisma.XOR<Prisma.DoctorProfileNullableScalarRelationFilter, Prisma.DoctorProfileWhereInput> | null
 }, "id" | "tokenHash">
 
 export type UserInvitationOrderByWithAggregationInput = {
@@ -282,6 +295,7 @@ export type UserInvitationOrderByWithAggregationInput = {
   revokedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  doctorProfileId?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.UserInvitationCountOrderByAggregateInput
   _max?: Prisma.UserInvitationMaxOrderByAggregateInput
   _min?: Prisma.UserInvitationMinOrderByAggregateInput
@@ -301,6 +315,7 @@ export type UserInvitationScalarWhereWithAggregatesInput = {
   revokedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"UserInvitation"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"UserInvitation"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"UserInvitation"> | Date | string
+  doctorProfileId?: Prisma.UuidNullableWithAggregatesFilter<"UserInvitation"> | string | null
 }
 
 export type UserInvitationCreateInput = {
@@ -314,6 +329,7 @@ export type UserInvitationCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   invitedBy: Prisma.UserCreateNestedOneWithoutSentInvitationsInput
+  doctorProfile?: Prisma.DoctorProfileCreateNestedOneWithoutOwnerInvitationsInput
 }
 
 export type UserInvitationUncheckedCreateInput = {
@@ -327,6 +343,7 @@ export type UserInvitationUncheckedCreateInput = {
   revokedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  doctorProfileId?: string | null
 }
 
 export type UserInvitationUpdateInput = {
@@ -340,6 +357,7 @@ export type UserInvitationUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   invitedBy?: Prisma.UserUpdateOneRequiredWithoutSentInvitationsNestedInput
+  doctorProfile?: Prisma.DoctorProfileUpdateOneWithoutOwnerInvitationsNestedInput
 }
 
 export type UserInvitationUncheckedUpdateInput = {
@@ -353,6 +371,7 @@ export type UserInvitationUncheckedUpdateInput = {
   revokedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  doctorProfileId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type UserInvitationCreateManyInput = {
@@ -366,6 +385,7 @@ export type UserInvitationCreateManyInput = {
   revokedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  doctorProfileId?: string | null
 }
 
 export type UserInvitationUpdateManyMutationInput = {
@@ -391,6 +411,7 @@ export type UserInvitationUncheckedUpdateManyInput = {
   revokedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  doctorProfileId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type UserInvitationListRelationFilter = {
@@ -422,6 +443,7 @@ export type UserInvitationCountOrderByAggregateInput = {
   revokedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  doctorProfileId?: Prisma.SortOrder
 }
 
 export type UserInvitationMaxOrderByAggregateInput = {
@@ -434,6 +456,7 @@ export type UserInvitationMaxOrderByAggregateInput = {
   revokedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  doctorProfileId?: Prisma.SortOrder
 }
 
 export type UserInvitationMinOrderByAggregateInput = {
@@ -446,6 +469,7 @@ export type UserInvitationMinOrderByAggregateInput = {
   revokedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  doctorProfileId?: Prisma.SortOrder
 }
 
 export type UserInvitationCreateNestedManyWithoutInvitedByInput = {
@@ -499,6 +523,48 @@ export type UserInvitationUpdateroleCodesInput = {
   push?: string | string[]
 }
 
+export type UserInvitationCreateNestedManyWithoutDoctorProfileInput = {
+  create?: Prisma.XOR<Prisma.UserInvitationCreateWithoutDoctorProfileInput, Prisma.UserInvitationUncheckedCreateWithoutDoctorProfileInput> | Prisma.UserInvitationCreateWithoutDoctorProfileInput[] | Prisma.UserInvitationUncheckedCreateWithoutDoctorProfileInput[]
+  connectOrCreate?: Prisma.UserInvitationCreateOrConnectWithoutDoctorProfileInput | Prisma.UserInvitationCreateOrConnectWithoutDoctorProfileInput[]
+  createMany?: Prisma.UserInvitationCreateManyDoctorProfileInputEnvelope
+  connect?: Prisma.UserInvitationWhereUniqueInput | Prisma.UserInvitationWhereUniqueInput[]
+}
+
+export type UserInvitationUncheckedCreateNestedManyWithoutDoctorProfileInput = {
+  create?: Prisma.XOR<Prisma.UserInvitationCreateWithoutDoctorProfileInput, Prisma.UserInvitationUncheckedCreateWithoutDoctorProfileInput> | Prisma.UserInvitationCreateWithoutDoctorProfileInput[] | Prisma.UserInvitationUncheckedCreateWithoutDoctorProfileInput[]
+  connectOrCreate?: Prisma.UserInvitationCreateOrConnectWithoutDoctorProfileInput | Prisma.UserInvitationCreateOrConnectWithoutDoctorProfileInput[]
+  createMany?: Prisma.UserInvitationCreateManyDoctorProfileInputEnvelope
+  connect?: Prisma.UserInvitationWhereUniqueInput | Prisma.UserInvitationWhereUniqueInput[]
+}
+
+export type UserInvitationUpdateManyWithoutDoctorProfileNestedInput = {
+  create?: Prisma.XOR<Prisma.UserInvitationCreateWithoutDoctorProfileInput, Prisma.UserInvitationUncheckedCreateWithoutDoctorProfileInput> | Prisma.UserInvitationCreateWithoutDoctorProfileInput[] | Prisma.UserInvitationUncheckedCreateWithoutDoctorProfileInput[]
+  connectOrCreate?: Prisma.UserInvitationCreateOrConnectWithoutDoctorProfileInput | Prisma.UserInvitationCreateOrConnectWithoutDoctorProfileInput[]
+  upsert?: Prisma.UserInvitationUpsertWithWhereUniqueWithoutDoctorProfileInput | Prisma.UserInvitationUpsertWithWhereUniqueWithoutDoctorProfileInput[]
+  createMany?: Prisma.UserInvitationCreateManyDoctorProfileInputEnvelope
+  set?: Prisma.UserInvitationWhereUniqueInput | Prisma.UserInvitationWhereUniqueInput[]
+  disconnect?: Prisma.UserInvitationWhereUniqueInput | Prisma.UserInvitationWhereUniqueInput[]
+  delete?: Prisma.UserInvitationWhereUniqueInput | Prisma.UserInvitationWhereUniqueInput[]
+  connect?: Prisma.UserInvitationWhereUniqueInput | Prisma.UserInvitationWhereUniqueInput[]
+  update?: Prisma.UserInvitationUpdateWithWhereUniqueWithoutDoctorProfileInput | Prisma.UserInvitationUpdateWithWhereUniqueWithoutDoctorProfileInput[]
+  updateMany?: Prisma.UserInvitationUpdateManyWithWhereWithoutDoctorProfileInput | Prisma.UserInvitationUpdateManyWithWhereWithoutDoctorProfileInput[]
+  deleteMany?: Prisma.UserInvitationScalarWhereInput | Prisma.UserInvitationScalarWhereInput[]
+}
+
+export type UserInvitationUncheckedUpdateManyWithoutDoctorProfileNestedInput = {
+  create?: Prisma.XOR<Prisma.UserInvitationCreateWithoutDoctorProfileInput, Prisma.UserInvitationUncheckedCreateWithoutDoctorProfileInput> | Prisma.UserInvitationCreateWithoutDoctorProfileInput[] | Prisma.UserInvitationUncheckedCreateWithoutDoctorProfileInput[]
+  connectOrCreate?: Prisma.UserInvitationCreateOrConnectWithoutDoctorProfileInput | Prisma.UserInvitationCreateOrConnectWithoutDoctorProfileInput[]
+  upsert?: Prisma.UserInvitationUpsertWithWhereUniqueWithoutDoctorProfileInput | Prisma.UserInvitationUpsertWithWhereUniqueWithoutDoctorProfileInput[]
+  createMany?: Prisma.UserInvitationCreateManyDoctorProfileInputEnvelope
+  set?: Prisma.UserInvitationWhereUniqueInput | Prisma.UserInvitationWhereUniqueInput[]
+  disconnect?: Prisma.UserInvitationWhereUniqueInput | Prisma.UserInvitationWhereUniqueInput[]
+  delete?: Prisma.UserInvitationWhereUniqueInput | Prisma.UserInvitationWhereUniqueInput[]
+  connect?: Prisma.UserInvitationWhereUniqueInput | Prisma.UserInvitationWhereUniqueInput[]
+  update?: Prisma.UserInvitationUpdateWithWhereUniqueWithoutDoctorProfileInput | Prisma.UserInvitationUpdateWithWhereUniqueWithoutDoctorProfileInput[]
+  updateMany?: Prisma.UserInvitationUpdateManyWithWhereWithoutDoctorProfileInput | Prisma.UserInvitationUpdateManyWithWhereWithoutDoctorProfileInput[]
+  deleteMany?: Prisma.UserInvitationScalarWhereInput | Prisma.UserInvitationScalarWhereInput[]
+}
+
 export type UserInvitationCreateWithoutInvitedByInput = {
   id?: string
   email: string
@@ -509,6 +575,7 @@ export type UserInvitationCreateWithoutInvitedByInput = {
   revokedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  doctorProfile?: Prisma.DoctorProfileCreateNestedOneWithoutOwnerInvitationsInput
 }
 
 export type UserInvitationUncheckedCreateWithoutInvitedByInput = {
@@ -521,6 +588,7 @@ export type UserInvitationUncheckedCreateWithoutInvitedByInput = {
   revokedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  doctorProfileId?: string | null
 }
 
 export type UserInvitationCreateOrConnectWithoutInvitedByInput = {
@@ -563,6 +631,59 @@ export type UserInvitationScalarWhereInput = {
   revokedAt?: Prisma.DateTimeNullableFilter<"UserInvitation"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"UserInvitation"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"UserInvitation"> | Date | string
+  doctorProfileId?: Prisma.UuidNullableFilter<"UserInvitation"> | string | null
+}
+
+export type UserInvitationCreateWithoutDoctorProfileInput = {
+  id?: string
+  email: string
+  tokenHash: string
+  roleCodes?: Prisma.UserInvitationCreateroleCodesInput | string[]
+  expiresAt: Date | string
+  consumedAt?: Date | string | null
+  revokedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  invitedBy: Prisma.UserCreateNestedOneWithoutSentInvitationsInput
+}
+
+export type UserInvitationUncheckedCreateWithoutDoctorProfileInput = {
+  id?: string
+  email: string
+  tokenHash: string
+  roleCodes?: Prisma.UserInvitationCreateroleCodesInput | string[]
+  invitedById: string
+  expiresAt: Date | string
+  consumedAt?: Date | string | null
+  revokedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type UserInvitationCreateOrConnectWithoutDoctorProfileInput = {
+  where: Prisma.UserInvitationWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserInvitationCreateWithoutDoctorProfileInput, Prisma.UserInvitationUncheckedCreateWithoutDoctorProfileInput>
+}
+
+export type UserInvitationCreateManyDoctorProfileInputEnvelope = {
+  data: Prisma.UserInvitationCreateManyDoctorProfileInput | Prisma.UserInvitationCreateManyDoctorProfileInput[]
+  skipDuplicates?: boolean
+}
+
+export type UserInvitationUpsertWithWhereUniqueWithoutDoctorProfileInput = {
+  where: Prisma.UserInvitationWhereUniqueInput
+  update: Prisma.XOR<Prisma.UserInvitationUpdateWithoutDoctorProfileInput, Prisma.UserInvitationUncheckedUpdateWithoutDoctorProfileInput>
+  create: Prisma.XOR<Prisma.UserInvitationCreateWithoutDoctorProfileInput, Prisma.UserInvitationUncheckedCreateWithoutDoctorProfileInput>
+}
+
+export type UserInvitationUpdateWithWhereUniqueWithoutDoctorProfileInput = {
+  where: Prisma.UserInvitationWhereUniqueInput
+  data: Prisma.XOR<Prisma.UserInvitationUpdateWithoutDoctorProfileInput, Prisma.UserInvitationUncheckedUpdateWithoutDoctorProfileInput>
+}
+
+export type UserInvitationUpdateManyWithWhereWithoutDoctorProfileInput = {
+  where: Prisma.UserInvitationScalarWhereInput
+  data: Prisma.XOR<Prisma.UserInvitationUpdateManyMutationInput, Prisma.UserInvitationUncheckedUpdateManyWithoutDoctorProfileInput>
 }
 
 export type UserInvitationCreateManyInvitedByInput = {
@@ -575,6 +696,7 @@ export type UserInvitationCreateManyInvitedByInput = {
   revokedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  doctorProfileId?: string | null
 }
 
 export type UserInvitationUpdateWithoutInvitedByInput = {
@@ -587,6 +709,7 @@ export type UserInvitationUpdateWithoutInvitedByInput = {
   revokedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  doctorProfile?: Prisma.DoctorProfileUpdateOneWithoutOwnerInvitationsNestedInput
 }
 
 export type UserInvitationUncheckedUpdateWithoutInvitedByInput = {
@@ -599,6 +722,7 @@ export type UserInvitationUncheckedUpdateWithoutInvitedByInput = {
   revokedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  doctorProfileId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type UserInvitationUncheckedUpdateManyWithoutInvitedByInput = {
@@ -606,6 +730,59 @@ export type UserInvitationUncheckedUpdateManyWithoutInvitedByInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   tokenHash?: Prisma.StringFieldUpdateOperationsInput | string
   roleCodes?: Prisma.UserInvitationUpdateroleCodesInput | string[]
+  expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  consumedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  revokedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  doctorProfileId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+export type UserInvitationCreateManyDoctorProfileInput = {
+  id?: string
+  email: string
+  tokenHash: string
+  roleCodes?: Prisma.UserInvitationCreateroleCodesInput | string[]
+  invitedById: string
+  expiresAt: Date | string
+  consumedAt?: Date | string | null
+  revokedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type UserInvitationUpdateWithoutDoctorProfileInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  tokenHash?: Prisma.StringFieldUpdateOperationsInput | string
+  roleCodes?: Prisma.UserInvitationUpdateroleCodesInput | string[]
+  expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  consumedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  revokedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  invitedBy?: Prisma.UserUpdateOneRequiredWithoutSentInvitationsNestedInput
+}
+
+export type UserInvitationUncheckedUpdateWithoutDoctorProfileInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  tokenHash?: Prisma.StringFieldUpdateOperationsInput | string
+  roleCodes?: Prisma.UserInvitationUpdateroleCodesInput | string[]
+  invitedById?: Prisma.StringFieldUpdateOperationsInput | string
+  expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  consumedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  revokedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type UserInvitationUncheckedUpdateManyWithoutDoctorProfileInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  tokenHash?: Prisma.StringFieldUpdateOperationsInput | string
+  roleCodes?: Prisma.UserInvitationUpdateroleCodesInput | string[]
+  invitedById?: Prisma.StringFieldUpdateOperationsInput | string
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   consumedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   revokedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -626,7 +803,9 @@ export type UserInvitationSelect<ExtArgs extends runtime.Types.Extensions.Intern
   revokedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  doctorProfileId?: boolean
   invitedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  doctorProfile?: boolean | Prisma.UserInvitation$doctorProfileArgs<ExtArgs>
 }, ExtArgs["result"]["userInvitation"]>
 
 export type UserInvitationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -640,7 +819,9 @@ export type UserInvitationSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   revokedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  doctorProfileId?: boolean
   invitedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  doctorProfile?: boolean | Prisma.UserInvitation$doctorProfileArgs<ExtArgs>
 }, ExtArgs["result"]["userInvitation"]>
 
 export type UserInvitationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -654,7 +835,9 @@ export type UserInvitationSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   revokedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  doctorProfileId?: boolean
   invitedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  doctorProfile?: boolean | Prisma.UserInvitation$doctorProfileArgs<ExtArgs>
 }, ExtArgs["result"]["userInvitation"]>
 
 export type UserInvitationSelectScalar = {
@@ -668,23 +851,28 @@ export type UserInvitationSelectScalar = {
   revokedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  doctorProfileId?: boolean
 }
 
-export type UserInvitationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "tokenHash" | "roleCodes" | "invitedById" | "expiresAt" | "consumedAt" | "revokedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["userInvitation"]>
+export type UserInvitationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "tokenHash" | "roleCodes" | "invitedById" | "expiresAt" | "consumedAt" | "revokedAt" | "createdAt" | "updatedAt" | "doctorProfileId", ExtArgs["result"]["userInvitation"]>
 export type UserInvitationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   invitedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  doctorProfile?: boolean | Prisma.UserInvitation$doctorProfileArgs<ExtArgs>
 }
 export type UserInvitationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   invitedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  doctorProfile?: boolean | Prisma.UserInvitation$doctorProfileArgs<ExtArgs>
 }
 export type UserInvitationIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   invitedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  doctorProfile?: boolean | Prisma.UserInvitation$doctorProfileArgs<ExtArgs>
 }
 
 export type $UserInvitationPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "UserInvitation"
   objects: {
     invitedBy: Prisma.$UserPayload<ExtArgs>
+    doctorProfile: Prisma.$DoctorProfilePayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -705,6 +893,24 @@ export type $UserInvitationPayload<ExtArgs extends runtime.Types.Extensions.Inte
     revokedAt: Date | null
     createdAt: Date
     updatedAt: Date
+    /**
+     * The doctor profile this invitation was raised for (P19-T15), set when it
+     * came from the create-doctor form rather than the staff invitation screen.
+     * Null for every ordinary staff invitation.
+     * 
+     * This column, not an `email` on `doctor_profiles`, is what lets an
+     * administrator enter a doctor's sign-in address at creation. No `User` row
+     * exists until someone accepts — `password_hash` is not nullable — so
+     * `owner_user_id` cannot be filled at invite time. The binding is carried
+     * here instead and consumed in the accept transaction, which creates the
+     * account and links it to this profile in one write. Until then the address
+     * is stored once, on this row, and read back through it.
+     * 
+     * `SetNull` rather than `Cascade`: an invitation is an audit record of a
+     * link that was minted and mailed, and hard-deleting a profile must not
+     * erase the evidence that it was.
+     */
+    doctorProfileId: string | null
   }, ExtArgs["result"]["userInvitation"]>
   composites: {}
 }
@@ -1100,6 +1306,7 @@ readonly fields: UserInvitationFieldRefs;
 export interface Prisma__UserInvitationClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   invitedBy<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  doctorProfile<T extends Prisma.UserInvitation$doctorProfileArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserInvitation$doctorProfileArgs<ExtArgs>>): Prisma.Prisma__DoctorProfileClient<runtime.Types.Result.GetResult<Prisma.$DoctorProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1139,6 +1346,7 @@ export interface UserInvitationFieldRefs {
   readonly revokedAt: Prisma.FieldRef<"UserInvitation", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"UserInvitation", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"UserInvitation", 'DateTime'>
+  readonly doctorProfileId: Prisma.FieldRef<"UserInvitation", 'String'>
 }
     
 
@@ -1537,6 +1745,25 @@ export type UserInvitationDeleteManyArgs<ExtArgs extends runtime.Types.Extension
    * Limit how many UserInvitations to delete.
    */
   limit?: number
+}
+
+/**
+ * UserInvitation.doctorProfile
+ */
+export type UserInvitation$doctorProfileArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the DoctorProfile
+   */
+  select?: Prisma.DoctorProfileSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the DoctorProfile
+   */
+  omit?: Prisma.DoctorProfileOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DoctorProfileInclude<ExtArgs> | null
+  where?: Prisma.DoctorProfileWhereInput
 }
 
 /**
