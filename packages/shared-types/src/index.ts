@@ -12,6 +12,9 @@ export type ApiError = {
   };
 };
 
+export * from '#shared/phone-number';
+export * from '#shared/phone-number-schema';
+export * from '#shared/format-phone-number';
 export * from '#admin-management/schemas';
 export * from '#admin-management/contracts';
 export * from '#admin-management/types';

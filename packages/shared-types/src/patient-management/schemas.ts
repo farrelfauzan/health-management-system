@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { indonesianPhoneNumberSchema } from '#shared/phone-number-schema';
+
 export const patientDateSchema = z
   .string()
   .regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must use YYYY-MM-DD format');
@@ -380,7 +382,7 @@ export const createPatientSchema = z.object({
   placeOfBirth: placeOfBirthSchema.optional(),
   sex: patientSexSchema,
   status: patientStatusSchema.optional().default('OUT_PATIENT'),
-  phoneNumber: z.string().trim().min(6).max(32),
+  phoneNumber: indonesianPhoneNumberSchema,
   address: z.string().trim().min(3).max(300),
   // Nullable: newborns have no NIK for weeks, foreign nationals carry a
   // passport or KITAS, and an unidentified emergency arrival needs a record
@@ -394,7 +396,7 @@ export const createPatientSchema = z.object({
   occupation: z.string().trim().min(2).max(120).optional(),
   religion: religionSchema.optional(),
   emergencyContactName: z.string().trim().min(2).max(120).optional(),
-  emergencyContactPhone: z.string().trim().min(6).max(32).optional(),
+  emergencyContactPhone: indonesianPhoneNumberSchema.optional(),
   guardianName: z.string().trim().min(2).max(120).optional(),
   guardianRelation: z.string().trim().min(2).max(60).optional(),
   allergies: patientAllergiesSchema.optional(),
@@ -434,7 +436,7 @@ export const updatePatientSchema = z
     placeOfBirth: placeOfBirthSchema.nullable().optional(),
     sex: patientSexSchema.optional(),
     status: patientStatusSchema.optional(),
-    phoneNumber: z.string().trim().min(6).max(32).optional(),
+    phoneNumber: indonesianPhoneNumberSchema.optional(),
     address: z.string().trim().min(3).max(300).optional(),
     nik: nikSchema.nullable().optional(),
     bpjsNumber: bpjsNumberSchema.nullable().optional(),
@@ -445,7 +447,7 @@ export const updatePatientSchema = z
     occupation: z.string().trim().min(2).max(120).nullable().optional(),
     religion: religionSchema.nullable().optional(),
     emergencyContactName: z.string().trim().min(2).max(120).nullable().optional(),
-    emergencyContactPhone: z.string().trim().min(6).max(32).nullable().optional(),
+    emergencyContactPhone: indonesianPhoneNumberSchema.nullable().optional(),
     guardianName: z.string().trim().min(2).max(120).nullable().optional(),
     guardianRelation: z.string().trim().min(2).max(60).nullable().optional(),
     // Replaces the whole list: the client always submits the complete set of

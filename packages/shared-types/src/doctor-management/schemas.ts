@@ -4,6 +4,7 @@ import { z } from 'zod';
 // adopted national identifiers first; practitioners share the exact same
 // 16-digit Dukcapil format, so reuse it instead of diverging.
 import { nikSchema } from '#patient-management/schemas';
+import { indonesianPhoneNumberSchema } from '#shared/phone-number-schema';
 
 export const MAX_INITIAL_PATIENT_ASSIGNMENTS = 20;
 export const MAX_SCHEDULE_ENTRIES = 28;
@@ -177,7 +178,7 @@ export const createDoctorSchema = z.object({
   specialtyId: z.string().uuid(),
   // SATUSEHAT Practitioner requires at least one ContactPoint, and phone is
   // the one the profile owns — the email lives on the user account.
-  phoneNumber: z.string().trim().min(6).max(32),
+  phoneNumber: indonesianPhoneNumberSchema,
   title: doctorTitleSchema.optional(),
   degrees: doctorDegreesSchema.optional(),
   // Required. The IHS practitioner number is resolved from the master
@@ -203,7 +204,7 @@ export const updateDoctorSchema = z
   .object({
     fullName: z.string().trim().min(2).max(120).optional(),
     specialtyId: z.string().uuid().optional(),
-    phoneNumber: z.string().trim().min(6).max(32).optional(),
+    phoneNumber: indonesianPhoneNumberSchema.optional(),
     title: doctorTitleSchema.nullable().optional(),
     degrees: doctorDegreesSchema.nullable().optional(),
     // Settable but not clearable: a doctor who has a NIK must keep one, or

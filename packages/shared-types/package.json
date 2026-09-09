@@ -4,6 +4,9 @@
   "private": true,
   "type": "module",
   "imports": {
+    "#shared/phone-number": "./src/shared/phone-number.ts",
+    "#shared/phone-number-schema": "./src/shared/phone-number-schema.ts",
+    "#shared/format-phone-number": "./src/shared/format-phone-number.ts",
     "#admin-management/schemas": "./src/admin-management/schemas.ts",
     "#admin-management/contracts": "./src/admin-management/contracts.ts",
     "#admin-management/types": "./src/admin-management/types.ts",
