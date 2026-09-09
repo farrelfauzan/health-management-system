@@ -1,7 +1,7 @@
 'use client';
 
 import type { LabTestView } from '@hms/shared-types';
-import { Badge, TableCell, TableRow } from '@hms/ui';
+import { Badge, Button, TableCell, TableRow } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
 import { formatRupiah } from '#lib/billing/format-rupiah';
@@ -9,10 +9,13 @@ import { formatReferenceRange } from '#lib/laboratory/format-reference-range';
 
 type LabTestRowProps = {
   labTest: LabTestView;
+  /** Present only for somebody who may edit the catalog (`P18-T15`). */
+  onEdit?: (labTest: LabTestView) => void;
 };
 
-export function LabTestRow({ labTest }: LabTestRowProps) {
+export function LabTestRow({ labTest, onEdit }: LabTestRowProps) {
   const t = useTranslations('operations.laboratory');
+  const tCommon = useTranslations('operations.common');
   const renderedRanges = labTest.referenceRanges.flatMap((range) => {
     const formatted = formatReferenceRange(range);
     return formatted === null ? [] : [{ id: range.id, sex: range.sex, formatted }];
@@ -71,6 +74,13 @@ export function LabTestRow({ labTest }: LabTestRowProps) {
           {labTest.isActive ? t('active') : t('inactive')}
         </Badge>
       </TableCell>
+      {onEdit ? (
+        <TableCell className="text-right">
+          <Button type="button" size="sm" variant="outline" onClick={() => onEdit(labTest)}>
+            {tCommon('edit')}
+          </Button>
+        </TableCell>
+      ) : null}
     </TableRow>
   );
 }
