@@ -37,7 +37,15 @@ export function PatientDemographicsCard({ patient }: PatientDemographicsCardProp
     { label: t('patients.demographics.birthPlace'), value: patient.placeOfBirth ?? EMPTY_VALUE },
     { label: t('patients.demographics.phone'), value: patient.phoneNumber, isMono: true },
     { label: t('patients.demographics.email'), value: patient.email ?? EMPTY_VALUE },
-    { label: t('patients.demographics.address'), value: patient.address ?? EMPTY_VALUE },
+    {
+      // The one printable line the API composes from the street, RT/RW and the
+      // resolved region names (P19-T10). A row that predates the region tables
+      // has no chain, and the formatter then returns the street line alone, so
+      // this never renders worse than the free-text field it replaced. The
+      // fallback covers a record with no address at all.
+      label: t('patients.demographics.address'),
+      value: patient.addressDetails.formattedAddress || (patient.address ?? EMPTY_VALUE),
+    },
     {
       label: t('patients.demographics.bloodType'),
       value: formatBloodType(patient.bloodType, patient.rhesusFactor),

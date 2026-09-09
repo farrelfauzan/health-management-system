@@ -61,6 +61,19 @@ export function PatientsTableRow({
         )}
       </TableCell>
       <TableCell className="px-4">
+        {/* The line the API composes from the street, RT/RW and the resolved
+            region names (P19-T10). Empty on a record that carries no address
+            at all, which a chat-made draft legitimately does until the front
+            desk completes it. Clamped rather than truncated on one line: a full
+            Indonesian address is long, and a worklist that hides the regency is
+            not showing an address. */}
+        <span className="line-clamp-2 max-w-[22rem] text-sm text-slate-600">
+          {patient.addressDetails.formattedAddress || (
+            <span className="text-slate-400">{t('patients.noAddress')}</span>
+          )}
+        </span>
+      </TableCell>
+      <TableCell className="px-4">
         <StatusBadge status={patient.status} label={t(`patients.status.${patient.status}`)} />
       </TableCell>
       <TableCell className="px-4 text-right">

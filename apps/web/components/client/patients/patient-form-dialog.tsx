@@ -36,6 +36,7 @@ import {
   SelectValue,
 } from '@hms/ui';
 
+import { PatientAddressFields } from '#components/client/patients/patient-address-fields';
 import { PatientDoctorPicker } from '#components/client/patients/patient-doctor-picker';
 import { PrivacyNoticeCapture } from '#components/client/patients/privacy-notice-capture';
 import { FieldError } from '#components/client/shared/field-error';
@@ -50,12 +51,19 @@ import {
 } from '#lib/api/generated/patient-management/patient-management';
 import { parseApiSuccess } from '#lib/api/response';
 import { notifyApiError } from '#lib/api/notify-api-error';
+import { buildPatientAddressDefaults } from '#lib/patients/build-patient-address-defaults';
 import { buildPatientCoreFields } from '#lib/patients/build-patient-core-fields';
+import { buildPatientCreateAddressFields } from '#lib/patients/build-patient-create-address-fields';
 import { buildPatientFieldValidator } from '#lib/patients/build-patient-field-validator';
 import { buildPatientOptionalFields } from '#lib/patients/build-patient-optional-fields';
+import { buildPatientUpdateAddressFields } from '#lib/patients/build-patient-update-address-fields';
 import { invalidatePatientQueries } from '#lib/patients/invalidate-patient-queries';
+import type { PatientAddressFieldErrors } from '#lib/patients/patient-address-field-errors.types';
+import type { PatientAddressFormValues } from '#lib/patients/patient-address-form-values.types';
 import { PATIENT_FORM_REQUIRED_FIELDS } from '#lib/patients/patient-form-required-fields';
+import { resolveAddressChainErrors } from '#lib/patients/resolve-address-chain-errors';
 import { useActiveDoctors } from '#lib/patients/use-active-doctors';
+import { validatePatientAddress } from '#lib/patients/validate-patient-address';
 import type { PatientConversionResult } from '#lib/prospective-arrivals/patient-conversion-result';
 import type { PatientFormConversion } from '#lib/prospective-arrivals/patient-form-conversion';
 import { invalidateProspectiveArrivalQueries } from '#lib/prospective-arrivals/invalidate-prospective-arrival-queries';
@@ -90,7 +98,31 @@ export function PatientFormDialog({
   const queryClient = useQueryClient();
   const [formError, setFormError] = useState<string | null>(null);
   const [identifierWarnings, setIdentifierWarnings] = useState<string[]>([]);
+  // Held beside the form rather than inside it: the address section is one
+  // controlled value, and TanStack's per-field meta has nowhere to put a
+  // message that belongs to the third of four selects inside it.
+  const [addressErrors, setAddressErrors] = useState<PatientAddressFieldErrors>({});
   const doctorsQuery = useActiveDoctors(open && !isEditMode);
+  /**
+   * Runs on both submit paths — the valid one and the blocked one — so a
+   * missing region chain is reported on the first press of Save, not only once
+   * every other field happens to be right.
+   */
+  function collectAddressErrors(values: PatientAddressFormValues): PatientAddressFieldErrors {
+    return validatePatientAddress({
+      values,
+      isChainRequired: !isEditMode,
+      messages: {
+        provinceRequired: t('patients.form.provinceRequired'),
+        regencyRequired: t('patients.form.regencyRequired'),
+        districtRequired: t('patients.form.districtRequired'),
+        villageRequired: t('patients.form.villageRequired'),
+        chainIncomplete: t('patients.form.addressChainIncomplete'),
+        rtRwInvalid: t('patients.form.rtRwInvalid'),
+        postalCodeInvalid: t('patients.form.postalCodeInvalid'),
+      },
+    });
+  }
   // Typed to the envelope both endpoints answer with rather than to either
   // one's generated payload: the two return different `data` shapes — a patient
   // profile and a resolution view — and each branch parses its own below.
@@ -114,6 +146,10 @@ export function PatientFormDialog({
       status: patient?.status ?? 'OUT_PATIENT',
       phoneNumber: patient?.phoneNumber ?? conversion?.phoneNumber ?? '',
       address: patient?.address ?? '',
+      // A conversion deliberately starts empty (P19-T08 carries no address on
+      // the booking) and an edit starts on the record's own chain, names
+      // included, so the four comboboxes show it before their lists arrive.
+      addressChain: buildPatientAddressDefaults(patient?.addressDetails),
       placeOfBirth: patient?.placeOfBirth ?? '',
       email: patient?.email ?? '',
       // Identifiers are write-only from this form: the profile carries masked
@@ -136,6 +172,14 @@ export function PatientFormDialog({
     onSubmit: async ({ value }) => {
       setFormError(null);
       setIdentifierWarnings([]);
+      // Before anything is sent: a chain the API would refuse is caught here so
+      // the message lands under the select that is wrong, not in the banner.
+      const nextAddressErrors = collectAddressErrors(value.addressChain);
+      setAddressErrors(nextAddressErrors);
+      if (Object.keys(nextAddressErrors).length > 0) {
+        setFormError(t('patients.form.validationError'));
+        return;
+      }
       let envelope: ApiSuccess<PatientProfile>;
       try {
         if (isEditMode && patient) {
@@ -148,6 +192,7 @@ export function PatientFormDialog({
             input: {
               ...buildPatientCoreFields(value),
               ...buildPatientOptionalFields(value),
+              ...buildPatientUpdateAddressFields(value.addressChain),
             },
           });
           envelope = parseApiSuccess<PatientProfile>(response, t('patients.form.saveError'));
@@ -175,6 +220,7 @@ export function PatientFormDialog({
             doctorIds: value.doctorIds.length > 0 ? value.doctorIds : undefined,
             privacyNotice: value.privacyNotice,
             ...buildPatientOptionalFields(value),
+            ...buildPatientCreateAddressFields(value.addressChain),
           });
           if (conversion) {
             const conversionEnvelope = parseApiSuccess<ProspectiveArrivalResolutionView>(
@@ -209,14 +255,20 @@ export function PatientFormDialog({
         }
         onOpenChange(false);
       } catch (error) {
+        // A chain the master data disagrees with — a village moved to another
+        // district, a code retired since the list was cached — is the one
+        // address failure the form cannot predict. Put it back on the level the
+        // API named rather than leaving it as one sentence in the banner.
+        setAddressErrors(resolveAddressChainErrors(error));
         setFormError(notifyApiError(error, t('patients.form.saveError')));
       }
     },
     // Without this a blocked submit is indistinguishable from a dead button:
     // the field errors render far down a dialog that scrolls, so the summary
     // at the top is the only feedback the person pressing Save can see.
-    onSubmitInvalid: () => {
+    onSubmitInvalid: ({ value }) => {
       setIdentifierWarnings([]);
+      setAddressErrors(collectAddressErrors(value.addressChain));
       setFormError(t('patients.form.validationError'));
     },
   });
@@ -440,36 +492,55 @@ export function PatientFormDialog({
             )}
           </form.Field>
 
-          <form.Field
-            name="address"
-            validators={{
-              onSubmit: buildPatientFieldValidator({
-                schema: createPatientSchema.shape.address,
-                allowBlank: isEditMode,
-              }),
-            }}
-          >
-            {(field) => (
-              <div className="space-y-1.5">
-                <FormLabel
-                  htmlFor={field.name}
-                  className="font-heading text-xs text-slate-600"
-                  required={!isEditMode && PATIENT_FORM_REQUIRED_FIELDS.has(field.name)}
-                >
-                  {t('patients.form.address')}
-                </FormLabel>
-                <Input
-                  id={field.name}
+          <div className="space-y-4 border-t border-slate-100 pt-4">
+            <p className="font-heading text-xs font-semibold uppercase tracking-wide text-slate-500">
+              {t('patients.form.addressSection')}
+            </p>
+            <form.Field
+              name="address"
+              validators={{
+                onSubmit: buildPatientFieldValidator({
+                  schema: createPatientSchema.shape.address,
+                  allowBlank: isEditMode,
+                }),
+              }}
+            >
+              {(field) => (
+                <div className="space-y-1.5">
+                  <FormLabel
+                    htmlFor={field.name}
+                    className="font-heading text-xs text-slate-600"
+                    required={!isEditMode && PATIENT_FORM_REQUIRED_FIELDS.has(field.name)}
+                  >
+                    {t('patients.form.streetLine')}
+                  </FormLabel>
+                  <Input
+                    id={field.name}
+                    value={field.state.value}
+                    placeholder="Jl. Melati No. 5"
+                    onChange={(event) => field.handleChange(event.target.value)}
+                    onBlur={field.handleBlur}
+                    aria-invalid={field.state.meta.errors.length > 0}
+                  />
+                  <FieldError errors={field.state.meta.errors} />
+                </div>
+              )}
+            </form.Field>
+            <form.Field name="addressChain">
+              {(field) => (
+                <PatientAddressFields
                   value={field.state.value}
-                  placeholder="Jl. Melati No. 5, Jakarta"
-                  onChange={(event) => field.handleChange(event.target.value)}
-                  onBlur={field.handleBlur}
-                  aria-invalid={field.state.meta.errors.length > 0}
+                  onChange={(nextValue) => {
+                    setAddressErrors({});
+                    field.handleChange(nextValue);
+                  }}
+                  errors={addressErrors}
+                  isRequired={!isEditMode}
+                  isEnabled={open}
                 />
-                <FieldError errors={field.state.meta.errors} />
-              </div>
-            )}
-          </form.Field>
+              )}
+            </form.Field>
+          </div>
 
           <div className="space-y-4 border-t border-slate-100 pt-4">
             <p className="font-heading text-xs font-semibold uppercase tracking-wide text-slate-500">

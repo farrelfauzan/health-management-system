@@ -45,7 +45,8 @@
         "id": "ID Pasien",
         "lastVisit": "Kunjungan Terakhir",
         "lastVisitHelp": "Menampilkan pembaruan rekam terakhir hingga data kunjungan tersedia.",
-        "doctor": "Dokter yang Ditetapkan"
+        "doctor": "Dokter yang Ditetapkan",
+        "address": "Alamat"
       },
       "unassigned": "Belum ditetapkan",
       "sex": {
@@ -167,7 +168,6 @@
         "selectSex": "Pilih jenis kelamin",
         "selectStatus": "Pilih status",
         "phone": "Nomor Telepon",
-        "address": "Alamat",
         "identifiers": "Identitas Nasional",
         "identifierHelp": "NIK dan nomor BPJS tersimpan terenkripsi dan tersamar. Biarkan kosong untuk mempertahankan nilai; isi hanya untuk menggantinya.",
         "digits16": "16 digit",
@@ -186,7 +186,34 @@
         "guardianName": "Nama Penanggung Jawab",
         "relation": "Hubungan",
         "initialDoctors": "Dokter Awal (opsional)",
-        "createAction": "Buat Pasien"
+        "createAction": "Buat Pasien",
+        "addressSection": "Alamat",
+        "streetLine": "Alamat Jalan",
+        "province": "Provinsi",
+        "regency": "Kabupaten / Kota",
+        "district": "Kecamatan",
+        "village": "Kelurahan / Desa",
+        "rtRw": "RT / RW",
+        "postalCode": "Kode Pos",
+        "selectProvince": "Pilih provinsi",
+        "selectRegency": "Pilih kabupaten atau kota",
+        "selectDistrict": "Pilih kecamatan",
+        "selectVillage": "Pilih kelurahan atau desa",
+        "selectProvinceFirst": "Pilih provinsi terlebih dahulu",
+        "selectRegencyFirst": "Pilih kabupaten atau kota terlebih dahulu",
+        "selectDistrictFirst": "Pilih kecamatan terlebih dahulu",
+        "searchRegion": "Cari berdasarkan nama",
+        "searchVillage": "Ketik nama kelurahan atau desa",
+        "searchingRegions": "Mencari…",
+        "noRegions": "Wilayah tidak ditemukan.",
+        "villageSearchHint": "Baru sebagian kelurahan yang ditampilkan. Ketik namanya untuk mempersempit daftar.",
+        "provinceRequired": "Provinsi wajib diisi",
+        "regencyRequired": "Kabupaten atau kota wajib diisi",
+        "districtRequired": "Kecamatan wajib diisi",
+        "villageRequired": "Kelurahan atau desa wajib diisi",
+        "addressChainIncomplete": "Lengkapi keempat tingkat wilayah, atau kosongkan alamatnya sama sekali",
+        "rtRwInvalid": "RT/RW harus berbentuk 003/007",
+        "postalCodeInvalid": "Kode pos harus lima digit"
       },
       "noActiveDoctors": "Tidak ada dokter aktif yang tersedia.",
       "assignedDoctors": "Dokter yang Ditetapkan",
@@ -392,7 +419,8 @@
         "unreachable": "SATUSEHAT tidak dapat dihubungi. Coba lagi."
       },
       "noImmunizations": "Belum ada imunisasi tercatat untuk pasien ini.",
-      "loadingImmunizations": "Memuat riwayat imunisasi..."
+      "loadingImmunizations": "Memuat riwayat imunisasi...",
+      "noAddress": "Alamat belum dicatat"
     },
     "privacyNotice": {
       "title": "Pemberitahuan Privasi Pasien",

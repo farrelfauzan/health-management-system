@@ -10,7 +10,7 @@ import { DataTableHeaderCell } from '#components/shared/data-table-header-cell';
 import { EmptyState } from '#components/shared/empty-state';
 import { TableSkeleton } from '#components/shared/table-skeleton';
 
-const TABLE_COLUMN_COUNT = 4;
+const TABLE_COLUMN_COUNT = 5;
 
 type PatientsTableProps = {
   patients: PatientListItem[];
@@ -46,6 +46,7 @@ export function PatientsTable({
         <TableRow>
           <DataTableHeaderCell>{t('patients.columns.name')}</DataTableHeaderCell>
           <DataTableHeaderCell>{t('patients.columns.doctor')}</DataTableHeaderCell>
+          <DataTableHeaderCell>{t('patients.columns.address')}</DataTableHeaderCell>
           <DataTableHeaderCell>{t('common.status')}</DataTableHeaderCell>
           <DataTableHeaderCell className="text-right">{t('common.actions')}</DataTableHeaderCell>
         </TableRow>
