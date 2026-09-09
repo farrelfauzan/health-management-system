@@ -25,6 +25,7 @@ export {
 } from '#components/command';
 export { DatePicker } from '#components/date-picker';
 export { Input } from '#components/input';
+export { PhoneInput } from '#components/phone-input';
 export {
   Select,
   SelectContent,
@@ -150,6 +151,7 @@ export type { RichTextVariableDefinition } from '#lib/rich-text/rich-text-variab
 export type { Editor as RichTextEditorInstance } from '@tiptap/react';
 export { Textarea } from '#components/textarea';
 export { cn } from '#lib/utils';
+export { toNationalPhoneDigits } from '#lib/to-national-phone-digits';
 export {
   buildAppAbility,
   type AppAbility,

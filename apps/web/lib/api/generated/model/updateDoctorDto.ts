@@ -16,6 +16,7 @@ export interface UpdateDoctorDto {
   fullName?: string;
   specialtyId?: string;
   /**
+     * Indonesian phone number. Accepts 0812…, +62 812-…, 62812… and punctuated forms; stored as 62812….
      * @minLength 6
      * @maxLength 32
      */

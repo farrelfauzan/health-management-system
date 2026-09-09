@@ -29,6 +29,7 @@ import {
   DialogHeader,
   DialogTitle,
   Input,
+  PhoneInput,
   Select,
   SelectContent,
   SelectItem,
@@ -427,11 +428,11 @@ export function PatientFormDialog({
                 >
                   {t('patients.form.phone')}
                 </FormLabel>
-                <Input
+                <PhoneInput
                   id={field.name}
                   value={field.state.value}
-                  placeholder="+628123456789"
-                  onChange={(event) => field.handleChange(event.target.value)}
+                  placeholder="8123456789"
+                  onValueChange={(value) => field.handleChange(value)}
                   onBlur={field.handleBlur}
                   aria-invalid={field.state.meta.errors.length > 0}
                 />
@@ -722,11 +723,11 @@ export function PatientFormDialog({
                     >
                       {t('patients.form.contactPhone')}
                     </FormLabel>
-                    <Input
+                    <PhoneInput
                       id={field.name}
                       value={field.state.value}
-                      placeholder="+628123456789"
-                      onChange={(event) => field.handleChange(event.target.value)}
+                      placeholder="8123456789"
+                      onValueChange={(value) => field.handleChange(value)}
                       onBlur={field.handleBlur}
                     />
                   </div>

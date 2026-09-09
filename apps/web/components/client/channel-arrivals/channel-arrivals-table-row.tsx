@@ -1,6 +1,6 @@
 'use client';
 
-import type { ChannelArrivalView } from '@hms/shared-types';
+import { formatPhoneNumber, type ChannelArrivalView } from '@hms/shared-types';
 import { Badge, TableCell, TableRow } from '@hms/ui';
 import { useFormatter, useTranslations } from 'next-intl';
 
@@ -41,7 +41,7 @@ export function ChannelArrivalsTableRow({
         <p className="text-xs text-slate-500">
           {/* No MRN on a prospective booking, and it is not a load failure:
               none has been spent on this person yet (`P17-T03`). */}
-          {arrival.patientMrn ?? t('noMrnYet')} · {arrival.patientPhoneNumber}
+          {arrival.patientMrn ?? t('noMrnYet')} · {formatPhoneNumber(arrival.patientPhoneNumber)}
         </p>
       </TableCell>
       <TableCell>
