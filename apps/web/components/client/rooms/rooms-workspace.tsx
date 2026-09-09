@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger, useAbility } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
@@ -9,6 +10,7 @@ import { RoomClassesPanel } from '#components/client/rooms/room-classes-panel';
 import { RoomsPanel } from '#components/client/rooms/rooms-panel';
 import { WardsPanel } from '#components/client/rooms/wards-panel';
 import { PageHeader } from '#components/shared/page-header';
+import type { RoomsWorkspaceTab } from '#lib/rooms/rooms-workspace-tab';
 
 export function RoomsWorkspace() {
   const t = useTranslations('operations.rooms');
@@ -20,12 +22,24 @@ export function RoomsWorkspace() {
   // The occupancy board is a bed aggregate, so it follows the bed grant. A
   // clinic that lets a clerk read wards but not beds still gets a usable
   // screen — one tab fewer, not a blank page.
-  const defaultTab = canReadBeds ? 'occupancy' : canReadWards ? 'wards' : 'rooms';
+  const defaultTab: RoomsWorkspaceTab = canReadBeds
+    ? 'occupancy'
+    : canReadWards
+      ? 'wards'
+      : 'rooms';
+  // Held in state (not just `defaultValue`) so a panel can send the user to
+  // the tab where a missing parent gets created. P19-T05 moves this into a
+  // `?tab=` search param; until then this is the smallest thing that works.
+  const [activeTab, setActiveTab] = useState<RoomsWorkspaceTab>(defaultTab);
 
   return (
     <div className="space-y-6">
       <PageHeader title={t('title')} subtitle={t('subtitle')} breadcrumbs={[t('title')]} />
-      <Tabs defaultValue={defaultTab} className="space-y-5">
+      <Tabs
+        value={activeTab}
+        onValueChange={(value) => setActiveTab(value as RoomsWorkspaceTab)}
+        className="space-y-5"
+      >
         <TabsList>
           {canReadBeds ? <TabsTrigger value="occupancy">{t('occupancy')}</TabsTrigger> : null}
           {canReadWards ? <TabsTrigger value="wards">{t('wards')}</TabsTrigger> : null}
@@ -45,12 +59,12 @@ export function RoomsWorkspace() {
         ) : null}
         {canReadRooms ? (
           <TabsContent value="rooms">
-            <RoomsPanel />
+            <RoomsPanel onGoToWards={canReadWards ? () => setActiveTab('wards') : undefined} />
           </TabsContent>
         ) : null}
         {canReadBeds ? (
           <TabsContent value="beds">
-            <BedsPanel />
+            <BedsPanel onGoToRooms={canReadRooms ? () => setActiveTab('rooms') : undefined} />
           </TabsContent>
         ) : null}
         {canReadClasses ? (

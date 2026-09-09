@@ -873,7 +873,15 @@
       "quotaMustBePositive": "Kuota harus bilangan bulat minimal 1, atau dikosongkan untuk tanpa batas.",
       "emptyRoomClasses": "Belum ada kelas perawatan",
       "emptyRoomClassesDescription": "Tambahkan kelas — VIP, Kelas 1, atau sebutan lain yang dipakai klinik ini — sebelum membuat kamar.",
-      "noRoomClasses": "Belum ada kelas aktif. Tambahkan lebih dulu pada tab Kelas."
+      "noRoomClasses": "Belum ada kelas aktif. Tambahkan lebih dulu pada tab Kelas.",
+      "selectWard": "Pilih bangsal",
+      "selectRoom": "Pilih kamar",
+      "noWards": "Belum ada bangsal. Buat bangsal lebih dulu pada tab Bangsal.",
+      "noWardsDescription": "Setiap kamar berada di dalam sebuah bangsal. Buat bangsal lebih dulu, lalu kembali ke sini untuk menambahkan kamar.",
+      "noRooms": "Belum ada kamar. Buat kamar lebih dulu pada tab Kamar.",
+      "noRoomsDescription": "Setiap tempat tidur berada di dalam sebuah kamar. Buat kamar lebih dulu, lalu kembali ke sini untuk menambahkan tempat tidur.",
+      "goToWards": "Buka tab Bangsal",
+      "goToRooms": "Buka tab Kamar"
     },
     "admissions": {
       "title": "Rawat Inap",
