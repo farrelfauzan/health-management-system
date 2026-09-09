@@ -1,3 +1,4 @@
+import { LAB_REPORT_CONFIGURATION_FAILURE_MESSAGES } from '@hms/shared-types';
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
@@ -362,6 +363,37 @@ describe('LabReportService', () => {
         expect.objectContaining({ nextAttemptAt: null }),
       );
     });
+
+    // P18-T16. Five retries against a missing clinic profile are five
+    // guaranteed failures. The row is parked on the first attempt, with the
+    // registry's message rather than "NotFoundException", and the render is
+    // never attempted.
+    it('parks a missing clinic profile FAILED at once rather than spending the attempts', async () => {
+      clinicProfileServiceMock.getProfile.mockRejectedValue(
+        new NotFoundException('The clinic profile has not been configured yet'),
+      );
+
+      await service.renderClaimedReport(buildReport({ attemptCount: 0 }));
+
+      expect(pdfRendererServiceMock.render).not.toHaveBeenCalled();
+      expect(labReportRepositoryMock.rescheduleAttempt).toHaveBeenCalledWith({
+        id: '77777777-eeee-4eee-8eee-777777777777',
+        error: LAB_REPORT_CONFIGURATION_FAILURE_MESSAGES.CLINIC_PROFILE_MISSING,
+        nextAttemptAt: null,
+      });
+    });
+
+    it('still retries a clinic profile read that failed for any other reason', async () => {
+      clinicProfileServiceMock.getProfile.mockRejectedValue(new Error('connection reset'));
+
+      await service.renderClaimedReport(buildReport({ attemptCount: 0 }));
+
+      const [payload] = labReportRepositoryMock.rescheduleAttempt.mock.calls[0] as [
+        { error: string; nextAttemptAt: Date | null },
+      ];
+      expect(payload.error).toBe('connection reset');
+      expect(payload.nextAttemptAt).not.toBeNull();
+    });
   });
 
   describe('downloading', () => {
@@ -458,9 +490,9 @@ describe('LabReportService', () => {
         buildReport({ id: reportId, labOrderId, status: 'READY' }),
       );
 
-      await expect(
-        service.retryReport(labOrderId, reportId, currentUser),
-      ).rejects.toBeInstanceOf(ConflictException);
+      await expect(service.retryReport(labOrderId, reportId, currentUser)).rejects.toBeInstanceOf(
+        ConflictException,
+      );
       expect(labReportRepositoryMock.requeueReport).not.toHaveBeenCalled();
     });
 
@@ -472,9 +504,9 @@ describe('LabReportService', () => {
       // update still wins, and the requeue matches nothing.
       labReportRepositoryMock.requeueReport.mockResolvedValue(false);
 
-      await expect(
-        service.retryReport(labOrderId, reportId, currentUser),
-      ).rejects.toBeInstanceOf(ConflictException);
+      await expect(service.retryReport(labOrderId, reportId, currentUser)).rejects.toBeInstanceOf(
+        ConflictException,
+      );
     });
 
     it('refuses a version belonging to another order', async () => {
@@ -482,9 +514,9 @@ describe('LabReportService', () => {
         buildReport({ id: reportId, labOrderId: 'ffffffff-9999-4999-8999-ffffffffffff' }),
       );
 
-      await expect(
-        service.retryReport(labOrderId, reportId, currentUser),
-      ).rejects.toBeInstanceOf(NotFoundException);
+      await expect(service.retryReport(labOrderId, reportId, currentUser)).rejects.toBeInstanceOf(
+        NotFoundException,
+      );
       expect(labReportRepositoryMock.requeueReport).not.toHaveBeenCalled();
     });
   });

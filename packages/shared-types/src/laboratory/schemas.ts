@@ -543,3 +543,30 @@ export type ClinicalRequestDispositionInput = z.infer<typeof clinicalRequestDisp
 export const labReportStatusSchema = z.enum(['PENDING', 'READY', 'FAILED']);
 
 export type LabReportStatusValue = z.infer<typeof labReportStatusSchema>;
+
+/**
+ * Why a render can fail for a reason no retry will fix (P18-T16): a setting
+ * somebody has to change. Distinct from a transient failure — "the renderer
+ * was busy" is worth five attempts, "there is no clinic profile" is worth
+ * none, and the screen should offer the setting rather than a retry button.
+ *
+ * The codes are the contract; the messages are what the worker stores on the
+ * row and what the API reads back to recognise the code, so both live here
+ * and nowhere else.
+ */
+export const LAB_REPORT_CONFIGURATION_FAILURE_CODES = ['CLINIC_PROFILE_MISSING'] as const;
+
+export const labReportConfigurationFailureCodeSchema = z.enum(
+  LAB_REPORT_CONFIGURATION_FAILURE_CODES,
+);
+
+export type LabReportConfigurationFailureCode = z.infer<
+  typeof labReportConfigurationFailureCodeSchema
+>;
+
+export const LAB_REPORT_CONFIGURATION_FAILURE_MESSAGES: Readonly<
+  Record<LabReportConfigurationFailureCode, string>
+> = {
+  CLINIC_PROFILE_MISSING:
+    'The clinic profile has not been configured yet; the report has no letterhead to print',
+};

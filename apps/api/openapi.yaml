@@ -39927,9 +39927,9 @@ paths:
                               type: string
                             attemptCount:
                               type: integer
-                            nextAttemptAt:
-                              type: string
                             lastError:
+                              type: string
+                            configurationFailure:
                               type: string
                             requestedById:
                               type: string
@@ -39943,8 +39943,8 @@ paths:
                             - isAmended
                             - releasedAt
                             - attemptCount
-                            - nextAttemptAt
                             - lastError
+                            - configurationFailure
                             - requestedById
                             - createdAt
                     required:
@@ -39971,6 +39971,18 @@ paths:
                       note: Sampel lipemik, disarankan ulang setelah puasa 12 jam.
                       createdAt: 2026-07-20T08:00:00.000Z
                     versions:
+                      - id: aaaaaaaa-eeee-4eee-8eee-aaaaaaaaaaaa
+                        labOrderId: eeeeeeee-5555-4555-8555-eeeeeeeeeeee
+                        version: 3
+                        status: FAILED
+                        isAmended: true
+                        releasedAt: 2026-07-20T08:00:00.000Z
+                        attemptCount: 1
+                        lastError: The clinic profile has not been configured yet; the report has no
+                          letterhead to print
+                        configurationFailure: CLINIC_PROFILE_MISSING
+                        requestedById: 99999999-ffff-4fff-8fff-999999999999
+                        createdAt: 2026-07-20T08:00:00.000Z
                       - id: 99999999-eeee-4eee-8eee-999999999999
                         labOrderId: eeeeeeee-5555-4555-8555-eeeeeeeeeeee
                         version: 2
@@ -40120,9 +40132,9 @@ paths:
                               type: string
                             attemptCount:
                               type: integer
-                            nextAttemptAt:
-                              type: string
                             lastError:
+                              type: string
+                            configurationFailure:
                               type: string
                             requestedById:
                               type: string
@@ -40136,8 +40148,8 @@ paths:
                             - isAmended
                             - releasedAt
                             - attemptCount
-                            - nextAttemptAt
                             - lastError
+                            - configurationFailure
                             - requestedById
                             - createdAt
                     required:
@@ -40167,6 +40179,18 @@ paths:
                       note: Sampel lipemik, disarankan ulang setelah puasa 12 jam.
                       createdAt: 2026-07-20T08:00:00.000Z
                     versions:
+                      - id: aaaaaaaa-eeee-4eee-8eee-aaaaaaaaaaaa
+                        labOrderId: eeeeeeee-5555-4555-8555-eeeeeeeeeeee
+                        version: 3
+                        status: FAILED
+                        isAmended: true
+                        releasedAt: 2026-07-20T08:00:00.000Z
+                        attemptCount: 1
+                        lastError: The clinic profile has not been configured yet; the report has no
+                          letterhead to print
+                        configurationFailure: CLINIC_PROFILE_MISSING
+                        requestedById: 99999999-ffff-4fff-8fff-999999999999
+                        createdAt: 2026-07-20T08:00:00.000Z
                       - id: 99999999-eeee-4eee-8eee-999999999999
                         labOrderId: eeeeeeee-5555-4555-8555-eeeeeeeeeeee
                         version: 2

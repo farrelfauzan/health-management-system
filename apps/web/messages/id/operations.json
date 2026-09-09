@@ -1627,7 +1627,14 @@
         "retry": "Coba lagi",
         "retried": "Render dimasukkan ke antrean.",
         "retryError": "Render tidak dapat dimasukkan ke antrean.",
-        "note": "Catatan"
+        "note": "Catatan",
+        "configurationFailures": {
+          "CLINIC_PROFILE_MISSING": "Menunggu profil klinik: laporan belum punya kop surat sampai profil diisi."
+        },
+        "fixSetting": {
+          "CLINIC_PROFILE_MISSING": "Buka profil klinik"
+        },
+        "askAdministrator": "Minta administrator mengisinya, lalu coba lagi."
       },
       "history": {
         "title": "Riwayat",

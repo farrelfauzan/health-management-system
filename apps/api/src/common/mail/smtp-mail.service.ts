@@ -88,6 +88,8 @@ export class SmtpMailService extends MailService {
         messageId: result.messageId,
       };
     } catch (err: unknown) {
+      // The class only (P18-T16): an SMTP rejection quotes the envelope, and
+      // the envelope is the recipient. Host and port say which server said no.
       this.logger.error(
         buildSafeErrorLog('mail_send_failed', {
           host: this.config.host,

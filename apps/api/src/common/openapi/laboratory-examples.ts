@@ -124,6 +124,23 @@ const labReportPendingVersion = {
   createdAt: timestamp,
 };
 
+// P18-T16. A version parked by a missing setting: FAILED on its first attempt,
+// with the code the order detail turns into a link to the setting.
+const labReportBlockedVersion = {
+  id: 'aaaaaaaa-eeee-4eee-8eee-aaaaaaaaaaaa',
+  labOrderId,
+  version: 3,
+  status: 'FAILED',
+  isAmended: true,
+  releasedAt: timestamp,
+  attemptCount: 1,
+  lastError:
+    'The clinic profile has not been configured yet; the report has no letterhead to print',
+  configurationFailure: 'CLINIC_PROFILE_MISSING',
+  requestedById: doctorUserId,
+  createdAt: timestamp,
+};
+
 export const LABORATORY_EXAMPLES = {
   labTest: {
     view: {
@@ -305,7 +322,7 @@ export const LABORATORY_EXAMPLES = {
     view: {
       labOrderId,
       current: labReportVersion,
-      versions: [labReportPendingVersion, labReportVersion],
+      versions: [labReportBlockedVersion, labReportPendingVersion, labReportVersion],
     },
     download: {
       documentId: labReportDocumentId,

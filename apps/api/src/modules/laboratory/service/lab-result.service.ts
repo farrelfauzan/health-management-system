@@ -717,6 +717,9 @@ export class LabResultService {
         href,
       });
     } catch (caughtError) {
+      // The class only (P18-T16): a notification failure is a write to the
+      // bell, and its message can quote the row — which names the patient.
+      // The order id is enough to find what did not ring.
       this.logger.warn(
         `Lab result notification failed for order ${order.id}: ${
           caughtError instanceof Error ? caughtError.name : 'unknown'

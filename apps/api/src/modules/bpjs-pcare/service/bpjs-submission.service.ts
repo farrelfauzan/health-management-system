@@ -396,6 +396,12 @@ export class BpjsSubmissionService {
     return ANTREAN_SUBMISSION_TYPES.includes(type);
   }
 
+  /**
+   * The message, truncated, stored on the outbox row (P18-T16) — the same
+   * reasoning as the SATUSEHAT outbox: PCare's rejection text is what the
+   * operator fixes the visit from, and it is read from the ops screen, not
+   * from the log.
+   */
   private describeError(caughtError: unknown): string {
     const message = caughtError instanceof Error ? caughtError.message : String(caughtError);
     return message.slice(0, MAX_STORED_ERROR_LENGTH);

@@ -1627,7 +1627,14 @@
         "retry": "Retry",
         "retried": "Render requeued.",
         "retryError": "The render could not be requeued.",
-        "note": "Note"
+        "note": "Note",
+        "configurationFailures": {
+          "CLINIC_PROFILE_MISSING": "Waiting on the clinic profile: the report has no letterhead to print until it is filled in."
+        },
+        "fixSetting": {
+          "CLINIC_PROFILE_MISSING": "Open clinic profile"
+        },
+        "askAdministrator": "Ask an administrator to fill it in, then retry."
       },
       "history": {
         "title": "History",

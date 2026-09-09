@@ -9,6 +9,7 @@ import { labReportControllerDownloadReportV1 } from '#lib/api/generated/laborato
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { parseApiSuccess } from '#lib/api/response';
 import { EmptyState } from '#components/shared/empty-state';
+import { LabReportFailureRemedy } from '#components/client/laboratory/lab-report-failure-remedy';
 import { LabReportRetryButton } from '#components/client/laboratory/lab-report-retry-button';
 import { useLabReports } from '#lib/laboratory/use-lab-reports';
 
@@ -92,20 +93,22 @@ export function LabReportVersions({ labOrderId }: LabReportVersionsProps) {
               <Badge variant="outline">{t('current')}</Badge>
             ) : null}
             <span className="ml-auto text-xs text-slate-500">
-              {version.renderedAt
-                ? format.dateTime(new Date(version.renderedAt), {
-                    dateStyle: 'medium',
+              {version.renderedAt ? (
+                format.dateTime(new Date(version.renderedAt), {
+                  dateStyle: 'medium',
+                  timeStyle: 'short',
+                })
+              ) : version.configurationFailure ? (
+                <LabReportFailureRemedy code={version.configurationFailure} />
+              ) : version.status === 'FAILED' ? (
+                t('failedWith', { error: version.lastError ?? '' })
+              ) : version.nextAttemptAt ? (
+                t('retrying', {
+                  nextAttemptAt: format.dateTime(new Date(version.nextAttemptAt), {
                     timeStyle: 'short',
-                  })
-                : version.status === 'FAILED'
-                  ? t('failedWith', { error: version.lastError ?? '' })
-                  : version.nextAttemptAt
-                    ? t('retrying', {
-                        nextAttemptAt: format.dateTime(new Date(version.nextAttemptAt), {
-                          timeStyle: 'short',
-                        }),
-                      })
-                    : null}
+                  }),
+                })
+              ) : null}
             </span>
             <LabReportRetryButton labOrderId={labOrderId} version={version} />
             {version.note ? (
