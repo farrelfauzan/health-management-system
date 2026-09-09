@@ -49,6 +49,10 @@ const SUPPORTED_ACTIONS: AppAction[] = [
   // nothing without this entry, and the approve/reject controls silently
   // never render for anyone.
   'decide',
+  // P19-T16. `registration.checkin-override:any` splits on the last dot into
+  // resource `registration` and action `checkin-override`; without this entry
+  // the rule resolves to nothing and "Check in anyway" never renders.
+  'checkin-override',
 ];
 const SUBJECT_BY_RESOURCE: Record<string, AppSubject> = {
   user: 'User',

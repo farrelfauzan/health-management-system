@@ -11,4 +11,5 @@ export interface UpdateRegistrationDto {
   status?: UpdateRegistrationDtoStatus;
   /** @nullable */
   appointmentId?: string | null;
+  force?: boolean;
 }

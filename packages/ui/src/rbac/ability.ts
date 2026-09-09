@@ -44,7 +44,12 @@ export type AppAction =
   // P18-T04/T08. The second signature on a laboratory result. Its own verb
   // rather than `approve`: approving a document and signing out a value are
   // different acts with different seeded keys.
-  | 'verify';
+  | 'verify'
+  // P19-T16. Checking a patient in when the doctor is not practising. Its own
+  // verb rather than a wider `update`, because every desk clerk holds
+  // `registration.update:any` and the whole point of the rule is that the
+  // exception is somebody's decision.
+  | 'checkin-override';
 export type AppSubject =
   | 'User'
   | 'Role'

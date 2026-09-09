@@ -185,6 +185,16 @@
       "appointmentHelp": "Only scheduled or confirmed appointments can be linked.",
       "creating": "Registering...",
       "createAction": "Create Registration",
+      "session": {
+        "todayHours": "Practises {start}–{end} today",
+        "noSessionToday": "Not practising today",
+        "noSession": "{doctor} has no session today, so this patient can not be checked in",
+        "beforeOpening": "{doctor} practises {start}–{end} today; check-in opens at {opensAt}",
+        "afterEnd": "{doctor} practised {start}–{end} today; check-in for that session has closed",
+        "checkInAnyway": "Check In Anyway",
+        "overrideTitle": "Checking in outside the practice session",
+        "overrideDescription": "The doctor is not practising today. This override is recorded against your account."
+      },
       "labels": {
         "eligibility": "BPJS eligibility",
         "membership": "Membership",
