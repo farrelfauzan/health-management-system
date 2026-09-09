@@ -8,6 +8,7 @@ import {
 import { AuditService } from '../../../common/audit/audit.service';
 import { PrivacyNoticeRepository } from '../../../common/privacy-notice/privacy-notice.repository';
 import { AuthRepository } from '../../auth/repository/auth.repository';
+import { RegionsService } from '../../regions/service/regions.service';
 import { PatientIdentifierConflictError } from '../repository/patient-identifier-conflict.error';
 import { PatientManagementRepository } from '../repository/patient-management.repository';
 import { PatientManagementService } from './patient-management.service';
@@ -79,11 +80,16 @@ describe('PatientManagementService', () => {
     findCurrentPatientRecord: jest.fn(),
   } as unknown as PrivacyNoticeRepository;
 
+  const regionsServiceMock = {
+    assertOptionalAddressChain: jest.fn().mockResolvedValue(null),
+  } as unknown as RegionsService;
+
   const service = new PatientManagementService(
     patientManagementRepositoryMock,
     authRepositoryMock,
     auditServiceMock,
     privacyNoticeRepositoryMock,
+    regionsServiceMock,
   );
 
   const currentUser = {

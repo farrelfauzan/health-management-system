@@ -11,6 +11,8 @@ import { PrivacyNoticeRepository } from '../../common/privacy-notice/privacy-not
 import { AuthRepository } from '../auth/repository/auth.repository';
 import { PatientManagementRepository } from '../patient-management/repository/patient-management.repository';
 import { PatientManagementService } from '../patient-management/service/patient-management.service';
+import { RegionsRepository } from '../regions/repository/regions.repository';
+import { RegionsService } from '../regions/service/regions.service';
 import { ProspectiveArrivalRepository } from './repository/prospective-arrival.repository';
 import { ProspectiveArrivalService } from './service/prospective-arrival.service';
 
@@ -224,6 +226,7 @@ describe('prospective arrival conversion against Postgres', () => {
         authRepositoryStub,
         { record: jest.fn() } as unknown as AuditService,
         privacyNoticeRepository,
+        new RegionsService(new RegionsRepository(prisma)),
       ),
       identifierCrypto,
       { record: jest.fn() } as unknown as AuditService,
