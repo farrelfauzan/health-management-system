@@ -6,6 +6,7 @@ import { useForm } from '@tanstack/react-form';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   createDoctorSchema,
+  doctorEmailFormSchema,
   type CreateDoctorInput,
   type DoctorEducation,
   type DoctorLicense,
@@ -24,6 +25,7 @@ import {
   Input,
 } from '@hms/ui';
 
+import { DoctorAccountEmailNotice } from '#components/client/doctors/doctor-account-email-notice';
 import { DoctorEducationsField } from '#components/client/doctors/doctor-educations-field';
 import { DoctorLicensesField } from '#components/client/doctors/doctor-licenses-field';
 import { DoctorPatientPicker } from '#components/client/doctors/doctor-patient-picker';
@@ -118,6 +120,9 @@ export function DoctorFormDialog({
       phoneNumber: doctor?.phoneNumber ?? '',
       title: doctor?.title ?? '',
       degrees: doctor?.degrees ?? '',
+      // Create-only (P19-T15): on edit the address is shown read-only and the
+      // update payload never carries it.
+      email: '',
       // Write-only, like the patient NIK: the profile carries only a mask, so
       // a blank leaves the stored value alone rather than clearing it.
       nik: '',
@@ -129,6 +134,7 @@ export function DoctorFormDialog({
       const trimmedTitle = value.title.trim();
       const trimmedDegrees = value.degrees.trim();
       const trimmedNik = value.nik.trim();
+      const trimmedEmail = value.email.trim();
       const credentials = {
         licenses: buildLicensePayload(licenseRows),
         educations: buildEducationPayload(educationRows),
@@ -162,6 +168,10 @@ export function DoctorFormDialog({
             patientIds: value.patientIds.length > 0 ? value.patientIds : undefined,
             ...profileFields,
             ...credentials,
+            // Omitted when blank rather than sent empty: absent means "no
+            // account for this doctor", which is not the same request as an
+            // address the API would then reject as invalid.
+            ...(trimmedEmail.length > 0 ? { email: trimmedEmail } : {}),
             nik: trimmedNik,
           });
           parseApiSuccess<DoctorProfile>(response, t('doctors.form.saveError'));
@@ -365,9 +375,37 @@ export function DoctorFormDialog({
               </form.Field>
             </div>
             <div className="grid grid-cols-2 gap-3">
-              {/* Email is not here on purpose: it is the address the doctor
-                  signs in with, managed on their user account under
-                  Administration, and read back through that relation. */}
+              {/* Optional on create, read-only on edit (P19-T15): entering it
+                  creates or attaches the account the doctor signs in with, in
+                  the same request. It is still not a field on the profile —
+                  changing it later is an Administration action on the account,
+                  which is what the edit-mode notice below points at. */}
+              {!isEditMode ? (
+                <form.Field name="email" validators={{ onSubmit: doctorEmailFormSchema }}>
+                  {(field) => (
+                    <div className="space-y-1.5">
+                      <FormLabel
+                        htmlFor={field.name}
+                        className="font-heading text-xs text-slate-600"
+                        required={DOCTOR_FORM_REQUIRED_FIELDS.has(field.name)}
+                      >
+                        {t('doctors.email')}
+                      </FormLabel>
+                      <Input
+                        id={field.name}
+                        type="email"
+                        autoComplete="email"
+                        value={field.state.value}
+                        placeholder="budi.santoso@clinic.local"
+                        onChange={(event) => field.handleChange(event.target.value)}
+                        onBlur={field.handleBlur}
+                        aria-invalid={field.state.meta.errors.length > 0}
+                      />
+                      <FieldError errors={field.state.meta.errors} />
+                    </div>
+                  )}
+                </form.Field>
+              ) : null}
               {/* Required on create, optional on edit: the API demands a NIK
                   for every new doctor because SATUSEHAT resolves the IHS
                   practitioner number from it and nothing else, while an edit
@@ -402,9 +440,15 @@ export function DoctorFormDialog({
               </form.Field>
             </div>
             {isEditMode ? (
-              <p className="rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-600">
-                {t('doctors.form.nikHelp')}
-              </p>
+              <>
+                <DoctorAccountEmailNotice
+                  email={doctor?.email}
+                  invitationStatus={doctor?.invitationStatus}
+                />
+                <p className="rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-600">
+                  {t('doctors.form.nikHelp')}
+                </p>
+              </>
             ) : null}
           </div>
 
