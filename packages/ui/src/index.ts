@@ -87,6 +87,7 @@ export {
 } from '#components/dropdown-menu';
 export { Icon } from '#components/icon';
 export { Label } from '#components/label';
+export { RequiredMarker } from '#components/required-marker';
 export {
   Popover,
   PopoverAnchor,

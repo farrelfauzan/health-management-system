@@ -65,6 +65,10 @@
         "unsupportedTypeNamed": "{name} bukan tipe berkas yang diterima.",
         "tooLargeNamed": "{name} melebihi batas {limitMb} MB."
       }
+    },
+    "form": {
+      "required": "wajib diisi",
+      "requiredLegend": "Wajib diisi"
     }
   }
 }

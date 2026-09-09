@@ -14,6 +14,7 @@ type SharedMessages = {
     pagination: typeof idSharedMessages.shared.pagination;
     statuses: Record<string, string>;
     documentUpload: typeof idSharedMessages.shared.documentUpload;
+    form: typeof idSharedMessages.shared.form;
   };
 };
 
