@@ -20,6 +20,7 @@ export type DoctorManagementControllerGetDoctorByIdV1200Data = {
   email: string;
   title: string;
   degrees: string;
+  invitationStatus: string;
   nikMasked: string;
   satusehatPractitionerId: string;
   ownerUserId: string;
