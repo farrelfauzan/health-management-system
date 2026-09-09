@@ -34,6 +34,7 @@ export * from '#terminology/types';
 export * from '#registration-flow/schemas';
 export * from '#registration-flow/contracts';
 export * from '#registration-flow/types';
+export * from '#registration-flow/resolve-checkin-window';
 export * from '#billing/schemas';
 export * from '#billing/accommodation-nights';
 export * from '#billing/contracts';

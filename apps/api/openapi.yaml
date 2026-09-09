@@ -24256,6 +24256,22 @@ paths:
                           type: string
                         updatedAt:
                           type: string
+                        todaySession:
+                          type: object
+                          properties:
+                            start:
+                              type: string
+                            end:
+                              type: string
+                            opensAt:
+                              type: string
+                            closesAt:
+                              type: string
+                          required:
+                            - start
+                            - end
+                            - opensAt
+                            - closesAt
                         patient:
                           type: object
                           properties:
@@ -24309,6 +24325,7 @@ paths:
                         - createdById
                         - createdAt
                         - updatedAt
+                        - todaySession
                         - patient
                         - appointment
                   meta:
@@ -24343,6 +24360,11 @@ paths:
                       createdById: 33333333-3333-4333-8333-333333333333
                       createdAt: 2026-07-20T08:00:00.000Z
                       updatedAt: 2026-07-20T08:00:00.000Z
+                      todaySession:
+                        start: 14:00
+                        end: 17:00
+                        opensAt: 13:00
+                        closesAt: 17:00
                       patient:
                         id: 11111111-1111-4111-8111-111111111111
                         mrn: "00000001"
@@ -24440,6 +24462,22 @@ paths:
                         type: string
                       updatedAt:
                         type: string
+                      todaySession:
+                        type: object
+                        properties:
+                          start:
+                            type: string
+                          end:
+                            type: string
+                          opensAt:
+                            type: string
+                          closesAt:
+                            type: string
+                        required:
+                          - start
+                          - end
+                          - opensAt
+                          - closesAt
                     required:
                       - id
                       - patientId
@@ -24453,6 +24491,7 @@ paths:
                       - createdById
                       - createdAt
                       - updatedAt
+                      - todaySession
                   message:
                     type: string
                 required:
@@ -24474,6 +24513,11 @@ paths:
                     createdById: 33333333-3333-4333-8333-333333333333
                     createdAt: 2026-07-20T08:00:00.000Z
                     updatedAt: 2026-07-20T08:00:00.000Z
+                    todaySession:
+                      start: 14:00
+                      end: 17:00
+                      opensAt: 13:00
+                      closesAt: 17:00
                   message: Registration created
         "400":
           description: Request validation failed.
@@ -24774,6 +24818,22 @@ paths:
                         type: string
                       updatedAt:
                         type: string
+                      todaySession:
+                        type: object
+                        properties:
+                          start:
+                            type: string
+                          end:
+                            type: string
+                          opensAt:
+                            type: string
+                          closesAt:
+                            type: string
+                        required:
+                          - start
+                          - end
+                          - opensAt
+                          - closesAt
                     required:
                       - id
                       - patientId
@@ -24787,6 +24847,7 @@ paths:
                       - createdById
                       - createdAt
                       - updatedAt
+                      - todaySession
                 required:
                   - data
                 example:
@@ -24805,6 +24866,11 @@ paths:
                     createdById: 33333333-3333-4333-8333-333333333333
                     createdAt: 2026-07-20T08:00:00.000Z
                     updatedAt: 2026-07-20T08:00:00.000Z
+                    todaySession:
+                      start: 14:00
+                      end: 17:00
+                      opensAt: 13:00
+                      closesAt: 17:00
         "401":
           description: Authentication is required.
           content:
@@ -24898,6 +24964,22 @@ paths:
                         type: string
                       updatedAt:
                         type: string
+                      todaySession:
+                        type: object
+                        properties:
+                          start:
+                            type: string
+                          end:
+                            type: string
+                          opensAt:
+                            type: string
+                          closesAt:
+                            type: string
+                        required:
+                          - start
+                          - end
+                          - opensAt
+                          - closesAt
                       checkedInAt:
                         type: string
                     required:
@@ -24913,6 +24995,7 @@ paths:
                       - createdById
                       - createdAt
                       - updatedAt
+                      - todaySession
                       - checkedInAt
                   message:
                     type: string
@@ -24935,6 +25018,11 @@ paths:
                     createdById: 33333333-3333-4333-8333-333333333333
                     createdAt: 2026-07-20T08:00:00.000Z
                     updatedAt: 2026-07-20T08:00:00.000Z
+                    todaySession:
+                      start: 14:00
+                      end: 17:00
+                      opensAt: 13:00
+                      closesAt: 17:00
                     checkedInAt: 2026-07-20T08:00:00.000Z
                   message: Registration updated
         "400":
@@ -46364,6 +46452,8 @@ components:
           type: string
           format: uuid
           nullable: true
+        force:
+          type: boolean
     CreateMedicationDto:
       type: object
       properties:

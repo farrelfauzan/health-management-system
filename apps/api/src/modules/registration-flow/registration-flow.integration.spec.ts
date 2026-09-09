@@ -49,6 +49,7 @@ describe('RegistrationFlow integration', () => {
     id: registrationId,
     patientId,
     appointmentId: null,
+    type: 'CONSULTATION',
     status: 'PENDING',
     queueNumber: 1,
     queueDate: new Date('2026-07-18T00:00:00.000Z'),

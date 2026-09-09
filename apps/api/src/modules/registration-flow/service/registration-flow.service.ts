@@ -1,7 +1,13 @@
 import {
   Actor,
+  CheckInPracticeWindow,
+  CheckInWindowDecision,
+  RegistrationCheckInWindow,
+  RegistrationDoctorWindows,
   canTransitionRegistrationStatus,
   getCalendarDateInTimeZone,
+  getClockTimeInTimeZone,
+  resolveCheckInWindow,
   QueueBoardCounts,
   QueueBoardEntry,
   QueueBoardPoliSummary,
@@ -24,8 +30,11 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
+import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { AppointmentManagementService } from '../../appointment-management/service/appointment-management.service';
 import { AuthRepository } from '../../auth/repository/auth.repository';
+import { buildOutsideSessionMessage } from './build-outside-session-message';
 import { CreateRegistrationDto } from '../dto/create-registration.dto';
 import { ListRegistrationsQueryDto } from '../dto/list-registrations-query.dto';
 import { QueueBoardQueryDto } from '../dto/queue-board-query.dto';
@@ -35,6 +44,14 @@ import { CurrentPrivacyNoticeEvidenceRequiredError } from '../../../common/priva
 
 const REGISTRABLE_APPOINTMENT_STATUSES = ['SCHEDULED', 'CONFIRMED'] as const;
 const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
+/**
+ * How early a patient may arrive and still be checked in (P19-T16). An hour,
+ * because that is roughly when people turn up for an afternoon session and a
+ * desk that refuses them has to either lie about the status or leave them
+ * standing. Nothing on the far side: a session that has ended has ended.
+ */
+const DEFAULT_CHECKIN_GRACE_MINUTES = 60;
+const AUDIT_RESOURCE_REGISTRATION = 'Registration';
 
 function parseRegistrationDateOnly(value: string): Date {
   const [yearPart = '', monthPart = '', dayPart = ''] = value.split('-');
@@ -45,16 +62,59 @@ function formatCalendarDate(value: Date): string {
   return value.toISOString().slice(0, 10);
 }
 
+/**
+ * Reads `REGISTRATION_CHECKIN_GRACE_MINUTES`. A missing, non-numeric or
+ * negative value falls back to the default rather than failing startup: the
+ * grace is a comfort setting, and a clinic whose API refuses to boot over a
+ * typo in it is worse off than one running the hour everybody expected.
+ */
+function resolveGraceMinutes(configuredValue: string | undefined): number {
+  const parsed = Number(configuredValue);
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : DEFAULT_CHECKIN_GRACE_MINUTES;
+}
+
+/**
+ * The hours a queue row prints, or nothing at all when the doctor holds no
+ * window today. `NO_SESSION` is the case the row renders as "not practising",
+ * and it is deliberately an absent field rather than an empty object: a row
+ * with hours and a row without are different states, not the same state with
+ * blank strings.
+ */
+function toCheckInWindowContract(
+  decision: CheckInWindowDecision,
+): RegistrationCheckInWindow | undefined {
+  if (
+    decision.sessionStart === undefined ||
+    decision.sessionEnd === undefined ||
+    decision.opensAt === undefined ||
+    decision.closesAt === undefined
+  ) {
+    return undefined;
+  }
+  return {
+    start: decision.sessionStart,
+    end: decision.sessionEnd,
+    opensAt: decision.opensAt,
+    closesAt: decision.closesAt,
+  };
+}
+
 @Injectable()
 export class RegistrationFlowService {
   private readonly clinicTimeZone: string;
+  private readonly checkInGraceMinutes: number;
 
   constructor(
     private readonly registrationFlowRepository: RegistrationFlowRepository,
     private readonly authRepository: AuthRepository,
+    private readonly appointmentManagementService: AppointmentManagementService,
+    private readonly auditService: AuditService,
     configService: ConfigService,
   ) {
     this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
+    this.checkInGraceMinutes = resolveGraceMinutes(
+      configService.get<string>('REGISTRATION_CHECKIN_GRACE_MINUTES'),
+    );
   }
 
   async listRegistrations(query: ListRegistrationsQueryDto, currentUser: CurrentUser) {
@@ -84,7 +144,7 @@ export class RegistrationFlowService {
     );
 
     return {
-      items: result.items.map((registration) => this.toRegistrationListItem(registration)),
+      items: await this.attachCheckInWindows(result.items),
       meta: {
         page: result.page,
         limit: result.limit,
@@ -113,7 +173,7 @@ export class RegistrationFlowService {
       throw new NotFoundException('Registration not found');
     }
 
-    return this.toRegistrationListItem(registration);
+    return this.attachCheckInWindow(registration);
   }
 
   async createRegistration(payload: CreateRegistrationDto, currentUser: CurrentUser) {
@@ -173,7 +233,7 @@ export class RegistrationFlowService {
       throw error;
     }
 
-    return this.toRegistrationListItem(created);
+    return this.attachCheckInWindow(created);
   }
 
   /**
@@ -355,6 +415,15 @@ export class RegistrationFlowService {
       this.assertAllowedStatusTransition(registration.status, payload.status);
     }
 
+    if (payload.status === 'CHECKED_IN') {
+      await this.assertCheckInWithinPracticeWindow({
+        registration,
+        actor,
+        currentUser,
+        isForced: payload.force === true,
+      });
+    }
+
     if (payload.appointmentId !== undefined) {
       await this.assertAppointmentLinkChangeable({ registration, payload });
     }
@@ -363,7 +432,194 @@ export class RegistrationFlowService {
       this.buildUpdatePayload(id, payload),
     );
 
-    return this.toRegistrationListItem(updated);
+    return this.attachCheckInWindow(updated);
+  }
+
+  /**
+   * Refuses a check-in the doctor is not there for (P19-T16).
+   *
+   * The queue is a promise that somebody will be seen, and a ticket issued on
+   * a day the doctor holds no session is a promise nobody made. Skipped for a
+   * visit with no doctor at all — a LAB_ONLY walk-in, or a registration with
+   * no appointment — because there are no hours for it to be outside of.
+   */
+  private async assertCheckInWithinPracticeWindow(params: {
+    registration: RegistrationWithRelationsRecord;
+    actor: Actor;
+    currentUser: CurrentUser;
+    isForced: boolean;
+  }): Promise<void> {
+    const { registration, actor, currentUser, isForced } = params;
+    // Checked before the window, not after: a caller who asks to override
+    // without holding the grant is refused whether or not the override would
+    // have mattered, so "force worked" never means "force was ignored".
+    if (isForced && !this.resolveScope(actor, 'Registration', 'checkin-override').hasAny) {
+      throw new ForbiddenException(
+        'You are not allowed to check patients in outside a practice session',
+      );
+    }
+    if (registration.type === 'LAB_ONLY' || !registration.appointment) {
+      return;
+    }
+    const now = new Date();
+    const decision = await this.decideCheckInWindow(registration, now);
+    if (decision.allowed) {
+      return;
+    }
+    const doctorName = registration.appointment.doctor.fullName;
+    if (!isForced) {
+      throw new ConflictException({
+        code: 'REGISTRATION_OUTSIDE_SESSION',
+        message: buildOutsideSessionMessage({ doctorName, decision }),
+        // `errors` is what `AllExceptionsFilter` renders as `details`. The web
+        // reads these rather than the sentence above so it can say the same
+        // thing in Indonesian without the two copies drifting apart.
+        errors: {
+          doctorName,
+          reason: decision.reason,
+          sessionStart: decision.sessionStart,
+          sessionEnd: decision.sessionEnd,
+          opensAt: decision.opensAt,
+          closesAt: decision.closesAt,
+        },
+      });
+    }
+    await this.auditService.record({
+      action: 'REGISTRATION_CHECKIN_OVERRIDDEN',
+      resource: AUDIT_RESOURCE_REGISTRATION,
+      resourceId: registration.id,
+      actorUserId: currentUser.sub,
+      patientId: registration.patientId,
+      metadata: {
+        doctorId: registration.appointment.doctorId,
+        doctorName,
+        reason: decision.reason,
+        sessionStart: decision.sessionStart ?? null,
+        sessionEnd: decision.sessionEnd ?? null,
+        checkedInAt: now.toISOString(),
+      },
+    });
+  }
+
+  /**
+   * The window this one registration is judged against, and where `now` sits
+   * in it. One doctor, so one lookup — the list path batches instead.
+   */
+  private async decideCheckInWindow(
+    registration: RegistrationWithRelationsRecord,
+    now: Date,
+  ): Promise<CheckInWindowDecision> {
+    const doctorWindows = await this.loadDoctorWindows([registration], now);
+    return resolveCheckInWindow({
+      windows: this.buildRegistrationWindows(registration, doctorWindows),
+      now,
+      timeZone: this.clinicTimeZone,
+      graceMinutes: this.checkInGraceMinutes,
+    });
+  }
+
+  private async attachCheckInWindow(
+    registration: RegistrationWithRelationsRecord,
+  ): Promise<RegistrationListItem> {
+    const [item] = await this.attachCheckInWindows([registration]);
+    return item ?? this.toRegistrationListItem(registration);
+  }
+
+  /**
+   * Puts today's practice hours on every row of a page (P19-T16), so the queue
+   * can print them and grey out Check in before anybody clicks it.
+   *
+   * One practice-window query for the whole page rather than one per row: the
+   * front desk lists twenty tickets held by three doctors, and the hours are a
+   * property of the doctor's day, not of the ticket.
+   */
+  private async attachCheckInWindows(
+    registrations: RegistrationWithRelationsRecord[],
+  ): Promise<RegistrationListItem[]> {
+    const now = new Date();
+    const doctorWindows = await this.loadDoctorWindows(registrations, now);
+    return registrations.map((registration) => {
+      const decision = resolveCheckInWindow({
+        windows: this.buildRegistrationWindows(registration, doctorWindows),
+        now,
+        timeZone: this.clinicTimeZone,
+        graceMinutes: this.checkInGraceMinutes,
+      });
+      return this.toRegistrationListItem(registration, toCheckInWindowContract(decision));
+    });
+  }
+
+  private async loadDoctorWindows(
+    registrations: RegistrationWithRelationsRecord[],
+    now: Date,
+  ): Promise<RegistrationDoctorWindows> {
+    const sessionDate = getCalendarDateInTimeZone(now, this.clinicTimeZone);
+    // Only rows that will actually fall back to the doctor's day need the
+    // lookup: a booking that names its own session or an approved instant
+    // already carries its window.
+    const doctorIds = registrations.flatMap((registration) =>
+      registration.appointment &&
+      registration.appointment.type !== 'SPECIAL_REQUEST' &&
+      !registration.appointment.session
+        ? [registration.appointment.doctorId]
+        : [],
+    );
+    const records = await this.appointmentManagementService.listDoctorPracticeWindows({
+      doctorIds,
+      sessionDate,
+    });
+    const windowsByDoctor = new Map<string, CheckInPracticeWindow[]>();
+    for (const record of records) {
+      const existing = windowsByDoctor.get(record.doctorId) ?? [];
+      existing.push({
+        date: record.date,
+        startTime: record.startTime,
+        endTime: record.endTime,
+        kind: 'SESSION',
+      });
+      windowsByDoctor.set(record.doctorId, existing);
+    }
+    return windowsByDoctor;
+  }
+
+  /**
+   * Which windows gate this registration.
+   *
+   * The booking is asked first and believed: a session-based appointment names
+   * the session it joined, and an approved special request names the exact
+   * instant somebody agreed to. Only a booking that names neither falls back
+   * to "whatever this doctor is running today".
+   */
+  private buildRegistrationWindows(
+    registration: RegistrationWithRelationsRecord,
+    doctorWindows: RegistrationDoctorWindows,
+  ): CheckInPracticeWindow[] {
+    const appointment = registration.appointment;
+    if (registration.type === 'LAB_ONLY' || !appointment) {
+      return [];
+    }
+    if (appointment.type === 'SPECIAL_REQUEST') {
+      const approvedTime = getClockTimeInTimeZone(appointment.scheduledAt, this.clinicTimeZone);
+      return [
+        {
+          date: getCalendarDateInTimeZone(appointment.scheduledAt, this.clinicTimeZone),
+          startTime: approvedTime,
+          endTime: approvedTime,
+          kind: 'SPECIAL_REQUEST',
+        },
+      ];
+    }
+    if (appointment.session) {
+      return [
+        {
+          date: formatCalendarDate(appointment.session.sessionDate),
+          startTime: appointment.session.startTime,
+          endTime: appointment.session.endTime,
+          kind: 'SESSION',
+        },
+      ];
+    }
+    return [...(doctorWindows.get(appointment.doctorId) ?? [])];
   }
 
   private buildUpdatePayload(
@@ -501,8 +757,10 @@ export class RegistrationFlowService {
 
   private toRegistrationListItem(
     registration: RegistrationWithRelationsRecord,
+    todaySession?: RegistrationCheckInWindow,
   ): RegistrationListItem {
     return {
+      ...(todaySession ? { todaySession } : {}),
       id: registration.id,
       patientId: registration.patientId,
       appointmentId: registration.appointmentId ?? undefined,

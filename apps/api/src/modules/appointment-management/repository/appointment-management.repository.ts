@@ -7,6 +7,7 @@ import {
   CreateAppointmentRecordPayload,
   FindConflictingAppointmentParams,
   ListAppointmentsParams,
+  ListDoctorPracticeWindowsParams,
   ListDoctorSessionsParams,
   UpdateAppointmentRecordPayload,
   UpdateAppointmentSessionRecordPayload,
@@ -468,6 +469,49 @@ export class AppointmentManagementRepository {
       orderBy: {
         fullName: 'asc',
       },
+    });
+  }
+
+  /**
+   * The sessions and standing schedules that decide whether a doctor is
+   * practising on one clinic-local day (P19-T16).
+   *
+   * Both are read in one round trip and reconciled by the caller: a doctor
+   * with any session row for the date — cancelled included — is described by
+   * those rows and never by the weekly template, because a cancelled session
+   * is an explicit "not today" that a Tuesday schedule must not overrule.
+   */
+  async listDoctorPracticeWindows(params: ListDoctorPracticeWindowsParams, dayOfWeek: number) {
+    const doctorIds = [...params.doctorIds];
+    const sessionDate = new Date(`${params.sessionDate}T00:00:00.000Z`);
+    return this.prisma.executeTransaction(async (tx) => {
+      const sessions = await tx.appointmentSession.findMany({
+        where: {
+          doctorId: { in: doctorIds },
+          sessionDate,
+        },
+        select: {
+          doctorId: true,
+          startTime: true,
+          endTime: true,
+          status: true,
+        },
+        orderBy: { startTime: 'asc' },
+      });
+      const schedules = await tx.doctorSchedule.findMany({
+        where: {
+          doctorId: { in: doctorIds },
+          dayOfWeek,
+          isAvailable: true,
+        },
+        select: {
+          doctorId: true,
+          startTime: true,
+          endTime: true,
+        },
+        orderBy: { startTime: 'asc' },
+      });
+      return { sessions, schedules };
     });
   }
 
