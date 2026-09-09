@@ -8,6 +8,7 @@ import { InvoicesPanel } from '#components/client/billing/invoices-panel';
 import { ServiceTariffsPanel } from '#components/client/billing/service-tariffs-panel';
 import { DocumentTemplatesPanel } from '#components/client/document-templates/document-templates-panel';
 import { PageHeader } from '#components/shared/page-header';
+import type { BillingTab } from '#lib/billing/billing-tab';
 
 type BillingWorkspaceProps = {
   /**
@@ -16,15 +17,24 @@ type BillingWorkspaceProps = {
    * for the same reason (FR-E5-14).
    */
   currentUserId: string | null;
+  /** A tab asked for by the URL (SJ-156); honoured only when this person may read it. */
+  initialTab?: BillingTab;
 };
 
-export function BillingWorkspace({ currentUserId }: BillingWorkspaceProps) {
+export function BillingWorkspace({ currentUserId, initialTab }: BillingWorkspaceProps) {
   const t = useTranslations('operations.billing');
   const ability = useAbility();
   const canReadInvoices = ability.can('read', 'Invoice');
   const canReadTariffs = ability.can('read', 'ServiceTariff');
   const canReadTemplates = ability.can('read', 'DocumentTemplate');
-  const defaultTab = resolveDefaultTab();
+  const readableTabs: Record<BillingTab, boolean> = {
+    invoices: canReadInvoices,
+    tariffs: canReadTariffs,
+    report: canReadInvoices,
+    templates: canReadTemplates,
+  };
+  const defaultTab =
+    initialTab !== undefined && readableTabs[initialTab] ? initialTab : resolveDefaultTab();
 
   function resolveDefaultTab(): string {
     if (canReadInvoices) {

@@ -1,5 +1,7 @@
 import type { AppAction, AppSubject } from '@hms/ui';
 
+import { SETTINGS_HUB_CARDS } from '#lib/settings/settings-hub-cards';
+
 export type AdminNavAbility = {
   action: AppAction;
   subject: AppSubject;
@@ -28,6 +30,7 @@ export type ShellNavigationKey =
   | 'integrations'
   | 'organization'
   | 'administration'
+  | 'settings'
   | 'today';
 
 /**
@@ -266,6 +269,16 @@ export const ADMIN_NAV_SECTIONS: AdminNavSection[] = [
         labelKey: 'administration',
         icon: 'settings',
         ability: { action: 'read', subject: 'User' },
+      },
+      {
+        // SJ-156. The hub of every configuration screen. Opens on any ability
+        // that opens one of its cards, so a person who may change one setting
+        // finds the way in and sees exactly that card.
+        href: '/admin/settings',
+        label: 'Settings',
+        labelKey: 'settings',
+        icon: 'tune',
+        ability: SETTINGS_HUB_CARDS.flatMap((card) => [...card.abilities]),
       },
     ],
   },

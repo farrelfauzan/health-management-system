@@ -1695,6 +1695,43 @@
         "loadError": "The release policy could not be loaded.",
         "singleOperatorWarning": "This removes the second pair of eyes on every result. Intended for a clinic with one person on the bench."
       }
+    },
+    "settings": {
+      "title": "Settings",
+      "subtitle": "Everything the clinic configures, in one place. Each card opens the screen where that setting lives.",
+      "open": "Open",
+      "needsAttention": "Needs attention",
+      "cards": {
+        "clinicProfile": {
+          "title": "Clinic profile",
+          "description": "Name, address, licence and logo — the letterhead on every invoice and report.",
+          "attention": "Not configured yet. Invoices and laboratory reports cannot render until it is."
+        },
+        "serviceTariffs": {
+          "title": "Service tariffs",
+          "description": "The price list invoices are generated from, including LAB prices the laboratory catalog attaches."
+        },
+        "laboratory": {
+          "title": "Laboratory",
+          "description": "The test catalog with its reference ranges and panels, and who may release a result."
+        },
+        "documentTemplates": {
+          "title": "Document templates",
+          "description": "Invoice and report layouts, and the variables they are authored against."
+        },
+        "integrations": {
+          "title": "Integrations",
+          "description": "SATUSEHAT and BPJS credentials, mappings and submission queues."
+        },
+        "aiProviders": {
+          "title": "AI providers",
+          "description": "Which vendor answers the assistant, and the credentials it uses."
+        },
+        "roles": {
+          "title": "Roles & permissions",
+          "description": "What each role may see and do."
+        }
+      }
     }
   },
   "channelArrivals": {
