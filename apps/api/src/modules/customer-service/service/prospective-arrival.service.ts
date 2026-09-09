@@ -4,6 +4,7 @@ import {
   ConvertProspectivePatientInput,
   LinkProspectivePatientInput,
   ListProspectiveMatchCandidatesQueryInput,
+  ListProspectivePatientsParams,
   ListProspectivePatientsQueryInput,
   maskIdentifierLast4,
   ProspectiveArrivalResolutionView,
@@ -11,6 +12,7 @@ import {
   ProspectiveMatchCandidateView,
   ProspectiveMatchReasonValue,
   ProspectivePatientListRow,
+  ProspectivePatientsListResult,
   ProspectivePatientView,
 } from '@hms/shared-types';
 
@@ -81,14 +83,29 @@ export class ProspectiveArrivalService {
     private readonly auditService: AuditService,
   ) {}
 
+  /**
+   * The back-office view of the same table (`P19-T08`): filtered, searched,
+   * paged. The one piece of thinking here is the free text — the desk types a
+   * name or a phone number into one box, and a phone is only ever matched on
+   * its digits, normalised the way the column was written.
+   */
   async listProspectivePatients(
     query: ListProspectivePatientsQueryInput,
-  ): Promise<ProspectivePatientView[]> {
-    const rows = await this.arrivalRepository.listByStatus({
+  ): Promise<ProspectivePatientsListResult> {
+    const page = await this.arrivalRepository.listProspectivePatients({
       status: query.status,
+      channel: query.channel,
+      ...splitProspectiveSearch(query.q),
+      sort: query.sort,
+      order: query.order,
+      page: query.page,
       limit: query.limit,
+      upcomingFrom: new Date(),
     });
-    return rows.map((row) => toProspectiveView(row));
+    return {
+      items: page.rows.map((row) => toProspectiveView(row)),
+      meta: { page: query.page, limit: query.limit, total: page.total },
+    };
   }
 
   /**
@@ -321,7 +338,32 @@ export class ProspectiveArrivalService {
   }
 }
 
+/** Digits alone are a phone number; anything with a letter in it is a name. */
+const PHONE_SEARCH_PATTERN = /^[\d\s()+-]+$/;
+
+/**
+ * Decides which column one typed string is for.
+ *
+ * A string made only of digits and phone punctuation is compared on the
+ * normalised digits, so `0812 1000-0004` finds the row stored as
+ * `628121000004`. Anything else is a name and is never compared against the
+ * phone column — `Siti` cannot match a number, and sending it there would only
+ * cost a scan.
+ */
+function splitProspectiveSearch(
+  q: string | undefined,
+): Pick<ListProspectivePatientsParams, 'nameQuery' | 'phoneQuery'> {
+  if (q === undefined) {
+    return {};
+  }
+  if (PHONE_SEARCH_PATTERN.test(q)) {
+    return { phoneQuery: normalizePhoneNumber(q) };
+  }
+  return { nameQuery: q };
+}
+
 function toProspectiveView(row: ProspectivePatientListRow): ProspectivePatientView {
+  const upcoming = row.appointments[0];
   return {
     id: row.id,
     fullName: row.fullName,
@@ -329,7 +371,16 @@ function toProspectiveView(row: ProspectivePatientListRow): ProspectivePatientVi
     channel: row.channel,
     status: row.status,
     patientId: row.patientId,
+    patientMrn: row.patient?.mrn ?? null,
     openAppointments: row._count.appointments,
+    upcomingAppointment:
+      upcoming === undefined
+        ? null
+        : {
+            id: upcoming.id,
+            scheduledAt: upcoming.scheduledAt.toISOString(),
+            doctorName: upcoming.doctor.fullName,
+          },
     expiresAt: row.expiresAt.toISOString(),
     createdAt: row.createdAt.toISOString(),
   };

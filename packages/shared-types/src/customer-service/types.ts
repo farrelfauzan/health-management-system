@@ -6,9 +6,15 @@ import {
   ConversationMessageRoleValue,
   ConversationStateValue,
   CsSafetyTagValue,
+  ProspectivePatientSortFieldValue,
+  ProspectivePatientSortOrderValue,
   ProspectivePatientStatusValue,
   WaGatewayKindValue,
 } from '#customer-service/schemas';
+import type {
+  ProspectivePatientsListMeta,
+  ProspectivePatientView,
+} from '#customer-service/contracts';
 
 /**
  * One inbound customer message, normalized off whichever wire it arrived on
@@ -599,10 +605,26 @@ export type ProspectiveExpirySweepResult = {
   skipped: number;
 };
 
-/** What the counter's list asks the repository for (`P17-T04`). */
+/**
+ * What the counter's list asks the repository for (`P17-T04`, filters and
+ * paging from `P19-T08`).
+ *
+ * The free text arrives already split by the service: `nameQuery` is the text
+ * as typed, `phoneQuery` is its digits normalised the way the stored column is
+ * (`normalizePhoneNumber`), so `0812…` finds a row stored as `62812…`. The
+ * repository never decides which of the two a string was.
+ */
 export type ListProspectivePatientsParams = {
   status: ProspectivePatientStatusValue;
+  channel?: ChannelKindValue;
+  nameQuery?: string;
+  phoneQuery?: string;
+  sort: ProspectivePatientSortFieldValue;
+  order: ProspectivePatientSortOrderValue;
+  page: number;
   limit: number;
+  /** The clock the "upcoming" booking is measured against; owned by the caller. */
+  upcomingFrom: Date;
 };
 
 /**
@@ -620,9 +642,32 @@ export type ProspectivePatientListRow = {
   channel: ChannelKindValue;
   status: ProspectivePatientStatusValue;
   patientId: string | null;
+  /** Present only on a resolved row; the MRN it became or was matched to. */
+  patient: { mrn: string } | null;
+  /** At most one: the earliest live booking still ahead of `upcomingFrom`. */
+  appointments: ProspectivePatientListAppointmentRow[];
   expiresAt: Date;
   createdAt: Date;
   _count: { appointments: number };
+};
+
+/** The one booking the list selects per prospective row (`P19-T08`). */
+export type ProspectivePatientListAppointmentRow = {
+  id: string;
+  scheduledAt: Date;
+  doctor: { fullName: string };
+};
+
+/** What the service hands the controller for one page (`P19-T08`). */
+export type ProspectivePatientsListResult = {
+  items: ProspectivePatientView[];
+  meta: ProspectivePatientsListMeta;
+};
+
+/** One page of prospective rows plus the size of the whole filter (`P19-T08`). */
+export type ProspectivePatientListPage = {
+  rows: ProspectivePatientListRow[];
+  total: number;
 };
 
 /**
