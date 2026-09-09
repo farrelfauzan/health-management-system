@@ -27,6 +27,7 @@ import {
 } from '@hms/ui';
 import { useFormatter, useTranslations } from 'next-intl';
 
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import {
   bpjsPcareConfigControllerDeleteConfigV1,
   bpjsPcareConfigControllerTestConnectionV1,
@@ -159,11 +160,7 @@ export function BpjsSettingsPanel() {
   }
 
   if (configQuery.isError && !isUnconfigured) {
-    return (
-      <p role="alert" className="rounded-lg bg-rose-50 p-3 text-sm text-rose-700">
-        {t('labels.configError')}
-      </p>
-    );
+    return <InlineNotice tone="error">{t('labels.configError')}</InlineNotice>;
   }
 
   return (
@@ -177,9 +174,7 @@ export function BpjsSettingsPanel() {
       <CardContent>
         <form className="space-y-5" onSubmit={(event) => void handleSubmit(event)}>
           {isUnconfigured ? (
-            <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
-              {t('labels.credentials')}
-            </div>
+            <InlineNotice tone="warning">{t('labels.credentials')}</InlineNotice>
           ) : null}
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
@@ -292,11 +287,7 @@ export function BpjsSettingsPanel() {
               })}
             </p>
           ) : null}
-          {formError ? (
-            <p role="alert" className="rounded-lg bg-rose-50 p-3 text-sm text-rose-700">
-              {formError}
-            </p>
-          ) : null}
+          {formError ? <InlineNotice tone="error">{formError}</InlineNotice> : null}
 
           <div className="flex flex-wrap gap-3">
             <Button type="submit" disabled={saveMutation.isPending}>

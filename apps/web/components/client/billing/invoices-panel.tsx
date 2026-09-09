@@ -11,6 +11,7 @@ import {
   type InvoicesFilterValues,
 } from '#components/client/billing/invoices-filter-card';
 import { InvoicesTable } from '#components/client/billing/invoices-table';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { NumberedPagination } from '#components/client/shared/numbered-pagination';
 import { INVOICES_PAGE_SIZE, type InvoicesSearchParams } from '#lib/billing/search-params';
 import { useInvoicesList } from '#lib/billing/use-invoices-list';
@@ -41,9 +42,7 @@ export function InvoicesPanel() {
       />
 
       {invoicesQuery.error && invoicesQuery.invoices.length > 0 ? (
-        <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
-          {t('invoiceError')}
-        </p>
+        <InlineNotice tone="error">{t('invoiceError')}</InlineNotice>
       ) : null}
 
       <Card className="gap-0 rounded-xl border-slate-200 py-0 shadow-none">

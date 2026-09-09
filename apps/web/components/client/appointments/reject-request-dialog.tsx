@@ -15,6 +15,7 @@ import {
 } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { appointmentManagementControllerRejectAppointmentV1 } from '#lib/api/generated/appointment-management/appointment-management';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { parseApiSuccess } from '#lib/api/response';
@@ -63,14 +64,7 @@ export function RejectRequestDialog({ open, onOpenChange, request }: RejectReque
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
-          {formError ? (
-            <p
-              role="alert"
-              className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700"
-            >
-              {formError}
-            </p>
-          ) : null}
+          {formError ? <InlineNotice tone="error">{formError}</InlineNotice> : null}
           <div className="space-y-1.5">
             <label
               htmlFor="reject-request-reason"

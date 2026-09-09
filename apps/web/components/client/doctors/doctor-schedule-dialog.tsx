@@ -21,6 +21,7 @@ import {
 import { useTranslations } from 'next-intl';
 
 import { DoctorScheduleEntryRow } from '#components/client/doctors/doctor-schedule-entry-row';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { doctorManagementControllerUpdateDoctorScheduleV1 } from '#lib/api/generated/doctor-management/doctor-management';
 import { parseApiSuccess } from '#lib/api/response';
 import { notifyApiError } from '#lib/api/notify-api-error';
@@ -104,14 +105,7 @@ export function DoctorScheduleDialog({
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-3">
-          {scheduleError ? (
-            <p
-              role="alert"
-              className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700"
-            >
-              {scheduleError}
-            </p>
-          ) : null}
+          {scheduleError ? <InlineNotice tone="error">{scheduleError}</InlineNotice> : null}
           {entries.length === 0 ? (
             <p className="text-sm text-slate-500">{t('doctors.scheduleEmpty')}</p>
           ) : (

@@ -6,6 +6,7 @@ import { Button, Card, CardContent, CardHeader, CardTitle, Icon, useAbility } fr
 import { useTranslations } from 'next-intl';
 
 import { DoctorSatusehatLinkButton } from '#components/client/doctors/doctor-satusehat-link-button';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { useDoctorIdentifiers } from '#lib/doctors/use-doctor-identifiers';
 
 type DoctorIdentifiersCardProps = {
@@ -13,10 +14,7 @@ type DoctorIdentifiersCardProps = {
   isSatusehatEnabled: boolean;
 };
 
-export function DoctorIdentifiersCard({
-  doctor,
-  isSatusehatEnabled,
-}: DoctorIdentifiersCardProps) {
+export function DoctorIdentifiersCard({ doctor, isSatusehatEnabled }: DoctorIdentifiersCardProps) {
   const ability = useAbility();
   const t = useTranslations('clinical');
   const [isRevealed, setIsRevealed] = useState<boolean>(false);
@@ -67,21 +65,23 @@ export function DoctorIdentifiersCard({
         ) : null}
 
         {identifiersQuery.error ? (
-          <p
-            role="alert"
-            className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700"
-          >
-            {t('doctors.identifiersError')}
-          </p>
+          <InlineNotice tone="error">{t('doctors.identifiersError')}</InlineNotice>
         ) : null}
 
         {isRevealed && identifiersQuery.identifiers ? (
-          <div className="flex items-center justify-between gap-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2">
-            <p className="text-xs text-amber-900">{t('doctors.identifierAudit')}</p>
-            <Button type="button" size="sm" variant="outline" onClick={() => setIsRevealed(false)}>
-              {t('doctors.hide')}
-            </Button>
-          </div>
+          <InlineNotice tone="warning">
+            <div className="flex items-center justify-between gap-3">
+              <p>{t('doctors.identifierAudit')}</p>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={() => setIsRevealed(false)}
+              >
+                {t('doctors.hide')}
+              </Button>
+            </div>
+          </InlineNotice>
         ) : null}
 
         {!canReveal ? (

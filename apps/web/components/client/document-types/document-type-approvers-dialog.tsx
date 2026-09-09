@@ -16,6 +16,7 @@ import {
 import { useTranslations } from 'next-intl';
 
 import { DefaultApproverPicker } from '#components/client/document-types/default-approver-picker';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { documentTypeControllerSetDefaultApproversV1 } from '#lib/api/generated/document-types/document-types';
 import { parseApiSuccess } from '#lib/api/response';
 import { resolveApiErrorMessage } from '#lib/api/resolve-api-error-message';
@@ -59,11 +60,7 @@ export function DocumentTypeApproversDialog({
           <DialogTitle>{t('title', { name: type.name })}</DialogTitle>
           <DialogDescription>{t('description')}</DialogDescription>
         </DialogHeader>
-        {error ? (
-          <p role="alert" className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-900">
-            {error}
-          </p>
-        ) : null}
+        {error ? <InlineNotice tone="error">{error}</InlineNotice> : null}
         <DefaultApproverPicker selected={selected} onChange={setSelected} />
         <DialogFooter>
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>

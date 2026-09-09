@@ -37,6 +37,7 @@ import {
 } from '@hms/ui';
 import { useFormatter, useTranslations } from 'next-intl';
 
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import {
   bpjsSubmissionControllerRetrySubmissionV1,
   getBpjsSubmissionControllerListSubmissionsV1QueryKey,
@@ -304,9 +305,7 @@ export function IntegrationSubmissionMonitor() {
           </div>
 
           {activeQuery.isError ? (
-            <p role="alert" className="rounded-lg bg-rose-50 p-3 text-sm text-rose-700">
-              {t('noSubmissions')}
-            </p>
+            <InlineNotice tone="error">{t('noSubmissions')}</InlineNotice>
           ) : (
             <div className="overflow-x-auto rounded-lg border">
               <Table>

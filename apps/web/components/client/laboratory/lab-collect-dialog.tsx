@@ -24,6 +24,7 @@ import {
 } from '@hms/ui';
 import { useLocale, useTranslations } from 'next-intl';
 
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import {
   labSpecimenControllerCollectLabSpecimensV1,
   labSpecimenControllerGetSpecimenLabelV1,
@@ -95,7 +96,7 @@ export function LabCollectDialog({ item, onClose }: LabCollectDialogProps) {
           {orderQuery.isPending ? (
             <Skeleton className="h-8 w-full" />
           ) : orderQuery.isError ? (
-            <p className="text-sm text-red-600">{t('loadError')}</p>
+            <InlineNotice tone="error">{t('loadError')}</InlineNotice>
           ) : pendingTypes.length === 0 ? (
             <p className="text-sm text-slate-500">{t('nothingToDraw')}</p>
           ) : (
@@ -146,11 +147,12 @@ function resolvePendingSpecimenTypes(
 
 async function readLabels(specimens: readonly LabSpecimenView[]): Promise<LabSpecimenLabel[]> {
   return Promise.all(
-    specimens.map(async (specimen) =>
-      parseApiSuccess<LabSpecimenLabel>(
-        await labSpecimenControllerGetSpecimenLabelV1(specimen.id),
-        'Unable to read the specimen label.',
-      ).data,
+    specimens.map(
+      async (specimen) =>
+        parseApiSuccess<LabSpecimenLabel>(
+          await labSpecimenControllerGetSpecimenLabelV1(specimen.id),
+          'Unable to read the specimen label.',
+        ).data,
     ),
   );
 }

@@ -14,6 +14,7 @@ import { useTranslations } from 'next-intl';
 import { EncounterLabTestPicker } from '#components/client/encounters/encounter-lab-test-picker';
 import { LabIntakePatientPicker } from '#components/client/laboratory/lab-intake-patient-picker';
 import { LabIntakeSourceChoice } from '#components/client/laboratory/lab-intake-source-choice';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import type { LabIntakePatient } from '#lib/laboratory/lab-intake-patient';
 import { labOrderControllerCreateWalkInLabOrderV1 } from '#lib/api/generated/laboratory-orders/laboratory-orders';
 import { notifyApiError } from '#lib/api/notify-api-error';
@@ -184,7 +185,7 @@ export function LabIntakeWorkspace() {
               {t('submit')}
             </Button>
           </div>
-          {formError ? <p className="text-sm text-red-600">{formError}</p> : null}
+          {formError ? <InlineNotice tone="error">{formError}</InlineNotice> : null}
         </form>
       </CardContent>
     </Card>
