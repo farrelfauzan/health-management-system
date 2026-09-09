@@ -1814,8 +1814,50 @@
         "roles": {
           "title": "Roles & permissions",
           "description": "What each role may see and do."
+        },
+        "doctorCredentials": {
+          "title": "Doctor credentials",
+          "description": "The titles, degrees and fields of study doctor profiles are described by."
         }
       }
+    },
+    "doctorCredentials": {
+      "title": "Doctor credentials",
+      "description": "The lists the doctor form picks titles, degrees and fields of study from. Codes are permanent; labels are what prints on a document.",
+      "add": "Add option",
+      "kinds": {
+        "TITLE": "Titles",
+        "DEGREE": "Degrees",
+        "FIELD_OF_STUDY": "Fields of study"
+      },
+      "columns": {
+        "label": "Printed label",
+        "code": "Code",
+        "sortOrder": "Order",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "active": "Active",
+      "inactive": "Not offered",
+      "empty": "No options yet.",
+      "loading": "Loading the catalog…",
+      "loadError": "The credential catalog could not be loaded.",
+      "deactivate": "Stop offering",
+      "reactivate": "Offer again",
+      "deactivateHint": "Doctors who already carry this credential keep printing it; it only stops being offered on the form.",
+      "dialogTitle": "Add a credential option",
+      "dialogDescription": "The code is stored on every doctor that picks this option and can never be changed. The label is what prints.",
+      "fields": {
+        "kind": "List",
+        "code": "Code",
+        "label": "Printed label",
+        "sortOrder": "Order"
+      },
+      "codeHint": "Upper-snake ASCII, for example SP_PD.",
+      "saved": "Credential option saved.",
+      "saveError": "The credential option could not be saved.",
+      "codeRequired": "Enter a code in upper-snake ASCII, for example SP_PD.",
+      "labelRequired": "Enter the printed label."
     }
   },
   "channelArrivals": {

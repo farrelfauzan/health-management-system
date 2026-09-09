@@ -37,6 +37,11 @@ describe('resolveVisibleSettingsHubCards', () => {
     expect(resolveKeys([{ action: 'write', subject: 'LabTest' }])).toEqual(['laboratory']);
   });
 
+  it('opens the doctor credential catalog for whoever may edit a doctor', () => {
+    expect(resolveKeys([{ action: 'update', subject: 'Doctor' }])).toEqual(['doctorCredentials']);
+    expect(resolveKeys([{ action: 'read', subject: 'Doctor' }])).toEqual([]);
+  });
+
   it('drops a card whose destination a disabled feature has removed', () => {
     const actual = resolveKeys(
       [

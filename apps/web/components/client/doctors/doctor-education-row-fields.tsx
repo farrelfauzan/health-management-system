@@ -3,6 +3,8 @@
 import { Icon, Input } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { CredentialCatalogHint } from '#components/client/doctors/credential-catalog-hint';
+import { FieldOfStudyCombobox } from '#components/client/doctors/field-of-study-combobox';
 import { FormLabel } from '#components/client/shared/form-label';
 import type { EducationRow } from '#lib/doctors/doctor-credential-rows';
 
@@ -75,12 +77,12 @@ export function DoctorEducationRowFields({
           >
             {t('doctors.credentials.field')}
           </FormLabel>
-          <Input
+          <FieldOfStudyCombobox
             id={`education-field-${row.key}`}
             value={row.fieldOfStudy}
-            placeholder="Pendidikan Dokter"
-            onChange={(event) => onChange(row.key, { fieldOfStudy: event.target.value })}
+            onChange={(code) => onChange(row.key, { fieldOfStudy: code })}
           />
+          <CredentialCatalogHint legacyValue={row.legacyFieldOfStudy || undefined} />
         </div>
         <div className="space-y-1.5">
           <FormLabel

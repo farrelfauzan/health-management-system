@@ -443,6 +443,22 @@ export class DoctorManagementRepository {
       .catch(rethrowIdentifierConflict);
   }
 
+  /**
+   * The field-of-study codes this doctor's education rows already hold. Used
+   * only to keep an edit saveable after an admin deactivates an option that
+   * some rows still store (P19-T14).
+   */
+  async listEducationFieldOfStudyCodes(doctorId: string): Promise<string[]> {
+    const educations = await this.prisma.doctorEducation.findMany({
+      where: { doctorId, deletedAt: null, fieldOfStudy: { not: null } },
+      select: { fieldOfStudy: true },
+    });
+
+    return educations
+      .map((education) => education.fieldOfStudy)
+      .filter((code): code is string => code !== null);
+  }
+
   async updateDoctor(id: string, payload: UpdateDoctorRecordPayload) {
     return this.prisma
       .executeTransaction(async (tx) => {

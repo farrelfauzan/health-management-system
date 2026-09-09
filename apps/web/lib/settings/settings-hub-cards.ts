@@ -4,6 +4,7 @@ export type SettingsHubCardKey =
   | 'clinicProfile'
   | 'serviceTariffs'
   | 'laboratory'
+  | 'doctorCredentials'
   | 'documentTemplates'
   | 'integrations'
   | 'aiProviders'
@@ -56,6 +57,15 @@ export const SETTINGS_HUB_CARDS: readonly SettingsHubCard[] = [
       { action: 'write', subject: 'LabTest' },
       { action: 'write', subject: 'LaboratorySettings' },
     ],
+  },
+  {
+    key: 'doctorCredentials',
+    href: '/admin/settings/doctor-credentials',
+    icon: 'badge',
+    // `update` on Doctor rather than a `write` of its own (P19-T14): extending
+    // the credential catalog is the same administrative act as editing a
+    // doctor, and the API gates both on `doctor.update:any`.
+    abilities: [{ action: 'update', subject: 'Doctor' }],
   },
   {
     key: 'documentTemplates',

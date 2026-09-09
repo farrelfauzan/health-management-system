@@ -399,6 +399,7 @@ export const ModelName = {
   DocumentDelivery: 'DocumentDelivery',
   DocumentDeliveryLink: 'DocumentDeliveryLink',
   PatientAllergy: 'PatientAllergy',
+  DoctorCredentialOption: 'DoctorCredentialOption',
   Specialty: 'Specialty',
   DoctorProfile: 'DoctorProfile',
   DoctorEducation: 'DoctorEducation',
@@ -503,7 +504,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientDeliveryConsent" | "documentDelivery" | "documentDeliveryLink" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorLicenseExpiryNotice" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "prescriptionItemComponent" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "vaultDocumentExpiryNotice" | "vaultDocumentShare" | "userOffboardingNotice" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit" | "documentType" | "documentTypeApprover" | "managedDocument" | "documentApprovalRequest" | "documentApprovalApprover" | "documentApprovalDecision" | "labTest" | "labReferenceRange" | "labPanel" | "labPanelMember" | "labOrderCounter" | "labOrder" | "labOrderItem" | "labSpecimenCounter" | "labSpecimen" | "labResult" | "laboratorySettings" | "labReport" | "immunization"
+    modelProps: "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientDeliveryConsent" | "documentDelivery" | "documentDeliveryLink" | "patientAllergy" | "doctorCredentialOption" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorLicenseExpiryNotice" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "prescriptionItemComponent" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "vaultDocumentExpiryNotice" | "vaultDocumentShare" | "userOffboardingNotice" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit" | "documentType" | "documentTypeApprover" | "managedDocument" | "documentApprovalRequest" | "documentApprovalApprover" | "documentApprovalDecision" | "labTest" | "labReferenceRange" | "labPanel" | "labPanelMember" | "labOrderCounter" | "labOrder" | "labOrderItem" | "labSpecimenCounter" | "labSpecimen" | "labResult" | "laboratorySettings" | "labReport" | "immunization"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1614,6 +1615,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.PatientAllergyCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.PatientAllergyCountAggregateOutputType> | number
+        }
+      }
+    }
+    DoctorCredentialOption: {
+      payload: Prisma.$DoctorCredentialOptionPayload<ExtArgs>
+      fields: Prisma.DoctorCredentialOptionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.DoctorCredentialOptionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorCredentialOptionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.DoctorCredentialOptionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorCredentialOptionPayload>
+        }
+        findFirst: {
+          args: Prisma.DoctorCredentialOptionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorCredentialOptionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.DoctorCredentialOptionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorCredentialOptionPayload>
+        }
+        findMany: {
+          args: Prisma.DoctorCredentialOptionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorCredentialOptionPayload>[]
+        }
+        create: {
+          args: Prisma.DoctorCredentialOptionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorCredentialOptionPayload>
+        }
+        createMany: {
+          args: Prisma.DoctorCredentialOptionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.DoctorCredentialOptionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorCredentialOptionPayload>[]
+        }
+        delete: {
+          args: Prisma.DoctorCredentialOptionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorCredentialOptionPayload>
+        }
+        update: {
+          args: Prisma.DoctorCredentialOptionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorCredentialOptionPayload>
+        }
+        deleteMany: {
+          args: Prisma.DoctorCredentialOptionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.DoctorCredentialOptionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.DoctorCredentialOptionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorCredentialOptionPayload>[]
+        }
+        upsert: {
+          args: Prisma.DoctorCredentialOptionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorCredentialOptionPayload>
+        }
+        aggregate: {
+          args: Prisma.DoctorCredentialOptionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateDoctorCredentialOption>
+        }
+        groupBy: {
+          args: Prisma.DoctorCredentialOptionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DoctorCredentialOptionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.DoctorCredentialOptionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DoctorCredentialOptionCountAggregateOutputType> | number
         }
       }
     }
@@ -8501,6 +8576,21 @@ export const PatientAllergyScalarFieldEnum = {
 export type PatientAllergyScalarFieldEnum = (typeof PatientAllergyScalarFieldEnum)[keyof typeof PatientAllergyScalarFieldEnum]
 
 
+export const DoctorCredentialOptionScalarFieldEnum = {
+  id: 'id',
+  kind: 'kind',
+  code: 'code',
+  label: 'label',
+  sortOrder: 'sortOrder',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type DoctorCredentialOptionScalarFieldEnum = (typeof DoctorCredentialOptionScalarFieldEnum)[keyof typeof DoctorCredentialOptionScalarFieldEnum]
+
+
 export const SpecialtyScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -10342,6 +10432,20 @@ export type ListEnumAllergySeverityFieldRefInput<$PrismaModel> = FieldRefInputTy
 
 
 /**
+ * Reference to a field of type 'DoctorCredentialKind'
+ */
+export type EnumDoctorCredentialKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DoctorCredentialKind'>
+    
+
+
+/**
+ * Reference to a field of type 'DoctorCredentialKind[]'
+ */
+export type ListEnumDoctorCredentialKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DoctorCredentialKind[]'>
+    
+
+
+/**
  * Reference to a field of type 'DoctorLicenseType'
  */
 export type EnumDoctorLicenseTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DoctorLicenseType'>
@@ -11501,6 +11605,7 @@ export type GlobalOmitConfig = {
   documentDelivery?: Prisma.DocumentDeliveryOmit
   documentDeliveryLink?: Prisma.DocumentDeliveryLinkOmit
   patientAllergy?: Prisma.PatientAllergyOmit
+  doctorCredentialOption?: Prisma.DoctorCredentialOptionOmit
   specialty?: Prisma.SpecialtyOmit
   doctorProfile?: Prisma.DoctorProfileOmit
   doctorEducation?: Prisma.DoctorEducationOmit

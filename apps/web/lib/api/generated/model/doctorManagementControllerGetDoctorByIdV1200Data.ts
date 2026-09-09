@@ -5,10 +5,12 @@
  * Health Management System API
  * OpenAPI spec version: 1.0.0
  */
+import type { DoctorManagementControllerGetDoctorByIdV1200DataDegreeValuesItem } from './doctorManagementControllerGetDoctorByIdV1200DataDegreeValuesItem';
 import type { DoctorManagementControllerGetDoctorByIdV1200DataEducationsItem } from './doctorManagementControllerGetDoctorByIdV1200DataEducationsItem';
 import type { DoctorManagementControllerGetDoctorByIdV1200DataLicensesItem } from './doctorManagementControllerGetDoctorByIdV1200DataLicensesItem';
 import type { DoctorManagementControllerGetDoctorByIdV1200DataPatientsItem } from './doctorManagementControllerGetDoctorByIdV1200DataPatientsItem';
 import type { DoctorManagementControllerGetDoctorByIdV1200DataSchedulesItem } from './doctorManagementControllerGetDoctorByIdV1200DataSchedulesItem';
+import type { DoctorManagementControllerGetDoctorByIdV1200DataTitleValue } from './doctorManagementControllerGetDoctorByIdV1200DataTitleValue';
 
 export type DoctorManagementControllerGetDoctorByIdV1200Data = {
   id: string;
@@ -20,6 +22,9 @@ export type DoctorManagementControllerGetDoctorByIdV1200Data = {
   email: string;
   title: string;
   degrees: string;
+  titleValue: DoctorManagementControllerGetDoctorByIdV1200DataTitleValue;
+  degreeValues: DoctorManagementControllerGetDoctorByIdV1200DataDegreeValuesItem[];
+  displayName: string;
   nikMasked: string;
   satusehatPractitionerId: string;
   ownerUserId: string;

@@ -582,7 +582,19 @@
         "institution": "Institution",
         "degree": "Degree",
         "field": "Field of Study",
-        "graduationYear": "Graduation Year"
+        "graduationYear": "Graduation Year",
+        "noTitle": "No title",
+        "selectDegrees": "Select degrees",
+        "searchDegrees": "Search degrees",
+        "noDegreeMatch": "No matching degree",
+        "removeDegree": "Remove {label}",
+        "selectField": "Select a field of study",
+        "searchField": "Search fields of study",
+        "noFieldMatch": "No matching field of study",
+        "noField": "No field of study",
+        "legacyValue": "On file: {value}",
+        "legacyNotice": "On file as free text: {value}. Pick a replacement from the list.",
+        "manageLink": "Missing an option? Add it under Settings."
       },
       "scheduleFields": {
         "day": "Day for entry {index}",

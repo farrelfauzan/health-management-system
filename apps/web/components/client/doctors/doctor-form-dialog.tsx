@@ -24,9 +24,12 @@ import {
   Input,
 } from '@hms/ui';
 
+import { CredentialCatalogHint } from '#components/client/doctors/credential-catalog-hint';
+import { DoctorDegreesPicker } from '#components/client/doctors/doctor-degrees-picker';
 import { DoctorEducationsField } from '#components/client/doctors/doctor-educations-field';
 import { DoctorLicensesField } from '#components/client/doctors/doctor-licenses-field';
 import { DoctorPatientPicker } from '#components/client/doctors/doctor-patient-picker';
+import { DoctorTitleSelect } from '#components/client/doctors/doctor-title-select';
 import { SpecialtyCombobox } from '#components/client/doctors/specialty-combobox';
 import { FieldError } from '#components/client/shared/field-error';
 import { FormLabel } from '#components/client/shared/form-label';
@@ -83,6 +86,14 @@ export function DoctorFormDialog({
     toEducationRows(educations),
   );
   const [rowKeyCounter, setRowKeyCounter] = useState<number>(0);
+  // Free text written before the credential catalog existed (P19-T14). It has
+  // no code to preselect, so the form shows what is on file and asks for a
+  // pick rather than dropping a credential nobody can re-derive.
+  const legacyTitle = doctor?.titleValue?.isLegacy ? doctor.titleValue.label : undefined;
+  const legacyDegrees = (doctor?.degreeValues ?? [])
+    .filter((value) => value.isLegacy)
+    .map((value) => value.label)
+    .join(', ');
 
   function addLicenseRow(): void {
     setLicenseRows((rows) => [...rows, buildEmptyLicenseRow(`new-license-${rowKeyCounter}`)]);
@@ -116,8 +127,11 @@ export function DoctorFormDialog({
       fullName: doctor?.fullName ?? '',
       specialtyId: doctor?.specialtyId ?? '',
       phoneNumber: doctor?.phoneNumber ?? '',
-      title: doctor?.title ?? '',
-      degrees: doctor?.degrees ?? '',
+      // Option codes, not the printed labels the response also carries.
+      title: doctor?.titleValue?.code ?? '',
+      degrees: (doctor?.degreeValues ?? [])
+        .map((value) => value.code)
+        .filter((code): code is string => Boolean(code)),
       // Write-only, like the patient NIK: the profile carries only a mask, so
       // a blank leaves the stored value alone rather than clearing it.
       nik: '',
@@ -127,7 +141,6 @@ export function DoctorFormDialog({
     onSubmit: async ({ value }) => {
       setFormError(null);
       const trimmedTitle = value.title.trim();
-      const trimmedDegrees = value.degrees.trim();
       const trimmedNik = value.nik.trim();
       const credentials = {
         licenses: buildLicensePayload(licenseRows),
@@ -135,7 +148,8 @@ export function DoctorFormDialog({
       };
       const profileFields = {
         ...(trimmedTitle.length > 0 ? { title: trimmedTitle } : {}),
-        ...(trimmedDegrees.length > 0 ? { degrees: trimmedDegrees } : {}),
+        // Always sent, so clearing every chip clears the stored degrees too.
+        degrees: value.degrees,
         ...(trimmedNik.length > 0 ? { nik: trimmedNik } : {}),
       };
       try {
@@ -324,6 +338,9 @@ export function DoctorFormDialog({
             <p className="font-heading text-xs font-semibold uppercase tracking-wide text-slate-500">
               {t('doctors.form.identity')}
             </p>
+            {/* Picked from the credential catalog since P19-T14, never typed:
+                free text is how one credential reached documents spelled five
+                different ways. A missing option is added under Settings. */}
             <div className="grid grid-cols-2 gap-3">
               <form.Field name="title">
                 {(field) => (
@@ -334,13 +351,13 @@ export function DoctorFormDialog({
                     >
                       {t('doctors.form.title')}
                     </FormLabel>
-                    <Input
+                    <DoctorTitleSelect
                       id={field.name}
                       value={field.state.value}
-                      placeholder="dr."
-                      onChange={(event) => field.handleChange(event.target.value)}
-                      onBlur={field.handleBlur}
+                      legacyValue={legacyTitle}
+                      onChange={(code) => field.handleChange(code)}
                     />
+                    <CredentialCatalogHint legacyValue={legacyTitle} />
                   </div>
                 )}
               </form.Field>
@@ -353,13 +370,12 @@ export function DoctorFormDialog({
                     >
                       {t('doctors.form.degrees')}
                     </FormLabel>
-                    <Input
+                    <DoctorDegreesPicker
                       id={field.name}
-                      value={field.state.value}
-                      placeholder="Sp.PD"
-                      onChange={(event) => field.handleChange(event.target.value)}
-                      onBlur={field.handleBlur}
+                      values={field.state.value}
+                      onChange={(codes) => field.handleChange(codes)}
                     />
+                    <CredentialCatalogHint legacyValue={legacyDegrees || undefined} />
                   </div>
                 )}
               </form.Field>

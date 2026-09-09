@@ -1443,6 +1443,46 @@ model PatientAllergy {
   @@map("patient_allergies")
 }
 
+/// Master data for the credentials that print alongside a doctor's name
+/// (P19-T14). Titles ("dr."), academic and specialist degrees ("Sp.PD") and
+/// education fields of study used to be free text on every form, so the same
+/// credential reached documents spelled five different ways.
+///
+/// One table for all three kinds rather than three near-identical tables: they
+/// share every column, every screen and every rule, and the only thing that
+/// differs is which list a field draws from.
+model DoctorCredentialOption {
+  id   String               @id @default(uuid()) @db.Uuid
+  kind DoctorCredentialKind
+  /// Stable upper-snake ASCII identifier ("SP_PD"). This is what is stored on
+  /// doctor profiles and education rows, so it must never be rewritten — an
+  /// option whose printed form changed gets a new `label`, not a new `code`.
+  code String
+  /// The printed form, exactly as it should appear on a document.
+  label     String
+  sortOrder Int       @default(0) @map("sort_order")
+  isActive  Boolean   @default(true) @map("is_active")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@unique([kind, code])
+  @@index([kind, isActive])
+  @@index([deletedAt])
+  @@map("doctor_credential_options")
+}
+
+enum DoctorCredentialKind {
+  /// Honorific printed before the name: "dr.", "drg.", "Prof. Dr.".
+  TITLE
+  /// Academic or specialist credential printed after the name: "Sp.PD", "M.Kes".
+  DEGREE
+  /// Programme an education row was taken in: "Pendidikan Dokter".
+  FIELD_OF_STUDY
+
+  @@map("doctor_credential_kind")
+}
+
 model Specialty {
   id           String    @id @default(uuid()) @db.Uuid
   name         String    @unique
@@ -1505,8 +1545,17 @@ model DoctorProfile {
   bpjsDoctorCode          String? @map("bpjs_doctor_code")
 
   // Listing/profile fields clinics expect on doctor directories (P7-T04).
-  // Specialty remains the existing Specialty reference table; title/degrees
-  // cover honorifics and academic credentials (e.g. "dr.", "Sp.PD").
+  // Specialty remains the existing Specialty reference table.
+  //
+  // `title` and `degrees` are no longer free text (P19-T14). Both now store
+  // DoctorCredentialOption *codes*: `title` a single TITLE code ("DR"), and
+  // `degrees` a comma-joined ordered list of DEGREE codes ("SP_PD,M_KES").
+  // The columns stay `String` rather than becoming foreign keys because rows
+  // written before the option table existed hold free text, and dropping them
+  // would erase credentials nobody can re-enter from the record. The read path
+  // resolves a stored value to an option by code first, then by
+  // case-insensitive label; whatever matches neither is returned as-is and
+  // flagged legacy so the form asks an admin to pick a replacement.
   //
   // There is deliberately no `email` here: it lives on the linked `User`
   // account and is read through `ownerUser`. Two copies of one address drift

@@ -582,7 +582,19 @@
         "institution": "Institusi",
         "degree": "Gelar",
         "field": "Bidang Studi",
-        "graduationYear": "Tahun Lulus"
+        "graduationYear": "Tahun Lulus",
+        "noTitle": "Tanpa gelar depan",
+        "selectDegrees": "Pilih gelar",
+        "searchDegrees": "Cari gelar",
+        "noDegreeMatch": "Gelar tidak ditemukan",
+        "removeDegree": "Hapus {label}",
+        "selectField": "Pilih bidang studi",
+        "searchField": "Cari bidang studi",
+        "noFieldMatch": "Bidang studi tidak ditemukan",
+        "noField": "Tanpa bidang studi",
+        "legacyValue": "Tersimpan: {value}",
+        "legacyNotice": "Tersimpan sebagai teks bebas: {value}. Pilih penggantinya dari daftar.",
+        "manageLink": "Pilihan belum ada? Tambahkan di Pengaturan."
       },
       "scheduleFields": {
         "day": "Hari untuk entri {index}",

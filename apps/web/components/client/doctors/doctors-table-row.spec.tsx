@@ -15,6 +15,8 @@ const DOCTOR: DoctorListItem = {
   specialtyId: '0f1cbb1f-8f4a-4bb0-9a5e-2d94f7a3c111',
   specialty: 'Cardiology',
   phoneNumber: '+628129876543',
+  degreeValues: [],
+  displayName: 'Dr. Budi Santoso',
   isActive: true,
   createdAt: '2026-07-01T00:00:00.000Z',
   updatedAt: '2026-07-10T00:00:00.000Z',

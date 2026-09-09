@@ -27,14 +27,17 @@ export interface CreateDoctorDto {
   phoneNumber: string;
   /**
      * @minLength 1
-     * @maxLength 32
+     * @maxLength 64
+     * @pattern ^[A-Z][A-Z0-9_]*$
      */
   title?: string;
   /**
-     * @minLength 1
-     * @maxLength 120
+     * @maxItems 8
+     * @items.minLength 1
+     * @items.maxLength 64
+     * @items.pattern ^[A-Z][A-Z0-9_]*$
      */
-  degrees?: string;
+  degrees?: string[];
   nik: string;
   /**
      * @minLength 1
