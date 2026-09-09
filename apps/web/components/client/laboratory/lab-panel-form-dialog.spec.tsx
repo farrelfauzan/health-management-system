@@ -113,7 +113,7 @@ describe('LabPanelFormDialog', () => {
     renderDialog(null);
 
     await userEvent.type(screen.getByPlaceholderText('DL'), 'DL');
-    await userEvent.type(screen.getByLabelText('Nama'), 'Darah Lengkap');
+    await userEvent.type(screen.getByLabelText(/^Nama\b/), 'Darah Lengkap');
     await userEvent.click(screen.getByRole('button', { name: 'Simpan' }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
@@ -127,7 +127,7 @@ describe('LabPanelFormDialog', () => {
     renderDialog(null);
 
     await user.type(screen.getByPlaceholderText('DL'), 'DL');
-    await user.type(screen.getByLabelText('Nama'), 'Darah Lengkap');
+    await user.type(screen.getByLabelText(/^Nama\b/), 'Darah Lengkap');
     // The members picker is the first combobox on the form; the tariff picker follows it.
     await user.click(screen.getAllByRole('combobox')[0] as HTMLElement);
     expect(screen.queryByText('Pemeriksaan lama')).not.toBeInTheDocument();

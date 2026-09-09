@@ -11,6 +11,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  Label,
   Textarea,
 } from '@hms/ui';
 import { useTranslations } from 'next-intl';
@@ -72,12 +73,12 @@ export function RejectRequestDialog({ open, onOpenChange, request }: RejectReque
             </p>
           ) : null}
           <div className="space-y-1.5">
-            <label
+            <Label
               htmlFor="reject-request-reason"
-              className="block font-heading text-xs font-medium text-slate-600"
+              className="font-heading text-xs text-slate-600"
             >
               Reason
-            </label>
+            </Label>
             <Textarea
               id="reject-request-reason"
               rows={3}

@@ -19,6 +19,7 @@ import {
   DialogHeader,
   DialogTitle,
   Input,
+  Label,
   Textarea,
 } from '@hms/ui';
 import { useTranslations } from 'next-intl';
@@ -118,12 +119,12 @@ export function RoleFormDialog({ open, onOpenChange, role }: RoleFormDialogProps
             <form.Field name="code" validators={{ onSubmit: createRoleSchema.shape.code }}>
               {(field) => (
                 <div className="space-y-1.5">
-                  <label
+                  <Label
                     htmlFor={field.name}
-                    className="block font-heading text-xs font-medium text-slate-600"
+                    className="font-heading text-xs text-slate-600"
                   >
                     {t('codeLabel')}
-                  </label>
+                  </Label>
                   <Input
                     id={field.name}
                     value={field.state.value}
@@ -142,12 +143,12 @@ export function RoleFormDialog({ open, onOpenChange, role }: RoleFormDialogProps
           <form.Field name="name" validators={{ onSubmit: createRoleSchema.shape.name }}>
             {(field) => (
               <div className="space-y-1.5">
-                <label
+                <Label
                   htmlFor={field.name}
-                  className="block font-heading text-xs font-medium text-slate-600"
+                  className="font-heading text-xs text-slate-600"
                 >
                   {t('nameLabel')}
-                </label>
+                </Label>
                 <Input
                   id={field.name}
                   value={field.state.value}
@@ -164,12 +165,12 @@ export function RoleFormDialog({ open, onOpenChange, role }: RoleFormDialogProps
           <form.Field name="description">
             {(field) => (
               <div className="space-y-1.5">
-                <label
+                <Label
                   htmlFor={field.name}
-                  className="block font-heading text-xs font-medium text-slate-600"
+                  className="font-heading text-xs text-slate-600"
                 >
                   {t('descriptionLabel')}
-                </label>
+                </Label>
                 <Textarea
                   id={field.name}
                   value={field.state.value}

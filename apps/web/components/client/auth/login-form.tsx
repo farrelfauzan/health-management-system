@@ -12,7 +12,7 @@ import {
   type LoginResult,
   type MfaEnrolmentCompleted,
 } from '@hms/shared-types';
-import { Button, Input } from '@hms/ui';
+import { Button, Input, Label } from '@hms/ui';
 
 import { authControllerLoginV1 } from '#lib/api/generated/auth/auth';
 import { parseApiSuccess } from '#lib/api/response';
@@ -149,9 +149,9 @@ export function LoginForm() {
       <form.Field name="email">
         {(field) => (
           <div className="space-y-1.5">
-            <label htmlFor={field.name} className="block text-xs font-medium text-slate-700">
+            <Label htmlFor={field.name} className="text-xs text-slate-700">
               {t('emailLabel')}
-            </label>
+            </Label>
             <Input
               id={field.name}
               name={field.name}
@@ -174,9 +174,9 @@ export function LoginForm() {
       <form.Field name="password">
         {(field) => (
           <div className="space-y-1.5">
-            <label htmlFor={field.name} className="block text-xs font-medium text-slate-700">
+            <Label htmlFor={field.name} className="text-xs text-slate-700">
               {t('passwordLabel')}
-            </label>
+            </Label>
             <Input
               id={field.name}
               name={field.name}

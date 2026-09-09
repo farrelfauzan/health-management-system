@@ -11,6 +11,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  Label,
   Textarea,
   toast,
 } from '@hms/ui';
@@ -73,7 +74,7 @@ export function LabReleaseDialog({ labOrderId, open, onOpenChange }: LabReleaseD
           <DialogTitle>{t('releaseTitle')}</DialogTitle>
           <DialogDescription>{t('releaseDescription')}</DialogDescription>
         </DialogHeader>
-        <label className="block space-y-1 text-sm text-slate-700">
+        <Label className="block space-y-1 text-sm text-slate-700 font-normal leading-normal">
           {t('note')}
           <Textarea
             value={note}
@@ -83,7 +84,7 @@ export function LabReleaseDialog({ labOrderId, open, onOpenChange }: LabReleaseD
             disabled={releaseMutation.isPending}
             data-testid="lab-release-note"
           />
-        </label>
+        </Label>
         <DialogFooter>
           <Button type="button" variant="outline" onClick={handleClose}>
             {tCommon('cancel')}

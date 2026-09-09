@@ -8,6 +8,7 @@ import {
   DatePicker,
   Icon,
   Input,
+  Label,
   Select,
   SelectContent,
   SelectItem,
@@ -100,12 +101,12 @@ export function PatientsFilterCard({
         }
       >
         <div className="w-full sm:w-56">
-          <label
+          <Label
             htmlFor="patients-quick-filter"
-            className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
+            className="mb-1.5 font-heading text-xs text-slate-600"
           >
             {t('patients.quickFilter')}
-          </label>
+          </Label>
           <Input
             id="patients-quick-filter"
             placeholder={t('patients.searchPlaceholder')}
@@ -114,12 +115,12 @@ export function PatientsFilterCard({
           />
         </div>
         <div className="w-40">
-          <label
+          <Label
             htmlFor="patients-status-filter"
-            className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
+            className="mb-1.5 font-heading text-xs text-slate-600"
           >
             {t('common.status')}
-          </label>
+          </Label>
           <Select value={status} onValueChange={setStatus}>
             <SelectTrigger id="patients-status-filter" className="w-full">
               <SelectValue placeholder={t('common.allStatuses')} />
@@ -137,12 +138,12 @@ export function PatientsFilterCard({
         {/* DUMMY-DATA: no department concept exists in the MVP backend; this
             control ships disabled until a department contract lands. */}
         {/* <div className="w-44">
-          <label
+          <Label
             htmlFor="patients-department-filter"
-            className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
+            className="mb-1.5 font-heading text-xs text-slate-600"
           >
             Department
-          </label>
+          </Label>
           <Select disabled>
             <SelectTrigger id="patients-department-filter" className="w-full">
               <SelectValue placeholder="All Departments" />

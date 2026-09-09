@@ -79,7 +79,7 @@ describe('ClinicProfilePanel', () => {
   it('renders the stored profile in the form', async () => {
     renderPanel();
 
-    expect(await screen.findByLabelText('Clinic name')).toHaveValue('Klinik Sehat Bersama');
+    expect(await screen.findByLabelText(/^Clinic name/)).toHaveValue('Klinik Sehat Bersama');
     expect(screen.getByLabelText('Tax ID (NPWP)')).toHaveValue('01.234.567.8-901.000');
   });
 
@@ -89,7 +89,7 @@ describe('ClinicProfilePanel', () => {
 
     renderPanel();
 
-    expect(await screen.findByLabelText('Clinic name')).toHaveValue('');
+    expect(await screen.findByLabelText(/^Clinic name/)).toHaveValue('');
     expect(screen.queryByText(/Unable to load the clinic profile/)).not.toBeInTheDocument();
   });
 
@@ -101,7 +101,7 @@ describe('ClinicProfilePanel', () => {
     renderPanel();
 
     expect(await screen.findByText(/Unable to load the clinic profile/)).toBeInTheDocument();
-    expect(screen.queryByLabelText('Clinic name')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(/^Clinic name/)).not.toBeInTheDocument();
   });
 
   it('refuses to save without a clinic name', async () => {
@@ -116,7 +116,7 @@ describe('ClinicProfilePanel', () => {
   it('sends an emptied optional field as null so the column is cleared', async () => {
     const user = userEvent.setup();
     renderPanel();
-    await screen.findByLabelText('Clinic name');
+    await screen.findByLabelText(/^Clinic name/);
 
     await user.clear(screen.getByLabelText('Tax ID (NPWP)'));
     await user.click(screen.getByRole('button', { name: 'Save profile' }));
@@ -133,7 +133,7 @@ describe('ClinicProfilePanel', () => {
   it('omits logoStorageKey entirely when the logo was not touched', async () => {
     const user = userEvent.setup();
     renderPanel();
-    await screen.findByLabelText('Clinic name');
+    await screen.findByLabelText(/^Clinic name/);
 
     await user.click(screen.getByRole('button', { name: 'Save profile' }));
 
@@ -156,7 +156,7 @@ describe('ClinicProfilePanel', () => {
     });
     putFileToSignedUrlMock.mockResolvedValue(undefined);
     renderPanel();
-    await screen.findByLabelText('Clinic name');
+    await screen.findByLabelText(/^Clinic name/);
 
     await user.upload(
       screen.getByLabelText('Logo'),
@@ -180,7 +180,7 @@ describe('ClinicProfilePanel', () => {
     // walks straight past it. This is the check behind that hint.
     const user = userEvent.setup({ applyAccept: false });
     renderPanel();
-    await screen.findByLabelText('Clinic name');
+    await screen.findByLabelText(/^Clinic name/);
 
     await user.upload(
       screen.getByLabelText('Logo'),
@@ -194,7 +194,7 @@ describe('ClinicProfilePanel', () => {
   it('hides the save action from a reader who cannot write', async () => {
     renderPanel(READ_ONLY_RULES);
 
-    expect(await screen.findByLabelText('Clinic name')).toBeDisabled();
+    expect(await screen.findByLabelText(/^Clinic name/)).toBeDisabled();
     expect(screen.queryByRole('button', { name: 'Save profile' })).not.toBeInTheDocument();
   });
 });

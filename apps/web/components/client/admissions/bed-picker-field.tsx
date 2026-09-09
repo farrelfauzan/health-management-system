@@ -1,8 +1,9 @@
 'use client';
 
-import { Combobox, Label } from '@hms/ui';
+import { Combobox } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { FormLabel } from '#components/client/shared/form-label';
 import { useBedsList } from '#lib/rooms/use-beds-list';
 
 const FREE_BED_LIMIT = 100;
@@ -14,6 +15,8 @@ type BedPickerFieldProps = {
   onChange: (bedId: string) => void;
   /** Excluded from the list — the bed the patient is already in. */
   excludedBedId?: string;
+  /** Marks the label when the consuming form cannot submit without a bed. */
+  isRequired?: boolean;
 };
 
 /**
@@ -29,6 +32,7 @@ export function BedPickerField({
   value,
   onChange,
   excludedBedId,
+  isRequired = false,
 }: BedPickerFieldProps) {
   const t = useTranslations('operations.admissions');
   const bedsQuery = useBedsList({ page: 1, limit: FREE_BED_LIMIT, status: 'AVAILABLE' });
@@ -36,7 +40,9 @@ export function BedPickerField({
 
   return (
     <div className="space-y-2">
-      <Label htmlFor={id}>{label}</Label>
+      <FormLabel htmlFor={id} required={isRequired}>
+        {label}
+      </FormLabel>
       <Combobox
         id={id}
         options={beds.map((bed) => ({

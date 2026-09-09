@@ -18,7 +18,6 @@ import {
   DialogHeader,
   DialogTitle,
   Input,
-  Label,
   Select,
   SelectContent,
   SelectItem,
@@ -31,6 +30,8 @@ import {
   bedControllerCreateBedV1,
   bedControllerUpdateBedV1,
 } from '#lib/api/generated/room-management/room-management';
+import { FormLabel } from '#components/client/shared/form-label';
+import { RequiredLegend } from '#components/client/shared/required-legend';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { parseApiSuccess } from '#lib/api/response';
 import { invalidateRoomQueries } from '#lib/rooms/invalidate-room-queries';
@@ -105,8 +106,9 @@ export function BedFormDialog({ open, onOpenChange, bed }: BedFormDialogProps) {
           <DialogDescription>{t('rooms.occupiedBedLocked')}</DialogDescription>
         </DialogHeader>
         <form noValidate className="space-y-4" onSubmit={(event) => void handleSubmit(event)}>
+          {!isEditing ? <RequiredLegend /> : null}
           <div className="space-y-2">
-            <Label htmlFor="bed-room">{t('rooms.room')}</Label>
+            <FormLabel htmlFor="bed-room" required={!isEditing}>{t('rooms.room')}</FormLabel>
             <Select value={roomId} onValueChange={setRoomId} disabled={isEditing}>
               <SelectTrigger id="bed-room" className="w-full">
                 <SelectValue placeholder={t('rooms.room')} />
@@ -122,7 +124,7 @@ export function BedFormDialog({ open, onOpenChange, bed }: BedFormDialogProps) {
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="bed-code">{t('rooms.code')}</Label>
+              <FormLabel htmlFor="bed-code" required={!isEditing}>{t('rooms.code')}</FormLabel>
               <Input
                 id="bed-code"
                 value={code}
@@ -131,7 +133,7 @@ export function BedFormDialog({ open, onOpenChange, bed }: BedFormDialogProps) {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="bed-status">{t('rooms.status')}</Label>
+              <FormLabel htmlFor="bed-status">{t('rooms.status')}</FormLabel>
               <Select
                 value={status}
                 onValueChange={(value) => setStatus(value as SettableBedStatusValue)}
@@ -150,7 +152,7 @@ export function BedFormDialog({ open, onOpenChange, bed }: BedFormDialogProps) {
             </div>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="bed-notes">{t('rooms.notes')}</Label>
+            <FormLabel htmlFor="bed-notes">{t('rooms.notes')}</FormLabel>
             <Input id="bed-notes" value={notes} onChange={(event) => setNotes(event.target.value)} />
           </div>
           {actionError ? <p className="text-sm text-danger">{actionError}</p> : null}

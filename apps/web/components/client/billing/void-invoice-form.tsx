@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { InvoiceDetail, VoidInvoiceInput } from '@hms/shared-types';
-import { Button, Textarea } from '@hms/ui';
+import { Button, Label, Textarea } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
 import { invoiceControllerVoidInvoiceV1 } from '#lib/api/generated/invoices/invoices';
@@ -62,12 +62,12 @@ export function VoidInvoiceForm({ invoiceId, onVoided, onCancel }: VoidInvoiceFo
         </p>
       ) : null}
       <div>
-        <label
+        <Label
           htmlFor="void-reason"
-          className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
+          className="mb-1.5 font-heading text-xs text-slate-600"
         >
           Reason
-        </label>
+        </Label>
         <Textarea
           id="void-reason"
           rows={2}

@@ -15,6 +15,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  Label,
 } from '@hms/ui';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
@@ -83,12 +84,12 @@ export function EncounterOpenDialog({
           </DialogDescription>
         </DialogHeader>
         <div>
-          <label
+          <Label
             htmlFor="open-encounter-doctor"
-            className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
+            className="mb-1.5 font-heading text-xs text-slate-600"
           >
             {t('encounters.attendingDoctor')}
-          </label>
+          </Label>
           <DoctorCombobox
             id="open-encounter-doctor"
             doctors={doctorsQuery.doctors}

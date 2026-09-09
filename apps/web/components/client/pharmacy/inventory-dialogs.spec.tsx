@@ -52,8 +52,8 @@ describe('pharmacy inventory dialogs', () => {
       />,
     );
 
-    expect(screen.getByLabelText('Lot / batch number')).toBeInTheDocument();
-    expect(screen.getByLabelText('Expiry date')).toBeInTheDocument();
-    expect(screen.getByRole('spinbutton', { name: 'Quantity received' })).toBeInTheDocument();
+    expect(screen.getByLabelText(/^Lot \/ batch number/)).toBeInTheDocument();
+    expect(screen.getByLabelText(/^Expiry date/)).toBeInTheDocument();
+    expect(screen.getByRole('spinbutton', { name: /^Quantity received/ })).toBeInTheDocument();
   });
 });

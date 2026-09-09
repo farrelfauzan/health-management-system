@@ -1,6 +1,8 @@
 'use client';
 
-import { Input, Label } from '@hms/ui';
+import { Input } from '@hms/ui';
+
+import { FormLabel } from '#components/client/shared/form-label';
 
 type ClinicProfileTextFieldProps = {
   id: string;
@@ -9,6 +11,8 @@ type ClinicProfileTextFieldProps = {
   placeholder?: string;
   type?: 'text' | 'email' | 'tel';
   disabled?: boolean;
+  /** Marks the label; the clinic name is the only field the API insists on. */
+  isRequired?: boolean;
   onChange: (value: string) => void;
 };
 
@@ -24,11 +28,14 @@ export function ClinicProfileTextField({
   placeholder,
   type = 'text',
   disabled = false,
+  isRequired = false,
   onChange,
 }: ClinicProfileTextFieldProps) {
   return (
     <div className="space-y-2">
-      <Label htmlFor={id}>{label}</Label>
+      <FormLabel htmlFor={id} required={isRequired}>
+        {label}
+      </FormLabel>
       <Input
         id={id}
         type={type}

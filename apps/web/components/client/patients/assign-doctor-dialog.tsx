@@ -16,6 +16,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  Label,
 } from '@hms/ui';
 
 import { doctorPatientControllerAssignDoctorToPatientV1 } from '#lib/api/generated/doctor-patient/doctor-patient';
@@ -98,12 +99,12 @@ export function AssignDoctorDialog({
             </p>
           ) : null}
           <div className="space-y-1.5">
-            <label
+            <Label
               htmlFor="assign-doctor-select"
-              className="block font-heading text-xs font-medium text-slate-600"
+              className="font-heading text-xs text-slate-600"
             >
               {t('encounters.doctor')}
-            </label>
+            </Label>
             <Combobox
               id="assign-doctor-select"
               options={selectableDoctors.map((doctor) => ({

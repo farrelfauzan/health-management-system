@@ -15,6 +15,7 @@ import {
 import { useTranslations } from 'next-intl';
 
 import { BedPickerField } from '#components/client/admissions/bed-picker-field';
+import { RequiredLegend } from '#components/client/shared/required-legend';
 import { admissionFlowControllerTransferAdmissionV1 } from '#lib/api/generated/admission-flow/admission-flow';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { parseApiSuccess } from '#lib/api/response';
@@ -70,9 +71,11 @@ export function TransferAdmissionDialog({
           </DialogDescription>
         </DialogHeader>
         <form noValidate className="space-y-4" onSubmit={(event) => void handleSubmit(event)}>
+          <RequiredLegend />
           <BedPickerField
             id="transfer-bed"
             label={t('admissions.targetBed')}
+            isRequired
             value={bedId}
             onChange={setBedId}
             excludedBedId={admission.currentBed?.id}

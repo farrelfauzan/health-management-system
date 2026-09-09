@@ -9,6 +9,7 @@ import {
   Checkbox,
   Icon,
   Input,
+  Label,
   Select,
   SelectContent,
   SelectItem,
@@ -112,7 +113,7 @@ export function InventoryPanel() {
           <div className="grid gap-3 lg:grid-cols-[minmax(240px,1fr)_240px_auto]">
             <Input aria-label={t('searchPlaceholder')} placeholder={t('searchPlaceholder')} value={search} onChange={(event) => { setSearch(event.target.value); setPage(1); }} />
             <Select value={category} onValueChange={(value) => { setCategory(value); setPage(1); }}><SelectTrigger className="w-full"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="ALL">{t('allCategories')}</SelectItem>{['OBAT_BEBAS','OBAT_BEBAS_TERBATAS','OBAT_KERAS','PSIKOTROPIKA','NARKOTIKA','OBAT_HERBAL','SUPLEMEN','ALAT_KESEHATAN'].map((value) => <SelectItem key={value} value={value}>{formatStatusLabel(value, locale)}</SelectItem>)}</SelectContent></Select>
-            <label className="flex items-center gap-2 rounded-md border border-slate-200 px-3 text-sm"><Checkbox checked={reorderOnly} onCheckedChange={(checked) => { setReorderOnly(checked === true); setPage(1); }} />{t('reorderOnly')}</label>
+            <Label className="flex items-center gap-2 rounded-md border border-slate-200 px-3 text-sm font-normal"><Checkbox checked={reorderOnly} onCheckedChange={(checked) => { setReorderOnly(checked === true); setPage(1); }} />{t('reorderOnly')}</Label>
           </div>
           {medicationsQuery.isError ? <p role="alert" className="rounded-lg bg-rose-50 p-3 text-sm text-rose-700">{t('catalogLoadError')}</p> : null}
           {!medicationsQuery.isPending && !medicationsQuery.isError && medications.length === 0 ? <p className="py-10 text-center text-sm text-slate-500">{t('emptyCatalog')}</p> : null}

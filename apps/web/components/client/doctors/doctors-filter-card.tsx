@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import {
   Button,
   Input,
+  Label,
   Select,
   SelectContent,
   SelectItem,
@@ -75,12 +76,12 @@ export function DoctorsFilterCard({ initialQuery, onApply, onReset }: DoctorsFil
         }
       >
         <div className="w-full sm:w-56">
-          <label
+          <Label
             htmlFor="doctors-quick-filter"
-            className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
+            className="mb-1.5 font-heading text-xs text-slate-600"
           >
             {t('doctors.quickFilter')}
-          </label>
+          </Label>
           <Input
             id="doctors-quick-filter"
             placeholder={t('doctors.searchPlaceholder')}
@@ -89,12 +90,12 @@ export function DoctorsFilterCard({ initialQuery, onApply, onReset }: DoctorsFil
           />
         </div>
         <div className="w-52">
-          <label
+          <Label
             htmlFor="doctors-specialty-filter"
-            className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
+            className="mb-1.5 font-heading text-xs text-slate-600"
           >
             {t('doctors.specialty')}
-          </label>
+          </Label>
           <SpecialtyCombobox
             id="doctors-specialty-filter"
             specialties={specialtiesQuery.specialties}
@@ -105,12 +106,12 @@ export function DoctorsFilterCard({ initialQuery, onApply, onReset }: DoctorsFil
           />
         </div>
         <div className="w-40">
-          <label
+          <Label
             htmlFor="doctors-status-filter"
-            className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
+            className="mb-1.5 font-heading text-xs text-slate-600"
           >
             {t('common.status')}
-          </label>
+          </Label>
           <Select value={status} onValueChange={setStatus}>
             <SelectTrigger id="doctors-status-filter" className="w-full">
               <SelectValue placeholder={t('common.allStatuses')} />
@@ -123,12 +124,12 @@ export function DoctorsFilterCard({ initialQuery, onApply, onReset }: DoctorsFil
           </Select>
         </div>
         <div className="w-48">
-          <label
+          <Label
             htmlFor="doctors-nik-filter"
-            className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
+            className="mb-1.5 font-heading text-xs text-slate-600"
           >
             {t('doctors.satusehatFilter')}
-          </label>
+          </Label>
           <Select value={nikState} onValueChange={setNikState}>
             <SelectTrigger id="doctors-nik-filter" className="w-full">
               <SelectValue placeholder={t('common.allStatuses')} />
