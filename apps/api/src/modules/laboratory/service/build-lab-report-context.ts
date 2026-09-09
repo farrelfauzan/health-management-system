@@ -48,6 +48,8 @@ type BuildLabReportContextParams = {
   releasedAt: Date;
   /** The release this version replaces, when it is an amendment. */
   supersededReleasedAt: Date | null;
+  /** The verifier's interpretive note for this version, or nothing (P18-T14). */
+  note: string | null;
   timeZone: string;
 };
 
@@ -128,6 +130,10 @@ export function buildLabReportContext(params: BuildLabReportContextParams): LabR
               timeZone,
               withTime: true,
             })}`,
+      // Empty rather than absent, the shape the amendment notice takes: the
+      // template's note block is dropped for an empty string, and a clinic
+      // template naming the token prints nothing rather than "undefined".
+      'report.note': params.note ?? '',
     },
     lines,
   };

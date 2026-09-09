@@ -32,6 +32,7 @@ const LAB_REPORT_SELECT = {
   renderedAt: true,
   pageCount: true,
   requestedById: true,
+  note: true,
   createdAt: true,
 } as const;
 
@@ -74,6 +75,7 @@ export class LabReportRepository {
           isAmended: payload.isAmended,
           releasedAt: payload.releasedAt,
           requestedById: payload.requestedById,
+          note: payload.note,
         },
         select: LAB_REPORT_SELECT,
       });
@@ -278,6 +280,7 @@ function toLabReportRecord(row: LabReportRow): LabReportRecord {
     renderedAt: row.renderedAt,
     pageCount: row.pageCount,
     requestedById: row.requestedById,
+    note: row.note,
     createdAt: row.createdAt,
   };
 }

@@ -100,6 +100,7 @@ describe('LabReportService', () => {
       renderedAt: null,
       pageCount: null,
       requestedById: verifierUserId,
+      note: null,
       createdAt: releasedAt,
       ...overrides,
     };
@@ -193,6 +194,7 @@ describe('LabReportService', () => {
         requestedById: verifierUserId,
         isAmended: false,
         releasedAt,
+        note: null,
       });
 
       expect(actual?.version).toBe(1);
@@ -209,6 +211,7 @@ describe('LabReportService', () => {
           requestedById: verifierUserId,
           isAmended: false,
           releasedAt,
+          note: null,
         }),
       ).resolves.toBeNull();
     });
@@ -293,6 +296,22 @@ describe('LabReportService', () => {
       expect(labReportRepositoryMock.fileDocument).toHaveBeenCalledWith(
         expect.objectContaining({ title: 'Hasil laboratorium LAB/20260907/0001 (revisi)' }),
       );
+    });
+
+    // P18-T14. The note is read from the version row being rendered, so the
+    // sheet a later amendment supersedes keeps the sentence it was released
+    // with, and an amendment prints its own.
+    it('prints the note stored on the version it renders, and no heading without one', async () => {
+      await service.renderClaimedReport(
+        buildReport({ note: 'Sampel lipemik, ulangi puasa 12 jam.' }),
+      );
+      await service.renderClaimedReport(buildReport({ version: 2 }));
+
+      const [withNote] = pdfRendererServiceMock.render.mock.calls[0] as [string];
+      const [withoutNote] = pdfRendererServiceMock.render.mock.calls[1] as [string];
+      expect(withNote).toContain('Sampel lipemik, ulangi puasa 12 jam.');
+      expect(withNote).toContain('Catatan');
+      expect(withoutNote).not.toContain('Catatan');
     });
 
     it('sends nothing when LAB_RESULT is not a dispatch-by-default category', async () => {

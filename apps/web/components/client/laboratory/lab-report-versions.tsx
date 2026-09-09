@@ -26,7 +26,8 @@ type LabReportVersionsProps = {
  * The hasil laboratorium and every version there has been (`P18-T05`).
  * Polls while one is still rendering, so the download button appears without
  * a reload; a failed render says why, because "there is no PDF" without a
- * reason sends the bench to IT.
+ * reason sends the bench to IT. Each version shows the note it was released
+ * with (`P18-T14`), so the sentence is readable without downloading the file.
  */
 export function LabReportVersions({ labOrderId }: LabReportVersionsProps) {
   const t = useTranslations('operations.laboratory.reports');
@@ -107,6 +108,12 @@ export function LabReportVersions({ labOrderId }: LabReportVersionsProps) {
                     : null}
             </span>
             <LabReportRetryButton labOrderId={labOrderId} version={version} />
+            {version.note ? (
+              <p className="w-full text-xs text-slate-600" data-testid="lab-report-note">
+                <span className="font-medium text-slate-700">{t('note')}: </span>
+                {version.note}
+              </p>
+            ) : null}
           </li>
         ))}
       </ul>

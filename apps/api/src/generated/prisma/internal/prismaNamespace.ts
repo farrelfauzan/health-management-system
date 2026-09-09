@@ -9984,6 +9984,7 @@ export const LabReportScalarFieldEnum = {
   renderedAt: 'renderedAt',
   pageCount: 'pageCount',
   requestedById: 'requestedById',
+  note: 'note',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

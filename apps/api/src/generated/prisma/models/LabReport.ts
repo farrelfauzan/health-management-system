@@ -71,6 +71,7 @@ export type LabReportMinAggregateOutputType = {
   renderedAt: Date | null
   pageCount: number | null
   requestedById: string | null
+  note: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -92,6 +93,7 @@ export type LabReportMaxAggregateOutputType = {
   renderedAt: Date | null
   pageCount: number | null
   requestedById: string | null
+  note: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -113,6 +115,7 @@ export type LabReportCountAggregateOutputType = {
   renderedAt: number
   pageCount: number
   requestedById: number
+  note: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -148,6 +151,7 @@ export type LabReportMinAggregateInputType = {
   renderedAt?: true
   pageCount?: true
   requestedById?: true
+  note?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -169,6 +173,7 @@ export type LabReportMaxAggregateInputType = {
   renderedAt?: true
   pageCount?: true
   requestedById?: true
+  note?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -190,6 +195,7 @@ export type LabReportCountAggregateInputType = {
   renderedAt?: true
   pageCount?: true
   requestedById?: true
+  note?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -298,6 +304,7 @@ export type LabReportGroupByOutputType = {
   renderedAt: Date | null
   pageCount: number | null
   requestedById: string
+  note: string | null
   createdAt: Date
   updatedAt: Date
   _count: LabReportCountAggregateOutputType | null
@@ -342,6 +349,7 @@ export type LabReportWhereInput = {
   renderedAt?: Prisma.DateTimeNullableFilter<"LabReport"> | Date | string | null
   pageCount?: Prisma.IntNullableFilter<"LabReport"> | number | null
   requestedById?: Prisma.UuidFilter<"LabReport"> | string
+  note?: Prisma.StringNullableFilter<"LabReport"> | string | null
   createdAt?: Prisma.DateTimeFilter<"LabReport"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"LabReport"> | Date | string
   labOrder?: Prisma.XOR<Prisma.LabOrderScalarRelationFilter, Prisma.LabOrderWhereInput>
@@ -367,6 +375,7 @@ export type LabReportOrderByWithRelationInput = {
   renderedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   pageCount?: Prisma.SortOrderInput | Prisma.SortOrder
   requestedById?: Prisma.SortOrder
+  note?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   labOrder?: Prisma.LabOrderOrderByWithRelationInput
@@ -396,6 +405,7 @@ export type LabReportWhereUniqueInput = Prisma.AtLeast<{
   renderedAt?: Prisma.DateTimeNullableFilter<"LabReport"> | Date | string | null
   pageCount?: Prisma.IntNullableFilter<"LabReport"> | number | null
   requestedById?: Prisma.UuidFilter<"LabReport"> | string
+  note?: Prisma.StringNullableFilter<"LabReport"> | string | null
   createdAt?: Prisma.DateTimeFilter<"LabReport"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"LabReport"> | Date | string
   labOrder?: Prisma.XOR<Prisma.LabOrderScalarRelationFilter, Prisma.LabOrderWhereInput>
@@ -421,6 +431,7 @@ export type LabReportOrderByWithAggregationInput = {
   renderedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   pageCount?: Prisma.SortOrderInput | Prisma.SortOrder
   requestedById?: Prisma.SortOrder
+  note?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.LabReportCountOrderByAggregateInput
@@ -450,6 +461,7 @@ export type LabReportScalarWhereWithAggregatesInput = {
   renderedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"LabReport"> | Date | string | null
   pageCount?: Prisma.IntNullableWithAggregatesFilter<"LabReport"> | number | null
   requestedById?: Prisma.UuidWithAggregatesFilter<"LabReport"> | string
+  note?: Prisma.StringNullableWithAggregatesFilter<"LabReport"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"LabReport"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"LabReport"> | Date | string
 }
@@ -467,6 +479,7 @@ export type LabReportCreateInput = {
   lastError?: string | null
   renderedAt?: Date | string | null
   pageCount?: number | null
+  note?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   labOrder: Prisma.LabOrderCreateNestedOneWithoutReportsInput
@@ -492,6 +505,7 @@ export type LabReportUncheckedCreateInput = {
   renderedAt?: Date | string | null
   pageCount?: number | null
   requestedById: string
+  note?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -509,6 +523,7 @@ export type LabReportUpdateInput = {
   lastError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   renderedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   labOrder?: Prisma.LabOrderUpdateOneRequiredWithoutReportsNestedInput
@@ -534,6 +549,7 @@ export type LabReportUncheckedUpdateInput = {
   renderedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   requestedById?: Prisma.StringFieldUpdateOperationsInput | string
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -555,6 +571,7 @@ export type LabReportCreateManyInput = {
   renderedAt?: Date | string | null
   pageCount?: number | null
   requestedById: string
+  note?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -572,6 +589,7 @@ export type LabReportUpdateManyMutationInput = {
   lastError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   renderedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -593,6 +611,7 @@ export type LabReportUncheckedUpdateManyInput = {
   renderedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   requestedById?: Prisma.StringFieldUpdateOperationsInput | string
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -634,6 +653,7 @@ export type LabReportCountOrderByAggregateInput = {
   renderedAt?: Prisma.SortOrder
   pageCount?: Prisma.SortOrder
   requestedById?: Prisma.SortOrder
+  note?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -661,6 +681,7 @@ export type LabReportMaxOrderByAggregateInput = {
   renderedAt?: Prisma.SortOrder
   pageCount?: Prisma.SortOrder
   requestedById?: Prisma.SortOrder
+  note?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -682,6 +703,7 @@ export type LabReportMinOrderByAggregateInput = {
   renderedAt?: Prisma.SortOrder
   pageCount?: Prisma.SortOrder
   requestedById?: Prisma.SortOrder
+  note?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -867,6 +889,7 @@ export type LabReportCreateWithoutRequestedByInput = {
   lastError?: string | null
   renderedAt?: Date | string | null
   pageCount?: number | null
+  note?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   labOrder: Prisma.LabOrderCreateNestedOneWithoutReportsInput
@@ -890,6 +913,7 @@ export type LabReportUncheckedCreateWithoutRequestedByInput = {
   lastError?: string | null
   renderedAt?: Date | string | null
   pageCount?: number | null
+  note?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -940,6 +964,7 @@ export type LabReportScalarWhereInput = {
   renderedAt?: Prisma.DateTimeNullableFilter<"LabReport"> | Date | string | null
   pageCount?: Prisma.IntNullableFilter<"LabReport"> | number | null
   requestedById?: Prisma.UuidFilter<"LabReport"> | string
+  note?: Prisma.StringNullableFilter<"LabReport"> | string | null
   createdAt?: Prisma.DateTimeFilter<"LabReport"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"LabReport"> | Date | string
 }
@@ -957,6 +982,7 @@ export type LabReportCreateWithoutTemplateVersionInput = {
   lastError?: string | null
   renderedAt?: Date | string | null
   pageCount?: number | null
+  note?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   labOrder: Prisma.LabOrderCreateNestedOneWithoutReportsInput
@@ -980,6 +1006,7 @@ export type LabReportUncheckedCreateWithoutTemplateVersionInput = {
   renderedAt?: Date | string | null
   pageCount?: number | null
   requestedById: string
+  note?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1023,6 +1050,7 @@ export type LabReportCreateWithoutDocumentInput = {
   lastError?: string | null
   renderedAt?: Date | string | null
   pageCount?: number | null
+  note?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   labOrder: Prisma.LabOrderCreateNestedOneWithoutReportsInput
@@ -1046,6 +1074,7 @@ export type LabReportUncheckedCreateWithoutDocumentInput = {
   renderedAt?: Date | string | null
   pageCount?: number | null
   requestedById: string
+  note?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1079,6 +1108,7 @@ export type LabReportUpdateWithoutDocumentInput = {
   lastError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   renderedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   labOrder?: Prisma.LabOrderUpdateOneRequiredWithoutReportsNestedInput
@@ -1102,6 +1132,7 @@ export type LabReportUncheckedUpdateWithoutDocumentInput = {
   renderedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   requestedById?: Prisma.StringFieldUpdateOperationsInput | string
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1119,6 +1150,7 @@ export type LabReportCreateWithoutLabOrderInput = {
   lastError?: string | null
   renderedAt?: Date | string | null
   pageCount?: number | null
+  note?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   document?: Prisma.DocumentCreateNestedOneWithoutLabReportInput
@@ -1142,6 +1174,7 @@ export type LabReportUncheckedCreateWithoutLabOrderInput = {
   renderedAt?: Date | string | null
   pageCount?: number | null
   requestedById: string
+  note?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1188,6 +1221,7 @@ export type LabReportCreateManyRequestedByInput = {
   lastError?: string | null
   renderedAt?: Date | string | null
   pageCount?: number | null
+  note?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1205,6 +1239,7 @@ export type LabReportUpdateWithoutRequestedByInput = {
   lastError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   renderedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   labOrder?: Prisma.LabOrderUpdateOneRequiredWithoutReportsNestedInput
@@ -1228,6 +1263,7 @@ export type LabReportUncheckedUpdateWithoutRequestedByInput = {
   lastError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   renderedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1248,6 +1284,7 @@ export type LabReportUncheckedUpdateManyWithoutRequestedByInput = {
   lastError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   renderedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1268,6 +1305,7 @@ export type LabReportCreateManyTemplateVersionInput = {
   renderedAt?: Date | string | null
   pageCount?: number | null
   requestedById: string
+  note?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1285,6 +1323,7 @@ export type LabReportUpdateWithoutTemplateVersionInput = {
   lastError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   renderedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   labOrder?: Prisma.LabOrderUpdateOneRequiredWithoutReportsNestedInput
@@ -1308,6 +1347,7 @@ export type LabReportUncheckedUpdateWithoutTemplateVersionInput = {
   renderedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   requestedById?: Prisma.StringFieldUpdateOperationsInput | string
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1328,6 +1368,7 @@ export type LabReportUncheckedUpdateManyWithoutTemplateVersionInput = {
   renderedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   requestedById?: Prisma.StringFieldUpdateOperationsInput | string
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1348,6 +1389,7 @@ export type LabReportCreateManyLabOrderInput = {
   renderedAt?: Date | string | null
   pageCount?: number | null
   requestedById: string
+  note?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1365,6 +1407,7 @@ export type LabReportUpdateWithoutLabOrderInput = {
   lastError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   renderedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   document?: Prisma.DocumentUpdateOneWithoutLabReportNestedInput
@@ -1388,6 +1431,7 @@ export type LabReportUncheckedUpdateWithoutLabOrderInput = {
   renderedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   requestedById?: Prisma.StringFieldUpdateOperationsInput | string
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1408,6 +1452,7 @@ export type LabReportUncheckedUpdateManyWithoutLabOrderInput = {
   renderedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   pageCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   requestedById?: Prisma.StringFieldUpdateOperationsInput | string
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1431,6 +1476,7 @@ export type LabReportSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   renderedAt?: boolean
   pageCount?: boolean
   requestedById?: boolean
+  note?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   labOrder?: boolean | Prisma.LabOrderDefaultArgs<ExtArgs>
@@ -1456,6 +1502,7 @@ export type LabReportSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   renderedAt?: boolean
   pageCount?: boolean
   requestedById?: boolean
+  note?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   labOrder?: boolean | Prisma.LabOrderDefaultArgs<ExtArgs>
@@ -1481,6 +1528,7 @@ export type LabReportSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   renderedAt?: boolean
   pageCount?: boolean
   requestedById?: boolean
+  note?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   labOrder?: boolean | Prisma.LabOrderDefaultArgs<ExtArgs>
@@ -1506,11 +1554,12 @@ export type LabReportSelectScalar = {
   renderedAt?: boolean
   pageCount?: boolean
   requestedById?: boolean
+  note?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type LabReportOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "labOrderId" | "version" | "status" | "isAmended" | "releasedAt" | "documentId" | "templateVersionId" | "attemptCount" | "nextAttemptAt" | "leasedUntil" | "leasedBy" | "lastError" | "renderedAt" | "pageCount" | "requestedById" | "createdAt" | "updatedAt", ExtArgs["result"]["labReport"]>
+export type LabReportOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "labOrderId" | "version" | "status" | "isAmended" | "releasedAt" | "documentId" | "templateVersionId" | "attemptCount" | "nextAttemptAt" | "leasedUntil" | "leasedBy" | "lastError" | "renderedAt" | "pageCount" | "requestedById" | "note" | "createdAt" | "updatedAt", ExtArgs["result"]["labReport"]>
 export type LabReportInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   labOrder?: boolean | Prisma.LabOrderDefaultArgs<ExtArgs>
   document?: boolean | Prisma.LabReport$documentArgs<ExtArgs>
@@ -1570,6 +1619,12 @@ export type $LabReportPayload<ExtArgs extends runtime.Types.Extensions.InternalA
      * and the account that released it to the patient.
      */
     requestedById: string
+    /**
+     * The verifier's interpretive note, printed under the results table
+     * (P18-T14). On the version, not the order: an amendment writes its own,
+     * and the superseded sheet keeps the sentence it was released with.
+     */
+    note: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["labReport"]>
@@ -2015,6 +2070,7 @@ export interface LabReportFieldRefs {
   readonly renderedAt: Prisma.FieldRef<"LabReport", 'DateTime'>
   readonly pageCount: Prisma.FieldRef<"LabReport", 'Int'>
   readonly requestedById: Prisma.FieldRef<"LabReport", 'String'>
+  readonly note: Prisma.FieldRef<"LabReport", 'String'>
   readonly createdAt: Prisma.FieldRef<"LabReport", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"LabReport", 'DateTime'>
 }

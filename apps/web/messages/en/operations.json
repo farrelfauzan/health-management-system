@@ -1593,7 +1593,13 @@
         "amended": "Value amended; a corrected report is being rendered.",
         "amendError": "The value could not be amended.",
         "version": "v{version}",
-        "amendedFrom": "Corrected (v{version}): {reason}"
+        "amendedFrom": "Corrected (v{version}): {reason}",
+        "releaseTitle": "Release this order",
+        "releaseDescription": "The report is signed out as one document and rendered for the patient. Add a note only if the reader needs one.",
+        "note": "Note for the reader",
+        "notePlaceholder": "e.g. sample lipaemic, repeat after a 12-hour fast; or: critical value phoned to the requesting doctor at 09:15",
+        "releaseConfirm": "Release order",
+        "amendNotePlaceholder": "What the reader of the corrected sheet should know — printed under the results"
       },
       "reports": {
         "title": "Documents",
@@ -1620,7 +1626,8 @@
         "loadError": "The documents could not be loaded.",
         "retry": "Retry",
         "retried": "Render requeued.",
-        "retryError": "The render could not be requeued."
+        "retryError": "The render could not be requeued.",
+        "note": "Note"
       },
       "history": {
         "title": "History",

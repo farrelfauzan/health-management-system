@@ -16,7 +16,8 @@ import { TemplateSettingsValue, resolveDefaultTemplateSettings } from '@hms/shar
  *
  * What is deliberately on it: the amendment notice, at the top and in a box,
  * because a corrected report that looks like the original is the failure
- * this whole ticket exists to prevent. What is deliberately not: any
+ * this whole ticket exists to prevent; and the verifier's note (P18-T14)
+ * under the results, because a table of numbers is not a result. What is deliberately not: any
  * identifier beyond the MRN. The sheet travels on WhatsApp.
  */
 const LETTERHEAD = [
@@ -58,6 +59,18 @@ const ORDER_BLOCK = [
   '</tbody></table>',
 ].join('');
 
+/**
+ * The verifier's sentence under the results (P18-T14). Wrapped in the class
+ * the HTML builder drops when the token resolves empty, so a sheet with
+ * nothing to say carries neither the heading nor a blank box.
+ */
+const NOTE_BLOCK = [
+  '<div class="hms-report-note" style="margin-top:3mm;font-size:10pt">',
+  '<p style="margin:0;font-weight:bold">Catatan</p>',
+  '<p style="margin:0"><span data-hms-var="report.note"></span></p>',
+  '</div>',
+].join('');
+
 const SIGNATURE_BLOCK = [
   '<table width="100%" style="border-collapse:collapse;font-size:10pt;margin-top:8mm"><tbody><tr>',
   '<td style="width:60%;vertical-align:top;font-size:9pt">',
@@ -78,6 +91,7 @@ const LAB_REPORT_CONTENT_HTML = [
   PATIENT_BLOCK,
   ORDER_BLOCK,
   '<div data-hms-var="results"></div>',
+  NOTE_BLOCK,
   SIGNATURE_BLOCK,
 ].join('');
 

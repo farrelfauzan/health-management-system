@@ -345,6 +345,8 @@ export type LabReportVersionView = {
   renderedAt?: string;
   pageCount?: number;
   requestedById: string;
+  /** The verifier's interpretive note printed under this version's results (P18-T14). */
+  note?: string;
   createdAt: string;
 };
 

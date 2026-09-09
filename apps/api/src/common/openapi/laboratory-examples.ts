@@ -89,6 +89,8 @@ const labResult = {
  */
 const labReportDocumentId = '88888888-dddd-4ddd-8ddd-888888888888';
 
+const labReportNote = 'Sampel lipemik, disarankan ulang setelah puasa 12 jam.';
+
 const labReportVersion = {
   id: '77777777-eeee-4eee-8eee-777777777777',
   labOrderId,
@@ -101,6 +103,7 @@ const labReportVersion = {
   renderedAt: timestamp,
   pageCount: 1,
   requestedById: doctorUserId,
+  note: labReportNote,
   createdAt: timestamp,
 };
 
@@ -261,9 +264,11 @@ export const LABORATORY_EXAMPLES = {
     enterRequest: {
       items: [{ labOrderItemId: labOrderItem.id, valueNumeric: 6.8 }],
     },
+    releaseRequest: { note: labReportNote },
     amendRequest: {
       valueNumeric: 8.6,
       reason: 'Salah ketik: 6.8 seharusnya 8.6, dikoreksi dari worksheet',
+      note: 'Koreksi nilai Hb; entri sebelumnya tertukar dengan pasien lain.',
     },
     amended: {
       ...labResult,

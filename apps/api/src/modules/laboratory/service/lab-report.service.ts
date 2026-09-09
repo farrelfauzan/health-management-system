@@ -297,6 +297,7 @@ export class LabReportService {
       verifierName: verifier.displayName,
       releasedAt: report.releasedAt,
       supersededReleasedAt: superseded?.releasedAt ?? null,
+      note: report.note,
       timeZone: this.clinicTimeZone,
     });
   }

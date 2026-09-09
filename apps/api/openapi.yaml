@@ -39006,6 +39006,17 @@ paths:
           in: path
           schema:
             type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReleaseLabOrderDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  note: Sampel lipemik, disarankan ulang setelah puasa 12 jam.
       responses:
         "200":
           description: The second signature, applied to the whole order — a report is
@@ -39014,7 +39025,11 @@ paths:
             it unless this clinic has `singleOperator` on; every released row
             records which of the two it was. A LAB_TECHNICIAN may release only
             where `technicianMayVerify` is on. Releasing notifies the ordering
-            doctor.
+            doctor. The body carries the verifier’s optional interpretive `note`
+            (P18-T14) — the one sentence printed under the results table and
+            shown on the report’s versions list; it is stored on the report
+            version this release queues, so a later amendment never overwrites
+            it.
           content:
             application/json:
               schema:
@@ -39211,6 +39226,15 @@ paths:
                         verifiedById: 99999999-ffff-4fff-8fff-999999999999
                         verifiedAt: 2026-07-20T08:00:00.000Z
                   message: Lab order released
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
         "401":
           description: Authentication is required.
           content:
@@ -39263,6 +39287,7 @@ paths:
                 value:
                   valueNumeric: 8.6
                   reason: "Salah ketik: 6.8 seharusnya 8.6, dikoreksi dari worksheet"
+                  note: Koreksi nilai Hb; entri sebelumnya tertukar dengan pasien lain.
       responses:
         "200":
           description: Writes the correction as the next version beside the value it
@@ -39271,7 +39296,9 @@ paths:
             is released again with a new timestamp and the ordering doctor is
             told. Only the current version of a value can be amended, and the
             reason is mandatory — it is what the amended report shows the person
-            who acted on the old number.
+            who acted on the old number. An optional `note` (P18-T14) is printed
+            under the corrected sheet’s results and stored on the new report
+            version; the superseded version keeps its own.
           content:
             application/json:
               schema:
@@ -39863,6 +39890,8 @@ paths:
                             type: integer
                           requestedById:
                             type: string
+                          note:
+                            type: string
                           createdAt:
                             type: string
                         required:
@@ -39877,6 +39906,7 @@ paths:
                           - renderedAt
                           - pageCount
                           - requestedById
+                          - note
                           - createdAt
                       versions:
                         type: array
@@ -39938,6 +39968,7 @@ paths:
                       renderedAt: 2026-07-20T08:00:00.000Z
                       pageCount: 1
                       requestedById: 99999999-ffff-4fff-8fff-999999999999
+                      note: Sampel lipemik, disarankan ulang setelah puasa 12 jam.
                       createdAt: 2026-07-20T08:00:00.000Z
                     versions:
                       - id: 99999999-eeee-4eee-8eee-999999999999
@@ -39962,6 +39993,7 @@ paths:
                         renderedAt: 2026-07-20T08:00:00.000Z
                         pageCount: 1
                         requestedById: 99999999-ffff-4fff-8fff-999999999999
+                        note: Sampel lipemik, disarankan ulang setelah puasa 12 jam.
                         createdAt: 2026-07-20T08:00:00.000Z
         "401":
           description: Authentication is required.
@@ -40051,6 +40083,8 @@ paths:
                             type: integer
                           requestedById:
                             type: string
+                          note:
+                            type: string
                           createdAt:
                             type: string
                         required:
@@ -40065,6 +40099,7 @@ paths:
                           - renderedAt
                           - pageCount
                           - requestedById
+                          - note
                           - createdAt
                       versions:
                         type: array
@@ -40129,6 +40164,7 @@ paths:
                       renderedAt: 2026-07-20T08:00:00.000Z
                       pageCount: 1
                       requestedById: 99999999-ffff-4fff-8fff-999999999999
+                      note: Sampel lipemik, disarankan ulang setelah puasa 12 jam.
                       createdAt: 2026-07-20T08:00:00.000Z
                     versions:
                       - id: 99999999-eeee-4eee-8eee-999999999999
@@ -40153,6 +40189,7 @@ paths:
                         renderedAt: 2026-07-20T08:00:00.000Z
                         pageCount: 1
                         requestedById: 99999999-ffff-4fff-8fff-999999999999
+                        note: Sampel lipemik, disarankan ulang setelah puasa 12 jam.
                         createdAt: 2026-07-20T08:00:00.000Z
                   message: Report render requeued
         "401":
@@ -47595,6 +47632,13 @@ components:
               - labOrderItemId
       required:
         - items
+    ReleaseLabOrderDto:
+      type: object
+      properties:
+        note:
+          type: string
+          minLength: 1
+          maxLength: 1000
     AmendLabResultDto:
       type: object
       properties:
@@ -47612,6 +47656,10 @@ components:
           maxLength: 200
           nullable: true
         reason:
+          type: string
+          minLength: 1
+          maxLength: 1000
+        note:
           type: string
           minLength: 1
           maxLength: 1000

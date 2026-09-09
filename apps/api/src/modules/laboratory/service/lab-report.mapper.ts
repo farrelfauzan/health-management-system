@@ -19,6 +19,7 @@ export class LabReportMapper {
       renderedAt: record.renderedAt ? record.renderedAt.toISOString() : undefined,
       pageCount: record.pageCount ?? undefined,
       requestedById: record.requestedById,
+      note: record.note ?? undefined,
       createdAt: record.createdAt.toISOString(),
     };
   }

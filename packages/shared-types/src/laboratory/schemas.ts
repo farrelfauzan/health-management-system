@@ -446,8 +446,27 @@ export const enterLabResultsSchema = z
  * replaced, and this sentence is what the amended report shows them.
  */
 export const amendLabResultSchema = labResultValueSchema
-  .extend({ reason: z.string().trim().min(1).max(MAX_NOTES_LENGTH) })
+  .extend({
+    reason: z.string().trim().min(1).max(MAX_NOTES_LENGTH),
+    /**
+     * P18-T14. The sentence printed under the corrected sheet's results.
+     * Distinct from `reason`: the reason is the record's explanation of what
+     * went wrong, the note is what the reader of the new sheet should do.
+     */
+    note: z.string().trim().min(1).max(MAX_NOTES_LENGTH).optional(),
+  })
   .refine(hasExactlyOneValue, ONE_VALUE_ISSUE);
+
+/**
+ * The second signature's body (P18-T14). Only the interpretive note: the
+ * sentence the verifier has that decides what the patient does next —
+ * "sampel lipemik, ulangi puasa 12 jam" — printed under the results table.
+ * Optional, because most sheets need none, and a note nobody wrote must
+ * render nothing rather than an empty box.
+ */
+export const releaseLabOrderSchema = z.object({
+  note: z.string().trim().min(1).max(MAX_NOTES_LENGTH).optional(),
+});
 
 /**
  * The trend feed. `testCode` narrows to one test — the only useful shape, since
@@ -478,6 +497,7 @@ export type LabResultFlagValue = z.infer<typeof labResultFlagSchema>;
 export type LabResultEntryInput = z.infer<typeof labResultEntrySchema>;
 export type EnterLabResultsInput = z.infer<typeof enterLabResultsSchema>;
 export type AmendLabResultInput = z.infer<typeof amendLabResultSchema>;
+export type ReleaseLabOrderInput = z.infer<typeof releaseLabOrderSchema>;
 export type ListPatientLabResultsQuery = z.infer<typeof listPatientLabResultsQuerySchema>;
 export type UpdateLaboratorySettingsInput = z.infer<typeof updateLaboratorySettingsSchema>;
 

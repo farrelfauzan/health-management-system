@@ -19,6 +19,7 @@ export type LabReportRow = {
   renderedAt: Date | null;
   pageCount: number | null;
   requestedById: string;
+  note: string | null;
   createdAt: Date;
 };
 

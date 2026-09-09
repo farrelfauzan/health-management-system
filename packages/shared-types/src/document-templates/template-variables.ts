@@ -715,6 +715,17 @@ export const LAB_REPORT_TEMPLATE_VARIABLES: readonly TemplateVariable[] = [
     sample: 'AMENDED — menggantikan laporan tanggal 7 September 2026, 11:40',
   },
   {
+    // P18-T14. The verifier's one sentence under the results — what the
+    // patient does next, or why a value should be read with care. Empty on
+    // most sheets, and the built-in layout drops its block entirely then,
+    // so a report with nothing to say carries no empty heading.
+    token: 'report.note',
+    labelId: 'Catatan verifikator',
+    labelEn: 'Verifier note',
+    type: 'text',
+    sample: 'Sampel lipemik, disarankan ulang setelah puasa 12 jam.',
+  },
+  {
     token: 'results',
     labelId: 'Hasil pemeriksaan',
     labelEn: 'Results',

@@ -472,19 +472,27 @@ export type LabReportRecord = {
   renderedAt: Date | null;
   pageCount: number | null;
   requestedById: string;
+  /**
+   * The verifier's interpretive note for this version (P18-T14). On the
+   * version rather than the order: an amendment gets its own, and the sheet
+   * that was superseded keeps the sentence it was released with.
+   */
+  note: string | null;
   createdAt: Date;
 };
 
 /**
  * Queues the next report version for an order. `isAmended` decides the banner;
  * `releasedAt` is snapshotted here rather than read at render time because the
- * order may be released again before the worker gets to this row.
+ * order may be released again before the worker gets to this row. `note` is
+ * the sentence this version prints under its results, or nothing.
  */
 export type EnqueueLabReportPayload = {
   labOrderId: string;
   requestedById: string;
   isAmended: boolean;
   releasedAt: Date;
+  note: string | null;
 };
 
 export type ClaimDueLabReportsPayload = {

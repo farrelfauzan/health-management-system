@@ -161,6 +161,7 @@ describe('buildLabReportContext', () => {
       verifierName: 'dr. Andi Wijaya',
       releasedAt,
       supersededReleasedAt: null,
+      note: null,
       timeZone: 'Asia/Jakarta',
       ...overrides,
     });
@@ -244,6 +245,29 @@ describe('buildLabReportContext', () => {
       'AMENDED — menggantikan laporan tanggal 7 September 2026, 09:00',
     );
     expect(actual.title).toBe('Hasil laboratorium LAB/20260907/0001 (revisi)');
+  });
+
+  // P18-T14. The sentence under the table, when the verifier wrote one. The
+  // empty string rather than absence is deliberate: a clinic template naming
+  // the token prints nothing, and the built-in layout drops the block.
+  it('prints the verifier note under the results, and nothing when there is none', () => {
+    const withNote = build({ note: 'Sampel lipemik, ulangi puasa 12 jam.' });
+    const withoutNote = build();
+
+    expect(withNote.values['report.note']).toBe('Sampel lipemik, ulangi puasa 12 jam.');
+    expect(withoutNote.values['report.note']).toBe('');
+  });
+
+  it('carries the note of an amended version beside its banner', () => {
+    const actual = build({
+      supersededReleasedAt: new Date('2026-09-07T02:00:00.000Z'),
+      note: 'Koreksi nilai Hb; entri sebelumnya tertukar dengan pasien lain.',
+    });
+
+    expect(actual.values['report.amendmentNotice']).toContain('AMENDED');
+    expect(actual.values['report.note']).toBe(
+      'Koreksi nilai Hb; entri sebelumnya tertukar dengan pasien lain.',
+    );
   });
 
   it('never carries the NIK', () => {

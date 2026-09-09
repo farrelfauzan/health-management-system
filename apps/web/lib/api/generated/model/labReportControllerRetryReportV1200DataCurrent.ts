@@ -18,5 +18,6 @@ export type LabReportControllerRetryReportV1200DataCurrent = {
   renderedAt: string;
   pageCount: number;
   requestedById: string;
+  note: string;
   createdAt: string;
 };

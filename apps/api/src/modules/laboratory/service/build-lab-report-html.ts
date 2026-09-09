@@ -28,6 +28,17 @@ const NUMERIC_COLUMN_TOKENS: ReadonlySet<string> = new Set(['result.no', 'result
 
 const IMAGE_TOKENS: ReadonlySet<string> = new Set(['clinic.logo']);
 
+/**
+ * Blocks that exist only to frame one token — a heading over the verifier's
+ * note — and must leave the page with it when the token is empty (P18-T14).
+ * Keyed by the class the built-in layout gives the wrapper; a clinic template
+ * that keeps the class keeps the behaviour, one that drops it prints the
+ * empty span the way any other token prints.
+ */
+const OMIT_WHEN_EMPTY_WRAPPERS: ReadonlyMap<string, string> = new Map([
+  ['report.note', 'hms-report-note'],
+]);
+
 const DATA_IMAGE_SOURCE_PREFIX = 'data:image/';
 
 type BuildLabReportHtmlParams = {
@@ -75,7 +86,11 @@ function fillTemplateTokens(
       fillImageToken(element, values[token] ?? '');
       continue;
     }
-    setElementText(element, values[token] ?? '');
+    const value = values[token] ?? '';
+    if (value === '' && removeEmptyWrapper(element, OMIT_WHEN_EMPTY_WRAPPERS.get(token))) {
+      continue;
+    }
+    setElementText(element, value);
   }
   // UTF-8 entities: the page declares its charset, and the flag markers and
   // the em dash in the banner are read back by the specs — and by a person
@@ -139,6 +154,30 @@ function fillImageToken(element: Element, value: string): void {
   }
   const image = new Element('img', { src: value, class: 'hms-inline-image', alt: '' });
   domutils.appendChild(element, image);
+}
+
+/**
+ * Removes the nearest ancestor carrying `wrapperClass`, so an empty token
+ * takes its heading with it. False when there is no such ancestor, and the
+ * caller falls back to an empty span.
+ */
+function removeEmptyWrapper(element: Element, wrapperClass: string | undefined): boolean {
+  if (wrapperClass === undefined) {
+    return false;
+  }
+  let current: Element | null = element;
+  while (current !== null) {
+    if (hasClass(current, wrapperClass)) {
+      domutils.removeElement(current);
+      return true;
+    }
+    current = current.parent instanceof Element ? current.parent : null;
+  }
+  return false;
+}
+
+function hasClass(element: Element, className: string): boolean {
+  return (element.attribs['class'] ?? '').split(/\s+/).includes(className);
 }
 
 function setElementText(element: Element, value: string): void {
