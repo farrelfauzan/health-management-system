@@ -2,9 +2,11 @@ import {
   Actor,
   DoctorEducationRecord,
   DoctorIdentifiers,
+  DoctorInvitationStatusValue,
   DoctorLicenseInput,
   DoctorLicenseRecord,
   DoctorLicenseWritePayload,
+  DoctorOwnerPlan,
   DoctorRecord,
   DoctorScheduleRecord,
   hasScheduleOverlap,
@@ -21,7 +23,9 @@ import {
 
 import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { AdminManagementService } from '../../admin-management/service/admin-management.service';
 import { AuthRepository } from '../../auth/repository/auth.repository';
+import { UserInvitationService } from '../../user-invitation/service/user-invitation.service';
 import { CreateDoctorDto } from '../dto/create-doctor.dto';
 import { ListDoctorsQueryDto } from '../dto/list-doctors-query.dto';
 import { UpdateDoctorDto } from '../dto/update-doctor.dto';
@@ -30,6 +34,7 @@ import { DoctorIdentifierConflictError } from '../repository/doctor-identifier-c
 import { DoctorManagementRepository } from '../repository/doctor-management.repository';
 
 const DOCTOR_AUDIT_RESOURCE = 'DoctorProfile';
+const DOCTOR_ROLE_CODE = 'DOCTOR';
 
 function parseDateOnly(value: string): Date {
   return new Date(`${value}T00:00:00.000Z`);
@@ -54,6 +59,8 @@ export class DoctorManagementService {
     private readonly doctorManagementRepository: DoctorManagementRepository,
     private readonly authRepository: AuthRepository,
     private readonly auditService: AuditService,
+    private readonly userInvitationService: UserInvitationService,
+    private readonly adminManagementService: AdminManagementService,
   ) {}
 
   async listDoctors(query: ListDoctorsQueryDto, currentUser: CurrentUser) {
@@ -206,6 +213,8 @@ export class DoctorManagementService {
     await this.assertActiveSpecialtyId(payload.specialtyId);
     await this.assertAssignablePatientIds(payload.patientIds);
 
+    const ownerPlan = await this.resolveOwnerPlan(payload.email, payload.ownerUserId);
+
     const created = await this.runWithIdentifierConflictMapping(() =>
       this.doctorManagementRepository.createDoctor({
         licenseNumber: payload.licenseNumber,
@@ -218,14 +227,102 @@ export class DoctorManagementService {
         satusehatPractitionerId: payload.satusehatPractitionerId,
         licenses: payload.licenses?.map((license) => toLicenseWritePayload(license)),
         educations: payload.educations,
-        ownerUserId: payload.ownerUserId,
+        ownerUserId: ownerPlan?.kind === 'ATTACH' ? ownerPlan.userId : payload.ownerUserId,
         isActive: payload.isActive,
         patientIds: payload.patientIds,
         actorUserId: currentUser.sub,
       }),
     );
 
-    return this.toDoctorResponse(created);
+    return this.toDoctorResponse(await this.linkOwnerAccount(created, ownerPlan, currentUser.sub));
+  }
+
+  /**
+   * Decides what the supplied email means before anything is written
+   * (P19-T15).
+   *
+   * Every refusal an address can earn happens here, while the profile does not
+   * exist yet — a 409 raised after the create would leave a doctor behind with
+   * neither an account nor an invitation, which is exactly the two-places
+   * problem this ticket exists to remove.
+   */
+  private async resolveOwnerPlan(
+    email: string | undefined,
+    ownerUserId: string | undefined,
+  ): Promise<DoctorOwnerPlan | null> {
+    if (!email) {
+      return null;
+    }
+    const plan = await this.userInvitationService.resolveDoctorOwnerPlan(email);
+    if (plan.kind === 'INVITE') {
+      if (ownerUserId) {
+        throw new BadRequestException(
+          'Provide either an email to invite or an existing owner user, not both',
+        );
+      }
+      return plan;
+    }
+    if (ownerUserId && ownerUserId !== plan.userId) {
+      throw new BadRequestException('The email and the owner user refer to different accounts');
+    }
+    const doctorWithSameOwner = await this.doctorManagementRepository.findDoctorByOwnerUserId(
+      plan.userId,
+    );
+    if (doctorWithSameOwner) {
+      throw new ConflictException({
+        code: 'DOCTOR_EMAIL_ALREADY_LINKED',
+        message: 'This email already belongs to a doctor',
+        errors: { email: 'This email already belongs to a doctor' },
+      });
+    }
+    return plan;
+  }
+
+  /**
+   * Finishes the account side of the create, after the profile is committed.
+   *
+   * It cannot be inside the profile's transaction, and the reason is the
+   * direction of the foreign key: an invitation points at the doctor profile,
+   * so the profile has to exist before the invitation row can. The invitation
+   * flow already sends its email after its own commit for a related reason —
+   * an SMTP timeout must not roll back the row the administrator can resend
+   * from. What that costs is a window where the profile exists and the
+   * invitation does not; every reason to refuse the address was spent in
+   * {@link resolveOwnerPlan}, so what remains is an infrastructure failure, and
+   * the recovery is the Administration invitation screen.
+   */
+  private async linkOwnerAccount(
+    created: DoctorRecord,
+    ownerPlan: DoctorOwnerPlan | null,
+    actorUserId: string,
+  ): Promise<DoctorRecord> {
+    if (!ownerPlan) {
+      return created;
+    }
+    if (ownerPlan.kind === 'ATTACH') {
+      // The account already exists, so there is nobody to invite — a second
+      // invitation to somebody who can already log in is a password-reset
+      // email wearing the wrong words. It may not hold DOCTOR yet, though.
+      await this.adminManagementService.grantRoleCodes({
+        userId: ownerPlan.userId,
+        roleCodes: [DOCTOR_ROLE_CODE],
+        assignedById: actorUserId,
+      });
+      return { ...created, ownerUser: { email: ownerPlan.email } };
+    }
+    const invitation = await this.userInvitationService.inviteDoctorOwner({
+      email: ownerPlan.email,
+      doctorProfileId: created.id,
+      invitedById: actorUserId,
+    });
+    // Folded into the response rather than re-read: this row was just written,
+    // and the create select ran before it existed.
+    return {
+      ...created,
+      ownerInvitations: [
+        { email: invitation.email, expiresAt: new Date(invitation.expiresAt) },
+      ],
+    };
   }
 
   async updateDoctor(id: string, payload: UpdateDoctorDto, currentUser: CurrentUser) {
@@ -452,6 +549,35 @@ export class DoctorManagementService {
    * values come only from {@link getDoctorIdentifiers}, which requires
    * `doctor.read-identifier` and audits the disclosure.
    */
+  /**
+   * The invitation still worth reading: unconsumed, unwithdrawn, and not yet
+   * lapsed. The repository filters the first two in SQL; expiry is compared
+   * here because only the reader knows what "now" is.
+   */
+  private resolveLiveInvitation(doctor: DoctorRecord, now: Date = new Date()) {
+    return (doctor.ownerInvitations ?? []).find(
+      (invitation) => invitation.expiresAt.getTime() > now.getTime(),
+    );
+  }
+
+  /**
+   * Whether this doctor can sign in yet (P19-T15).
+   *
+   * `ACCEPTED` is read off the account link rather than off the invitation's
+   * `consumedAt`, and that is the honest source: an account exists and is
+   * linked, whether it was minted by accepting the invitation or already
+   * existed and was attached — in both cases the doctor can log in, which is
+   * the question a directory row is asking. Absent, rather than a third state,
+   * when there is neither an account nor a live link: a doctor created without
+   * an email has no invitation to have a status.
+   */
+  private resolveInvitationStatus(doctor: DoctorRecord): DoctorInvitationStatusValue | undefined {
+    if (doctor.ownerUserId ?? doctor.ownerUser) {
+      return 'ACCEPTED';
+    }
+    return this.resolveLiveInvitation(doctor) ? 'PENDING' : undefined;
+  }
+
   private toDoctorResponse(doctor: DoctorRecord) {
     return {
       id: doctor.id,
@@ -460,8 +586,10 @@ export class DoctorManagementService {
       specialtyId: doctor.specialtyId,
       specialty: doctor.specialty.name,
       phoneNumber: doctor.phoneNumber ?? undefined,
-      // Sourced from the linked account, the only place it is stored.
-      email: doctor.ownerUser?.email ?? undefined,
+      // Sourced from the linked account, the only place it is stored — or,
+      // before that account exists, from the invitation holding it (P19-T15).
+      email: doctor.ownerUser?.email ?? this.resolveLiveInvitation(doctor)?.email,
+      invitationStatus: this.resolveInvitationStatus(doctor),
       title: doctor.title ?? undefined,
       degrees: doctor.degrees ?? undefined,
       nikMasked: maskIdentifierLast4(doctor.nikLast4),
