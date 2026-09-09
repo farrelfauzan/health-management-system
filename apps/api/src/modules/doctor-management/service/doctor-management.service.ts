@@ -545,11 +545,6 @@ export class DoctorManagementService {
   }
 
   /**
-   * The practitioner NIK leaves the API masked, exactly like a patient's. Full
-   * values come only from {@link getDoctorIdentifiers}, which requires
-   * `doctor.read-identifier` and audits the disclosure.
-   */
-  /**
    * The invitation still worth reading: unconsumed, unwithdrawn, and not yet
    * lapsed. The repository filters the first two in SQL; expiry is compared
    * here because only the reader knows what "now" is.
@@ -578,6 +573,11 @@ export class DoctorManagementService {
     return this.resolveLiveInvitation(doctor) ? 'PENDING' : undefined;
   }
 
+  /**
+   * The practitioner NIK leaves the API masked, exactly like a patient's. Full
+   * values come only from {@link getDoctorIdentifiers}, which requires
+   * `doctor.read-identifier` and audits the disclosure.
+   */
   private toDoctorResponse(doctor: DoctorRecord) {
     return {
       id: doctor.id,
