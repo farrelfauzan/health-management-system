@@ -970,10 +970,12 @@ export type LinkProspectivePatientInput = z.infer<typeof linkProspectivePatientS
  * registered without a date of birth, which is the thing `P17-T01` opened the
  * prospective table to avoid in the first place.
  *
- * The base schema, not the front-desk one (P19-T10): the region codes are
- * optional on a conversion, because the person arrived on a chat booking that
- * could not collect an address and the counter completes it over later
- * visits. Given at all, they are still validated as a chain by the service.
+ * That includes the structured address (P19-T10, required since P19-T11). The
+ * chat booking this record came from could not collect one, but the person is
+ * standing at the counter when the conversion runs, and the same form with the
+ * same region picker is what the clerk fills in — it simply opens with the
+ * address section empty. Exempting the conversion would reintroduce the
+ * loophole this schema exists to close.
  */
 export const convertProspectivePatientSchema = createPatientSchema;
 

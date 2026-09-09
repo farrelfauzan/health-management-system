@@ -79,11 +79,24 @@ reason: a region with patients in it cannot be removed, only deactivated.
 
 ## How a patient address uses it
 
-The four region codes are **optional** on every patient write. They are
-validated as a chain against the master data whenever they are present, and
-refused when only some of them are, but a create with no chain at all is
-accepted: the front-desk form has no region picker until `P19-T11` adds one.
-Tighten `createPatientSchema` to require them once that form ships.
+Which of the four region codes a write must carry depends on who is writing.
+
+- **Required** on the front-desk create (`POST /api/v1/v1/patients`) and on the
+  prospective-patient conversion, both of which are made by a clerk with the
+  cascading region picker `P19-T11` put on the patient form. `createPatientSchema`
+  is the schema behind both.
+- **Optional** everywhere else, through `createPatientBaseSchema`: the BPJS
+  antrean registration (`POST /antrean/…`) receives a free-text `alamat` and
+  nothing more, and the legacy import (`POST /api/v1/v1/patients/import`) copies
+  whatever the clinic's previous system held. Refusing those records would leave
+  the patient unregistered rather than imprecisely registered.
+- **Optional as a set** on update (`PATCH`), where a chain is replaced whole or
+  left alone.
+
+Wherever codes are present they are validated as a chain against the master
+data, and a partial chain is refused on the field that is missing. Rows written
+before this table existed carry no codes at all; their `formattedAddress` is the
+street line alone.
 
 ## Reading the API
 

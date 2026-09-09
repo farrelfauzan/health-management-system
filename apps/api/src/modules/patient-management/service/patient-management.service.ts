@@ -11,7 +11,7 @@ import {
   Actor,
   collectNikDemographicWarnings,
   ConvertsProspectivePatient,
-  CreatePatientInput,
+  CreatePatientBaseInput,
   CreatePatientFromProspectiveResult,
   CreatePatientRecordPayload,
   maskIdentifierLast4,
@@ -178,7 +178,7 @@ export class PatientManagementService {
     };
   }
 
-  async createPatient(payload: CreatePatientInput, currentUser: CurrentUser) {
+  async createPatient(payload: CreatePatientBaseInput, currentUser: CurrentUser) {
     await this.assertPatientCreatable(payload, currentUser);
 
     const created = await this.createPatientRecord(payload, currentUser);
@@ -208,7 +208,7 @@ export class PatientManagementService {
    * registry's rules; it does not own the channel's.
    */
   async createPatientFromProspective(
-    payload: CreatePatientInput,
+    payload: CreatePatientBaseInput,
     prospectivePatientId: string,
     currentUser: CurrentUser,
   ) {
@@ -236,7 +236,7 @@ export class PatientManagementService {
    * of them.
    */
   private async assertPatientCreatable(
-    payload: CreatePatientInput,
+    payload: CreatePatientBaseInput,
     currentUser: CurrentUser,
   ): Promise<void> {
     const actor = await this.getActorOrThrow(currentUser);
@@ -553,7 +553,7 @@ export class PatientManagementService {
   }
 
   private async createPatientRecord(
-    payload: CreatePatientInput & { mrn?: string },
+    payload: CreatePatientBaseInput & { mrn?: string },
     currentUser: CurrentUser,
   ): Promise<PatientRecord> {
     return this.runPatientCreate(this.buildCreatePayload(payload, currentUser));
@@ -565,7 +565,7 @@ export class PatientManagementService {
    * than reaching one and being silently dropped by the other.
    */
   private buildCreatePayload(
-    payload: CreatePatientInput & { mrn?: string },
+    payload: CreatePatientBaseInput & { mrn?: string },
     currentUser: CurrentUser,
   ): CreatePatientRecordPayload {
     return {
@@ -811,7 +811,7 @@ export class PatientManagementService {
   }
 
   private assertPrivacyNoticeActorRules(
-    evidence: CreatePatientInput['privacyNotice'],
+    evidence: CreatePatientBaseInput['privacyNotice'],
     isOwnPatient: boolean,
     isSystemActor = false,
   ): void {
