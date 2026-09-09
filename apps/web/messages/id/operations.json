@@ -1779,6 +1779,43 @@
           }
         }
       }
+    },
+    "settings": {
+      "title": "Pengaturan",
+      "subtitle": "Semua yang dikonfigurasi klinik, di satu tempat. Tiap kartu membuka layar tempat pengaturan itu berada.",
+      "open": "Buka",
+      "needsAttention": "Perlu perhatian",
+      "cards": {
+        "clinicProfile": {
+          "title": "Profil klinik",
+          "description": "Nama, alamat, izin, dan logo — kop surat pada setiap tagihan dan laporan.",
+          "attention": "Belum diisi. Tagihan dan hasil laboratorium tidak dapat dibuat sampai profil diisi."
+        },
+        "serviceTariffs": {
+          "title": "Tarif layanan",
+          "description": "Daftar harga sumber pembuatan tagihan, termasuk tarif LAB yang dipakai katalog laboratorium."
+        },
+        "laboratory": {
+          "title": "Laboratorium",
+          "description": "Katalog pemeriksaan beserta rentang rujukan dan paketnya, serta siapa yang boleh merilis hasil."
+        },
+        "documentTemplates": {
+          "title": "Templat dokumen",
+          "description": "Tata letak tagihan dan laporan, serta variabel yang dipakai menyusunnya."
+        },
+        "integrations": {
+          "title": "Integrasi",
+          "description": "Kredensial SATUSEHAT dan BPJS, pemetaan, dan antrean pengiriman."
+        },
+        "aiProviders": {
+          "title": "Penyedia AI",
+          "description": "Vendor mana yang menjawab asisten, dan kredensial yang dipakainya."
+        },
+        "roles": {
+          "title": "Peran & izin",
+          "description": "Apa yang boleh dilihat dan dilakukan tiap peran."
+        }
+      }
     }
   },
   "channelArrivals": {
