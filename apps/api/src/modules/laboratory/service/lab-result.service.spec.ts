@@ -348,14 +348,14 @@ describe('LabResultService', () => {
 
     it('refuses while a test is still waiting for a value', async () => {
       labOrderRepositoryMock.findLabOrderById.mockResolvedValue(buildOrder({ status: 'RESULTED' }));
-      await expect(service.releaseLabOrder(labOrderId, doctorUser)).rejects.toBeInstanceOf(
+      await expect(service.releaseLabOrder(labOrderId, {}, doctorUser)).rejects.toBeInstanceOf(
         ConflictException,
       );
     });
 
     it('refuses the person who entered the value as its second signature', async () => {
       labOrderRepositoryMock.findLabOrderById.mockResolvedValue(buildResultedOrder());
-      await expect(service.releaseLabOrder(labOrderId, analystUser)).rejects.toBeInstanceOf(
+      await expect(service.releaseLabOrder(labOrderId, {}, analystUser)).rejects.toBeInstanceOf(
         ForbiddenException,
       );
     });
@@ -371,7 +371,7 @@ describe('LabResultService', () => {
       labResultRepositoryMock.releaseLabOrder.mockResolvedValue([
         buildResult({ verifiedById: analystUser.sub, verifiedUnderSingleOperator: true }),
       ]);
-      await service.releaseLabOrder(labOrderId, analystUser);
+      await service.releaseLabOrder(labOrderId, {}, analystUser);
       expect(labResultRepositoryMock.releaseLabOrder).toHaveBeenCalledWith(
         expect.objectContaining({
           verifiedById: analystUser.sub,
@@ -385,7 +385,7 @@ describe('LabResultService', () => {
       authRepositoryMock.findUserById.mockResolvedValue({
         roles: [{ role: { code: 'LAB_TECHNICIAN', name: 'Lab Technician', permissions: [] } }],
       });
-      await expect(service.releaseLabOrder(labOrderId, doctorUser)).rejects.toBeInstanceOf(
+      await expect(service.releaseLabOrder(labOrderId, {}, doctorUser)).rejects.toBeInstanceOf(
         ForbiddenException,
       );
     });
@@ -399,7 +399,7 @@ describe('LabResultService', () => {
         roles: [{ role: { code: 'LAB_TECHNICIAN', name: 'Analis Laboratorium', permissions: [] } }],
       });
 
-      await expect(service.releaseLabOrder(labOrderId, doctorUser)).rejects.toBeInstanceOf(
+      await expect(service.releaseLabOrder(labOrderId, {}, doctorUser)).rejects.toBeInstanceOf(
         ForbiddenException,
       );
     });
@@ -410,7 +410,7 @@ describe('LabResultService', () => {
         roles: [{ role: { code: 'SUPER_ADMIN', name: 'Super Admin', permissions: [] } }],
       });
 
-      await expect(service.releaseLabOrder(labOrderId, doctorUser)).resolves.toBeDefined();
+      await expect(service.releaseLabOrder(labOrderId, {}, doctorUser)).resolves.toBeDefined();
     });
 
     it('allows a technician where the clinic has', async () => {
@@ -425,14 +425,14 @@ describe('LabResultService', () => {
         updatedAt: null,
       });
       labResultRepositoryMock.releaseLabOrder.mockResolvedValue([buildResult()]);
-      await service.releaseLabOrder(labOrderId, doctorUser);
+      await service.releaseLabOrder(labOrderId, {}, doctorUser);
       expect(labResultRepositoryMock.releaseLabOrder).toHaveBeenCalled();
     });
 
     it('records both operators and the rule in force on the audit row', async () => {
       labOrderRepositoryMock.findLabOrderById.mockResolvedValue(buildResultedOrder());
       labResultRepositoryMock.releaseLabOrder.mockResolvedValue([buildResult()]);
-      await service.releaseLabOrder(labOrderId, doctorUser);
+      await service.releaseLabOrder(labOrderId, {}, doctorUser);
       expect(auditServiceMock.record).toHaveBeenCalledWith(
         expect.objectContaining({
           action: 'LAB_RESULT_RELEASED',
@@ -448,7 +448,7 @@ describe('LabResultService', () => {
     it('tells the ordering doctor the report is out', async () => {
       labOrderRepositoryMock.findLabOrderById.mockResolvedValue(buildResultedOrder());
       labResultRepositoryMock.releaseLabOrder.mockResolvedValue([buildResult()]);
-      await service.releaseLabOrder(labOrderId, doctorUser);
+      await service.releaseLabOrder(labOrderId, {}, doctorUser);
       expect(notificationServiceMock.createForUser).toHaveBeenCalledWith(
         expect.objectContaining({ type: 'LAB_RESULT_RELEASED', userId: doctorUserId }),
       );
@@ -459,9 +459,29 @@ describe('LabResultService', () => {
     it('queues the report for the worker rather than rendering it here', async () => {
       labOrderRepositoryMock.findLabOrderById.mockResolvedValue(buildResultedOrder());
       labResultRepositoryMock.releaseLabOrder.mockResolvedValue([buildResult()]);
-      await service.releaseLabOrder(labOrderId, doctorUser);
+      await service.releaseLabOrder(labOrderId, {}, doctorUser);
       expect(labReportServiceMock.enqueueForOrder).toHaveBeenCalledWith(
-        expect.objectContaining({ labOrderId, requestedById: doctorUser.sub, isAmended: false }),
+        expect.objectContaining({
+          labOrderId,
+          requestedById: doctorUser.sub,
+          isAmended: false,
+          note: null,
+        }),
+      );
+    });
+
+    // P18-T14. The verifier's sentence goes to the version this release
+    // queues, not onto the order: the sheet is what it was written for.
+    it('stores the verifier note against the report version it queues', async () => {
+      labOrderRepositoryMock.findLabOrderById.mockResolvedValue(buildResultedOrder());
+      labResultRepositoryMock.releaseLabOrder.mockResolvedValue([buildResult()]);
+      await service.releaseLabOrder(
+        labOrderId,
+        { note: 'Sampel lipemik, ulangi puasa 12 jam.' },
+        doctorUser,
+      );
+      expect(labReportServiceMock.enqueueForOrder).toHaveBeenCalledWith(
+        expect.objectContaining({ isAmended: false, note: 'Sampel lipemik, ulangi puasa 12 jam.' }),
       );
     });
   });
@@ -509,8 +529,28 @@ describe('LabResultService', () => {
         doctorUser,
       );
       expect(labReportServiceMock.enqueueForOrder).toHaveBeenCalledWith(
-        expect.objectContaining({ labOrderId, requestedById: doctorUser.sub, isAmended: true }),
+        expect.objectContaining({
+          labOrderId,
+          requestedById: doctorUser.sub,
+          isAmended: true,
+          note: null,
+        }),
       );
+    });
+
+    // P18-T14. An amendment's note is its own; the superseded version is
+    // never touched, which the repository's append-only write guarantees and
+    // this asserts from the service's side: nothing is passed to update.
+    it('queues the amended version with its own note and leaves the earlier one alone', async () => {
+      await service.amendLabResult(
+        '77777777-dddd-4ddd-8ddd-777777777777',
+        { valueNumeric: 8.6, reason: 'Salah ketik', note: 'Koreksi nilai Hb.' },
+        doctorUser,
+      );
+      expect(labReportServiceMock.enqueueForOrder).toHaveBeenCalledWith(
+        expect.objectContaining({ isAmended: true, note: 'Koreksi nilai Hb.' }),
+      );
+      expect(labReportServiceMock.enqueueForOrder).toHaveBeenCalledTimes(1);
     });
 
     it('refuses to fork the history by amending a superseded version', async () => {

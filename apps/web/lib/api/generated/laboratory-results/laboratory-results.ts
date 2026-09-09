@@ -28,7 +28,8 @@ import type {
   LabResultControllerGetOrderBenchV1200,
   LabResultControllerReleaseLabOrderV1200,
   PatientLabResultControllerListPatientLabResultsV1200,
-  PatientLabResultControllerListPatientLabResultsV1Params
+  PatientLabResultControllerListPatientLabResultsV1Params,
+  ReleaseLabOrderDto
 } from '../model';
 
 import { orvalAxiosMutator } from '../../http';
@@ -249,12 +250,15 @@ export function useLabResultControllerEnterLabResultsV1<TData = Awaited<ReturnTy
  */
 export const labResultControllerReleaseLabOrderV1 = (
     id: string,
+    releaseLabOrderDto: ReleaseLabOrderDto,
  signal?: AbortSignal
 ) => {
 
 
       return orvalAxiosMutator<LabResultControllerReleaseLabOrderV1200>(
-      {url: `/api/v1/lab-orders/${id}/release`, method: 'POST', signal
+      {url: `/api/v1/lab-orders/${id}/release`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: releaseLabOrderDto, signal
     },
       );
     }
@@ -262,23 +266,25 @@ export const labResultControllerReleaseLabOrderV1 = (
 
 
 
-export const getLabResultControllerReleaseLabOrderV1QueryKey = (id: string,) => {
+export const getLabResultControllerReleaseLabOrderV1QueryKey = (id: string,
+    releaseLabOrderDto?: ReleaseLabOrderDto,) => {
     return [
-    'POST', `/api/v1/lab-orders/${id}/release`
+    'POST', `/api/v1/lab-orders/${id}/release`, releaseLabOrderDto
     ] as const;
     }
 
 
-export const getLabResultControllerReleaseLabOrderV1QueryOptions = <TData = Awaited<ReturnType<typeof labResultControllerReleaseLabOrderV1>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof labResultControllerReleaseLabOrderV1>>, TError, TData>>, }
+export const getLabResultControllerReleaseLabOrderV1QueryOptions = <TData = Awaited<ReturnType<typeof labResultControllerReleaseLabOrderV1>>, TError = unknown>(id: string,
+    releaseLabOrderDto: ReleaseLabOrderDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof labResultControllerReleaseLabOrderV1>>, TError, TData>>, }
 ) => {
 
 const {query: queryOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getLabResultControllerReleaseLabOrderV1QueryKey(id);
+  const queryKey =  queryOptions?.queryKey ?? getLabResultControllerReleaseLabOrderV1QueryKey(id,releaseLabOrderDto);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof labResultControllerReleaseLabOrderV1>>> = ({ signal }) => labResultControllerReleaseLabOrderV1(id, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof labResultControllerReleaseLabOrderV1>>> = ({ signal }) => labResultControllerReleaseLabOrderV1(id,releaseLabOrderDto, signal);
 
 
 
@@ -292,7 +298,8 @@ export type LabResultControllerReleaseLabOrderV1QueryError = unknown
 
 
 export function useLabResultControllerReleaseLabOrderV1<TData = Awaited<ReturnType<typeof labResultControllerReleaseLabOrderV1>>, TError = unknown>(
- id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof labResultControllerReleaseLabOrderV1>>, TError, TData>> & Pick<
+ id: string,
+    releaseLabOrderDto: ReleaseLabOrderDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof labResultControllerReleaseLabOrderV1>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof labResultControllerReleaseLabOrderV1>>,
           TError,
@@ -302,7 +309,8 @@ export function useLabResultControllerReleaseLabOrderV1<TData = Awaited<ReturnTy
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useLabResultControllerReleaseLabOrderV1<TData = Awaited<ReturnType<typeof labResultControllerReleaseLabOrderV1>>, TError = unknown>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof labResultControllerReleaseLabOrderV1>>, TError, TData>> & Pick<
+ id: string,
+    releaseLabOrderDto: ReleaseLabOrderDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof labResultControllerReleaseLabOrderV1>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof labResultControllerReleaseLabOrderV1>>,
           TError,
@@ -312,7 +320,8 @@ export function useLabResultControllerReleaseLabOrderV1<TData = Awaited<ReturnTy
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useLabResultControllerReleaseLabOrderV1<TData = Awaited<ReturnType<typeof labResultControllerReleaseLabOrderV1>>, TError = unknown>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof labResultControllerReleaseLabOrderV1>>, TError, TData>>, }
+ id: string,
+    releaseLabOrderDto: ReleaseLabOrderDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof labResultControllerReleaseLabOrderV1>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
@@ -320,11 +329,12 @@ export function useLabResultControllerReleaseLabOrderV1<TData = Awaited<ReturnTy
  */
 
 export function useLabResultControllerReleaseLabOrderV1<TData = Awaited<ReturnType<typeof labResultControllerReleaseLabOrderV1>>, TError = unknown>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof labResultControllerReleaseLabOrderV1>>, TError, TData>>, }
+ id: string,
+    releaseLabOrderDto: ReleaseLabOrderDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof labResultControllerReleaseLabOrderV1>>, TError, TData>>, }
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getLabResultControllerReleaseLabOrderV1QueryOptions(id,options)
+  const queryOptions = getLabResultControllerReleaseLabOrderV1QueryOptions(id,releaseLabOrderDto,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

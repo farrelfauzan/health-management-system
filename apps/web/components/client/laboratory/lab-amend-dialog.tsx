@@ -32,6 +32,8 @@ import { notifyApiError } from '#lib/api/notify-api-error';
 import { parseApiSuccess } from '#lib/api/response';
 import { invalidateLabQueries } from '#lib/laboratory/invalidate-lab-queries';
 
+const MAX_NOTE_LENGTH = 1_000;
+
 export type LabAmendTarget = {
   result: LabResultView;
   item: LabOrderItemView;
@@ -54,6 +56,7 @@ export function LabAmendDialog({ target, onClose }: LabAmendDialogProps) {
   const queryClient = useQueryClient();
   const [value, setValue] = useState<string>('');
   const [reason, setReason] = useState<string>('');
+  const [note, setNote] = useState<string>('');
   const amendMutation = useMutation({
     mutationFn: (payload: AmendLabResultInput) =>
       labResultControllerAmendLabResultV1(target?.result.id ?? '', payload),
@@ -62,6 +65,7 @@ export function LabAmendDialog({ target, onClose }: LabAmendDialogProps) {
   function handleClose(): void {
     setValue('');
     setReason('');
+    setNote('');
     onClose();
   }
 
@@ -70,9 +74,11 @@ export function LabAmendDialog({ target, onClose }: LabAmendDialogProps) {
       return;
     }
     try {
+      const trimmedNote = note.trim();
       const response = await amendMutation.mutateAsync({
         ...toValuePayload(target.item, value),
         reason: reason.trim(),
+        ...(trimmedNote === '' ? {} : { note: trimmedNote }),
       });
       parseApiSuccess<LabResultView>(response, t('amendError'));
       toast.success(t('amended'));
@@ -122,6 +128,19 @@ export function LabAmendDialog({ target, onClose }: LabAmendDialogProps) {
               onChange={(event) => setReason(event.target.value)}
               placeholder={t('amendReasonPlaceholder')}
               disabled={amendMutation.isPending}
+            />
+          </label>
+          {/* P18-T14. The reason is the record's; the note is the sheet's —
+              printed under the corrected results for whoever reads them. */}
+          <label className="block space-y-1 text-sm text-slate-700">
+            {t('note')}
+            <Textarea
+              value={note}
+              maxLength={MAX_NOTE_LENGTH}
+              onChange={(event) => setNote(event.target.value)}
+              placeholder={t('amendNotePlaceholder')}
+              disabled={amendMutation.isPending}
+              data-testid="lab-amend-note"
             />
           </label>
         </div>

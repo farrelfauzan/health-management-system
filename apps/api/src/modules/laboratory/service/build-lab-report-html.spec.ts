@@ -117,6 +117,32 @@ describe('buildLabReportHtml', () => {
     expect(actual).toContain('.hms-amendment-notice:has(> span:empty) { display: none; }');
   });
 
+  // P18-T14. The note is one sentence under the table when the verifier wrote
+  // one. When they did not, the whole block goes — heading included — so an
+  // ordinary sheet carries no empty "Catatan" for readers to learn to ignore.
+  it('prints the verifier note under its heading when given', () => {
+    const actual = buildLabReportHtml({
+      contentHtml: template,
+      values: { 'report.note': 'Sampel lipemik, ulangi puasa 12 jam.' },
+      lines: [],
+    });
+
+    expect(actual).toContain('Catatan');
+    expect(actual).toContain('Sampel lipemik, ulangi puasa 12 jam.');
+  });
+
+  it('omits the note block entirely when the note is empty', () => {
+    const actual = buildLabReportHtml({
+      contentHtml: template,
+      values: { 'report.note': '' },
+      lines: [],
+    });
+
+    expect(actual).not.toContain('Catatan');
+    expect(actual).not.toContain('hms-report-note');
+    expect(actual).not.toContain('report.note');
+  });
+
   it('repeats the table header on every page and never splits a row', () => {
     const actual = buildLabReportHtml({ contentHtml: template, values: {}, lines: [] });
 

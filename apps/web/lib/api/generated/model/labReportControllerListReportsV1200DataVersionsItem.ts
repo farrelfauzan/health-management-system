@@ -14,8 +14,8 @@ export type LabReportControllerListReportsV1200DataVersionsItem = {
   isAmended: boolean;
   releasedAt: string;
   attemptCount: number;
-  nextAttemptAt: string;
   lastError: string;
+  configurationFailure: string;
   requestedById: string;
   createdAt: string;
 };

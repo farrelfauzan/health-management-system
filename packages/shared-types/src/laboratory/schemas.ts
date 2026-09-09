@@ -446,8 +446,27 @@ export const enterLabResultsSchema = z
  * replaced, and this sentence is what the amended report shows them.
  */
 export const amendLabResultSchema = labResultValueSchema
-  .extend({ reason: z.string().trim().min(1).max(MAX_NOTES_LENGTH) })
+  .extend({
+    reason: z.string().trim().min(1).max(MAX_NOTES_LENGTH),
+    /**
+     * P18-T14. The sentence printed under the corrected sheet's results.
+     * Distinct from `reason`: the reason is the record's explanation of what
+     * went wrong, the note is what the reader of the new sheet should do.
+     */
+    note: z.string().trim().min(1).max(MAX_NOTES_LENGTH).optional(),
+  })
   .refine(hasExactlyOneValue, ONE_VALUE_ISSUE);
+
+/**
+ * The second signature's body (P18-T14). Only the interpretive note: the
+ * sentence the verifier has that decides what the patient does next —
+ * "sampel lipemik, ulangi puasa 12 jam" — printed under the results table.
+ * Optional, because most sheets need none, and a note nobody wrote must
+ * render nothing rather than an empty box.
+ */
+export const releaseLabOrderSchema = z.object({
+  note: z.string().trim().min(1).max(MAX_NOTES_LENGTH).optional(),
+});
 
 /**
  * The trend feed. `testCode` narrows to one test — the only useful shape, since
@@ -478,6 +497,7 @@ export type LabResultFlagValue = z.infer<typeof labResultFlagSchema>;
 export type LabResultEntryInput = z.infer<typeof labResultEntrySchema>;
 export type EnterLabResultsInput = z.infer<typeof enterLabResultsSchema>;
 export type AmendLabResultInput = z.infer<typeof amendLabResultSchema>;
+export type ReleaseLabOrderInput = z.infer<typeof releaseLabOrderSchema>;
 export type ListPatientLabResultsQuery = z.infer<typeof listPatientLabResultsQuerySchema>;
 export type UpdateLaboratorySettingsInput = z.infer<typeof updateLaboratorySettingsSchema>;
 
@@ -523,3 +543,30 @@ export type ClinicalRequestDispositionInput = z.infer<typeof clinicalRequestDisp
 export const labReportStatusSchema = z.enum(['PENDING', 'READY', 'FAILED']);
 
 export type LabReportStatusValue = z.infer<typeof labReportStatusSchema>;
+
+/**
+ * Why a render can fail for a reason no retry will fix (P18-T16): a setting
+ * somebody has to change. Distinct from a transient failure — "the renderer
+ * was busy" is worth five attempts, "there is no clinic profile" is worth
+ * none, and the screen should offer the setting rather than a retry button.
+ *
+ * The codes are the contract; the messages are what the worker stores on the
+ * row and what the API reads back to recognise the code, so both live here
+ * and nowhere else.
+ */
+export const LAB_REPORT_CONFIGURATION_FAILURE_CODES = ['CLINIC_PROFILE_MISSING'] as const;
+
+export const labReportConfigurationFailureCodeSchema = z.enum(
+  LAB_REPORT_CONFIGURATION_FAILURE_CODES,
+);
+
+export type LabReportConfigurationFailureCode = z.infer<
+  typeof labReportConfigurationFailureCodeSchema
+>;
+
+export const LAB_REPORT_CONFIGURATION_FAILURE_MESSAGES: Readonly<
+  Record<LabReportConfigurationFailureCode, string>
+> = {
+  CLINIC_PROFILE_MISSING:
+    'The clinic profile has not been configured yet; the report has no letterhead to print',
+};

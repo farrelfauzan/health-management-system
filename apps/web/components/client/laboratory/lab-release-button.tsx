@@ -1,14 +1,11 @@
 'use client';
 
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
 import type { LabOrderBenchView, LaboratorySettingsView } from '@hms/shared-types';
-import { Button, Icon, toast } from '@hms/ui';
+import { Button, Icon } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
-import { labResultControllerReleaseLabOrderV1 } from '#lib/api/generated/laboratory-results/laboratory-results';
-import { notifyApiError } from '#lib/api/notify-api-error';
-import { parseApiSuccess } from '#lib/api/response';
-import { invalidateLabQueries } from '#lib/laboratory/invalidate-lab-queries';
+import { LabReleaseDialog } from '#components/client/laboratory/lab-release-dialog';
 
 type LabReleaseButtonProps = {
   bench: LabOrderBenchView;
@@ -24,7 +21,8 @@ type LabReleaseButtonProps = {
  * without a value, a value the viewer typed themselves under the two-operator
  * rule, a clinic that keeps release to doctors. Every one of those is also
  * refused by the API on the click; this is the sentence that saves the
- * click.
+ * click. The click itself opens the release dialog (`P18-T14`), where the
+ * verifier may add the one sentence the sheet prints under its results.
  */
 export function LabReleaseButton({
   bench,
@@ -34,10 +32,7 @@ export function LabReleaseButton({
   isTechnicianOnly,
 }: LabReleaseButtonProps) {
   const t = useTranslations('operations.laboratory.validation');
-  const queryClient = useQueryClient();
-  const releaseMutation = useMutation({
-    mutationFn: () => labResultControllerReleaseLabOrderV1(bench.order.id),
-  });
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
   if (!canVerify || bench.order.status === 'RELEASED') {
     return null;
@@ -60,16 +55,6 @@ export function LabReleaseButton({
           ? t('ownEntry')
           : null;
 
-  async function handleRelease(): Promise<void> {
-    try {
-      parseApiSuccess(await releaseMutation.mutateAsync(), t('releaseError'));
-      toast.success(t('released'));
-      await invalidateLabQueries(queryClient);
-    } catch (caughtError) {
-      notifyApiError(caughtError, t('releaseError'));
-    }
-  }
-
   return (
     <div className="flex flex-wrap items-center justify-end gap-3">
       {blocker ? <span className="text-xs text-slate-600">{blocker}</span> : null}
@@ -78,13 +63,18 @@ export function LabReleaseButton({
       ) : null}
       <Button
         type="button"
-        onClick={handleRelease}
-        disabled={blocker !== null || releaseMutation.isPending}
+        onClick={() => setIsDialogOpen(true)}
+        disabled={blocker !== null}
         data-testid="lab-release-button"
       >
         <Icon name="verified" size={16} />
-        {releaseMutation.isPending ? t('releasing') : t('release')}
+        {t('release')}
       </Button>
+      <LabReleaseDialog
+        labOrderId={bench.order.id}
+        open={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+      />
     </div>
   );
 }

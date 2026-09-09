@@ -9,6 +9,7 @@ import { labReportControllerDownloadReportV1 } from '#lib/api/generated/laborato
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { parseApiSuccess } from '#lib/api/response';
 import { EmptyState } from '#components/shared/empty-state';
+import { LabReportFailureRemedy } from '#components/client/laboratory/lab-report-failure-remedy';
 import { LabReportRetryButton } from '#components/client/laboratory/lab-report-retry-button';
 import { useLabReports } from '#lib/laboratory/use-lab-reports';
 
@@ -26,7 +27,8 @@ type LabReportVersionsProps = {
  * The hasil laboratorium and every version there has been (`P18-T05`).
  * Polls while one is still rendering, so the download button appears without
  * a reload; a failed render says why, because "there is no PDF" without a
- * reason sends the bench to IT.
+ * reason sends the bench to IT. Each version shows the note it was released
+ * with (`P18-T14`), so the sentence is readable without downloading the file.
  */
 export function LabReportVersions({ labOrderId }: LabReportVersionsProps) {
   const t = useTranslations('operations.laboratory.reports');
@@ -91,22 +93,30 @@ export function LabReportVersions({ labOrderId }: LabReportVersionsProps) {
               <Badge variant="outline">{t('current')}</Badge>
             ) : null}
             <span className="ml-auto text-xs text-slate-500">
-              {version.renderedAt
-                ? format.dateTime(new Date(version.renderedAt), {
-                    dateStyle: 'medium',
+              {version.renderedAt ? (
+                format.dateTime(new Date(version.renderedAt), {
+                  dateStyle: 'medium',
+                  timeStyle: 'short',
+                })
+              ) : version.configurationFailure ? (
+                <LabReportFailureRemedy code={version.configurationFailure} />
+              ) : version.status === 'FAILED' ? (
+                t('failedWith', { error: version.lastError ?? '' })
+              ) : version.nextAttemptAt ? (
+                t('retrying', {
+                  nextAttemptAt: format.dateTime(new Date(version.nextAttemptAt), {
                     timeStyle: 'short',
-                  })
-                : version.status === 'FAILED'
-                  ? t('failedWith', { error: version.lastError ?? '' })
-                  : version.nextAttemptAt
-                    ? t('retrying', {
-                        nextAttemptAt: format.dateTime(new Date(version.nextAttemptAt), {
-                          timeStyle: 'short',
-                        }),
-                      })
-                    : null}
+                  }),
+                })
+              ) : null}
             </span>
             <LabReportRetryButton labOrderId={labOrderId} version={version} />
+            {version.note ? (
+              <p className="w-full text-xs text-slate-600" data-testid="lab-report-note">
+                <span className="font-medium text-slate-700">{t('note')}: </span>
+                {version.note}
+              </p>
+            ) : null}
           </li>
         ))}
       </ul>

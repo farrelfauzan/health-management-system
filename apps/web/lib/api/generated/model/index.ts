@@ -1233,6 +1233,7 @@ export * from './rejectAppointmentDto';
 export * from './rejectDocumentApprovalDto';
 export * from './rejectLabSpecimenDto';
 export * from './rejectLabSpecimenDtoReason';
+export * from './releaseLabOrderDto';
 export * from './releasePatientDocumentDto';
 export * from './releasePatientDocumentDtoDispatch';
 export * from './releasePatientDocumentDtoDispatchChannelsItem';

@@ -5245,6 +5245,10 @@ model LabReport {
   /// The verifier whose signature queued this version — the file's uploader
   /// and the account that released it to the patient.
   requestedById     String          @map("requested_by_id") @db.Uuid
+  /// The verifier's interpretive note, printed under the results table
+  /// (P18-T14). On the version, not the order: an amendment writes its own,
+  /// and the superseded sheet keeps the sentence it was released with.
+  note              String?
   createdAt         DateTime        @default(now()) @map("created_at")
   updatedAt         DateTime        @updatedAt @map("updated_at")
 

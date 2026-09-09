@@ -1448,6 +1448,12 @@ export class SatusehatSubmissionService {
     this.logger.warn('SATUSEHAT submission refused: the NIK matched more than one record');
   }
 
+  /**
+   * The message, truncated, stored on the outbox row (P18-T16): what fails
+   * here is a national gateway's verdict on a FHIR bundle, and the
+   * OperationOutcome text is the only thing an operator can act on. The row
+   * is read under `satusehat.submission.read`, never printed to the log.
+   */
   private describeError(caughtError: unknown): string {
     const message = caughtError instanceof Error ? caughtError.message : String(caughtError);
     return message.slice(0, MAX_STORED_ERROR_LENGTH);

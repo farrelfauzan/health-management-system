@@ -21,6 +21,7 @@ import { LABORATORY_EXAMPLES } from '../../../common/openapi/laboratory-examples
 import { AuditAction } from '../../../generated/prisma/client';
 import { AmendLabResultDto } from '../dto/amend-lab-result.dto';
 import { EnterLabResultsDto } from '../dto/enter-lab-results.dto';
+import { ReleaseLabOrderDto } from '../dto/release-lab-order.dto';
 import { LabResultService } from '../service/lab-result.service';
 
 /**
@@ -96,7 +97,7 @@ export class LabResultController {
   @ApiEndpoint({
     summary: 'Release a laboratory order',
     responseDescription:
-      'The second signature, applied to the whole order — a report is signed out as one document. Refused while any test is still waiting for a value, and refused when the verifier is the person who entered it unless this clinic has `singleOperator` on; every released row records which of the two it was. A LAB_TECHNICIAN may release only where `technicianMayVerify` is on. Releasing notifies the ordering doctor.',
+      'The second signature, applied to the whole order — a report is signed out as one document. Refused while any test is still waiting for a value, and refused when the verifier is the person who entered it unless this clinic has `singleOperator` on; every released row records which of the two it was. A LAB_TECHNICIAN may release only where `technicianMayVerify` is on. Releasing notifies the ordering doctor. The body carries the verifier’s optional interpretive `note` (P18-T14) — the one sentence printed under the results table and shown on the report’s versions list; it is stored on the report version this release queues, so a later amendment never overwrites it.',
     responseExample: {
       data: {
         order: { ...LABORATORY_EXAMPLES.labOrder.view, status: 'RELEASED' },
@@ -104,15 +105,19 @@ export class LabResultController {
       },
       message: 'Lab order released',
     },
+    requestType: ReleaseLabOrderDto,
+    requestExample: LABORATORY_EXAMPLES.labResult.releaseRequest,
     notFoundDescription: 'Lab order not found.',
   })
   async releaseLabOrder(
     @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() payload: ReleaseLabOrderDto,
     @AuthUser() currentUser?: CurrentUser,
   ) {
     return {
       data: await this.labResultService.releaseLabOrder(
         id,
+        payload,
         this.assertAuthenticated(currentUser),
       ),
       message: 'Lab order released',
@@ -126,7 +131,7 @@ export class LabResultController {
   @ApiEndpoint({
     summary: 'Amend a released laboratory result',
     responseDescription:
-      'Writes the correction as the next version beside the value it replaces; the superseded row stays readable for ever, because somebody may have treated a patient on the strength of it. The order is released again with a new timestamp and the ordering doctor is told. Only the current version of a value can be amended, and the reason is mandatory — it is what the amended report shows the person who acted on the old number.',
+      'Writes the correction as the next version beside the value it replaces; the superseded row stays readable for ever, because somebody may have treated a patient on the strength of it. The order is released again with a new timestamp and the ordering doctor is told. Only the current version of a value can be amended, and the reason is mandatory — it is what the amended report shows the person who acted on the old number. An optional `note` (P18-T14) is printed under the corrected sheet’s results and stored on the new report version; the superseded version keeps its own.',
     responseExample: { data: LABORATORY_EXAMPLES.labResult.amended, message: 'Lab result amended' },
     requestType: AmendLabResultDto,
     requestExample: LABORATORY_EXAMPLES.labResult.amendRequest,

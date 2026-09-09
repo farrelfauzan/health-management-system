@@ -376,7 +376,8 @@ describe('Laboratory results integration', () => {
 
     const response = await request(app.getHttpServer())
       .post(`/api/v1/v1/lab-orders/${labOrderId}/release`)
-      .set('Authorization', `Bearer ${token}`);
+      .set('Authorization', `Bearer ${token}`)
+      .send({});
 
     expect(response.status).toBe(409);
   });
@@ -390,7 +391,8 @@ describe('Laboratory results integration', () => {
 
     const response = await request(app.getHttpServer())
       .post(`/api/v1/v1/lab-orders/${labOrderId}/release`)
-      .set('Authorization', `Bearer ${token}`);
+      .set('Authorization', `Bearer ${token}`)
+      .send({});
 
     expect(response.status).toBe(403);
   });
@@ -413,7 +415,8 @@ describe('Laboratory results integration', () => {
 
     const response = await request(app.getHttpServer())
       .post(`/api/v1/v1/lab-orders/${labOrderId}/release`)
-      .set('Authorization', `Bearer ${token}`);
+      .set('Authorization', `Bearer ${token}`)
+      .send({});
 
     expect(response.status).toBe(200);
     // Asserted on the write rather than on the response, because the response
@@ -427,8 +430,54 @@ describe('Laboratory results integration', () => {
     );
     // P18-T05: signing out queues the sheet, and does not wait for it.
     expect(labReportRepositoryMock.enqueue).toHaveBeenCalledWith(
-      expect.objectContaining({ labOrderId, requestedById: analystUserId, isAmended: false }),
+      expect.objectContaining({
+        labOrderId,
+        requestedById: analystUserId,
+        isAmended: false,
+        note: null,
+      }),
     );
+  });
+
+  // P18-T14. The verifier's sentence reaches the queued version row, trimmed,
+  // so the worker prints exactly what was typed and nothing the order holds.
+  it('stores the release note on the report version it queues', async () => {
+    const token = await buildToken(analystUserId, 'analis@hms.local');
+    mockActorWithPermissions('ADMIN', ADMIN_PERMISSIONS);
+    labOrderRepositoryMock.findLabOrderById.mockResolvedValue(
+      buildOrderRecord({ status: 'RESULTED', items: [buildItem('RESULTED')] }),
+    );
+    laboratorySettingsRepositoryMock.findLaboratorySettings.mockResolvedValue({
+      technicianMayVerify: true,
+      singleOperator: true,
+      updatedById: adminUserId,
+      updatedAt: timestamp,
+    });
+    labResultRepositoryMock.releaseLabOrder.mockResolvedValue([
+      buildResultRecord({ verifiedById: analystUserId, verifiedUnderSingleOperator: true }),
+    ]);
+
+    const response = await request(app.getHttpServer())
+      .post(`/api/v1/v1/lab-orders/${labOrderId}/release`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ note: '  Sampel lipemik, ulangi puasa 12 jam.  ' });
+
+    expect(response.status).toBe(200);
+    expect(labReportRepositoryMock.enqueue).toHaveBeenCalledWith(
+      expect.objectContaining({ labOrderId, note: 'Sampel lipemik, ulangi puasa 12 jam.' }),
+    );
+  });
+
+  it('refuses a release note longer than the sheet can hold', async () => {
+    const token = await buildToken(doctorUserId, 'dokter@hms.local');
+    mockActorWithPermissions('DOCTOR', DOCTOR_PERMISSIONS);
+
+    const response = await request(app.getHttpServer())
+      .post(`/api/v1/v1/lab-orders/${labOrderId}/release`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ note: 'x'.repeat(1_001) });
+
+    expect(response.status).toBe(400);
   });
 
   it('refuses a technician signing out where the clinic has not said they may', async () => {
@@ -443,7 +492,8 @@ describe('Laboratory results integration', () => {
 
     const response = await request(app.getHttpServer())
       .post(`/api/v1/v1/lab-orders/${labOrderId}/release`)
-      .set('Authorization', `Bearer ${token}`);
+      .set('Authorization', `Bearer ${token}`)
+      .send({});
 
     expect(response.status).toBe(403);
   });

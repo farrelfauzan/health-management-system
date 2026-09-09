@@ -27,13 +27,14 @@ describe('built-in lab report template', () => {
   // The load-bearing ones: a report without the results block is not a
   // report, one without the verifier is not signed, and one without the
   // amendment notice cannot say it replaced another.
-  it('prints the results, the verifier, the release time and the amendment notice', () => {
+  it('prints the results, the verifier, the release time, the amendment notice and the note', () => {
     expect(used).toEqual(
       expect.arrayContaining([
         'results',
         'report.verifierName',
         'report.releasedAt',
         'report.amendmentNotice',
+        'report.note',
         'order.number',
       ]),
     );

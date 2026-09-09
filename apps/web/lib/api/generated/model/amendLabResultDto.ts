@@ -26,4 +26,9 @@ export interface AmendLabResultDto {
      * @maxLength 1000
      */
   reason: string;
+  /**
+     * @minLength 1
+     * @maxLength 1000
+     */
+  note?: string;
 }

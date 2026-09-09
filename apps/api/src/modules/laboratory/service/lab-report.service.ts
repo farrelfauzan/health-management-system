@@ -1,4 +1,5 @@
 import {
+  ClinicProfileView,
   DELIVERY_CHANNELS,
   EnqueueLabReportPayload,
   LabOrderRecord,
@@ -10,7 +11,13 @@ import {
   LabWorklistOrderRecord,
   TemplateSettingsValue,
 } from '@hms/shared-types';
-import { ConflictException, ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  ForbiddenException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PDFParse } from 'pdf-parse';
 
@@ -30,6 +37,7 @@ import { buildLabReportContext } from './build-lab-report-context';
 import { buildLabReportHtml } from './build-lab-report-html';
 import { BUILT_IN_LAB_REPORT_TEMPLATE } from './built-in-lab-report-template';
 import { LabOrderAccessService } from './lab-order-access.service';
+import { LabReportConfigurationError } from './lab-report-configuration.error';
 import { LabReportMapper } from './lab-report.mapper';
 
 const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
@@ -107,6 +115,10 @@ export class LabReportService {
     try {
       return await this.labReportRepository.enqueue(payload);
     } catch (caughtError) {
+      // The class only (P18-T16): what fails here is a database write, and a
+      // Prisma message quotes the statement — column names, the note's text.
+      // The row it could not write is named instead, which is what a reader
+      // needs to find it.
       this.logger.error(
         buildSafeErrorLog('lab_report_enqueue_failed', {
           labOrderId: payload.labOrderId,
@@ -292,13 +304,31 @@ export class LabReportService {
       order,
       patient: worklistOrder.patient,
       results,
-      clinic: await this.clinicProfileService.getProfile(),
+      clinic: await this.resolveClinicProfile(),
       clinicLogoDataUri: null,
       verifierName: verifier.displayName,
       releasedAt: report.releasedAt,
       supersededReleasedAt: superseded?.releasedAt ?? null,
+      note: report.note,
       timeZone: this.clinicTimeZone,
     });
+  }
+
+  /**
+   * The letterhead. A clinic that has never filled its profile in is the one
+   * failure this worker meets in practice (P18-T16), and it is not a missing
+   * *report*: it is re-thrown as the configuration failure it is, so the
+   * worker parks the row at once and the screen can point at the setting.
+   */
+  private async resolveClinicProfile(): Promise<ClinicProfileView> {
+    try {
+      return await this.clinicProfileService.getProfile();
+    } catch (caughtError) {
+      if (caughtError instanceof NotFoundException) {
+        throw new LabReportConfigurationError('CLINIC_PROFILE_MISSING');
+      }
+      throw caughtError;
+    }
   }
 
   /**
@@ -328,6 +358,9 @@ export class LabReportService {
         refused: result.refused.map((refusal) => `${refusal.channel}:${refusal.refusalReason}`),
       };
     } catch (caughtError) {
+      // The class only (P18-T16), for the delivery outbox's reason: a send
+      // error can carry the recipient's number or address. The delivery row
+      // holds the per-channel outcome for anyone who needs more than this.
       this.logger.warn(
         buildSafeErrorLog('lab_report_dispatch_failed', {
           reportId: report.id,
@@ -344,6 +377,10 @@ export class LabReportService {
    * a sidecar outage does not un-sign anything.
    */
   private async settleFailure(report: LabReportRecord, caughtError: unknown): Promise<void> {
+    if (caughtError instanceof LabReportConfigurationError) {
+      await this.settleConfigurationFailure(report, caughtError);
+      return;
+    }
     const reason = describeError(caughtError);
     const attemptNumber = report.attemptCount + 1;
     const isLastAttempt = attemptNumber >= this.workerConfig.maxAttempts;
@@ -366,6 +403,32 @@ export class LabReportService {
       id: report.id,
       error: reason,
       nextAttemptAt: isLastAttempt ? null : new Date(Date.now() + delayMs),
+    });
+  }
+
+  /**
+   * A missing setting fails every time until somebody changes it (P18-T16),
+   * so the attempt budget is not spent on it: the row is parked FAILED at
+   * once, the log names the setting rather than an exception class, and the
+   * retry route re-opens it once the setting exists. Stored with the
+   * registry's message, which is how the versions list recognises the code.
+   */
+  private async settleConfigurationFailure(
+    report: LabReportRecord,
+    caughtError: LabReportConfigurationError,
+  ): Promise<void> {
+    this.logger.error(
+      buildSafeErrorLog('lab_report_render_blocked_by_configuration', {
+        reportId: report.id,
+        attempt: report.attemptCount + 1,
+        setting: caughtError.code,
+        reason: caughtError.message,
+      }),
+    );
+    await this.labReportRepository.rescheduleAttempt({
+      id: report.id,
+      error: caughtError.message,
+      nextAttemptAt: null,
     });
   }
 

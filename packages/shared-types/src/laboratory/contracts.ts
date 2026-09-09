@@ -5,6 +5,7 @@ import type {
   LabOrderPriorityValue,
   LabOrderSourceValue,
   LabOrderStatusValue,
+  LabReportConfigurationFailureCode,
   LabReportStatusValue,
   LabResultFlagValue,
   LabResultTypeValue,
@@ -342,9 +343,16 @@ export type LabReportVersionView = {
   attemptCount: number;
   nextAttemptAt?: string;
   lastError?: string;
+  /**
+   * Set on a FAILED version whose last failure was a missing setting rather
+   * than a transient fault (P18-T16) — the screen links it to the setting.
+   */
+  configurationFailure?: LabReportConfigurationFailureCode;
   renderedAt?: string;
   pageCount?: number;
   requestedById: string;
+  /** The verifier's interpretive note printed under this version's results (P18-T14). */
+  note?: string;
   createdAt: string;
 };
 

@@ -13,6 +13,7 @@ import {
   LabResultView,
   ListPatientLabResultsQuery,
   PatientLabResultView,
+  ReleaseLabOrderInput,
   computeLabFlag,
   getStartOfCalendarDateInTimeZone,
   resolveLabReferenceRange,
@@ -158,6 +159,7 @@ export class LabResultService {
    */
   async releaseLabOrder(
     labOrderId: string,
+    payload: ReleaseLabOrderInput,
     currentUser: CurrentUser,
   ): Promise<LabOrderResultsView> {
     const order = await this.findLabOrderOrThrow(labOrderId);
@@ -186,7 +188,7 @@ export class LabResultService {
       },
     });
     await this.notifyRelease(order, currentUser);
-    await this.enqueueReport(order.id, currentUser, false);
+    await this.enqueueReport(order.id, currentUser, false, payload.note ?? null);
 
     return this.toOrderResultsView(order.id);
   }
@@ -253,7 +255,7 @@ export class LabResultService {
       },
     });
     await this.notifyAmendment(order, amended, currentUser);
-    await this.enqueueReport(order.id, currentUser, true);
+    await this.enqueueReport(order.id, currentUser, true, payload.note ?? null);
 
     return this.labResultMapper.toLabResultView(amended);
   }
@@ -263,12 +265,14 @@ export class LabResultService {
    * signing out never waits on the PDF sidecar. Queued against the order's
    * release time as it now stands — an amendment re-releases the order — and
    * best-effort like the bell: a queue write that failed does not un-sign a
-   * report.
+   * report. The verifier's note (P18-T14) travels with the version it was
+   * written for, so the sheet a later amendment supersedes keeps its own.
    */
   private async enqueueReport(
     labOrderId: string,
     currentUser: CurrentUser,
     isAmended: boolean,
+    note: string | null,
   ): Promise<void> {
     const order = await this.findLabOrderOrThrow(labOrderId);
     await this.labReportService.enqueueForOrder({
@@ -276,6 +280,7 @@ export class LabResultService {
       requestedById: currentUser.sub,
       isAmended,
       releasedAt: order.releasedAt ?? new Date(),
+      note,
     });
   }
 
@@ -712,6 +717,9 @@ export class LabResultService {
         href,
       });
     } catch (caughtError) {
+      // The class only (P18-T16): a notification failure is a write to the
+      // bell, and its message can quote the row — which names the patient.
+      // The order id is enough to find what did not ring.
       this.logger.warn(
         `Lab result notification failed for order ${order.id}: ${
           caughtError instanceof Error ? caughtError.name : 'unknown'

@@ -1593,7 +1593,13 @@
         "amended": "Nilai diamendemen; laporan koreksi sedang dibuat.",
         "amendError": "Nilai tidak dapat diamendemen.",
         "version": "v{version}",
-        "amendedFrom": "Dikoreksi (v{version}): {reason}"
+        "amendedFrom": "Dikoreksi (v{version}): {reason}",
+        "releaseTitle": "Rilis permintaan ini",
+        "releaseDescription": "Laporan dirilis sebagai satu dokumen dan dibuatkan PDF untuk pasien. Tambahkan catatan hanya bila pembaca memerlukannya.",
+        "note": "Catatan untuk pembaca",
+        "notePlaceholder": "mis. sampel lipemik, ulangi puasa 12 jam; atau: nilai kritis sudah ditelepon ke dokter pengirim 09:15",
+        "releaseConfirm": "Rilis permintaan",
+        "amendNotePlaceholder": "Yang perlu diketahui pembaca lembar koreksi — dicetak di bawah tabel hasil"
       },
       "reports": {
         "title": "Dokumen",
@@ -1620,7 +1626,15 @@
         "loadError": "Dokumen tidak dapat dimuat.",
         "retry": "Coba lagi",
         "retried": "Render dimasukkan ke antrean.",
-        "retryError": "Render tidak dapat dimasukkan ke antrean."
+        "retryError": "Render tidak dapat dimasukkan ke antrean.",
+        "note": "Catatan",
+        "configurationFailures": {
+          "CLINIC_PROFILE_MISSING": "Menunggu profil klinik: laporan belum punya kop surat sampai profil diisi."
+        },
+        "fixSetting": {
+          "CLINIC_PROFILE_MISSING": "Buka profil klinik"
+        },
+        "askAdministrator": "Minta administrator mengisinya, lalu coba lagi."
       },
       "history": {
         "title": "Riwayat",

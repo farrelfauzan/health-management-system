@@ -1,6 +1,7 @@
 import type { LabOrderBenchView } from '@hms/shared-types';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { NextIntlClientProvider } from 'next-intl';
 import { describe, expect, it } from 'vitest';
 
@@ -150,6 +151,17 @@ describe('LabReleaseButton', () => {
 
     expect(screen.getByTestId('lab-release-button')).toBeDisabled();
     expect(screen.getByText(/belum ada nilainya/i)).toBeInTheDocument();
+  });
+
+  // P18-T14. The click opens the release dialog, where the note lives; the
+  // release itself happens on the dialog's confirm.
+  it('opens the release dialog with its note field on the click', async () => {
+    renderButton();
+
+    await userEvent.click(screen.getByTestId('lab-release-button'));
+
+    expect(screen.getByTestId('lab-release-note')).toBeInTheDocument();
+    expect(screen.getByTestId('lab-release-confirm')).toBeInTheDocument();
   });
 
   it('disappears once the order is released', () => {
