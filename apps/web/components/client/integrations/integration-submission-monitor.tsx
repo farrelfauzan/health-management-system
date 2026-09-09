@@ -51,10 +51,15 @@ import {
   useBpjsSubmissions,
   useSatusehatSubmissions,
 } from '#lib/integrations/use-integration-queries';
+import {
+  SUBMISSION_MONITOR_PROVIDERS,
+  type SubmissionMonitorProvider,
+} from '#lib/integrations/submission-monitor-providers';
+import { useTabSearchParam } from '#lib/navigation/use-tab-search-param';
 import { formatStatusLabel } from '#lib/shared/status-label';
 import { IntegrationProviderLogo } from '#components/client/integrations/integration-provider-logo';
 
-type Provider = 'bpjs' | 'satusehat';
+type Provider = SubmissionMonitorProvider;
 type StatusFilter = 'ALL' | BpjsSubmissionStatusValue;
 
 type MonitorRow = {
@@ -121,7 +126,17 @@ export function IntegrationSubmissionMonitor() {
   const queryClient = useQueryClient();
   const canReadBpjs = ability.can('read', 'BpjsSubmission');
   const canReadSatusehat = ability.can('read', 'SatusehatSubmission');
-  const [provider, setProvider] = useState<Provider>(canReadBpjs ? 'bpjs' : 'satusehat');
+  // `provider`, not `tab`: this strip sits inside the integrations page's own
+  // strip (`?tab=monitor`), and the two must compose in one URL (SJ-162).
+  const readableProviders: Record<Provider, boolean> = {
+    bpjs: canReadBpjs,
+    satusehat: canReadSatusehat,
+  };
+  const { tab: provider, setTab: setProvider } = useTabSearchParam<Provider>({
+    key: 'provider',
+    allowed: SUBMISSION_MONITOR_PROVIDERS.filter((candidate) => readableProviders[candidate]),
+    fallback: canReadBpjs ? 'bpjs' : 'satusehat',
+  });
   const [status, setStatus] = useState<StatusFilter>('ALL');
   const [type, setType] = useState<'ALL' | BpjsSubmissionTypeValue>('ALL');
   const [satusehatKind, setSatusehatKind] = useState<'ALL' | SatusehatSubmissionKindValue>('ALL');

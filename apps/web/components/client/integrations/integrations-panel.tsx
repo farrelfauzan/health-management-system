@@ -10,15 +10,32 @@ import { BpjsMappingsPanel } from '#components/client/integrations/bpjs-mappings
 import { BpjsSettingsPanel } from '#components/client/integrations/bpjs-settings-panel';
 import { IntegrationSubmissionMonitor } from '#components/client/integrations/integration-submission-monitor';
 import { PageHeader } from '#components/shared/page-header';
+import { INTEGRATIONS_TABS, type IntegrationsTab } from '#lib/integrations/integrations-tabs';
+import { useTabSearchParam } from '#lib/navigation/use-tab-search-param';
 
-export function IntegrationsPanel() {
+type IntegrationsPanelProps = {
+  /** A tab asked for by the URL; honoured only when this person may see it (SJ-162). */
+  initialTab?: IntegrationsTab;
+};
+
+export function IntegrationsPanel({ initialTab }: IntegrationsPanelProps) {
   const t = useTranslations('operations.integrations');
   const ability = useAbility();
   const canMonitor =
     ability.can('read', 'BpjsSubmission') || ability.can('read', 'SatusehatSubmission');
   const canConfigure = ability.can('manage', 'BpjsConfig');
   const canMap = ability.can('manage', 'BpjsMapping');
-  const defaultTab = canMonitor ? 'monitor' : canConfigure ? 'settings' : 'mappings';
+  const readableTabs: Record<IntegrationsTab, boolean> = {
+    monitor: canMonitor,
+    settings: canConfigure,
+    antrean: canConfigure,
+    mappings: canMap,
+  };
+  const { tab, setTab } = useTabSearchParam<IntegrationsTab>({
+    allowed: INTEGRATIONS_TABS.filter((candidate) => readableTabs[candidate]),
+    fallback: canMonitor ? 'monitor' : canConfigure ? 'settings' : 'mappings',
+    initialTab,
+  });
 
   return (
     <div className="space-y-6">
@@ -31,7 +48,11 @@ export function IntegrationsPanel() {
           for an admin without the config grant. */}
       {canConfigure ? <WhatsappSessionCard /> : null}
       {canConfigure ? <TelegramWebhookCard /> : null}
-      <Tabs defaultValue={defaultTab} className="space-y-5">
+      <Tabs
+        value={tab}
+        onValueChange={(value) => setTab(value as IntegrationsTab)}
+        className="space-y-5"
+      >
         <TabsList>
           {canMonitor ? <TabsTrigger value="monitor">{t('monitor')}</TabsTrigger> : null}
           {canConfigure ? <TabsTrigger value="settings">{t('settings')}</TabsTrigger> : null}
