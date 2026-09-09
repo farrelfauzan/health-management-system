@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { CreatePrescriptionInput, PrescriptionResponse } from '@hms/shared-types';
-import { Button, Input } from '@hms/ui';
+import { Button, Input, Label } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
 import { CodeSearchPicker } from '#components/client/encounters/code-search-picker';
@@ -144,12 +144,12 @@ export function EncounterPrescriptionForm({
       />
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <div>
-          <label
+          <Label
             htmlFor="prescription-dosage"
-            className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
+            className="mb-1.5 font-heading text-xs text-slate-600"
           >
             {t('encounters.prescriptionForm.dosage')}
-          </label>
+          </Label>
           <Input
             id="prescription-dosage"
             placeholder={t('encounters.prescriptionForm.dosagePlaceholder')}
@@ -158,12 +158,12 @@ export function EncounterPrescriptionForm({
           />
         </div>
         <div>
-          <label
+          <Label
             htmlFor="prescription-frequency"
-            className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
+            className="mb-1.5 font-heading text-xs text-slate-600"
           >
             {t('encounters.prescriptionForm.frequency')}
-          </label>
+          </Label>
           <Input
             id="prescription-frequency"
             placeholder={t('encounters.prescriptionForm.frequencyPlaceholder')}
@@ -172,12 +172,12 @@ export function EncounterPrescriptionForm({
           />
         </div>
         <div>
-          <label
+          <Label
             htmlFor="prescription-duration"
-            className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
+            className="mb-1.5 font-heading text-xs text-slate-600"
           >
             {t('encounters.prescriptionForm.durationDays')}
-          </label>
+          </Label>
           <Input
             id="prescription-duration"
             type="number"
@@ -188,12 +188,12 @@ export function EncounterPrescriptionForm({
           />
         </div>
         <div>
-          <label
+          <Label
             htmlFor="prescription-quantity"
-            className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
+            className="mb-1.5 font-heading text-xs text-slate-600"
           >
             {t('encounters.prescriptionForm.quantity')}
-          </label>
+          </Label>
           <Input
             id="prescription-quantity"
             type="number"
@@ -206,12 +206,12 @@ export function EncounterPrescriptionForm({
       </div>
       <div className="flex items-end gap-3">
         <div className="min-w-48 flex-1">
-          <label
+          <Label
             htmlFor="prescription-instructions"
-            className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
+            className="mb-1.5 font-heading text-xs text-slate-600"
           >
             {t('encounters.prescriptionForm.instructions')}
-          </label>
+          </Label>
           <Input
             id="prescription-instructions"
             placeholder={t('encounters.prescriptionForm.instructionsPlaceholder')}
@@ -236,12 +236,12 @@ export function EncounterPrescriptionForm({
       ) : null}
       <div className="flex items-end gap-3">
         <div className="min-w-48 flex-1">
-          <label
+          <Label
             htmlFor="prescription-notes"
-            className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
+            className="mb-1.5 font-heading text-xs text-slate-600"
           >
             {t('encounters.notes')}
-          </label>
+          </Label>
           <Input
             id="prescription-notes"
             placeholder={t('encounters.prescriptionForm.notesPlaceholder')}

@@ -1,7 +1,7 @@
 'use client';
 
 import type { DoctorListItem } from '@hms/shared-types';
-import { Checkbox, Skeleton } from '@hms/ui';
+import { Checkbox, Label, Skeleton } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
 import { AvatarInitials } from '#components/shared/avatar-initials';
@@ -37,9 +37,9 @@ export function MedicalStaffList({
       {doctors.map((doctor) => {
         const isSelected = selectedDoctorIds === null || selectedDoctorIds.includes(doctor.id);
         return (
-          <label
+          <Label
             key={doctor.id}
-            className="flex cursor-pointer items-center gap-2.5 rounded-xl border border-slate-200 p-2 transition-colors hover:border-primary/40 hover:bg-white"
+            className="flex cursor-pointer items-center gap-2.5 rounded-xl border border-slate-200 p-2 transition-colors hover:border-primary/40 hover:bg-white font-normal"
           >
             <AvatarInitials name={doctor.fullName} size="sm" />
             <span className="min-w-0 flex-1">
@@ -53,7 +53,7 @@ export function MedicalStaffList({
               aria-label={t('toggleDoctor', { name: doctor.fullName })}
               onCheckedChange={() => onToggleDoctor(doctor.id)}
             />
-          </label>
+          </Label>
         );
       })}
     </div>

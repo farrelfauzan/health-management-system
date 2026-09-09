@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import type { LabWorklistBucketValue, LabWorklistItem } from '@hms/shared-types';
-import { Button, Icon, Input, Tabs, TabsList, TabsTrigger, useAbility } from '@hms/ui';
+import { Button, Icon, Input, Label, Tabs, TabsList, TabsTrigger, useAbility } from '@hms/ui';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useFormatter, useTranslations } from 'next-intl';
@@ -57,7 +57,7 @@ export function LabWorklistWorkspace({ initialQuery }: LabWorklistWorkspaceProps
           </TabsList>
         </Tabs>
         <div className="flex flex-wrap items-center gap-2">
-          <label className="flex items-center gap-2 text-sm text-slate-600">
+          <Label className="flex items-center gap-2 text-sm text-slate-600 font-normal">
             {t('dateLabel')}
             <Input
               type="date"
@@ -70,7 +70,7 @@ export function LabWorklistWorkspace({ initialQuery }: LabWorklistWorkspaceProps
                 })
               }
             />
-          </label>
+          </Label>
           <Button
             type="button"
             size="sm"

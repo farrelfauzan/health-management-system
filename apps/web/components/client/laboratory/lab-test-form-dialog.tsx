@@ -32,6 +32,8 @@ import { useTranslations } from 'next-intl';
 
 import { LabReferenceRangesEditor } from '#components/client/laboratory/lab-reference-ranges-editor';
 import { LabTariffPicker } from '#components/client/laboratory/lab-tariff-picker';
+import { FormLabel } from '#components/client/shared/form-label';
+import { RequiredLegend } from '#components/client/shared/required-legend';
 import {
   labTestControllerCreateLabTestV1,
   labTestControllerReplaceReferenceRangesV1,
@@ -238,6 +240,7 @@ export function LabTestFormDialog({ open, labTest, onOpenChange }: LabTestFormDi
             <DialogDescription>{t('testDescription')}</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
+            <RequiredLegend />
             {actionError ? (
               <p
                 role="alert"
@@ -247,42 +250,46 @@ export function LabTestFormDialog({ open, labTest, onOpenChange }: LabTestFormDi
               </p>
             ) : null}
             <div className="grid gap-3 sm:grid-cols-3">
-              <label className="space-y-1 text-sm text-slate-700">
-                {t('fields.code')}
+              <div className="space-y-1 text-sm text-slate-700">
+                <FormLabel htmlFor="lab-test-code" required>{t('fields.code')}</FormLabel>
                 <Input
+                  id="lab-test-code"
                   value={code}
                   placeholder="HB"
                   onChange={(event) => setCode(event.target.value)}
                   disabled={saveMutation.isPending}
                 />
-              </label>
-              <label className="space-y-1 text-sm text-slate-700 sm:col-span-2">
-                {t('fields.name')}
+              </div>
+              <div className="space-y-1 text-sm text-slate-700 sm:col-span-2">
+                <FormLabel htmlFor="lab-test-name" required>{t('fields.name')}</FormLabel>
                 <Input
+                  id="lab-test-name"
                   value={name}
                   onChange={(event) => setName(event.target.value)}
                   disabled={saveMutation.isPending}
                 />
-              </label>
+              </div>
             </div>
             <div className="grid gap-3 sm:grid-cols-3">
-              <label className="space-y-1 text-sm text-slate-700">
-                {t('fields.loinc')}
+              <div className="space-y-1 text-sm text-slate-700">
+                <FormLabel htmlFor="lab-test-loinc">{t('fields.loinc')}</FormLabel>
                 <Input
+                  id="lab-test-loinc"
                   value={loincCode}
                   placeholder="718-7"
                   onChange={(event) => setLoincCode(event.target.value)}
                   disabled={saveMutation.isPending}
                 />
-              </label>
-              <label className="space-y-1 text-sm text-slate-700 sm:col-span-2">
-                {t('fields.loincDisplay')}
+              </div>
+              <div className="space-y-1 text-sm text-slate-700 sm:col-span-2">
+                <FormLabel htmlFor="lab-test-loinc-display">{t('fields.loincDisplay')}</FormLabel>
                 <Input
+                  id="lab-test-loinc-display"
                   value={loincDisplay}
                   onChange={(event) => setLoincDisplay(event.target.value)}
                   disabled={saveMutation.isPending}
                 />
-              </label>
+              </div>
             </div>
             {loincCode.trim() === '' ? (
               <p className="text-xs text-amber-700" data-testid="lab-test-loinc-hint">
@@ -290,14 +297,14 @@ export function LabTestFormDialog({ open, labTest, onOpenChange }: LabTestFormDi
               </p>
             ) : null}
             <div className="grid gap-3 sm:grid-cols-2">
-              <label className="space-y-1 text-sm text-slate-700">
-                {t('fields.specimen')}
+              <div className="space-y-1 text-sm text-slate-700">
+                <FormLabel htmlFor="lab-test-specimen" required>{t('fields.specimen')}</FormLabel>
                 <Select
                   value={specimenType}
                   onValueChange={(value) => setSpecimenType(value as LabSpecimenTypeValue)}
                   disabled={saveMutation.isPending}
                 >
-                  <SelectTrigger className="w-full">
+                  <SelectTrigger id="lab-test-specimen" className="w-full">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -308,15 +315,15 @@ export function LabTestFormDialog({ open, labTest, onOpenChange }: LabTestFormDi
                     ))}
                   </SelectContent>
                 </Select>
-              </label>
-              <label className="space-y-1 text-sm text-slate-700">
-                {t('fields.resultType')}
+              </div>
+              <div className="space-y-1 text-sm text-slate-700">
+                <FormLabel htmlFor="lab-test-result-type" required>{t('fields.resultType')}</FormLabel>
                 <Select
                   value={resultType}
                   onValueChange={(value) => setResultType(value as LabResultTypeValue)}
                   disabled={saveMutation.isPending}
                 >
-                  <SelectTrigger className="w-full">
+                  <SelectTrigger id="lab-test-result-type" className="w-full">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -327,35 +334,38 @@ export function LabTestFormDialog({ open, labTest, onOpenChange }: LabTestFormDi
                     ))}
                   </SelectContent>
                 </Select>
-              </label>
+              </div>
             </div>
             {isNumeric ? (
               <div className="grid gap-3 sm:grid-cols-2">
-                <label className="space-y-1 text-sm text-slate-700">
-                  {t('fields.unit')}
+                <div className="space-y-1 text-sm text-slate-700">
+                  <FormLabel htmlFor="lab-test-unit" required>{t('fields.unit')}</FormLabel>
                   <Input
+                    id="lab-test-unit"
                     value={unit}
                     placeholder="g/dL"
                     onChange={(event) => setUnit(event.target.value)}
                     disabled={saveMutation.isPending}
                     data-testid="lab-test-unit"
                   />
-                </label>
-                <label className="space-y-1 text-sm text-slate-700">
-                  {t('fields.decimals')}
+                </div>
+                <div className="space-y-1 text-sm text-slate-700">
+                  <FormLabel htmlFor="lab-test-decimals">{t('fields.decimals')}</FormLabel>
                   <Input
+                    id="lab-test-decimals"
                     inputMode="numeric"
                     value={decimals}
                     onChange={(event) => setDecimals(event.target.value)}
                     disabled={saveMutation.isPending}
                   />
-                </label>
+                </div>
               </div>
             ) : null}
             {resultType === 'CODED' ? (
-              <label className="block space-y-1 text-sm text-slate-700">
-                {t('fields.codedOptions')}
+              <div className="space-y-1 text-sm text-slate-700">
+                <FormLabel htmlFor="lab-test-coded-options" required>{t('fields.codedOptions')}</FormLabel>
                 <Textarea
+                  id="lab-test-coded-options"
                   value={codedOptionsText}
                   onChange={(event) => setCodedOptionsText(event.target.value)}
                   placeholder={t('fields.codedOptionsPlaceholder')}
@@ -363,12 +373,10 @@ export function LabTestFormDialog({ open, labTest, onOpenChange }: LabTestFormDi
                   data-testid="lab-test-coded-options"
                 />
                 <span className="block text-xs text-slate-500">{t('fields.codedOptionsHint')}</span>
-              </label>
+              </div>
             ) : null}
             <div className="space-y-1 text-sm text-slate-700">
-              <label htmlFor="lab-test-tariff" className="block">
-                {t('fields.tariff')}
-              </label>
+              <FormLabel htmlFor="lab-test-tariff">{t('fields.tariff')}</FormLabel>
               <LabTariffPicker
                 id="lab-test-tariff"
                 value={serviceTariffId}
@@ -384,7 +392,7 @@ export function LabTestFormDialog({ open, labTest, onOpenChange }: LabTestFormDi
               error={rangesError}
               onChange={setRangeDrafts}
             />
-            <label className="flex items-start gap-2 text-sm text-slate-700">
+            <FormLabel className="flex items-start gap-2 text-sm text-slate-700 font-normal">
               <Checkbox
                 checked={isActive}
                 onCheckedChange={(checked) => setIsActive(checked === true)}
@@ -394,7 +402,7 @@ export function LabTestFormDialog({ open, labTest, onOpenChange }: LabTestFormDi
                 {t('fields.active')}
                 <span className="block text-xs text-slate-500">{t('deactivateHint')}</span>
               </span>
-            </label>
+            </FormLabel>
           </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>

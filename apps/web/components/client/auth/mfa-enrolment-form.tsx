@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import type { MfaEnrolment, MfaEnrolmentCompleted } from '@hms/shared-types';
-import { Button, Input } from '@hms/ui';
+import { Button, Input, Label } from '@hms/ui';
 
 import {
   authControllerBeginMfaEnrolmentV1,
@@ -125,9 +125,9 @@ export function MfaEnrolmentForm({ ticket, onEnrolled }: MfaEnrolmentFormProps) 
       ) : null}
 
       <div className="space-y-1.5">
-        <label htmlFor="mfa-enrolment-code" className="block text-xs font-medium text-slate-700">
+        <Label htmlFor="mfa-enrolment-code" className="text-xs text-slate-700">
           {t('codeLabel')}
-        </label>
+        </Label>
         <Input
           id="mfa-enrolment-code"
           name="code"

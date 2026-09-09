@@ -20,6 +20,8 @@ import {
 import { useTranslations } from 'next-intl';
 
 import { LabTariffPicker } from '#components/client/laboratory/lab-tariff-picker';
+import { FormLabel } from '#components/client/shared/form-label';
+import { RequiredLegend } from '#components/client/shared/required-legend';
 import {
   labPanelControllerCreateLabPanelV1,
   labPanelControllerUpdateLabPanelV1,
@@ -113,6 +115,7 @@ export function LabPanelFormDialog({ open, labPanel, onOpenChange }: LabPanelFor
             <DialogDescription>{t('panelDescription')}</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
+            <RequiredLegend />
             {actionError ? (
               <p
                 role="alert"
@@ -122,28 +125,30 @@ export function LabPanelFormDialog({ open, labPanel, onOpenChange }: LabPanelFor
               </p>
             ) : null}
             <div className="grid gap-3 sm:grid-cols-3">
-              <label className="space-y-1 text-sm text-slate-700">
-                {t('fields.code')}
+              <div className="space-y-1 text-sm text-slate-700">
+                <FormLabel htmlFor="lab-panel-code" required>{t('fields.code')}</FormLabel>
                 <Input
+                  id="lab-panel-code"
                   value={code}
                   placeholder="DL"
                   onChange={(event) => setCode(event.target.value)}
                   disabled={saveMutation.isPending}
                 />
-              </label>
-              <label className="space-y-1 text-sm text-slate-700 sm:col-span-2">
-                {t('fields.name')}
+              </div>
+              <div className="space-y-1 text-sm text-slate-700 sm:col-span-2">
+                <FormLabel htmlFor="lab-panel-name" required>{t('fields.name')}</FormLabel>
                 <Input
+                  id="lab-panel-name"
                   value={name}
                   onChange={(event) => setName(event.target.value)}
                   disabled={saveMutation.isPending}
                 />
-              </label>
+              </div>
             </div>
             <div className="space-y-1 text-sm text-slate-700">
-              <label htmlFor="lab-panel-members" className="block">
+              <FormLabel htmlFor="lab-panel-members" required>
                 {t('fields.members')}
-              </label>
+              </FormLabel>
               <MultiCombobox
                 id="lab-panel-members"
                 options={memberOptions}
@@ -158,9 +163,7 @@ export function LabPanelFormDialog({ open, labPanel, onOpenChange }: LabPanelFor
               <p className="text-xs text-slate-500">{t('fields.membersHint')}</p>
             </div>
             <div className="space-y-1 text-sm text-slate-700">
-              <label htmlFor="lab-panel-tariff" className="block">
-                {t('fields.tariff')}
-              </label>
+              <FormLabel htmlFor="lab-panel-tariff">{t('fields.tariff')}</FormLabel>
               <LabTariffPicker
                 id="lab-panel-tariff"
                 value={serviceTariffId}
@@ -169,7 +172,7 @@ export function LabPanelFormDialog({ open, labPanel, onOpenChange }: LabPanelFor
               />
               <p className="text-xs text-slate-500">{t('tariffHint')}</p>
             </div>
-            <label className="flex items-start gap-2 text-sm text-slate-700">
+            <FormLabel className="flex items-start gap-2 text-sm text-slate-700 font-normal">
               <Checkbox
                 checked={isActive}
                 onCheckedChange={(checked) => setIsActive(checked === true)}
@@ -179,7 +182,7 @@ export function LabPanelFormDialog({ open, labPanel, onOpenChange }: LabPanelFor
                 {t('fields.active')}
                 <span className="block text-xs text-slate-500">{t('deactivateHint')}</span>
               </span>
-            </label>
+            </FormLabel>
           </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>

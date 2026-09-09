@@ -17,6 +17,7 @@ import {
   DialogHeader,
   DialogTitle,
   Input,
+  Label,
   Select,
   SelectContent,
   SelectItem,
@@ -97,7 +98,7 @@ export function LabAmendDialog({ target, onClose }: LabAmendDialogProps) {
           <DialogDescription>{t('amendDescription')}</DialogDescription>
         </DialogHeader>
         <div className="space-y-3">
-          <label className="block space-y-1 text-sm text-slate-700">
+          <Label className="block space-y-1 text-sm text-slate-700 font-normal">
             {t('amendValue')}
             {target?.item.resultType === 'CODED' ? (
               <Select value={value} onValueChange={setValue}>
@@ -120,8 +121,8 @@ export function LabAmendDialog({ target, onClose }: LabAmendDialogProps) {
                 disabled={amendMutation.isPending}
               />
             )}
-          </label>
-          <label className="block space-y-1 text-sm text-slate-700">
+          </Label>
+          <Label className="block space-y-1 text-sm text-slate-700 font-normal leading-normal">
             {t('amendReason')}
             <Textarea
               value={reason}
@@ -129,10 +130,10 @@ export function LabAmendDialog({ target, onClose }: LabAmendDialogProps) {
               placeholder={t('amendReasonPlaceholder')}
               disabled={amendMutation.isPending}
             />
-          </label>
+          </Label>
           {/* P18-T14. The reason is the record's; the note is the sheet's —
               printed under the corrected results for whoever reads them. */}
-          <label className="block space-y-1 text-sm text-slate-700">
+          <Label className="block space-y-1 text-sm text-slate-700 font-normal leading-normal">
             {t('note')}
             <Textarea
               value={note}
@@ -142,7 +143,7 @@ export function LabAmendDialog({ target, onClose }: LabAmendDialogProps) {
               disabled={amendMutation.isPending}
               data-testid="lab-amend-note"
             />
-          </label>
+          </Label>
         </div>
         <DialogFooter>
           <Button type="button" variant="outline" onClick={handleClose}>

@@ -14,6 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
   Input,
+  Label,
 } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
@@ -109,12 +110,12 @@ export function AdminUserFormDialog({ open, onOpenChange, user }: AdminUserFormD
           <form.Field name="email" validators={{ onSubmit: adminUserEmailSchema }}>
             {(field) => (
               <div className="space-y-1.5">
-                <label
+                <Label
                   htmlFor={field.name}
-                  className="block font-heading text-xs font-medium text-slate-600"
+                  className="font-heading text-xs text-slate-600"
                 >
                   Email
-                </label>
+                </Label>
                 <Input
                   id={field.name}
                   type="email"
@@ -140,12 +141,12 @@ export function AdminUserFormDialog({ open, onOpenChange, user }: AdminUserFormD
           >
             {(field) => (
               <div className="space-y-1.5">
-                <label
+                <Label
                   htmlFor={field.name}
-                  className="block font-heading text-xs font-medium text-slate-600"
+                  className="font-heading text-xs text-slate-600"
                 >
                   {t('administration.newPassword')}
-                </label>
+                </Label>
                 <Input
                   id={field.name}
                   type="password"
@@ -192,13 +193,13 @@ export function AdminUserFormDialog({ open, onOpenChange, user }: AdminUserFormD
 
           <form.Field name="isActive">
             {(field) => (
-              <label className="flex cursor-pointer items-center gap-2.5">
+              <Label className="flex cursor-pointer items-center gap-2.5 font-normal">
                 <Checkbox
                   checked={field.state.value}
                   onCheckedChange={(checked) => field.handleChange(checked === true)}
                 />
                 <span className="text-sm text-slate-700">{t('common.active')}</span>
-              </label>
+              </Label>
             )}
           </form.Field>
 

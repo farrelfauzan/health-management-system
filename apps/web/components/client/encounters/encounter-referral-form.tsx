@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { BpjsReferralResponse, UpsertBpjsReferralInput } from '@hms/shared-types';
-import { Button, DatePicker, Input, Textarea } from '@hms/ui';
+import { Button, DatePicker, Input, Label, Textarea } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
 import { encounterClinicalDataControllerSaveBpjsReferralV1 } from '#lib/api/generated/encounters/encounters';
@@ -98,12 +98,12 @@ export function EncounterReferralForm({
       ) : null}
       <div className="grid gap-3 sm:grid-cols-2">
         <div>
-          <label
+          <Label
             htmlFor="referral-destination"
-            className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
+            className="mb-1.5 font-heading text-xs text-slate-600"
           >
             {t('encounters.referralForm.destination')}
-          </label>
+          </Label>
           <Input
             id="referral-destination"
             placeholder="e.g. 0301R001"
@@ -112,12 +112,12 @@ export function EncounterReferralForm({
           />
         </div>
         <div>
-          <label
+          <Label
             htmlFor="referral-date"
-            className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
+            className="mb-1.5 font-heading text-xs text-slate-600"
           >
             {t('encounters.referralForm.date')}
-          </label>
+          </Label>
           <DatePicker
             id="referral-date"
             className="w-full"
@@ -127,12 +127,12 @@ export function EncounterReferralForm({
           />
         </div>
         <div>
-          <label
+          <Label
             htmlFor="referral-subspecialty"
-            className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
+            className="mb-1.5 font-heading text-xs text-slate-600"
           >
             {t('encounters.referralForm.subspecialty')}
-          </label>
+          </Label>
           <Input
             id="referral-subspecialty"
             placeholder={t('encounters.referralForm.subspecialtyPlaceholder')}
@@ -141,12 +141,12 @@ export function EncounterReferralForm({
           />
         </div>
         <div>
-          <label
+          <Label
             htmlFor="referral-sarana"
-            className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
+            className="mb-1.5 font-heading text-xs text-slate-600"
           >
             {t('encounters.referralForm.facility')}
-          </label>
+          </Label>
           <Input
             id="referral-sarana"
             placeholder={t('encounters.referralForm.optional')}
@@ -155,12 +155,12 @@ export function EncounterReferralForm({
           />
         </div>
         <div>
-          <label
+          <Label
             htmlFor="referral-khusus"
-            className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
+            className="mb-1.5 font-heading text-xs text-slate-600"
           >
             {t('encounters.referralForm.specific')}
-          </label>
+          </Label>
           <Input
             id="referral-khusus"
             placeholder={t('encounters.referralForm.specificPlaceholder')}
@@ -170,12 +170,12 @@ export function EncounterReferralForm({
         </div>
       </div>
       <div>
-        <label
+        <Label
           htmlFor="referral-notes"
-          className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
+          className="mb-1.5 font-heading text-xs text-slate-600"
         >
           {t('encounters.notes')}
-        </label>
+        </Label>
         <Textarea
           id="referral-notes"
           rows={2}

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import {
   Button,
   Input,
+  Label,
   Select,
   SelectContent,
   SelectItem,
@@ -75,12 +76,12 @@ export function AdminUsersFilterCard({
         }
       >
         <div className="w-full sm:w-56">
-          <label
+          <Label
             htmlFor="admin-users-quick-filter"
-            className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
+            className="mb-1.5 font-heading text-xs text-slate-600"
           >
             {t('common.quickFilter')}
-          </label>
+          </Label>
           <Input
             id="admin-users-quick-filter"
             placeholder={t('administration.search')}
@@ -89,12 +90,12 @@ export function AdminUsersFilterCard({
           />
         </div>
         <div className="w-52">
-          <label
+          <Label
             htmlFor="admin-users-role-filter"
-            className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
+            className="mb-1.5 font-heading text-xs text-slate-600"
           >
             {t('administration.role')}
-          </label>
+          </Label>
           <Select value={roleCode} onValueChange={setRoleCode}>
             <SelectTrigger id="admin-users-role-filter" className="w-full">
               <SelectValue placeholder={t('administration.allRoles')} />
@@ -110,12 +111,12 @@ export function AdminUsersFilterCard({
           </Select>
         </div>
         <div className="w-40">
-          <label
+          <Label
             htmlFor="admin-users-status-filter"
-            className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
+            className="mb-1.5 font-heading text-xs text-slate-600"
           >
             {t('common.status')}
-          </label>
+          </Label>
           <Select value={status} onValueChange={setStatus}>
             <SelectTrigger id="admin-users-status-filter" className="w-full">
               <SelectValue placeholder={t('common.allStatuses')} />

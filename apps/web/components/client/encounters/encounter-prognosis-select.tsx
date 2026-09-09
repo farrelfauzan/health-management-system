@@ -2,6 +2,7 @@
 
 import type { EncounterPrognosisValue } from '@hms/shared-types';
 import {
+  Label,
   Select,
   SelectContent,
   SelectItem,
@@ -35,12 +36,12 @@ export function EncounterPrognosisSelect({
   const selectedLabel = value ? t(`encounters.soap.prognosisOptions.${value}`) : null;
   return (
     <div>
-      <label
+      <Label
         htmlFor="soap-prognosis"
-        className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
+        className="mb-1.5 font-heading text-xs text-slate-600"
       >
         {t('encounters.soap.prognosis')}
-      </label>
+      </Label>
       {isEditable ? (
         <Select
           value={value ?? NOT_RECORDED_VALUE}

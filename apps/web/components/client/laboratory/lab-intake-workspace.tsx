@@ -7,7 +7,7 @@ import type {
   LabOrderPriorityValue,
   LabOrderView,
 } from '@hms/shared-types';
-import { Button, Card, CardContent, Checkbox, Icon, Input, toast } from '@hms/ui';
+import { Button, Card, CardContent, Checkbox, Icon, Input, Label, toast } from '@hms/ui';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 
@@ -156,7 +156,7 @@ export function LabIntakeWorkspace() {
 
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex flex-wrap items-center gap-4">
-              <label className="flex items-center gap-2 text-sm text-slate-700">
+              <Label className="flex items-center gap-2 text-sm text-slate-700 font-normal">
                 <Checkbox
                   checked={priority === 'URGENT'}
                   onCheckedChange={(checked) =>
@@ -165,15 +165,15 @@ export function LabIntakeWorkspace() {
                   disabled={isBusy}
                 />
                 {t('urgent')}
-              </label>
-              <label className="flex items-center gap-2 text-sm text-slate-700">
+              </Label>
+              <Label className="flex items-center gap-2 text-sm text-slate-700 font-normal">
                 <Checkbox
                   checked={isFasting}
                   onCheckedChange={(checked) => setIsFasting(checked === true)}
                   disabled={isBusy}
                 />
                 {t('fasting')}
-              </label>
+              </Label>
             </div>
             <Button
               type="submit"

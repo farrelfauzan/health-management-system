@@ -11,6 +11,7 @@ import {
 import {
   Button,
   Input,
+  Label,
   Select,
   SelectContent,
   SelectItem,
@@ -88,12 +89,12 @@ export function RecordPaymentForm({ invoice, onRecorded }: RecordPaymentFormProp
       ) : null}
       <div className="grid gap-3 sm:grid-cols-2">
         <div>
-          <label
+          <Label
             htmlFor="payment-method"
-            className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
+            className="mb-1.5 font-heading text-xs text-slate-600"
           >
             Method
-          </label>
+          </Label>
           <Select value={method} onValueChange={(value) => setMethod(value as PaymentMethodValue)}>
             <SelectTrigger id="payment-method" className="w-full">
               <SelectValue />
@@ -108,12 +109,12 @@ export function RecordPaymentForm({ invoice, onRecorded }: RecordPaymentFormProp
           </Select>
         </div>
         <div>
-          <label
+          <Label
             htmlFor="payment-amount"
-            className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
+            className="mb-1.5 font-heading text-xs text-slate-600"
           >
             Amount Taken
-          </label>
+          </Label>
           <Input
             id="payment-amount"
             inputMode="decimal"
@@ -130,12 +131,12 @@ export function RecordPaymentForm({ invoice, onRecorded }: RecordPaymentFormProp
         </div>
       </div>
       <div>
-        <label
+        <Label
           htmlFor="payment-reference"
-          className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
+          className="mb-1.5 font-heading text-xs text-slate-600"
         >
           Reference Number
-        </label>
+        </Label>
         <Input
           id="payment-reference"
           placeholder={t('labels.referencePlaceholder')}
@@ -144,12 +145,12 @@ export function RecordPaymentForm({ invoice, onRecorded }: RecordPaymentFormProp
         />
       </div>
       <div>
-        <label
+        <Label
           htmlFor="payment-notes"
-          className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
+          className="mb-1.5 font-heading text-xs text-slate-600"
         >
           Notes
-        </label>
+        </Label>
         <Textarea
           id="payment-notes"
           rows={2}

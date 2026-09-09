@@ -13,7 +13,6 @@ import {
   DialogHeader,
   DialogTitle,
   Input,
-  Label,
   Select,
   SelectContent,
   SelectItem,
@@ -23,6 +22,8 @@ import {
 import { useTranslations } from 'next-intl';
 
 import { RoomClassSelect } from '#components/client/rooms/room-class-select';
+import { FormLabel } from '#components/client/shared/form-label';
+import { RequiredLegend } from '#components/client/shared/required-legend';
 import {
   roomControllerCreateRoomV1,
   roomControllerUpdateRoomV1,
@@ -99,8 +100,9 @@ export function RoomFormDialog({ open, onOpenChange, room }: RoomFormDialogProps
           </DialogDescription>
         </DialogHeader>
         <form noValidate className="space-y-4" onSubmit={(event) => void handleSubmit(event)}>
+          <RequiredLegend />
           <div className="space-y-2">
-            <Label htmlFor="room-ward">{t('rooms.ward')}</Label>
+            <FormLabel htmlFor="room-ward" required={!isEditing}>{t('rooms.ward')}</FormLabel>
             <Select value={wardId} onValueChange={setWardId} disabled={isEditing}>
               <SelectTrigger id="room-ward" className="w-full">
                 <SelectValue placeholder={t('rooms.allWards')} />
@@ -116,7 +118,7 @@ export function RoomFormDialog({ open, onOpenChange, room }: RoomFormDialogProps
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="room-code">{t('rooms.code')}</Label>
+              <FormLabel htmlFor="room-code" required={!isEditing}>{t('rooms.code')}</FormLabel>
               <Input
                 id="room-code"
                 value={code}
@@ -124,10 +126,10 @@ export function RoomFormDialog({ open, onOpenChange, room }: RoomFormDialogProps
                 onChange={(event) => setCode(event.target.value)}
               />
             </div>
-            <RoomClassSelect id="room-class" value={roomClassId} onChange={setRoomClassId} />
+            <RoomClassSelect id="room-class" value={roomClassId} onChange={setRoomClassId} isRequired />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="room-name">{t('rooms.name')}</Label>
+            <FormLabel htmlFor="room-name" required>{t('rooms.name')}</FormLabel>
             <Input id="room-name" value={name} onChange={(event) => setName(event.target.value)} />
           </div>
           <div className="flex items-center gap-2">
@@ -136,7 +138,7 @@ export function RoomFormDialog({ open, onOpenChange, room }: RoomFormDialogProps
               checked={isActive}
               onCheckedChange={(checked) => setIsActive(checked === true)}
             />
-            <Label htmlFor="room-active">{t('rooms.active')}</Label>
+            <FormLabel htmlFor="room-active">{t('rooms.active')}</FormLabel>
           </div>
           {actionError ? <p className="text-sm text-danger">{actionError}</p> : null}
           <DialogFooter>
