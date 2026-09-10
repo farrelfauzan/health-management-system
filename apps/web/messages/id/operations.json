@@ -1275,9 +1275,10 @@
           "label": "Penyetuju",
           "placeholder": "Pilih siapa yang menyetujui dokumen ini",
           "searchPlaceholder": "Cari staf berdasarkan email",
-          "empty": "Tidak ada staf yang cocok",
-          "loadError": "Tidak dapat memuat daftar staf",
-          "remove": "Hapus {email}"
+          "empty": "Tidak ada pemberi persetujuan yang cocok dengan pencarian itu",
+          "loadError": "Tidak dapat memuat daftar orang yang bisa menyetujui",
+          "remove": "Hapus {email}",
+          "eligibleOnlyHint": "Hanya akun yang berhak menyetujui dokumen yang ditampilkan. Orang yang tidak berhak menyetujui akan membuat dokumen menunggu keputusan yang tidak akan pernah datang."
         },
         "submit": {
           "action": "Ajukan persetujuan",

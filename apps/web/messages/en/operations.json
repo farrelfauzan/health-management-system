@@ -1275,9 +1275,10 @@
           "label": "Approvers",
           "placeholder": "Choose who approves this document",
           "searchPlaceholder": "Search staff by email",
-          "empty": "No staff match that search",
-          "loadError": "Unable to load staff",
-          "remove": "Remove {email}"
+          "empty": "Nobody with approval rights matches that search",
+          "loadError": "Unable to load the people who can approve",
+          "remove": "Remove {email}",
+          "eligibleOnlyHint": "Only accounts that are allowed to approve documents are listed. Someone who cannot approve would leave the document waiting for a decision that can never come."
         },
         "submit": {
           "action": "Submit for approval",

@@ -458,8 +458,11 @@
         "chunks": "Cuplikan",
         "size": "Ukuran",
         "actions": "Tindakan",
-        "approval": "Persetujuan"
-      }
+        "approval": "Persetujuan",
+        "select": "Pilihan"
+      },
+      "selectAll": "Pilih semua dokumen yang bisa dikirim untuk persetujuan",
+      "selectRow": "Pilih {title}"
     },
     "visibility": {
       "labels": {
@@ -588,6 +591,23 @@
       },
       "errors": {
         "sendForReview": "Tidak dapat mengirim dokumen ini untuk disetujui."
+      },
+      "submit": {
+        "title": "{count, plural, one {Kirim dokumen ini untuk persetujuan} other {Kirim # dokumen untuk persetujuan}}",
+        "description": "Pilih siapa yang menyetujuinya. Hanya akun yang berhak menyetujui dokumen yang bisa dipilih, dan panel yang sama berlaku untuk seluruh pilihan ini.",
+        "dueAt": "Tenggat (opsional)",
+        "dueAtHint": "Tenggat hanya memicu pengingat dan penanda terlambat. Tenggat tidak pernah menyetujui atau menolak apa pun dengan sendirinya.",
+        "consequence": "Selama sebuah dokumen menunggu persetujuan, asisten tidak bisa mengutipnya, baik di asisten dalam aplikasi maupun di kanal publik. Setelah disetujui, dokumen kembali dipakai.",
+        "selfApprovalOnly": "Anda tidak bisa menjadi satu-satunya penyetuju dokumen yang Anda kirim sendiri. Tambahkan orang lain, atau aktifkan persetujuan sendiri untuk jenis dokumen ini.",
+        "cancel": "Batal",
+        "submit": "Kirim untuk persetujuan",
+        "submitting": "Mengirim…",
+        "success": "{count, plural, one {# dokumen dikirim untuk persetujuan} other {# dokumen dikirim untuk persetujuan}}.",
+        "partial": "{submitted, plural, =0 {Tidak ada dokumen yang terkirim} one {# dokumen terkirim} other {# dokumen terkirim}}, {failed, plural, one {# ditolak} other {# ditolak}}. {reason}",
+        "error": "Tidak dapat mengirim dokumen ini untuk persetujuan."
+      },
+      "bulk": {
+        "action": "Kirim {count, plural, one {# dokumen} other {# dokumen}} untuk persetujuan"
       }
     }
   },

@@ -6,9 +6,12 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { getDashboardAiMessages } from '#lib/dashboard/localization';
 import idAuthShellMessages from '../../../messages/id/auth-shell.json';
+import idOperationsMessages from '../../../messages/id/operations.json';
 
 const listDocumentsMock = vi.hoisted(() => vi.fn());
-const sendForReviewMock = vi.hoisted(() => vi.fn());
+const approvalContextMock = vi.hoisted(() => vi.fn());
+const submitForApprovalMock = vi.hoisted(() => vi.fn());
+const eligibleApproversMock = vi.hoisted(() => vi.fn());
 
 vi.mock('#lib/api/generated/document-management/document-management', () => ({
   documentAdminControllerListDocumentsV1: listDocumentsMock,
@@ -18,11 +21,24 @@ vi.mock('#lib/api/generated/document-management/document-management', () => ({
   documentAdminControllerDeleteDocumentV1: vi.fn(),
   documentAdminControllerGetDownloadUrlV1: vi.fn(),
   documentAdminControllerReingestDocumentV1: vi.fn(),
-  documentAdminControllerSendDocumentForReviewV1: sendForReviewMock,
+  documentAdminControllerSendDocumentForReviewV1: vi.fn(),
+  documentAdminControllerGetApprovalContextV1: approvalContextMock,
+  documentAdminControllerSubmitDocumentsForApprovalV1: submitForApprovalMock,
   getDocumentAdminControllerListDocumentsV1QueryKey: () => ['clinic-documents'],
+  getDocumentAdminControllerGetApprovalContextV1QueryKey: () => ['clinic-corpus-approval-context'],
+}));
+
+vi.mock('#lib/api/generated/documents/documents', () => ({
+  managedDocumentControllerListEligibleApproversV1: eligibleApproversMock,
+  getManagedDocumentControllerListEligibleApproversV1QueryKey: (
+    params: Record<string, unknown> = {},
+  ) => ['eligible-approvers', params],
 }));
 
 const { ClinicCorpusPanel } = await import('./clinic-corpus-panel');
+
+const CURRENT_USER_ID = 'user-1';
+const APPROVER_ID = 'approver-1';
 
 function buildDocument(overrides: Record<string, unknown> = {}): Record<string, unknown> {
   return {
@@ -39,7 +55,7 @@ function buildDocument(overrides: Record<string, unknown> = {}): Record<string, 
     ingestError: null,
     ingestedAt: '2026-08-06T09:07:41.000Z',
     chunkCount: 12,
-    uploadedById: 'user-1',
+    uploadedById: CURRENT_USER_ID,
     // Policy off — the default, so the approval column stays empty (US-E5-06).
     approval: {
       isApprovalRequired: false,
@@ -53,6 +69,19 @@ function buildDocument(overrides: Record<string, unknown> = {}): Record<string, 
   };
 }
 
+/** The reporter's state: the upload registered the row and left it at DRAFT. */
+function buildDraftDocument(overrides: Record<string, unknown> = {}): Record<string, unknown> {
+  return buildDocument({
+    approval: {
+      isApprovalRequired: true,
+      managedDocumentId: 'managed-1',
+      status: 'DRAFT',
+      pendingRound: null,
+    },
+    ...overrides,
+  });
+}
+
 function renderPanel(): void {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
@@ -61,18 +90,23 @@ function renderPanel(): void {
     <QueryClientProvider client={queryClient}>
       <NextIntlClientProvider
         locale="id"
-        messages={{ ...getDashboardAiMessages('id'), ...idAuthShellMessages }}
+        messages={{
+          ...getDashboardAiMessages('id'),
+          ...idAuthShellMessages,
+          ...idOperationsMessages,
+        }}
       >
-        <ClinicCorpusPanel />
+        <ClinicCorpusPanel currentUserId={CURRENT_USER_ID} />
       </NextIntlClientProvider>
     </QueryClientProvider>,
   );
 }
 
-const approvalMessages = getDashboardAiMessages('id').clinicCorpus.approval;
-const reviewConfirm = approvalMessages.confirm.sendForReview;
+const corpusMessages = getDashboardAiMessages('id').clinicCorpus;
+const approvalMessages = corpusMessages.approval;
+const submitMessages = approvalMessages.submit;
 
-async function openSendForReviewDialog(): Promise<HTMLElement> {
+async function openSubmitDialog(): Promise<HTMLElement> {
   await screen.findByText('Jam Buka Poliklinik');
   await userEvent.click(screen.getByRole('button', { name: approvalMessages.sendForReview }));
   return screen.findByRole('dialog');
@@ -82,7 +116,27 @@ describe('ClinicCorpusPanel', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     listDocumentsMock.mockResolvedValue({ status: 200, data: { data: [buildDocument()] } });
-    sendForReviewMock.mockResolvedValue({ status: 200, data: { data: { id: 'doc-1' } } });
+    approvalContextMock.mockResolvedValue({
+      status: 200,
+      data: {
+        data: {
+          isApprovalRequired: true,
+          allowSelfApproval: false,
+          requiredApprovals: 1,
+          defaultApprovers: [{ id: APPROVER_ID, email: 'kepala.klinik@salingjaga.id' }],
+        },
+      },
+    });
+    eligibleApproversMock.mockResolvedValue({
+      status: 200,
+      data: {
+        data: [{ id: APPROVER_ID, email: 'kepala.klinik@salingjaga.id', roleCodes: ['ADMIN'] }],
+      },
+    });
+    submitForApprovalMock.mockResolvedValue({
+      status: 200,
+      data: { data: { submittedCount: 1, failedCount: 0, items: [] } },
+    });
   });
 
   it('lists only the FAQ corpus, never a stored-but-never-embedded document', async () => {
@@ -186,10 +240,191 @@ describe('ClinicCorpusPanel', () => {
     }
   });
 
-  it('hides the review action once the document already has a registry row', async () => {
-    // Sending for review is the fix for a document that predates the policy.
-    // One already tracked has nothing to send, and offering it would be an
-    // action that can only be refused.
+  it('offers the submit action on a draft, which is what an upload produces', async () => {
+    // The reported dead end. The old control checked for the *absence* of a
+    // registry row, so it hid itself on every document that actually needed
+    // submitting — the badge said "Not submitted" and nothing could act on it.
+    listDocumentsMock.mockResolvedValue({
+      status: 200,
+      data: { data: [buildDraftDocument()] },
+    });
+    renderPanel();
+    await screen.findByText('Jam Buka Poliklinik');
+
+    expect(
+      screen.getByRole('button', { name: approvalMessages.sendForReview }),
+    ).toBeInTheDocument();
+  });
+
+  it.each(['PENDING_APPROVAL', 'ISSUED', 'ARCHIVED'])(
+    'hides the submit action on a %s document, where it could only be refused',
+    async (status) => {
+      listDocumentsMock.mockResolvedValue({
+        status: 200,
+        data: {
+          data: [
+            buildDocument({
+              approval: {
+                isApprovalRequired: true,
+                managedDocumentId: 'managed-1',
+                status,
+                pendingRound: null,
+              },
+            }),
+          ],
+        },
+      });
+      renderPanel();
+      await screen.findByText('Jam Buka Poliklinik');
+
+      expect(
+        screen.queryByRole('button', { name: approvalMessages.sendForReview }),
+      ).not.toBeInTheDocument();
+    },
+  );
+
+  it('offers only accounts that can approve in the picker', async () => {
+    listDocumentsMock.mockResolvedValue({
+      status: 200,
+      data: { data: [buildDraftDocument()] },
+    });
+    renderPanel();
+    const dialog = await openSubmitDialog();
+
+    // The source is the eligible-approver route, not the staff directory:
+    // naming somebody who cannot decide produces a round nobody can resolve.
+    await waitFor(() => expect(eligibleApproversMock).toHaveBeenCalled());
+    expect(
+      within(dialog).getByText(
+        idOperationsMessages.operations.documents.approvals.picker.eligibleOnlyHint,
+      ),
+    ).toBeInTheDocument();
+    expect(within(dialog).getAllByText('kepala.klinik@salingjaga.id').length).toBeGreaterThan(0);
+  });
+
+  it('opens with the type’s default approvers already chosen', async () => {
+    listDocumentsMock.mockResolvedValue({
+      status: 200,
+      data: { data: [buildDraftDocument()] },
+    });
+    renderPanel();
+    const dialog = await openSubmitDialog();
+
+    // One click for the common case: the panel is prefilled, and Send is
+    // enabled without the admin naming anybody.
+    await waitFor(() =>
+      expect(within(dialog).getByRole('button', { name: submitMessages.submit })).toBeEnabled(),
+    );
+  });
+
+  it('submits the row it was opened from, to the panel that was named', async () => {
+    listDocumentsMock.mockResolvedValue({
+      status: 200,
+      data: { data: [buildDraftDocument()] },
+    });
+    renderPanel();
+    const dialog = await openSubmitDialog();
+    await waitFor(() =>
+      expect(within(dialog).getByRole('button', { name: submitMessages.submit })).toBeEnabled(),
+    );
+
+    await userEvent.click(within(dialog).getByRole('button', { name: submitMessages.submit }));
+
+    await waitFor(() => expect(submitForApprovalMock).toHaveBeenCalledTimes(1));
+    expect(submitForApprovalMock).toHaveBeenCalledWith({
+      documentIds: ['doc-1'],
+      approverIds: [APPROVER_ID],
+    });
+  });
+
+  it('submits a whole selection in one call, not one call per row', async () => {
+    listDocumentsMock.mockResolvedValue({
+      status: 200,
+      data: {
+        data: [
+          buildDraftDocument(),
+          buildDraftDocument({ id: 'doc-2', title: 'SOP Rujukan' }),
+        ],
+      },
+    });
+    submitForApprovalMock.mockResolvedValue({
+      status: 200,
+      data: { data: { submittedCount: 2, failedCount: 0, items: [] } },
+    });
+    renderPanel();
+    await screen.findByText('SOP Rujukan');
+
+    await userEvent.click(screen.getByRole('checkbox', { name: corpusMessages.table.selectAll }));
+    await userEvent.click(
+      screen.getByRole('button', { name: /Kirim 2 dokumen untuk persetujuan/ }),
+    );
+    const dialog = await screen.findByRole('dialog');
+    await waitFor(() =>
+      expect(within(dialog).getByRole('button', { name: submitMessages.submit })).toBeEnabled(),
+    );
+    await userEvent.click(within(dialog).getByRole('button', { name: submitMessages.submit }));
+
+    await waitFor(() => expect(submitForApprovalMock).toHaveBeenCalledTimes(1));
+    expect(submitForApprovalMock).toHaveBeenCalledWith({
+      documentIds: ['doc-1', 'doc-2'],
+      approverIds: [APPROVER_ID],
+    });
+  });
+
+  it('reports how many were refused and why, rather than claiming a clean run', async () => {
+    // A batch is not a transaction. An admin told "2 sent" while one was
+    // silently refused would find out from the approver, or never.
+    listDocumentsMock.mockResolvedValue({
+      status: 200,
+      data: {
+        data: [
+          buildDraftDocument(),
+          buildDraftDocument({ id: 'doc-2', title: 'SOP Rujukan' }),
+        ],
+      },
+    });
+    submitForApprovalMock.mockResolvedValue({
+      status: 200,
+      data: {
+        data: {
+          submittedCount: 1,
+          failedCount: 1,
+          items: [
+            { documentId: 'doc-1', isSubmitted: true, error: null },
+            {
+              documentId: 'doc-2',
+              isSubmitted: false,
+              error: {
+                code: 'DOCUMENT_NOT_SUBMITTABLE',
+                message: 'This document is already waiting for approval',
+              },
+            },
+          ],
+        },
+      },
+    });
+    renderPanel();
+    await screen.findByText('SOP Rujukan');
+
+    await userEvent.click(screen.getByRole('checkbox', { name: corpusMessages.table.selectAll }));
+    await userEvent.click(
+      screen.getByRole('button', { name: /Kirim 2 dokumen untuk persetujuan/ }),
+    );
+    const dialog = await screen.findByRole('dialog');
+    await waitFor(() =>
+      expect(within(dialog).getByRole('button', { name: submitMessages.submit })).toBeEnabled(),
+    );
+    await userEvent.click(within(dialog).getByRole('button', { name: submitMessages.submit }));
+
+    expect(await screen.findByText(/1 dokumen terkirim/)).toBeInTheDocument();
+    // The refusal's own sentence, because a count alone says nothing about
+    // what to do next.
+    expect(
+      screen.getByText(/This document is already waiting for approval/),
+    ).toBeInTheDocument();
+  });
+
+  it('offers no checkbox on a document that cannot be submitted', async () => {
     listDocumentsMock.mockResolvedValue({
       status: 200,
       data: {
@@ -208,51 +443,8 @@ describe('ClinicCorpusPanel', () => {
     renderPanel();
     await screen.findByText('Jam Buka Poliklinik');
 
-    expect(
-      screen.queryByRole('button', { name: approvalMessages.sendForReview }),
-    ).not.toBeInTheDocument();
-  });
-
-  it('asks about a review send in the app, not through the browser’s own confirm', async () => {
-    // window.confirm is unstyled, unlocalised in its own buttons, says the
-    // origin rather than the product above copy the reader is meant to trust,
-    // and Chrome suppresses it after a few in a row — at which point the send
-    // goes unconfirmed.
-    const confirmSpy = vi.spyOn(window, 'confirm');
-    renderPanel();
-
-    const dialog = await openSendForReviewDialog();
-
-    expect(confirmSpy).not.toHaveBeenCalled();
-    expect(within(dialog).getByText(reviewConfirm.title)).toBeInTheDocument();
-    // The copy names the document and the consequence an admin does not expect
-    // from a button called "review": the assistant goes quiet about it.
-    expect(within(dialog).getByText(/Jam Buka Poliklinik/)).toBeInTheDocument();
-    expect(within(dialog).getByText(/sampai ada yang menyetujuinya/)).toBeInTheDocument();
-    // Reflex-pressing Enter must not send anything.
-    await waitFor(() =>
-      expect(within(dialog).getByRole('button', { name: reviewConfirm.cancel })).toHaveFocus(),
-    );
-  });
-
-  it('sends nothing when the admin backs out of the review dialog', async () => {
-    renderPanel();
-    const dialog = await openSendForReviewDialog();
-
-    await userEvent.click(within(dialog).getByRole('button', { name: reviewConfirm.cancel }));
-
-    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
-    expect(sendForReviewMock).not.toHaveBeenCalled();
-  });
-
-  it('sends the document for review once when the admin confirms, and says so', async () => {
-    renderPanel();
-    const dialog = await openSendForReviewDialog();
-
-    await userEvent.click(within(dialog).getByRole('button', { name: reviewConfirm.confirm }));
-
-    await waitFor(() => expect(sendForReviewMock).toHaveBeenCalledTimes(1));
-    expect(sendForReviewMock).toHaveBeenCalledWith('doc-1');
-    expect(await screen.findByText(approvalMessages.success.sendForReview)).toBeInTheDocument();
+    // A box here would let an admin build a selection the batch can only
+    // report back as failures.
+    expect(screen.queryAllByRole('checkbox')).toHaveLength(0);
   });
 });
