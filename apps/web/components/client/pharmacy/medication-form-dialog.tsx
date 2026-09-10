@@ -27,8 +27,10 @@ import {
 } from '@hms/ui';
 import { useLocale, useTranslations } from 'next-intl';
 
+import { FieldDescription } from '#components/client/shared/field-description';
 import { FormLabel } from '#components/client/shared/form-label';
 import { InlineNotice } from '#components/client/shared/inline-notice';
+import { LabelInfoTooltip } from '#components/client/shared/label-info-tooltip';
 import { RequiredLegend } from '#components/client/shared/required-legend';
 import {
   medicationControllerCreateMedicationV1,
@@ -129,12 +131,19 @@ export function MedicationFormDialog({
               </FormLabel>
               <Input
                 id="medication-code"
+                aria-describedby="medication-code-description"
                 value={code}
                 onChange={(event) => setCode(event.target.value)}
               />
+              <FieldDescription id="medication-code-description">
+                {t('codeDescription')}
+              </FieldDescription>
             </div>
             <div className="space-y-1.5">
-              <FormLabel htmlFor="medication-kfa-code">{t('kfaCode')}</FormLabel>
+              <div className="flex items-center gap-1.5">
+                <FormLabel htmlFor="medication-kfa-code">{t('kfaCode')}</FormLabel>
+                <LabelInfoTooltip field={t('kfaCode')}>{t('kfaCodeTooltip')}</LabelInfoTooltip>
+              </div>
               <Input
                 id="medication-kfa-code"
                 inputMode="numeric"
@@ -148,6 +157,7 @@ export function MedicationFormDialog({
               </FormLabel>
               <Input
                 id="medication-name"
+                placeholder={t('namePlaceholder')}
                 value={name}
                 onChange={(event) => setName(event.target.value)}
               />
@@ -156,6 +166,7 @@ export function MedicationFormDialog({
               <FormLabel htmlFor="medication-form">{t('form')}</FormLabel>
               <Input
                 id="medication-form"
+                placeholder={t('formPlaceholder')}
                 value={form}
                 onChange={(event) => setForm(event.target.value)}
               />
@@ -164,6 +175,7 @@ export function MedicationFormDialog({
               <FormLabel htmlFor="medication-strength">{t('strength')}</FormLabel>
               <Input
                 id="medication-strength"
+                placeholder={t('strengthPlaceholder')}
                 value={strength}
                 onChange={(event) => setStrength(event.target.value)}
               />
@@ -208,20 +220,30 @@ export function MedicationFormDialog({
                 type="number"
                 min="0"
                 max="1000000"
+                aria-describedby="medication-reorder-level-description"
                 value={reorderLevel}
                 onChange={(event) => setReorderLevel(event.target.value)}
               />
+              <FieldDescription id="medication-reorder-level-description">
+                {t('reorderLevelDescription')}
+              </FieldDescription>
             </div>
             {/* P10-T16. The flag is what filters the immunisation picker on
                 the encounter: a catalog row nobody marks here cannot be
                 recorded as a vaccination at all. */}
-            <FormLabel className="flex items-center gap-2 text-sm sm:col-span-2 font-normal">
-              <Checkbox
-                checked={isVaccine}
-                onCheckedChange={(value) => setIsVaccine(value === true)}
-              />
-              {t('isVaccine')}
-            </FormLabel>
+            <div className="space-y-1.5 sm:col-span-2">
+              <FormLabel className="flex items-center gap-2 text-sm font-normal">
+                <Checkbox
+                  aria-describedby="medication-is-vaccine-description"
+                  checked={isVaccine}
+                  onCheckedChange={(value) => setIsVaccine(value === true)}
+                />
+                {t('isVaccine')}
+              </FormLabel>
+              <FieldDescription id="medication-is-vaccine-description" className="pl-6">
+                {t('isVaccineDescription')}
+              </FieldDescription>
+            </div>
           </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>

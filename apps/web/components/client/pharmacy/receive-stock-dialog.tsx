@@ -21,6 +21,7 @@ import {
 } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { FieldDescription } from '#components/client/shared/field-description';
 import { FormLabel } from '#components/client/shared/form-label';
 import { InlineNotice } from '#components/client/shared/inline-notice';
 import { RequiredLegend } from '#components/client/shared/required-legend';
@@ -127,9 +128,13 @@ export function ReceiveStockDialog({
                 </FormLabel>
                 <Input
                   id="receive-stock-batch-number"
+                  aria-describedby="receive-stock-batch-number-description"
                   value={batchNumber}
                   onChange={(event) => setBatchNumber(event.target.value)}
                 />
+                <FieldDescription id="receive-stock-batch-number-description">
+                  {t('batchNumberDescription')}
+                </FieldDescription>
               </div>
               <div className="space-y-1.5">
                 <FormLabel htmlFor="receive-stock-expiry-date" required>
@@ -151,18 +156,26 @@ export function ReceiveStockDialog({
                   type="number"
                   min="1"
                   max="1000000"
+                  aria-describedby="receive-stock-quantity-description"
                   value={quantity}
                   onChange={(event) => setQuantity(event.target.value)}
                 />
+                <FieldDescription id="receive-stock-quantity-description">
+                  {t('quantityDescription')}
+                </FieldDescription>
               </div>
               <div className="space-y-1.5">
                 <FormLabel htmlFor="receive-stock-received-at">{t('receivedAt')}</FormLabel>
                 <Input
                   id="receive-stock-received-at"
                   type="datetime-local"
+                  aria-describedby="receive-stock-received-at-description"
                   value={receivedAt}
                   onChange={(event) => setReceivedAt(event.target.value)}
                 />
+                <FieldDescription id="receive-stock-received-at-description">
+                  {t('receivedAtDescription')}
+                </FieldDescription>
               </div>
             </div>
             <div className="space-y-1.5">
@@ -170,6 +183,7 @@ export function ReceiveStockDialog({
               <Textarea
                 id="receive-stock-notes"
                 maxLength={1000}
+                placeholder={t('notesPlaceholder')}
                 value={notes}
                 onChange={(event) => setNotes(event.target.value)}
               />
