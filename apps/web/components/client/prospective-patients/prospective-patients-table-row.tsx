@@ -1,12 +1,11 @@
 'use client';
 
-import type { ProspectivePatientView } from '@hms/shared-types';
+import { formatPhoneNumber, type ProspectivePatientView } from '@hms/shared-types';
 import { Badge, TableCell, TableRow } from '@hms/ui';
 import { useFormatter, useTranslations } from 'next-intl';
 
 import { ProspectivePatientRowActions } from '#components/client/prospective-patients/prospective-patient-row-actions';
 import { StatusBadge } from '#components/shared/status-badge';
-import { formatProspectivePhoneNumber } from '#lib/prospective-patients/format-prospective-phone-number';
 
 type ProspectivePatientsTableRowProps = {
   item: ProspectivePatientView;
@@ -33,7 +32,7 @@ export function ProspectivePatientsTableRow({
         </p>
       </TableCell>
       <TableCell className="px-4 font-mono text-sm text-slate-700">
-        {formatProspectivePhoneNumber(item.phoneNumber)}
+        {formatPhoneNumber(item.phoneNumber)}
       </TableCell>
       <TableCell className="px-4">
         <Badge variant="outline">{t(`channel.${item.channel}`)}</Badge>

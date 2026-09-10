@@ -7,6 +7,7 @@ import { Button, Card, CardContent } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
 import { ClinicProfileLogoField } from '#components/client/clinic-profile/clinic-profile-logo-field';
+import { ClinicProfilePhoneField } from '#components/client/clinic-profile/clinic-profile-phone-field';
 import { ClinicProfileTextField } from '#components/client/clinic-profile/clinic-profile-text-field';
 import { InlineNotice } from '#components/client/shared/inline-notice';
 import { RequiredLegend } from '#components/client/shared/required-legend';
@@ -135,10 +136,9 @@ export function ClinicProfileForm({ profile, canWrite }: ClinicProfileFormProps)
             disabled={!canWrite}
             onChange={setAddress}
           />
-          <ClinicProfileTextField
+          <ClinicProfilePhoneField
             id="clinic-profile-phone-number"
             label={t('fields.phoneNumber')}
-            type="tel"
             value={phoneNumber}
             disabled={!canWrite}
             onChange={setPhoneNumber}

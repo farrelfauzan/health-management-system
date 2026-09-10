@@ -23,6 +23,7 @@ import {
   DialogHeader,
   DialogTitle,
   Input,
+  PhoneInput,
 } from '@hms/ui';
 
 import { DoctorAccountEmailNotice } from '#components/client/doctors/doctor-account-email-notice';
@@ -298,11 +299,11 @@ export function DoctorFormDialog({
                   >
                     {t('doctors.form.phone')}
                   </FormLabel>
-                  <Input
+                  <PhoneInput
                     id={field.name}
                     value={field.state.value}
-                    placeholder="+628129876543"
-                    onChange={(event) => field.handleChange(event.target.value)}
+                    placeholder="8129876543"
+                    onValueChange={(value) => field.handleChange(value)}
                     onBlur={field.handleBlur}
                     aria-invalid={field.state.meta.errors.length > 0}
                   />

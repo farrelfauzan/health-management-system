@@ -40,7 +40,7 @@ function buildProspectivePatient(
   return {
     id: 'prospective-1',
     fullName: 'Siti Rahayu',
-    phoneNumber: '628123456789',
+    phoneNumber: '6281234567890',
     channel: 'TELEGRAM',
     status: 'AWAITING_ARRIVAL',
     patientId: null,
@@ -109,8 +109,9 @@ describe('ProspectivePatientsPanel', () => {
     renderPanel();
 
     expect(await screen.findByText('Siti Rahayu')).toBeInTheDocument();
-    // Stored normalised, read back the way a person says it.
-    expect(screen.getByText('+62 8123456789')).toBeInTheDocument();
+    // Stored normalised, read back the way a person says it — the shared
+    // `formatPhoneNumber` groups a mobile number 3-4-4 (`P19-T09`).
+    expect(screen.getByText('+62 812-3456-7890')).toBeInTheDocument();
     expect(screen.getByText('Telegram')).toBeInTheDocument();
     expect(screen.getByText('dr. Andi Pratama')).toBeInTheDocument();
     // Not `getByText`: "Menunggu" is also the status select's current value.

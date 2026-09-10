@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import type { ChannelArrivalView } from '@hms/shared-types';
+import { formatPhoneNumber, type ChannelArrivalView } from '@hms/shared-types';
 import {
   Button,
   Input,
@@ -130,7 +130,7 @@ export function ProspectiveArrivalDrawer({
           <SheetDescription>
             {t('description', {
               name: arrival.patientFullName,
-              phone: arrival.patientPhoneNumber,
+              phone: formatPhoneNumber(arrival.patientPhoneNumber),
             })}
           </SheetDescription>
         </SheetHeader>

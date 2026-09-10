@@ -8,6 +8,7 @@ import {
   rtRwSchema,
   villageCodeSchema,
 } from '#regions/schemas';
+import { indonesianPhoneNumberSchema } from '#shared/phone-number-schema';
 
 export const patientDateSchema = z
   .string()
@@ -497,7 +498,7 @@ export const createPatientSchema = z.object({
   placeOfBirth: placeOfBirthSchema.optional(),
   sex: patientSexSchema,
   status: patientStatusSchema.optional().default('OUT_PATIENT'),
-  phoneNumber: z.string().trim().min(6).max(32),
+  phoneNumber: indonesianPhoneNumberSchema,
   /** The street line. The Kemendagri chain lives in the four codes below. */
   address: z.string().trim().min(3).max(300),
   ...patientAddressSchema.partial().shape,
@@ -513,7 +514,7 @@ export const createPatientSchema = z.object({
   occupation: z.string().trim().min(2).max(120).optional(),
   religion: religionSchema.optional(),
   emergencyContactName: z.string().trim().min(2).max(120).optional(),
-  emergencyContactPhone: z.string().trim().min(6).max(32).optional(),
+  emergencyContactPhone: indonesianPhoneNumberSchema.optional(),
   guardianName: z.string().trim().min(2).max(120).optional(),
   guardianRelation: z.string().trim().min(2).max(60).optional(),
   allergies: patientAllergiesSchema.optional(),
@@ -553,7 +554,7 @@ export const updatePatientSchema = z
     placeOfBirth: placeOfBirthSchema.nullable().optional(),
     sex: patientSexSchema.optional(),
     status: patientStatusSchema.optional(),
-    phoneNumber: z.string().trim().min(6).max(32).optional(),
+    phoneNumber: indonesianPhoneNumberSchema.optional(),
     address: z.string().trim().min(3).max(300).optional(),
     provinceCode: provinceCodeSchema.optional(),
     regencyCode: regencyCodeSchema.optional(),
@@ -570,7 +571,7 @@ export const updatePatientSchema = z
     occupation: z.string().trim().min(2).max(120).nullable().optional(),
     religion: religionSchema.nullable().optional(),
     emergencyContactName: z.string().trim().min(2).max(120).nullable().optional(),
-    emergencyContactPhone: z.string().trim().min(6).max(32).nullable().optional(),
+    emergencyContactPhone: indonesianPhoneNumberSchema.nullable().optional(),
     guardianName: z.string().trim().min(2).max(120).nullable().optional(),
     guardianRelation: z.string().trim().min(2).max(60).nullable().optional(),
     // Replaces the whole list: the client always submits the complete set of

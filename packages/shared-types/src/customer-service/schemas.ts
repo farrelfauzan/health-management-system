@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { createPatientSchema, nikSchema } from '#patient-management/schemas';
+import { indonesianPhoneNumberSchema } from '#shared/phone-number-schema';
 
 /**
  * The messaging channels the customer-service gateway speaks. Mirrors the
@@ -340,12 +341,9 @@ export const bookAppointmentArgumentsSchema = z.object({
     .min(2)
     .max(120)
     .describe('Nama lengkap pasien seperti yang pelanggan tuliskan.'),
-  phoneNumber: z
-    .string()
-    .trim()
-    .min(6)
-    .max(32)
-    .describe('Nomor telepon yang bisa dihubungi, seperti yang pelanggan tuliskan.'),
+  phoneNumber: indonesianPhoneNumberSchema.describe(
+    'Nomor telepon yang bisa dihubungi, seperti yang pelanggan tuliskan.',
+  ),
   sessionId: z
     .string()
     .trim()

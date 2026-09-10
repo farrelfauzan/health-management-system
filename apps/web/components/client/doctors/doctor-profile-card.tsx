@@ -1,6 +1,6 @@
 'use client';
 
-import type { DoctorDetail } from '@hms/shared-types';
+import { formatPhoneNumber, type DoctorDetail } from '@hms/shared-types';
 import { Card, CardContent, CardHeader, CardTitle } from '@hms/ui';
 import { useFormatter, useTranslations } from 'next-intl';
 
@@ -20,7 +20,11 @@ export function DoctorProfileCard({ doctor }: DoctorProfileCardProps) {
     { label: t('doctors.specialty'), value: doctor.specialty },
     { label: t('doctors.titleLabel'), value: doctor.title ?? EMPTY_VALUE },
     { label: t('doctors.degrees'), value: doctor.degrees ?? EMPTY_VALUE },
-    { label: t('doctors.phone'), value: doctor.phoneNumber ?? '-', isMono: true },
+    {
+      label: t('doctors.phone'),
+      value: doctor.phoneNumber ? formatPhoneNumber(doctor.phoneNumber) : EMPTY_VALUE,
+      isMono: true,
+    },
     // Read from the linked account, or from the invitation still holding it
     // (P19-T15): a doctor with neither has no address.
     {

@@ -45175,6 +45175,8 @@ components:
             - DISCHARGED
           default: OUT_PATIENT
         phoneNumber:
+          description: Indonesian phone number. Accepts 0812…, +62 812-…, 62812… and
+            punctuated forms; stored as 62812….
           type: string
           minLength: 6
           maxLength: 32
@@ -45246,6 +45248,8 @@ components:
           minLength: 2
           maxLength: 120
         emergencyContactPhone:
+          description: Indonesian phone number. Accepts 0812…, +62 812-…, 62812… and
+            punctuated forms; stored as 62812….
           type: string
           minLength: 6
           maxLength: 32
@@ -45374,6 +45378,8 @@ components:
             - DISCHARGED
           default: OUT_PATIENT
         phoneNumber:
+          description: Indonesian phone number. Accepts 0812…, +62 812-…, 62812… and
+            punctuated forms; stored as 62812….
           type: string
           minLength: 6
           maxLength: 32
@@ -45445,6 +45451,8 @@ components:
           minLength: 2
           maxLength: 120
         emergencyContactPhone:
+          description: Indonesian phone number. Accepts 0812…, +62 812-…, 62812… and
+            punctuated forms; stored as 62812….
           type: string
           minLength: 6
           maxLength: 32
@@ -45578,6 +45586,8 @@ components:
             - OUT_PATIENT
             - DISCHARGED
         phoneNumber:
+          description: Indonesian phone number. Accepts 0812…, +62 812-…, 62812… and
+            punctuated forms; stored as 62812….
           type: string
           minLength: 6
           maxLength: 32
@@ -45660,6 +45670,8 @@ components:
           maxLength: 120
           nullable: true
         emergencyContactPhone:
+          description: Indonesian phone number. Accepts 0812…, +62 812-…, 62812… and
+            punctuated forms; stored as 62812….
           type: string
           minLength: 6
           maxLength: 32
@@ -45860,8 +45872,11 @@ components:
           maxLength: 1000
           nullable: true
         phoneNumber:
+          description: Indonesian phone number. Accepts 0812…, +62 812-…, 62812… and
+            punctuated forms; stored as 62812….
           type: string
-          maxLength: 255
+          minLength: 6
+          maxLength: 32
           nullable: true
         email:
           type: string
@@ -46368,6 +46383,8 @@ components:
             - DISCHARGED
           default: OUT_PATIENT
         phoneNumber:
+          description: Indonesian phone number. Accepts 0812…, +62 812-…, 62812… and
+            punctuated forms; stored as 62812….
           type: string
           minLength: 6
           maxLength: 32
@@ -46439,6 +46456,8 @@ components:
           minLength: 2
           maxLength: 120
         emergencyContactPhone:
+          description: Indonesian phone number. Accepts 0812…, +62 812-…, 62812… and
+            punctuated forms; stored as 62812….
           type: string
           minLength: 6
           maxLength: 32
@@ -46755,6 +46774,8 @@ components:
           type: string
           format: uuid
         phoneNumber:
+          description: Indonesian phone number. Accepts 0812…, +62 812-…, 62812… and
+            punctuated forms; stored as 62812….
           type: string
           minLength: 6
           maxLength: 32
@@ -46857,6 +46878,8 @@ components:
           type: string
           format: uuid
         phoneNumber:
+          description: Indonesian phone number. Accepts 0812…, +62 812-…, 62812… and
+            punctuated forms; stored as 62812….
           type: string
           minLength: 6
           maxLength: 32

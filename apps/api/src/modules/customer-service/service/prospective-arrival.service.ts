@@ -7,6 +7,7 @@ import {
   ListProspectivePatientsParams,
   ListProspectivePatientsQueryInput,
   maskIdentifierLast4,
+  normalizePhoneNumber,
   ProspectiveArrivalResolutionView,
   ProspectiveMatchCandidateRow,
   ProspectiveMatchCandidateView,
@@ -22,7 +23,6 @@ import { NationalIdentifierCryptoService } from '../../../common/crypto/national
 import { buildSafeErrorLog } from '../../../common/observability/safe-logging';
 import { PatientManagementService } from '../../patient-management/service/patient-management.service';
 import { ProspectiveArrivalRepository } from '../repository/prospective-arrival.repository';
-import { normalizePhoneNumber } from './normalize-phone-number';
 import { scoreNameSimilarity } from './score-name-similarity';
 
 const PROSPECTIVE_AUDIT_RESOURCE = 'ProspectivePatient';
