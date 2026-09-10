@@ -3,9 +3,10 @@
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { PersonalDocumentView } from '@hms/shared-types';
-import { Button } from '@hms/ui';
+import { TooltipProvider } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { PersonalDocumentActionButton } from '#components/client/personal-documents/personal-document-action-button';
 import { PersonalDocumentRenameDialog } from '#components/client/personal-documents/personal-document-rename-dialog';
 import {
   personalDocumentControllerDeleteDocumentV1,
@@ -85,44 +86,42 @@ export function PersonalDocumentRowActions({
   }
 
   return (
-    <div className="flex justify-end gap-2">
-      <Button
-        type="button"
-        variant="ghost"
-        size="sm"
-        disabled={downloadMutation.isPending}
-        onClick={() => downloadMutation.mutate()}
-      >
-        {t('download')}
-      </Button>
-      <Button type="button" variant="ghost" size="sm" onClick={() => setIsRenameOpen(true)}>
-        {t('rename')}
-      </Button>
-      <Button
-        type="button"
-        variant="ghost"
-        size="sm"
-        disabled={reingestMutation.isPending}
-        onClick={() => reingestMutation.mutate()}
-      >
-        {t('reingest')}
-      </Button>
-      <Button
-        type="button"
-        variant="ghost"
-        size="sm"
-        disabled={deleteMutation.isPending}
-        onClick={confirmDelete}
-      >
-        {t('delete')}
-      </Button>
-      <PersonalDocumentRenameDialog
-        open={isRenameOpen}
-        onOpenChange={setIsRenameOpen}
-        document={document}
-        onSaved={onResult}
-        onFailed={onError}
-      />
-    </div>
+    // One provider per row rather than one per button: Radix needs an ancestor
+    // provider, and four of them in a row would each carry their own delay
+    // timer for controls the user reads as a single group.
+    <TooltipProvider>
+      <div className="flex justify-end gap-1">
+        <PersonalDocumentActionButton
+          icon="download"
+          label={t('download')}
+          disabled={downloadMutation.isPending}
+          onClick={() => downloadMutation.mutate()}
+        />
+        <PersonalDocumentActionButton
+          icon="edit"
+          label={t('rename')}
+          onClick={() => setIsRenameOpen(true)}
+        />
+        <PersonalDocumentActionButton
+          icon="refresh"
+          label={t('reingest')}
+          disabled={reingestMutation.isPending}
+          onClick={() => reingestMutation.mutate()}
+        />
+        <PersonalDocumentActionButton
+          icon="delete"
+          label={t('delete')}
+          disabled={deleteMutation.isPending}
+          onClick={confirmDelete}
+        />
+        <PersonalDocumentRenameDialog
+          open={isRenameOpen}
+          onOpenChange={setIsRenameOpen}
+          document={document}
+          onSaved={onResult}
+          onFailed={onError}
+        />
+      </div>
+    </TooltipProvider>
   );
 }

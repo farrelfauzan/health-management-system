@@ -69,6 +69,20 @@ describe('PersonalKnowledgeBasePanel', () => {
     expect(await screen.findByText(/Jangan simpan data pasien/i)).toBeInTheDocument();
   });
 
+  // The row actions are icons now, so the glyph carries no text and the
+  // accessible name is the only thing naming the button. If these queries
+  // ever fail, the row has become four unlabelled buttons for a screen
+  // reader, which is exactly the failure icon-only controls invite.
+  it('names every row action even though the buttons are icon-only', async () => {
+    renderPanel();
+
+    for (const label of ['Unduh', 'Ubah nama', 'Proses ulang', 'Hapus']) {
+      expect(await screen.findByRole('button', { name: label })).toBeInTheDocument();
+    }
+    // No visible action text left to read, which is the point of the change.
+    expect(screen.queryByText('Unduh')).not.toBeInTheDocument();
+  });
+
   it('marks a READY document as answerable', async () => {
     renderPanel();
 
