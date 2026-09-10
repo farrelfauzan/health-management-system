@@ -67,7 +67,7 @@ export function DatePicker({
           aria-invalid={ariaInvalid}
           data-empty={!selectedDate}
           className={cn(
-            'w-full justify-start text-left font-normal data-[empty=true]:text-muted-foreground',
+            'w-full justify-start text-left font-normal data-[empty=true]:text-placeholder',
             className,
           )}
         >
