@@ -5,6 +5,7 @@ import { useMutation } from '@tanstack/react-query';
 import { Button, Card, CardContent } from '@hms/ui';
 import { useFormatter, useTranslations } from 'next-intl';
 
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { channelGatewayAdminControllerStartPairingV1 } from '#lib/api/generated/channel-gateway/channel-gateway';
 import { resolveApiErrorMessage } from '#lib/api/resolve-api-error-message';
 import { parseApiSuccess } from '#lib/api/response';
@@ -86,9 +87,7 @@ export function WhatsappSessionCard() {
             time: format.dateTime(new Date(session.checkedAt), { timeStyle: 'medium' }),
           })}
         </p>
-        {error ? (
-          <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-900">{error}</p>
-        ) : null}
+        {error ? <InlineNotice tone="error">{error}</InlineNotice> : null}
         {pairing ? (
           <div className="space-y-2 rounded-lg bg-slate-50 px-4 py-3">
             <p className="text-sm text-slate-700">{t('pairInstructions')}</p>

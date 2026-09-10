@@ -19,6 +19,7 @@ import { useState } from 'react';
 
 import { OrganizationUnitMemberAddRow } from '#components/client/organization/organization-unit-member-add-row';
 import { OrganizationUnitMemberRow } from '#components/client/organization/organization-unit-member-row';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { NumberedPagination } from '#components/client/shared/numbered-pagination';
 import { DataTable } from '#components/shared/data-table';
 import { DataTableHeaderCell } from '#components/shared/data-table-header-cell';
@@ -96,11 +97,7 @@ export function OrganizationUnitMembersDialog({
           />
         ) : null}
 
-        {actionError ? (
-          <p role="alert" className="text-sm text-danger">
-            {actionError}
-          </p>
-        ) : null}
+        {actionError ? <InlineNotice tone="error">{actionError}</InlineNotice> : null}
 
         {!membersQuery.isPending && membersQuery.members.length === 0 ? (
           <EmptyState

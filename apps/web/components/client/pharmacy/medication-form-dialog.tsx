@@ -27,14 +27,15 @@ import {
 } from '@hms/ui';
 import { useLocale, useTranslations } from 'next-intl';
 
+import { FieldDescription } from '#components/client/shared/field-description';
+import { FormLabel } from '#components/client/shared/form-label';
+import { InlineNotice } from '#components/client/shared/inline-notice';
+import { LabelInfoTooltip } from '#components/client/shared/label-info-tooltip';
+import { RequiredLegend } from '#components/client/shared/required-legend';
 import {
   medicationControllerCreateMedicationV1,
   medicationControllerUpdateMedicationV1,
 } from '#lib/api/generated/pharmacy-flow/pharmacy-flow';
-import { FieldDescription } from '#components/client/shared/field-description';
-import { FormLabel } from '#components/client/shared/form-label';
-import { LabelInfoTooltip } from '#components/client/shared/label-info-tooltip';
-import { RequiredLegend } from '#components/client/shared/required-legend';
 import type { CreateMedicationDto } from '#lib/api/generated/model/createMedicationDto';
 import type { UpdateMedicationDto } from '#lib/api/generated/model/updateMedicationDto';
 import { parseApiSuccess } from '#lib/api/response';
@@ -119,16 +120,24 @@ export function MedicationFormDialog({
           </DialogHeader>
           <div className="grid gap-4 py-5 sm:grid-cols-2">
             <RequiredLegend className="sm:col-span-2" />
-            {error ? <p role="alert" className="rounded-lg bg-rose-50 p-3 text-sm text-rose-700 sm:col-span-2">{error}</p> : null}
+            {error ? (
+              <InlineNotice tone="error" className="sm:col-span-2">
+                {error}
+              </InlineNotice>
+            ) : null}
             <div className="space-y-1.5">
-              <FormLabel htmlFor="medication-code" required>{t('code')}</FormLabel>
+              <FormLabel htmlFor="medication-code" required>
+                {t('code')}
+              </FormLabel>
               <Input
                 id="medication-code"
                 aria-describedby="medication-code-description"
                 value={code}
                 onChange={(event) => setCode(event.target.value)}
               />
-              <FieldDescription id="medication-code-description">{t('codeDescription')}</FieldDescription>
+              <FieldDescription id="medication-code-description">
+                {t('codeDescription')}
+              </FieldDescription>
             </div>
             <div className="space-y-1.5">
               <div className="flex items-center gap-1.5">
@@ -143,7 +152,9 @@ export function MedicationFormDialog({
               />
             </div>
             <div className="space-y-1.5 sm:col-span-2">
-              <FormLabel htmlFor="medication-name" required>{t('name')}</FormLabel>
+              <FormLabel htmlFor="medication-name" required>
+                {t('name')}
+              </FormLabel>
               <Input
                 id="medication-name"
                 placeholder={t('namePlaceholder')}
@@ -169,8 +180,39 @@ export function MedicationFormDialog({
                 onChange={(event) => setStrength(event.target.value)}
               />
             </div>
-            <div className="space-y-1.5"><FormLabel htmlFor="medication-unit">{t('unit')}</FormLabel><Select value={unit} onValueChange={(value) => setUnit(value as MedicationUnitValue)}><SelectTrigger id="medication-unit" className="w-full"><SelectValue /></SelectTrigger><SelectContent>{MEDICATION_UNITS.map((value) => <SelectItem key={value} value={value}>{formatStatusLabel(value, locale)}</SelectItem>)}</SelectContent></Select></div>
-            <div className="space-y-1.5"><FormLabel htmlFor="medication-category">{t('category')}</FormLabel><Select value={category} onValueChange={(value) => setCategory(value as MedicationCategoryValue)}><SelectTrigger id="medication-category" className="w-full"><SelectValue /></SelectTrigger><SelectContent>{MEDICATION_CATEGORIES.map((value) => <SelectItem key={value} value={value}>{formatStatusLabel(value, locale)}</SelectItem>)}</SelectContent></Select></div>
+            <div className="space-y-1.5">
+              <FormLabel htmlFor="medication-unit">{t('unit')}</FormLabel>
+              <Select value={unit} onValueChange={(value) => setUnit(value as MedicationUnitValue)}>
+                <SelectTrigger id="medication-unit" className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {MEDICATION_UNITS.map((value) => (
+                    <SelectItem key={value} value={value}>
+                      {formatStatusLabel(value, locale)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <FormLabel htmlFor="medication-category">{t('category')}</FormLabel>
+              <Select
+                value={category}
+                onValueChange={(value) => setCategory(value as MedicationCategoryValue)}
+              >
+                <SelectTrigger id="medication-category" className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {MEDICATION_CATEGORIES.map((value) => (
+                    <SelectItem key={value} value={value}>
+                      {formatStatusLabel(value, locale)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
             <div className="space-y-1.5 sm:col-span-2">
               <FormLabel htmlFor="medication-reorder-level">{t('reorderLevel')}</FormLabel>
               <Input
@@ -182,7 +224,9 @@ export function MedicationFormDialog({
                 value={reorderLevel}
                 onChange={(event) => setReorderLevel(event.target.value)}
               />
-              <FieldDescription id="medication-reorder-level-description">{t('reorderLevelDescription')}</FieldDescription>
+              <FieldDescription id="medication-reorder-level-description">
+                {t('reorderLevelDescription')}
+              </FieldDescription>
             </div>
             {/* P10-T16. The flag is what filters the immunisation picker on
                 the encounter: a catalog row nobody marks here cannot be
@@ -196,12 +240,18 @@ export function MedicationFormDialog({
                 />
                 {t('isVaccine')}
               </FormLabel>
-              <FieldDescription id="medication-is-vaccine-description" className="pl-6">{t('isVaccineDescription')}</FieldDescription>
+              <FieldDescription id="medication-is-vaccine-description" className="pl-6">
+                {t('isVaccineDescription')}
+              </FieldDescription>
             </div>
           </div>
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>{t('cancel')}</Button>
-            <Button type="submit" disabled={saveMutation.isPending}>{saveMutation.isPending ? t('saving') : t('saveMedication')}</Button>
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+              {t('cancel')}
+            </Button>
+            <Button type="submit" disabled={saveMutation.isPending}>
+              {saveMutation.isPending ? t('saving') : t('saveMedication')}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

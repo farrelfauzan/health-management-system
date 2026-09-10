@@ -28,6 +28,7 @@ import {
 import { useTranslations } from 'next-intl';
 
 import { SendInvoiceChannelOption } from '#components/client/billing/send-invoice-channel-option';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { resolveApiErrorMessage } from '#lib/api/resolve-api-error-message';
 import { buildSendAt } from '#lib/document-delivery/build-send-at';
 import { resolveDeliveryRefusal } from '#lib/document-delivery/resolve-delivery-refusal';
@@ -130,9 +131,7 @@ export function SendInvoiceDialog({ invoice, open, onOpenChange }: SendInvoiceDi
             <p className="text-sm font-medium">{t('channels')}</p>
             {readinessQuery.isPending ? <Skeleton className="h-20 w-full" /> : null}
             {readinessQuery.isError ? (
-              <p role="alert" className="text-sm text-rose-700">
-                {tc('loadError')}
-              </p>
+              <InlineNotice tone="error">{tc('loadError')}</InlineNotice>
             ) : null}
             {readiness.length > 0 ? (
               <ul className="space-y-2">
@@ -214,14 +213,7 @@ export function SendInvoiceDialog({ invoice, open, onOpenChange }: SendInvoiceDi
             ) : null}
           </div>
 
-          {formError ? (
-            <p
-              role="alert"
-              className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700"
-            >
-              {formError}
-            </p>
-          ) : null}
+          {formError ? <InlineNotice tone="error">{formError}</InlineNotice> : null}
 
           <div className="flex justify-end gap-2">
             <Button

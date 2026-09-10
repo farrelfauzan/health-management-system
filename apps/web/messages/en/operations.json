@@ -873,7 +873,15 @@
       "quotaMustBePositive": "Quota must be a whole number of at least 1, or empty for no limit.",
       "emptyRoomClasses": "No room classes yet",
       "emptyRoomClassesDescription": "Add a class — VIP, Kelas 1, or whatever this clinic calls its wards — before creating rooms.",
-      "noRoomClasses": "No active room classes. Add one under the Classes tab first."
+      "noRoomClasses": "No active room classes. Add one under the Classes tab first.",
+      "selectWard": "Select a ward",
+      "selectRoom": "Select a room",
+      "noWards": "No wards yet. Create a ward under the Wards tab first.",
+      "noWardsDescription": "Every room belongs to a ward. Create one first, then come back to add rooms.",
+      "noRooms": "No rooms yet. Create a room under the Rooms tab first.",
+      "noRoomsDescription": "Every bed belongs to a room. Create one first, then come back to add beds.",
+      "goToWards": "Go to Wards",
+      "goToRooms": "Go to Rooms"
     },
     "admissions": {
       "title": "Admissions",

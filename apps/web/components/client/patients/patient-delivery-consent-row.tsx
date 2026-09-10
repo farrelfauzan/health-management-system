@@ -43,9 +43,12 @@ export function PatientDeliveryConsentRow({
   const actionLabel = isGranted ? t('withdraw') : consent === null ? t('capture') : t('recapture');
 
   return (
-    <li className="space-y-2 rounded-lg border border-slate-200 px-3 py-2">
-      <div className="flex items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
+    <li className="min-w-0 space-y-2 rounded-lg border border-slate-200 px-3 py-2">
+      {/* P19-T12. The action label has three lengths ("Catat ulang persetujuan"
+          is the longest); the row wraps so the button drops below the status
+          block instead of widening the card past its column. */}
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="flex min-w-0 flex-wrap items-center gap-2">
           <p className="text-sm font-medium text-slate-900">{t(`channels.${readiness.channel}`)}</p>
           <Badge
             className={`rounded-full border-transparent text-[11px] font-medium ${STATE_CLASSES[state]}`}
@@ -58,6 +61,7 @@ export function PatientDeliveryConsentRow({
             type="button"
             size="sm"
             variant={isGranted ? 'ghost' : 'outline'}
+            className="ml-auto h-auto min-h-8 max-w-full whitespace-normal"
             disabled={isSaving}
             onClick={() => onChange(readiness.channel, !isGranted)}
           >

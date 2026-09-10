@@ -15,6 +15,7 @@ import {
 } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { labOrderControllerCancelLabOrderV1 } from '#lib/api/generated/laboratory-orders/laboratory-orders';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { parseApiSuccess } from '#lib/api/response';
@@ -80,14 +81,7 @@ export function EncounterLabCancelDialog({
           placeholder={t('encounters.laboratory.cancel.reasonPlaceholder')}
           rows={3}
         />
-        {actionError ? (
-          <p
-            role="alert"
-            className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700"
-          >
-            {actionError}
-          </p>
-        ) : null}
+        {actionError ? <InlineNotice tone="error">{actionError}</InlineNotice> : null}
         <DialogFooter>
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
             {t('encounters.laboratory.cancel.keep')}

@@ -15,6 +15,7 @@ import {
   type RegistrationsFilterValues,
 } from '#components/client/registrations/registrations-filter-card';
 import { RegistrationsTable } from '#components/client/registrations/registrations-table';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { NumberedPagination } from '#components/client/shared/numbered-pagination';
 import { PageHeader } from '#components/shared/page-header';
 import type { RegistrationTransitionTarget } from '#lib/registrations/registration-transition-meta';
@@ -112,9 +113,7 @@ export function RegistrationsQueuePanel({
       />
 
       {registrationsQuery.error && registrationsQuery.registrations.length > 0 ? (
-        <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
-          {t('errorTitle')}
-        </p>
+        <InlineNotice tone="error">{t('errorTitle')}</InlineNotice>
       ) : null}
 
       <Card className="gap-0 rounded-xl border-slate-200 py-0 shadow-none">

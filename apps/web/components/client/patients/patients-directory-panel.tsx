@@ -13,6 +13,7 @@ import {
   type PatientsFilterValues,
 } from '#components/client/patients/patients-filter-card';
 import { PatientsTable } from '#components/client/patients/patients-table';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { NumberedPagination } from '#components/client/shared/numbered-pagination';
 import { PageHeader } from '#components/shared/page-header';
 import { buildPatientsCsv } from '#lib/patients/build-patients-csv';
@@ -60,11 +61,7 @@ export function PatientsDirectoryPanel({
     downloadTextFile({
       fileName: CSV_FILE_NAME,
       content: buildPatientsCsv(patientsQuery.patients, {
-        headers: [
-          t('patients.csv.fullName'),
-          t('patients.csv.status'),
-          t('patients.csv.doctors'),
-        ],
+        headers: [t('patients.csv.fullName'), t('patients.csv.status'), t('patients.csv.doctors')],
         status: (status) => t(`patients.status.${status}`),
       }),
       mimeType: CSV_MIME_TYPE,
@@ -109,9 +106,7 @@ export function PatientsDirectoryPanel({
       />
 
       {patientsQuery.error && patientsQuery.patients.length > 0 ? (
-        <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
-          {t('patients.errorDescription')}
-        </p>
+        <InlineNotice tone="error">{t('patients.errorDescription')}</InlineNotice>
       ) : null}
 
       <Card className="gap-0 rounded-xl border-slate-200 py-0 shadow-none">

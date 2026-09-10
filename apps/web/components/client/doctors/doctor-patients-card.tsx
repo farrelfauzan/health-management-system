@@ -6,6 +6,7 @@ import type { DoctorDetail, DoctorPatientAssignment } from '@hms/shared-types';
 import { Button, Can, Card, CardContent, CardHeader, CardTitle, Icon } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { AvatarInitials } from '#components/shared/avatar-initials';
 import { doctorPatientControllerUnassignDoctorFromPatientV1 } from '#lib/api/generated/doctor-patient/doctor-patient';
 import { parseApiSuccess } from '#lib/api/response';
@@ -51,14 +52,7 @@ export function DoctorPatientsCard({ doctor, onAssignPatient }: DoctorPatientsCa
         </Can>
       </CardHeader>
       <CardContent className="space-y-3">
-        {unassignError ? (
-          <p
-            role="alert"
-            className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700"
-          >
-            {unassignError}
-          </p>
-        ) : null}
+        {unassignError ? <InlineNotice tone="error">{unassignError}</InlineNotice> : null}
         {!doctor.patients ? (
           <p className="text-sm text-slate-500">{t('doctors.patientsPermission')}</p>
         ) : doctor.patients.length === 0 ? (

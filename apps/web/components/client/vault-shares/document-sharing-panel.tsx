@@ -14,6 +14,7 @@ import {
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { ShareDocumentDialog } from '#components/client/vault-shares/share-document-dialog';
 import { ShareRow } from '#components/client/vault-shares/share-row';
 import { useDocumentShares } from '#lib/vault-shares/use-document-shares';
@@ -57,7 +58,9 @@ export function DocumentSharingPanel({
           {sharesQuery.isPending ? (
             <p className="py-4 text-sm text-slate-500">{t('loading')}</p>
           ) : sharesQuery.isError ? (
-            <p className="py-4 text-sm text-red-700">{t('error')}</p>
+            <InlineNotice tone="error" className="my-4">
+              {t('error')}
+            </InlineNotice>
           ) : sharesQuery.shares.length === 0 ? (
             <p className="py-4 text-sm text-slate-500">{t('empty')}</p>
           ) : (

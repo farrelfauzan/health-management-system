@@ -11,6 +11,7 @@ import {
 } from '#components/client/clinic-documents/clinic-document-filters';
 import { ClinicDocumentUploadDialog } from '#components/client/clinic-documents/clinic-document-upload-dialog';
 import { ClinicDocumentsTable } from '#components/client/clinic-documents/clinic-documents-table';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { PageHeader } from '#components/shared/page-header';
 import { useClinicDocuments } from '#lib/clinic-documents/use-clinic-documents';
 
@@ -36,9 +37,7 @@ type VisibilityFilter = DocumentVisibilityValue | typeof CLINIC_DOCUMENT_FILTER_
 export function ClinicCorpusPanel() {
   const t = useTranslations('clinicCorpus');
   const [isUploadOpen, setIsUploadOpen] = useState(false);
-  const [ingestStatus, setIngestStatus] = useState<IngestStatusFilter>(
-    CLINIC_DOCUMENT_FILTER_ALL,
-  );
+  const [ingestStatus, setIngestStatus] = useState<IngestStatusFilter>(CLINIC_DOCUMENT_FILTER_ALL);
   const [visibility, setVisibility] = useState<VisibilityFilter>(CLINIC_DOCUMENT_FILTER_ALL);
   const [notice, setNotice] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -80,26 +79,20 @@ export function ClinicCorpusPanel() {
         onIngestStatusChange={setIngestStatus}
         onVisibilityChange={setVisibility}
       />
-      {notice ? (
-        <p className="rounded-lg bg-emerald-50 px-4 py-3 text-sm text-emerald-900">{notice}</p>
-      ) : null}
-      {error ? (
-        <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-900">{error}</p>
-      ) : null}
+      {notice ? <InlineNotice tone="success">{notice}</InlineNotice> : null}
+      {error ? <InlineNotice tone="error">{error}</InlineNotice> : null}
       <Card>
         <CardContent className="p-0">
           {documentsQuery.isLoading ? (
             <p className="p-6 text-sm text-slate-500">{t('states.loading')}</p>
           ) : documentsQuery.isError ? (
-            <p className="p-6 text-sm text-red-700">{t('states.error')}</p>
+            <InlineNotice tone="error" className="m-6">
+              {t('states.error')}
+            </InlineNotice>
           ) : rows.length === 0 ? (
             <p className="p-6 text-sm text-slate-500">{t('states.empty')}</p>
           ) : (
-            <ClinicDocumentsTable
-              documents={rows}
-              onResult={handleResult}
-              onError={handleError}
-            />
+            <ClinicDocumentsTable documents={rows} onResult={handleResult} onError={handleError} />
           )}
         </CardContent>
       </Card>

@@ -4,10 +4,13 @@ import { PatientDetailPanel } from '#components/client/patients/patient-detail-p
 import { ACCESS_TOKEN_COOKIE_NAME } from '#lib/auth/access-token-cookie';
 import { resolveSessionClaims } from '#lib/auth/session-claims';
 import { SESSION_HINT_COOKIE_NAME } from '#lib/auth/session-hint-cookie';
+import { parseTabSearchParam } from '#lib/navigation/parse-tab-search-param';
+import { PATIENT_DETAIL_TABS } from '#lib/patients/patient-detail-tabs';
 import { isFeatureEnabled } from '#lib/shell/is-feature-enabled';
 
 type DoctorPatientDetailPageProps = {
   params: Promise<{ id: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
 /**
@@ -17,8 +20,12 @@ type DoctorPatientDetailPageProps = {
  * bought the integration. Visibility only — `FeatureGuard` refuses the
  * endpoint whatever the page decided.
  */
-export default async function DoctorPatientDetailPage({ params }: DoctorPatientDetailPageProps) {
+export default async function DoctorPatientDetailPage({
+  params,
+  searchParams,
+}: DoctorPatientDetailPageProps) {
   const { id } = await params;
+  const query = await searchParams;
   const cookieStore = await cookies();
   const claims = resolveSessionClaims({
     accessToken: cookieStore.get(ACCESS_TOKEN_COOKIE_NAME)?.value,
@@ -28,6 +35,7 @@ export default async function DoctorPatientDetailPage({ params }: DoctorPatientD
   return (
     <PatientDetailPanel
       patientId={id}
+      initialTab={parseTabSearchParam(query.tab, PATIENT_DETAIL_TABS)}
       isSatusehatEnabled={isFeatureEnabled(claims, 'satusehat')}
       isLaboratoryEnabled={isFeatureEnabled(claims, 'laboratory')}
     />

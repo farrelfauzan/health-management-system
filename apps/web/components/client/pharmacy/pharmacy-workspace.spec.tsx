@@ -8,6 +8,12 @@ import { PharmacyWorkspace } from './pharmacy-workspace';
 
 vi.mock('./inventory-panel', () => ({ InventoryPanel: () => <p>Inventory content</p> }));
 vi.mock('./pharmacy-panel', () => ({ PharmacyPanel: () => <p>Queue content</p> }));
+// The strip keeps its tab in the URL (SJ-162), so it needs a router to read.
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({ push: vi.fn(), replace: vi.fn(), refresh: vi.fn() }),
+  usePathname: () => '/admin/pharmacy',
+  useSearchParams: () => new URLSearchParams(),
+}));
 
 const initialQuery = { page: 1, limit: 10 };
 

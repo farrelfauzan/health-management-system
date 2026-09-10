@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl';
 import { DocumentsFilters } from '#components/client/patient-documents/documents-filters';
 import { DocumentsTable } from '#components/client/patient-documents/documents-table';
 import { UploadDocumentDialog } from '#components/client/patient-documents/upload-document-dialog';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { EmptyState } from '#components/shared/empty-state';
 import type { PatientDocumentsFilters } from '#lib/patient-documents/patient-documents-filters';
 import { usePatientDocuments } from '#lib/patient-documents/use-patient-documents';
@@ -60,7 +61,11 @@ export function PatientDocumentsPanel({ patientId }: PatientDocumentsPanelProps)
       );
     }
     if (documentsQuery.isError) {
-      return <p className="p-6 text-sm text-red-700">{t('loadError')}</p>;
+      return (
+        <InlineNotice tone="error" className="m-6">
+          {t('loadError')}
+        </InlineNotice>
+      );
     }
     if (documentsQuery.documents.length === 0) {
       return (
@@ -111,12 +116,8 @@ export function PatientDocumentsPanel({ patientId }: PatientDocumentsPanelProps)
         ) : null}
       </div>
       <DocumentsFilters filters={filters} onFiltersChange={setFilters} />
-      {notice ? (
-        <p className="rounded-lg bg-emerald-50 px-4 py-3 text-sm text-emerald-900">{notice}</p>
-      ) : null}
-      {error ? (
-        <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-900">{error}</p>
-      ) : null}
+      {notice ? <InlineNotice tone="success">{notice}</InlineNotice> : null}
+      {error ? <InlineNotice tone="error">{error}</InlineNotice> : null}
       <Card className="rounded-xl border-slate-200 py-0 shadow-none">
         <CardContent className="p-0">{renderBody()}</CardContent>
       </Card>

@@ -9,6 +9,7 @@ import { ConversationHandoffActions } from '#components/client/conversations/con
 import { ConversationReplyForm } from '#components/client/conversations/conversation-reply-form';
 import { ConversationStateBadge } from '#components/client/conversations/conversation-state-badge';
 import { ConversationTranscriptMessage } from '#components/client/conversations/conversation-transcript-message';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { PageHeader } from '#components/shared/page-header';
 import { useConversationTranscript } from '#lib/conversations/use-conversation-transcript';
 
@@ -26,9 +27,7 @@ type ConversationTranscriptPanelProps = {
  * ascending order keeps the cursor pointing at *older* messages, which is the
  * only direction this list ever grows in.
  */
-export function ConversationTranscriptPanel({
-  conversationId,
-}: ConversationTranscriptPanelProps) {
+export function ConversationTranscriptPanel({ conversationId }: ConversationTranscriptPanelProps) {
   const t = useTranslations('conversations.transcript');
   const [notice, setNotice] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -49,7 +48,11 @@ export function ConversationTranscriptPanel({
     return <p className="p-6 text-sm text-slate-500">{t('loading')}</p>;
   }
   if (transcriptQuery.isError || transcript === undefined) {
-    return <p className="p-6 text-sm text-red-700">{t('error')}</p>;
+    return (
+      <InlineNotice tone="error" className="m-6">
+        {t('error')}
+      </InlineNotice>
+    );
   }
 
   const conversation = transcript.conversation;
@@ -70,10 +73,7 @@ export function ConversationTranscriptPanel({
         }
       />
       <div className="flex flex-wrap items-center gap-3">
-        <ConversationStateBadge
-          state={conversation.state}
-          isBlocked={conversation.isBlocked}
-        />
+        <ConversationStateBadge state={conversation.state} isBlocked={conversation.isBlocked} />
         <Link
           href="/admin/conversations"
           className="text-sm text-slate-600 underline-offset-4 hover:underline"
@@ -81,12 +81,8 @@ export function ConversationTranscriptPanel({
           {t('backToInbox')}
         </Link>
       </div>
-      {notice ? (
-        <p className="rounded-lg bg-emerald-50 px-4 py-3 text-sm text-emerald-900">{notice}</p>
-      ) : null}
-      {error ? (
-        <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-900">{error}</p>
-      ) : null}
+      {notice ? <InlineNotice tone="success">{notice}</InlineNotice> : null}
+      {error ? <InlineNotice tone="error">{error}</InlineNotice> : null}
       <Card>
         <CardContent className="space-y-3 p-5">
           {transcript.nextCursor === null ? null : (

@@ -8,7 +8,8 @@ import { InvoicesPanel } from '#components/client/billing/invoices-panel';
 import { ServiceTariffsPanel } from '#components/client/billing/service-tariffs-panel';
 import { DocumentTemplatesPanel } from '#components/client/document-templates/document-templates-panel';
 import { PageHeader } from '#components/shared/page-header';
-import type { BillingTab } from '#lib/billing/billing-tab';
+import { BILLING_TABS, type BillingTab } from '#lib/billing/billing-tab';
+import { useTabSearchParam } from '#lib/navigation/use-tab-search-param';
 
 type BillingWorkspaceProps = {
   /**
@@ -33,20 +34,21 @@ export function BillingWorkspace({ currentUserId, initialTab }: BillingWorkspace
     report: canReadInvoices,
     templates: canReadTemplates,
   };
-  const defaultTab =
-    initialTab !== undefined && readableTabs[initialTab] ? initialTab : resolveDefaultTab();
-
-  function resolveDefaultTab(): string {
-    if (canReadInvoices) {
-      return 'invoices';
-    }
-    return canReadTariffs ? 'tariffs' : 'templates';
-  }
+  const allowedTabs = BILLING_TABS.filter((tab) => readableTabs[tab]);
+  const { tab, setTab } = useTabSearchParam<BillingTab>({
+    allowed: allowedTabs,
+    fallback: allowedTabs[0] ?? 'invoices',
+    initialTab,
+  });
 
   return (
     <div className="space-y-6">
       <PageHeader title={t('title')} subtitle={t('subtitle')} breadcrumbs={[t('title')]} />
-      <Tabs defaultValue={defaultTab} className="space-y-5">
+      <Tabs
+        value={tab}
+        onValueChange={(value) => setTab(value as BillingTab)}
+        className="space-y-5"
+      >
         <TabsList>
           {canReadInvoices ? <TabsTrigger value="invoices">{t('invoices')}</TabsTrigger> : null}
           {canReadTariffs ? <TabsTrigger value="tariffs">{t('tariffs')}</TabsTrigger> : null}

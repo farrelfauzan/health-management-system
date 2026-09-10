@@ -16,6 +16,7 @@ import {
 } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { patientDocumentDetailControllerDeleteDocumentV1 } from '#lib/api/generated/document-management/document-management';
 import { resolveApiErrorMessage } from '#lib/api/resolve-api-error-message';
 import { parseApiSuccess } from '#lib/api/response';
@@ -91,7 +92,7 @@ export function DeleteDocumentDialog({
             value={reason}
             onChange={(event) => setReason(event.target.value)}
           />
-          {error ? <p className="text-sm text-red-700">{error}</p> : null}
+          {error ? <InlineNotice tone="error">{error}</InlineNotice> : null}
         </div>
         <DialogFooter>
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>

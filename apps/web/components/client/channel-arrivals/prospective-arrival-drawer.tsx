@@ -18,6 +18,7 @@ import { useTranslations } from 'next-intl';
 
 import { ProspectiveMatchCandidateRow } from '#components/client/channel-arrivals/prospective-match-candidate-row';
 import { PatientFormDialog } from '#components/client/patients/patient-form-dialog';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { prospectivePatientControllerLinkToExistingPatientV1 } from '#lib/api/generated/customer-service/customer-service';
 import { resolveApiErrorMessage } from '#lib/api/resolve-api-error-message';
 import { invalidateProspectiveArrivalQueries } from '#lib/prospective-arrivals/invalidate-prospective-arrival-queries';
@@ -153,7 +154,7 @@ export function ProspectiveArrivalDrawer({
           {candidatesQuery.isLoading ? (
             <p className="text-sm text-slate-500">{t('searching')}</p>
           ) : candidatesQuery.isError ? (
-            <p className="text-sm text-red-700">{t('searchFailed')}</p>
+            <InlineNotice tone="error">{t('searchFailed')}</InlineNotice>
           ) : candidatesQuery.candidates.length === 0 ? (
             <p className="text-sm text-slate-500">{t('noCandidates')}</p>
           ) : (

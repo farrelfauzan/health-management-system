@@ -5,6 +5,7 @@ import { Card, CardContent, DatePicker, Label } from '@hms/ui';
 import { useFormatter, useTranslations } from 'next-intl';
 
 import { CashierReportBreakdownCard } from '#components/client/billing/cashier-report-breakdown-card';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { useCashierDailyReport } from '#lib/billing/use-cashier-daily-report';
 import { formatStatusLabel } from '#lib/shared/status-label';
 
@@ -59,14 +60,7 @@ export function CashierReportPanel() {
         <p className="text-sm text-slate-500">{t('loadingReport')}</p>
       ) : null}
 
-      {reportQuery.error ? (
-        <p
-          role="alert"
-          className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700"
-        >
-          {t('invoiceError')}
-        </p>
-      ) : null}
+      {reportQuery.error ? <InlineNotice tone="error">{t('invoiceError')}</InlineNotice> : null}
 
       {report ? (
         <div className="grid gap-5 lg:grid-cols-2">
