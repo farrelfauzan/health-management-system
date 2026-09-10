@@ -98,6 +98,7 @@ describe('Document management integration', () => {
   type PrismaMock = {
     document: Record<string, jest.Mock>;
     documentChunk: Record<string, jest.Mock>;
+    managedDocument: { findFirst: jest.Mock; findMany: jest.Mock; count: jest.Mock };
     [key: string]: unknown;
   };
 
@@ -516,9 +517,120 @@ describe('Document management integration', () => {
       .delete(`/api/v1/admin/documents/${DOCUMENT_ID}`)
       .set('Authorization', `Bearer ${token}`)
       .expect(403);
+    await request(server)
+      .get('/api/v1/admin/documents/approval-context')
+      .set('Authorization', `Bearer ${token}`)
+      .expect(403);
+    await request(server)
+      .post('/api/v1/admin/documents/submit-for-approval')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ documentIds: [DOCUMENT_ID], approverIds: [ADMIN_USER_ID] })
+      .expect(403);
 
     expect(objectStorageServiceMock.getSignedUploadUrl).not.toHaveBeenCalled();
     expect(objectStorageServiceMock.getSignedUrl).not.toHaveBeenCalled();
+  });
+
+  describe('corpus submission (P19)', () => {
+    it('reports the all-off approval context when no corpus type is configured', async () => {
+      mockAdmin();
+      const token = await buildToken(ADMIN_USER_ID, 'admin@hms.test');
+
+      const response = await request(app.getHttpServer())
+        .get('/api/v1/admin/documents/approval-context')
+        .set('Authorization', `Bearer ${token}`)
+        .expect(200);
+
+      // A clinic that never switched approval on has no type row, and the
+      // screen must still render rather than meet a 404.
+      expect(response.body.data).toEqual({
+        isApprovalRequired: false,
+        allowSelfApproval: false,
+        requiredApprovals: 1,
+        defaultApprovers: [],
+      });
+    });
+
+    it('reads `approval-context` as a route, never as a document id', async () => {
+      mockAdmin();
+      const token = await buildToken(ADMIN_USER_ID, 'admin@hms.test');
+
+      const response = await request(app.getHttpServer())
+        .get('/api/v1/admin/documents/approval-context')
+        .set('Authorization', `Bearer ${token}`);
+
+      // The UUID pipe on `:id` would answer 400 if the literal segment were
+      // being parsed as an id instead.
+      expect(response.status).not.toBe(400);
+      expect(response.status).not.toBe(404);
+    });
+
+    it('refuses a submission that names no approver', async () => {
+      mockAdmin();
+      const token = await buildToken(ADMIN_USER_ID, 'admin@hms.test');
+
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/admin/documents/submit-for-approval')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ documentIds: [DOCUMENT_ID], approverIds: [] });
+
+      // A round with no approver is a document nobody can issue, so the
+      // schema refuses it before any row is written.
+      expect(response.status).toBe(400);
+    });
+
+    it('reports a document that is already issued as that item’s own refusal', async () => {
+      mockAdmin();
+      const token = await buildToken(ADMIN_USER_ID, 'admin@hms.test');
+      documentRows.push(buildStoredDocumentRow());
+      prismaServiceMock.managedDocument.findFirst.mockResolvedValueOnce({
+        id: '44444444-4444-4444-8444-444444444444',
+        status: 'ISSUED',
+        typeId: '55555555-5555-4555-8555-555555555555',
+        type: {
+          id: '55555555-5555-4555-8555-555555555555',
+          code: 'CLINIC_CORPUS_DOCUMENT',
+          name: 'Dokumen korpus klinik',
+          behavior: 'CLINIC_CORPUS',
+          contentMode: 'UPLOAD_ONLY',
+          requiresPatient: false,
+          requiresDoctor: false,
+          isActive: true,
+          isApprovalRequired: true,
+          allowSelfApproval: false,
+          requiredApprovals: 1,
+        },
+      } as never);
+
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/admin/documents/submit-for-approval')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ documentIds: [DOCUMENT_ID], approverIds: [ADMIN_USER_ID] })
+        .expect(200);
+
+      // The batch answers 200 with a per-item failure rather than failing
+      // whole: one already-issued document must not cost the rest of a
+      // selection its submission.
+      expect(response.body.data.submittedCount).toBe(0);
+      expect(response.body.data.failedCount).toBe(1);
+      expect(response.body.data.items[0].error.code).toBe('DOCUMENT_NOT_SUBMITTABLE');
+    });
+
+    it('reports a document with a purpose that is never retrieved as a refusal', async () => {
+      mockAdmin();
+      const token = await buildToken(ADMIN_USER_ID, 'admin@hms.test');
+      documentRows.push(buildStoredDocumentRow({ purpose: 'GENERAL' }));
+
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/admin/documents/submit-for-approval')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ documentIds: [DOCUMENT_ID], approverIds: [ADMIN_USER_ID] })
+        .expect(200);
+
+      expect(response.body.data.failedCount).toBe(1);
+      expect(response.body.data.items[0].message).toBeUndefined();
+      expect(response.body.data.items[0].error.message).toContain('never retrieved');
+    });
   });
 
   it('queues a re-ingest rather than embedding inline, keeping the old chunks answering', async () => {

@@ -1,10 +1,13 @@
 import { ConflictException, Inject, Injectable, forwardRef } from '@nestjs/common';
 
 import {
+  ClinicCorpusApprovalContextView,
   ClinicDocumentApprovalView,
+  DOCUMENT_NOT_SUBMITTABLE_ERROR_CODE,
   DocumentIngestStatusValue,
   DocumentRecord,
   ManagedDocumentRecord,
+  SubmitDocumentForApprovalInput,
 } from '@hms/shared-types';
 
 import { CurrentUser } from '../../../common/auth/current-user.type';
@@ -110,6 +113,64 @@ export class ClinicCorpusApprovalService {
    */
   async sendForReview(document: DocumentRecord, actor: CurrentUser): Promise<ManagedDocumentRecord> {
     return this.registerGovernedDocument(document, actor);
+  }
+
+  /**
+   * Registers a corpus document if it needs it, then submits it to a named
+   * panel (`P19`).
+   *
+   * The dead end this exists to end: an upload under an active policy
+   * auto-creates its registry row at `DRAFT` via {@link syncRegistryRow}, so
+   * the "send for review" action — which only ever *registered* — hid itself
+   * on exactly the documents that needed submitting, and the retrieval gate
+   * dropped all of them. Both states arrive here, and both end at
+   * `PENDING_APPROVAL`.
+   *
+   * Everything else is deliberately not reimplemented. The panel rules, the
+   * content freeze, the self-approval refusal and the audit trail are
+   * {@link DocumentApprovalService.submitForApproval}'s, unchanged, because a
+   * second copy of them is a second copy that can be wrong.
+   */
+  async submitForApproval(
+    document: DocumentRecord,
+    input: SubmitDocumentForApprovalInput,
+    actor: CurrentUser,
+  ): Promise<ManagedDocumentRecord> {
+    const existing = await this.findGoverned(document.id);
+    if (existing !== null) {
+      assertCorpusSubmittable(existing);
+    }
+    const governed = await this.registerGovernedDocument(document, actor);
+    await this.approvalService.submitForApproval(governed.id, input, actor);
+    return governed;
+  }
+
+  /**
+   * What the submit dialog needs before it can name a panel (`P19`): the
+   * type's policy and its configured default approvers.
+   *
+   * A property of the type, so it is read once for the screen rather than
+   * repeated onto every row of a list.
+   */
+  async resolveApprovalContext(): Promise<ClinicCorpusApprovalContextView> {
+    const type = await this.documentTypeService.findTypeByCode(CLINIC_CORPUS_TYPE_CODE);
+    if (type === null) {
+      return {
+        isApprovalRequired: false,
+        allowSelfApproval: false,
+        requiredApprovals: 1,
+        defaultApprovers: [],
+      };
+    }
+    return {
+      isApprovalRequired: type.isApprovalRequired,
+      allowSelfApproval: type.allowSelfApproval,
+      requiredApprovals: type.requiredApprovals,
+      defaultApprovers: type.defaultApprovers.map((approver) => ({
+        id: approver.id,
+        email: approver.email,
+      })),
+    };
   }
 
   /**
@@ -276,4 +337,30 @@ export class ClinicCorpusApprovalService {
     const type = await this.documentTypeService.findTypeByCode(CLINIC_CORPUS_TYPE_CODE);
     return type?.isApprovalRequired ?? false;
   }
+}
+
+/**
+ * Only a document with no round and no decision behind it may be submitted
+ * from the corpus screen (`P19`).
+ *
+ * Checked here, before anything is written, rather than left to the approval
+ * service: registering runs first and `PENDING_APPROVAL` would already have
+ * been voided by the time that refusal arrived. The three refused states each
+ * have their own door — an open round is withdrawn, an issued document is
+ * re-opened by an edit that changes what the assistant may quote, an archived
+ * one is not in use at all — and quietly re-submitting any of them would take
+ * a working document out of the assistant's reach without anybody asking.
+ */
+function assertCorpusSubmittable(governed: ManagedDocumentRecord): void {
+  if (governed.status === 'DRAFT') {
+    return;
+  }
+  throw new ConflictException({
+    message:
+      governed.status === 'PENDING_APPROVAL'
+        ? 'This document is already waiting for approval'
+        : 'Only a document that has not been submitted can be sent for approval',
+    code: DOCUMENT_NOT_SUBMITTABLE_ERROR_CODE,
+    errors: { managedDocumentId: governed.id, status: governed.status },
+  });
 }

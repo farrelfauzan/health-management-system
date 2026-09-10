@@ -113,4 +113,39 @@ export const DOCUMENT_MANAGEMENT_EXAMPLES = {
     deletedAt: '2026-08-03T10:00:00.000Z',
     chunksRemoved: 12,
   },
+  approvalContext: {
+    isApprovalRequired: true,
+    allowSelfApproval: false,
+    requiredApprovals: 1,
+    defaultApprovers: [
+      { id: 'd7c3b2a1-4e5f-4a6b-8c9d-0e1f2a3b4c5d', email: 'kepala.klinik@salingjaga.id' },
+    ],
+  },
+  submitForApprovalRequest: {
+    documentIds: [
+      '2f6d1a4c-8b9e-4c1d-9a2f-5e7b3c0d8a11',
+      '9f1c7c2e-3a52-4f0b-9e33-1c9a5f0a77b1',
+    ],
+    approverIds: ['d7c3b2a1-4e5f-4a6b-8c9d-0e1f2a3b4c5d'],
+    dueAt: '2026-09-17T09:00:00.000Z',
+  },
+  bulkSubmission: {
+    submittedCount: 1,
+    failedCount: 1,
+    items: [
+      {
+        documentId: '2f6d1a4c-8b9e-4c1d-9a2f-5e7b3c0d8a11',
+        isSubmitted: true,
+        error: null,
+      },
+      {
+        documentId: '9f1c7c2e-3a52-4f0b-9e33-1c9a5f0a77b1',
+        isSubmitted: false,
+        error: {
+          code: 'DOCUMENT_NOT_SUBMITTABLE',
+          message: 'This document is already waiting for approval',
+        },
+      },
+    ],
+  },
 } as const;

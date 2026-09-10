@@ -22,6 +22,7 @@ import { DOCUMENT_MANAGEMENT_EXAMPLES } from '../../../common/openapi/document-m
 import { ConfirmClinicDocumentUploadDto } from '../dto/confirm-clinic-document-upload.dto';
 import { CreateClinicDocumentUploadUrlDto } from '../dto/create-clinic-document-upload-url.dto';
 import { ListClinicDocumentsQueryDto } from '../dto/list-clinic-documents-query.dto';
+import { SubmitClinicDocumentsForApprovalDto } from '../dto/submit-clinic-documents-for-approval.dto';
 import { UpdateClinicDocumentDto } from '../dto/update-clinic-document.dto';
 import { DocumentService } from '../service/document.service';
 
@@ -101,6 +102,21 @@ export class DocumentAdminController {
     const result = await this.documentService.listDocuments(query, actor);
 
     return { data: result.items, meta: { nextCursor: result.nextCursor } };
+  }
+
+  /** Declared before `:id` so `approval-context` is not parsed as a document id. */
+  @Get('approval-context')
+  @Auth([{ action: 'read', subject: 'Document' }])
+  @ApiEndpoint({
+    summary: 'Read the corpus approval policy and its default panel',
+    responseDescription:
+      'The `CLINIC_CORPUS_DOCUMENT` type’s approval policy and configured default approvers, which is what the submit dialog opens with. Read once for the screen rather than repeated onto every row of the list: all of it is a property of the type and not of any one document. A clinic with no corpus type configured gets the all-off answer rather than a 404.',
+    responseExample: { data: DOCUMENT_MANAGEMENT_EXAMPLES.approvalContext },
+  })
+  async getApprovalContext(@AuthUser() currentUser?: CurrentUser) {
+    const actor = this.assertAuthenticated(currentUser);
+
+    return { data: await this.documentService.getApprovalContext(actor) };
   }
 
   @Get(':id')
@@ -188,6 +204,34 @@ export class DocumentAdminController {
     const view = await this.documentService.reingestDocument(id, actor);
 
     return { data: view, message: 'Document queued for ingestion' };
+  }
+
+  /**
+   * Declared before `:id/...` for readability rather than necessity — it has
+   * one path segment where those have two, so no route shadows another.
+   */
+  @Post('submit-for-approval')
+  @HttpCode(200)
+  @Auth([{ action: 'write', subject: 'Document' }])
+  @ApiEndpoint({
+    summary: 'Submit clinic corpus documents for approval',
+    responseDescription:
+      'Registers each document with the registry if it has no row yet, then opens one approval round per document against the panel named here (FR-E5-09/10). This is the whole action from the corpus screen: an upload under an active policy already parks its document at DRAFT, so "register" alone left the admin with a governed document, no round, and no way to make one. One panel covers the whole selection, because a clinic onboarding twenty-eight SOPs is asking one group to read them, not twenty-eight different groups. Not a transaction: every document reports its own outcome, so one already-issued row costs the rest nothing. Per-item refusals are the ones the single-document path raises — `DOCUMENT_NOT_SUBMITTABLE` for anything not at DRAFT, `DOCUMENT_APPROVER_INELIGIBLE` for a name that cannot approve, `DOCUMENT_SELF_APPROVAL_FORBIDDEN` for a panel of only the submitter.',
+    responseExample: {
+      data: DOCUMENT_MANAGEMENT_EXAMPLES.bulkSubmission,
+      message: 'Documents submitted for approval',
+    },
+    requestType: SubmitClinicDocumentsForApprovalDto,
+    requestExample: DOCUMENT_MANAGEMENT_EXAMPLES.submitForApprovalRequest,
+  })
+  async submitDocumentsForApproval(
+    @Body() body: SubmitClinicDocumentsForApprovalDto,
+    @AuthUser() currentUser?: CurrentUser,
+  ) {
+    const actor = this.assertAuthenticated(currentUser);
+    const view = await this.documentService.submitForApproval(body, actor);
+
+    return { data: view, message: 'Documents submitted for approval' };
   }
 
   @Post(':id/send-for-review')

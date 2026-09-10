@@ -2,13 +2,18 @@ import {
   BadRequestException,
   ConflictException,
   ForbiddenException,
+  HttpException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 
 import {
+  CLINIC_DOCUMENT_SUBMISSION_FAILED_ERROR_CODE,
+  ClinicCorpusApprovalContextView,
   ClinicDocumentApprovalView,
+  ClinicDocumentBulkSubmissionView,
+  ClinicDocumentSubmissionItemView,
   ClinicDocumentDownloadView,
   ClinicDocumentListView,
   ClinicDocumentUploadUrlView,
@@ -25,6 +30,7 @@ import {
   DocumentUploadMimeTypeValue,
   INGESTIBLE_DOCUMENT_PURPOSES,
   ListClinicDocumentsQueryInput,
+  SubmitClinicDocumentsForApprovalInput,
   UpdateClinicDocumentInput,
   isDocumentImageMimeType,
 } from '@hms/shared-types';
@@ -318,6 +324,67 @@ export class DocumentService {
     return this.toViewWithApproval(record);
   }
 
+  /**
+   * Submits corpus documents to a named panel (`P19`).
+   *
+   * One panel for the whole selection, and one call for it. The screen this
+   * serves is an admin looking at twenty-eight documents that an upload
+   * silently parked at `DRAFT`, none of which the assistant can cite; asking
+   * them to name the same two approvers twenty-eight times is not a fix.
+   *
+   * Not a transaction, for the same reason a bulk approval is not: a
+   * selection that happens to include one already-issued document must not
+   * cost the other twenty-seven their submission. Every item reports its own
+   * refusal in the caller's language of error codes.
+   */
+  async submitForApproval(
+    input: SubmitClinicDocumentsForApprovalInput,
+    actor: CurrentUser,
+  ): Promise<ClinicDocumentBulkSubmissionView> {
+    await this.assertClinicCorpusScope(actor, 'write');
+    const items: ClinicDocumentSubmissionItemView[] = [];
+    for (const documentId of input.documentIds) {
+      items.push(await this.trySubmitForApproval(documentId, input, actor));
+    }
+    return {
+      submittedCount: items.filter((item) => item.isSubmitted).length,
+      failedCount: items.filter((item) => !item.isSubmitted).length,
+      items,
+    };
+  }
+
+  /** The type-level facts the corpus submit dialog opens with (`P19`). */
+  async getApprovalContext(actor: CurrentUser): Promise<ClinicCorpusApprovalContextView> {
+    await this.assertClinicCorpusScope(actor, 'read');
+    return this.corpusApprovalService.resolveApprovalContext();
+  }
+
+  private async trySubmitForApproval(
+    documentId: string,
+    input: SubmitClinicDocumentsForApprovalInput,
+    actor: CurrentUser,
+  ): Promise<ClinicDocumentSubmissionItemView> {
+    try {
+      const record = await this.requireClinicDocument(documentId);
+      if (this.resolveInitialIngestStatus(record.purpose, record.mimeType) !== 'PENDING') {
+        throw new BadRequestException(
+          `Documents with purpose ${record.purpose} are never retrieved, so there is nothing to review`,
+        );
+      }
+      await this.corpusApprovalService.submitForApproval(
+        record,
+        {
+          approverIds: input.approverIds,
+          ...(input.dueAt === undefined ? {} : { dueAt: input.dueAt }),
+        },
+        actor,
+      );
+      return { documentId, isSubmitted: true, error: null };
+    } catch (err: unknown) {
+      return { documentId, isSubmitted: false, error: toSubmissionError(err) };
+    }
+  }
+
   private async readUploadedObject(storageKey: string): Promise<HeadObjectResult> {
     try {
       return await this.objectStorageService.headObject({ key: storageKey });
@@ -468,4 +535,29 @@ export class DocumentService {
   private async toViewWithApproval(record: DocumentRecord): Promise<ClinicDocumentView> {
     return this.toView(record, await this.corpusApprovalService.resolveApprovalView(record.id));
   }
+}
+
+/**
+ * One item's refusal, in the shape the batch reports (`P19`).
+ *
+ * The message is the one the single-document path produced, verbatim: those
+ * sentences are already written for a person to read, and a summary that said
+ * "3 failed" would leave the admin with nothing to act on.
+ */
+function toSubmissionError(err: unknown): { code: string; message: string } {
+  if (!(err instanceof HttpException)) {
+    return {
+      code: CLINIC_DOCUMENT_SUBMISSION_FAILED_ERROR_CODE,
+      message: 'This document could not be submitted for approval',
+    };
+  }
+  const response = err.getResponse();
+  if (typeof response === 'object' && response !== null) {
+    const body = response as { code?: unknown; message?: unknown };
+    return {
+      code: typeof body.code === 'string' ? body.code : CLINIC_DOCUMENT_SUBMISSION_FAILED_ERROR_CODE,
+      message: typeof body.message === 'string' ? body.message : err.message,
+    };
+  }
+  return { code: CLINIC_DOCUMENT_SUBMISSION_FAILED_ERROR_CODE, message: err.message };
 }

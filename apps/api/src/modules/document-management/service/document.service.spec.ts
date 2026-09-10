@@ -110,6 +110,13 @@ describe('DocumentService', () => {
       resolveGatedIngestStatus: jest.fn(async (proposed: unknown) => proposed),
       syncRegistryRow: jest.fn().mockResolvedValue(null),
       sendForReview: jest.fn(),
+      submitForApproval: jest.fn(),
+      resolveApprovalContext: jest.fn().mockResolvedValue({
+        isApprovalRequired: false,
+        allowSelfApproval: false,
+        requiredApprovals: 1,
+        defaultApprovers: [],
+      }),
       assertIngestAllowed: jest.fn(),
       requiresReapprovalOnVisibilityChange: jest.fn().mockResolvedValue(false),
       reopenForVisibilityChange: jest.fn(),
@@ -585,6 +592,152 @@ describe('DocumentService', () => {
         documentService.reingestDocument('2f6d1a4c-8b9e-4c1d-9a2f-5e7b3c0d8a11', ACTOR),
       ).rejects.toThrow('never ingested');
       expect(mockDocumentRepository.markDocumentPending).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('submitForApproval', () => {
+    const DOCUMENT_A = '2f6d1a4c-8b9e-4c1d-9a2f-5e7b3c0d8a11';
+    const DOCUMENT_B = '9f1c7c2e-3a52-4f0b-9e33-1c9a5f0a77b1';
+    const APPROVER_ID = 'd7c3b2a1-4e5f-4a6b-8c9d-0e1f2a3b4c5d';
+
+    beforeEach(() => {
+      mockDocumentRepository.findDocumentById.mockResolvedValue(buildDocumentRecord());
+    });
+
+    it('submits every document in the selection to the one named panel', async () => {
+      const actual = await documentService.submitForApproval(
+        { documentIds: [DOCUMENT_A, DOCUMENT_B], approverIds: [APPROVER_ID] },
+        ACTOR,
+      );
+
+      expect(actual.submittedCount).toBe(2);
+      expect(actual.failedCount).toBe(0);
+      expect(mockCorpusApprovalService.submitForApproval).toHaveBeenCalledTimes(2);
+      expect(mockCorpusApprovalService.submitForApproval).toHaveBeenCalledWith(
+        expect.anything(),
+        { approverIds: [APPROVER_ID] },
+        ACTOR,
+      );
+    });
+
+    it('carries the deadline through without inventing one', async () => {
+      await documentService.submitForApproval(
+        {
+          documentIds: [DOCUMENT_A],
+          approverIds: [APPROVER_ID],
+          dueAt: '2026-09-17T09:00:00.000Z',
+        },
+        ACTOR,
+      );
+
+      expect(mockCorpusApprovalService.submitForApproval).toHaveBeenCalledWith(
+        expect.anything(),
+        { approverIds: [APPROVER_ID], dueAt: '2026-09-17T09:00:00.000Z' },
+        ACTOR,
+      );
+    });
+
+    it('keeps the good submissions when one document is refused', async () => {
+      // A batch is not a transaction. Twenty-seven good submissions must not
+      // be lost because the twenty-eighth had already been issued.
+      mockCorpusApprovalService.submitForApproval
+        .mockResolvedValueOnce(undefined as never)
+        .mockRejectedValueOnce(
+          new ConflictException({
+            message: 'This document is already waiting for approval',
+            code: 'DOCUMENT_NOT_SUBMITTABLE',
+          }),
+        );
+
+      const actual = await documentService.submitForApproval(
+        { documentIds: [DOCUMENT_A, DOCUMENT_B], approverIds: [APPROVER_ID] },
+        ACTOR,
+      );
+
+      expect(actual.submittedCount).toBe(1);
+      expect(actual.failedCount).toBe(1);
+      expect(actual.items[1]).toEqual({
+        documentId: DOCUMENT_B,
+        isSubmitted: false,
+        // The reason travels with the item, because "1 failed" tells an admin
+        // nothing about what to do next.
+        error: {
+          code: 'DOCUMENT_NOT_SUBMITTABLE',
+          message: 'This document is already waiting for approval',
+        },
+      });
+    });
+
+    it('reports a missing document as that document’s own failure', async () => {
+      mockDocumentRepository.findDocumentById
+        .mockResolvedValueOnce(buildDocumentRecord())
+        .mockResolvedValueOnce(null);
+
+      const actual = await documentService.submitForApproval(
+        { documentIds: [DOCUMENT_A, DOCUMENT_B], approverIds: [APPROVER_ID] },
+        ACTOR,
+      );
+
+      expect(actual.submittedCount).toBe(1);
+      expect(actual.items[1]?.error?.message).toContain('not found');
+    });
+
+    it('refuses a purpose that is never retrieved, where there is nothing to review', async () => {
+      mockDocumentRepository.findDocumentById.mockResolvedValue(
+        buildDocumentRecord({ purpose: 'GENERAL' }),
+      );
+
+      const actual = await documentService.submitForApproval(
+        { documentIds: [DOCUMENT_A], approverIds: [APPROVER_ID] },
+        ACTOR,
+      );
+
+      expect(actual.failedCount).toBe(1);
+      expect(mockCorpusApprovalService.submitForApproval).not.toHaveBeenCalled();
+    });
+
+    it('refuses a clinician holding only the OWN-scoped grant', async () => {
+      // `PermissionsGuard` cannot tell `document.write:own` from
+      // `document.write:any`, so the corpus scope is re-checked here.
+      mockAuthRepository.findUserById.mockResolvedValue(
+        buildActorWithPermissions(OWN_SCOPE_PERMISSIONS) as never,
+      );
+
+      await expect(
+        documentService.submitForApproval(
+          { documentIds: [DOCUMENT_A], approverIds: [APPROVER_ID] },
+          ACTOR,
+        ),
+      ).rejects.toBeInstanceOf(ForbiddenException);
+      expect(mockCorpusApprovalService.submitForApproval).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('getApprovalContext', () => {
+    it('reports the corpus type policy the submit dialog opens with', async () => {
+      mockCorpusApprovalService.resolveApprovalContext.mockResolvedValue({
+        isApprovalRequired: true,
+        allowSelfApproval: false,
+        requiredApprovals: 1,
+        defaultApprovers: [{ id: 'approver-1', email: 'kepala.klinik@salingjaga.id' }],
+      });
+
+      await expect(documentService.getApprovalContext(ACTOR)).resolves.toEqual({
+        isApprovalRequired: true,
+        allowSelfApproval: false,
+        requiredApprovals: 1,
+        defaultApprovers: [{ id: 'approver-1', email: 'kepala.klinik@salingjaga.id' }],
+      });
+    });
+
+    it('refuses a clinician holding only the OWN-scoped read grant', async () => {
+      mockAuthRepository.findUserById.mockResolvedValue(
+        buildActorWithPermissions(OWN_SCOPE_PERMISSIONS) as never,
+      );
+
+      await expect(documentService.getApprovalContext(ACTOR)).rejects.toBeInstanceOf(
+        ForbiddenException,
+      );
     });
   });
 });
