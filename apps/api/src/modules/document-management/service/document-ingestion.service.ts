@@ -9,6 +9,7 @@ import {
   IngestDocumentResult,
 } from '@hms/shared-types';
 
+import { extractDocumentText } from '../../../common/documents/extract-document-text';
 import { EmbeddingService } from '../../../common/embedding/embedding.service';
 import { buildSafeErrorLog } from '../../../common/observability/safe-logging';
 import { ObjectStorageService } from '../../../common/storage/object-storage.service';
@@ -16,7 +17,6 @@ import { resolveDocumentIngestionConfig } from '../document-ingestion.config';
 import { DocumentIngestionError } from '../document-ingestion.error';
 import { DocumentChunkRepository } from '../repository/document-chunk.repository';
 import { DocumentRepository } from '../repository/document.repository';
-import { extractDocumentText } from './extract-document-text';
 import { splitTextIntoChunks } from './split-text-into-chunks';
 
 const MAX_INGEST_ERROR_LENGTH = 500;

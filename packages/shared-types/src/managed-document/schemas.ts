@@ -356,3 +356,41 @@ export const createManagedDocumentUploadUrlSchema = z
 export type CreateManagedDocumentUploadUrlInput = z.infer<
   typeof createManagedDocumentUploadUrlSchema
 >;
+
+/**
+ * The stored content types a document gets an in-app preview for
+ * (`P19-T18`).
+ *
+ * A deliberate subset of `DOCUMENT_TEXT_MIME_TYPES`: `application/pdf` is
+ * extractable, but a PDF's meaning lives in its layout, and a de-laid-out
+ * wall of extracted text is a worse thing to approve against than the file
+ * itself. A PDF keeps the signed download it has always had, and so does
+ * every image and every type the store may admit later — the preview is an
+ * allowlist, so a new upload type is silently not previewable rather than
+ * silently previewed wrong.
+ */
+export const MANAGED_DOCUMENT_PREVIEW_MIME_TYPES = ['text/markdown', 'text/plain'] as const;
+
+export type ManagedDocumentPreviewMimeTypeValue =
+  (typeof MANAGED_DOCUMENT_PREVIEW_MIME_TYPES)[number];
+
+/**
+ * How much of a document the preview carries, in characters (`P19-T18`).
+ *
+ * A preview exists so an approver can read before deciding, not so the app
+ * can stream an arbitrary file into a page: roughly 4,000 words, which is a
+ * long clinic policy read end to end, and small enough that one response
+ * cannot be used to pull a large file through the API a chunk at a time. Past
+ * it the response says so and the download stays the way to read all of it.
+ */
+export const MANAGED_DOCUMENT_PREVIEW_MAX_CHARACTERS = 20_000;
+
+/**
+ * A document with no previewable body — drafted in the editor, or uploaded
+ * under a type outside {@link MANAGED_DOCUMENT_PREVIEW_MIME_TYPES}.
+ */
+export const MANAGED_DOCUMENT_NOT_PREVIEWABLE_ERROR_CODE = 'MANAGED_DOCUMENT_NOT_PREVIEWABLE';
+
+export function isManagedDocumentPreviewMimeType(mimeType: string | null): boolean {
+  return MANAGED_DOCUMENT_PREVIEW_MIME_TYPES.some((allowed) => allowed === mimeType);
+}

@@ -198,3 +198,27 @@ export type ManagedDocumentDownloadView = {
   url: string;
   expiresAt: string;
 };
+
+/**
+ * A document's text, as an approver reads it before deciding (`P19-T18`,
+ * FR-E5-13).
+ *
+ * `text` is plain text, never markup: the API extracts it from the stored
+ * file, strips every tag, and the web renders it as text. There is no path on
+ * which operator-uploaded bytes become HTML in the app origin, which is the
+ * same posture the signed attachment-disposition download takes (NFR-SEC-04)
+ * rather than a relaxation of it.
+ *
+ * `isTruncated` is the honest half of the cap: `characterCount` is what came
+ * back, `totalCharacterCount` is what the document holds, and a reader who
+ * needs the rest downloads the file.
+ */
+export type ManagedDocumentPreviewView = {
+  documentId: string;
+  /** The stored content type the text was extracted from. */
+  mimeType: string;
+  text: string;
+  characterCount: number;
+  totalCharacterCount: number;
+  isTruncated: boolean;
+};

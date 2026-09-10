@@ -13,6 +13,12 @@ const PDF_PARSE_PARAMETERS = { pageJoiner: '' } as const;
 /**
  * Pulls plain text out of a stored file.
  *
+ * Lives in `common` rather than in the store module because two modules now
+ * read a stored file's text and neither may reach into the other: ingestion
+ * chunks and embeds it, and the registry shows a slice of it to whoever is
+ * being asked to approve the document (`P19-T18`). One reader means one set
+ * of format branches to keep true.
+ *
  * The accepted types are the three the document store admits at upload, so
  * this cannot be reached with a format it has no branch for — but the default
  * still throws rather than returning an empty string, because "extracted

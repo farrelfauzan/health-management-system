@@ -1198,6 +1198,13 @@
           "issued": "Issued"
         }
       },
+      "preview": {
+        "title": "Document preview",
+        "loading": "Loading the document text…",
+        "loadError": "The document text could not be loaded. Download the file to read it.",
+        "empty": "No text could be read from this file. Download it to check the file itself.",
+        "truncated": "Showing the first {shown} of {total} characters. Download the file to read the rest."
+      },
       "form": {
         "title": "New document",
         "description": "Pick a type — the form is built from what that type requires.",

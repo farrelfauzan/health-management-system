@@ -16427,6 +16427,100 @@ paths:
         - bearer: []
       summary: Mint a signed download URL for an uploaded document body
       tags: *a23
+  /api/v1/documents/{id}/preview:
+    get:
+      operationId: ManagedDocumentController_getPreview_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "The document’s text, extracted server-side, stripped of every tag
+            and capped at 20,000 characters — so an approver can read what they
+            are signing off without the file ever being framed in the app origin
+            (`P19-T18`, NFR-SEC-04). `isTruncated` says the document continues
+            past what came back, and the signed download stays the way to read
+            all of it. Markdown and plain text only: a PDF, an image, or a
+            document drafted in the editor is 409
+            `MANAGED_DOCUMENT_NOT_PREVIEWABLE`. Authorised as a read of the
+            document itself, so a row outside the caller’s reach is 404 here
+            exactly as it is on the detail."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      documentId:
+                        type: string
+                      mimeType:
+                        type: string
+                      text:
+                        type: string
+                      characterCount:
+                        type: integer
+                      totalCharacterCount:
+                        type: integer
+                      isTruncated:
+                        type: boolean
+                    required:
+                      - documentId
+                      - mimeType
+                      - text
+                      - characterCount
+                      - totalCharacterCount
+                      - isTruncated
+                required:
+                  - data
+                example:
+                  data:
+                    documentId: e2c3d4f5-6a7b-4c8d-9e0f-1a2b3c4d5e6f
+                    mimeType: text/markdown
+                    text: >-
+                      # Kebijakan Rujukan
+
+
+                      Pasien yang memerlukan rujukan lanjutan wajib membawa
+                      surat pengantar dari dokter penanggung jawab.
+                    characterCount: 118
+                    totalCharacterCount: 4820
+                    isTruncated: true
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Document not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Document not found.
+      security:
+        - bearer: []
+      summary: Read an uploaded document’s text, for review before a decision
+      tags: *a23
   /api/v1/documents/{id}/history:
     get:
       operationId: ManagedDocumentController_getHistory_v1

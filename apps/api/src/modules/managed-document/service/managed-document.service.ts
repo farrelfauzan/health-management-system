@@ -13,16 +13,20 @@ import {
   DOCUMENT_UPLOAD_MIME_TYPES,
   DocumentUploadMimeTypeValue,
   ExportManagedDocumentsQueryInput,
+  isManagedDocumentPreviewMimeType,
   ListManagedDocumentsQueryInput,
   MANAGED_DOCUMENT_CONTENT_CONFLICT_ERROR_CODE,
   MANAGED_DOCUMENT_EXPORT_MAX_ROWS,
   MANAGED_DOCUMENT_NOT_EDITABLE_ERROR_CODE,
+  MANAGED_DOCUMENT_NOT_PREVIEWABLE_ERROR_CODE,
+  MANAGED_DOCUMENT_PREVIEW_MAX_CHARACTERS,
   MANAGED_DOCUMENT_TYPE_RULE_ERROR_CODE,
   ManagedDocumentAccessContext,
   ManagedDocumentDetailView,
   ManagedDocumentDownloadView,
   ManagedDocumentHistoryView,
   ManagedDocumentListView,
+  ManagedDocumentPreviewView,
   ManagedDocumentRecord,
   ManagedDocumentShape,
   ManagedDocumentStatusValue,
@@ -36,6 +40,9 @@ import {
 
 import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { extractDocumentText } from '../../../common/documents/extract-document-text';
+import { sanitiseDocumentPreviewText } from '../../../common/documents/sanitise-document-preview-text';
+import { truncateDocumentPreviewText } from '../../../common/documents/truncate-document-preview-text';
 import { sanitiseRichTextHtml } from '../../../common/html/sanitise-rich-text-html';
 import { ObjectStorageService } from '../../../common/storage/object-storage.service';
 import { AuditAction } from '../../../generated/prisma/client';
@@ -70,6 +77,9 @@ const EDITABLE_STATUSES: readonly ManagedDocumentStatusValue[] = ['DRAFT', 'PEND
 export const MANAGED_DOCUMENT_NOT_DOWNLOADABLE_ERROR_CODE = 'MANAGED_DOCUMENT_NOT_DOWNLOADABLE';
 
 type StoredContent = { storageKey: string; storageMimeType: string; storageSizeBytes: number };
+
+/** A stored body the preview may be produced from — narrowed, so no cast. */
+type PreviewableContent = { storageKey: string; mimeType: string };
 
 export type ManagedDocumentExport = { fileName: string; csv: string };
 
@@ -412,6 +422,70 @@ export class ManagedDocumentService {
       metadata: { changedFields: listChangedFields(input) },
     });
     return toManagedDocumentDetailView(record);
+  }
+
+  /**
+   * A document's text, for somebody being asked to approve it (`P19-T18`).
+   *
+   * The gap this closes: an uploaded body has never been readable in the app,
+   * so an approver deciding on a clinic corpus document was deciding on a
+   * title and a filename. Three properties keep that from becoming a new
+   * hole:
+   *
+   *   * **It is a read of *this* document, under the rule that already
+   *     governs it.** The access context and {@link findVisibleOrThrow} are
+   *     the same two lines every other detail read opens with, so a row
+   *     outside the caller's reach is a 404 here exactly as it is on the
+   *     detail and the download (FR-E5-04). Being named on the round grants
+   *     no extra reach, and needing no round grants none either — an
+   *     approver reads it because they can read the document.
+   *   * **The bytes never leave as bytes.** The file is extracted to text
+   *     with the same reader the ingestion pipeline uses, stripped of markup,
+   *     and returned as a string. Nothing is proxied for a browser to frame.
+   *   * **It is capped.** A preview is for reading before a decision, not a
+   *     way to pull a file through the API; past the cap the response says so
+   *     and the signed download is still how the whole document is read.
+   *
+   * Text types only. A PDF is extractable but its meaning is its layout, so
+   * it keeps the download it has today rather than gaining a de-laid-out wall
+   * of text to approve against — and so does anything the store may admit
+   * later, because the allowlist is the gate.
+   */
+  async getPreview(id: string, actor: CurrentUser): Promise<ManagedDocumentPreviewView> {
+    const access = await this.accessService.resolveContext(actor);
+    const record = await this.findVisibleOrThrow(id, access);
+    const previewable = this.assertPreviewable(record);
+    const storedObject = await this.objectStorageService.getObject({ key: previewable.storageKey });
+    const extracted = await extractDocumentText({
+      content: storedObject.body,
+      mimeType: previewable.mimeType,
+    });
+    const truncated = truncateDocumentPreviewText({
+      text: sanitiseDocumentPreviewText(extracted.text),
+      limit: MANAGED_DOCUMENT_PREVIEW_MAX_CHARACTERS,
+    });
+    return { documentId: record.id, mimeType: previewable.mimeType, ...truncated };
+  }
+
+  /**
+   * Returns the stored type a preview may be produced from, or refuses.
+   * A drafted body is already on the detail response, so asking for its
+   * preview is a client mistake rather than a missing feature.
+   */
+  private assertPreviewable(record: ManagedDocumentRecord): PreviewableContent {
+    if (record.storageKey === null || record.storageMimeType === null) {
+      throw new ConflictException({
+        message: 'This document was drafted in the editor and has no file to preview',
+        code: MANAGED_DOCUMENT_NOT_PREVIEWABLE_ERROR_CODE,
+      });
+    }
+    if (!isManagedDocumentPreviewMimeType(record.storageMimeType)) {
+      throw new ConflictException({
+        message: 'This file type cannot be previewed in the app; download it to read it',
+        code: MANAGED_DOCUMENT_NOT_PREVIEWABLE_ERROR_CODE,
+      });
+    }
+    return { storageKey: record.storageKey, mimeType: record.storageMimeType };
   }
 
   /**

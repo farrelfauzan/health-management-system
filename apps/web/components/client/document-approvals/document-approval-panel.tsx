@@ -13,6 +13,7 @@ import { SubmitDocumentDialog } from '#components/client/document-approvals/subm
 import { SubmitDocumentTrigger } from '#components/client/document-approvals/submit-document-trigger';
 import { WithdrawDocumentButton } from '#components/client/document-approvals/withdraw-document-button';
 import { IssueDocumentButton } from '#components/client/document-approvals/issue-document-button';
+import { ManagedDocumentPreview } from '#components/client/managed-documents/managed-document-preview';
 
 type DocumentApprovalPanelProps = {
   document: ManagedDocumentDetailView;
@@ -113,6 +114,14 @@ export function DocumentApprovalPanel({
             })}
           </p>
         ) : null}
+        {/*
+          `P19-T18`: the document itself, on the screen where it is signed off.
+          Inside the panel rather than below it because an approver who has to
+          go looking for the content will decide without it — which is what
+          they were doing before, for every uploaded document. Renders nothing
+          for a type it cannot preview, so a PDF panel is unchanged.
+        */}
+        <ManagedDocumentPreview document={document} />
         {isSubmitOpen ? (
           <SubmitDocumentDialog
             open={isSubmitOpen}

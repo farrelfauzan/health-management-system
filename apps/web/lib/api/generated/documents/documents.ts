@@ -36,6 +36,7 @@ import type {
   ManagedDocumentControllerGetDocumentV1200,
   ManagedDocumentControllerGetDownloadUrlV1200,
   ManagedDocumentControllerGetHistoryV1200,
+  ManagedDocumentControllerGetPreviewV1200,
   ManagedDocumentControllerIssueDocumentV1200,
   ManagedDocumentControllerListDocumentsV1200,
   ManagedDocumentControllerListDocumentsV1Params,
@@ -810,6 +811,98 @@ export function useManagedDocumentControllerGetDownloadUrlV1<TData = Awaited<Ret
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getManagedDocumentControllerGetDownloadUrlV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Read an uploaded document’s text, for review before a decision
+ */
+export const managedDocumentControllerGetPreviewV1 = (
+    id: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<ManagedDocumentControllerGetPreviewV1200>(
+      {url: `/api/v1/documents/${id}/preview`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getManagedDocumentControllerGetPreviewV1QueryKey = (id: string,) => {
+    return [
+    `/api/v1/documents/${id}/preview`
+    ] as const;
+    }
+
+
+export const getManagedDocumentControllerGetPreviewV1QueryOptions = <TData = Awaited<ReturnType<typeof managedDocumentControllerGetPreviewV1>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof managedDocumentControllerGetPreviewV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getManagedDocumentControllerGetPreviewV1QueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof managedDocumentControllerGetPreviewV1>>> = ({ signal }) => managedDocumentControllerGetPreviewV1(id, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof managedDocumentControllerGetPreviewV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ManagedDocumentControllerGetPreviewV1QueryResult = NonNullable<Awaited<ReturnType<typeof managedDocumentControllerGetPreviewV1>>>
+export type ManagedDocumentControllerGetPreviewV1QueryError = unknown
+
+
+export function useManagedDocumentControllerGetPreviewV1<TData = Awaited<ReturnType<typeof managedDocumentControllerGetPreviewV1>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof managedDocumentControllerGetPreviewV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof managedDocumentControllerGetPreviewV1>>,
+          TError,
+          Awaited<ReturnType<typeof managedDocumentControllerGetPreviewV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useManagedDocumentControllerGetPreviewV1<TData = Awaited<ReturnType<typeof managedDocumentControllerGetPreviewV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof managedDocumentControllerGetPreviewV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof managedDocumentControllerGetPreviewV1>>,
+          TError,
+          Awaited<ReturnType<typeof managedDocumentControllerGetPreviewV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useManagedDocumentControllerGetPreviewV1<TData = Awaited<ReturnType<typeof managedDocumentControllerGetPreviewV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof managedDocumentControllerGetPreviewV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Read an uploaded document’s text, for review before a decision
+ */
+
+export function useManagedDocumentControllerGetPreviewV1<TData = Awaited<ReturnType<typeof managedDocumentControllerGetPreviewV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof managedDocumentControllerGetPreviewV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getManagedDocumentControllerGetPreviewV1QueryOptions(id,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

@@ -989,6 +989,8 @@ export * from './managedDocumentControllerGetHistoryV1200DataEntriesItemMetadata
 export * from './managedDocumentControllerGetHistoryV1200DataRoundsItem';
 export * from './managedDocumentControllerGetHistoryV1200DataRoundsItemApproversItem';
 export * from './managedDocumentControllerGetHistoryV1200DataRoundsItemSubmittedBy';
+export * from './managedDocumentControllerGetPreviewV1200';
+export * from './managedDocumentControllerGetPreviewV1200Data';
 export * from './managedDocumentControllerIssueDocumentV1200';
 export * from './managedDocumentControllerIssueDocumentV1200Data';
 export * from './managedDocumentControllerIssueDocumentV1200DataDefaultApproversItem';

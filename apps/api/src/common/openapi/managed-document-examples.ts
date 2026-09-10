@@ -167,6 +167,14 @@ export const MANAGED_DOCUMENT_EXAMPLES = {
     url: 'https://example-bucket.s3.amazonaws.com/documents/managed/9f1c7c2e-3a52-4f0b-9e33-1c9a5f0a77b1.pdf?X-Amz-Signature=...&response-content-disposition=attachment',
     expiresAt: '2026-09-30T02:10:00.000Z',
   },
+  preview: {
+    documentId: DOCUMENT_VIEW_EXAMPLE.id,
+    mimeType: 'text/markdown',
+    text: '# Kebijakan Rujukan\n\nPasien yang memerlukan rujukan lanjutan wajib membawa surat pengantar dari dokter penanggung jawab.',
+    characterCount: 118,
+    totalCharacterCount: 4_820,
+    isTruncated: true,
+  },
   history: {
     documentId: DOCUMENT_VIEW_EXAMPLE.id,
     createdAt: '2026-09-30T02:00:00.000Z',
