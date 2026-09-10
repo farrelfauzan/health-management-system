@@ -39,6 +39,8 @@ import type {
   ManagedDocumentControllerIssueDocumentV1200,
   ManagedDocumentControllerListDocumentsV1200,
   ManagedDocumentControllerListDocumentsV1Params,
+  ManagedDocumentControllerListEligibleApproversV1200,
+  ManagedDocumentControllerListEligibleApproversV1Params,
   ManagedDocumentControllerSubmitDocumentV1200,
   ManagedDocumentControllerUpdateDocumentV1200,
   ManagedDocumentControllerWithdrawDocumentV1200,
@@ -336,6 +338,99 @@ export function useManagedDocumentControllerExportDocumentsV1<TData = Awaited<Re
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getManagedDocumentControllerExportDocumentsV1QueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary List who may be named as an approver
+ */
+export const managedDocumentControllerListEligibleApproversV1 = (
+    params?: ManagedDocumentControllerListEligibleApproversV1Params,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<ManagedDocumentControllerListEligibleApproversV1200>(
+      {url: `/api/v1/documents/eligible-approvers`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+
+
+
+
+export const getManagedDocumentControllerListEligibleApproversV1QueryKey = (params?: ManagedDocumentControllerListEligibleApproversV1Params,) => {
+    return [
+    `/api/v1/documents/eligible-approvers`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getManagedDocumentControllerListEligibleApproversV1QueryOptions = <TData = Awaited<ReturnType<typeof managedDocumentControllerListEligibleApproversV1>>, TError = unknown>(params?: ManagedDocumentControllerListEligibleApproversV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof managedDocumentControllerListEligibleApproversV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getManagedDocumentControllerListEligibleApproversV1QueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof managedDocumentControllerListEligibleApproversV1>>> = ({ signal }) => managedDocumentControllerListEligibleApproversV1(params, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof managedDocumentControllerListEligibleApproversV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ManagedDocumentControllerListEligibleApproversV1QueryResult = NonNullable<Awaited<ReturnType<typeof managedDocumentControllerListEligibleApproversV1>>>
+export type ManagedDocumentControllerListEligibleApproversV1QueryError = unknown
+
+
+export function useManagedDocumentControllerListEligibleApproversV1<TData = Awaited<ReturnType<typeof managedDocumentControllerListEligibleApproversV1>>, TError = unknown>(
+ params: undefined |  ManagedDocumentControllerListEligibleApproversV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof managedDocumentControllerListEligibleApproversV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof managedDocumentControllerListEligibleApproversV1>>,
+          TError,
+          Awaited<ReturnType<typeof managedDocumentControllerListEligibleApproversV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useManagedDocumentControllerListEligibleApproversV1<TData = Awaited<ReturnType<typeof managedDocumentControllerListEligibleApproversV1>>, TError = unknown>(
+ params?: ManagedDocumentControllerListEligibleApproversV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof managedDocumentControllerListEligibleApproversV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof managedDocumentControllerListEligibleApproversV1>>,
+          TError,
+          Awaited<ReturnType<typeof managedDocumentControllerListEligibleApproversV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useManagedDocumentControllerListEligibleApproversV1<TData = Awaited<ReturnType<typeof managedDocumentControllerListEligibleApproversV1>>, TError = unknown>(
+ params?: ManagedDocumentControllerListEligibleApproversV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof managedDocumentControllerListEligibleApproversV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List who may be named as an approver
+ */
+
+export function useManagedDocumentControllerListEligibleApproversV1<TData = Awaited<ReturnType<typeof managedDocumentControllerListEligibleApproversV1>>, TError = unknown>(
+ params?: ManagedDocumentControllerListEligibleApproversV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof managedDocumentControllerListEligibleApproversV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getManagedDocumentControllerListEligibleApproversV1QueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

@@ -34,12 +34,14 @@ import type {
   DocumentAdminControllerConfirmUploadV1201,
   DocumentAdminControllerCreateUploadUrlV1200,
   DocumentAdminControllerDeleteDocumentV1200,
+  DocumentAdminControllerGetApprovalContextV1200,
   DocumentAdminControllerGetDocumentV1200,
   DocumentAdminControllerGetDownloadUrlV1200,
   DocumentAdminControllerListDocumentsV1200,
   DocumentAdminControllerListDocumentsV1Params,
   DocumentAdminControllerReingestDocumentV1202,
   DocumentAdminControllerSendDocumentForReviewV1200,
+  DocumentAdminControllerSubmitDocumentsForApprovalV1200,
   DocumentAdminControllerUpdateDocumentV1200,
   EncounterDocumentControllerListEncounterDocumentsV1200,
   PatientDocumentControllerConfirmUploadV1200,
@@ -68,6 +70,7 @@ import type {
   SharedWithMeDocumentControllerGetSharedDownloadUrlV1200,
   SharedWithMeDocumentControllerListSharedWithMeV1200,
   SharedWithMeDocumentControllerListSharedWithMeV1Params,
+  SubmitClinicDocumentsForApprovalDto,
   UpdateClinicDocumentDto,
   UpdatePatientDocumentDto,
   UpdatePersonalDocumentDto,
@@ -377,6 +380,98 @@ export function useDocumentAdminControllerListDocumentsV1<TData = Awaited<Return
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getDocumentAdminControllerListDocumentsV1QueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Read the corpus approval policy and its default panel
+ */
+export const documentAdminControllerGetApprovalContextV1 = (
+
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<DocumentAdminControllerGetApprovalContextV1200>(
+      {url: `/api/v1/admin/documents/approval-context`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getDocumentAdminControllerGetApprovalContextV1QueryKey = () => {
+    return [
+    `/api/v1/admin/documents/approval-context`
+    ] as const;
+    }
+
+
+export const getDocumentAdminControllerGetApprovalContextV1QueryOptions = <TData = Awaited<ReturnType<typeof documentAdminControllerGetApprovalContextV1>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentAdminControllerGetApprovalContextV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getDocumentAdminControllerGetApprovalContextV1QueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof documentAdminControllerGetApprovalContextV1>>> = ({ signal }) => documentAdminControllerGetApprovalContextV1(signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof documentAdminControllerGetApprovalContextV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type DocumentAdminControllerGetApprovalContextV1QueryResult = NonNullable<Awaited<ReturnType<typeof documentAdminControllerGetApprovalContextV1>>>
+export type DocumentAdminControllerGetApprovalContextV1QueryError = unknown
+
+
+export function useDocumentAdminControllerGetApprovalContextV1<TData = Awaited<ReturnType<typeof documentAdminControllerGetApprovalContextV1>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentAdminControllerGetApprovalContextV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof documentAdminControllerGetApprovalContextV1>>,
+          TError,
+          Awaited<ReturnType<typeof documentAdminControllerGetApprovalContextV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDocumentAdminControllerGetApprovalContextV1<TData = Awaited<ReturnType<typeof documentAdminControllerGetApprovalContextV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentAdminControllerGetApprovalContextV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof documentAdminControllerGetApprovalContextV1>>,
+          TError,
+          Awaited<ReturnType<typeof documentAdminControllerGetApprovalContextV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDocumentAdminControllerGetApprovalContextV1<TData = Awaited<ReturnType<typeof documentAdminControllerGetApprovalContextV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentAdminControllerGetApprovalContextV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Read the corpus approval policy and its default panel
+ */
+
+export function useDocumentAdminControllerGetApprovalContextV1<TData = Awaited<ReturnType<typeof documentAdminControllerGetApprovalContextV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentAdminControllerGetApprovalContextV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getDocumentAdminControllerGetApprovalContextV1QueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -846,6 +941,100 @@ export function useDocumentAdminControllerReingestDocumentV1<TData = Awaited<Ret
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getDocumentAdminControllerReingestDocumentV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Submit clinic corpus documents for approval
+ */
+export const documentAdminControllerSubmitDocumentsForApprovalV1 = (
+    submitClinicDocumentsForApprovalDto: SubmitClinicDocumentsForApprovalDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<DocumentAdminControllerSubmitDocumentsForApprovalV1200>(
+      {url: `/api/v1/admin/documents/submit-for-approval`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: submitClinicDocumentsForApprovalDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getDocumentAdminControllerSubmitDocumentsForApprovalV1QueryKey = (submitClinicDocumentsForApprovalDto?: SubmitClinicDocumentsForApprovalDto,) => {
+    return [
+    'POST', `/api/v1/admin/documents/submit-for-approval`, submitClinicDocumentsForApprovalDto
+    ] as const;
+    }
+
+
+export const getDocumentAdminControllerSubmitDocumentsForApprovalV1QueryOptions = <TData = Awaited<ReturnType<typeof documentAdminControllerSubmitDocumentsForApprovalV1>>, TError = unknown>(submitClinicDocumentsForApprovalDto: SubmitClinicDocumentsForApprovalDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentAdminControllerSubmitDocumentsForApprovalV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getDocumentAdminControllerSubmitDocumentsForApprovalV1QueryKey(submitClinicDocumentsForApprovalDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof documentAdminControllerSubmitDocumentsForApprovalV1>>> = ({ signal }) => documentAdminControllerSubmitDocumentsForApprovalV1(submitClinicDocumentsForApprovalDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof documentAdminControllerSubmitDocumentsForApprovalV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type DocumentAdminControllerSubmitDocumentsForApprovalV1QueryResult = NonNullable<Awaited<ReturnType<typeof documentAdminControllerSubmitDocumentsForApprovalV1>>>
+export type DocumentAdminControllerSubmitDocumentsForApprovalV1QueryError = unknown
+
+
+export function useDocumentAdminControllerSubmitDocumentsForApprovalV1<TData = Awaited<ReturnType<typeof documentAdminControllerSubmitDocumentsForApprovalV1>>, TError = unknown>(
+ submitClinicDocumentsForApprovalDto: SubmitClinicDocumentsForApprovalDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentAdminControllerSubmitDocumentsForApprovalV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof documentAdminControllerSubmitDocumentsForApprovalV1>>,
+          TError,
+          Awaited<ReturnType<typeof documentAdminControllerSubmitDocumentsForApprovalV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDocumentAdminControllerSubmitDocumentsForApprovalV1<TData = Awaited<ReturnType<typeof documentAdminControllerSubmitDocumentsForApprovalV1>>, TError = unknown>(
+ submitClinicDocumentsForApprovalDto: SubmitClinicDocumentsForApprovalDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentAdminControllerSubmitDocumentsForApprovalV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof documentAdminControllerSubmitDocumentsForApprovalV1>>,
+          TError,
+          Awaited<ReturnType<typeof documentAdminControllerSubmitDocumentsForApprovalV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDocumentAdminControllerSubmitDocumentsForApprovalV1<TData = Awaited<ReturnType<typeof documentAdminControllerSubmitDocumentsForApprovalV1>>, TError = unknown>(
+ submitClinicDocumentsForApprovalDto: SubmitClinicDocumentsForApprovalDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentAdminControllerSubmitDocumentsForApprovalV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Submit clinic corpus documents for approval
+ */
+
+export function useDocumentAdminControllerSubmitDocumentsForApprovalV1<TData = Awaited<ReturnType<typeof documentAdminControllerSubmitDocumentsForApprovalV1>>, TError = unknown>(
+ submitClinicDocumentsForApprovalDto: SubmitClinicDocumentsForApprovalDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentAdminControllerSubmitDocumentsForApprovalV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getDocumentAdminControllerSubmitDocumentsForApprovalV1QueryOptions(submitClinicDocumentsForApprovalDto,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
