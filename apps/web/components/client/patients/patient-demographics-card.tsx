@@ -1,6 +1,6 @@
 'use client';
 
-import type { PatientDetail } from '@hms/shared-types';
+import { formatPhoneNumber, type PatientDetail } from '@hms/shared-types';
 import { Card, CardContent, CardHeader, CardTitle } from '@hms/ui';
 import { useFormatter, useTranslations } from 'next-intl';
 
@@ -35,7 +35,11 @@ export function PatientDemographicsCard({ patient }: PatientDemographicsCardProp
           : `${formatDate(patient.dateOfBirth)} (${t('common.years', { count: computePatientAge(patient.dateOfBirth) })})`,
     },
     { label: t('patients.demographics.birthPlace'), value: patient.placeOfBirth ?? EMPTY_VALUE },
-    { label: t('patients.demographics.phone'), value: patient.phoneNumber, isMono: true },
+    {
+      label: t('patients.demographics.phone'),
+      value: formatPhoneNumber(patient.phoneNumber),
+      isMono: true,
+    },
     { label: t('patients.demographics.email'), value: patient.email ?? EMPTY_VALUE },
     {
       // The one printable line the API composes from the street, RT/RW and the

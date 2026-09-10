@@ -6,9 +6,12 @@ import {
 } from '@nestjs/common';
 
 import { AuditService } from '../../../common/audit/audit.service';
+import { AdminManagementService } from '../../admin-management/service/admin-management.service';
 import { AuthRepository } from '../../auth/repository/auth.repository';
+import { UserInvitationService } from '../../user-invitation/service/user-invitation.service';
 import { DoctorIdentifierConflictError } from '../repository/doctor-identifier-conflict.error';
 import { DoctorManagementRepository } from '../repository/doctor-management.repository';
+import { DoctorCredentialOptionService } from './doctor-credential-option.service';
 import { DoctorManagementService } from './doctor-management.service';
 
 type PermissionScope = 'ANY' | 'OWN';
@@ -56,6 +59,7 @@ describe('DoctorManagementService', () => {
     createDoctor: jest.fn(),
     updateDoctor: jest.fn(),
     replaceDoctorSchedules: jest.fn(),
+    listEducationFieldOfStudyCodes: jest.fn().mockResolvedValue([]),
   } as unknown as DoctorManagementRepository;
 
   const authRepositoryMock = {
@@ -66,10 +70,32 @@ describe('DoctorManagementService', () => {
     record: jest.fn(),
   } as unknown as AuditService;
 
+  // The credential catalog is exercised on its own; here it stands in as an
+  // always-permissive catalog whose labels are the codes, so these tests keep
+  // asserting the doctor rules rather than the resolver's.
+  const doctorCredentialOptionServiceMock = {
+    assertUsableCodes: jest.fn().mockResolvedValue(undefined),
+    buildResolver: jest
+      .fn()
+      .mockResolvedValue((_kind: string, stored: string) => ({ label: stored, isLegacy: true })),
+  } as unknown as DoctorCredentialOptionService;
+
+  const userInvitationServiceMock = {
+    resolveDoctorOwnerPlan: jest.fn(),
+    inviteDoctorOwner: jest.fn(),
+  } as unknown as UserInvitationService;
+
+  const adminManagementServiceMock = {
+    grantRoleCodes: jest.fn(),
+  } as unknown as AdminManagementService;
+
   const service = new DoctorManagementService(
     doctorManagementRepositoryMock,
     authRepositoryMock,
     auditServiceMock,
+    doctorCredentialOptionServiceMock,
+    userInvitationServiceMock,
+    adminManagementServiceMock,
   );
 
   const currentUser = {
@@ -574,14 +600,21 @@ describe('DoctorManagementService', () => {
       (doctorManagementRepositoryMock.createDoctor as jest.Mock).mockResolvedValue({
         ...doctorRecord,
         ownerUser: { email: 'dr.first@clinic.local' },
-        title: 'dr.',
-        degrees: 'Sp.JP',
+        title: 'DR',
+        degrees: 'SP_JP,M_KES',
       });
+      (doctorCredentialOptionServiceMock.buildResolver as jest.Mock).mockResolvedValueOnce(
+        (_kind: string, stored: string) => ({
+          code: stored,
+          label: { DR: 'dr.', SP_JP: 'Sp.JP', M_KES: 'M.Kes' }[stored] ?? stored,
+          isLegacy: false,
+        }),
+      );
       const inputEducations = [
         {
           institution: 'Universitas Indonesia',
           degree: 'dr.',
-          fieldOfStudy: 'Kedokteran',
+          fieldOfStudy: 'PENDIDIKAN_DOKTER',
           graduationYear: 2004,
         },
       ];
@@ -592,24 +625,25 @@ describe('DoctorManagementService', () => {
           specialtyId,
           phoneNumber: '0812345678',
           nik: inputDoctorNik,
-          title: 'dr.',
-          degrees: 'Sp.JP',
+          title: 'DR',
+          degrees: ['SP_JP', 'M_KES'],
           educations: inputEducations,
           isActive: true,
         },
         currentUser,
       );
+      // The ordered code list is stored comma-joined in the single column.
       expect(doctorManagementRepositoryMock.createDoctor).toHaveBeenCalledWith(
         expect.objectContaining({
-          title: 'dr.',
-          degrees: 'Sp.JP',
+          title: 'DR',
+          degrees: 'SP_JP,M_KES',
           educations: inputEducations,
         }),
       );
       // Read back from the linked account, the only place it is stored.
       expect(result.email).toBe('dr.first@clinic.local');
       expect(result.title).toBe('dr.');
-      expect(result.degrees).toBe('Sp.JP');
+      expect(result.degrees).toBe('Sp.JP, M.Kes');
     });
 
     it('replaces the education list on update', async () => {
@@ -622,7 +656,7 @@ describe('DoctorManagementService', () => {
         {
           institution: 'Universitas Gadjah Mada',
           degree: 'Sp.A',
-          fieldOfStudy: 'Ilmu Kesehatan Anak',
+          fieldOfStudy: 'ILMU_KESEHATAN_ANAK',
           graduationYear: 2014,
         },
       ];
@@ -659,7 +693,11 @@ describe('DoctorManagementService', () => {
         ],
       });
       const result = await service.getDoctorById(doctorId, currentUser);
+      // Free text written before the credential catalog existed (P19-T14):
+      // it still prints exactly as stored, and is flagged so the form asks an
+      // admin to pick a replacement rather than dropping the credential.
       expect(result.title).toBe('dr.');
+      expect(result.titleValue).toEqual({ label: 'dr.', isLegacy: true });
       expect(result.degrees).toBe('Sp.PD');
       expect(result.email).toBe('dr.first@clinic.local');
       expect(result.educations).toEqual([
@@ -668,11 +706,29 @@ describe('DoctorManagementService', () => {
           institution: 'Universitas Indonesia',
           degree: 'Sp.PD',
           fieldOfStudy: 'Penyakit Dalam',
+          fieldOfStudyValue: { label: 'Penyakit Dalam', isLegacy: true },
           graduationYear: 2010,
           createdAt: '2026-07-01T00:00:00.000Z',
           updatedAt: '2026-07-01T00:00:00.000Z',
         },
       ]);
+    });
+
+    it('rejects a credential code that names no live option', async () => {
+      (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
+        buildActor([{ action: 'update', resource: 'Doctor', scope: 'ANY' }]),
+      );
+      (doctorManagementRepositoryMock.findDoctorById as jest.Mock).mockResolvedValue(doctorRecord);
+      (doctorCredentialOptionServiceMock.assertUsableCodes as jest.Mock).mockRejectedValueOnce(
+        new BadRequestException({
+          message: 'Unknown or inactive DEGREE credential option',
+          details: { field: 'degrees', unknownCodes: ['SP_MADE_UP'] },
+        }),
+      );
+      await expect(
+        service.updateDoctor(doctorId, { degrees: ['SP_MADE_UP'] }, currentUser),
+      ).rejects.toBeInstanceOf(BadRequestException);
+      expect(doctorManagementRepositoryMock.updateDoctor).not.toHaveBeenCalled();
     });
   });
 

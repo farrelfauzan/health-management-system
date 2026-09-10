@@ -66,6 +66,7 @@ export const ModelName = {
   DocumentDelivery: 'DocumentDelivery',
   DocumentDeliveryLink: 'DocumentDeliveryLink',
   PatientAllergy: 'PatientAllergy',
+  DoctorCredentialOption: 'DoctorCredentialOption',
   Specialty: 'Specialty',
   DoctorProfile: 'DoctorProfile',
   DoctorEducation: 'DoctorEducation',
@@ -231,7 +232,8 @@ export const UserInvitationScalarFieldEnum = {
   consumedAt: 'consumedAt',
   revokedAt: 'revokedAt',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  doctorProfileId: 'doctorProfileId'
 } as const
 
 export type UserInvitationScalarFieldEnum = (typeof UserInvitationScalarFieldEnum)[keyof typeof UserInvitationScalarFieldEnum]
@@ -440,6 +442,21 @@ export const PatientAllergyScalarFieldEnum = {
 } as const
 
 export type PatientAllergyScalarFieldEnum = (typeof PatientAllergyScalarFieldEnum)[keyof typeof PatientAllergyScalarFieldEnum]
+
+
+export const DoctorCredentialOptionScalarFieldEnum = {
+  id: 'id',
+  kind: 'kind',
+  code: 'code',
+  label: 'label',
+  sortOrder: 'sortOrder',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type DoctorCredentialOptionScalarFieldEnum = (typeof DoctorCredentialOptionScalarFieldEnum)[keyof typeof DoctorCredentialOptionScalarFieldEnum]
 
 
 export const SpecialtyScalarFieldEnum = {

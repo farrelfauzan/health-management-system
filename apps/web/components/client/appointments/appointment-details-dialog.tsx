@@ -16,6 +16,7 @@ import {
 } from '@hms/ui';
 import { useFormatter, useTranslations } from 'next-intl';
 
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { AvatarInitials } from '#components/shared/avatar-initials';
 import { StatusBadge } from '#components/shared/status-badge';
 import { appointmentManagementControllerUpdateAppointmentV1 } from '#lib/api/generated/appointment-management/appointment-management';
@@ -94,14 +95,7 @@ export function AppointmentDetailsDialog({
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
-          {actionError ? (
-            <p
-              role="alert"
-              className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700"
-            >
-              {actionError}
-            </p>
-          ) : null}
+          {actionError ? <InlineNotice tone="error">{actionError}</InlineNotice> : null}
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-3">
               <AvatarInitials name={appointment.subject.fullName} />

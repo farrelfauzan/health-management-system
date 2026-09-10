@@ -141,7 +141,8 @@ export const AuditAction = {
   LAB_RESULT_ENTERED: 'LAB_RESULT_ENTERED',
   LAB_RESULT_RELEASED: 'LAB_RESULT_RELEASED',
   LAB_RESULT_AMENDED: 'LAB_RESULT_AMENDED',
-  LAB_REPORT_FILED: 'LAB_REPORT_FILED'
+  LAB_REPORT_FILED: 'LAB_REPORT_FILED',
+  REGISTRATION_CHECKIN_OVERRIDDEN: 'REGISTRATION_CHECKIN_OVERRIDDEN'
 } as const
 
 export type AuditAction = (typeof AuditAction)[keyof typeof AuditAction]
@@ -657,6 +658,15 @@ export const DeliveryStatus = {
 } as const
 
 export type DeliveryStatus = (typeof DeliveryStatus)[keyof typeof DeliveryStatus]
+
+
+export const DoctorCredentialKind = {
+  TITLE: 'TITLE',
+  DEGREE: 'DEGREE',
+  FIELD_OF_STUDY: 'FIELD_OF_STUDY'
+} as const
+
+export type DoctorCredentialKind = (typeof DoctorCredentialKind)[keyof typeof DoctorCredentialKind]
 
 
 export const DocumentOwnerType = {

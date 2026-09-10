@@ -6,6 +6,7 @@ import type { ProcedureResponse } from '@hms/shared-types';
 import { Icon } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { encounterClinicalDataControllerRemoveProcedureV1 } from '#lib/api/generated/encounters/encounters';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { invalidateEncounterQueries } from '#lib/encounters/invalidate-encounter-queries';
@@ -44,11 +45,7 @@ export function EncounterProcedureRow({
         <span className="font-mono text-sm font-medium text-slate-900">{procedure.code}</span>
         <p className="text-sm text-slate-700">{procedure.display}</p>
         {procedure.notes ? <p className="text-xs text-slate-500">{procedure.notes}</p> : null}
-        {actionError ? (
-          <p role="alert" className="text-xs text-rose-600">
-            {actionError}
-          </p>
-        ) : null}
+        {actionError ? <InlineNotice tone="error">{actionError}</InlineNotice> : null}
       </div>
       {isEditable ? (
         <button

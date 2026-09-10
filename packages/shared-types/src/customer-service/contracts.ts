@@ -338,10 +338,36 @@ export type ProspectivePatientView = {
   status: ProspectivePatientStatusValue;
   /** Set once the record resolved — the patient it became, or was found to be. */
   patientId: string | null;
+  /**
+   * The MRN of that patient (`P19-T08`), so a resolved row can name the record
+   * it became without a second request. Null while the record is unresolved,
+   * which is the whole point: no number has been spent on this person yet.
+   */
+  patientMrn: string | null;
   /** How many bookings are still riding on this record. */
   openAppointments: number;
+  /**
+   * The next booking that has not been cancelled, if there is one still ahead
+   * (`P19-T08`). What the back office wants to know before it converts
+   * someone is whether they are actually coming, and when.
+   */
+  upcomingAppointment: ProspectivePatientUpcomingAppointmentView | null;
   expiresAt: string;
   createdAt: string;
+};
+
+/** The one booking a prospective row surfaces (`P19-T08`). */
+export type ProspectivePatientUpcomingAppointmentView = {
+  id: string;
+  scheduledAt: string;
+  doctorName: string;
+};
+
+/** The page the "From chat" table is looking at (`P19-T08`). */
+export type ProspectivePatientsListMeta = {
+  page: number;
+  limit: number;
+  total: number;
 };
 
 /**

@@ -6,6 +6,7 @@ import type { DiagnosisResponse } from '@hms/shared-types';
 import { Badge, Icon } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { encounterClinicalDataControllerRemoveDiagnosisV1 } from '#lib/api/generated/encounters/encounters';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { invalidateEncounterQueries } from '#lib/encounters/invalidate-encounter-queries';
@@ -56,11 +57,7 @@ export function EncounterDiagnosisRow({
         </div>
         <p className="text-sm text-slate-700">{diagnosis.display}</p>
         {diagnosis.notes ? <p className="text-xs text-slate-500">{diagnosis.notes}</p> : null}
-        {actionError ? (
-          <p role="alert" className="text-xs text-rose-600">
-            {actionError}
-          </p>
-        ) : null}
+        {actionError ? <InlineNotice tone="error">{actionError}</InlineNotice> : null}
       </div>
       {isEditable ? (
         <button

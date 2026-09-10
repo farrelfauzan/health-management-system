@@ -565,6 +565,23 @@ export type EnumAllergySeverityWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumAllergySeverityFilter<$PrismaModel>
 }
 
+export type EnumDoctorCredentialKindFilter<$PrismaModel = never> = {
+  equals?: $Enums.DoctorCredentialKind | Prisma.EnumDoctorCredentialKindFieldRefInput<$PrismaModel>
+  in?: $Enums.DoctorCredentialKind[] | Prisma.ListEnumDoctorCredentialKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DoctorCredentialKind[] | Prisma.ListEnumDoctorCredentialKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDoctorCredentialKindFilter<$PrismaModel> | $Enums.DoctorCredentialKind
+}
+
+export type EnumDoctorCredentialKindWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.DoctorCredentialKind | Prisma.EnumDoctorCredentialKindFieldRefInput<$PrismaModel>
+  in?: $Enums.DoctorCredentialKind[] | Prisma.ListEnumDoctorCredentialKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DoctorCredentialKind[] | Prisma.ListEnumDoctorCredentialKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDoctorCredentialKindWithAggregatesFilter<$PrismaModel> | $Enums.DoctorCredentialKind
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumDoctorCredentialKindFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumDoctorCredentialKindFilter<$PrismaModel>
+}
+
 export type EnumDoctorLicenseTypeFilter<$PrismaModel = never> = {
   equals?: $Enums.DoctorLicenseType | Prisma.EnumDoctorLicenseTypeFieldRefInput<$PrismaModel>
   in?: $Enums.DoctorLicenseType[] | Prisma.ListEnumDoctorLicenseTypeFieldRefInput<$PrismaModel>
@@ -2550,6 +2567,23 @@ export type NestedEnumAllergySeverityWithAggregatesFilter<$PrismaModel = never> 
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumAllergySeverityFilter<$PrismaModel>
   _max?: Prisma.NestedEnumAllergySeverityFilter<$PrismaModel>
+}
+
+export type NestedEnumDoctorCredentialKindFilter<$PrismaModel = never> = {
+  equals?: $Enums.DoctorCredentialKind | Prisma.EnumDoctorCredentialKindFieldRefInput<$PrismaModel>
+  in?: $Enums.DoctorCredentialKind[] | Prisma.ListEnumDoctorCredentialKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DoctorCredentialKind[] | Prisma.ListEnumDoctorCredentialKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDoctorCredentialKindFilter<$PrismaModel> | $Enums.DoctorCredentialKind
+}
+
+export type NestedEnumDoctorCredentialKindWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.DoctorCredentialKind | Prisma.EnumDoctorCredentialKindFieldRefInput<$PrismaModel>
+  in?: $Enums.DoctorCredentialKind[] | Prisma.ListEnumDoctorCredentialKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DoctorCredentialKind[] | Prisma.ListEnumDoctorCredentialKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDoctorCredentialKindWithAggregatesFilter<$PrismaModel> | $Enums.DoctorCredentialKind
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumDoctorCredentialKindFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumDoctorCredentialKindFilter<$PrismaModel>
 }
 
 export type NestedEnumDoctorLicenseTypeFilter<$PrismaModel = never> = {

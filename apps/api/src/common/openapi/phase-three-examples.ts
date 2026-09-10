@@ -212,8 +212,14 @@ const doctor = {
   specialty: specialty.name,
   phoneNumber: '+628129876543',
   email: 'budi.santoso@clinic.local',
+  // Printed forms resolved from the credential catalog (P19-T14); the columns
+  // themselves hold the codes `DR` and `SP_PD`.
   title: 'dr.',
   degrees: 'Sp.PD',
+  titleValue: { code: 'DR', label: 'dr.', isLegacy: false },
+  degreeValues: [{ code: 'SP_PD', label: 'Sp.PD', isLegacy: false }],
+  displayName: 'dr. Budi Santoso, Sp.PD',
+  invitationStatus: 'ACCEPTED',
   nikMasked: '••••••••0002',
   satusehatPractitionerId: '10009880728',
   ownerUserId: userId,
@@ -245,7 +251,12 @@ const doctorEducations = [
     id: 'fafafafa-fafa-4afa-8afa-fafafafafafa',
     institution: 'Universitas Indonesia',
     degree: 'dr.',
-    fieldOfStudy: 'Kedokteran',
+    fieldOfStudy: 'Pendidikan Dokter',
+    fieldOfStudyValue: {
+      code: 'PENDIDIKAN_DOKTER',
+      label: 'Pendidikan Dokter',
+      isLegacy: false,
+    },
     graduationYear: 2004,
     createdAt: timestamp,
     updatedAt: timestamp,
@@ -254,7 +265,12 @@ const doctorEducations = [
     id: 'fbfbfbfb-fbfb-4bfb-8bfb-fbfbfbfbfbfb',
     institution: 'Universitas Indonesia',
     degree: 'Sp.PD',
-    fieldOfStudy: 'Penyakit Dalam',
+    fieldOfStudy: 'Ilmu Penyakit Dalam',
+    fieldOfStudyValue: {
+      code: 'ILMU_PENYAKIT_DALAM',
+      label: 'Ilmu Penyakit Dalam',
+      isLegacy: false,
+    },
     graduationYear: 2010,
     createdAt: timestamp,
     updatedAt: timestamp,
@@ -313,6 +329,9 @@ const registration = {
   createdById: userId,
   createdAt: timestamp,
   updatedAt: timestamp,
+  // Today's practice hours for this registration's doctor (P19-T16). The queue
+  // row prints them and greys out Check in when they are absent.
+  todaySession: { start: '14:00', end: '17:00', opensAt: '13:00', closesAt: '17:00' },
 };
 // Synthetic KFA code: structurally valid (numeric) but not a real Kemenkes
 // catalog entry.
@@ -668,8 +687,8 @@ export const PHASE_THREE_EXAMPLES = {
       specialtyId,
       phoneNumber: '+628129876543',
       email: 'budi.santoso@clinic.local',
-      title: 'dr.',
-      degrees: 'Sp.PD',
+      title: 'DR',
+      degrees: ['SP_PD'],
       nik: syntheticDoctorNik,
       licenses: [
         { type: 'STR', licenseNumber: 'STR-33-2020-000123', issuedAt: '2020-02-01' },
@@ -684,25 +703,30 @@ export const PHASE_THREE_EXAMPLES = {
         {
           institution: 'Universitas Indonesia',
           degree: 'dr.',
-          fieldOfStudy: 'Kedokteran',
+          fieldOfStudy: 'PENDIDIKAN_DOKTER',
           graduationYear: 2004,
         },
         {
           institution: 'Universitas Indonesia',
           degree: 'Sp.PD',
-          fieldOfStudy: 'Penyakit Dalam',
+          fieldOfStudy: 'ILMU_PENYAKIT_DALAM',
           graduationYear: 2010,
         },
       ],
-      ownerUserId: userId,
+      // No `ownerUserId` beside the email (P19-T15): the address is now how a
+      // doctor's account is created or attached, and naming both is refused
+      // unless they resolve to the same user. `ownerUserId` remains accepted
+      // on its own for callers that already hold a user id.
       patientIds: [patientId],
     },
+    // No `email` here on purpose: `updateDoctorSchema` does not accept one, and
+    // changing a sign-in address stays an Administration action on the account.
+    // It used to be shown, which was a promise the schema silently dropped.
     updateRequest: {
       specialtyId,
       phoneNumber: '+628129876500',
-      email: 'budi.santoso@clinic.local',
-      title: 'dr.',
-      degrees: 'Sp.PD',
+      title: 'DR',
+      degrees: ['SP_PD'],
       isActive: true,
     },
     scheduleRequest: {

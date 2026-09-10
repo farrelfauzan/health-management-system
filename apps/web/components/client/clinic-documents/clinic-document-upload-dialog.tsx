@@ -28,6 +28,7 @@ import { useTranslations } from 'next-intl';
 
 import { DocumentFilePicker } from '#components/client/documents/document-file-picker';
 import { UploadProgressIndicator } from '#components/client/documents/upload-progress-indicator';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { invalidateClinicDocumentQueries } from '#lib/clinic-documents/invalidate-clinic-document-queries';
 import { uploadClinicDocument } from '#lib/clinic-documents/upload-clinic-document';
 import { resolveApiErrorMessage } from '#lib/api/resolve-api-error-message';
@@ -188,7 +189,7 @@ export function ClinicDocumentUploadDialog({
               </SelectContent>
             </Select>
           </div>
-          {error ? <p className="text-sm text-red-700">{error}</p> : null}
+          {error ? <InlineNotice tone="error">{error}</InlineNotice> : null}
           {progress && uploadMutation.isPending ? (
             <UploadProgressIndicator progress={progress} label={resolveProgressLabel(progress)} />
           ) : null}

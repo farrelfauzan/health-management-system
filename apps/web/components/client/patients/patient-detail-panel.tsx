@@ -28,10 +28,17 @@ import { PatientDoctorsCard } from '#components/client/patients/patient-doctors-
 import { PatientFormDialog } from '#components/client/patients/patient-form-dialog';
 import { EmptyState } from '#components/shared/empty-state';
 import { PageHeader } from '#components/shared/page-header';
+import { useShellBreadcrumbRoot } from '#lib/navigation/use-shell-breadcrumb-root';
+import { useTabSearchParam } from '#lib/navigation/use-tab-search-param';
+import { PATIENT_DETAIL_TABS, type PatientDetailTab } from '#lib/patients/patient-detail-tabs';
 import { usePatientDetail } from '#lib/patients/use-patient-detail';
+
+const DEFAULT_PATIENTS_HREF = '/admin/patients';
 
 type PatientDetailPanelProps = {
   patientId: string;
+  /** A tab asked for by the URL; honoured only when this person may see it (SJ-162). */
+  initialTab?: PatientDetailTab;
   isSatusehatEnabled: boolean;
   /**
    * P18-T07. Resolved on the server page from the session claims. Visibility
@@ -39,14 +46,22 @@ type PatientDetailPanelProps = {
    * whatever this says.
    */
   isLaboratoryEnabled?: boolean;
+  /**
+   * The list this record was opened from, for the trail's parent link: the
+   * directory in the admin shell, the doctor's own panel in theirs.
+   */
+  patientsHref?: string;
 };
 
 export function PatientDetailPanel({
   patientId,
+  initialTab,
   isSatusehatEnabled,
   isLaboratoryEnabled = false,
+  patientsHref = DEFAULT_PATIENTS_HREF,
 }: PatientDetailPanelProps) {
   const t = useTranslations('clinical');
+  const root = useShellBreadcrumbRoot();
   const ability = useAbility();
   // Visibility only. The tab hides for a role without the grant; the API's
   // guard is what refuses the list to anyone who reaches the route anyway.
@@ -55,6 +70,16 @@ export function PatientDetailPanel({
   // entitlement has no laboratory at all, and a person without the order key
   // has one they may not read.
   const canReadLabHistory = isLaboratoryEnabled && ability.can('read', 'LabOrder');
+  const readableTabs: Record<PatientDetailTab, boolean> = {
+    overview: true,
+    documents: canReadDocuments,
+    laboratory: canReadLabHistory,
+  };
+  const { tab, setTab } = useTabSearchParam<PatientDetailTab>({
+    allowed: PATIENT_DETAIL_TABS.filter((candidate) => readableTabs[candidate]),
+    fallback: 'overview',
+    initialTab,
+  });
   const detailQuery = usePatientDetail(patientId);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState<boolean>(false);
   const [isAssignDialogOpen, setIsAssignDialogOpen] = useState<boolean>(false);
@@ -89,7 +114,11 @@ export function PatientDetailPanel({
       <PageHeader
         title={patient.fullName}
         subtitle={t('patients.record', { mrn: patient.mrn })}
-        breadcrumbs={[t('patients.dashboard'), t('patients.title'), patient.fullName]}
+        breadcrumbs={[
+          root,
+          { label: t('patients.title'), href: patientsHref },
+          { label: patient.fullName },
+        ]}
         actions={
           <Can action="update" subject="Patient">
             <Button type="button" variant="outline" onClick={() => setIsEditDialogOpen(true)}>
@@ -100,7 +129,11 @@ export function PatientDetailPanel({
         }
       />
 
-      <Tabs defaultValue="overview" className="space-y-5">
+      <Tabs
+        value={tab}
+        onValueChange={(value) => setTab(value as PatientDetailTab)}
+        className="space-y-5"
+      >
         <TabsList>
           <TabsTrigger value="overview">{t('patients.tabs.overview')}</TabsTrigger>
           {canReadDocuments ? (
@@ -114,13 +147,10 @@ export function PatientDetailPanel({
           <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">
             <div className="space-y-6">
               <PatientDemographicsCard patient={patient} />
-              <PatientIdentifiersCard
-                patient={patient}
-                isSatusehatEnabled={isSatusehatEnabled}
-              />
+              <PatientIdentifiersCard patient={patient} isSatusehatEnabled={isSatusehatEnabled} />
               <PatientImmunizationsCard patientId={patient.id} />
             </div>
-            <div className="space-y-6">
+            <div className="min-w-0 space-y-6">
               <PatientAllergiesCard allergies={patient.allergies} />
               <PatientPrivacyHistoryCard patientId={patient.id} />
               <PatientDeliveryConsentCard patientId={patient.id} />

@@ -100,6 +100,10 @@
         "logoAlt": "{facilityName} logo",
         "facilityType": "Medical Center"
       },
+      "sidebar": {
+        "collapse": "Collapse sidebar",
+        "expand": "Expand sidebar"
+      },
       "navigation": {
         "dashboard": "Dashboard",
         "patients": "Patients",
@@ -227,7 +231,6 @@
         "description": "This screen ships in an upcoming Phase 4 task. The navigation and layout are ready for it."
       },
       "routes": {
-        "mainDashboard": "Main Dashboard",
         "overview": "Overview",
         "clinicOverview": "Clinic Overview",
         "hospitalOverview": "Hospital Overview",

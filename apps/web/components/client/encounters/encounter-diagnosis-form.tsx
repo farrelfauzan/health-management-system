@@ -16,6 +16,7 @@ import {
 import { useTranslations } from 'next-intl';
 
 import { CodeSearchPicker } from '#components/client/encounters/code-search-picker';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { encounterClinicalDataControllerAddDiagnosisV1 } from '#lib/api/generated/encounters/encounters';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { parseApiSuccess } from '#lib/api/response';
@@ -79,14 +80,7 @@ export function EncounterDiagnosisForm({
 
   return (
     <form noValidate className="space-y-3" onSubmit={(event) => void handleSubmit(event)}>
-      {actionError ? (
-        <p
-          role="alert"
-          className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700"
-        >
-          {actionError}
-        </p>
-      ) : null}
+      {actionError ? <InlineNotice tone="error">{actionError}</InlineNotice> : null}
       <CodeSearchPicker
         id="diagnosis-code-search"
         label={t('encounters.diagnosis.label')}

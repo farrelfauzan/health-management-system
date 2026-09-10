@@ -5,12 +5,14 @@
  * Health Management System API
  * OpenAPI spec version: 1.0.0
  */
+import type { DoctorManagementControllerGetDoctorByIdV1200DataEducationsItemFieldOfStudyValue } from './doctorManagementControllerGetDoctorByIdV1200DataEducationsItemFieldOfStudyValue';
 
 export type DoctorManagementControllerGetDoctorByIdV1200DataEducationsItem = {
   id: string;
   institution: string;
   degree: string;
   fieldOfStudy: string;
+  fieldOfStudyValue: DoctorManagementControllerGetDoctorByIdV1200DataEducationsItemFieldOfStudyValue;
   graduationYear: number;
   createdAt: string;
   updatedAt: string;

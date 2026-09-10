@@ -18,7 +18,10 @@ export type EducationRow = {
   key: string;
   institution: string;
   degree: string;
+  /** FIELD_OF_STUDY option code (P19-T14); `''` when unset or legacy free text. */
   fieldOfStudy: string;
+  /** Raw stored text that matched no option, shown so the edit does not lose it. */
+  legacyFieldOfStudy: string;
   graduationYear: string;
 };
 
@@ -27,7 +30,14 @@ export function buildEmptyLicenseRow(key: string): LicenseRow {
 }
 
 export function buildEmptyEducationRow(key: string): EducationRow {
-  return { key, institution: '', degree: '', fieldOfStudy: '', graduationYear: '' };
+  return {
+    key,
+    institution: '',
+    degree: '',
+    fieldOfStudy: '',
+    legacyFieldOfStudy: '',
+    graduationYear: '',
+  };
 }
 
 export function toLicenseRows(licenses: DoctorLicense[]): LicenseRow[] {
@@ -45,7 +55,14 @@ export function toEducationRows(educations: DoctorEducation[]): EducationRow[] {
     key: education.id,
     institution: education.institution,
     degree: education.degree,
-    fieldOfStudy: education.fieldOfStudy ?? '',
+    // The response carries the printed label in `fieldOfStudy`; the row holds
+    // the code, which is what the API accepts back.
+    fieldOfStudy: education.fieldOfStudyValue?.isLegacy
+      ? ''
+      : (education.fieldOfStudyValue?.code ?? ''),
+    legacyFieldOfStudy: education.fieldOfStudyValue?.isLegacy
+      ? education.fieldOfStudyValue.label
+      : '',
     graduationYear: education.graduationYear ? String(education.graduationYear) : '',
   }));
 }

@@ -96,6 +96,21 @@ export function getCalendarDateInTimeZone(instant: Date, timeZone: string): stri
   }).format(instant);
 }
 
+/**
+ * Formats an instant as the `HH:mm` wall-clock time it reads in the given IANA
+ * time zone. The inverse pairing of `getCalendarDateInTimeZone`: an approved
+ * special-request appointment is stored as a UTC instant, and the desk needs
+ * the hour printed on the clinic's clock to compare it against a session.
+ */
+export function getClockTimeInTimeZone(instant: Date, timeZone: string): string {
+  return new Intl.DateTimeFormat('en-GB', {
+    timeZone,
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23',
+  }).format(instant);
+}
+
 const MILLISECONDS_PER_MINUTE = 60_000;
 
 function getTimeZoneOffsetMinutes(instant: Date, timeZone: string): number {
@@ -153,6 +168,14 @@ export const updateRegistrationSchema = z
   .object({
     status: updateRegistrationStatusSchema.optional(),
     appointmentId: z.string().uuid().nullable().optional(),
+    /**
+     * Checks a patient in outside the doctor's practice window (P19-T16).
+     * Meaningful only alongside `status: 'CHECKED_IN'`, and only for a caller
+     * holding `registration.checkin-override:any` — every other caller is
+     * refused rather than quietly ignored, because a desk that believes it
+     * forced a check-in and did not is worse than one that was told no.
+     */
+    force: z.boolean().optional(),
   })
   .refine(
     (payload) => payload.status !== undefined || payload.appointmentId !== undefined,

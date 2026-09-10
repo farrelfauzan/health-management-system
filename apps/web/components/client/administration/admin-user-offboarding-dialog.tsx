@@ -14,6 +14,7 @@ import {
 } from '@hms/ui';
 import { useFormatter, useTranslations } from 'next-intl';
 
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import {
   userOffboardingControllerOffboardUserV1,
   userOffboardingControllerReonboardUserV1,
@@ -100,7 +101,7 @@ export function AdminUserOffboardingDialog({
         {previewQuery.isPending ? (
           <p className="text-sm text-slate-500">{t('previewLoading')}</p>
         ) : preview === null ? (
-          <p className="text-sm text-red-700">{t('previewError')}</p>
+          <InlineNotice tone="error">{t('previewError')}</InlineNotice>
         ) : (
           <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm">
             <dt className="font-medium text-slate-900">{t('preview.deletionDate')}</dt>
@@ -120,7 +121,7 @@ export function AdminUserOffboardingDialog({
         ) : (
           <p className="text-sm text-slate-700">{t('reonboardConsequences')}</p>
         )}
-        {formError ? <p className="text-sm text-red-700">{formError}</p> : null}
+        {formError ? <InlineNotice tone="error">{formError}</InlineNotice> : null}
         <DialogFooter>
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
             {t('cancel')}

@@ -19,9 +19,22 @@ const READ_ONLY_RULES: AppRule[] = [{ action: 'read', subject: 'Registration' }]
 
 const CLINICAL_RULES: AppRule[] = [...FULL_ACCESS_RULES, { action: 'write', subject: 'Encounter' }];
 
+const OVERRIDE_RULES: AppRule[] = [
+  ...FULL_ACCESS_RULES,
+  { action: 'checkin-override', subject: 'Registration' },
+];
+
+const LINKED_APPOINTMENT: RegistrationListItem['appointment'] = {
+  id: 'appointment-1',
+  scheduledAt: '2026-07-18T09:00:00.000Z',
+  status: 'SCHEDULED',
+  doctor: { id: 'doctor-1', fullName: 'Dr. Budi Santoso', specialty: 'Internal Medicine' },
+};
+
 function buildRegistration(
   status: RegistrationStatusValue,
   appointment?: RegistrationListItem['appointment'],
+  todaySession?: RegistrationListItem['todaySession'],
 ): RegistrationListItem {
   return {
     id: 'registration-1',
@@ -32,6 +45,7 @@ function buildRegistration(
     updatedAt: '2026-07-18T08:00:00.000Z',
     patient: { id: 'patient-1', mrn: 'MRN-0001', fullName: 'John Doe' },
     appointment,
+    todaySession,
   };
 }
 
@@ -40,9 +54,11 @@ function renderRow(params: {
   rules: AppRule[];
   variant: RegistrationsViewVariant;
   appointment?: RegistrationListItem['appointment'];
+  todaySession?: RegistrationListItem['todaySession'];
   onTransition?: (
     registration: RegistrationListItem,
     target: 'CHECKED_IN' | 'COMPLETED' | 'CANCELLED',
+    isForced?: boolean,
   ) => void;
   onOpenEncounter?: (registration: RegistrationListItem) => void;
 }): void {
@@ -52,7 +68,11 @@ function renderRow(params: {
         <Table>
           <TableBody>
             <RegistrationsTableRow
-              registration={buildRegistration(params.status, params.appointment)}
+              registration={buildRegistration(
+                params.status,
+                params.appointment,
+                params.todaySession,
+              )}
               variant={params.variant}
               onTransition={params.onTransition ?? vi.fn()}
               onOpenEncounter={params.onOpenEncounter ?? vi.fn()}
@@ -159,6 +179,94 @@ describe('RegistrationsTableRow', () => {
     await user.click(screen.getByRole('button', { name: 'Actions for John Doe' }));
 
     expect(screen.queryByRole('menuitem', { name: /Open Encounter/ })).not.toBeInTheDocument();
+  });
+
+  it("shows today's practice hours under the doctor", () => {
+    renderRow({
+      status: 'PENDING',
+      rules: FULL_ACCESS_RULES,
+      variant: 'admin',
+      appointment: LINKED_APPOINTMENT,
+      todaySession: { start: '14:00', end: '17:00', opensAt: '13:00', closesAt: '17:00' },
+    });
+
+    expect(screen.getByText('Practises 14:00–17:00 today')).toBeInTheDocument();
+  });
+
+  it('says the doctor is not practising when there are no hours today', () => {
+    renderRow({
+      status: 'PENDING',
+      rules: FULL_ACCESS_RULES,
+      variant: 'admin',
+      appointment: LINKED_APPOINTMENT,
+    });
+
+    expect(screen.getByText('Not practising today')).toBeInTheDocument();
+  });
+
+  it('disables Check in, with a reason, when the doctor is not practising', async () => {
+    const user = userEvent.setup();
+    const onTransition = vi.fn();
+    renderRow({
+      status: 'PENDING',
+      rules: FULL_ACCESS_RULES,
+      variant: 'admin',
+      appointment: LINKED_APPOINTMENT,
+      onTransition,
+    });
+
+    await user.click(screen.getByRole('button', { name: 'Actions for John Doe' }));
+    const checkIn = screen.getByRole('menuitem', { name: /Check In/ });
+
+    expect(checkIn).toHaveAttribute('data-disabled');
+    expect(checkIn).toHaveAttribute(
+      'title',
+      'Dr. Budi Santoso has no session today, so this patient can not be checked in',
+    );
+    expect(screen.queryByRole('menuitem', { name: /Check In Anyway/ })).not.toBeInTheDocument();
+  });
+
+  it('leaves Check in enabled while the doctor is practising', async () => {
+    const user = userEvent.setup();
+    renderRow({
+      status: 'PENDING',
+      rules: FULL_ACCESS_RULES,
+      variant: 'admin',
+      appointment: LINKED_APPOINTMENT,
+      todaySession: { start: '14:00', end: '17:00', opensAt: '13:00', closesAt: '17:00' },
+    });
+
+    await user.click(screen.getByRole('button', { name: 'Actions for John Doe' }));
+
+    expect(screen.getByRole('menuitem', { name: /Check In/ })).not.toHaveAttribute('data-disabled');
+  });
+
+  it('offers a forced check-in to a holder of the override capability', async () => {
+    const user = userEvent.setup();
+    const onTransition = vi.fn();
+    renderRow({
+      status: 'PENDING',
+      rules: OVERRIDE_RULES,
+      variant: 'admin',
+      appointment: LINKED_APPOINTMENT,
+      onTransition,
+    });
+
+    await user.click(screen.getByRole('button', { name: 'Actions for John Doe' }));
+    await user.click(screen.getByRole('menuitem', { name: /Check In Anyway/ }));
+
+    expect(onTransition).toHaveBeenCalledWith(expect.any(Object), 'CHECKED_IN', true);
+  });
+
+  // A walk-in with no appointment has no doctor whose hours could gate it, so
+  // the rule does not apply and the desk must not be blocked.
+  it('leaves a walk-in check-in enabled with no session information', async () => {
+    const user = userEvent.setup();
+    renderRow({ status: 'PENDING', rules: FULL_ACCESS_RULES, variant: 'admin' });
+
+    await user.click(screen.getByRole('button', { name: 'Actions for John Doe' }));
+
+    expect(screen.getByRole('menuitem', { name: /Check In/ })).not.toHaveAttribute('data-disabled');
   });
 
   it('limits the patient variant to cancellation only', async () => {

@@ -5,10 +5,25 @@
  * Health Management System API
  * OpenAPI spec version: 1.0.0
  */
+import type { ProspectivePatientControllerListProspectivePatientsV1Channel } from './prospectivePatientControllerListProspectivePatientsV1Channel';
+import type { ProspectivePatientControllerListProspectivePatientsV1Order } from './prospectivePatientControllerListProspectivePatientsV1Order';
+import type { ProspectivePatientControllerListProspectivePatientsV1Sort } from './prospectivePatientControllerListProspectivePatientsV1Sort';
 import type { ProspectivePatientControllerListProspectivePatientsV1Status } from './prospectivePatientControllerListProspectivePatientsV1Status';
 
 export type ProspectivePatientControllerListProspectivePatientsV1Params = {
 status?: ProspectivePatientControllerListProspectivePatientsV1Status;
+channel?: ProspectivePatientControllerListProspectivePatientsV1Channel;
+/**
+ * @minLength 1
+ * @maxLength 100
+ */
+q?: string;
+sort?: ProspectivePatientControllerListProspectivePatientsV1Sort;
+order?: ProspectivePatientControllerListProspectivePatientsV1Order;
+/**
+ * @minimum 1
+ */
+page?: number;
 /**
  * @minimum 1
  * @maximum 100

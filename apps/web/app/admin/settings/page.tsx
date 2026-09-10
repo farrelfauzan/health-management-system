@@ -8,6 +8,7 @@ import { PageHeader } from '#components/shared/page-header';
 import { ACCESS_TOKEN_COOKIE_NAME } from '#lib/auth/access-token-cookie';
 import { resolveSessionClaims } from '#lib/auth/session-claims';
 import { SESSION_HINT_COOKIE_NAME } from '#lib/auth/session-hint-cookie';
+import { resolveShellBreadcrumbRoot } from '#lib/navigation/resolve-shell-breadcrumb-root.server';
 import { resolveAppAbilityRules } from '#lib/rbac/app-ability.server';
 import { resolveVisibleSettingsHubCards } from '#lib/settings/settings-hub-cards';
 import { resolveDisabledNavHrefs } from '#lib/shell/resolve-disabled-nav-hrefs';
@@ -39,10 +40,15 @@ export default async function AdminSettingsPage() {
   }
 
   const t = await getTranslations('operations.settings');
+  const root = await resolveShellBreadcrumbRoot();
 
   return (
     <div className="space-y-6">
-      <PageHeader title={t('title')} subtitle={t('subtitle')} breadcrumbs={[t('title')]} />
+      <PageHeader
+        title={t('title')}
+        subtitle={t('subtitle')}
+        breadcrumbs={[root, { label: t('title') }]}
+      />
       <SettingsHubGrid cardKeys={cards.map((card) => card.key)} />
     </div>
   );

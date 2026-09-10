@@ -1,4 +1,8 @@
-import type { DoctorLicenseTypeValue } from '#doctor-management/schemas';
+import type { DoctorCredentialValue } from '#doctor-credential-option/contracts';
+import type {
+  DoctorInvitationStatusValue,
+  DoctorLicenseTypeValue,
+} from '#doctor-management/schemas';
 
 export type DoctorProfile = {
   id: string;
@@ -8,13 +12,36 @@ export type DoctorProfile = {
   specialty: string;
   phoneNumber?: string;
   /**
-   * Read from the linked user account, not stored on the profile. Absent when
-   * the doctor has no account yet — the address is the one they sign in with,
-   * so there is exactly one copy of it.
+   * Read from the linked user account, not stored on the profile. While an
+   * invitation raised at creation is still outstanding there is no account
+   * yet, so it is read from that invitation instead — either way there is
+   * exactly one stored copy of the address, and it is the one they sign in
+   * with. Absent only when the doctor has neither an account nor a live
+   * invitation.
    */
   email?: string;
+  /**
+   * Whether the doctor can sign in yet (P19-T15). `ACCEPTED` means an account
+   * is linked, whether it was created by accepting the invitation or already
+   * existed and was attached. `PENDING` means an invitation is outstanding and
+   * still usable. Absent means neither — the doctor was created without an
+   * email, or the invitation lapsed or was withdrawn without being replaced.
+   */
+  invitationStatus?: DoctorInvitationStatusValue;
+  /**
+   * The title's *printed* form ("dr."), not the stored code — every reader
+   * wanted the printed form before P19-T14 and still does. Absent when the
+   * doctor has no title on file.
+   */
   title?: string;
+  /** The printed degrees, in order, joined for display: `Sp.PD, M.Kes`. */
   degrees?: string;
+  /** The title as code + label + legacy flag, for the form that edits it. */
+  titleValue?: DoctorCredentialValue;
+  /** Each stored degree as code + label + legacy flag, in stored order. */
+  degreeValues: DoctorCredentialValue[];
+  /** `dr. Andi Prasetyo, Sp.PD` — the one composed form, built by the API. */
+  displayName: string;
   /**
    * Masked NIK (`••••••••0001`), rendered from the stored last four digits
    * without decrypting a row. Absent when no NIK is on file. Full values come
@@ -43,7 +70,10 @@ export type DoctorEducation = {
   id: string;
   institution: string;
   degree: string;
+  /** The field of study's printed form ("Pendidikan Dokter"), not the code. */
   fieldOfStudy?: string;
+  /** The same value as code + label + legacy flag, for the form that edits it. */
+  fieldOfStudyValue?: DoctorCredentialValue;
   graduationYear?: number;
   createdAt: string;
   updatedAt: string;

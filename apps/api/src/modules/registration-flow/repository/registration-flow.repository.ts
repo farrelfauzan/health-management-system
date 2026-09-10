@@ -33,6 +33,11 @@ const REGISTRATION_RELATIONS_INCLUDE = {
   appointment: {
     select: {
       id: true,
+      // `type`, `doctorId` and the linked session are what the check-in
+      // window rule reads (P19-T16): the booking already names the doctor and,
+      // when it joined one, the exact session whose hours gate the desk.
+      type: true,
+      doctorId: true,
       scheduledAt: true,
       status: true,
       doctor: {
@@ -44,6 +49,14 @@ const REGISTRATION_RELATIONS_INCLUDE = {
               name: true,
             },
           },
+        },
+      },
+      session: {
+        select: {
+          id: true,
+          sessionDate: true,
+          startTime: true,
+          endTime: true,
         },
       },
     },

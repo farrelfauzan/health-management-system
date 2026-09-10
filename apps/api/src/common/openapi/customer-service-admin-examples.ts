@@ -133,10 +133,17 @@ export const CUSTOMER_SERVICE_ADMIN_EXAMPLES = {
     channel: 'TELEGRAM',
     status: 'AWAITING_ARRIVAL',
     patientId: optionalExample('6d90a1c3-2f84-4b57-8e10-3c7f5a9d0b28'),
+    patientMrn: optionalExample('RM-000119'),
     openAppointments: 1,
+    upcomingAppointment: optionalExample({
+      id: '0f3c9d61-7a2b-4c58-9e14-5b6d8a7c2f10',
+      scheduledAt: '2026-08-12T02:00:00.000Z',
+      doctorName: 'dr. Andi Pratama',
+    }),
     expiresAt: '2026-11-06T14:22:00.000Z',
     createdAt: '2026-08-08T14:22:00.000Z',
   },
+  prospectivePatientsMeta: { page: 1, limit: 25, total: 1 },
   prospectiveMatchCandidate: {
     id: '2a7f4b91-0c86-4d3e-9f52-1b8c6a0e4d77',
     mrn: 'RM-000119',

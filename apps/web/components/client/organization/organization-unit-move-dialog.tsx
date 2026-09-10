@@ -21,6 +21,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { organizationUnitControllerMoveUnitV1 } from '#lib/api/generated/organization-structure/organization-structure';
 import { parseApiSuccess } from '#lib/api/response';
@@ -109,11 +110,7 @@ export function OrganizationUnitMoveDialog({
               </SelectContent>
             </Select>
           </div>
-          {actionError ? (
-            <p role="alert" className="text-sm text-danger">
-              {actionError}
-            </p>
-          ) : null}
+          {actionError ? <InlineNotice tone="error">{actionError}</InlineNotice> : null}
         </div>
         <DialogFooter>
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>

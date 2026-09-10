@@ -1,4 +1,8 @@
-import type { AppointmentStatusValue } from '#appointment-management/schemas';
+import type {
+  AppointmentStatusValue,
+  AppointmentTypeValue,
+} from '#appointment-management/schemas';
+import type { CheckInPracticeWindow } from '#registration-flow/resolve-checkin-window';
 import type {
   RegistrationStatusValue,
   RegistrationTypeValue,
@@ -77,6 +81,11 @@ export type RegistrationRecord = {
   id: string;
   patientId: string;
   appointmentId: string | null;
+  /**
+   * What the visit is for. Read by the check-in window rule (P19-T16): a
+   * LAB_ONLY walk-in has no doctor to be practising, so no session can gate it.
+   */
+  type: RegistrationTypeValue;
   status: RegistrationStatusValue;
   queueNumber: number | null;
   queueDate: Date | null;
@@ -105,12 +114,35 @@ export type RegistrationDoctorProjection = {
   };
 };
 
+export type RegistrationAppointmentSessionProjection = {
+  id: string;
+  sessionDate: Date;
+  startTime: string;
+  endTime: string;
+};
+
 export type RegistrationAppointmentProjection = {
   id: string;
+  /**
+   * `SPECIAL_REQUEST` names one approved instant rather than a session, and
+   * the check-in window is that instant plus or minus the grace (P19-T16).
+   */
+  type: AppointmentTypeValue;
+  doctorId: string;
   scheduledAt: Date;
   status: AppointmentStatusValue;
   doctor: RegistrationDoctorProjection;
+  /** The session the booking joined, when it joined one. */
+  session: RegistrationAppointmentSessionProjection | null;
 };
+
+/**
+ * Practice windows for the doctors named on a page of registrations, keyed by
+ * doctor id. Resolved once per page rather than once per row: the front desk
+ * lists twenty tickets for three doctors, and twenty schedule lookups to
+ * render three sets of opening hours is twenty queries too many.
+ */
+export type RegistrationDoctorWindows = ReadonlyMap<string, readonly CheckInPracticeWindow[]>;
 
 export type RegistrationSpecialtyProjection = {
   id: string;

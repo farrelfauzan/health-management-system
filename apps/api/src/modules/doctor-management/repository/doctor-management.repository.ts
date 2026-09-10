@@ -37,6 +37,17 @@ const DOCTOR_RECORD_SELECT = {
   // The doctor's email lives on their account; selecting it here keeps the
   // response shape unchanged while there is only one stored copy.
   ownerUser: { select: { email: true } },
+  // Where the address lives before the account does (P19-T15). An invitation
+  // raised on the create form holds it until somebody accepts, at which point
+  // `ownerUser` above takes over and this select returns nothing, because the
+  // row is then consumed. Newest first and capped at one: a resend supersedes
+  // its predecessor, so only the latest link is the live one.
+  ownerInvitations: {
+    where: { consumedAt: null, revokedAt: null },
+    orderBy: { createdAt: 'desc' },
+    take: 1,
+    select: { email: true, expiresAt: true },
+  },
   isActive: true,
   createdAt: true,
   updatedAt: true,
@@ -441,6 +452,22 @@ export class DoctorManagementRepository {
         return doctor;
       })
       .catch(rethrowIdentifierConflict);
+  }
+
+  /**
+   * The field-of-study codes this doctor's education rows already hold. Used
+   * only to keep an edit saveable after an admin deactivates an option that
+   * some rows still store (P19-T14).
+   */
+  async listEducationFieldOfStudyCodes(doctorId: string): Promise<string[]> {
+    const educations = await this.prisma.doctorEducation.findMany({
+      where: { doctorId, deletedAt: null, fieldOfStudy: { not: null } },
+      select: { fieldOfStudy: true },
+    });
+
+    return educations
+      .map((education) => education.fieldOfStudy)
+      .filter((code): code is string => code !== null);
   }
 
   async updateDoctor(id: string, payload: UpdateDoctorRecordPayload) {

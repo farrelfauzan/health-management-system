@@ -7,6 +7,7 @@ import request from 'supertest';
 import { AppModule } from '../../app.module';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { AuthRepository } from '../auth/repository/auth.repository';
+import { DoctorCredentialOptionRepository } from './repository/doctor-credential-option.repository';
 import { DoctorManagementRepository } from './repository/doctor-management.repository';
 
 describe('DoctorManagement integration', () => {
@@ -32,7 +33,20 @@ describe('DoctorManagement integration', () => {
     findActivePatientsByIds: jest.fn(),
     findDoctorIdentifiers: jest.fn(),
     createDoctor: jest.fn(),
+    updateDoctor: jest.fn(),
     replaceDoctorSchedules: jest.fn(),
+    listEducationFieldOfStudyCodes: jest.fn(),
+  };
+
+  // The credential catalog every doctor response resolves its printed title
+  // and degrees against (P19-T14). Stubbed here rather than reached through
+  // the Prisma stub, which has no delegates.
+  const credentialOptionRepositoryMock = {
+    listOptions: jest.fn(),
+    findOptionById: jest.fn(),
+    findOptionByKindAndCode: jest.fn(),
+    createOption: jest.fn(),
+    updateOption: jest.fn(),
   };
 
   const prismaServiceMock = {
@@ -91,6 +105,8 @@ describe('DoctorManagement integration', () => {
       .useValue(authRepositoryMock)
       .overrideProvider(DoctorManagementRepository)
       .useValue(doctorRepositoryMock)
+      .overrideProvider(DoctorCredentialOptionRepository)
+      .useValue(credentialOptionRepositoryMock)
       .overrideProvider(PrismaService)
       .useValue(prismaServiceMock)
       .compile();
@@ -131,6 +147,8 @@ describe('DoctorManagement integration', () => {
     doctorRepositoryMock.createDoctor.mockResolvedValue(doctorRecord);
     doctorRepositoryMock.findDoctorById.mockResolvedValue(doctorRecord);
     doctorRepositoryMock.replaceDoctorSchedules.mockResolvedValue([]);
+    doctorRepositoryMock.listEducationFieldOfStudyCodes.mockResolvedValue([]);
+    credentialOptionRepositoryMock.listOptions.mockResolvedValue([]);
   });
 
   it('returns 401 when bearer token is missing', async () => {

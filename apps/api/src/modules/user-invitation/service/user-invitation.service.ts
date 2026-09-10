@@ -1,6 +1,8 @@
 import {
   AcceptUserInvitationInput,
   CreateUserInvitationInput,
+  DoctorOwnerPlan,
+  InviteDoctorOwnerParams,
   ListUserInvitationsParams,
   UserInvitationAcceptedView,
   UserInvitationPreview,
@@ -37,6 +39,7 @@ import { resolveInvitationStatus } from './resolve-invitation-status';
 const INVITATION_TOKEN_BYTES = 32;
 const MILLISECONDS_PER_HOUR = 60 * 60 * 1000;
 const SUPER_ADMIN_ROLE_CODE = 'SUPER_ADMIN';
+const DOCTOR_ROLE_CODE = 'DOCTOR';
 const PRIVILEGED_ROLE_CODES: ReadonlySet<string> = new Set([SUPER_ADMIN_ROLE_CODE]);
 
 type InvitationRow = Awaited<ReturnType<UserInvitationRepository['findInvitationById']>>;
@@ -92,6 +95,68 @@ export class UserInvitationService {
       actorUserId: currentUserId,
       resourceId: invitation.id,
       metadata: { roleCodes: payload.roleCodes },
+    });
+    await this.deliverInvitation(invitation, token);
+    return this.presentInvitation(invitation, await this.resolveRoleNames([invitation]), now);
+  }
+
+  /**
+   * Decides what the create-doctor form's email should do, without writing
+   * anything (P19-T15).
+   *
+   * Called before the profile is created so every refusal lands while there is
+   * still nothing to clean up. A live invitation for the same address is a
+   * refusal rather than a second invitation: two working links to one mailbox
+   * is exactly what {@link createInvitation} exists to prevent, and the person
+   * holding the first one would end up with an account that never links to the
+   * doctor profile.
+   */
+  async resolveDoctorOwnerPlan(email: string): Promise<DoctorOwnerPlan> {
+    const existingUser = await this.adminManagementRepository.findActiveUserByEmail(email);
+    if (existingUser) {
+      return { kind: 'ATTACH', userId: existingUser.id, email };
+    }
+    const liveInvitation = await this.userInvitationRepository.findLiveInvitationByEmail(
+      email,
+      new Date(),
+    );
+    if (liveInvitation) {
+      throw new ConflictException({
+        code: 'DOCTOR_EMAIL_INVITATION_PENDING',
+        message: 'An invitation for this email is already pending',
+        errors: { email: 'An invitation for this email is already pending' },
+      });
+    }
+    return { kind: 'INVITE', email };
+  }
+
+  /**
+   * Raises the doctor's own invitation, bound to the profile just created.
+   *
+   * Deliberately not a call to {@link createInvitation}: that one is the staff
+   * screen's entry point and re-runs checks this path has already made against
+   * the same address, and it cannot carry the profile binding. What both share
+   * is the delivery helper, so a doctor's invitation email is the same email
+   * everyone else gets.
+   */
+  async inviteDoctorOwner(params: InviteDoctorOwnerParams): Promise<UserInvitationView> {
+    await this.assertRoleCodesExist([DOCTOR_ROLE_CODE]);
+    const now = new Date();
+    const token = this.mintToken();
+    const invitation = await this.userInvitationRepository.createInvitation({
+      email: params.email,
+      tokenHash: this.hashToken(token),
+      roleCodes: [DOCTOR_ROLE_CODE],
+      invitedById: params.invitedById,
+      expiresAt: this.resolveExpiry(now),
+      doctorProfileId: params.doctorProfileId,
+    });
+    await this.auditService.record({
+      action: AuditAction.USER_INVITED,
+      resource: 'user_invitation',
+      actorUserId: params.invitedById,
+      resourceId: invitation.id,
+      metadata: { roleCodes: [DOCTOR_ROLE_CODE], doctorProfileId: params.doctorProfileId },
     });
     await this.deliverInvitation(invitation, token);
     return this.presentInvitation(invitation, await this.resolveRoleNames([invitation]), now);
@@ -209,6 +274,7 @@ export class UserInvitationService {
       roleIds: roles.map((role) => role.id),
       assignedById: invitation.invitedById,
       consumedAt: new Date(),
+      doctorProfileId: invitation.doctorProfileId,
     });
     await this.auditService.record({
       action: AuditAction.USER_INVITE_ACCEPTED,

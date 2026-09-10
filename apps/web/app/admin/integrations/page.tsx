@@ -6,9 +6,16 @@ import { IntegrationsPanel } from '#components/client/integrations/integrations-
 import { ACCESS_TOKEN_COOKIE_NAME } from '#lib/auth/access-token-cookie';
 import { SESSION_HINT_COOKIE_NAME } from '#lib/auth/session-hint-cookie';
 import { resolveSessionClaims } from '#lib/auth/session-claims';
+import { INTEGRATIONS_TABS } from '#lib/integrations/integrations-tabs';
+import { parseTabSearchParam } from '#lib/navigation/parse-tab-search-param';
 import { resolveAppAbilityRules } from '#lib/rbac/app-ability.server';
 
-export default async function AdminIntegrationsPage() {
+type AdminIntegrationsPageProps = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
+
+export default async function AdminIntegrationsPage({ searchParams }: AdminIntegrationsPageProps) {
+  const params = await searchParams;
   const cookieStore = await cookies();
   const claims = resolveSessionClaims({
     accessToken: cookieStore.get(ACCESS_TOKEN_COOKIE_NAME)?.value,
@@ -25,5 +32,5 @@ export default async function AdminIntegrationsPage() {
     redirect('/admin/dashboard');
   }
 
-  return <IntegrationsPanel />;
+  return <IntegrationsPanel initialTab={parseTabSearchParam(params.tab, INTEGRATIONS_TABS)} />;
 }

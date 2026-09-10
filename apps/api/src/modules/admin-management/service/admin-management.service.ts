@@ -43,6 +43,39 @@ export class AdminManagementService {
     }
   }
 
+  /**
+   * Grants role codes the user does not already hold (P19-T15).
+   *
+   * The one write another module needs on this one's tables: attaching an
+   * existing account to a new doctor profile has to leave that account holding
+   * DOCTOR, and the account may already be a receptionist. Additive by
+   * construction — see `AdminManagementRepository.addUserRoles` for why the
+   * replacing path would be wrong here — and it refuses an unknown code rather
+   * than granting the subset it recognised.
+   */
+  async grantRoleCodes(params: {
+    userId: string;
+    roleCodes: string[];
+    assignedById: string;
+  }): Promise<void> {
+    const roles = await this.adminManagementRepository.findActiveRolesByCodes(params.roleCodes);
+    if (roles.length !== params.roleCodes.length) {
+      throw new BadRequestException('One or more role codes are invalid');
+    }
+    await this.adminManagementRepository.addUserRoles({
+      userId: params.userId,
+      roleIds: roles.map((role) => role.id),
+      assignedById: params.assignedById,
+    });
+    await this.auditService.record({
+      action: AuditAction.USER_UPDATED,
+      resource: 'user',
+      actorUserId: params.assignedById,
+      resourceId: params.userId,
+      metadata: { grantedRoleCodes: params.roleCodes.join(',') },
+    });
+  }
+
   async listUsers(query: ListUsersQueryDto) {
     const result = await this.adminManagementRepository.listUsers(query);
 

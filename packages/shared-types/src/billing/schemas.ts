@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { indonesianPhoneNumberSchema } from '#shared/phone-number-schema';
+
 /**
  * ACCOMMODATION (IMP-15) is the one category priced per ward class rather than
  * per service — the room class *is* the product — which is why a tariff in it
@@ -327,7 +329,7 @@ export const updateClinicProfileSchema = z
     name: z.string().trim().min(1).max(255).optional(),
     legalName: optionalClinicProfileTextSchema.nullable().optional(),
     address: z.string().trim().max(1000).nullable().optional(),
-    phoneNumber: optionalClinicProfileTextSchema.nullable().optional(),
+    phoneNumber: indonesianPhoneNumberSchema.nullable().optional(),
     email: z.string().trim().email().max(255).nullable().optional(),
     licenseNumber: optionalClinicProfileTextSchema.nullable().optional(),
     taxId: optionalClinicProfileTextSchema.nullable().optional(),

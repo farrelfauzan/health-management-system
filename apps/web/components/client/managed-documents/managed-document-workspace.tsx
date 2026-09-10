@@ -8,9 +8,11 @@ import { DocumentApprovalThread } from '#components/client/document-approvals/do
 import { ManagedDocumentBody } from '#components/client/managed-documents/managed-document-body';
 import { ManagedDocumentHeader } from '#components/client/managed-documents/managed-document-header';
 import { TemplateSubmissionReview } from '#components/client/document-templates/template-submission-review';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { PageHeader } from '#components/shared/page-header';
 import { useManagedDocument } from '#lib/managed-documents/use-managed-document';
 import { useManagedDocumentHistory } from '#lib/managed-documents/use-managed-document-history';
+import { useShellBreadcrumbRoot } from '#lib/navigation/use-shell-breadcrumb-root';
 
 type ManagedDocumentWorkspaceProps = {
   documentId: string;
@@ -30,6 +32,7 @@ export function ManagedDocumentWorkspace({
   isApprovalEnabled,
 }: ManagedDocumentWorkspaceProps) {
   const t = useTranslations('operations.documents.workspace');
+  const root = useShellBreadcrumbRoot();
   const ability = useAbility();
   const documentQuery = useManagedDocument(documentId);
   const historyQuery = useManagedDocumentHistory(documentId);
@@ -42,9 +45,7 @@ export function ManagedDocumentWorkspace({
     return (
       <Card className="rounded-xl border-slate-200 shadow-none">
         <CardContent className="p-6">
-          <p role="alert" className="text-sm text-slate-600">
-            {t('loadError')}
-          </p>
+          <InlineNotice tone="error">{t('loadError')}</InlineNotice>
         </CardContent>
       </Card>
     );
@@ -55,7 +56,11 @@ export function ManagedDocumentWorkspace({
       <PageHeader
         title={document.title}
         subtitle={document.type.name}
-        breadcrumbs={[t('breadcrumb'), document.title]}
+        breadcrumbs={[
+          root,
+          { label: t('breadcrumb'), href: '/admin/documents' },
+          { label: document.title },
+        ]}
       />
       <ManagedDocumentHeader document={document} />
       <DocumentApprovalPanel

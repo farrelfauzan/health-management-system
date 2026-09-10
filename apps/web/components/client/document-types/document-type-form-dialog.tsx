@@ -36,6 +36,7 @@ import {
   DocumentTypeApprovalFields,
   type DocumentTypeApprovalValues,
 } from '#components/client/document-types/document-type-approval-fields';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import {
   documentTypeControllerCreateTypeV1,
   documentTypeControllerUpdateTypeV1,
@@ -143,11 +144,7 @@ export function DocumentTypeFormDialog({ open, type, onOpenChange }: DocumentTyp
               <span>{t('form.systemNote')}</span>
             </p>
           ) : null}
-          {error ? (
-            <p role="alert" className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-900">
-              {error}
-            </p>
-          ) : null}
+          {error ? <InlineNotice tone="error">{error}</InlineNotice> : null}
           <div className="space-y-2">
             <Label htmlFor="document-type-name">{t('form.name')}</Label>
             <Input

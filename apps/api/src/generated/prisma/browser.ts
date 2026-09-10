@@ -227,6 +227,18 @@ export type DocumentDeliveryLink = Prisma.DocumentDeliveryLinkModel
  */
 export type PatientAllergy = Prisma.PatientAllergyModel
 /**
+ * Model DoctorCredentialOption
+ * Master data for the credentials that print alongside a doctor's name
+ * (P19-T14). Titles ("dr."), academic and specialist degrees ("Sp.PD") and
+ * education fields of study used to be free text on every form, so the same
+ * credential reached documents spelled five different ways.
+ * 
+ * One table for all three kinds rather than three near-identical tables: they
+ * share every column, every screen and every rule, and the only thing that
+ * differs is which list a field draws from.
+ */
+export type DoctorCredentialOption = Prisma.DoctorCredentialOptionModel
+/**
  * Model Specialty
  * 
  */

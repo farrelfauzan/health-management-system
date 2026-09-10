@@ -68,7 +68,8 @@
     },
     "form": {
       "required": "required",
-      "requiredLegend": "Required"
+      "requiredLegend": "Required",
+      "moreAbout": "More about {field}"
     }
   }
 }

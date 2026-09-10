@@ -17,6 +17,11 @@ export type RowAction = {
   icon?: string;
   isDestructive?: boolean;
   isDisabled?: boolean;
+  /**
+   * Why a disabled action is disabled, shown on hover. A greyed-out item with
+   * no explanation reads as a bug; with one it reads as a rule.
+   */
+  disabledReason?: string;
 };
 
 type RowActionsMenuProps = {
@@ -44,6 +49,7 @@ export function RowActionsMenu({ actions, triggerLabel }: RowActionsMenuProps) {
           <DropdownMenuItem
             key={action.label}
             disabled={action.isDisabled}
+            title={action.isDisabled ? action.disabledReason : undefined}
             variant={action.isDestructive ? 'destructive' : 'default'}
             onSelect={action.onSelect}
             className={cn(action.isDestructive && 'text-danger')}

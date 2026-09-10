@@ -30,6 +30,7 @@ import { useTranslations } from 'next-intl';
 
 import { ManagedDocumentContentFields } from '#components/client/managed-documents/managed-document-content-fields';
 import { ManagedDocumentPartyFields } from '#components/client/managed-documents/managed-document-party-fields';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { managedDocumentControllerCreateDocumentV1 } from '#lib/api/generated/documents/documents';
 import { parseApiSuccess } from '#lib/api/response';
 import { resolveApiErrorMessage } from '#lib/api/resolve-api-error-message';
@@ -182,20 +183,15 @@ export function NewManagedDocumentDialog({
             <DialogTitle>{t('title')}</DialogTitle>
             <DialogDescription>{t('description')}</DialogDescription>
           </DialogHeader>
-          {error ? (
-            <p role="alert" className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-900">
-              {error}
-            </p>
-          ) : null}
+          {error ? <InlineNotice tone="error">{error}</InlineNotice> : null}
           {issues.length > 0 ? (
-            <ul
-              role="alert"
-              className="space-y-1 rounded-lg bg-amber-50 px-4 py-3 text-sm text-amber-900"
-            >
-              {issues.map((issue) => (
-                <li key={`${issue.code}-${issue.field}`}>{t(`issues.${issue.code}`)}</li>
-              ))}
-            </ul>
+            <InlineNotice tone="warning">
+              <ul className="space-y-1">
+                {issues.map((issue) => (
+                  <li key={`${issue.code}-${issue.field}`}>{t(`issues.${issue.code}`)}</li>
+                ))}
+              </ul>
+            </InlineNotice>
           ) : null}
           <div className="space-y-2">
             <Label htmlFor="managed-document-type">{t('type')}</Label>
@@ -215,7 +211,9 @@ export function NewManagedDocumentDialog({
                   ))}
               </SelectContent>
             </Select>
-            {typesQuery.isError ? <p className="text-xs text-red-700">{t('typesError')}</p> : null}
+            {typesQuery.isError ? (
+              <InlineNotice tone="error">{t('typesError')}</InlineNotice>
+            ) : null}
           </div>
           <div className="grid gap-3 sm:grid-cols-[2fr_1fr]">
             <div className="space-y-2">

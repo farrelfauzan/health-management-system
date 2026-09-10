@@ -10,6 +10,7 @@ import type {
 import { Button, Card, CardContent, CardHeader, CardTitle, Label, Textarea } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { encounterControllerUpdateEncounterSoapV1 } from '#lib/api/generated/encounters/encounters';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { parseApiSuccess } from '#lib/api/response';
@@ -90,14 +91,7 @@ export function EncounterSoapCard({ encounter, isEditable }: EncounterSoapCardPr
         ) : null}
       </CardHeader>
       <CardContent className="space-y-4">
-        {actionError ? (
-          <p
-            role="alert"
-            className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700"
-          >
-            {actionError}
-          </p>
-        ) : null}
+        {actionError ? <InlineNotice tone="error">{actionError}</InlineNotice> : null}
         {SOAP_SECTIONS.map((section) => (
           <div key={section.key}>
             <Label

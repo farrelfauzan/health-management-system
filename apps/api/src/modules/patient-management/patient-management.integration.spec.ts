@@ -142,7 +142,7 @@ describe('PatientManagement integration', () => {
       placeOfBirth: null,
       sex: 'MALE',
       status: 'OUT_PATIENT',
-      phoneNumber: '123456',
+      phoneNumber: '6281210000001',
       address: 'Main Street',
       nikLast4: '0001',
       bpjsNumberLast4: null,
@@ -157,7 +157,7 @@ describe('PatientManagement integration', () => {
       mrn: 'MRN-OWN-01',
       fullName: 'Owned Patient',
       dateOfBirth: new Date('1992-02-02T00:00:00.000Z'),
-      phoneNumber: '999999',
+      phoneNumber: '6281299990001',
       address: 'Owner Street',
       ownerUserId: 'own-user',
       isActive: true,
@@ -169,7 +169,7 @@ describe('PatientManagement integration', () => {
       mrn: 'MRN-OWN-01',
       fullName: 'Owned Patient',
       dateOfBirth: new Date('1992-02-02T00:00:00.000Z'),
-      phoneNumber: '999999',
+      phoneNumber: '6281299990001',
       address: 'Owner Street',
       ownerUserId: 'own-user',
       isActive: true,
@@ -348,7 +348,7 @@ describe('PatientManagement integration', () => {
           fullName: 'Patient One',
           dateOfBirth: '1990-01-01',
           sex: 'MALE',
-          phoneNumber: '123456',
+          phoneNumber: '081210000001',
           address: 'Main Street',
           ...SPEC_ADDRESS,
           privacyNotice: SPEC_PRIVACY_NOTICE,
@@ -376,7 +376,7 @@ describe('PatientManagement integration', () => {
           fullName: 'Patient One',
           dateOfBirth: '1990-01-01',
           sex: 'MALE',
-          phoneNumber: '123456',
+          phoneNumber: '081210000001',
           address: 'Main Street',
           ...SPEC_ADDRESS,
           privacyNotice: SPEC_PRIVACY_NOTICE,
@@ -398,7 +398,7 @@ describe('PatientManagement integration', () => {
           fullName: 'Patient One',
           dateOfBirth: '1990-01-01',
           sex: 'MALE',
-          phoneNumber: '123456',
+          phoneNumber: '081210000001',
           address: 'Main Street',
           ...SPEC_ADDRESS,
           privacyNotice: SPEC_PRIVACY_NOTICE,
@@ -425,7 +425,7 @@ describe('PatientManagement integration', () => {
           fullName: 'Patient One',
           dateOfBirth: '1990-01-01',
           sex: 'MALE',
-          phoneNumber: '123456',
+          phoneNumber: '081210000001',
           address: 'Main Street',
           ...SPEC_ADDRESS,
           privacyNotice: SPEC_PRIVACY_NOTICE,
@@ -529,7 +529,7 @@ describe('PatientManagement integration', () => {
           fullName: 'Patient One',
           dateOfBirth: '1990-01-01',
           sex: 'MALE',
-          phoneNumber: '123456',
+          phoneNumber: '081210000001',
           address: 'Main Street',
           ...SPEC_ADDRESS,
           privacyNotice: SPEC_PRIVACY_NOTICE,
@@ -552,7 +552,7 @@ describe('PatientManagement integration', () => {
           fullName: 'Patient One',
           dateOfBirth: '1990-01-01',
           sex: 'MALE',
-          phoneNumber: '123456',
+          phoneNumber: '081210000001',
           address: 'Main Street',
           ...SPEC_ADDRESS,
           privacyNotice: SPEC_PRIVACY_NOTICE,
@@ -574,7 +574,7 @@ describe('PatientManagement integration', () => {
           fullName: 'Patient One',
           dateOfBirth: '1990-01-01',
           sex: 'MALE',
-          phoneNumber: '123456',
+          phoneNumber: '081210000001',
           address: 'Main Street',
           ...SPEC_ADDRESS,
           privacyNotice: SPEC_PRIVACY_NOTICE,
@@ -599,7 +599,7 @@ describe('PatientManagement integration', () => {
           fullName: 'Patient One',
           dateOfBirth: '1990-01-01',
           sex: 'MALE',
-          phoneNumber: '123456',
+          phoneNumber: '081210000001',
           address: 'Main Street',
           ...SPEC_ADDRESS,
           privacyNotice: SPEC_PRIVACY_NOTICE,
@@ -621,7 +621,7 @@ describe('PatientManagement integration', () => {
           fullName: 'Patient One',
           dateOfBirth: '1990-01-01',
           sex: 'MALE',
-          phoneNumber: '123456',
+          phoneNumber: '081210000001',
           address: 'Main Street',
           ...SPEC_ADDRESS,
           privacyNotice: SPEC_PRIVACY_NOTICE,
@@ -663,7 +663,7 @@ describe('PatientManagement integration', () => {
         fullName: 'Patient One',
         dateOfBirth: '1990-01-01',
         sex: 'MALE',
-        phoneNumber: '123456',
+        phoneNumber: '081210000001',
         address: 'Main Street',
         ...SPEC_ADDRESS,
         privacyNotice: SPEC_PRIVACY_NOTICE,
@@ -703,6 +703,47 @@ describe('PatientManagement integration', () => {
           guardianRelation: 'Spouse',
         }),
       );
+    });
+
+    it.each([
+      ['a national number', '081210000001'],
+      ['an international number', '+62 812-1000-0001'],
+      ['a country code without a plus', '62812 1000 0001'],
+    ])('stores %s as the one canonical form (SJ-166)', async (_label, inputPhoneNumber) => {
+      const token = await signCreateToken();
+
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/v1/patients')
+        .set('Authorization', `Bearer ${token}`)
+        .send(
+          buildCreateBody({
+            phoneNumber: inputPhoneNumber,
+            emergencyContactPhone: '0813-2000-0002',
+          }),
+        );
+
+      // Whichever way the front desk types it, the row the chat-booking lookup
+      // compares against holds the same digits — a second record for a patient
+      // the clinic already knows is a split medical history, not a typo.
+      expect(response.status).toBe(201);
+      expect(patientRepositoryMock.createPatient).toHaveBeenCalledWith(
+        expect.objectContaining({
+          phoneNumber: '6281210000001',
+          emergencyContactPhone: '6281320000002',
+        }),
+      );
+    });
+
+    it('rejects a phone number that is not a phone number', async () => {
+      const token = await signCreateToken();
+
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/v1/patients')
+        .set('Authorization', `Bearer ${token}`)
+        .send(buildCreateBody({ phoneNumber: 'tidak punya' }));
+
+      expect(response.status).toBe(400);
+      expect(patientRepositoryMock.createPatient).not.toHaveBeenCalled();
     });
 
     it('rejects an unrecognised religion value', async () => {
@@ -790,7 +831,7 @@ describe('PatientManagement integration', () => {
         fullName: 'Patient One',
         dateOfBirth: '1990-01-01',
         sex: 'MALE',
-        phoneNumber: '123456',
+        phoneNumber: '081210000001',
         address: 'Jl. Merdeka No. 10',
         ...SPEC_ADDRESS,
         rtRw: '001/002',
@@ -810,7 +851,7 @@ describe('PatientManagement integration', () => {
           fullName: 'Patient One',
           dateOfBirth: '1990-01-01',
           sex: 'MALE',
-          phoneNumber: '123456',
+          phoneNumber: '081210000001',
           address: 'Main Street',
           provinceCode: SPEC_ADDRESS.provinceCode,
           privacyNotice: SPEC_PRIVACY_NOTICE,
@@ -841,7 +882,7 @@ describe('PatientManagement integration', () => {
           fullName: 'Patient One',
           dateOfBirth: '1990-01-01',
           sex: 'MALE',
-          phoneNumber: '123456',
+          phoneNumber: '081210000001',
           address: 'Main Street',
           privacyNotice: SPEC_PRIVACY_NOTICE,
         });
@@ -896,7 +937,7 @@ describe('PatientManagement integration', () => {
         placeOfBirth: null,
         sex: 'MALE',
         status: 'OUT_PATIENT',
-        phoneNumber: '123456',
+        phoneNumber: '081210000001',
         address: 'Jl. Merdeka No. 10',
         ...SPEC_ADDRESS,
         provinceName: 'Daerah Khusus Ibukota Jakarta',
@@ -950,7 +991,7 @@ describe('PatientManagement integration', () => {
           fullName: 'Patient One',
           dateOfBirth: '1990-01-01',
           sex: 'MALE',
-          phoneNumber: '123456',
+          phoneNumber: '081210000001',
           address: 'Main Street',
           privacyNotice: SPEC_PRIVACY_NOTICE,
         });

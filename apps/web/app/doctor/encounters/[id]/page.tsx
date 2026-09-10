@@ -30,7 +30,7 @@ export default async function DoctorEncounterDetailPage({
   return (
     <EncounterWorkspace
       encounterId={id}
-      breadcrumbRoot="Doctor"
+      encountersHref="/doctor/encounters"
       patientHrefPrefix=""
       isLaboratoryEnabled={isFeatureEnabled(claims, 'laboratory')}
     />

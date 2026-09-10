@@ -1,6 +1,6 @@
 'use client';
 
-import type { ProspectiveMatchCandidateView } from '@hms/shared-types';
+import { formatPhoneNumber, type ProspectiveMatchCandidateView } from '@hms/shared-types';
 import { Button } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
@@ -38,7 +38,7 @@ export function ProspectiveMatchCandidateRow({
       <div className="min-w-0 space-y-1">
         <p className="truncate text-sm font-medium text-slate-900">{candidate.fullName}</p>
         <p className="text-xs text-slate-500">
-          {candidate.mrn} · {candidate.phoneNumber}
+          {candidate.mrn} · {formatPhoneNumber(candidate.phoneNumber)}
           {candidate.dateOfBirth === null ? '' : ` · ${candidate.dateOfBirth}`}
           {candidate.nikMasked === null ? '' : ` · ${candidate.nikMasked}`}
         </p>

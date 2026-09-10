@@ -30,6 +30,7 @@ export interface ImportPatientDto {
   sex: ImportPatientDtoSex;
   status?: ImportPatientDtoStatus;
   /**
+     * Indonesian phone number. Accepts 0812…, +62 812-…, 62812… and punctuated forms; stored as 62812….
      * @minLength 6
      * @maxLength 32
      */
@@ -70,6 +71,7 @@ export interface ImportPatientDto {
      */
   emergencyContactName?: string;
   /**
+     * Indonesian phone number. Accepts 0812…, +62 812-…, 62812… and punctuated forms; stored as 62812….
      * @minLength 6
      * @maxLength 32
      */

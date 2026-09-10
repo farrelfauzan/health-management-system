@@ -27,7 +27,6 @@
     "patients": {
       "title": "Pasien",
       "subtitle": "Kelola rekam pasien, demografi, dan penetapan perawatan.",
-      "dashboard": "Dasbor Utama",
       "add": "Tambah Pasien Baru",
       "assignDoctor": "Tetapkan Dokter",
       "itemLabel": "pasien",
@@ -132,14 +131,6 @@
       "doctorRequired": "Pilih dokter yang akan ditetapkan.",
       "doctorDuplicate": "Dokter ini sudah ditetapkan kepada pasien.",
       "assignDoctorError": "Dokter gagal ditetapkan. Silakan coba lagi.",
-      "sample": "Contoh",
-      "activeAlert": "Peringatan Aktif",
-      "alertHeadline": "Kapasitas unit gawat darurat telah mencapai 95%",
-      "alertRecommendation": "Rekomendasi: Arahkan kasus tidak mendesak ke unit rawat jalan.",
-      "admissionTrends": "Tren Penerimaan",
-      "admissionSummary": "Okupansi naik 12% dibandingkan minggu lalu.",
-      "sampleData": "data contoh",
-      "admissionChartLabel": "Grafik contoh tren penerimaan",
       "csv": {
         "patientId": "ID Pasien",
         "fullName": "Nama Lengkap",
@@ -420,7 +411,9 @@
       },
       "noImmunizations": "Belum ada imunisasi tercatat untuk pasien ini.",
       "loadingImmunizations": "Memuat riwayat imunisasi...",
-      "noAddress": "Alamat belum dicatat"
+      "noAddress": "Alamat belum dicatat",
+      "directoryTab": "Direktori",
+      "fromChatTab": "Dari chat"
     },
     "privacyNotice": {
       "title": "Pemberitahuan Privasi Pasien",
@@ -525,7 +518,6 @@
     "doctors": {
       "title": "Dokter",
       "subtitle": "Kelola profil tenaga medis, kredensial, jadwal, dan penetapan pasien.",
-      "dashboard": "Dasbor Utama",
       "add": "Tambah Dokter Baru",
       "assignPatient": "Tetapkan Pasien",
       "manageSchedule": "Kelola Jadwal",
@@ -610,7 +602,19 @@
         "institution": "Institusi",
         "degree": "Gelar",
         "field": "Bidang Studi",
-        "graduationYear": "Tahun Lulus"
+        "graduationYear": "Tahun Lulus",
+        "noTitle": "Tanpa gelar depan",
+        "selectDegrees": "Pilih gelar",
+        "searchDegrees": "Cari gelar",
+        "noDegreeMatch": "Gelar tidak ditemukan",
+        "removeDegree": "Hapus {label}",
+        "selectField": "Pilih bidang studi",
+        "searchField": "Cari bidang studi",
+        "noFieldMatch": "Bidang studi tidak ditemukan",
+        "noField": "Tanpa bidang studi",
+        "legacyValue": "Tersimpan: {value}",
+        "legacyNotice": "Tersimpan sebagai teks bebas: {value}. Pilih penggantinya dari daftar.",
+        "manageLink": "Pilihan belum ada? Tambahkan di Pengaturan."
       },
       "scheduleFields": {
         "day": "Hari untuk entri {index}",
@@ -642,6 +646,8 @@
         "digits16": "16 digit",
         "nikHelp": "NIK tersimpan terenkripsi dan tersamar. Biarkan kosong untuk mempertahankan nilai; isi hanya untuk menggantinya.",
         "initialPatients": "Pasien Awal (opsional)",
+        "emailReadOnly": "Alamat untuk masuk melekat pada akun dokter.",
+        "emailManageLink": "Kelola lewat menu Administrasi",
         "createAction": "Buat Dokter"
       },
       "identity": "Identitas Tenaga Medis",

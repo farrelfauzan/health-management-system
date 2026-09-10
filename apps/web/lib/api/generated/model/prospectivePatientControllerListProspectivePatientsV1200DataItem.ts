@@ -5,6 +5,7 @@
  * Health Management System API
  * OpenAPI spec version: 1.0.0
  */
+import type { ProspectivePatientControllerListProspectivePatientsV1200DataItemUpcomingAppointment } from './prospectivePatientControllerListProspectivePatientsV1200DataItemUpcomingAppointment';
 
 export type ProspectivePatientControllerListProspectivePatientsV1200DataItem = {
   id: string;
@@ -13,7 +14,9 @@ export type ProspectivePatientControllerListProspectivePatientsV1200DataItem = {
   channel: string;
   status: string;
   patientId?: string;
+  patientMrn?: string;
   openAppointments: number;
+  upcomingAppointment?: ProspectivePatientControllerListProspectivePatientsV1200DataItemUpcomingAppointment;
   expiresAt: string;
   createdAt: string;
 };
