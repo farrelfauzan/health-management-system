@@ -58,6 +58,12 @@ describe('PatientsTableRow', () => {
     expect(screen.getByText('Rawat inap')).toBeInTheDocument();
   });
 
+  it('shows the one printable address line the API composed', () => {
+    renderRow(READ_ONLY_RULES);
+
+    expect(screen.getByText('Jalan Merdeka No 12')).toBeInTheDocument();
+  });
+
   it('shows detail and assign actions when the ability allows them', async () => {
     const user = userEvent.setup();
     renderRow(FULL_ACCESS_RULES);

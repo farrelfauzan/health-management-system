@@ -41,13 +41,13 @@ export interface CreatePatientDto {
      */
   address: string;
   /** @pattern ^\d{2}$ */
-  provinceCode?: string;
+  provinceCode: string;
   /** @pattern ^\d{2}\.\d{2}$ */
-  regencyCode?: string;
+  regencyCode: string;
   /** @pattern ^\d{2}\.\d{2}\.\d{2}$ */
-  districtCode?: string;
+  districtCode: string;
   /** @pattern ^\d{2}\.\d{2}\.\d{2}\.\d{4}$ */
-  villageCode?: string;
+  villageCode: string;
   /** @pattern ^\d{1,3}\/\d{1,3}$ */
   rtRw?: string;
   /** @pattern ^\d{5}$ */

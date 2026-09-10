@@ -45954,6 +45954,10 @@ components:
         - sex
         - phoneNumber
         - address
+        - provinceCode
+        - regencyCode
+        - districtCode
+        - villageCode
         - privacyNotice
     ImportPatientDto:
       type: object
@@ -47162,6 +47166,10 @@ components:
         - sex
         - phoneNumber
         - address
+        - provinceCode
+        - regencyCode
+        - districtCode
+        - villageCode
         - privacyNotice
     CreateAiProviderConfigDto:
       type: object

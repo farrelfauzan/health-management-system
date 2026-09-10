@@ -66,6 +66,12 @@ describe('indonesianPhoneNumberSchema', () => {
       sex: 'FEMALE',
       phoneNumber: '0812-1000-0001',
       address: 'Jalan Melati 4',
+      // `P19-T11` made the region chain part of the front-desk create, so the
+      // payload has to carry one before the phone rule is reached at all.
+      provinceCode: '31',
+      regencyCode: '31.71',
+      districtCode: '31.71.01',
+      villageCode: '31.71.01.1001',
       emergencyContactPhone: '+62 813 2000 0002',
       privacyNotice: {
         privacyNoticeVersionId: '2f2f0a3a-2f4c-4d0a-9a3f-1f9a2c3d4e5f',

@@ -25,9 +25,10 @@ const SPEC_PRIVACY_NOTICE = {
 } as const;
 
 /**
- * The front-desk create requires a structured address since P19-T10. The
- * region repository is mocked below to resolve exactly this chain, so a
- * payload carrying it passes the master-data check.
+ * The front-desk create requires a structured address since P19-T11, and
+ * validates one whenever it is given since P19-T10. The region repository is
+ * mocked below to resolve exactly this chain, so a payload carrying it passes
+ * the master-data check.
  */
 const SPEC_ADDRESS = {
   provinceCode: '31',
@@ -864,37 +865,15 @@ describe('PatientManagement integration', () => {
     });
 
     /**
-     * The codes stay optional until `P19-T11` puts a region picker on the
-     * front-desk form. Requiring them here would reject every create the
-     * current UI makes, so the contract accepts an address with no chain and
-     * the read path answers with the street line alone.
+     * Required on the front desk since `P19-T11` put a cascading region picker
+     * on the patient form: the clerk can always produce the chain now, so a
+     * create with no chain is a form that was bypassed, not a caller that
+     * cannot supply one. The callers that genuinely cannot — the antrean
+     * registration and the legacy import — go through
+     * `createPatientBaseSchema` and are unaffected.
      */
-    it('accepts a create that carries no chain at all', async () => {
+    it('refuses a create that carries no chain at all', async () => {
       const token = await signTokenWith([{ action: 'create', resource: 'Patient', scope: 'ANY' }]);
-      patientRepositoryMock.createPatient.mockResolvedValue({
-        id: '5bd5e23d-098a-4ee6-a777-cf5f850ece2f',
-        mrn: '00001002',
-        fullName: 'Patient One',
-        dateOfBirth: new Date('1990-01-01T00:00:00.000Z'),
-        placeOfBirth: null,
-        sex: 'MALE',
-        status: 'OUT_PATIENT',
-        phoneNumber: '081210000001',
-        address: 'Main Street',
-        provinceCode: null,
-        regencyCode: null,
-        districtCode: null,
-        villageCode: null,
-        rtRw: null,
-        postalCode: null,
-        nikLast4: null,
-        bpjsNumberLast4: null,
-        hasSatusehatPatientId: false,
-        ownerUserId: null,
-        isActive: true,
-        createdAt: new Date('2026-01-01T00:00:00.000Z'),
-        updatedAt: new Date('2026-01-01T00:00:00.000Z'),
-      });
 
       const response = await request(app.getHttpServer())
         .post('/api/v1/v1/patients')
@@ -908,9 +887,17 @@ describe('PatientManagement integration', () => {
           privacyNotice: SPEC_PRIVACY_NOTICE,
         });
 
-      expect(response.status).toBe(201);
+      expect(response.status).toBe(400);
+      expect(response.body.error.details.map((issue: { path: string[] }) => issue.path)).toEqual(
+        expect.arrayContaining([
+          ['provinceCode'],
+          ['regencyCode'],
+          ['districtCode'],
+          ['villageCode'],
+        ]),
+      );
       expect(regionsRepositoryMock.findChain).not.toHaveBeenCalled();
-      expect(response.body.data.addressDetails).toEqual({ formattedAddress: 'Main Street' });
+      expect(patientRepositoryMock.createPatient).not.toHaveBeenCalled();
     });
 
     it('rejects a chain the master data does not confirm, on the offending field', async () => {

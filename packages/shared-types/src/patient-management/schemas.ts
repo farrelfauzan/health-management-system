@@ -465,18 +465,18 @@ export function addAddressChainCompletenessIssues(
 }
 
 /**
- * Everything a patient record can be created with, before the front-desk
- * rule that the address must be structured. The four region codes are
- * optional here — supplied together and validated as a chain by the service
- * when they are, absent when they are not.
+ * Everything a patient record can be created with, before the front-desk rule
+ * that the address must be structured. The four region codes are optional
+ * here — supplied together and validated as a chain by the service when they
+ * are, absent when they are not.
  *
- * They are optional rather than required on every create path, including the
- * front desk's. Most callers cannot supply them: a BPJS antrean registration
- * carries a free-text `alamat`, a chat conversion is completed over later
- * visits, and a legacy import copies what the previous system held. The front
- * desk could, but its form has no region picker until `P19-T11` adds one, and
- * requiring the codes here would reject every create the current UI makes.
- * Tighten this to required once that form ships.
+ * This is the shape the create paths that have no person in front of them use.
+ * A BPJS antrean registration carries a free-text `alamat` and nothing else, a
+ * chat conversion is completed over later visits, and a legacy import copies
+ * what the previous system held. None of them can produce a Kemendagri chain,
+ * and refusing the record would leave the patient unregistered rather than
+ * imprecisely registered. The front desk, which can produce one, uses
+ * {@link createPatientSchema} instead.
  *
  * `mrn` is deliberately absent: it is allocated by the server inside the create
  * transaction. A client-supplied MRN can collide with an existing record and
@@ -490,7 +490,7 @@ export function addAddressChainCompletenessIssues(
  * district is a mismatch whether or not the prefixes agree — and it is the
  * service that rejects a partial chain on these optional-code paths.
  */
-export const createPatientSchema = z.object({
+export const createPatientBaseSchema = z.object({
   fullName: z.string().trim().min(2).max(120),
   dateOfBirth: patientDateSchema
     .refine(isValidDateValue, 'Date of birth must be a valid calendar date')
@@ -530,12 +530,41 @@ export const createPatientSchema = z.object({
 });
 
 /**
- * Legacy import. Identical to a create except that the MRN comes from the
- * clinic's previous system, so it must be accepted verbatim — the number is
- * already printed on a folder and cannot be renumbered. Gated by
- * `patient.import-identifier`, never exposed on the ordinary create route.
+ * The front-desk create, and the prospective-patient conversion that shares
+ * its form. The four region codes are required: `P19-T11` put a cascading
+ * province → regency → district → village picker on the patient form, so the
+ * clerk registering somebody at the counter can always produce the chain, and
+ * an address without one cannot be printed on an invoice, searched by region
+ * or sent to SATUSEHAT.
+ *
+ * RT/RW and the postal code stay optional — plenty of Indonesian addresses
+ * carry neither, and refusing those would be inventing a rule the KTP does
+ * not have.
+ *
+ * Still a plain object rather than a refined one, for the reason
+ * {@link createPatientBaseSchema} gives: the web reads `.shape` field by field
+ * and the service checks the chain against the master data on every write.
  */
-export const importPatientSchema = createPatientSchema.extend({
+export const createPatientSchema = createPatientBaseSchema.extend({
+  provinceCode: provinceCodeSchema,
+  regencyCode: regencyCodeSchema,
+  districtCode: districtCodeSchema,
+  villageCode: villageCodeSchema,
+});
+
+/**
+ * Legacy import. Identical to {@link createPatientBaseSchema} except that the
+ * MRN comes from the clinic's previous system, so it must be accepted
+ * verbatim — the number is already printed on a folder and cannot be
+ * renumbered. Gated by `patient.import-identifier`, never exposed on the
+ * ordinary create route.
+ *
+ * Built on the base rather than on the front-desk create on purpose: an import
+ * copies the address the old system held, which is a free-text line, and
+ * demanding a Kemendagri chain would make every historical record
+ * unimportable.
+ */
+export const importPatientSchema = createPatientBaseSchema.extend({
   mrn: mrnSchema,
 });
 
@@ -588,6 +617,13 @@ export const updatePatientSchema = z
   });
 
 export type ListPatientsQueryInput = z.infer<typeof listPatientsQuerySchema>;
+/**
+ * What the patient service accepts on any create path. Deliberately the lax
+ * shape: the machine callers (BPJS antrean, chat conversion, legacy import)
+ * reach the service without a region chain, and the routes that do demand one
+ * enforce it at their DTO.
+ */
+export type CreatePatientBaseInput = z.infer<typeof createPatientBaseSchema>;
 export type CreatePatientInput = z.infer<typeof createPatientSchema>;
 export type ImportPatientInput = z.infer<typeof importPatientSchema>;
 export type UpdatePatientInput = z.infer<typeof updatePatientSchema>;
