@@ -660,6 +660,15 @@ export const DeliveryStatus = {
 export type DeliveryStatus = (typeof DeliveryStatus)[keyof typeof DeliveryStatus]
 
 
+export const DoctorCredentialKind = {
+  TITLE: 'TITLE',
+  DEGREE: 'DEGREE',
+  FIELD_OF_STUDY: 'FIELD_OF_STUDY'
+} as const
+
+export type DoctorCredentialKind = (typeof DoctorCredentialKind)[keyof typeof DoctorCredentialKind]
+
+
 export const DocumentOwnerType = {
   CLINIC: 'CLINIC',
   PATIENT: 'PATIENT',

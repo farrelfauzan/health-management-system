@@ -24,7 +24,8 @@ function buildEducationRow(overrides: Partial<EducationRow> = {}): EducationRow 
     key: 'row-1',
     institution: 'Universitas Indonesia',
     degree: 'dr.',
-    fieldOfStudy: 'Pendidikan Dokter',
+    fieldOfStudy: 'PENDIDIKAN_DOKTER',
+    legacyFieldOfStudy: '',
     graduationYear: '2015',
     ...overrides,
   };

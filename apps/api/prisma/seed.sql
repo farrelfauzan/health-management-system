@@ -1320,6 +1320,118 @@ SET
   "updated_at" = NOW(),
   "deleted_at" = NULL;
 
+-- Doctor credential catalog (P19-T14): the titles, degrees and education
+-- fields of study a doctor's credentials are picked from, replacing the free
+-- text that used to reach documents spelled five different ways.
+--
+-- Codes are stable upper-snake ASCII and are what `doctor_profiles.title`,
+-- `doctor_profiles.degrees` and `doctor_educations.field_of_study` store;
+-- labels carry the printed form and are the only half that may be edited.
+-- `sort_order` groups each list the way a clinic reads it (specialist degrees
+-- before academic ones, clinical programmes before support ones).
+--
+-- Unlike most blocks here, the conflict clause deliberately leaves `is_active`
+-- alone: an admin who deactivated an option this clinic does not use should not
+-- have it revived by the next deploy's seed run.
+WITH seed_doctor_credential_options(kind, code, label, sort_order) AS (
+  VALUES
+    -- Titles, printed before the name.
+    ('TITLE', 'DR', 'dr.', 10),
+    ('TITLE', 'DRG', 'drg.', 20),
+    ('TITLE', 'DR_ACADEMIC', 'Dr.', 30),
+    ('TITLE', 'PROF', 'Prof.', 40),
+    ('TITLE', 'PROF_DR', 'Prof. Dr.', 50),
+    ('TITLE', 'DR_CAND', 'dr. (Cand.)', 60),
+    -- Specialist degrees (Sp.*), printed after the name.
+    ('DEGREE', 'SP_PD', 'Sp.PD', 100),
+    ('DEGREE', 'SP_A', 'Sp.A', 110),
+    ('DEGREE', 'SP_OG', 'Sp.OG', 120),
+    ('DEGREE', 'SP_B', 'Sp.B', 130),
+    ('DEGREE', 'SP_JP', 'Sp.JP', 140),
+    ('DEGREE', 'SP_M', 'Sp.M', 150),
+    ('DEGREE', 'SP_THT_KL', 'Sp.THT-KL', 160),
+    ('DEGREE', 'SP_KJ', 'Sp.KJ', 170),
+    ('DEGREE', 'SP_S', 'Sp.S', 180),
+    ('DEGREE', 'SP_AN', 'Sp.An', 190),
+    ('DEGREE', 'SP_RAD', 'Sp.Rad', 200),
+    ('DEGREE', 'SP_KK', 'Sp.KK', 210),
+    ('DEGREE', 'SP_PK', 'Sp.PK', 220),
+    ('DEGREE', 'SP_P', 'Sp.P', 230),
+    ('DEGREE', 'SP_U', 'Sp.U', 240),
+    ('DEGREE', 'SP_OT', 'Sp.OT', 250),
+    ('DEGREE', 'SP_KFR', 'Sp.KFR', 260),
+    -- Dental specialist degrees, for a clinic with a drg. on staff.
+    ('DEGREE', 'SP_KG', 'Sp.KG', 300),
+    ('DEGREE', 'SP_ORT', 'Sp.Ort', 310),
+    ('DEGREE', 'SP_BM', 'Sp.BM', 320),
+    -- Subspecialist degrees (KKI Subsp. format), printed after the Sp. degree.
+    ('DEGREE', 'SUBSP_KGEH', 'Subsp. K.G.E.H.', 400),
+    ('DEGREE', 'SUBSP_KKV', 'Subsp. K.K.V.', 410),
+    ('DEGREE', 'SUBSP_KEMD', 'Subsp. K.E.M.D.', 420),
+    -- Academic degrees.
+    ('DEGREE', 'S_KED', 'S.Ked', 500),
+    ('DEGREE', 'M_KES', 'M.Kes', 510),
+    ('DEGREE', 'M_BIOMED', 'M.Biomed', 520),
+    ('DEGREE', 'M_SC', 'M.Sc', 530),
+    ('DEGREE', 'MPH', 'MPH', 540),
+    ('DEGREE', 'MARS', 'MARS', 550),
+    ('DEGREE', 'PH_D', 'Ph.D', 560),
+    -- Fields of study on education rows.
+    ('FIELD_OF_STUDY', 'PENDIDIKAN_DOKTER', 'Pendidikan Dokter', 10),
+    ('FIELD_OF_STUDY', 'PENDIDIKAN_DOKTER_GIGI', 'Pendidikan Dokter Gigi', 20),
+    ('FIELD_OF_STUDY', 'ILMU_PENYAKIT_DALAM', 'Ilmu Penyakit Dalam', 30),
+    ('FIELD_OF_STUDY', 'ILMU_KESEHATAN_ANAK', 'Ilmu Kesehatan Anak', 40),
+    ('FIELD_OF_STUDY', 'OBSTETRI_DAN_GINEKOLOGI', 'Obstetri dan Ginekologi', 50),
+    ('FIELD_OF_STUDY', 'ILMU_BEDAH', 'Ilmu Bedah', 60),
+    ('FIELD_OF_STUDY', 'KARDIOLOGI_DAN_KEDOKTERAN_VASKULAR', 'Kardiologi dan Kedokteran Vaskular', 70),
+    ('FIELD_OF_STUDY', 'PULMONOLOGI_DAN_KEDOKTERAN_RESPIRASI', 'Pulmonologi dan Kedokteran Respirasi', 80),
+    ('FIELD_OF_STUDY', 'ILMU_PENYAKIT_MATA', 'Ilmu Penyakit Mata', 90),
+    ('FIELD_OF_STUDY', 'ILMU_KESEHATAN_THT_KL', 'Ilmu Kesehatan THT-KL', 100),
+    ('FIELD_OF_STUDY', 'ILMU_KEDOKTERAN_JIWA', 'Ilmu Kedokteran Jiwa', 110),
+    ('FIELD_OF_STUDY', 'NEUROLOGI', 'Neurologi', 120),
+    ('FIELD_OF_STUDY', 'ANESTESIOLOGI_DAN_TERAPI_INTENSIF', 'Anestesiologi dan Terapi Intensif', 130),
+    ('FIELD_OF_STUDY', 'RADIOLOGI', 'Radiologi', 140),
+    ('FIELD_OF_STUDY', 'DERMATOLOGI_DAN_VENEREOLOGI', 'Dermatologi dan Venereologi', 150),
+    ('FIELD_OF_STUDY', 'PATOLOGI_KLINIK', 'Patologi Klinik', 160),
+    ('FIELD_OF_STUDY', 'ILMU_BEDAH_MULUT', 'Bedah Mulut dan Maksilofasial', 170),
+    ('FIELD_OF_STUDY', 'KONSERVASI_GIGI', 'Konservasi Gigi', 180),
+    ('FIELD_OF_STUDY', 'KESEHATAN_MASYARAKAT', 'Kesehatan Masyarakat', 200),
+    ('FIELD_OF_STUDY', 'MANAJEMEN_RUMAH_SAKIT', 'Manajemen Rumah Sakit', 210),
+    ('FIELD_OF_STUDY', 'ILMU_BIOMEDIK', 'Ilmu Biomedik', 220),
+    ('FIELD_OF_STUDY', 'ILMU_GIZI', 'Ilmu Gizi', 230),
+    ('FIELD_OF_STUDY', 'FARMASI', 'Farmasi', 240),
+    ('FIELD_OF_STUDY', 'KEPERAWATAN', 'Keperawatan', 250),
+    ('FIELD_OF_STUDY', 'KEBIDANAN', 'Kebidanan', 260),
+    ('FIELD_OF_STUDY', 'TEKNOLOGI_LABORATORIUM_MEDIK', 'Teknologi Laboratorium Medik', 270)
+)
+INSERT INTO "doctor_credential_options" (
+  "id",
+  "kind",
+  "code",
+  "label",
+  "sort_order",
+  "is_active",
+  "created_at",
+  "updated_at",
+  "deleted_at"
+)
+SELECT
+  md5('doctor-credential-option:' || kind || ':' || code)::uuid,
+  kind::"doctor_credential_kind",
+  code,
+  label,
+  sort_order,
+  TRUE,
+  NOW(),
+  NOW(),
+  NULL
+FROM seed_doctor_credential_options
+ON CONFLICT ("kind", "code") DO UPDATE
+SET
+  "label" = EXCLUDED."label",
+  "sort_order" = EXCLUDED."sort_order",
+  "updated_at" = NOW();
+
 -- ICD-10 starter catalog.
 --
 -- NOT the official list. This is a small set of high-frequency FKTP primary-care
@@ -1539,11 +1651,13 @@ WITH seed_doctors(
   degrees
 ) AS (
   VALUES
-    ('SIP-2026-0001', 'dr. Andi Prasetyo, Sp.PD', 'Internal Medicine', '+62-811-2000-0001', 'dr.', 'Sp.PD'),
-    ('SIP-2026-0002', 'dr. Maya Sari, Sp.A', 'Pediatrics', '+62-811-2000-0002', 'dr.', 'Sp.A'),
-    ('SIP-2026-0003', 'dr. Hendra Gunawan, Sp.JP', 'Cardiology', '+62-811-2000-0003', 'dr.', 'Sp.JP'),
-    ('SIP-2026-0004', 'dr. Fitri Handayani, Sp.OG', 'Obstetrics & Gynecology', '+62-811-2000-0004', 'dr.', 'Sp.OG'),
-    ('SIP-2026-0005', 'dr. Yusuf Hidayat', 'General Practice', '+62-811-2000-0005', 'dr.', NULL)
+    -- `title` and `degrees` hold DoctorCredentialOption codes since P19-T14,
+    -- not the printed form; `degrees` is a comma-joined ordered list of them.
+    ('SIP-2026-0001', 'dr. Andi Prasetyo, Sp.PD', 'Internal Medicine', '+62-811-2000-0001', 'DR', 'SP_PD'),
+    ('SIP-2026-0002', 'dr. Maya Sari, Sp.A', 'Pediatrics', '+62-811-2000-0002', 'DR', 'SP_A'),
+    ('SIP-2026-0003', 'dr. Hendra Gunawan, Sp.JP', 'Cardiology', '+62-811-2000-0003', 'DR', 'SP_JP'),
+    ('SIP-2026-0004', 'dr. Fitri Handayani, Sp.OG', 'Obstetrics & Gynecology', '+62-811-2000-0004', 'DR', 'SP_OG,M_KES'),
+    ('SIP-2026-0005', 'dr. Yusuf Hidayat', 'General Practice', '+62-811-2000-0005', 'DR', NULL)
 )
 INSERT INTO "doctor_profiles" (
   "id",
@@ -1634,6 +1748,31 @@ SET
   "deleted_at" = NULL;
 
 -- Development demo doctor education rows (synthetic institutions/years).
+-- P19-T14 moved `field_of_study` to DoctorCredentialOption codes. The seeded
+-- rows' deterministic id hashes that column, so the pre-P19-T14 rows would
+-- survive alongside the new ones on a re-seed. Delete exactly those ids first —
+-- nothing but this seed block ever produces them.
+DELETE FROM "doctor_educations"
+WHERE "id" IN (
+  SELECT
+    md5(
+      'doctor-education:' || doctor_license_number || ':' || degree || ':' ||
+      COALESCE(field_of_study, '') || ':' || COALESCE(graduation_year::text, '')
+    )::uuid
+  FROM (
+    VALUES
+      ('SIP-2026-0001', 'dr.', 'Kedokteran', 2004),
+      ('SIP-2026-0001', 'Sp.PD', 'Penyakit Dalam', 2010),
+      ('SIP-2026-0002', 'dr.', 'Kedokteran', 2008),
+      ('SIP-2026-0002', 'Sp.A', 'Ilmu Kesehatan Anak', 2014),
+      ('SIP-2026-0003', 'dr.', 'Kedokteran', 2002),
+      ('SIP-2026-0003', 'Sp.JP', 'Jantung dan Pembuluh Darah', 2009),
+      ('SIP-2026-0004', 'dr.', 'Kedokteran', 2006),
+      ('SIP-2026-0004', 'Sp.OG', 'Obstetri dan Ginekologi', 2012),
+      ('SIP-2026-0005', 'dr.', 'Kedokteran', 2015)
+  ) AS superseded(doctor_license_number, degree, field_of_study, graduation_year)
+);
+
 WITH seed_doctor_educations(
   doctor_license_number,
   institution,
@@ -1641,16 +1780,18 @@ WITH seed_doctor_educations(
   field_of_study,
   graduation_year
 ) AS (
+  -- `degree` stays the award printed on the diploma (free text); only
+  -- `field_of_study` is a DoctorCredentialOption code (P19-T14).
   VALUES
-    ('SIP-2026-0001', 'Universitas Indonesia', 'dr.', 'Kedokteran', 2004),
-    ('SIP-2026-0001', 'Universitas Indonesia', 'Sp.PD', 'Penyakit Dalam', 2010),
-    ('SIP-2026-0002', 'Universitas Gadjah Mada', 'dr.', 'Kedokteran', 2008),
-    ('SIP-2026-0002', 'Universitas Gadjah Mada', 'Sp.A', 'Ilmu Kesehatan Anak', 2014),
-    ('SIP-2026-0003', 'Universitas Airlangga', 'dr.', 'Kedokteran', 2002),
-    ('SIP-2026-0003', 'Universitas Airlangga', 'Sp.JP', 'Jantung dan Pembuluh Darah', 2009),
-    ('SIP-2026-0004', 'Universitas Padjadjaran', 'dr.', 'Kedokteran', 2006),
-    ('SIP-2026-0004', 'Universitas Padjadjaran', 'Sp.OG', 'Obstetri dan Ginekologi', 2012),
-    ('SIP-2026-0005', 'Universitas Sumatera Utara', 'dr.', 'Kedokteran', 2015)
+    ('SIP-2026-0001', 'Universitas Indonesia', 'dr.', 'PENDIDIKAN_DOKTER', 2004),
+    ('SIP-2026-0001', 'Universitas Indonesia', 'Sp.PD', 'ILMU_PENYAKIT_DALAM', 2010),
+    ('SIP-2026-0002', 'Universitas Gadjah Mada', 'dr.', 'PENDIDIKAN_DOKTER', 2008),
+    ('SIP-2026-0002', 'Universitas Gadjah Mada', 'Sp.A', 'ILMU_KESEHATAN_ANAK', 2014),
+    ('SIP-2026-0003', 'Universitas Airlangga', 'dr.', 'PENDIDIKAN_DOKTER', 2002),
+    ('SIP-2026-0003', 'Universitas Airlangga', 'Sp.JP', 'KARDIOLOGI_DAN_KEDOKTERAN_VASKULAR', 2009),
+    ('SIP-2026-0004', 'Universitas Padjadjaran', 'dr.', 'PENDIDIKAN_DOKTER', 2006),
+    ('SIP-2026-0004', 'Universitas Padjadjaran', 'Sp.OG', 'OBSTETRI_DAN_GINEKOLOGI', 2012),
+    ('SIP-2026-0005', 'Universitas Sumatera Utara', 'dr.', 'PENDIDIKAN_DOKTER', 2015)
 )
 INSERT INTO "doctor_educations" (
   "id",

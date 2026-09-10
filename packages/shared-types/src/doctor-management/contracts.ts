@@ -1,3 +1,4 @@
+import type { DoctorCredentialValue } from '#doctor-credential-option/contracts';
 import type {
   DoctorInvitationStatusValue,
   DoctorLicenseTypeValue,
@@ -27,8 +28,20 @@ export type DoctorProfile = {
    * email, or the invitation lapsed or was withdrawn without being replaced.
    */
   invitationStatus?: DoctorInvitationStatusValue;
+  /**
+   * The title's *printed* form ("dr."), not the stored code — every reader
+   * wanted the printed form before P19-T14 and still does. Absent when the
+   * doctor has no title on file.
+   */
   title?: string;
+  /** The printed degrees, in order, joined for display: `Sp.PD, M.Kes`. */
   degrees?: string;
+  /** The title as code + label + legacy flag, for the form that edits it. */
+  titleValue?: DoctorCredentialValue;
+  /** Each stored degree as code + label + legacy flag, in stored order. */
+  degreeValues: DoctorCredentialValue[];
+  /** `dr. Andi Prasetyo, Sp.PD` — the one composed form, built by the API. */
+  displayName: string;
   /**
    * Masked NIK (`••••••••0001`), rendered from the stored last four digits
    * without decrypting a row. Absent when no NIK is on file. Full values come
@@ -57,7 +70,10 @@ export type DoctorEducation = {
   id: string;
   institution: string;
   degree: string;
+  /** The field of study's printed form ("Pendidikan Dokter"), not the code. */
   fieldOfStudy?: string;
+  /** The same value as code + label + legacy flag, for the form that edits it. */
+  fieldOfStudyValue?: DoctorCredentialValue;
   graduationYear?: number;
   createdAt: string;
   updatedAt: string;

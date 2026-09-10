@@ -4,10 +4,13 @@ import { AdminManagementModule } from '../admin-management/admin-management.modu
 import { AuthModule } from '../auth/auth.module';
 import { NotificationModule } from '../notification/notification.module';
 import { UserInvitationModule } from '../user-invitation/user-invitation.module';
+import { DoctorCredentialOptionController } from './controller/doctor-credential-option.controller';
 import { DoctorLicenseExpiryController } from './controller/doctor-license-expiry.controller';
 import { DoctorManagementController } from './controller/doctor-management.controller';
+import { DoctorCredentialOptionRepository } from './repository/doctor-credential-option.repository';
 import { DoctorLicenseExpiryRepository } from './repository/doctor-license-expiry.repository';
 import { DoctorManagementRepository } from './repository/doctor-management.repository';
+import { DoctorCredentialOptionService } from './service/doctor-credential-option.service';
 import { DoctorLicenseExpiryService } from './service/doctor-license-expiry.service';
 import { DoctorLicenseExpiryWorker } from './service/doctor-license-expiry.worker';
 import { DoctorManagementService } from './service/doctor-management.service';
@@ -34,13 +37,19 @@ import { DoctorManagementService } from './service/doctor-management.service';
     forwardRef(() => AdminManagementModule),
     forwardRef(() => UserInvitationModule),
   ],
-  controllers: [DoctorManagementController, DoctorLicenseExpiryController],
+  controllers: [
+    DoctorManagementController,
+    DoctorLicenseExpiryController,
+    DoctorCredentialOptionController,
+  ],
   providers: [
     DoctorManagementRepository,
     DoctorManagementService,
     DoctorLicenseExpiryRepository,
     DoctorLicenseExpiryService,
     DoctorLicenseExpiryWorker,
+    DoctorCredentialOptionRepository,
+    DoctorCredentialOptionService,
   ],
   exports: [DoctorLicenseExpiryService],
 })

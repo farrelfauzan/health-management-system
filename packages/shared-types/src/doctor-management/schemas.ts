@@ -3,6 +3,10 @@ import { z } from 'zod';
 // The canonical NIK validator lives with the patient domain because patients
 // adopted national identifiers first; practitioners share the exact same
 // 16-digit Dukcapil format, so reuse it instead of diverging.
+import {
+  doctorCredentialCodeSchema,
+  doctorDegreeCodesSchema,
+} from '#doctor-credential-option/schemas';
 import { nikSchema } from '#patient-management/schemas';
 import { indonesianPhoneNumberSchema } from '#shared/phone-number-schema';
 
@@ -69,13 +73,23 @@ export type DoctorLicenseInput = z.infer<typeof doctorLicenseInputSchema>;
 
 export const satusehatPractitionerIdSchema = z.string().trim().min(1).max(64);
 
-export const doctorTitleSchema = z.string().trim().min(1).max(32);
-export const doctorDegreesSchema = z.string().trim().min(1).max(120);
+/**
+ * Titles, degrees and fields of study are picked from the
+ * `DoctorCredentialOption` catalog since P19-T14, so what crosses the wire is
+ * an option code and no longer whatever the person typed. The API rejects a
+ * code that does not name a live option, which is what stops the same
+ * credential reaching a document spelled five different ways.
+ */
+export const doctorTitleSchema = doctorCredentialCodeSchema;
+export const doctorDegreesSchema = doctorDegreeCodesSchema;
 
 export const doctorEducationInputSchema = z.object({
   institution: z.string().trim().min(2).max(160),
+  // Free text on purpose, unlike the profile's `degrees`: this is the award the
+  // institution granted on a specific programme, and clinics enter it straight
+  // off the diploma. Only the field of study is catalogued (P19-T14).
   degree: z.string().trim().min(1).max(80),
-  fieldOfStudy: z.string().trim().min(2).max(120).optional(),
+  fieldOfStudy: doctorCredentialCodeSchema.optional(),
   graduationYear: z
     .number()
     .int()

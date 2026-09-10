@@ -1,5 +1,7 @@
 import {
   Actor,
+  DoctorCredentialResolver,
+  DoctorEducationInput,
   DoctorEducationRecord,
   DoctorIdentifiers,
   DoctorInvitationStatusValue,
@@ -9,8 +11,11 @@ import {
   DoctorOwnerPlan,
   DoctorRecord,
   DoctorScheduleRecord,
+  buildDoctorDisplayName,
   hasScheduleOverlap,
+  joinDegreeCodes,
   maskIdentifierLast4,
+  splitDegreeCodes,
 } from '@hms/shared-types';
 import {
   BadRequestException,
@@ -32,6 +37,7 @@ import { UpdateDoctorDto } from '../dto/update-doctor.dto';
 import { UpdateDoctorScheduleDto } from '../dto/update-doctor-schedule.dto';
 import { DoctorIdentifierConflictError } from '../repository/doctor-identifier-conflict.error';
 import { DoctorManagementRepository } from '../repository/doctor-management.repository';
+import { DoctorCredentialOptionService } from './doctor-credential-option.service';
 
 const DOCTOR_AUDIT_RESOURCE = 'DoctorProfile';
 const DOCTOR_ROLE_CODE = 'DOCTOR';
@@ -59,6 +65,7 @@ export class DoctorManagementService {
     private readonly doctorManagementRepository: DoctorManagementRepository,
     private readonly authRepository: AuthRepository,
     private readonly auditService: AuditService,
+    private readonly doctorCredentialOptionService: DoctorCredentialOptionService,
     private readonly userInvitationService: UserInvitationService,
     private readonly adminManagementService: AdminManagementService,
   ) {}
@@ -72,10 +79,11 @@ export class DoctorManagementService {
     }
 
     const result = await this.doctorManagementRepository.listDoctors(query);
+    const resolveCredential = await this.doctorCredentialOptionService.buildResolver();
 
     return {
       items: result.items.map((doctor) => ({
-        ...this.toDoctorResponse(doctor),
+        ...this.toDoctorResponse(doctor, resolveCredential),
         patientCount: doctor._count.patients,
         schedules: doctor.schedules.map((schedule) => this.toScheduleResponse(schedule)),
       })),
@@ -102,13 +110,16 @@ export class DoctorManagementService {
     }
 
     const canReadRelatedPatients = this.canReadRelatedPatients(actor, doctor, currentUser);
+    const resolveCredential = await this.doctorCredentialOptionService.buildResolver();
 
     return {
-      ...this.toDoctorResponse(doctor),
+      ...this.toDoctorResponse(doctor, resolveCredential),
       patientCount: doctor._count.patients,
       schedules: doctor.schedules.map((schedule) => this.toScheduleResponse(schedule)),
       licenses: doctor.licenses.map((license) => this.toLicenseResponse(license)),
-      educations: doctor.educations.map((education) => this.toEducationResponse(education)),
+      educations: doctor.educations.map((education) =>
+        this.toEducationResponse(education, resolveCredential),
+      ),
       ...(canReadRelatedPatients
         ? {
             patients: doctor.patients.map((assignment) => ({
@@ -212,6 +223,8 @@ export class DoctorManagementService {
 
     await this.assertActiveSpecialtyId(payload.specialtyId);
     await this.assertAssignablePatientIds(payload.patientIds);
+    await this.assertCredentialCodes({ title: payload.title, degrees: payload.degrees });
+    await this.assertEducationFieldCodes(payload.educations);
 
     const ownerPlan = await this.resolveOwnerPlan(payload.email, payload.ownerUserId);
 
@@ -222,7 +235,7 @@ export class DoctorManagementService {
         specialtyId: payload.specialtyId,
         phoneNumber: payload.phoneNumber,
         title: payload.title,
-        degrees: payload.degrees,
+        degrees: payload.degrees ? (joinDegreeCodes(payload.degrees) ?? undefined) : undefined,
         nik: payload.nik,
         satusehatPractitionerId: payload.satusehatPractitionerId,
         licenses: payload.licenses?.map((license) => toLicenseWritePayload(license)),
@@ -234,7 +247,10 @@ export class DoctorManagementService {
       }),
     );
 
-    return this.toDoctorResponse(await this.linkOwnerAccount(created, ownerPlan, currentUser.sub));
+    return this.toDoctorResponse(
+      await this.linkOwnerAccount(created, ownerPlan, currentUser.sub),
+      await this.doctorCredentialOptionService.buildResolver(),
+    );
   }
 
   /**
@@ -375,13 +391,24 @@ export class DoctorManagementService {
       await this.assertNikNotTaken(payload.nik, id);
     }
 
+    // The doctor's own stored codes stay acceptable even after an admin
+    // deactivates one, so switching an option off never strands the profiles
+    // that already carry it.
+    await this.assertCredentialCodes({
+      title: payload.title ?? undefined,
+      degrees: payload.degrees ?? undefined,
+      retainedTitle: doctor.title,
+      retainedDegrees: splitDegreeCodes(doctor.degrees),
+    });
+    await this.assertEducationFieldCodes(payload.educations, id);
+
     const updated = await this.runWithIdentifierConflictMapping(() =>
       this.doctorManagementRepository.updateDoctor(id, {
         fullName: payload.fullName,
         specialtyId: payload.specialtyId,
         phoneNumber: payload.phoneNumber,
         title: payload.title,
-        degrees: payload.degrees,
+        degrees: payload.degrees === undefined ? undefined : joinDegreeCodes(payload.degrees ?? []),
         nik: payload.nik,
         satusehatPractitionerId: payload.satusehatPractitionerId,
         licenses: payload.licenses?.map((license) => toLicenseWritePayload(license)),
@@ -391,7 +418,7 @@ export class DoctorManagementService {
       }),
     );
 
-    return this.toDoctorResponse(updated);
+    return this.toDoctorResponse(updated, await this.doctorCredentialOptionService.buildResolver());
   }
 
   async updateDoctorSchedule(
@@ -578,7 +605,63 @@ export class DoctorManagementService {
    * values come only from {@link getDoctorIdentifiers}, which requires
    * `doctor.read-identifier` and audits the disclosure.
    */
-  private toDoctorResponse(doctor: DoctorRecord) {
+  /**
+   * The doctor form no longer accepts typed-in credentials (P19-T14), so a
+   * code that names no live option is a bad request rather than a new spelling
+   * of an existing credential.
+   */
+  private async assertCredentialCodes(params: {
+    title?: string;
+    degrees?: string[];
+    retainedTitle?: string | null;
+    retainedDegrees?: string[];
+  }): Promise<void> {
+    const { title, degrees, retainedTitle, retainedDegrees } = params;
+    if (title !== undefined) {
+      await this.doctorCredentialOptionService.assertUsableCodes({
+        kind: 'TITLE',
+        codes: [title],
+        field: 'title',
+        retainedCodes: retainedTitle ? [retainedTitle] : [],
+      });
+    }
+    if (degrees !== undefined) {
+      await this.doctorCredentialOptionService.assertUsableCodes({
+        kind: 'DEGREE',
+        codes: degrees,
+        field: 'degrees',
+        retainedCodes: retainedDegrees ?? [],
+      });
+    }
+  }
+
+  private async assertEducationFieldCodes(
+    educations: DoctorEducationInput[] | undefined,
+    doctorId?: string,
+  ): Promise<void> {
+    if (!educations) {
+      return;
+    }
+    const codes = educations
+      .map((education) => education.fieldOfStudy)
+      .filter((code): code is string => Boolean(code));
+    const retainedCodes = doctorId
+      ? await this.doctorManagementRepository.listEducationFieldOfStudyCodes(doctorId)
+      : [];
+    await this.doctorCredentialOptionService.assertUsableCodes({
+      kind: 'FIELD_OF_STUDY',
+      codes,
+      field: 'educations.fieldOfStudy',
+      retainedCodes,
+    });
+  }
+
+  private toDoctorResponse(doctor: DoctorRecord, resolveCredential: DoctorCredentialResolver) {
+    const titleValue = doctor.title ? resolveCredential('TITLE', doctor.title) : undefined;
+    const degreeValues = splitDegreeCodes(doctor.degrees).map((code) =>
+      resolveCredential('DEGREE', code),
+    );
+
     return {
       id: doctor.id,
       licenseNumber: doctor.licenseNumber,
@@ -590,8 +673,18 @@ export class DoctorManagementService {
       // before that account exists, from the invitation holding it (P19-T15).
       email: doctor.ownerUser?.email ?? this.resolveLiveInvitation(doctor)?.email,
       invitationStatus: this.resolveInvitationStatus(doctor),
-      title: doctor.title ?? undefined,
-      degrees: doctor.degrees ?? undefined,
+      // Printed forms, not the stored codes: everything that reads a doctor
+      // wanted the printed form before the catalog existed and still does.
+      title: titleValue?.label,
+      degrees:
+        degreeValues.length > 0 ? degreeValues.map((value) => value.label).join(', ') : undefined,
+      titleValue,
+      degreeValues,
+      displayName: buildDoctorDisplayName({
+        title: titleValue?.label,
+        fullName: doctor.fullName,
+        degrees: degreeValues.map((value) => value.label),
+      }),
       nikMasked: maskIdentifierLast4(doctor.nikLast4),
       satusehatPractitionerId: doctor.satusehatPractitionerId ?? undefined,
       ownerUserId: doctor.ownerUserId ?? undefined,
@@ -613,12 +706,20 @@ export class DoctorManagementService {
     };
   }
 
-  private toEducationResponse(education: DoctorEducationRecord) {
+  private toEducationResponse(
+    education: DoctorEducationRecord,
+    resolveCredential: DoctorCredentialResolver,
+  ) {
+    const fieldOfStudyValue = education.fieldOfStudy
+      ? resolveCredential('FIELD_OF_STUDY', education.fieldOfStudy)
+      : undefined;
+
     return {
       id: education.id,
       institution: education.institution,
       degree: education.degree,
-      fieldOfStudy: education.fieldOfStudy ?? undefined,
+      fieldOfStudy: fieldOfStudyValue?.label,
+      fieldOfStudyValue,
       graduationYear: education.graduationYear ?? undefined,
       createdAt: education.createdAt.toISOString(),
       updatedAt: education.updatedAt.toISOString(),

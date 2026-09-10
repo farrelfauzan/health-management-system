@@ -23388,6 +23388,36 @@ paths:
                           type: string
                         degrees:
                           type: string
+                        titleValue:
+                          type: object
+                          properties:
+                            code:
+                              type: string
+                            label:
+                              type: string
+                            isLegacy:
+                              type: boolean
+                          required:
+                            - code
+                            - label
+                            - isLegacy
+                        degreeValues:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              code:
+                                type: string
+                              label:
+                                type: string
+                              isLegacy:
+                                type: boolean
+                            required:
+                              - code
+                              - label
+                              - isLegacy
+                        displayName:
+                          type: string
                         invitationStatus:
                           type: string
                         nikMasked:
@@ -23435,6 +23465,9 @@ paths:
                         - email
                         - title
                         - degrees
+                        - titleValue
+                        - degreeValues
+                        - displayName
                         - invitationStatus
                         - nikMasked
                         - satusehatPractitionerId
@@ -23471,6 +23504,15 @@ paths:
                       email: budi.santoso@clinic.local
                       title: dr.
                       degrees: Sp.PD
+                      titleValue:
+                        code: DR
+                        label: dr.
+                        isLegacy: false
+                      degreeValues:
+                        - code: SP_PD
+                          label: Sp.PD
+                          isLegacy: false
+                      displayName: dr. Budi Santoso, Sp.PD
                       invitationStatus: ACCEPTED
                       nikMasked: ••••••••0002
                       satusehatPractitionerId: "10009880728"
@@ -23530,8 +23572,9 @@ paths:
                   specialtyId: eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee
                   phoneNumber: "+628129876543"
                   email: budi.santoso@clinic.local
-                  title: dr.
-                  degrees: Sp.PD
+                  title: DR
+                  degrees:
+                    - SP_PD
                   nik: "3173011503800002"
                   licenses:
                     - type: STR
@@ -23544,11 +23587,11 @@ paths:
                   educations:
                     - institution: Universitas Indonesia
                       degree: dr.
-                      fieldOfStudy: Kedokteran
+                      fieldOfStudy: PENDIDIKAN_DOKTER
                       graduationYear: 2004
                     - institution: Universitas Indonesia
                       degree: Sp.PD
-                      fieldOfStudy: Penyakit Dalam
+                      fieldOfStudy: ILMU_PENYAKIT_DALAM
                       graduationYear: 2010
                   patientIds:
                     - 11111111-1111-4111-8111-111111111111
@@ -23581,6 +23624,36 @@ paths:
                         type: string
                       degrees:
                         type: string
+                      titleValue:
+                        type: object
+                        properties:
+                          code:
+                            type: string
+                          label:
+                            type: string
+                          isLegacy:
+                            type: boolean
+                        required:
+                          - code
+                          - label
+                          - isLegacy
+                      degreeValues:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            code:
+                              type: string
+                            label:
+                              type: string
+                            isLegacy:
+                              type: boolean
+                          required:
+                            - code
+                            - label
+                            - isLegacy
+                      displayName:
+                        type: string
                       invitationStatus:
                         type: string
                       nikMasked:
@@ -23605,6 +23678,9 @@ paths:
                       - email
                       - title
                       - degrees
+                      - titleValue
+                      - degreeValues
+                      - displayName
                       - invitationStatus
                       - nikMasked
                       - satusehatPractitionerId
@@ -23628,6 +23704,15 @@ paths:
                     email: budi.santoso@clinic.local
                     title: dr.
                     degrees: Sp.PD
+                    titleValue:
+                      code: DR
+                      label: dr.
+                      isLegacy: false
+                    degreeValues:
+                      - code: SP_PD
+                        label: Sp.PD
+                        isLegacy: false
+                    displayName: dr. Budi Santoso, Sp.PD
                     invitationStatus: ACCEPTED
                     nikMasked: ••••••••0002
                     satusehatPractitionerId: "10009880728"
@@ -23705,6 +23790,36 @@ paths:
                         type: string
                       degrees:
                         type: string
+                      titleValue:
+                        type: object
+                        properties:
+                          code:
+                            type: string
+                          label:
+                            type: string
+                          isLegacy:
+                            type: boolean
+                        required:
+                          - code
+                          - label
+                          - isLegacy
+                      degreeValues:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            code:
+                              type: string
+                            label:
+                              type: string
+                            isLegacy:
+                              type: boolean
+                          required:
+                            - code
+                            - label
+                            - isLegacy
+                      displayName:
+                        type: string
                       invitationStatus:
                         type: string
                       nikMasked:
@@ -23779,6 +23894,19 @@ paths:
                               type: string
                             fieldOfStudy:
                               type: string
+                            fieldOfStudyValue:
+                              type: object
+                              properties:
+                                code:
+                                  type: string
+                                label:
+                                  type: string
+                                isLegacy:
+                                  type: boolean
+                              required:
+                                - code
+                                - label
+                                - isLegacy
                             graduationYear:
                               type: integer
                             createdAt:
@@ -23790,6 +23918,7 @@ paths:
                             - institution
                             - degree
                             - fieldOfStudy
+                            - fieldOfStudyValue
                             - graduationYear
                             - createdAt
                             - updatedAt
@@ -23821,6 +23950,9 @@ paths:
                       - email
                       - title
                       - degrees
+                      - titleValue
+                      - degreeValues
+                      - displayName
                       - invitationStatus
                       - nikMasked
                       - satusehatPractitionerId
@@ -23846,6 +23978,15 @@ paths:
                     email: budi.santoso@clinic.local
                     title: dr.
                     degrees: Sp.PD
+                    titleValue:
+                      code: DR
+                      label: dr.
+                      isLegacy: false
+                    degreeValues:
+                      - code: SP_PD
+                        label: Sp.PD
+                        isLegacy: false
+                    displayName: dr. Budi Santoso, Sp.PD
                     invitationStatus: ACCEPTED
                     nikMasked: ••••••••0002
                     satusehatPractitionerId: "10009880728"
@@ -23878,14 +24019,22 @@ paths:
                       - id: fafafafa-fafa-4afa-8afa-fafafafafafa
                         institution: Universitas Indonesia
                         degree: dr.
-                        fieldOfStudy: Kedokteran
+                        fieldOfStudy: Pendidikan Dokter
+                        fieldOfStudyValue:
+                          code: PENDIDIKAN_DOKTER
+                          label: Pendidikan Dokter
+                          isLegacy: false
                         graduationYear: 2004
                         createdAt: 2026-07-20T08:00:00.000Z
                         updatedAt: 2026-07-20T08:00:00.000Z
                       - id: fbfbfbfb-fbfb-4bfb-8bfb-fbfbfbfbfbfb
                         institution: Universitas Indonesia
                         degree: Sp.PD
-                        fieldOfStudy: Penyakit Dalam
+                        fieldOfStudy: Ilmu Penyakit Dalam
+                        fieldOfStudyValue:
+                          code: ILMU_PENYAKIT_DALAM
+                          label: Ilmu Penyakit Dalam
+                          isLegacy: false
                         graduationYear: 2010
                         createdAt: 2026-07-20T08:00:00.000Z
                         updatedAt: 2026-07-20T08:00:00.000Z
@@ -23945,8 +24094,9 @@ paths:
                 value:
                   specialtyId: eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee
                   phoneNumber: "+628129876500"
-                  title: dr.
-                  degrees: Sp.PD
+                  title: DR
+                  degrees:
+                    - SP_PD
                   isActive: true
       responses:
         "200":
@@ -23977,6 +24127,36 @@ paths:
                         type: string
                       degrees:
                         type: string
+                      titleValue:
+                        type: object
+                        properties:
+                          code:
+                            type: string
+                          label:
+                            type: string
+                          isLegacy:
+                            type: boolean
+                        required:
+                          - code
+                          - label
+                          - isLegacy
+                      degreeValues:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            code:
+                              type: string
+                            label:
+                              type: string
+                            isLegacy:
+                              type: boolean
+                          required:
+                            - code
+                            - label
+                            - isLegacy
+                      displayName:
+                        type: string
                       invitationStatus:
                         type: string
                       nikMasked:
@@ -24001,6 +24181,9 @@ paths:
                       - email
                       - title
                       - degrees
+                      - titleValue
+                      - degreeValues
+                      - displayName
                       - invitationStatus
                       - nikMasked
                       - satusehatPractitionerId
@@ -24024,6 +24207,15 @@ paths:
                     email: budi.santoso@clinic.local
                     title: dr.
                     degrees: Sp.PD
+                    titleValue:
+                      code: DR
+                      label: dr.
+                      isLegacy: false
+                    degreeValues:
+                      - code: SP_PD
+                        label: Sp.PD
+                        isLegacy: false
+                    displayName: dr. Budi Santoso, Sp.PD
                     invitationStatus: ACCEPTED
                     nikMasked: ••••••••0002
                     satusehatPractitionerId: "10009880728"
@@ -24421,6 +24613,330 @@ paths:
       summary: List practitioner licences by expiry urgency
       tags:
         - Doctor Management
+  /api/v1/doctor-credential-options:
+    get:
+      operationId: DoctorCredentialOptionController_listDoctorCredentialOptions_v1
+      parameters:
+        - name: kind
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - TITLE
+              - DEGREE
+              - FIELD_OF_STUDY
+        - name: includeInactive
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - "true"
+              - "false"
+      responses:
+        "200":
+          description: The credential catalog, ordered by kind then by the clinic’s own
+            sort order. Active options only unless `includeInactive=true`, which
+            the master-data screen uses so an admin can see and revive what was
+            switched off.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        kind:
+                          type: string
+                        code:
+                          type: string
+                        label:
+                          type: string
+                        sortOrder:
+                          type: integer
+                        isActive:
+                          type: boolean
+                        createdAt:
+                          type: string
+                        updatedAt:
+                          type: string
+                      required:
+                        - id
+                        - kind
+                        - code
+                        - label
+                        - sortOrder
+                        - isActive
+                        - createdAt
+                        - updatedAt
+                required:
+                  - data
+                example:
+                  data:
+                    - id: b0f2b1a4-6d1e-4d9a-9a7a-0f5c2f3d8e11
+                      kind: TITLE
+                      code: DR
+                      label: dr.
+                      sortOrder: 10
+                      isActive: true
+                      createdAt: 2026-09-10T02:00:00.000Z
+                      updatedAt: 2026-09-10T02:00:00.000Z
+                    - id: c7a3d0e5-2b48-4c60-8f19-6d3a1b7e4c22
+                      kind: DEGREE
+                      code: SP_PD
+                      label: Sp.PD
+                      sortOrder: 100
+                      isActive: true
+                      createdAt: 2026-09-10T02:00:00.000Z
+                      updatedAt: 2026-09-10T02:00:00.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: List doctor credential options
+      tags: &a34
+        - Doctor Credential Options
+    post:
+      operationId: DoctorCredentialOptionController_createDoctorCredentialOption_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateDoctorCredentialOptionDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  kind: DEGREE
+                  code: SP_GK
+                  label: Sp.GK
+                  sortOrder: 270
+      responses:
+        "200":
+          description: Adds one option to a kind. The code is what doctor profiles store,
+            so it is fixed at creation and never rewritten — an option whose
+            printed form changes gets a new label instead.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      kind:
+                        type: string
+                      code:
+                        type: string
+                      label:
+                        type: string
+                      sortOrder:
+                        type: integer
+                      isActive:
+                        type: boolean
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - kind
+                      - code
+                      - label
+                      - sortOrder
+                      - isActive
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: c7a3d0e5-2b48-4c60-8f19-6d3a1b7e4c22
+                    kind: DEGREE
+                    code: SP_PD
+                    label: Sp.PD
+                    sortOrder: 100
+                    isActive: true
+                    createdAt: 2026-09-10T02:00:00.000Z
+                    updatedAt: 2026-09-10T02:00:00.000Z
+                  message: Credential option created
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Add a doctor credential option
+      tags: *a34
+  /api/v1/doctor-credential-options/{id}:
+    patch:
+      operationId: DoctorCredentialOptionController_updateDoctorCredentialOption_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateDoctorCredentialOptionDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  label: Sp.G.K.
+                  sortOrder: 275
+                  isActive: false
+      responses:
+        "200":
+          description: "Changes the printed label, the sort order, or whether the option
+            is still offered. Deactivating never deletes: doctors who already
+            store the code keep printing its label, they only stop being able to
+            pick it anew."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      kind:
+                        type: string
+                      code:
+                        type: string
+                      label:
+                        type: string
+                      sortOrder:
+                        type: integer
+                      isActive:
+                        type: boolean
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - kind
+                      - code
+                      - label
+                      - sortOrder
+                      - isActive
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: c7a3d0e5-2b48-4c60-8f19-6d3a1b7e4c22
+                    kind: DEGREE
+                    code: SP_PD
+                    label: Sp.PD
+                    sortOrder: 100
+                    isActive: false
+                    createdAt: 2026-09-10T02:00:00.000Z
+                    updatedAt: 2026-09-10T02:00:00.000Z
+                  message: Credential option updated
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Credential option not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Credential option not found.
+      security:
+        - bearer: []
+      summary: Edit or deactivate a doctor credential option
+      tags: *a34
   /api/v1/users/invitations:
     get:
       operationId: UserInvitationAdminController_listInvitations_v1
@@ -24570,7 +25086,7 @@ paths:
       security:
         - bearer: []
       summary: List staff invitations
-      tags: &a34
+      tags: &a35
         - Admin Management
     post:
       operationId: UserInvitationAdminController_createInvitation_v1
@@ -24688,7 +25204,7 @@ paths:
       security:
         - bearer: []
       summary: Invite a staff user by email
-      tags: *a34
+      tags: *a35
   /api/v1/users/invitations/{id}/resend:
     post:
       operationId: UserInvitationAdminController_resendInvitation_v1
@@ -24797,7 +25313,7 @@ paths:
       security:
         - bearer: []
       summary: Resend a staff invitation
-      tags: *a34
+      tags: *a35
   /api/v1/users/invitations/{id}:
     delete:
       operationId: UserInvitationAdminController_revokeInvitation_v1
@@ -24906,7 +25422,7 @@ paths:
       security:
         - bearer: []
       summary: Revoke a staff invitation
-      tags: *a34
+      tags: *a35
   /api/v1/invitations/{token}:
     get:
       operationId: UserInvitationPublicController_previewInvitation_v1
@@ -24953,7 +25469,7 @@ paths:
                     code: NOT_FOUND
                     message: No invitation matches this link.
       summary: Validate an invitation link
-      tags: &a35
+      tags: &a36
         - Admin Management
   /api/v1/invitations/{token}/accept:
     post:
@@ -25019,7 +25535,7 @@ paths:
                     code: NOT_FOUND
                     message: No invitation matches this link.
       summary: Accept an invitation and set a password
-      tags: *a35
+      tags: *a36
   /api/v1/doctor-patient-assignments:
     post:
       operationId: DoctorPatientController_assignDoctorToPatient_v1
@@ -25114,7 +25630,7 @@ paths:
       security:
         - bearer: []
       summary: Assign a doctor to a patient
-      tags: &a36
+      tags: &a37
         - Doctor Patient
   /api/v1/doctor-patient-assignments/activity:
     get:
@@ -25261,7 +25777,7 @@ paths:
       security:
         - bearer: []
       summary: List doctor-patient assignment activity
-      tags: *a36
+      tags: *a37
   /api/v1/doctor-patient-assignments/{id}:
     delete:
       operationId: DoctorPatientController_unassignDoctorFromPatient_v1
@@ -25357,7 +25873,7 @@ paths:
       security:
         - bearer: []
       summary: Unassign a doctor from a patient
-      tags: *a36
+      tags: *a37
   /api/v1/registrations:
     get:
       operationId: RegistrationFlowController_listRegistrations_v1
@@ -25611,7 +26127,7 @@ paths:
       security:
         - bearer: []
       summary: List registrations
-      tags: &a37
+      tags: &a38
         - Registration Flow
     post:
       operationId: RegistrationFlowController_createRegistration_v1
@@ -25758,7 +26274,7 @@ paths:
       security:
         - bearer: []
       summary: Create a registration
-      tags: *a37
+      tags: *a38
   /api/v1/registrations/queue-board:
     get:
       operationId: RegistrationFlowController_getQueueBoard_v1
@@ -25974,7 +26490,7 @@ paths:
       security:
         - bearer: []
       summary: Get a day's queue board
-      tags: *a37
+      tags: *a38
   /api/v1/registrations/{id}:
     get:
       operationId: RegistrationFlowController_getRegistrationById_v1
@@ -26110,7 +26626,7 @@ paths:
       security:
         - bearer: []
       summary: Get a registration
-      tags: *a37
+      tags: *a38
     patch:
       operationId: RegistrationFlowController_updateRegistration_v1
       parameters:
@@ -26273,7 +26789,7 @@ paths:
       security:
         - bearer: []
       summary: Update a registration
-      tags: *a37
+      tags: *a38
   /api/v1/medications:
     get:
       operationId: MedicationController_listMedications_v1
@@ -26434,7 +26950,7 @@ paths:
       security:
         - bearer: []
       summary: List medications
-      tags: &a38
+      tags: &a39
         - Pharmacy Flow
     post:
       operationId: MedicationController_createMedication_v1
@@ -26559,7 +27075,7 @@ paths:
       security:
         - bearer: []
       summary: Create a medication
-      tags: *a38
+      tags: *a39
   /api/v1/medications/{id}:
     patch:
       operationId: MedicationController_updateMedication_v1
@@ -26693,7 +27209,7 @@ paths:
       security:
         - bearer: []
       summary: Update a medication
-      tags: *a38
+      tags: *a39
   /api/v1/prescriptions:
     get:
       operationId: PrescriptionController_listPrescriptions_v1
@@ -26914,7 +27430,7 @@ paths:
       security:
         - bearer: []
       summary: List prescriptions
-      tags: &a39
+      tags: &a40
         - Pharmacy Flow
     post:
       operationId: PrescriptionController_createPrescription_v1
@@ -27106,7 +27622,7 @@ paths:
       security:
         - bearer: []
       summary: Create a prescription
-      tags: *a39
+      tags: *a40
   /api/v1/prescriptions/{id}/document:
     post:
       operationId: PrescriptionController_printPrescriptionDocument_v1
@@ -27189,7 +27705,7 @@ paths:
       security:
         - bearer: []
       summary: Print the resep for a prescription
-      tags: *a39
+      tags: *a40
   /api/v1/dispenses:
     post:
       operationId: DispenseController_createDispense_v1
@@ -27463,7 +27979,7 @@ paths:
       security:
         - bearer: []
       summary: List stock receipts
-      tags: &a40
+      tags: &a41
         - Pharmacy Inventory
     post:
       operationId: InventoryController_createReceipt_v1
@@ -27586,7 +28102,7 @@ paths:
       security:
         - bearer: []
       summary: Record a stock receipt
-      tags: *a40
+      tags: *a41
   /api/v1/inventory/summary:
     get:
       operationId: InventoryController_getSummary_v1
@@ -27685,7 +28201,7 @@ paths:
       security:
         - bearer: []
       summary: Get inventory summary
-      tags: *a40
+      tags: *a41
   /api/v1/inventory/expiry-report:
     get:
       operationId: InventoryController_getExpiryReport_v1
@@ -27813,7 +28329,7 @@ paths:
       security:
         - bearer: []
       summary: Get medication expiry report
-      tags: *a40
+      tags: *a41
   /api/v1/organization-units/tree:
     get:
       operationId: OrganizationUnitController_getTree_v1
@@ -27973,7 +28489,7 @@ paths:
       security:
         - bearer: []
       summary: Read the organization structure tree
-      tags: &a41
+      tags: &a42
         - Organization Structure
   /api/v1/organization-units:
     post:
@@ -28089,7 +28605,7 @@ paths:
       security:
         - bearer: []
       summary: Create an organization unit
-      tags: *a41
+      tags: *a42
   /api/v1/organization-units/{id}:
     patch:
       operationId: OrganizationUnitController_updateUnit_v1
@@ -28208,7 +28724,7 @@ paths:
       security:
         - bearer: []
       summary: Rename or re-kind an organization unit
-      tags: *a41
+      tags: *a42
     delete:
       operationId: OrganizationUnitController_deleteUnit_v1
       parameters:
@@ -28263,7 +28779,7 @@ paths:
       security:
         - bearer: []
       summary: Permanently delete an organization unit
-      tags: *a41
+      tags: *a42
   /api/v1/organization-units/{id}/move:
     patch:
       operationId: OrganizationUnitController_moveUnit_v1
@@ -28383,7 +28899,7 @@ paths:
       security:
         - bearer: []
       summary: Move an organization unit to a new parent
-      tags: *a41
+      tags: *a42
   /api/v1/organization-units/{id}/archive:
     post:
       operationId: OrganizationUnitController_archiveUnit_v1
@@ -28440,7 +28956,7 @@ paths:
       security:
         - bearer: []
       summary: Archive an organization unit
-      tags: *a41
+      tags: *a42
   /api/v1/organization-units/{id}/members:
     get:
       operationId: OrganizationUnitMemberController_listMembers_v1
@@ -28566,7 +29082,7 @@ paths:
       security:
         - bearer: []
       summary: List the staff assigned to an organization unit
-      tags: &a42
+      tags: &a43
         - Organization Structure
   /api/v1/organization-units/{id}/members/{userId}:
     put:
@@ -28658,7 +29174,7 @@ paths:
       security:
         - bearer: []
       summary: Assign a person to an organization unit
-      tags: *a42
+      tags: *a43
     delete:
       operationId: OrganizationUnitMemberController_unassignMember_v1
       parameters:
@@ -28718,7 +29234,7 @@ paths:
       security:
         - bearer: []
       summary: Remove a person from an organization unit
-      tags: *a42
+      tags: *a43
   /api/v1/audit:
     get:
       operationId: AuditController_listAuditEvents_v1
@@ -29323,7 +29839,7 @@ paths:
       security:
         - bearer: []
       summary: List room classes
-      tags: &a43
+      tags: &a44
         - Room Management
     post:
       operationId: RoomClassController_createRoomClass_v1
@@ -29429,7 +29945,7 @@ paths:
       security:
         - bearer: []
       summary: Create a room class
-      tags: *a43
+      tags: *a44
   /api/v1/room-classes/{id}:
     get:
       operationId: RoomClassController_getRoomClass_v1
@@ -29521,7 +30037,7 @@ paths:
       security:
         - bearer: []
       summary: Get a room class
-      tags: *a43
+      tags: *a44
     patch:
       operationId: RoomClassController_updateRoomClass_v1
       parameters:
@@ -29640,7 +30156,7 @@ paths:
       security:
         - bearer: []
       summary: Update a room class
-      tags: *a43
+      tags: *a44
     delete:
       operationId: RoomClassController_retireRoomClass_v1
       parameters:
@@ -29694,7 +30210,7 @@ paths:
       security:
         - bearer: []
       summary: Retire a room class
-      tags: *a43
+      tags: *a44
   /api/v1/wards:
     get:
       operationId: WardController_listWards_v1
@@ -29817,7 +30333,7 @@ paths:
       security:
         - bearer: []
       summary: List wards
-      tags: &a44
+      tags: &a45
         - Room Management
     post:
       operationId: WardController_createWard_v1
@@ -29913,7 +30429,7 @@ paths:
       security:
         - bearer: []
       summary: Create a ward
-      tags: *a44
+      tags: *a45
   /api/v1/wards/{id}:
     get:
       operationId: WardController_getWard_v1
@@ -29997,7 +30513,7 @@ paths:
       security:
         - bearer: []
       summary: Get a ward
-      tags: *a44
+      tags: *a45
     patch:
       operationId: WardController_updateWard_v1
       parameters:
@@ -30106,7 +30622,7 @@ paths:
       security:
         - bearer: []
       summary: Update a ward
-      tags: *a44
+      tags: *a45
     delete:
       operationId: WardController_retireWard_v1
       parameters:
@@ -30161,7 +30677,7 @@ paths:
       security:
         - bearer: []
       summary: Retire a ward
-      tags: *a44
+      tags: *a45
   /api/v1/rooms:
     get:
       operationId: RoomController_listRooms_v1
@@ -30341,7 +30857,7 @@ paths:
       security:
         - bearer: []
       summary: List rooms
-      tags: &a45
+      tags: &a46
         - Room Management
     post:
       operationId: RoomController_createRoom_v1
@@ -30482,7 +30998,7 @@ paths:
       security:
         - bearer: []
       summary: Create a room
-      tags: *a45
+      tags: *a46
   /api/v1/rooms/{id}:
     get:
       operationId: RoomController_getRoom_v1
@@ -30610,7 +31126,7 @@ paths:
       security:
         - bearer: []
       summary: Get a room
-      tags: *a45
+      tags: *a46
     patch:
       operationId: RoomController_updateRoom_v1
       parameters:
@@ -30762,7 +31278,7 @@ paths:
       security:
         - bearer: []
       summary: Update a room
-      tags: *a45
+      tags: *a46
     delete:
       operationId: RoomController_retireRoom_v1
       parameters:
@@ -30816,7 +31332,7 @@ paths:
       security:
         - bearer: []
       summary: Retire a room
-      tags: *a45
+      tags: *a46
   /api/v1/beds:
     get:
       operationId: BedController_listBeds_v1
@@ -31008,7 +31524,7 @@ paths:
       security:
         - bearer: []
       summary: List beds
-      tags: &a46
+      tags: &a47
         - Room Management
     post:
       operationId: BedController_createBed_v1
@@ -31157,7 +31673,7 @@ paths:
       security:
         - bearer: []
       summary: Create a bed
-      tags: *a46
+      tags: *a47
   /api/v1/beds/{id}:
     get:
       operationId: BedController_getBed_v1
@@ -31295,7 +31811,7 @@ paths:
       security:
         - bearer: []
       summary: Get a bed
-      tags: *a46
+      tags: *a47
     patch:
       operationId: BedController_updateBed_v1
       parameters:
@@ -31459,7 +31975,7 @@ paths:
       security:
         - bearer: []
       summary: Update a bed
-      tags: *a46
+      tags: *a47
     delete:
       operationId: BedController_retireBed_v1
       parameters:
@@ -31513,7 +32029,7 @@ paths:
       security:
         - bearer: []
       summary: Retire a bed
-      tags: *a46
+      tags: *a47
   /api/v1/room-occupancy:
     get:
       operationId: RoomOccupancyController_getOccupancy_v1
@@ -31989,7 +32505,7 @@ paths:
       security:
         - bearer: []
       summary: List admissions
-      tags: &a47
+      tags: &a48
         - Admission Flow
     post:
       operationId: AdmissionFlowController_admitPatient_v1
@@ -32282,7 +32798,7 @@ paths:
       security:
         - bearer: []
       summary: Admit a patient
-      tags: *a47
+      tags: *a48
   /api/v1/admissions/{id}:
     get:
       operationId: AdmissionFlowController_getAdmission_v1
@@ -32558,7 +33074,7 @@ paths:
       security:
         - bearer: []
       summary: Get an admission
-      tags: *a47
+      tags: *a48
     patch:
       operationId: AdmissionFlowController_updateAdmission_v1
       parameters:
@@ -32858,7 +33374,7 @@ paths:
       security:
         - bearer: []
       summary: Correct an open admission
-      tags: *a47
+      tags: *a48
   /api/v1/admissions/{id}/transfer:
     post:
       operationId: AdmissionFlowController_transferAdmission_v1
@@ -33159,7 +33675,7 @@ paths:
       security:
         - bearer: []
       summary: Transfer an admitted patient to another bed
-      tags: *a47
+      tags: *a48
   /api/v1/admissions/{id}/discharge:
     post:
       operationId: AdmissionFlowController_dischargeAdmission_v1
@@ -33495,7 +34011,7 @@ paths:
       security:
         - bearer: []
       summary: Discharge an admitted patient
-      tags: *a47
+      tags: *a48
   /api/v1/admissions/{id}/cancel:
     post:
       operationId: AdmissionFlowController_cancelAdmission_v1
@@ -33797,7 +34313,7 @@ paths:
       security:
         - bearer: []
       summary: Cancel an admission opened in error
-      tags: *a47
+      tags: *a48
   /api/v1/encounters:
     get:
       operationId: EncounterController_listEncounters_v1
@@ -34020,7 +34536,7 @@ paths:
       security:
         - bearer: []
       summary: List clinical encounters
-      tags: &a48
+      tags: &a49
         - Encounters
     post:
       operationId: EncounterController_openEncounter_v1
@@ -34191,7 +34707,7 @@ paths:
       security:
         - bearer: []
       summary: Open a clinical encounter
-      tags: *a48
+      tags: *a49
   /api/v1/encounters/{id}:
     get:
       operationId: EncounterController_getEncounterById_v1
@@ -34596,7 +35112,7 @@ paths:
       security:
         - bearer: []
       summary: Get a clinical encounter
-      tags: *a48
+      tags: *a49
     patch:
       operationId: EncounterController_updateEncounterSoap_v1
       parameters:
@@ -34783,7 +35299,7 @@ paths:
       security:
         - bearer: []
       summary: Write the SOAP note
-      tags: *a48
+      tags: *a49
   /api/v1/encounters/{id}/close:
     post:
       operationId: EncounterController_closeEncounter_v1
@@ -34955,7 +35471,7 @@ paths:
       security:
         - bearer: []
       summary: Close a clinical encounter
-      tags: *a48
+      tags: *a49
   /api/v1/encounters/{id}/cancel:
     post:
       operationId: EncounterController_cancelEncounter_v1
@@ -35124,7 +35640,7 @@ paths:
       security:
         - bearer: []
       summary: Cancel a clinical encounter
-      tags: *a48
+      tags: *a49
   /api/v1/encounters/{encounterId}/vital-signs:
     post:
       operationId: EncounterClinicalDataController_recordVitalSigns_v1
@@ -35273,7 +35789,7 @@ paths:
       security:
         - bearer: []
       summary: Record a vital-signs measurement
-      tags: &a49
+      tags: &a50
         - Encounters
   /api/v1/encounters/{encounterId}/diagnoses:
     post:
@@ -35397,7 +35913,7 @@ paths:
       security:
         - bearer: []
       summary: Code a diagnosis
-      tags: *a49
+      tags: *a50
   /api/v1/encounters/{encounterId}/diagnoses/{diagnosisId}:
     delete:
       operationId: EncounterClinicalDataController_removeDiagnosis_v1
@@ -35457,7 +35973,7 @@ paths:
       security:
         - bearer: []
       summary: Retract a diagnosis
-      tags: *a49
+      tags: *a50
   /api/v1/encounters/{encounterId}/procedures:
     post:
       operationId: EncounterClinicalDataController_addProcedure_v1
@@ -35575,7 +36091,7 @@ paths:
       security:
         - bearer: []
       summary: Code a procedure
-      tags: *a49
+      tags: *a50
   /api/v1/encounters/{encounterId}/procedures/{procedureId}:
     delete:
       operationId: EncounterClinicalDataController_removeProcedure_v1
@@ -35634,7 +36150,7 @@ paths:
       security:
         - bearer: []
       summary: Retract a procedure
-      tags: *a49
+      tags: *a50
   /api/v1/encounters/{encounterId}/immunizations:
     post:
       operationId: EncounterClinicalDataController_addImmunization_v1
@@ -35785,7 +36301,7 @@ paths:
       security:
         - bearer: []
       summary: Record a vaccination
-      tags: *a49
+      tags: *a50
   /api/v1/encounters/{encounterId}/immunizations/{immunizationId}:
     delete:
       operationId: EncounterClinicalDataController_removeImmunization_v1
@@ -35844,7 +36360,7 @@ paths:
       security:
         - bearer: []
       summary: Retract a vaccination
-      tags: *a49
+      tags: *a50
   /api/v1/encounters/{encounterId}/bpjs-referral:
     put:
       operationId: EncounterClinicalDataController_saveBpjsReferral_v1
@@ -35968,7 +36484,7 @@ paths:
       security:
         - bearer: []
       summary: Record or replace the encounter’s BPJS rujukan
-      tags: *a49
+      tags: *a50
     get:
       operationId: EncounterClinicalDataController_getBpjsReferral_v1
       parameters:
@@ -36059,7 +36575,7 @@ paths:
       security:
         - bearer: []
       summary: Read the encounter’s recorded BPJS rujukan
-      tags: *a49
+      tags: *a50
     delete:
       operationId: EncounterClinicalDataController_removeBpjsReferral_v1
       parameters:
@@ -36113,7 +36629,7 @@ paths:
       security:
         - bearer: []
       summary: Retract the encounter’s BPJS rujukan
-      tags: *a49
+      tags: *a50
   /api/v1/patients/{patientId}/immunizations:
     get:
       operationId: PatientImmunizationController_listPatientImmunizations_v1
@@ -36377,7 +36893,7 @@ paths:
       security:
         - bearer: []
       summary: List laboratory tests
-      tags: &a50
+      tags: &a51
         - Laboratory Catalog
     post:
       operationId: LabTestController_createLabTest_v1
@@ -36544,7 +37060,7 @@ paths:
       security:
         - bearer: []
       summary: Create a laboratory test
-      tags: *a50
+      tags: *a51
   /api/v1/lab-tests/{id}:
     patch:
       operationId: LabTestController_updateLabTest_v1
@@ -36719,7 +37235,7 @@ paths:
       security:
         - bearer: []
       summary: Update a laboratory test
-      tags: *a50
+      tags: *a51
   /api/v1/lab-tests/{id}/reference-ranges:
     put:
       operationId: LabTestController_replaceReferenceRanges_v1
@@ -36904,7 +37420,7 @@ paths:
       security:
         - bearer: []
       summary: Replace a test’s reference ranges
-      tags: *a50
+      tags: *a51
   /api/v1/lab-panels:
     get:
       operationId: LabPanelController_listLabPanels_v1
@@ -37024,7 +37540,7 @@ paths:
       security:
         - bearer: []
       summary: List laboratory panels
-      tags: &a51
+      tags: &a52
         - Laboratory Catalog
     post:
       operationId: LabPanelController_createLabPanel_v1
@@ -37167,7 +37683,7 @@ paths:
       security:
         - bearer: []
       summary: Create a laboratory panel
-      tags: *a51
+      tags: *a52
   /api/v1/lab-panels/{id}:
     patch:
       operationId: LabPanelController_updateLabPanel_v1
@@ -37312,7 +37828,7 @@ paths:
       security:
         - bearer: []
       summary: Update a laboratory panel
-      tags: *a51
+      tags: *a52
   /api/v1/encounters/{encounterId}/lab-orders:
     post:
       operationId: EncounterLabOrderController_createLabOrder_v1
@@ -37508,7 +38024,7 @@ paths:
       security:
         - bearer: []
       summary: Order laboratory tests on an encounter
-      tags: &a52
+      tags: &a53
         - Laboratory Orders
     get:
       operationId: EncounterLabOrderController_listEncounterLabOrders_v1
@@ -37673,7 +38189,7 @@ paths:
       security:
         - bearer: []
       summary: List an encounter’s laboratory orders
-      tags: *a52
+      tags: *a53
   /api/v1/lab-orders/intake:
     post:
       operationId: LabOrderController_createWalkInLabOrder_v1
@@ -37836,7 +38352,7 @@ paths:
       security:
         - bearer: []
       summary: Register a walk-in or external lab request
-      tags: &a53
+      tags: &a54
         - Laboratory Orders
   /api/v1/lab-orders:
     get:
@@ -38020,7 +38536,7 @@ paths:
       security:
         - bearer: []
       summary: List laboratory orders
-      tags: *a53
+      tags: *a54
   /api/v1/lab-orders/{id}:
     get:
       operationId: LabOrderController_getLabOrderById_v1
@@ -38181,7 +38697,7 @@ paths:
       security:
         - bearer: []
       summary: Read one laboratory order
-      tags: *a53
+      tags: *a54
   /api/v1/lab-orders/{id}/cancel:
     post:
       operationId: LabOrderController_cancelLabOrder_v1
@@ -38381,7 +38897,7 @@ paths:
       security:
         - bearer: []
       summary: Cancel a laboratory order
-      tags: *a53
+      tags: *a54
   /api/v1/lab-orders/{id}/disposition:
     patch:
       operationId: LabOrderController_updateDisposition_v1
@@ -38578,7 +39094,7 @@ paths:
       security:
         - bearer: []
       summary: Change where a laboratory order is filled and who pays
-      tags: *a53
+      tags: *a54
   /api/v1/lab-orders/{id}/request-document:
     post:
       operationId: LabOrderController_printRequestLetter_v1
@@ -38661,7 +39177,7 @@ paths:
       security:
         - bearer: []
       summary: Print the surat pengantar for a laboratory order
-      tags: *a53
+      tags: *a54
   /api/v1/lab-orders/{id}/collect:
     post:
       operationId: LabSpecimenController_collectLabSpecimens_v1
@@ -38777,7 +39293,7 @@ paths:
       security:
         - bearer: []
       summary: Collect the specimens an order needs
-      tags: &a54
+      tags: &a55
         - Laboratory Specimens
   /api/v1/lab-specimens/{id}/receive:
     post:
@@ -38867,7 +39383,7 @@ paths:
       security:
         - bearer: []
       summary: Mark a specimen as arrived in the lab
-      tags: *a54
+      tags: *a55
   /api/v1/lab-specimens/{id}/reject:
     post:
       operationId: LabSpecimenController_rejectLabSpecimen_v1
@@ -38979,7 +39495,7 @@ paths:
       security:
         - bearer: []
       summary: Reject a specimen and ask for a fresh draw
-      tags: *a54
+      tags: *a55
   /api/v1/lab-specimens/{id}/label:
     get:
       operationId: LabSpecimenController_getSpecimenLabel_v1
@@ -39082,7 +39598,7 @@ paths:
       security:
         - bearer: []
       summary: Read a specimen label payload
-      tags: *a54
+      tags: *a55
   /api/v1/lab-worklist:
     get:
       operationId: LabWorklistController_listWorklist_v1
@@ -39434,7 +39950,7 @@ paths:
       security:
         - bearer: []
       summary: Read the values entered on a laboratory order
-      tags: &a55
+      tags: &a56
         - Laboratory Results
     put:
       operationId: LabResultController_enterLabResults_v1
@@ -39694,7 +40210,7 @@ paths:
       security:
         - bearer: []
       summary: Enter results for a laboratory order
-      tags: *a55
+      tags: *a56
   /api/v1/lab-orders/{id}/release:
     post:
       operationId: LabResultController_releaseLabOrder_v1
@@ -39963,7 +40479,7 @@ paths:
       security:
         - bearer: []
       summary: Release a laboratory order
-      tags: *a55
+      tags: *a56
   /api/v1/lab-results/{id}/amend:
     post:
       operationId: LabResultController_amendLabResult_v1
@@ -40121,7 +40637,7 @@ paths:
       security:
         - bearer: []
       summary: Amend a released laboratory result
-      tags: *a55
+      tags: *a56
   /api/v1/patients/{id}/lab-results:
     get:
       operationId: PatientLabResultController_listPatientLabResults_v1
@@ -40360,7 +40876,7 @@ paths:
       security:
         - bearer: []
       summary: Read the laboratory verification settings
-      tags: &a56
+      tags: &a57
         - Laboratory Settings
     patch:
       operationId: LaboratorySettingsController_updateLaboratorySettings_v1
@@ -40446,7 +40962,7 @@ paths:
       security:
         - bearer: []
       summary: Change the laboratory verification settings
-      tags: *a56
+      tags: *a57
   /api/v1/lab-orders/{id}/report:
     get:
       operationId: LabReportController_downloadReport_v1
@@ -40535,7 +41051,7 @@ paths:
       security:
         - bearer: []
       summary: Download the current laboratory report
-      tags: &a57
+      tags: &a58
         - Laboratory Orders
   /api/v1/lab-orders/{id}/reports:
     get:
@@ -40735,7 +41251,7 @@ paths:
       security:
         - bearer: []
       summary: List the versions of a laboratory report
-      tags: *a57
+      tags: *a58
   /api/v1/lab-orders/{id}/reports/{reportId}/retry:
     post:
       operationId: LabReportController_retryReport_v1
@@ -40944,7 +41460,7 @@ paths:
       security:
         - bearer: []
       summary: Render a laboratory report version again
-      tags: *a57
+      tags: *a58
   /api/v1/satusehat/patients/{patientId}/link:
     post:
       operationId: SatusehatLinkController_linkPatient_v1
@@ -41014,7 +41530,7 @@ paths:
       security:
         - bearer: []
       summary: Link a patient to their SATUSEHAT IHS number
-      tags: &a58
+      tags: &a59
         - SATUSEHAT
   /api/v1/satusehat/doctors/{doctorId}/link:
     post:
@@ -41085,7 +41601,7 @@ paths:
       security:
         - bearer: []
       summary: Link a doctor to their SATUSEHAT IHS practitioner number
-      tags: *a58
+      tags: *a59
   /api/v1/satusehat/submissions:
     get:
       operationId: SatusehatSubmissionController_listSubmissions_v1
@@ -41268,7 +41784,7 @@ paths:
       security:
         - bearer: []
       summary: List SATUSEHAT submission outbox entries
-      tags: &a59
+      tags: &a60
         - SATUSEHAT
   /api/v1/satusehat/submissions/{id}/retry:
     post:
@@ -41390,7 +41906,7 @@ paths:
       security:
         - bearer: []
       summary: Retry a failed SATUSEHAT submission
-      tags: *a59
+      tags: *a60
   /api/v1/bpjs/config:
     get:
       operationId: BpjsPcareConfigController_getConfig_v1
@@ -41504,7 +42020,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS PCare bridging configuration
-      tags: &a60
+      tags: &a61
         - BPJS PCare
     put:
       operationId: BpjsPcareConfigController_upsertConfig_v1
@@ -41642,7 +42158,7 @@ paths:
       security:
         - bearer: []
       summary: Create or replace the BPJS PCare bridging configuration
-      tags: *a60
+      tags: *a61
     delete:
       operationId: BpjsPcareConfigController_deleteConfig_v1
       parameters: []
@@ -41701,7 +42217,7 @@ paths:
       security:
         - bearer: []
       summary: Delete the BPJS PCare bridging configuration
-      tags: *a60
+      tags: *a61
   /api/v1/bpjs/config/test-connection:
     post:
       operationId: BpjsPcareConfigController_testConnection_v1
@@ -41767,7 +42283,7 @@ paths:
       security:
         - bearer: []
       summary: Test the stored BPJS PCare credentials
-      tags: *a60
+      tags: *a61
   /api/v1/bpjs/reference/sync:
     post:
       operationId: BpjsReferenceController_syncCatalogs_v1
@@ -41855,7 +42371,7 @@ paths:
       security:
         - bearer: []
       summary: Sync the enumerable BPJS PCare reference catalogs
-      tags: &a61
+      tags: &a62
         - BPJS PCare
   /api/v1/bpjs/reference/status:
     get:
@@ -41922,7 +42438,7 @@ paths:
       security:
         - bearer: []
       summary: Read per-catalog BPJS reference sync status
-      tags: *a61
+      tags: *a62
   /api/v1/bpjs/reference/{catalog}:
     get:
       operationId: BpjsReferenceController_searchCatalog_v1
@@ -42016,7 +42532,7 @@ paths:
       security:
         - bearer: []
       summary: Search a synced BPJS reference catalog locally
-      tags: *a61
+      tags: *a62
   /api/v1/bpjs/reference/{catalog}/search:
     post:
       operationId: BpjsReferenceController_searchCatalogRemote_v1
@@ -42122,7 +42638,7 @@ paths:
       security:
         - bearer: []
       summary: Search a keyword-only BPJS catalog live and cache the results
-      tags: *a61
+      tags: *a62
   /api/v1/bpjs/mappings:
     get:
       operationId: BpjsMappingController_getOverview_v1
@@ -42210,7 +42726,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS mapping overview
-      tags: &a62
+      tags: &a63
         - BPJS PCare
   /api/v1/bpjs/mappings/doctors/{doctorId}:
     put:
@@ -42304,7 +42820,7 @@ paths:
       security:
         - bearer: []
       summary: Set or clear a doctor’s BPJS kdDokter mapping
-      tags: *a62
+      tags: *a63
   /api/v1/bpjs/mappings/specialties/{specialtyId}:
     put:
       operationId: BpjsMappingController_setSpecialtyMapping_v1
@@ -42393,7 +42909,7 @@ paths:
       security:
         - bearer: []
       summary: Set or clear a specialty’s BPJS kdPoli mapping
-      tags: *a62
+      tags: *a63
   /api/v1/bpjs/mappings/medications/{medicationId}:
     put:
       operationId: BpjsMappingController_setMedicationMapping_v1
@@ -42487,7 +43003,7 @@ paths:
       security:
         - bearer: []
       summary: Link or unlink a medication’s DPHO code
-      tags: *a62
+      tags: *a63
   /api/v1/bpjs/eligibility/patients/{patientId}/check:
     post:
       operationId: BpjsEligibilityController_checkEligibility_v1
@@ -42787,7 +43303,7 @@ paths:
       security:
         - bearer: []
       summary: List BPJS PCare submission outbox entries
-      tags: &a63
+      tags: &a64
         - BPJS PCare
   /api/v1/bpjs/submissions/{id}/retry:
     post:
@@ -42896,7 +43412,7 @@ paths:
       security:
         - bearer: []
       summary: Retry a failed BPJS PCare submission
-      tags: *a63
+      tags: *a64
   /api/v1/bpjs/reports/monthly:
     get:
       operationId: BpjsReportController_getMonthlyReport_v1
@@ -43143,7 +43659,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS Antrean Online bridging configuration
-      tags: &a64
+      tags: &a65
         - BPJS Antrean
     put:
       operationId: BpjsAntreanConfigController_upsertConfig_v1
@@ -43284,7 +43800,7 @@ paths:
       security:
         - bearer: []
       summary: Create or replace the BPJS Antrean Online bridging configuration
-      tags: *a64
+      tags: *a65
     delete:
       operationId: BpjsAntreanConfigController_deleteConfig_v1
       parameters: []
@@ -43343,7 +43859,7 @@ paths:
       security:
         - bearer: []
       summary: Delete the BPJS Antrean Online bridging configuration
-      tags: *a64
+      tags: *a65
   /api/v1/bpjs/antrean/config/test-connection:
     post:
       operationId: BpjsAntreanConfigController_testConnection_v1
@@ -43409,7 +43925,7 @@ paths:
       security:
         - bearer: []
       summary: Test the stored BPJS Antrean credentials
-      tags: *a64
+      tags: *a65
   /api/v1/bpjs/antrean/inbound-readiness:
     get:
       operationId: BpjsAntreanConfigController_getInboundReadiness_v1
@@ -43479,7 +43995,7 @@ paths:
       security:
         - bearer: []
       summary: Report whether the inbound Antrean web services can serve BPJS
-      tags: *a64
+      tags: *a65
   /api/v1/bpjs/antrean/hfis-reconciliation:
     get:
       operationId: BpjsAntreanConfigController_getHfisReconciliation_v1
@@ -43581,7 +44097,7 @@ paths:
       security:
         - bearer: []
       summary: Compare HFIS against HMS and report the disagreements
-      tags: *a64
+      tags: *a65
   /api/v1/admin/features:
     get:
       operationId: FeatureAdminController_getEntitlements_v1
@@ -43660,7 +44176,7 @@ paths:
       security:
         - bearer: []
       summary: List every feature and whether this client has it
-      tags: &a65
+      tags: &a66
         - Feature Entitlements
   /api/v1/admin/features/{key}:
     put:
@@ -43777,7 +44293,7 @@ paths:
       security:
         - bearer: []
       summary: Switch a feature on or off for this client
-      tags: *a65
+      tags: *a66
   /api/v1/features/availability:
     get:
       operationId: FeatureAvailabilityController_getAvailability_v1
@@ -43900,7 +44416,7 @@ paths:
       security:
         - bearer: []
       summary: List active roles
-      tags: &a66
+      tags: &a67
         - RBAC
     post:
       operationId: RbacController_createRole_v1
@@ -43987,7 +44503,7 @@ paths:
       security:
         - bearer: []
       summary: Create a custom role
-      tags: *a66
+      tags: *a67
   /api/v1/rbac/permissions:
     get:
       operationId: RbacController_getPermissionCatalog_v1
@@ -44067,7 +44583,7 @@ paths:
       security:
         - bearer: []
       summary: List the permission catalog
-      tags: *a66
+      tags: *a67
   /api/v1/rbac/roles/{id}:
     get:
       operationId: RbacController_getRoleById_v1
@@ -44186,7 +44702,7 @@ paths:
       security:
         - bearer: []
       summary: Get a role with its permissions and member count
-      tags: *a66
+      tags: *a67
     patch:
       operationId: RbacController_updateRole_v1
       parameters:
@@ -44285,7 +44801,7 @@ paths:
       security:
         - bearer: []
       summary: Update a role name or description
-      tags: *a66
+      tags: *a67
     delete:
       operationId: RbacController_deleteRole_v1
       parameters:
@@ -44361,7 +44877,7 @@ paths:
       security:
         - bearer: []
       summary: Soft-delete a role
-      tags: *a66
+      tags: *a67
   /api/v1/rbac/roles/{id}/permissions:
     put:
       operationId: RbacController_setRolePermissions_v1
@@ -44507,7 +45023,7 @@ paths:
       security:
         - bearer: []
       summary: Replace the permission set attached to a role
-      tags: *a66
+      tags: *a67
   /api/v1/rbac/assign-role:
     post:
       operationId: RbacController_assignRole_v1
@@ -44599,7 +45115,7 @@ paths:
       security:
         - bearer: []
       summary: Assign a role to a user
-      tags: *a66
+      tags: *a67
   /api/v1/rbac/unassign-role:
     post:
       operationId: RbacController_unassignRole_v1
@@ -44691,7 +45207,7 @@ paths:
       security:
         - bearer: []
       summary: Unassign a role from a user
-      tags: *a66
+      tags: *a67
   /api/v1/health:
     get:
       operationId: HealthController_getHealth_v1
@@ -46874,11 +47390,16 @@ components:
         title:
           type: string
           minLength: 1
-          maxLength: 32
+          maxLength: 64
+          pattern: ^[A-Z][A-Z0-9_]*$
         degrees:
-          type: string
-          minLength: 1
-          maxLength: 120
+          type: array
+          maxItems: 8
+          items:
+            type: string
+            minLength: 1
+            maxLength: 64
+            pattern: ^[A-Z][A-Z0-9_]*$
         nik:
           type: string
         satusehatPractitionerId:
@@ -46925,8 +47446,9 @@ components:
                 maxLength: 80
               fieldOfStudy:
                 type: string
-                minLength: 2
-                maxLength: 120
+                minLength: 1
+                maxLength: 64
+                pattern: ^[A-Z][A-Z0-9_]*$
               graduationYear:
                 type: integer
                 minimum: 1950
@@ -46974,12 +47496,17 @@ components:
         title:
           type: string
           minLength: 1
-          maxLength: 32
+          maxLength: 64
+          pattern: ^[A-Z][A-Z0-9_]*$
           nullable: true
         degrees:
-          type: string
-          minLength: 1
-          maxLength: 120
+          type: array
+          maxItems: 8
+          items:
+            type: string
+            minLength: 1
+            maxLength: 64
+            pattern: ^[A-Z][A-Z0-9_]*$
           nullable: true
         nik:
           type: string
@@ -47028,8 +47555,9 @@ components:
                 maxLength: 80
               fieldOfStudy:
                 type: string
-                minLength: 2
-                maxLength: 120
+                minLength: 1
+                maxLength: 64
+                pattern: ^[A-Z][A-Z0-9_]*$
               graduationYear:
                 type: integer
                 minimum: 1950
@@ -47080,6 +47608,50 @@ components:
               - endTime
       required:
         - schedules
+    CreateDoctorCredentialOptionDto:
+      type: object
+      properties:
+        kind:
+          type: string
+          enum:
+            - TITLE
+            - DEGREE
+            - FIELD_OF_STUDY
+        code:
+          type: string
+          minLength: 1
+          maxLength: 64
+          pattern: ^[A-Z][A-Z0-9_]*$
+        label:
+          type: string
+          minLength: 1
+          maxLength: 120
+        sortOrder:
+          type: integer
+          minimum: 0
+          exclusiveMinimum: false
+          maximum: 10000
+          exclusiveMaximum: false
+          default: 0
+      required:
+        - kind
+        - code
+        - label
+    UpdateDoctorCredentialOptionDto:
+      type: object
+      properties:
+        label:
+          type: string
+          minLength: 1
+          maxLength: 120
+        sortOrder:
+          type: integer
+          minimum: 0
+          exclusiveMinimum: false
+          maximum: 10000
+          exclusiveMaximum: false
+        isActive:
+          type: boolean
     CreateUserInvitationDto:
       type: object
       properties:

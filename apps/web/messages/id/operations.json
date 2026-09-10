@@ -1832,8 +1832,50 @@
         "roles": {
           "title": "Peran & izin",
           "description": "Apa yang boleh dilihat dan dilakukan tiap peran."
+        },
+        "doctorCredentials": {
+          "title": "Kredensial dokter",
+          "description": "Gelar depan, gelar belakang, dan bidang studi yang dipakai pada profil dokter."
         }
       }
+    },
+    "doctorCredentials": {
+      "title": "Kredensial dokter",
+      "description": "Daftar gelar depan, gelar belakang, dan bidang studi yang dipakai formulir dokter. Kode bersifat permanen; label adalah yang tercetak pada dokumen.",
+      "add": "Tambah pilihan",
+      "kinds": {
+        "TITLE": "Gelar depan",
+        "DEGREE": "Gelar belakang",
+        "FIELD_OF_STUDY": "Bidang studi"
+      },
+      "columns": {
+        "label": "Label tercetak",
+        "code": "Kode",
+        "sortOrder": "Urutan",
+        "status": "Status",
+        "actions": "Tindakan"
+      },
+      "active": "Aktif",
+      "inactive": "Tidak ditawarkan",
+      "empty": "Belum ada pilihan.",
+      "loading": "Memuat katalog…",
+      "loadError": "Katalog kredensial gagal dimuat.",
+      "deactivate": "Berhenti tawarkan",
+      "reactivate": "Tawarkan lagi",
+      "deactivateHint": "Dokter yang sudah memakai kredensial ini tetap mencetaknya; pilihan ini hanya berhenti muncul di formulir.",
+      "dialogTitle": "Tambah pilihan kredensial",
+      "dialogDescription": "Kode tersimpan pada setiap dokter yang memilih pilihan ini dan tidak dapat diubah. Label adalah yang tercetak.",
+      "fields": {
+        "kind": "Daftar",
+        "code": "Kode",
+        "label": "Label tercetak",
+        "sortOrder": "Urutan"
+      },
+      "codeHint": "Huruf kapital dengan garis bawah, misalnya SP_PD.",
+      "saved": "Pilihan kredensial tersimpan.",
+      "saveError": "Pilihan kredensial gagal disimpan.",
+      "codeRequired": "Isi kode dengan huruf kapital dan garis bawah, misalnya SP_PD.",
+      "labelRequired": "Isi label tercetak."
     }
   },
   "channelArrivals": {

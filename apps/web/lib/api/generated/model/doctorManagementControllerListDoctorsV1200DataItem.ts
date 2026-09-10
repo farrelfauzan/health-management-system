@@ -5,7 +5,9 @@
  * Health Management System API
  * OpenAPI spec version: 1.0.0
  */
+import type { DoctorManagementControllerListDoctorsV1200DataItemDegreeValuesItem } from './doctorManagementControllerListDoctorsV1200DataItemDegreeValuesItem';
 import type { DoctorManagementControllerListDoctorsV1200DataItemSchedulesItem } from './doctorManagementControllerListDoctorsV1200DataItemSchedulesItem';
+import type { DoctorManagementControllerListDoctorsV1200DataItemTitleValue } from './doctorManagementControllerListDoctorsV1200DataItemTitleValue';
 
 export type DoctorManagementControllerListDoctorsV1200DataItem = {
   id: string;
@@ -17,6 +19,9 @@ export type DoctorManagementControllerListDoctorsV1200DataItem = {
   email: string;
   title: string;
   degrees: string;
+  titleValue: DoctorManagementControllerListDoctorsV1200DataItemTitleValue;
+  degreeValues: DoctorManagementControllerListDoctorsV1200DataItemDegreeValuesItem[];
+  displayName: string;
   invitationStatus: string;
   nikMasked: string;
   satusehatPractitionerId: string;
