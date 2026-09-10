@@ -6,7 +6,7 @@ import type { PersonalDocumentView } from '@hms/shared-types';
 import { TooltipProvider } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
-import { PersonalDocumentActionButton } from '#components/client/personal-documents/personal-document-action-button';
+import { DocumentActionButton } from '#components/client/documents/document-action-button';
 import { PersonalDocumentRenameDialog } from '#components/client/personal-documents/personal-document-rename-dialog';
 import { ConfirmDialog } from '#components/client/shared/confirm-dialog';
 import {
@@ -88,24 +88,24 @@ export function PersonalDocumentRowActions({
     // timer for controls the user reads as a single group.
     <TooltipProvider>
       <div className="flex justify-end gap-1">
-        <PersonalDocumentActionButton
+        <DocumentActionButton
           icon="download"
           label={t('download')}
           disabled={downloadMutation.isPending}
           onClick={() => downloadMutation.mutate()}
         />
-        <PersonalDocumentActionButton
+        <DocumentActionButton
           icon="edit"
           label={t('rename')}
           onClick={() => setIsRenameOpen(true)}
         />
-        <PersonalDocumentActionButton
+        <DocumentActionButton
           icon="refresh"
           label={t('reingest')}
           disabled={reingestMutation.isPending}
           onClick={() => reingestMutation.mutate()}
         />
-        <PersonalDocumentActionButton
+        <DocumentActionButton
           icon="delete"
           label={t('delete')}
           disabled={deleteMutation.isPending}
