@@ -105,6 +105,7 @@
   --color-destructive: var(--destructive);
   --color-border: var(--border);
   --color-input: var(--input);
+  --color-control-border: var(--control-border);
   --color-ring: var(--ring);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -171,6 +172,7 @@
   --tooltip-foreground: #0b1c30;
   --border: #e2e8f0;
   --input: #e2e8f0;
+  --control-border: #737d92;  /* 4.14:1 on white, 3.75:1 on --muted; WCAG 1.4.11 needs 3:1 (was --input at 1.23:1) */
   --ring: #0066ff;
   /* Sidebar roles mapped to the Clinical Precision palette */
   --sidebar: #ffffff; /* surface-container-lowest */
