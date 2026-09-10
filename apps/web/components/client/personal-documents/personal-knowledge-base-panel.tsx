@@ -7,7 +7,9 @@ import { useTranslations } from 'next-intl';
 import { NoPatientDataNotice } from '#components/client/personal-documents/no-patient-data-notice';
 import { PersonalDocumentUploadDialog } from '#components/client/personal-documents/personal-document-upload-dialog';
 import { PersonalDocumentsTable } from '#components/client/personal-documents/personal-documents-table';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { PageHeader } from '#components/shared/page-header';
+import { useShellBreadcrumbRoot } from '#lib/navigation/use-shell-breadcrumb-root';
 import { usePersonalDocuments } from '#lib/personal-documents/use-personal-documents';
 
 /**
@@ -22,6 +24,7 @@ import { usePersonalDocuments } from '#lib/personal-documents/use-personal-docum
  */
 export function PersonalKnowledgeBasePanel() {
   const t = useTranslations('personalKnowledgeBase');
+  const root = useShellBreadcrumbRoot();
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -43,7 +46,7 @@ export function PersonalKnowledgeBasePanel() {
       <PageHeader
         title={t('header.title')}
         subtitle={t('header.subtitle')}
-        breadcrumbs={[t('header.breadcrumbs.assistant'), t('header.breadcrumbs.knowledgeBase')]}
+        breadcrumbs={[root, { label: t('header.breadcrumbs.knowledgeBase') }]}
         actions={
           <Button type="button" onClick={() => setIsUploadOpen(true)}>
             {t('header.upload')}
@@ -54,18 +57,16 @@ export function PersonalKnowledgeBasePanel() {
           week and is looking at their corpus is exactly who needs reminding
           what may not be in it. */}
       <NoPatientDataNotice />
-      {notice ? (
-        <p className="rounded-lg bg-emerald-50 px-4 py-3 text-sm text-emerald-900">{notice}</p>
-      ) : null}
-      {error ? (
-        <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-900">{error}</p>
-      ) : null}
+      {notice ? <InlineNotice tone="success">{notice}</InlineNotice> : null}
+      {error ? <InlineNotice tone="error">{error}</InlineNotice> : null}
       <Card>
         <CardContent className="p-0">
           {documentsQuery.isLoading ? (
             <p className="p-6 text-sm text-slate-500">{t('states.loading')}</p>
           ) : documentsQuery.isError ? (
-            <p className="p-6 text-sm text-red-700">{t('states.error')}</p>
+            <InlineNotice tone="error" className="m-6">
+              {t('states.error')}
+            </InlineNotice>
           ) : rows.length === 0 ? (
             <p className="p-6 text-sm text-slate-500">{t('states.empty')}</p>
           ) : (

@@ -3,10 +3,10 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { MissingParentNotice } from '#components/client/rooms/missing-parent-notice';
 import { FormLabel } from '#components/client/shared/form-label';
+import { ROOM_OPTION_LIST_LIMIT } from '#lib/rooms/option-list-limit';
 import { useRoomClassesList } from '#lib/rooms/use-room-classes-list';
-
-const ROOM_CLASS_OPTIONS_LIMIT = 100;
 
 type RoomClassSelectProps = {
   id: string;
@@ -36,7 +36,7 @@ export function RoomClassSelect({
   const t = useTranslations('operations.rooms');
   const roomClassesQuery = useRoomClassesList({
     page: 1,
-    limit: ROOM_CLASS_OPTIONS_LIMIT,
+    limit: ROOM_OPTION_LIST_LIMIT,
     isActive: 'true',
   });
 
@@ -57,8 +57,8 @@ export function RoomClassSelect({
           ))}
         </SelectContent>
       </Select>
-      {!roomClassesQuery.isPending && roomClassesQuery.roomClasses.length === 0 ? (
-        <p className="text-sm text-warning">{t('noRoomClasses')}</p>
+      {roomClassesQuery.isSuccess && roomClassesQuery.roomClasses.length === 0 ? (
+        <MissingParentNotice message={t('noRoomClasses')} />
       ) : null}
     </div>
   );

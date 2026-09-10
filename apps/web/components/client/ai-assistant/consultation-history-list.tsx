@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 
 import { ConsultationHistoryItem } from '#components/client/ai-assistant/consultation-history-item';
 import { DeleteConsultationDialog } from '#components/client/ai-assistant/delete-consultation-dialog';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import type { ConsultationHistoryEntry } from '#lib/ai-assistant/consultation-history-entry';
 
 type ConsultationHistoryListProps = {
@@ -40,9 +41,9 @@ export function ConsultationHistoryList({
   }
   if (hasFailed) {
     return (
-      <p role="status" className="px-2 py-3 text-sm text-destructive">
+      <InlineNotice tone="error" className="mx-2 my-3">
         {t('historyError')}
-      </p>
+      </InlineNotice>
     );
   }
   if (entries.length === 0) {

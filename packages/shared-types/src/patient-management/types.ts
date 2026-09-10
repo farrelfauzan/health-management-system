@@ -29,6 +29,39 @@ export type PatientDemographicFields = {
   guardianRelation?: string | null;
 };
 
+/**
+ * The structured address columns (P19-T10), shared by the create and update
+ * repository payloads. `undefined` leaves a column untouched. The four codes
+ * are only ever written as a validated chain — the service has already
+ * resolved them against the master data by the time a payload gets here — so
+ * the repository accepts them as plain strings and never re-checks them.
+ */
+export type PatientAddressFields = {
+  provinceCode?: string;
+  regencyCode?: string;
+  districtCode?: string;
+  villageCode?: string;
+  rtRw?: string | null;
+  postalCode?: string | null;
+};
+
+/**
+ * The address columns plus the names the read path resolves through the
+ * region relations. Null throughout on a legacy or draft row.
+ */
+export type PatientAddressRecordFields = {
+  provinceCode: string | null;
+  provinceName: string | null;
+  regencyCode: string | null;
+  regencyName: string | null;
+  districtCode: string | null;
+  districtName: string | null;
+  villageCode: string | null;
+  villageName: string | null;
+  rtRw: string | null;
+  postalCode: string | null;
+};
+
 export type PatientAllergyRecord = {
   id: string;
   substance: string;
@@ -97,7 +130,8 @@ export type CreatePatientRecordPayload = {
    * code that names a record nobody can find — with the number already spent.
    */
   convertsProspectivePatient?: ConvertsProspectivePatient;
-} & PatientDemographicFields;
+} & PatientDemographicFields &
+  PatientAddressFields;
 
 /** The prospective record an arrival conversion resolves (`P17-T04`). */
 export type ConvertsProspectivePatient = {
@@ -131,7 +165,8 @@ export type UpdatePatientRecordPayload = {
   isActive?: boolean;
   /** When present, replaces the whole active allergy list. */
   allergies?: PatientAllergyInput[];
-} & PatientDemographicFields;
+} & PatientDemographicFields &
+  PatientAddressFields;
 
 /**
  * Domain projection of a patient row. Identifiers appear only as their masked
@@ -176,7 +211,7 @@ export type PatientRecord = {
   lastVisitAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
-};
+} & PatientAddressRecordFields;
 
 /**
  * One registry record a chat customer's typed phone number resolved to

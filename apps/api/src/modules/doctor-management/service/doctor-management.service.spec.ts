@@ -6,7 +6,9 @@ import {
 } from '@nestjs/common';
 
 import { AuditService } from '../../../common/audit/audit.service';
+import { AdminManagementService } from '../../admin-management/service/admin-management.service';
 import { AuthRepository } from '../../auth/repository/auth.repository';
+import { UserInvitationService } from '../../user-invitation/service/user-invitation.service';
 import { DoctorIdentifierConflictError } from '../repository/doctor-identifier-conflict.error';
 import { DoctorManagementRepository } from '../repository/doctor-management.repository';
 import { DoctorManagementService } from './doctor-management.service';
@@ -66,10 +68,21 @@ describe('DoctorManagementService', () => {
     record: jest.fn(),
   } as unknown as AuditService;
 
+  const userInvitationServiceMock = {
+    resolveDoctorOwnerPlan: jest.fn(),
+    inviteDoctorOwner: jest.fn(),
+  } as unknown as UserInvitationService;
+
+  const adminManagementServiceMock = {
+    grantRoleCodes: jest.fn(),
+  } as unknown as AdminManagementService;
+
   const service = new DoctorManagementService(
     doctorManagementRepositoryMock,
     authRepositoryMock,
     auditServiceMock,
+    userInvitationServiceMock,
+    adminManagementServiceMock,
   );
 
   const currentUser = {

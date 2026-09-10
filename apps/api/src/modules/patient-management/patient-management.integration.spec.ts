@@ -7,6 +7,7 @@ import request from 'supertest';
 import { AppModule } from '../../app.module';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { AuthRepository } from '../auth/repository/auth.repository';
+import { RegionsRepository } from '../regions/repository/regions.repository';
 import { PatientManagementRepository } from './repository/patient-management.repository';
 
 /**
@@ -22,6 +23,25 @@ const SPEC_PRIVACY_NOTICE = {
   subjectType: 'SELF',
   provenance: 'FRONT_DESK',
 } as const;
+
+/**
+ * The front-desk create requires a structured address since P19-T10. The
+ * region repository is mocked below to resolve exactly this chain, so a
+ * payload carrying it passes the master-data check.
+ */
+const SPEC_ADDRESS = {
+  provinceCode: '31',
+  regencyCode: '31.71',
+  districtCode: '31.71.01',
+  villageCode: '31.71.01.1001',
+} as const;
+
+const SPEC_REGION_CHAIN = {
+  province: { code: '31', name: 'Daerah Khusus Ibukota Jakarta', parentCode: null },
+  regency: { code: '31.71', name: 'Kota Administrasi Jakarta Pusat', parentCode: '31' },
+  district: { code: '31.71.01', name: 'Gambir', parentCode: '31.71' },
+  village: { code: '31.71.01.1001', name: 'Gambir', parentCode: '31.71.01' },
+};
 
 type AuditLogWrite = {
   data: { action: string; metadata?: { fields?: string[] } };
@@ -50,6 +70,14 @@ describe('PatientManagement integration', () => {
     updatePatient: jest.fn(),
   };
 
+  const regionsRepositoryMock = {
+    listProvinces: jest.fn(),
+    listRegencies: jest.fn(),
+    listDistricts: jest.fn(),
+    listVillages: jest.fn(),
+    findChain: jest.fn(),
+  };
+
   const prismaServiceMock = {
     // SJ-4 writes one audit row per patient-data route, and the write is
     // awaited: an access that cannot be recorded fails the request rather than
@@ -68,6 +96,8 @@ describe('PatientManagement integration', () => {
       .useValue(authRepositoryMock)
       .overrideProvider(PatientManagementRepository)
       .useValue(patientRepositoryMock)
+      .overrideProvider(RegionsRepository)
+      .useValue(regionsRepositoryMock)
       .overrideProvider(PrismaService)
       .useValue(prismaServiceMock)
       .compile();
@@ -92,6 +122,7 @@ describe('PatientManagement integration', () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
+    regionsRepositoryMock.findChain.mockResolvedValue(SPEC_REGION_CHAIN);
     patientRepositoryMock.listPatients.mockResolvedValue({
       items: [],
       total: 0,
@@ -318,6 +349,7 @@ describe('PatientManagement integration', () => {
           sex: 'MALE',
           phoneNumber: '081210000001',
           address: 'Main Street',
+          ...SPEC_ADDRESS,
           privacyNotice: SPEC_PRIVACY_NOTICE,
         });
 
@@ -345,6 +377,7 @@ describe('PatientManagement integration', () => {
           sex: 'MALE',
           phoneNumber: '081210000001',
           address: 'Main Street',
+          ...SPEC_ADDRESS,
           privacyNotice: SPEC_PRIVACY_NOTICE,
         });
 
@@ -366,6 +399,7 @@ describe('PatientManagement integration', () => {
           sex: 'MALE',
           phoneNumber: '081210000001',
           address: 'Main Street',
+          ...SPEC_ADDRESS,
           privacyNotice: SPEC_PRIVACY_NOTICE,
         });
 
@@ -392,6 +426,7 @@ describe('PatientManagement integration', () => {
           sex: 'MALE',
           phoneNumber: '081210000001',
           address: 'Main Street',
+          ...SPEC_ADDRESS,
           privacyNotice: SPEC_PRIVACY_NOTICE,
         });
 
@@ -495,6 +530,7 @@ describe('PatientManagement integration', () => {
           sex: 'MALE',
           phoneNumber: '081210000001',
           address: 'Main Street',
+          ...SPEC_ADDRESS,
           privacyNotice: SPEC_PRIVACY_NOTICE,
           nik: '3201010101900001',
         });
@@ -517,6 +553,7 @@ describe('PatientManagement integration', () => {
           sex: 'MALE',
           phoneNumber: '081210000001',
           address: 'Main Street',
+          ...SPEC_ADDRESS,
           privacyNotice: SPEC_PRIVACY_NOTICE,
           nik: '12345',
         });
@@ -538,6 +575,7 @@ describe('PatientManagement integration', () => {
           sex: 'MALE',
           phoneNumber: '081210000001',
           address: 'Main Street',
+          ...SPEC_ADDRESS,
           privacyNotice: SPEC_PRIVACY_NOTICE,
           nik: '3201 0101 0190 0001',
         });
@@ -562,6 +600,7 @@ describe('PatientManagement integration', () => {
           sex: 'MALE',
           phoneNumber: '081210000001',
           address: 'Main Street',
+          ...SPEC_ADDRESS,
           privacyNotice: SPEC_PRIVACY_NOTICE,
           nik: '3201010101900001',
         });
@@ -583,6 +622,7 @@ describe('PatientManagement integration', () => {
           sex: 'MALE',
           phoneNumber: '081210000001',
           address: 'Main Street',
+          ...SPEC_ADDRESS,
           privacyNotice: SPEC_PRIVACY_NOTICE,
           nik: '3201014101900001',
         });
@@ -624,6 +664,7 @@ describe('PatientManagement integration', () => {
         sex: 'MALE',
         phoneNumber: '081210000001',
         address: 'Main Street',
+        ...SPEC_ADDRESS,
         privacyNotice: SPEC_PRIVACY_NOTICE,
         ...overrides,
       };
@@ -759,6 +800,260 @@ describe('PatientManagement integration', () => {
 
       expect(response.status).toBe(400);
       expect(patientRepositoryMock.createPatient).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('structured address (P19-T10)', () => {
+    async function signTokenWith(
+      permissions: Array<{ action: string; resource: string; scope: 'ANY' | 'OWN' }>,
+    ): Promise<string> {
+      authRepositoryMock.findUserById.mockResolvedValue({
+        id: 'admin-user',
+        roles: [
+          {
+            role: {
+              code: 'ADMIN',
+              permissions: permissions.map((permission) => ({ permission })),
+            },
+          },
+        ],
+      });
+
+      return jwtService.signAsync(
+        { sub: 'admin-user', email: 'admin@hms.local' },
+        { secret: 'dev-access-secret' },
+      );
+    }
+
+    function buildCreateBody(overrides: Record<string, unknown> = {}): Record<string, unknown> {
+      return {
+        fullName: 'Patient One',
+        dateOfBirth: '1990-01-01',
+        sex: 'MALE',
+        phoneNumber: '081210000001',
+        address: 'Jl. Merdeka No. 10',
+        ...SPEC_ADDRESS,
+        rtRw: '001/002',
+        postalCode: '10110',
+        privacyNotice: SPEC_PRIVACY_NOTICE,
+        ...overrides,
+      };
+    }
+
+    it('refuses a create that carries only part of the chain', async () => {
+      const token = await signTokenWith([{ action: 'create', resource: 'Patient', scope: 'ANY' }]);
+
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/v1/patients')
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          fullName: 'Patient One',
+          dateOfBirth: '1990-01-01',
+          sex: 'MALE',
+          phoneNumber: '081210000001',
+          address: 'Main Street',
+          provinceCode: SPEC_ADDRESS.provinceCode,
+          privacyNotice: SPEC_PRIVACY_NOTICE,
+        });
+
+      expect(response.status).toBe(400);
+      expect(response.body.error.details.map((issue: { path: string[] }) => issue.path)).toEqual(
+        expect.arrayContaining([['regencyCode'], ['districtCode'], ['villageCode']]),
+      );
+      expect(patientRepositoryMock.createPatient).not.toHaveBeenCalled();
+    });
+
+    /**
+     * The codes stay optional until `P19-T11` puts a region picker on the
+     * front-desk form. Requiring them here would reject every create the
+     * current UI makes, so the contract accepts an address with no chain and
+     * the read path answers with the street line alone.
+     */
+    it('accepts a create that carries no chain at all', async () => {
+      const token = await signTokenWith([{ action: 'create', resource: 'Patient', scope: 'ANY' }]);
+      patientRepositoryMock.createPatient.mockResolvedValue({
+        id: '5bd5e23d-098a-4ee6-a777-cf5f850ece2f',
+        mrn: '00001002',
+        fullName: 'Patient One',
+        dateOfBirth: new Date('1990-01-01T00:00:00.000Z'),
+        placeOfBirth: null,
+        sex: 'MALE',
+        status: 'OUT_PATIENT',
+        phoneNumber: '081210000001',
+        address: 'Main Street',
+        provinceCode: null,
+        regencyCode: null,
+        districtCode: null,
+        villageCode: null,
+        rtRw: null,
+        postalCode: null,
+        nikLast4: null,
+        bpjsNumberLast4: null,
+        hasSatusehatPatientId: false,
+        ownerUserId: null,
+        isActive: true,
+        createdAt: new Date('2026-01-01T00:00:00.000Z'),
+        updatedAt: new Date('2026-01-01T00:00:00.000Z'),
+      });
+
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/v1/patients')
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          fullName: 'Patient One',
+          dateOfBirth: '1990-01-01',
+          sex: 'MALE',
+          phoneNumber: '081210000001',
+          address: 'Main Street',
+          privacyNotice: SPEC_PRIVACY_NOTICE,
+        });
+
+      expect(response.status).toBe(201);
+      expect(regionsRepositoryMock.findChain).not.toHaveBeenCalled();
+      expect(response.body.data.addressDetails).toEqual({ formattedAddress: 'Main Street' });
+    });
+
+    it('rejects a chain the master data does not confirm, on the offending field', async () => {
+      const token = await signTokenWith([{ action: 'create', resource: 'Patient', scope: 'ANY' }]);
+      regionsRepositoryMock.findChain.mockResolvedValue({
+        ...SPEC_REGION_CHAIN,
+        village: { code: '31.71.01.1001', name: 'Elsewhere', parentCode: '31.71.02' },
+      });
+
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/v1/patients')
+        .set('Authorization', `Bearer ${token}`)
+        .send(buildCreateBody());
+
+      expect(response.status).toBe(400);
+      expect(response.body.error).toEqual({
+        code: 'BAD_REQUEST',
+        message: 'Validation failed',
+        details: [
+          {
+            code: 'custom',
+            message: 'villageCode does not belong to districtCode 31.71.01',
+            path: ['villageCode'],
+          },
+        ],
+      });
+      expect(patientRepositoryMock.createPatient).not.toHaveBeenCalled();
+    });
+
+    it('stores the chain, RT/RW and postal code, and answers with the resolved address', async () => {
+      const token = await signTokenWith([{ action: 'create', resource: 'Patient', scope: 'ANY' }]);
+      patientRepositoryMock.createPatient.mockResolvedValue({
+        id: '5bd5e23d-098a-4ee6-a777-cf5f850ece2f',
+        mrn: '00001001',
+        fullName: 'Patient One',
+        dateOfBirth: new Date('1990-01-01T00:00:00.000Z'),
+        placeOfBirth: null,
+        sex: 'MALE',
+        status: 'OUT_PATIENT',
+        phoneNumber: '081210000001',
+        address: 'Jl. Merdeka No. 10',
+        ...SPEC_ADDRESS,
+        provinceName: 'Daerah Khusus Ibukota Jakarta',
+        regencyName: 'Kota Administrasi Jakarta Pusat',
+        districtName: 'Gambir',
+        villageName: 'Gambir',
+        rtRw: '001/002',
+        postalCode: '10110',
+        nikLast4: null,
+        bpjsNumberLast4: null,
+        hasSatusehatPatientId: false,
+        ownerUserId: null,
+        isActive: true,
+        createdAt: new Date('2026-01-01T00:00:00.000Z'),
+        updatedAt: new Date('2026-01-01T00:00:00.000Z'),
+      });
+
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/v1/patients')
+        .set('Authorization', `Bearer ${token}`)
+        .send(buildCreateBody());
+
+      expect(response.status).toBe(201);
+      expect(regionsRepositoryMock.findChain).toHaveBeenCalledWith(SPEC_ADDRESS);
+      expect(patientRepositoryMock.createPatient).toHaveBeenCalledWith(
+        expect.objectContaining({ ...SPEC_ADDRESS, rtRw: '001/002', postalCode: '10110' }),
+      );
+      expect(response.body.data.addressDetails).toEqual({
+        ...SPEC_ADDRESS,
+        provinceName: 'Daerah Khusus Ibukota Jakarta',
+        regencyName: 'Kota Administrasi Jakarta Pusat',
+        districtName: 'Gambir',
+        villageName: 'Gambir',
+        rtRw: '001/002',
+        postalCode: '10110',
+        formattedAddress:
+          'Jl. Merdeka No. 10, RT/RW 001/002, Gambir, Gambir, Kota Administrasi Jakarta Pusat, Daerah Khusus Ibukota Jakarta, 10110',
+      });
+    });
+
+    it('still accepts a legacy import without any region code, and prints the street line', async () => {
+      const token = await signTokenWith([
+        { action: 'import-identifier', resource: 'Patient', scope: 'ANY' },
+      ]);
+
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/v1/patients/import')
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          mrn: 'RM-2019-0417',
+          fullName: 'Patient One',
+          dateOfBirth: '1990-01-01',
+          sex: 'MALE',
+          phoneNumber: '081210000001',
+          address: 'Main Street',
+          privacyNotice: SPEC_PRIVACY_NOTICE,
+        });
+
+      expect(response.status).toBe(201);
+      expect(regionsRepositoryMock.findChain).not.toHaveBeenCalled();
+      expect(patientRepositoryMock.createPatient).toHaveBeenCalledWith(
+        expect.objectContaining({ provinceCode: undefined, villageCode: undefined }),
+      );
+      expect(response.body.data.addressDetails).toEqual({ formattedAddress: 'Main Street' });
+    });
+
+    it('refuses a partial chain on update before touching the master data', async () => {
+      const token = await signTokenWith([{ action: 'update', resource: 'Patient', scope: 'ANY' }]);
+
+      const response = await request(app.getHttpServer())
+        .patch('/api/v1/v1/patients/f746de50-6b45-4351-9bb6-45aeb3f671f9')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ provinceCode: '31', regencyCode: '31.71' });
+
+      expect(response.status).toBe(400);
+      expect(response.body.error.details).toEqual([
+        expect.objectContaining({ path: ['districtCode'] }),
+        expect.objectContaining({ path: ['villageCode'] }),
+      ]);
+      expect(regionsRepositoryMock.findChain).not.toHaveBeenCalled();
+      expect(patientRepositoryMock.updatePatient).not.toHaveBeenCalled();
+    });
+
+    it('replaces the chain whole on update once the master data confirms it', async () => {
+      const token = await signTokenWith([{ action: 'update', resource: 'Patient', scope: 'ANY' }]);
+      patientRepositoryMock.updatePatient.mockResolvedValue({
+        ...(await patientRepositoryMock.findPatientById()),
+        ...SPEC_ADDRESS,
+        rtRw: null,
+        postalCode: null,
+      });
+
+      const response = await request(app.getHttpServer())
+        .patch('/api/v1/v1/patients/f746de50-6b45-4351-9bb6-45aeb3f671f9')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ ...SPEC_ADDRESS, rtRw: null });
+
+      expect(response.status).toBe(200);
+      expect(regionsRepositoryMock.findChain).toHaveBeenCalledWith(SPEC_ADDRESS);
+      expect(patientRepositoryMock.updatePatient).toHaveBeenCalledWith(
+        'f746de50-6b45-4351-9bb6-45aeb3f671f9',
+        expect.objectContaining({ ...SPEC_ADDRESS, rtRw: null }),
+      );
     });
   });
 });

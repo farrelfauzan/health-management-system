@@ -3,6 +3,8 @@
 import { useTranslations } from 'next-intl';
 import { Button } from '@hms/ui';
 
+import { InlineNotice } from '#components/client/shared/inline-notice';
+
 type MfaRecoveryCodesPanelProps = {
   recoveryCodes: string[];
   onAcknowledge: () => void;
@@ -38,9 +40,7 @@ export function MfaRecoveryCodesPanel({
         ))}
       </ul>
 
-      <p className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
-        {t('warning')}
-      </p>
+      <InlineNotice tone="warning">{t('warning')}</InlineNotice>
 
       <Button
         type="button"

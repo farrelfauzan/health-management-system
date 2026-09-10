@@ -5,10 +5,18 @@ import {
   ListProspectivePatientsParams,
   LinkProspectivePatientParams,
   ProspectiveMatchCandidateRow,
-  ProspectivePatientListRow,
+  ProspectivePatientListPage,
 } from '@hms/shared-types';
 
 import { PrismaService } from '../../../common/prisma/prisma.service';
+import { AppointmentStatus, Prisma } from '../../../generated/prisma/client';
+
+/**
+ * A booking in one of these states is over, and a record whose only booking
+ * is over has nothing riding on it. Neither the open count nor the "upcoming"
+ * booking looks at them.
+ */
+const CLOSED_APPOINTMENT_STATUSES: AppointmentStatus[] = ['CANCELLED', 'REJECTED'];
 
 /**
  * The counter's half of the prospective-patient table (`P17-T04`).
@@ -31,35 +39,60 @@ export class ProspectiveArrivalRepository {
   constructor(private readonly prismaService: PrismaService) {}
 
   /**
-   * The people the clinic has not registered yet, oldest enquiry first.
+   * The people the clinic has not registered yet, one page at a time.
    *
-   * Oldest first rather than newest, unlike the chat-side lookup: this is a
-   * worklist, and the record that has been waiting longest is the one closest
-   * to expiring unresolved.
+   * Oldest enquiry first by default rather than newest, unlike the chat-side
+   * lookup: this is a worklist, and the record that has been waiting longest
+   * is the one closest to expiring unresolved. The back office (`P19-T08`) can
+   * flip that or order by the expiry itself; either way the count is taken
+   * over the same filter so the page numbers and the tab badge agree.
+   *
+   * The name and phone halves of the search are two `OR` arms on purpose: the
+   * stored number is normalised digits, so the phone side compares digits the
+   * service already normalised, and a name never accidentally matches a phone.
    */
-  async listByStatus(params: ListProspectivePatientsParams): Promise<ProspectivePatientListRow[]> {
-    return this.prismaService.prospectivePatient.findMany({
-      where: { status: params.status },
-      orderBy: { createdAt: 'asc' },
-      take: params.limit,
-      select: {
-        id: true,
-        fullName: true,
-        phoneNumber: true,
-        channel: true,
-        status: true,
-        patientId: true,
-        expiresAt: true,
-        createdAt: true,
-        _count: {
-          select: {
-            appointments: {
-              where: { deletedAt: null, status: { notIn: ['CANCELLED', 'REJECTED'] } },
+  async listProspectivePatients(
+    params: ListProspectivePatientsParams,
+  ): Promise<ProspectivePatientListPage> {
+    const where = buildProspectivePatientWhere(params);
+    const [rows, total] = await Promise.all([
+      this.prismaService.prospectivePatient.findMany({
+        where,
+        orderBy: params.sort === 'expiresAt' ? { expiresAt: params.order } : { createdAt: params.order },
+        skip: (params.page - 1) * params.limit,
+        take: params.limit,
+        select: {
+          id: true,
+          fullName: true,
+          phoneNumber: true,
+          channel: true,
+          status: true,
+          patientId: true,
+          expiresAt: true,
+          createdAt: true,
+          patient: { select: { mrn: true } },
+          appointments: {
+            where: {
+              deletedAt: null,
+              status: { notIn: CLOSED_APPOINTMENT_STATUSES },
+              scheduledAt: { gte: params.upcomingFrom },
+            },
+            orderBy: { scheduledAt: 'asc' },
+            take: 1,
+            select: { id: true, scheduledAt: true, doctor: { select: { fullName: true } } },
+          },
+          _count: {
+            select: {
+              appointments: {
+                where: { deletedAt: null, status: { notIn: CLOSED_APPOINTMENT_STATUSES } },
+              },
             },
           },
         },
-      },
-    });
+      }),
+      this.prismaService.prospectivePatient.count({ where }),
+    ]);
+    return { rows, total };
   }
 
   async findById(prospectivePatientId: string) {
@@ -188,6 +221,27 @@ export class ProspectiveArrivalRepository {
       LIMIT ${limit}
     `;
   }
+}
+
+/**
+ * The filter shared by the page query and its count, so the two can never
+ * disagree about how many rows the back office is paging through.
+ */
+function buildProspectivePatientWhere(
+  params: ListProspectivePatientsParams,
+): Prisma.ProspectivePatientWhereInput {
+  const searchArms: Prisma.ProspectivePatientWhereInput[] = [];
+  if (params.nameQuery !== undefined) {
+    searchArms.push({ fullName: { contains: params.nameQuery, mode: 'insensitive' } });
+  }
+  if (params.phoneQuery !== undefined) {
+    searchArms.push({ phoneNumber: { contains: params.phoneQuery } });
+  }
+  return {
+    status: params.status,
+    ...(params.channel === undefined ? {} : { channel: params.channel }),
+    ...(searchArms.length === 0 ? {} : { OR: searchArms }),
+  };
 }
 
 /**

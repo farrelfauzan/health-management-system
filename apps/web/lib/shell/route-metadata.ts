@@ -1,4 +1,7 @@
 import { FACILITY_CONFIG, FACILITY_KIND_LABELS } from '#lib/facility/facility-config';
+import { BREADCRUMB_SHELL_ROOTS } from '#lib/navigation/breadcrumb-shell';
+import type { BreadcrumbTrailItem } from '#lib/navigation/breadcrumb-trail-item';
+import { buildShellBreadcrumbRoot } from '#lib/navigation/build-shell-breadcrumb-root';
 import type { ShellNavigationKey } from '#lib/shell/nav-items';
 
 export type AdminRouteKey =
@@ -15,13 +18,12 @@ export type AdminRouteKey =
   | 'administration';
 
 export type AdminRouteMetadata = {
-  breadcrumbs: string[];
+  breadcrumbs: BreadcrumbTrailItem[];
   title: string;
   subtitle: string;
 };
 
 export type AdminRouteMessageKey =
-  | 'mainDashboard'
   | 'overview'
   | 'clinicOverview'
   | 'hospitalOverview'
@@ -81,84 +83,86 @@ export function resolveLocalizedAdminRouteMetadata(
     administration: ['administrationSubtitle', 'administrationSubtitle'],
   } as const;
 
+  const root = buildShellBreadcrumbRoot({ shell: 'admin', translateNavigation });
+
   if (routeKey === 'dashboard') {
     return {
-      breadcrumbs: [translate('mainDashboard'), translate('overview')],
+      breadcrumbs: [root, { label: translate('overview') }],
       title: translate(FACILITY_CONFIG.kind === 'clinic' ? 'clinicOverview' : 'hospitalOverview'),
       subtitle: translate('dashboardSubtitle', { facilityName: FACILITY_CONFIG.name }),
     };
   }
 
   const [titleKey, subtitleKey] = descriptors[routeKey];
-  const isAdvanced =
-    routeKey === 'ai-assistant' || routeKey === 'integrations' || routeKey === 'administration';
   const title =
     routeKey === 'integrations' || routeKey === 'administration'
       ? translateNavigation(navigationKeys[routeKey])
       : translate(titleKey);
   return {
-    breadcrumbs: [
-      isAdvanced ? translateNavigation('advanced') : translate('mainDashboard'),
-      translateNavigation(navigationKeys[routeKey]),
-    ],
+    breadcrumbs: [root, { label: translateNavigation(navigationKeys[routeKey]) }],
     title,
     subtitle: translate(subtitleKey),
   };
 }
 
+const ADMIN_ROOT_BREADCRUMB: BreadcrumbTrailItem = {
+  label: 'Dashboard',
+  href: BREADCRUMB_SHELL_ROOTS.admin.href,
+};
+
 export const ADMIN_ROUTE_METADATA: Record<AdminRouteKey, AdminRouteMetadata> = {
   dashboard: {
-    breadcrumbs: ['Main Dashboard', 'Overview'],
+    breadcrumbs: [ADMIN_ROOT_BREADCRUMB, { label: 'Overview' }],
     title: `${FACILITY_KIND_LABELS[FACILITY_CONFIG.kind]} Overview`,
     subtitle: `Key metrics and activity across ${FACILITY_CONFIG.name} today.`,
   },
   patients: {
-    breadcrumbs: ['Main Dashboard', 'Patients'],
+    breadcrumbs: [ADMIN_ROOT_BREADCRUMB, { label: 'Patients' }],
     title: 'Patient Directory',
     subtitle: 'Manage and monitor current and past patient records across all departments.',
   },
   doctors: {
-    breadcrumbs: ['Main Dashboard', 'Doctors'],
+    breadcrumbs: [ADMIN_ROOT_BREADCRUMB, { label: 'Doctors' }],
     title: 'Doctor Directory',
     subtitle: 'Manage doctor profiles, specialties, and weekly schedules.',
   },
   appointments: {
-    breadcrumbs: ['Main Dashboard', 'Appointments'],
+    breadcrumbs: [ADMIN_ROOT_BREADCRUMB, { label: 'Appointments' }],
     title: 'Appointment Scheduling',
     subtitle: 'Coordinate visits across doctors and time slots.',
   },
   registrations: {
-    breadcrumbs: ['Main Dashboard', 'Registration'],
+    breadcrumbs: [ADMIN_ROOT_BREADCRUMB, { label: 'Registration' }],
     title: 'Registration Queue',
     subtitle: 'Track patient registrations from check-in to completion.',
   },
   encounters: {
-    breadcrumbs: ['Main Dashboard', 'Encounters'],
+    breadcrumbs: [ADMIN_ROOT_BREADCRUMB, { label: 'Encounters' }],
     title: 'Clinical Encounters',
     subtitle: 'Open, record, and close the medical record for each visit.',
   },
   pharmacy: {
-    breadcrumbs: ['Main Dashboard', 'Pharmacy'],
+    breadcrumbs: [ADMIN_ROOT_BREADCRUMB, { label: 'Pharmacy' }],
     title: 'Pharmacy Queue',
     subtitle: 'Verify and dispense incoming prescriptions.',
   },
   billing: {
-    breadcrumbs: ['Main Dashboard', 'Billing'],
+    breadcrumbs: [ADMIN_ROOT_BREADCRUMB, { label: 'Billing' }],
     title: 'Billing & Cashier',
     subtitle: 'Generate invoices from finished visits, settle them, and reconcile the drawer.',
   },
   'ai-assistant': {
-    breadcrumbs: ['Advanced', 'AI Assistant'],
+    breadcrumbs: [ADMIN_ROOT_BREADCRUMB, { label: 'AI Assistant' }],
     title: 'AI Clinical Assistant',
     subtitle: 'Ask clinical questions grounded in Saling Jaga patient context.',
   },
   integrations: {
-    breadcrumbs: ['Advanced', 'Integrations'],
+    breadcrumbs: [ADMIN_ROOT_BREADCRUMB, { label: 'Integrations' }],
     title: 'Integrations',
     subtitle: 'Configure BPJS PCare and monitor external health-data submissions.',
   },
   administration: {
-    breadcrumbs: ['Advanced', 'Administration'],
+    breadcrumbs: [ADMIN_ROOT_BREADCRUMB, { label: 'Administration' }],
     title: 'Administration',
     subtitle: 'Manage system users, roles, and permissions.',
   },

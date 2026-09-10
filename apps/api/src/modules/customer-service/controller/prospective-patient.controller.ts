@@ -54,17 +54,20 @@ export class ProspectivePatientController {
   @ApiEndpoint({
     summary: 'List people who booked through a channel and have not been registered',
     responseDescription:
-      'Prospective records in the requested status, oldest enquiry first — a worklist, so the record closest to expiring unresolved leads it. Defaults to AWAITING_ARRIVAL. No MRN and no clinical field appears here because none exists yet; `openAppointments` counts what is still riding on the record, so a row whose only booking was cancelled reads as nothing to do.',
-    responseExample: { data: [CUSTOMER_SERVICE_ADMIN_EXAMPLES.prospectivePatient] },
+      'Prospective records in the requested status, paged, oldest enquiry first by default — a worklist, so the record closest to expiring unresolved leads it. Defaults to AWAITING_ARRIVAL; `channel` narrows to one messenger, `q` matches a name loosely or a phone number on its digits, and `sort`/`order` switch between the enquiry date and the expiry. `meta.total` counts the whole filter, which is what the Patients page shows on its "From chat" badge. No clinical field appears here because none exists yet; `patientMrn` and `upcomingAppointment` are null until a record resolves or a booking is ahead, and `openAppointments` counts what is still riding on the record, so a row whose only booking was cancelled reads as nothing to do.',
+    responseExample: {
+      data: [CUSTOMER_SERVICE_ADMIN_EXAMPLES.prospectivePatient],
+      meta: CUSTOMER_SERVICE_ADMIN_EXAMPLES.prospectivePatientsMeta,
+    },
   })
   async listProspectivePatients(
     @Query() query: ListProspectivePatientsQueryDto,
     @AuthUser() currentUser?: CurrentUser,
   ) {
     this.assertAuthenticated(currentUser);
-    const items = await this.prospectiveArrivalService.listProspectivePatients(query);
+    const result = await this.prospectiveArrivalService.listProspectivePatients(query);
 
-    return { data: items };
+    return { data: result.items, meta: result.meta };
   }
 
   @Get(':prospectivePatientId/match-candidates')

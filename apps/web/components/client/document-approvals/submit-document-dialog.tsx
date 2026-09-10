@@ -17,8 +17,12 @@ import {
 } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
-import { ApproverPicker, type ApproverOption } from '#components/client/document-approvals/approver-picker';
+import {
+  ApproverPicker,
+  type ApproverOption,
+} from '#components/client/document-approvals/approver-picker';
 import { SelfApprovalNotice } from '#components/client/document-approvals/self-approval-notice';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { managedDocumentControllerSubmitDocumentV1 } from '#lib/api/generated/documents/documents';
 import { parseApiSuccess } from '#lib/api/response';
 import { resolveApiErrorMessage } from '#lib/api/resolve-api-error-message';
@@ -82,11 +86,7 @@ export function SubmitDocumentDialog({
           <DialogTitle>{t('title')}</DialogTitle>
           <DialogDescription>{t('description')}</DialogDescription>
         </DialogHeader>
-        {error ? (
-          <p role="alert" className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-900">
-            {error}
-          </p>
-        ) : null}
+        {error ? <InlineNotice tone="error">{error}</InlineNotice> : null}
         <ApproverPicker selected={approvers} onChange={setApprovers} />
         {isSelfOnly ? <SelfApprovalNotice /> : null}
         <div className="space-y-2">

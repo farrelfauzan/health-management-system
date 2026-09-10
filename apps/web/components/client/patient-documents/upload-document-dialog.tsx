@@ -25,6 +25,7 @@ import { useTranslations } from 'next-intl';
 import { DocumentFilePicker } from '#components/client/documents/document-file-picker';
 import { UploadFileItem } from '#components/client/patient-documents/upload-file-item';
 import { VisitLinkSelect } from '#components/client/patient-documents/visit-link-select';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { resolveApiErrorMessage } from '#lib/api/resolve-api-error-message';
 import type { DocumentUploadProgress } from '#lib/documents/upload-progress';
 import { invalidatePatientDocumentQueries } from '#lib/patient-documents/invalidate-patient-document-queries';
@@ -227,13 +228,13 @@ export function UploadDocumentDialog({
             onRejected={handleRejected}
           />
           {pickerErrors.length > 0 ? (
-            <ul className="space-y-1" role="alert">
-              {pickerErrors.map((message, index) => (
-                <li key={`${index}-${message}`} className="text-sm text-red-700">
-                  {message}
-                </li>
-              ))}
-            </ul>
+            <InlineNotice tone="error">
+              <ul className="space-y-1">
+                {pickerErrors.map((message, index) => (
+                  <li key={`${index}-${message}`}>{message}</li>
+                ))}
+              </ul>
+            </InlineNotice>
           ) : null}
           {entries.length > 0 ? (
             <div className="space-y-2">
@@ -303,7 +304,7 @@ export function UploadDocumentDialog({
               onChange={(event) => setNotes(event.target.value)}
             />
           </div>
-          {formError ? <p className="text-sm text-red-700">{formError}</p> : null}
+          {formError ? <InlineNotice tone="error">{formError}</InlineNotice> : null}
         </div>
         <DialogFooter>
           <Button

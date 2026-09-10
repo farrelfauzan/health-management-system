@@ -7,11 +7,14 @@ import { hasAnyRole } from '#lib/auth/access-token-claims';
 import { ACCESS_TOKEN_COOKIE_NAME } from '#lib/auth/access-token-cookie';
 import { resolveSessionClaims } from '#lib/auth/session-claims';
 import { SESSION_HINT_COOKIE_NAME } from '#lib/auth/session-hint-cookie';
+import { LAB_ORDER_TABS } from '#lib/laboratory/lab-order-tabs';
+import { parseTabSearchParam } from '#lib/navigation/parse-tab-search-param';
 import { resolveAppAbilityRules } from '#lib/rbac/app-ability.server';
 import { isFeatureEnabled } from '#lib/shell/is-feature-enabled';
 
 type AdminLabOrderPageProps = {
   params: Promise<{ id: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
 /**
@@ -22,8 +25,9 @@ type AdminLabOrderPageProps = {
  * screen explains a disabled Rilis button ("you typed these") before the API
  * refuses it, and the client has no other way to know who is looking.
  */
-export default async function AdminLabOrderPage({ params }: AdminLabOrderPageProps) {
+export default async function AdminLabOrderPage({ params, searchParams }: AdminLabOrderPageProps) {
   const { id } = await params;
+  const query = await searchParams;
   const cookieStore = await cookies();
   const claims = resolveSessionClaims({
     accessToken: cookieStore.get(ACCESS_TOKEN_COOKIE_NAME)?.value,
@@ -46,6 +50,7 @@ export default async function AdminLabOrderPage({ params }: AdminLabOrderPagePro
     <LabOrderDetailPanel
       labOrderId={id}
       currentUserId={claims?.sub ?? null}
+      initialTab={parseTabSearchParam(query.tab, LAB_ORDER_TABS)}
       isTechnicianOnly={isTechnicianOnly}
     />
   );

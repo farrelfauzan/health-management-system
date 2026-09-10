@@ -29,6 +29,11 @@ import { UserOffboardingWorker } from './service/user-offboarding.worker';
   // exist, do these role codes exist, what are their ids — on the accept path.
   // Cross-module access still goes through this module's own boundary rather
   // than a second Prisma caller for `user` and `role`.
-  exports: [AdminManagementRepository],
+  //
+  // The service is exported for `DoctorManagementModule` (P19-T15), which needs
+  // a *write*: attaching an existing account to a new doctor profile has to
+  // leave that account holding DOCTOR. A write is a rule, not a lookup, so that
+  // one goes through the service — `grantRoleCodes` — and not the repository.
+  exports: [AdminManagementRepository, AdminManagementService],
 })
 export class AdminManagementModule {}

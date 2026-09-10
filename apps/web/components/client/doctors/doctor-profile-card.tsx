@@ -25,8 +25,17 @@ export function DoctorProfileCard({ doctor }: DoctorProfileCardProps) {
       value: doctor.phoneNumber ? formatPhoneNumber(doctor.phoneNumber) : EMPTY_VALUE,
       isMono: true,
     },
-    // Read from the linked account: a doctor with no login has no address.
-    { label: t('doctors.email'), value: doctor.email ?? EMPTY_VALUE },
+    // Read from the linked account, or from the invitation still holding it
+    // (P19-T15): a doctor with neither has no address.
+    {
+      label: t('doctors.email'),
+      value: (
+        <span className="flex flex-wrap items-center gap-2">
+          {doctor.email ?? EMPTY_VALUE}
+          {doctor.invitationStatus ? <StatusBadge status={doctor.invitationStatus} /> : null}
+        </span>
+      ),
+    },
     {
       label: t('doctors.assignedPatients'),
       value: format.number(doctor.patientCount),

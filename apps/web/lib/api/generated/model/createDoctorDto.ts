@@ -26,6 +26,8 @@ export interface CreateDoctorDto {
      * @maxLength 32
      */
   phoneNumber: string;
+  /** @maxLength 255 */
+  email?: string;
   /**
      * @minLength 1
      * @maxLength 32
