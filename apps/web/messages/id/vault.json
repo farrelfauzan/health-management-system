@@ -119,7 +119,12 @@
       "delete": "Hapus",
       "menuFor": "Aksi untuk {title}",
       "confirm": {
-        "delete": "Hapus “{title}” secara permanen? Berkas dan seluruh datanya dihapus untuk selamanya — tidak ada salinan yang bisa dipulihkan siapa pun."
+        "delete": {
+          "title": "Hapus dokumen ini secara permanen?",
+          "body": "Menghapus “{title}” menghilangkan berkas dan seluruh catatannya untuk selamanya. Tidak ada salinan yang disimpan diam-diam, dan tidak ada siapa pun, termasuk administrator, yang bisa memulihkannya.",
+          "confirm": "Hapus permanen",
+          "cancel": "Batal"
+        }
       },
       "success": {
         "delete": "Dokumen dihapus."

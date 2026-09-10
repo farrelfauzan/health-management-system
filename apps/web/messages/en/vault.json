@@ -119,7 +119,12 @@
       "delete": "Delete",
       "menuFor": "Actions for {title}",
       "confirm": {
-        "delete": "Delete “{title}” permanently? The file and everything about it are removed for good — there is no copy anyone can restore."
+        "delete": {
+          "title": "Delete this document permanently?",
+          "body": "Deleting “{title}” removes the file and everything recorded about it for good. There is no soft-deleted copy, and nobody, an administrator included, can restore it.",
+          "confirm": "Delete permanently",
+          "cancel": "Cancel"
+        }
       },
       "success": {
         "delete": "Document deleted."
