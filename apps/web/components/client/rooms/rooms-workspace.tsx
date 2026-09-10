@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger, useAbility } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
@@ -10,9 +9,15 @@ import { RoomClassesPanel } from '#components/client/rooms/room-classes-panel';
 import { RoomsPanel } from '#components/client/rooms/rooms-panel';
 import { WardsPanel } from '#components/client/rooms/wards-panel';
 import { PageHeader } from '#components/shared/page-header';
-import type { RoomsWorkspaceTab } from '#lib/rooms/rooms-workspace-tab';
+import { useTabSearchParam } from '#lib/navigation/use-tab-search-param';
+import { ROOMS_TABS, type RoomsTab } from '#lib/rooms/rooms-tabs';
 
-export function RoomsWorkspace() {
+type RoomsWorkspaceProps = {
+  /** A tab asked for by the URL; honoured only when this person may see it (SJ-162). */
+  initialTab?: RoomsTab;
+};
+
+export function RoomsWorkspace({ initialTab }: RoomsWorkspaceProps) {
   const t = useTranslations('operations.rooms');
   const ability = useAbility();
   const canReadClasses = ability.can('read', 'RoomClass');
@@ -22,24 +27,24 @@ export function RoomsWorkspace() {
   // The occupancy board is a bed aggregate, so it follows the bed grant. A
   // clinic that lets a clerk read wards but not beds still gets a usable
   // screen — one tab fewer, not a blank page.
-  const defaultTab: RoomsWorkspaceTab = canReadBeds
-    ? 'occupancy'
-    : canReadWards
-      ? 'wards'
-      : 'rooms';
-  // Held in state (not just `defaultValue`) so a panel can send the user to
-  // the tab where a missing parent gets created. P19-T05 moves this into a
-  // `?tab=` search param; until then this is the smallest thing that works.
-  const [activeTab, setActiveTab] = useState<RoomsWorkspaceTab>(defaultTab);
+  const readableTabs: Record<RoomsTab, boolean> = {
+    occupancy: canReadBeds,
+    wards: canReadWards,
+    rooms: canReadRooms,
+    beds: canReadBeds,
+    classes: canReadClasses,
+  };
+  const allowedTabs = ROOMS_TABS.filter((candidate) => readableTabs[candidate]);
+  const { tab, setTab } = useTabSearchParam<RoomsTab>({
+    allowed: allowedTabs,
+    fallback: allowedTabs[0] ?? 'rooms',
+    initialTab,
+  });
 
   return (
     <div className="space-y-6">
       <PageHeader title={t('title')} subtitle={t('subtitle')} breadcrumbs={[t('title')]} />
-      <Tabs
-        value={activeTab}
-        onValueChange={(value) => setActiveTab(value as RoomsWorkspaceTab)}
-        className="space-y-5"
-      >
+      <Tabs value={tab} onValueChange={(value) => setTab(value as RoomsTab)} className="space-y-5">
         <TabsList>
           {canReadBeds ? <TabsTrigger value="occupancy">{t('occupancy')}</TabsTrigger> : null}
           {canReadWards ? <TabsTrigger value="wards">{t('wards')}</TabsTrigger> : null}
@@ -59,12 +64,16 @@ export function RoomsWorkspace() {
         ) : null}
         {canReadRooms ? (
           <TabsContent value="rooms">
-            <RoomsPanel onGoToWards={canReadWards ? () => setActiveTab('wards') : undefined} />
+            {/* SJ-159's "create a ward first" prompt sends the user to the ward
+                tab; since SJ-162 that is a URL change, so the trip is in the
+                history and the back button returns to the room they were
+                filling in. */}
+            <RoomsPanel onGoToWards={canReadWards ? () => setTab('wards') : undefined} />
           </TabsContent>
         ) : null}
         {canReadBeds ? (
           <TabsContent value="beds">
-            <BedsPanel onGoToRooms={canReadRooms ? () => setActiveTab('rooms') : undefined} />
+            <BedsPanel onGoToRooms={canReadRooms ? () => setTab('rooms') : undefined} />
           </TabsContent>
         ) : null}
         {canReadClasses ? (
