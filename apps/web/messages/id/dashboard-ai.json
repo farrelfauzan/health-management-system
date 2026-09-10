@@ -350,21 +350,28 @@
     },
     "upload": {
       "title": "Unggah ke basis pengetahuan Anda",
-      "description": "Berkas langsung masuk ke penyimpanan aman. Dokumen baru bisa dipakai menjawab setelah pemrosesan selesai.",
+      "description": "Pilih satu berkas atau lebih. Setiap berkas menjadi dokumen tersendiri dan bisa dipakai menjawab setelah pemrosesan selesai.",
       "fields": {
-        "file": "Berkas",
-        "fileHint": "PDF, Markdown, teks biasa, atau hasil pindai (JPEG, PNG, WebP). Maksimal 20 MB.",
-        "title": "Judul",
-        "language": "Bahasa"
+        "files": "Berkas",
+        "filesHint": "PDF, Markdown, teks biasa, atau hasil pindai (JPEG, PNG, WebP). Maksimal 20 MB per berkas.",
+        "language": "Bahasa",
+        "languageHint": "Berlaku untuk semua berkas pada unggahan ini."
       },
       "languages": {
         "ID": "Indonesia",
         "EN": "Inggris"
       },
+      "selected": "{count, plural, other {# berkas dipilih}}",
+      "outcome": {
+        "recorded": "Terunggah",
+        "failed": "Gagal"
+      },
       "actions": {
         "cancel": "Batal",
-        "upload": "Unggah",
-        "uploading": "Mengunggah…"
+        "remove": "Hapus {name} dari daftar",
+        "upload": "Unggah {count, plural, other {# berkas}}",
+        "uploading": "Mengunggah…",
+        "done": "Selesai"
       },
       "progress": {
         "preparing": "Menyiapkan unggahan…",
@@ -373,11 +380,11 @@
         "complete": "Selesai"
       },
       "errors": {
-        "noFile": "Pilih berkas terlebih dahulu.",
+        "noFiles": "Pilih setidaknya satu berkas.",
         "unsupportedType": "Jenis berkas itu tidak diterima. Gunakan PDF, Markdown, atau teks biasa.",
         "failed": "Unggahan tidak selesai."
       },
-      "success": "Dokumen terunggah. Akan bisa dipakai menjawab setelah pemrosesan selesai."
+      "summary": "{recorded, plural, =0 {Tidak ada dokumen yang terunggah} other {# dokumen terunggah}}, {failed, plural, =0 {tidak ada yang gagal} other {# gagal}}."
     },
     "rename": {
       "title": "Ubah nama dokumen",
