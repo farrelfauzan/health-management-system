@@ -1,5 +1,14 @@
 import { z } from 'zod';
 
+import {
+  districtCodeSchema,
+  postalCodeSchema,
+  provinceCodeSchema,
+  regencyCodeSchema,
+  rtRwSchema,
+  villageCodeSchema,
+} from '#regions/schemas';
+
 export const patientDateSchema = z
   .string()
   .regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must use YYYY-MM-DD format');
@@ -367,10 +376,118 @@ export const listPatientsQuerySchema = z
   );
 
 /**
+ * The structured half of a patient address (P19-T10): the four Kemendagri
+ * codes, RT/RW and the postal code. `address` itself stays the street line.
+ *
+ * The prefix check below is structural — `11.01` cannot be a regency of
+ * province `12` whatever the master data says — and it answers with the same
+ * field-level issue the service raises when a code exists but sits under a
+ * different parent. The update schema applies it; the service applies the
+ * master-data check to every write.
+ */
+export const patientAddressSchema = z.object({
+  provinceCode: provinceCodeSchema,
+  regencyCode: regencyCodeSchema,
+  districtCode: districtCodeSchema,
+  villageCode: villageCodeSchema,
+  rtRw: rtRwSchema.optional(),
+  postalCode: postalCodeSchema.optional(),
+});
+
+export type PatientAddressInput = z.infer<typeof patientAddressSchema>;
+
+type AddressChainPrefixes = {
+  provinceCode?: string | null;
+  regencyCode?: string | null;
+  districtCode?: string | null;
+  villageCode?: string | null;
+};
+
+const ADDRESS_CHAIN_FIELDS = ['provinceCode', 'regencyCode', 'districtCode', 'villageCode'] as const;
+
+type AddressChainField = (typeof ADDRESS_CHAIN_FIELDS)[number];
+
+const ADDRESS_CHAIN_LINKS: ReadonlyArray<{ parent: AddressChainField; child: AddressChainField }> = [
+  { parent: 'provinceCode', child: 'regencyCode' },
+  { parent: 'regencyCode', child: 'districtCode' },
+  { parent: 'districtCode', child: 'villageCode' },
+];
+
+/**
+ * Adds an issue on the first code that does not extend the one above it.
+ * Exported so the API can reuse the wording where it checks the same chain
+ * against the master data.
+ */
+export function addAddressChainPrefixIssues(
+  value: AddressChainPrefixes,
+  context: z.RefinementCtx,
+): void {
+  for (const link of ADDRESS_CHAIN_LINKS) {
+    const parent = value[link.parent];
+    const child = value[link.child];
+    if (!parent || !child) {
+      continue;
+    }
+    if (!child.startsWith(`${parent}.`)) {
+      context.addIssue({
+        code: 'custom',
+        message: `${link.child} does not belong to ${link.parent} ${parent}`,
+        path: [link.child],
+      });
+      return;
+    }
+  }
+}
+
+/**
+ * On an update the codes are optional, but never individually: a chain is
+ * replaced whole or left alone, because a village stored under yesterday's
+ * district is an address nobody can print or send to SATUSEHAT.
+ */
+export function addAddressChainCompletenessIssues(
+  value: AddressChainPrefixes,
+  context: z.RefinementCtx,
+): void {
+  const provided = ADDRESS_CHAIN_FIELDS.filter((field) => value[field] !== undefined);
+  if (provided.length === 0 || provided.length === ADDRESS_CHAIN_FIELDS.length) {
+    return;
+  }
+  for (const field of ADDRESS_CHAIN_FIELDS) {
+    if (value[field] === undefined) {
+      context.addIssue({
+        code: 'custom',
+        message: 'All four region codes must be supplied together',
+        path: [field],
+      });
+    }
+  }
+}
+
+/**
+ * Everything a patient record can be created with, before the front-desk
+ * rule that the address must be structured. The four region codes are
+ * optional here — supplied together and validated as a chain by the service
+ * when they are, absent when they are not.
+ *
+ * They are optional rather than required on every create path, including the
+ * front desk's. Most callers cannot supply them: a BPJS antrean registration
+ * carries a free-text `alamat`, a chat conversion is completed over later
+ * visits, and a legacy import copies what the previous system held. The front
+ * desk could, but its form has no region picker until `P19-T11` adds one, and
+ * requiring the codes here would reject every create the current UI makes.
+ * Tighten this to required once that form ships.
+ *
  * `mrn` is deliberately absent: it is allocated by the server inside the create
  * transaction. A client-supplied MRN can collide with an existing record and
  * nothing stops a caller from inventing a format. Clinics importing MRNs that
  * already exist on paper use {@link importPatientSchema} instead.
+ *
+ * Deliberately a plain object with no chain refinement: the web reads
+ * `createPatientSchema.shape` field by field for its validators, and a
+ * `ZodEffects` has no shape. The service's master-data check catches a
+ * structurally wrong chain anyway — a village whose parent is not the given
+ * district is a mismatch whether or not the prefixes agree — and it is the
+ * service that rejects a partial chain on these optional-code paths.
  */
 export const createPatientSchema = z.object({
   fullName: z.string().trim().min(2).max(120),
@@ -381,7 +498,9 @@ export const createPatientSchema = z.object({
   sex: patientSexSchema,
   status: patientStatusSchema.optional().default('OUT_PATIENT'),
   phoneNumber: z.string().trim().min(6).max(32),
+  /** The street line. The Kemendagri chain lives in the four codes below. */
   address: z.string().trim().min(3).max(300),
+  ...patientAddressSchema.partial().shape,
   // Nullable: newborns have no NIK for weeks, foreign nationals carry a
   // passport or KITAS, and an unidentified emergency arrival needs a record
   // immediately. Never the primary key — `mrn` stays the internal anchor.
@@ -436,6 +555,12 @@ export const updatePatientSchema = z
     status: patientStatusSchema.optional(),
     phoneNumber: z.string().trim().min(6).max(32).optional(),
     address: z.string().trim().min(3).max(300).optional(),
+    provinceCode: provinceCodeSchema.optional(),
+    regencyCode: regencyCodeSchema.optional(),
+    districtCode: districtCodeSchema.optional(),
+    villageCode: villageCodeSchema.optional(),
+    rtRw: rtRwSchema.nullable().optional(),
+    postalCode: postalCodeSchema.nullable().optional(),
     nik: nikSchema.nullable().optional(),
     bpjsNumber: bpjsNumberSchema.nullable().optional(),
     email: z.string().trim().email().max(254).nullable().optional(),
@@ -455,6 +580,8 @@ export const updatePatientSchema = z
     ownerUserId: z.string().uuid().nullable().optional(),
     isActive: z.boolean().optional(),
   })
+  .superRefine(addAddressChainCompletenessIssues)
+  .superRefine(addAddressChainPrefixIssues)
   .refine((payload) => Object.values(payload).some((value) => value !== undefined), {
     message: 'At least one field is required',
   });

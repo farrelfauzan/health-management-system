@@ -18,6 +18,7 @@ const PATIENT: PatientListItem = {
   doctors: [
     { id: 'doctor-1', assignmentId: 'assignment-1', fullName: 'Dr. Budi', specialty: 'Cardiology' },
   ],
+  addressDetails: { formattedAddress: 'Jalan Merdeka No 12' },
 };
 
 const FULL_ACCESS_RULES: AppRule[] = [
