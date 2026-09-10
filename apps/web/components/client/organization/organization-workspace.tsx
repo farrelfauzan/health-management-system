@@ -25,6 +25,7 @@ import { OrganizationUnitMembersDialog } from '#components/client/organization/o
 import { OrganizationUnitMoveDialog } from '#components/client/organization/organization-unit-move-dialog';
 import { OrganizationTreeTable } from '#components/client/organization/organization-tree-table';
 import { PageHeader } from '#components/shared/page-header';
+import { useShellBreadcrumbRoot } from '#lib/navigation/use-shell-breadcrumb-root';
 import { useTabSearchParam } from '#lib/navigation/use-tab-search-param';
 import { ORGANIZATION_TABS, type OrganizationTab } from '#lib/organization/organization-tabs';
 import { useOrganizationTree } from '#lib/organization/use-organization-tree';
@@ -50,6 +51,7 @@ const CLOSED_DIALOG: UnitDialogState = { mode: null, unit: null, parent: null };
  */
 export function OrganizationWorkspace({ initialTab }: OrganizationWorkspaceProps) {
   const t = useTranslations('operations.organization');
+  const root = useShellBreadcrumbRoot();
   const ability = useAbility();
   const { tab, setTab } = useTabSearchParam<OrganizationTab>({
     allowed: ORGANIZATION_TABS,
@@ -70,7 +72,7 @@ export function OrganizationWorkspace({ initialTab }: OrganizationWorkspaceProps
       <PageHeader
         title={t('title')}
         subtitle={canManage ? t('subtitle') : t('readOnlyNotice')}
-        breadcrumbs={[t('title')]}
+        breadcrumbs={[root, { label: t('title') }]}
         actions={
           canManage ? (
             <Button

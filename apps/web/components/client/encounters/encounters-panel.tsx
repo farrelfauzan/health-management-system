@@ -9,6 +9,7 @@ import {
   type EncountersFilterValues,
 } from '#components/client/encounters/encounters-filter-card';
 import { EncountersTable } from '#components/client/encounters/encounters-table';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { NumberedPagination } from '#components/client/shared/numbered-pagination';
 import { PageHeader } from '#components/shared/page-header';
 import {
@@ -16,6 +17,7 @@ import {
   type EncountersSearchParams,
 } from '#lib/encounters/search-params';
 import { useEncountersList } from '#lib/encounters/use-encounters-list';
+import { useShellBreadcrumbRoot } from '#lib/navigation/use-shell-breadcrumb-root';
 
 type EncountersPanelProps = {
   initialQuery: EncountersSearchParams;
@@ -30,6 +32,7 @@ export function EncountersPanel({
   const router = useRouter();
   const pathname = usePathname();
   const t = useTranslations('clinical');
+  const root = useShellBreadcrumbRoot();
   const encountersQuery = useEncountersList(initialQuery);
 
   function navigateWithParams(next: EncountersSearchParams): void {
@@ -55,7 +58,7 @@ export function EncountersPanel({
       <PageHeader
         title={t('encounters.title')}
         subtitle={t('encounters.subtitle')}
-        breadcrumbs={[t('patients.dashboard'), t('encounters.title')]}
+        breadcrumbs={[root, { label: t('encounters.title') }]}
       />
 
       <EncountersFilterCard
@@ -66,9 +69,7 @@ export function EncountersPanel({
       />
 
       {encountersQuery.error && encountersQuery.encounters.length > 0 ? (
-        <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
-          {t('encounters.errorDescription')}
-        </p>
+        <InlineNotice tone="error">{t('encounters.errorDescription')}</InlineNotice>
       ) : null}
 
       <Card className="gap-0 rounded-xl border-slate-200 py-0 shadow-none">

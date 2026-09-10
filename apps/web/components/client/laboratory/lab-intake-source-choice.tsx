@@ -1,5 +1,6 @@
 'use client';
 
+import { Label } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
 type LabIntakeSource = 'WALK_IN' | 'EXTERNAL_REFERRAL';
@@ -22,9 +23,9 @@ export function LabIntakeSourceChoice({ value, onChange, disabled }: LabIntakeSo
   return (
     <div className="grid gap-2 sm:grid-cols-2">
       {SOURCES.map((source) => (
-        <label
+        <Label
           key={source}
-          className={`cursor-pointer rounded-lg border p-3 ${
+          className={`block cursor-pointer rounded-lg border p-3 font-normal leading-normal ${
             value === source ? 'border-primary bg-primary-container/20' : 'border-slate-200'
           }`}
         >
@@ -40,7 +41,7 @@ export function LabIntakeSourceChoice({ value, onChange, disabled }: LabIntakeSo
             {t(source)}
           </span>
           <span className="mt-1 block text-xs text-slate-500">{t(`${source}_HINT`)}</span>
-        </label>
+        </Label>
       ))}
     </div>
   );

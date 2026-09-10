@@ -1,6 +1,6 @@
 'use client';
 
-import { Checkbox } from '@hms/ui';
+import { Checkbox, Label } from '@hms/ui';
 
 import type { VerificationStep } from '#lib/pharmacy/verification-steps';
 
@@ -23,9 +23,9 @@ export function VerificationChecklist({
         Verification Steps
       </p>
       {steps.map((step) => (
-        <label
+        <Label
           key={step.id}
-          className="flex cursor-pointer items-center gap-3 rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-700 transition-colors hover:bg-slate-50"
+          className="flex cursor-pointer items-center gap-3 rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-700 transition-colors hover:bg-slate-50 font-normal"
         >
           <Checkbox
             checked={checkedStepIds.includes(step.id)}
@@ -33,7 +33,7 @@ export function VerificationChecklist({
             onCheckedChange={() => onToggleStep(step.id)}
           />
           {step.label}
-        </label>
+        </Label>
       ))}
     </div>
   );

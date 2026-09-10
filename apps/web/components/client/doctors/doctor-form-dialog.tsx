@@ -29,6 +29,9 @@ import { DoctorLicensesField } from '#components/client/doctors/doctor-licenses-
 import { DoctorPatientPicker } from '#components/client/doctors/doctor-patient-picker';
 import { SpecialtyCombobox } from '#components/client/doctors/specialty-combobox';
 import { FieldError } from '#components/client/shared/field-error';
+import { FormLabel } from '#components/client/shared/form-label';
+import { InlineNotice } from '#components/client/shared/inline-notice';
+import { RequiredLegend } from '#components/client/shared/required-legend';
 import {
   buildEducationPayload,
   buildEmptyEducationRow,
@@ -46,6 +49,7 @@ import {
 import { parseApiSuccess } from '#lib/api/response';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { invalidateDoctorQueries } from '#lib/doctors/invalidate-doctor-queries';
+import { DOCTOR_FORM_REQUIRED_FIELDS } from '#lib/doctors/doctor-form-required-fields';
 import { usePatientsList } from '#lib/patients/use-patients-list';
 import { useSpecialtiesList } from '#lib/specialties/use-specialties-list';
 
@@ -191,14 +195,8 @@ export function DoctorFormDialog({
             void form.handleSubmit();
           }}
         >
-          {formError ? (
-            <p
-              role="alert"
-              className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700"
-            >
-              {formError}
-            </p>
-          ) : null}
+          <RequiredLegend />
+          {formError ? <InlineNotice tone="error">{formError}</InlineNotice> : null}
 
           {!isEditMode ? (
             <form.Field
@@ -207,12 +205,13 @@ export function DoctorFormDialog({
             >
               {(field) => (
                 <div className="space-y-1.5">
-                  <label
+                  <FormLabel
                     htmlFor={field.name}
-                    className="block font-heading text-xs font-medium text-slate-600"
+                    className="font-heading text-xs text-slate-600"
+                    required={DOCTOR_FORM_REQUIRED_FIELDS.has(field.name)}
                   >
                     {t('doctors.form.license')}
-                  </label>
+                  </FormLabel>
                   <Input
                     id={field.name}
                     value={field.state.value}
@@ -230,12 +229,13 @@ export function DoctorFormDialog({
           <form.Field name="fullName" validators={{ onSubmit: createDoctorSchema.shape.fullName }}>
             {(field) => (
               <div className="space-y-1.5">
-                <label
+                <FormLabel
                   htmlFor={field.name}
-                  className="block font-heading text-xs font-medium text-slate-600"
+                  className="font-heading text-xs text-slate-600"
+                  required={DOCTOR_FORM_REQUIRED_FIELDS.has(field.name)}
                 >
                   {t('doctors.form.fullName')}
-                </label>
+                </FormLabel>
                 <Input
                   id={field.name}
                   value={field.state.value}
@@ -256,12 +256,13 @@ export function DoctorFormDialog({
             >
               {(field) => (
                 <div className="space-y-1.5">
-                  <label
+                  <FormLabel
                     htmlFor={field.name}
-                    className="block font-heading text-xs font-medium text-slate-600"
+                    className="font-heading text-xs text-slate-600"
+                    required={DOCTOR_FORM_REQUIRED_FIELDS.has(field.name)}
                   >
                     {t('doctors.form.specialty')}
-                  </label>
+                  </FormLabel>
                   <SpecialtyCombobox
                     id={field.name}
                     specialties={specialtiesQuery.specialties}
@@ -280,12 +281,13 @@ export function DoctorFormDialog({
             >
               {(field) => (
                 <div className="space-y-1.5">
-                  <label
+                  <FormLabel
                     htmlFor={field.name}
-                    className="block font-heading text-xs font-medium text-slate-600"
+                    className="font-heading text-xs text-slate-600"
+                    required={DOCTOR_FORM_REQUIRED_FIELDS.has(field.name)}
                   >
                     {t('doctors.form.phone')}
-                  </label>
+                  </FormLabel>
                   <Input
                     id={field.name}
                     value={field.state.value}
@@ -302,13 +304,13 @@ export function DoctorFormDialog({
 
           <form.Field name="isActive">
             {(field) => (
-              <label className="flex cursor-pointer items-center gap-2.5">
+              <FormLabel className="flex cursor-pointer items-center gap-2.5 font-normal">
                 <Checkbox
                   checked={field.state.value}
                   onCheckedChange={(checked) => field.handleChange(checked === true)}
                 />
                 <span className="text-sm text-slate-700">{t('doctors.form.active')}</span>
-              </label>
+              </FormLabel>
             )}
           </form.Field>
 
@@ -320,12 +322,9 @@ export function DoctorFormDialog({
               <form.Field name="title">
                 {(field) => (
                   <div className="space-y-1.5">
-                    <label
-                      htmlFor={field.name}
-                      className="block font-heading text-xs font-medium text-slate-600"
-                    >
+                    <FormLabel htmlFor={field.name} className="font-heading text-xs text-slate-600">
                       {t('doctors.form.title')}
-                    </label>
+                    </FormLabel>
                     <Input
                       id={field.name}
                       value={field.state.value}
@@ -339,12 +338,9 @@ export function DoctorFormDialog({
               <form.Field name="degrees">
                 {(field) => (
                   <div className="space-y-1.5">
-                    <label
-                      htmlFor={field.name}
-                      className="block font-heading text-xs font-medium text-slate-600"
-                    >
+                    <FormLabel htmlFor={field.name} className="font-heading text-xs text-slate-600">
                       {t('doctors.form.degrees')}
-                    </label>
+                    </FormLabel>
                     <Input
                       id={field.name}
                       value={field.state.value}
@@ -370,12 +366,13 @@ export function DoctorFormDialog({
               >
                 {(field) => (
                   <div className="space-y-1.5">
-                    <label
+                    <FormLabel
                       htmlFor={field.name}
-                      className="block font-heading text-xs font-medium text-slate-600"
+                      className="font-heading text-xs text-slate-600"
+                      required={!isEditMode && DOCTOR_FORM_REQUIRED_FIELDS.has(field.name)}
                     >
                       NIK
-                    </label>
+                    </FormLabel>
                     <Input
                       id={field.name}
                       inputMode="numeric"

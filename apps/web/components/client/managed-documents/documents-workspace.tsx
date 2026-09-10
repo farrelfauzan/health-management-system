@@ -8,6 +8,7 @@ import { DocumentTypesPanel } from '#components/client/document-types/document-t
 import { ManagedDocumentsPanel } from '#components/client/managed-documents/managed-documents-panel';
 import { PageHeader } from '#components/shared/page-header';
 import { DOCUMENTS_TABS, type DocumentsTab } from '#lib/managed-documents/documents-tabs';
+import { useShellBreadcrumbRoot } from '#lib/navigation/use-shell-breadcrumb-root';
 import { useTabSearchParam } from '#lib/navigation/use-tab-search-param';
 
 type DocumentsWorkspaceProps = {
@@ -33,6 +34,7 @@ export function DocumentsWorkspace({
   isApprovalEnabled,
 }: DocumentsWorkspaceProps) {
   const t = useTranslations('operations.documents');
+  const root = useShellBreadcrumbRoot();
   const { tab, setTab } = useTabSearchParam<DocumentsTab>({
     allowed: DOCUMENTS_TABS.filter((candidate) => isApprovalEnabled || candidate !== 'approvals'),
     fallback: 'registry',
@@ -41,7 +43,11 @@ export function DocumentsWorkspace({
 
   return (
     <div className="space-y-6">
-      <PageHeader title={t('title')} subtitle={t('subtitle')} breadcrumbs={[t('title')]} />
+      <PageHeader
+        title={t('title')}
+        subtitle={t('subtitle')}
+        breadcrumbs={[root, { label: t('title') }]}
+      />
       <Tabs
         value={tab}
         onValueChange={(value) => setTab(value as DocumentsTab)}

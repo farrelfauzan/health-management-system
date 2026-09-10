@@ -17,6 +17,7 @@ import { useTranslations } from 'next-intl';
 import { AppointmentParticipantFields } from '#components/client/appointments/appointment-participant-fields';
 import { SessionBookingForm } from '#components/client/appointments/session-booking-form';
 import { SpecialRequestForm } from '#components/client/appointments/special-request-form';
+import { RequiredLegend } from '#components/client/shared/required-legend';
 
 type ScheduleAppointmentDialogProps = {
   open: boolean;
@@ -48,6 +49,7 @@ export function ScheduleAppointmentDialog({
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
+          <RequiredLegend />
           <AppointmentParticipantFields
             patientId={patientId}
             doctorId={doctorId}

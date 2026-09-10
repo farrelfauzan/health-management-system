@@ -1,8 +1,9 @@
 'use client';
 
 import type { DocumentTemplateApprovalView } from '@hms/shared-types';
-import { Icon } from '@hms/ui';
 import { useTranslations } from 'next-intl';
+
+import { InlineNotice } from '#components/client/shared/inline-notice';
 
 type TemplateApprovalBannerProps = {
   approval: DocumentTemplateApprovalView;
@@ -25,28 +26,15 @@ export function TemplateApprovalBanner({ approval, isDirty }: TemplateApprovalBa
 
   if (approval.status === 'PENDING_APPROVAL') {
     return (
-      <div
-        role="status"
-        data-testid="template-approval-pending"
-        className="flex flex-col gap-1 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900"
-      >
-        <span className="flex items-center gap-2 font-medium">
-          <Icon name="hourglass_top" size={18} />
-          {t('pending')}
-        </span>
-        {isDirty ? <span>{t('supersedeWarning')}</span> : null}
-      </div>
+      <InlineNotice tone="warning" title={t('pending')} data-testid="template-approval-pending">
+        {isDirty ? t('supersedeWarning') : null}
+      </InlineNotice>
     );
   }
 
   return (
-    <div
-      role="status"
-      data-testid="template-approval-required"
-      className="flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700"
-    >
-      <Icon name="how_to_reg" size={18} />
+    <InlineNotice tone="info" data-testid="template-approval-required">
       {t('required')}
-    </div>
+    </InlineNotice>
   );
 }

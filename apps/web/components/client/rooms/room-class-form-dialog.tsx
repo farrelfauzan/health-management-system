@@ -17,7 +17,6 @@ import {
   DialogHeader,
   DialogTitle,
   Input,
-  Label,
 } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
@@ -25,6 +24,8 @@ import {
   roomClassControllerCreateRoomClassV1,
   roomClassControllerUpdateRoomClassV1,
 } from '#lib/api/generated/room-management/room-management';
+import { FormLabel } from '#components/client/shared/form-label';
+import { RequiredLegend } from '#components/client/shared/required-legend';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { parseApiSuccess } from '#lib/api/response';
 import { invalidateRoomQueries } from '#lib/rooms/invalidate-room-queries';
@@ -119,9 +120,10 @@ export function RoomClassFormDialog({
           </DialogDescription>
         </DialogHeader>
         <form noValidate className="space-y-4" onSubmit={(event) => void handleSubmit(event)}>
+          <RequiredLegend />
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="room-class-code">{t('rooms.code')}</Label>
+              <FormLabel htmlFor="room-class-code" required={!isEditing}>{t('rooms.code')}</FormLabel>
               <Input
                 id="room-class-code"
                 value={code}
@@ -130,7 +132,7 @@ export function RoomClassFormDialog({
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="room-class-quota">{t('rooms.quota')}</Label>
+              <FormLabel htmlFor="room-class-quota">{t('rooms.quota')}</FormLabel>
               <Input
                 id="room-class-quota"
                 inputMode="numeric"
@@ -142,7 +144,7 @@ export function RoomClassFormDialog({
             </div>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="room-class-name">{t('rooms.name')}</Label>
+            <FormLabel htmlFor="room-class-name" required>{t('rooms.name')}</FormLabel>
             <Input
               id="room-class-name"
               value={name}
@@ -150,7 +152,7 @@ export function RoomClassFormDialog({
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="room-class-description">{t('rooms.description')}</Label>
+            <FormLabel htmlFor="room-class-description">{t('rooms.description')}</FormLabel>
             <Input
               id="room-class-description"
               value={description}
@@ -163,7 +165,7 @@ export function RoomClassFormDialog({
               checked={isActive}
               onCheckedChange={(checked) => setIsActive(checked === true)}
             />
-            <Label htmlFor="room-class-active">{t('rooms.active')}</Label>
+            <FormLabel htmlFor="room-class-active">{t('rooms.active')}</FormLabel>
           </div>
           {actionError ? <p className="text-sm text-danger">{actionError}</p> : null}
           <DialogFooter>

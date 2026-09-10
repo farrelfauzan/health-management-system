@@ -10,6 +10,7 @@ import { ChatThread } from '#components/client/ai-assistant/chat-thread';
 import { ConfidentialDisclaimer } from '#components/client/ai-assistant/confidential-disclaimer';
 import { ConsultationPanelDrawer } from '#components/client/ai-assistant/consultation-panel-drawer';
 import { ConsultationSidebar } from '#components/client/ai-assistant/consultation-sidebar';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { PageHeader } from '#components/shared/page-header';
 import { usePersistedBoolean } from '#hooks/use-persisted-boolean';
 import { useAiAssistant } from '#lib/ai-assistant/ai-assistant-context';
@@ -18,6 +19,7 @@ import type { ConsultationPanelProps } from '#lib/ai-assistant/consultation-pane
 import { buildSuggestedPrompts, type SuggestedPrompt } from '#lib/ai-assistant/suggested-prompts';
 import { useChatAvailability } from '#lib/ai-assistant/use-chat-availability';
 import { useChatSessions } from '#lib/ai-assistant/use-chat-sessions';
+import { useShellBreadcrumbRoot } from '#lib/navigation/use-shell-breadcrumb-root';
 import type { AppLocale } from '../../../i18n/config';
 
 const SIDEBAR_COLLAPSED_STORAGE_KEY = 'hms.ai-assistant.sidebar-collapsed';
@@ -31,6 +33,7 @@ const SIDEBAR_COLLAPSED_STORAGE_KEY = 'hms.ai-assistant.sidebar-collapsed';
 export function AiAssistantPanel() {
   const locale = useLocale() as AppLocale;
   const t = useTranslations('aiAssistant.header');
+  const root = useShellBreadcrumbRoot();
   const tSidebar = useTranslations('aiAssistant.sidebar');
   const tConversation = useTranslations('aiAssistant.conversation');
   const assistant = useAiAssistant();
@@ -95,13 +98,7 @@ export function AiAssistantPanel() {
       <PageHeader
         title={t('title')}
         subtitle={t('subtitle')}
-        // "Advanced" is an admin sidebar section; the doctor shell has no such
-        // group, so naming one there would describe navigation that isn't there.
-        breadcrumbs={
-          assistant.assistantPath?.startsWith('/doctor')
-            ? [t('breadcrumbs.assistant')]
-            : [t('breadcrumbs.advanced'), t('breadcrumbs.assistant')]
-        }
+        breadcrumbs={[root, { label: t('breadcrumbs.assistant') }]}
       />
       {isUnavailable ? <AssistantUnavailableNotice isEnabled={availability.isEnabled} /> : null}
       <section className="flex h-[calc(100vh-16rem)] min-h-[540px] overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
@@ -129,9 +126,9 @@ export function AiAssistantPanel() {
             <span className="text-sm font-medium text-slate-700">{tSidebar('panelTitle')}</span>
           </div>
           {assistant.hasTranscriptFailed ? (
-            <p role="status" className="px-6 pt-4 text-sm text-destructive">
+            <InlineNotice tone="error" className="mx-6 mt-4">
               {tConversation('transcriptFailed')}
-            </p>
+            </InlineNotice>
           ) : null}
           {assistant.isTranscriptLoading ? (
             <p role="status" className="px-6 pt-4 text-sm text-slate-500">

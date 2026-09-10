@@ -7,6 +7,8 @@ import { SPECIAL_REQUEST_MIN_LEAD_DAYS } from '@hms/shared-types';
 import { Button, DatePicker, DialogFooter, Input, Textarea, useAbility } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { FormLabel } from '#components/client/shared/form-label';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { appointmentManagementControllerCreateAppointmentV1 } from '#lib/api/generated/appointment-management/appointment-management';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { parseApiSuccess } from '#lib/api/response';
@@ -81,23 +83,17 @@ export function SpecialRequestForm({
 
   return (
     <div className="space-y-4">
-      {formError ? (
-        <p
-          role="alert"
-          className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700"
-        >
-          {formError}
-        </p>
-      ) : null}
+      {formError ? <InlineNotice tone="error">{formError}</InlineNotice> : null}
 
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5">
-          <label
+          <FormLabel
             htmlFor="special-request-date"
-            className="block font-heading text-xs font-medium text-slate-600"
+            className="font-heading text-xs text-slate-600"
+            required
           >
             Date
-          </label>
+          </FormLabel>
           <DatePicker
             id="special-request-date"
             value={date}
@@ -106,12 +102,13 @@ export function SpecialRequestForm({
           />
         </div>
         <div className="space-y-1.5">
-          <label
+          <FormLabel
             htmlFor="special-request-time"
-            className="block font-heading text-xs font-medium text-slate-600"
+            className="font-heading text-xs text-slate-600"
+            required
           >
             Time
-          </label>
+          </FormLabel>
           <Input
             id="special-request-time"
             type="time"
@@ -122,12 +119,13 @@ export function SpecialRequestForm({
       </div>
 
       <div className="space-y-1.5">
-        <label
+        <FormLabel
           htmlFor="special-request-reason"
-          className="block font-heading text-xs font-medium text-slate-600"
+          className="font-heading text-xs text-slate-600"
+          required
         >
           Reason
-        </label>
+        </FormLabel>
         <Textarea
           id="special-request-reason"
           rows={2}
@@ -138,12 +136,9 @@ export function SpecialRequestForm({
       </div>
 
       <div className="space-y-1.5">
-        <label
-          htmlFor="special-request-notes"
-          className="block font-heading text-xs font-medium text-slate-600"
-        >
+        <FormLabel htmlFor="special-request-notes" className="font-heading text-xs text-slate-600">
           Notes (optional)
-        </label>
+        </FormLabel>
         <Textarea
           id="special-request-notes"
           rows={3}
@@ -153,11 +148,11 @@ export function SpecialRequestForm({
         />
       </div>
 
-      <p className="rounded-lg border border-amber-100 bg-amber-50 px-3 py-2 text-xs text-amber-700">
+      <InlineNotice tone={canApprove ? 'info' : 'warning'}>
         {canApprove
           ? 'You can approve requests, so this appointment is scheduled immediately.'
           : `Special requests need clinic approval and must be made at least ${SPECIAL_REQUEST_MIN_LEAD_DAYS} days in advance.`}
-      </p>
+      </InlineNotice>
 
       <DialogFooter>
         <Button type="button" variant="outline" onClick={onCancel}>

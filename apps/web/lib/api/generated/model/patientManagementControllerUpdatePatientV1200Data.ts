@@ -5,6 +5,7 @@
  * Health Management System API
  * OpenAPI spec version: 1.0.0
  */
+import type { PatientManagementControllerUpdatePatientV1200DataAddressDetails } from './patientManagementControllerUpdatePatientV1200DataAddressDetails';
 
 export type PatientManagementControllerUpdatePatientV1200Data = {
   id: string;
@@ -17,6 +18,7 @@ export type PatientManagementControllerUpdatePatientV1200Data = {
   status: string;
   phoneNumber: string;
   address?: string;
+  addressDetails: PatientManagementControllerUpdatePatientV1200DataAddressDetails;
   nikMasked: string;
   bpjsNumberMasked: string;
   hasSatusehatPatientId: boolean;

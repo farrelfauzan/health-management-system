@@ -3,7 +3,7 @@
 import type { DoctorListItem } from '@hms/shared-types';
 import { useTranslations } from 'next-intl';
 import { MAX_INITIAL_DOCTOR_ASSIGNMENTS } from '@hms/shared-types';
-import { Checkbox, Skeleton } from '@hms/ui';
+import { Checkbox, Label, Skeleton } from '@hms/ui';
 
 type PatientDoctorPickerProps = {
   doctors: DoctorListItem[];
@@ -36,7 +36,7 @@ export function PatientDoctorPicker({
       {doctors.map((doctor) => {
         const isSelected = selectedDoctorIds.includes(doctor.id);
         return (
-          <label key={doctor.id} className="flex cursor-pointer items-center gap-2.5">
+          <Label key={doctor.id} className="flex cursor-pointer items-center gap-2.5 font-normal">
             <Checkbox
               checked={isSelected}
               disabled={!isSelected && isAtLimit}
@@ -44,7 +44,7 @@ export function PatientDoctorPicker({
             />
             <span className="text-sm text-slate-700">{doctor.fullName}</span>
             <span className="text-xs text-slate-400">{doctor.specialty}</span>
-          </label>
+          </Label>
         );
       })}
     </div>

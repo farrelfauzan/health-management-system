@@ -16,8 +16,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  Label,
 } from '@hms/ui';
 
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { doctorPatientControllerAssignDoctorToPatientV1 } from '#lib/api/generated/doctor-patient/doctor-patient';
 import { isApiStatusError } from '#lib/api/is-api-status-error';
 import { parseApiSuccess } from '#lib/api/response';
@@ -90,21 +92,14 @@ export function AssignPatientDialog({
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-3">
-          {assignError ? (
-            <p
-              role="alert"
-              className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700"
-            >
-              {assignError}
-            </p>
-          ) : null}
+          {assignError ? <InlineNotice tone="error">{assignError}</InlineNotice> : null}
           <div className="space-y-1.5">
-            <label
+            <Label
               htmlFor="assign-patient-select"
-              className="block font-heading text-xs font-medium text-slate-600"
+              className="font-heading text-xs text-slate-600"
             >
               {t('patients.title')}
-            </label>
+            </Label>
             <Combobox
               id="assign-patient-select"
               options={selectablePatients.map((patient) => ({

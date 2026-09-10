@@ -27,7 +27,6 @@
     "patients": {
       "title": "Pasien",
       "subtitle": "Kelola rekam pasien, demografi, dan penetapan perawatan.",
-      "dashboard": "Dasbor Utama",
       "add": "Tambah Pasien Baru",
       "assignDoctor": "Tetapkan Dokter",
       "itemLabel": "pasien",
@@ -491,7 +490,6 @@
     "doctors": {
       "title": "Dokter",
       "subtitle": "Kelola profil tenaga medis, kredensial, jadwal, dan penetapan pasien.",
-      "dashboard": "Dasbor Utama",
       "add": "Tambah Dokter Baru",
       "assignPatient": "Tetapkan Pasien",
       "manageSchedule": "Kelola Jadwal",

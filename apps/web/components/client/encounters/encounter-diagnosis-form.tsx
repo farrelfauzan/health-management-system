@@ -6,6 +6,7 @@ import { DIAGNOSIS_TYPES, type AddDiagnosisInput, type DiagnosisResponse } from 
 import {
   Button,
   Input,
+  Label,
   Select,
   SelectContent,
   SelectItem,
@@ -15,6 +16,7 @@ import {
 import { useTranslations } from 'next-intl';
 
 import { CodeSearchPicker } from '#components/client/encounters/code-search-picker';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { encounterClinicalDataControllerAddDiagnosisV1 } from '#lib/api/generated/encounters/encounters';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { parseApiSuccess } from '#lib/api/response';
@@ -78,14 +80,7 @@ export function EncounterDiagnosisForm({
 
   return (
     <form noValidate className="space-y-3" onSubmit={(event) => void handleSubmit(event)}>
-      {actionError ? (
-        <p
-          role="alert"
-          className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700"
-        >
-          {actionError}
-        </p>
-      ) : null}
+      {actionError ? <InlineNotice tone="error">{actionError}</InlineNotice> : null}
       <CodeSearchPicker
         id="diagnosis-code-search"
         label={t('encounters.diagnosis.label')}
@@ -100,12 +95,12 @@ export function EncounterDiagnosisForm({
       />
       <div className="flex flex-wrap items-end gap-3">
         <div className="w-40">
-          <label
+          <Label
             htmlFor="diagnosis-type"
-            className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
+            className="mb-1.5 font-heading text-xs text-slate-600"
           >
             {t('encounters.type')}
-          </label>
+          </Label>
           <Select value={type} onValueChange={setType}>
             <SelectTrigger id="diagnosis-type" className="w-full">
               <SelectValue />
@@ -120,12 +115,12 @@ export function EncounterDiagnosisForm({
           </Select>
         </div>
         <div className="min-w-48 flex-1">
-          <label
+          <Label
             htmlFor="diagnosis-notes"
-            className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
+            className="mb-1.5 font-heading text-xs text-slate-600"
           >
             {t('encounters.notes')}
-          </label>
+          </Label>
           <Input
             id="diagnosis-notes"
             placeholder={t('encounters.diagnosis.notes')}

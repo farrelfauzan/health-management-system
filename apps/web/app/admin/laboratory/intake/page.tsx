@@ -8,6 +8,7 @@ import { PageHeader } from '#components/shared/page-header';
 import { ACCESS_TOKEN_COOKIE_NAME } from '#lib/auth/access-token-cookie';
 import { resolveSessionClaims } from '#lib/auth/session-claims';
 import { SESSION_HINT_COOKIE_NAME } from '#lib/auth/session-hint-cookie';
+import { resolveShellBreadcrumbRoot } from '#lib/navigation/resolve-shell-breadcrumb-root.server';
 import { resolveAppAbilityRules } from '#lib/rbac/app-ability.server';
 import { isFeatureEnabled } from '#lib/shell/is-feature-enabled';
 
@@ -36,13 +37,19 @@ export default async function AdminLaboratoryIntakePage() {
   }
 
   const t = await getTranslations('operations.laboratory.intake');
+  const tWorklist = await getTranslations('operations.laboratory.worklist');
+  const root = await resolveShellBreadcrumbRoot();
 
   return (
     <div className="space-y-6">
       <PageHeader
         title={t('title')}
         subtitle={t('subtitle')}
-        breadcrumbs={[t('title')]}
+        breadcrumbs={[
+          root,
+          { label: tWorklist('title'), href: '/admin/laboratory' },
+          { label: t('title') },
+        ]}
       />
       <LabIntakeWorkspace />
     </div>

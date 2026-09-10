@@ -9,6 +9,7 @@ import { useTranslations } from 'next-intl';
 import { TemplateApprovalPanel } from '#components/client/document-templates/template-approval-panel';
 import { TemplatePreviewDialog } from '#components/client/document-templates/template-preview-dialog';
 import { TemplatePublishErrors } from '#components/client/document-templates/template-publish-errors';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import {
   documentTemplateControllerPreviewTemplateV1,
   documentTemplateControllerPublishTemplateV1,
@@ -145,11 +146,7 @@ export function TemplateEditorActions({
         onSaveDraft={onSaveDraft}
       />
       {previewError ? (
-        <div
-          role="alert"
-          className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700"
-        >
-          <span>{previewError}</span>
+        <InlineNotice tone="error" title={previewError}>
           <Button
             type="button"
             size="sm"
@@ -159,12 +156,19 @@ export function TemplateEditorActions({
           >
             {t('preview.retry')}
           </Button>
-        </div>
+        </InlineNotice>
       ) : null}
       {unknownTokens !== null ? (
-        <TemplatePublishErrors unknownTokens={unknownTokens} onDismiss={() => setUnknownTokens(null)} />
+        <TemplatePublishErrors
+          unknownTokens={unknownTokens}
+          onDismiss={() => setUnknownTokens(null)}
+        />
       ) : null}
-      <TemplatePreviewDialog open={isPreviewOpen} preview={preview} onOpenChange={setIsPreviewOpen} />
+      <TemplatePreviewDialog
+        open={isPreviewOpen}
+        preview={preview}
+        onOpenChange={setIsPreviewOpen}
+      />
     </div>
   );
 }

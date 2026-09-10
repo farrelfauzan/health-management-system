@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { MultiCombobox, type MultiComboboxOption } from '@hms/ui';
+import { Label, MultiCombobox, type MultiComboboxOption } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
 import { useLabPanels } from '#lib/laboratory/use-lab-panels';
@@ -57,7 +57,7 @@ export function EncounterLabTestPicker({
 
   return (
     <div className="grid gap-3 sm:grid-cols-2">
-      <label className="space-y-1 text-sm">
+      <Label className="block space-y-1 text-sm font-normal">
         <span className="font-medium text-slate-700">
           {t('encounters.laboratory.form.panels')}
         </span>
@@ -74,8 +74,8 @@ export function EncounterLabTestPicker({
           searchPlaceholder={t('encounters.laboratory.form.search')}
           emptyMessage={t('encounters.laboratory.form.noMatches')}
         />
-      </label>
-      <label className="space-y-1 text-sm">
+      </Label>
+      <Label className="block space-y-1 text-sm font-normal">
         <span className="font-medium text-slate-700">
           {t('encounters.laboratory.form.tests')}
         </span>
@@ -92,7 +92,7 @@ export function EncounterLabTestPicker({
           searchPlaceholder={t('encounters.laboratory.form.search')}
           emptyMessage={t('encounters.laboratory.form.noMatches')}
         />
-      </label>
+      </Label>
     </div>
   );
 }

@@ -4,8 +4,9 @@ import { useEffect, useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import type { AuthTokens } from '@hms/shared-types';
-import { Button, Input } from '@hms/ui';
+import { Button, Input, Label } from '@hms/ui';
 
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { authControllerAnswerMfaChallengeV1 } from '#lib/api/generated/auth/auth';
 import { parseApiSuccess } from '#lib/api/response';
 import { mfaTicketStore } from '#lib/auth/mfa-ticket-store';
@@ -80,20 +81,13 @@ export function MfaChallengeForm({ ticket, onAuthenticated }: MfaChallengeFormPr
         </p>
       </div>
 
-      {challengeError ? (
-        <p
-          role="alert"
-          className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700"
-        >
-          {challengeError}
-        </p>
-      ) : null}
+      {challengeError ? <InlineNotice tone="error">{challengeError}</InlineNotice> : null}
 
       {isUsingRecoveryCode ? (
         <div className="space-y-1.5">
-          <label htmlFor="mfa-recovery-code" className="block text-xs font-medium text-slate-700">
+          <Label htmlFor="mfa-recovery-code" className="text-xs text-slate-700">
             {t('recoveryCodeLabel')}
-          </label>
+          </Label>
           <Input
             id="mfa-recovery-code"
             name="recoveryCode"
@@ -108,9 +102,9 @@ export function MfaChallengeForm({ ticket, onAuthenticated }: MfaChallengeFormPr
         </div>
       ) : (
         <div className="space-y-1.5">
-          <label htmlFor="mfa-code" className="block text-xs font-medium text-slate-700">
+          <Label htmlFor="mfa-code" className="text-xs text-slate-700">
             {t('codeLabel')}
-          </label>
+          </Label>
           <Input
             id="mfa-code"
             name="code"

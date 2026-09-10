@@ -14,6 +14,7 @@ import {
 } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import {
   encounterControllerCancelEncounterV1,
   encounterControllerCloseEncounterV1,
@@ -82,26 +83,17 @@ export function EncounterTransitionDialog({
           </DialogDescription>
         </DialogHeader>
         {targetStatus === 'FINISHED' && !hasPrimaryDiagnosis ? (
-          <p className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
-            {t('encounters.transition.primaryWarning')}
-          </p>
+          <InlineNotice tone="warning">{t('encounters.transition.primaryWarning')}</InlineNotice>
         ) : null}
         {targetStatus === 'FINISHED' && openLabOrders.length > 0 ? (
-          <p className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+          <InlineNotice tone="warning">
             {t('encounters.transition.openLabWarning', {
               count: openLabOrders.length,
               orderNumbers: openLabOrders.map((order) => order.orderNumber).join(', '),
             })}
-          </p>
+          </InlineNotice>
         ) : null}
-        {actionError ? (
-          <p
-            role="alert"
-            className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700"
-          >
-            {actionError}
-          </p>
-        ) : null}
+        {actionError ? <InlineNotice tone="error">{actionError}</InlineNotice> : null}
         <DialogFooter>
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
             {t('encounters.transition.keepOpen')}

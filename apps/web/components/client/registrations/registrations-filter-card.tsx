@@ -6,6 +6,7 @@ import {
   Button,
   DatePicker,
   Input,
+  Label,
   Select,
   SelectContent,
   SelectItem,
@@ -94,12 +95,12 @@ export function RegistrationsFilterCard({
         }
       >
         <div className="w-full sm:w-56">
-          <label
+          <Label
             htmlFor="registrations-quick-filter"
-            className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
+            className="mb-1.5 font-heading text-xs text-slate-600"
           >
             {t('common.quickFilter')}
-          </label>
+          </Label>
           <Input
             id="registrations-quick-filter"
             placeholder={t('registrations.search')}
@@ -108,12 +109,12 @@ export function RegistrationsFilterCard({
           />
         </div>
         <div className="w-40">
-          <label
+          <Label
             htmlFor="registrations-status-filter"
-            className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
+            className="mb-1.5 font-heading text-xs text-slate-600"
           >
             {t('common.status')}
-          </label>
+          </Label>
           <Select value={status} onValueChange={setStatus}>
             <SelectTrigger id="registrations-status-filter" className="w-full">
               <SelectValue placeholder={t('common.allStatuses')} />
@@ -129,12 +130,12 @@ export function RegistrationsFilterCard({
           </Select>
         </div>
         <div className="w-56">
-          <label
+          <Label
             htmlFor="registrations-doctor-filter"
-            className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
+            className="mb-1.5 font-heading text-xs text-slate-600"
           >
             {t('common.doctor')}
-          </label>
+          </Label>
           <DoctorCombobox
             id="registrations-doctor-filter"
             doctors={doctorsQuery.doctors}

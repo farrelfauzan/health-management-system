@@ -9,6 +9,7 @@ import type {
 } from '@hms/shared-types';
 import { Button, Icon, useAbility } from '@hms/ui';
 
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import {
   invoiceDocumentControllerDownloadDocumentV1,
   invoiceDocumentControllerGetDocumentV1,
@@ -108,18 +109,14 @@ export function InvoiceDocumentActions({ invoice }: InvoiceDocumentActionsProps)
       </div>
 
       {invoiceDocument?.wasBoundRetroactively ? (
-        <p className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+        <InlineNotice tone="warning">
           This invoice predates document templates — its layout was bound retroactively to the
           current template.
-        </p>
+        </InlineNotice>
       ) : null}
 
       {failureReason ? (
-        <div
-          role="alert"
-          className="flex items-center justify-between gap-3 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700"
-        >
-          <span>{failureReason}</span>
+        <InlineNotice tone="error" title={failureReason}>
           {canWriteInvoice && !isDraft ? (
             <Button
               type="button"
@@ -131,7 +128,7 @@ export function InvoiceDocumentActions({ invoice }: InvoiceDocumentActionsProps)
               Retry
             </Button>
           ) : null}
-        </div>
+        </InlineNotice>
       ) : null}
 
       <div className="flex items-center justify-end gap-2">

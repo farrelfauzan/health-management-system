@@ -27,7 +27,6 @@
     "patients": {
       "title": "Patients",
       "subtitle": "Manage patient records, demographics, and care assignments.",
-      "dashboard": "Main Dashboard",
       "add": "Add New Patient",
       "assignDoctor": "Assign Doctor",
       "itemLabel": "patients",
@@ -491,7 +490,6 @@
     "doctors": {
       "title": "Doctors",
       "subtitle": "Manage practitioner profiles, credentials, schedules, and patient assignments.",
-      "dashboard": "Main Dashboard",
       "add": "Add New Doctor",
       "assignPatient": "Assign Patient",
       "manageSchedule": "Manage Schedule",

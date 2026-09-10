@@ -19,6 +19,7 @@ function buildPatient(overrides: Partial<PatientListItem> = {}): PatientListItem
         specialty: 'Cardiology',
       },
     ],
+    addressDetails: { formattedAddress: 'Jalan Merdeka No 12' },
     ...overrides,
   };
 }

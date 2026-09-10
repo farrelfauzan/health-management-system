@@ -2,6 +2,8 @@
 
 import { useTranslations } from 'next-intl';
 
+import { InlineNotice } from '#components/client/shared/inline-notice';
+
 /**
  * Shown when the drafter has named only themselves on a type whose
  * `allowSelfApproval` is off (FR-E5-14).
@@ -14,9 +16,5 @@ import { useTranslations } from 'next-intl';
 export function SelfApprovalNotice() {
   const t = useTranslations('operations.documents.approvals.submit');
 
-  return (
-    <p role="alert" className="rounded-lg bg-amber-50 px-4 py-3 text-sm text-amber-900">
-      {t('selfApprovalOnly')}
-    </p>
-  );
+  return <InlineNotice tone="warning">{t('selfApprovalOnly')}</InlineNotice>;
 }

@@ -2,6 +2,8 @@
 
 import { useTranslations } from 'next-intl';
 
+import { InlineNotice } from '#components/client/shared/inline-notice';
+
 /**
  * The rule that keeps a personal knowledge base inside risk class A
  * (ai-chatbot-tools.md §5.1 A): **no patient data in a knowledge base.**
@@ -20,12 +22,8 @@ export function NoPatientDataNotice() {
   const t = useTranslations('personalKnowledgeBase.notice');
 
   return (
-    <div
-      role="note"
-      className="rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900"
-    >
-      <p className="font-medium">{t('title')}</p>
-      <p className="mt-1">{t('body')}</p>
-    </div>
+    <InlineNotice tone="warning" title={t('title')}>
+      {t('body')}
+    </InlineNotice>
   );
 }
