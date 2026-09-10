@@ -8,7 +8,7 @@ import {
   type UserInvitationAcceptedView,
   type UserInvitationPreview,
 } from '@hms/shared-types';
-import { Button, Card, CardContent, Input, Label } from '@hms/ui';
+import { Button, Card, CardContent, Label } from '@hms/ui';
 import Link from 'next/link';
 import { useFormatter, useTranslations } from 'next-intl';
 
@@ -19,6 +19,7 @@ import {
   userInvitationPublicControllerAcceptInvitationV1,
   userInvitationPublicControllerPreviewInvitationV1,
 } from '#lib/api/generated/admin-management/admin-management';
+import { LocalizedPasswordInput } from '#components/client/shared/localized-password-input';
 import { resolveApiErrorMessage } from '#lib/api/resolve-api-error-message';
 import { parseApiSuccess } from '#lib/api/response';
 import { useApiQuery } from '#lib/api/use-api-query';
@@ -145,15 +146,11 @@ export function AcceptInvitationCard({ token }: AcceptInvitationCardProps) {
           >
             {(field) => (
               <div className="space-y-1.5">
-                <Label
-                  htmlFor={field.name}
-                  className="font-heading text-xs text-slate-600"
-                >
+                <Label htmlFor={field.name} className="font-heading text-xs text-slate-600">
                   {t('passwordLabel')}
                 </Label>
-                <Input
+                <LocalizedPasswordInput
                   id={field.name}
-                  type="password"
                   autoComplete="new-password"
                   value={field.state.value}
                   onChange={(event) => field.handleChange(event.target.value)}
@@ -175,15 +172,11 @@ export function AcceptInvitationCard({ token }: AcceptInvitationCardProps) {
               >
                 {(field) => (
                   <div className="space-y-1.5">
-                    <Label
-                      htmlFor={field.name}
-                      className="font-heading text-xs text-slate-600"
-                    >
+                    <Label htmlFor={field.name} className="font-heading text-xs text-slate-600">
                       {t('confirmPasswordLabel')}
                     </Label>
-                    <Input
+                    <LocalizedPasswordInput
                       id={field.name}
-                      type="password"
                       autoComplete="new-password"
                       value={field.state.value}
                       onChange={(event) => field.handleChange(event.target.value)}

@@ -34,6 +34,7 @@ import {
   bpjsPcareConfigControllerUpsertConfigV1,
   getBpjsPcareConfigControllerGetConfigV1QueryKey,
 } from '#lib/api/generated/bpjs-pcare/bpjs-pcare';
+import { LocalizedPasswordInput } from '#components/client/shared/localized-password-input';
 import { isApiStatusError } from '#lib/api/is-api-status-error';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { parseApiSuccess } from '#lib/api/response';
@@ -229,9 +230,8 @@ export function BpjsSettingsPanel() {
               <Label htmlFor="bpjs-secret">
                 Secret key {config?.hasSecretKey ? `(saved ····${config.secretKeyLast4})` : ''}
               </Label>
-              <Input
+              <LocalizedPasswordInput
                 id="bpjs-secret"
-                type="password"
                 required={!config?.hasSecretKey}
                 autoComplete="new-password"
                 placeholder={config?.hasSecretKey ? t('keepSecret') : undefined}
@@ -243,9 +243,8 @@ export function BpjsSettingsPanel() {
               <Label htmlFor="bpjs-user-key">
                 User key {config?.hasUserKey ? `(saved ····${config.userKeyLast4})` : ''}
               </Label>
-              <Input
+              <LocalizedPasswordInput
                 id="bpjs-user-key"
-                type="password"
                 required={!config?.hasUserKey}
                 autoComplete="new-password"
                 placeholder={config?.hasUserKey ? t('keepSecret') : undefined}
@@ -257,9 +256,8 @@ export function BpjsSettingsPanel() {
               <Label htmlFor="bpjs-password">
                 PCare password {config?.hasPcarePassword ? '(saved)' : ''}
               </Label>
-              <Input
+              <LocalizedPasswordInput
                 id="bpjs-password"
-                type="password"
                 required={!config?.hasPcarePassword}
                 autoComplete="new-password"
                 placeholder={config?.hasPcarePassword ? t('keepSecret') : undefined}

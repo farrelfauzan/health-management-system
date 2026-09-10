@@ -34,6 +34,7 @@ import {
   bpjsAntreanConfigControllerUpsertConfigV1,
   getBpjsAntreanConfigControllerGetConfigV1QueryKey,
 } from '#lib/api/generated/bpjs-antrean/bpjs-antrean';
+import { LocalizedPasswordInput } from '#components/client/shared/localized-password-input';
 import { isApiStatusError } from '#lib/api/is-api-status-error';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { parseApiSuccess } from '#lib/api/response';
@@ -221,9 +222,8 @@ export function BpjsAntreanSettingsPanel() {
                 {t('antrean.secretKey')}{' '}
                 {config?.hasSecretKey ? `(····${config.secretKeyLast4})` : ''}
               </Label>
-              <Input
+              <LocalizedPasswordInput
                 id="bpjs-antrean-secret"
-                type="password"
                 required={!config?.hasSecretKey}
                 autoComplete="new-password"
                 placeholder={config?.hasSecretKey ? t('keepSecret') : undefined}
@@ -235,9 +235,8 @@ export function BpjsAntreanSettingsPanel() {
               <Label htmlFor="bpjs-antrean-user-key">
                 {t('antrean.userKey')} {config?.hasUserKey ? `(····${config.userKeyLast4})` : ''}
               </Label>
-              <Input
+              <LocalizedPasswordInput
                 id="bpjs-antrean-user-key"
-                type="password"
                 required={!config?.hasUserKey}
                 autoComplete="new-password"
                 placeholder={config?.hasUserKey ? t('keepSecret') : undefined}
@@ -259,9 +258,8 @@ export function BpjsAntreanSettingsPanel() {
               <Label htmlFor="bpjs-antrean-inbound-password">
                 {t('antrean.inboundPassword')} {config?.hasInboundPassword ? '(saved)' : ''}
               </Label>
-              <Input
+              <LocalizedPasswordInput
                 id="bpjs-antrean-inbound-password"
-                type="password"
                 autoComplete="new-password"
                 placeholder={config?.hasInboundPassword ? t('keepSecret') : undefined}
                 value={form.inboundPassword}

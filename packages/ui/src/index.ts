@@ -25,6 +25,7 @@ export {
 } from '#components/command';
 export { DatePicker } from '#components/date-picker';
 export { Input } from '#components/input';
+export { PasswordInput } from '#components/password-input';
 export { PhoneInput } from '#components/phone-input';
 export {
   Select,

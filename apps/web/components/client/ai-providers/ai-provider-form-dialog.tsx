@@ -30,6 +30,7 @@ import {
   aiProviderControllerCreateConfigV1,
   aiProviderControllerUpdateConfigV1,
 } from '#lib/api/generated/ai-chatbot/ai-chatbot';
+import { LocalizedPasswordInput } from '#components/client/shared/localized-password-input';
 import { resolveApiErrorMessage } from '#lib/api/resolve-api-error-message';
 import { AI_PROVIDER_MODEL_PLACEHOLDERS } from '#lib/ai-providers/ai-provider-model-placeholders';
 import { invalidateAiProviderQueries } from '#lib/ai-providers/invalidate-ai-provider-queries';
@@ -150,9 +151,8 @@ export function AiProviderFormDialog({
           </div>
           <div className="space-y-2">
             <Label htmlFor="ai-provider-api-key">{t('apiKey')}</Label>
-            <Input
+            <LocalizedPasswordInput
               id="ai-provider-api-key"
-              type="password"
               autoComplete="off"
               value={apiKey}
               placeholder={config?.hasApiKey ? `••••${config.apiKeyHint}` : ''}

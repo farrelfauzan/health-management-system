@@ -70,6 +70,10 @@
       "required": "wajib diisi",
       "requiredLegend": "Wajib diisi",
       "moreAbout": "Selengkapnya tentang {field}"
+    },
+    "password": {
+      "show": "Tampilkan kata sandi",
+      "hide": "Sembunyikan kata sandi"
     }
   }
 }
