@@ -6,8 +6,14 @@ import { DocumentsWorkspace } from '#components/client/managed-documents/documen
 import { ACCESS_TOKEN_COOKIE_NAME } from '#lib/auth/access-token-cookie';
 import { resolveSessionClaims } from '#lib/auth/session-claims';
 import { SESSION_HINT_COOKIE_NAME } from '#lib/auth/session-hint-cookie';
+import { DOCUMENTS_TABS } from '#lib/managed-documents/documents-tabs';
+import { parseTabSearchParam } from '#lib/navigation/parse-tab-search-param';
 import { resolveAppAbilityRules } from '#lib/rbac/app-ability.server';
 import { isFeatureEnabled } from '#lib/shell/is-feature-enabled';
+
+type AdminDocumentsPageProps = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
 
 /**
  * The documents module (`P16-T31`): the registry, the caller's own approval
@@ -19,7 +25,8 @@ import { isFeatureEnabled } from '#lib/shell/is-feature-enabled';
  * established that this is an admin session; this decides only whether the
  * feature is theirs.
  */
-export default async function AdminDocumentsPage() {
+export default async function AdminDocumentsPage({ searchParams }: AdminDocumentsPageProps) {
+  const params = await searchParams;
   const cookieStore = await cookies();
   const claims = resolveSessionClaims({
     accessToken: cookieStore.get(ACCESS_TOKEN_COOKIE_NAME)?.value,
@@ -34,6 +41,7 @@ export default async function AdminDocumentsPage() {
   return (
     <DocumentsWorkspace
       currentUserId={claims?.sub ?? null}
+      initialTab={parseTabSearchParam(params.tab, DOCUMENTS_TABS)}
       isApprovalEnabled={isFeatureEnabled(claims, 'document-approval')}
     />
   );

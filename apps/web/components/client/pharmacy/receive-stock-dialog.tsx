@@ -23,6 +23,7 @@ import { useTranslations } from 'next-intl';
 
 import { FieldDescription } from '#components/client/shared/field-description';
 import { FormLabel } from '#components/client/shared/form-label';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { RequiredLegend } from '#components/client/shared/required-legend';
 import { inventoryControllerCreateReceiptV1 } from '#lib/api/generated/pharmacy-inventory/pharmacy-inventory';
 import type { CreateStockReceiptDto } from '#lib/api/generated/model/createStockReceiptDto';
@@ -102,22 +103,54 @@ export function ReceiveStockDialog({
           </DialogHeader>
           <div className="space-y-4 py-5">
             <RequiredLegend />
-            {error ? <p role="alert" className="rounded-lg bg-rose-50 p-3 text-sm text-rose-700">{error}</p> : null}
-            <div className="space-y-1.5"><FormLabel htmlFor="receive-stock-medication" required>{t('medication')}</FormLabel><Select value={medicationId} onValueChange={setMedicationId}><SelectTrigger id="receive-stock-medication" className="w-full"><SelectValue placeholder={t('selectMedication')} /></SelectTrigger><SelectContent>{medications.map((medication) => <SelectItem key={medication.id} value={medication.id}>{medication.code} · {medication.name}</SelectItem>)}</SelectContent></Select></div>
+            {error ? <InlineNotice tone="error">{error}</InlineNotice> : null}
+            <div className="space-y-1.5">
+              <FormLabel htmlFor="receive-stock-medication" required>
+                {t('medication')}
+              </FormLabel>
+              <Select value={medicationId} onValueChange={setMedicationId}>
+                <SelectTrigger id="receive-stock-medication" className="w-full">
+                  <SelectValue placeholder={t('selectMedication')} />
+                </SelectTrigger>
+                <SelectContent>
+                  {medications.map((medication) => (
+                    <SelectItem key={medication.id} value={medication.id}>
+                      {medication.code} · {medication.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1.5">
-                <FormLabel htmlFor="receive-stock-batch-number" required>{t('batchNumber')}</FormLabel>
+                <FormLabel htmlFor="receive-stock-batch-number" required>
+                  {t('batchNumber')}
+                </FormLabel>
                 <Input
                   id="receive-stock-batch-number"
                   aria-describedby="receive-stock-batch-number-description"
                   value={batchNumber}
                   onChange={(event) => setBatchNumber(event.target.value)}
                 />
-                <FieldDescription id="receive-stock-batch-number-description">{t('batchNumberDescription')}</FieldDescription>
+                <FieldDescription id="receive-stock-batch-number-description">
+                  {t('batchNumberDescription')}
+                </FieldDescription>
               </div>
-              <div className="space-y-1.5"><FormLabel htmlFor="receive-stock-expiry-date" required>{t('expiryDate')}</FormLabel><Input id="receive-stock-expiry-date" type="date" value={expiryDate} onChange={(event) => setExpiryDate(event.target.value)} /></div>
               <div className="space-y-1.5">
-                <FormLabel htmlFor="receive-stock-quantity" required>{t('quantity')}</FormLabel>
+                <FormLabel htmlFor="receive-stock-expiry-date" required>
+                  {t('expiryDate')}
+                </FormLabel>
+                <Input
+                  id="receive-stock-expiry-date"
+                  type="date"
+                  value={expiryDate}
+                  onChange={(event) => setExpiryDate(event.target.value)}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <FormLabel htmlFor="receive-stock-quantity" required>
+                  {t('quantity')}
+                </FormLabel>
                 <Input
                   id="receive-stock-quantity"
                   type="number"
@@ -127,7 +160,9 @@ export function ReceiveStockDialog({
                   value={quantity}
                   onChange={(event) => setQuantity(event.target.value)}
                 />
-                <FieldDescription id="receive-stock-quantity-description">{t('quantityDescription')}</FieldDescription>
+                <FieldDescription id="receive-stock-quantity-description">
+                  {t('quantityDescription')}
+                </FieldDescription>
               </div>
               <div className="space-y-1.5">
                 <FormLabel htmlFor="receive-stock-received-at">{t('receivedAt')}</FormLabel>
@@ -138,7 +173,9 @@ export function ReceiveStockDialog({
                   value={receivedAt}
                   onChange={(event) => setReceivedAt(event.target.value)}
                 />
-                <FieldDescription id="receive-stock-received-at-description">{t('receivedAtDescription')}</FieldDescription>
+                <FieldDescription id="receive-stock-received-at-description">
+                  {t('receivedAtDescription')}
+                </FieldDescription>
               </div>
             </div>
             <div className="space-y-1.5">
@@ -153,8 +190,12 @@ export function ReceiveStockDialog({
             </div>
           </div>
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>{t('cancel')}</Button>
-            <Button type="submit" disabled={receiveMutation.isPending}>{receiveMutation.isPending ? t('receiving') : t('receiveStock')}</Button>
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+              {t('cancel')}
+            </Button>
+            <Button type="submit" disabled={receiveMutation.isPending}>
+              {receiveMutation.isPending ? t('receiving') : t('receiveStock')}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

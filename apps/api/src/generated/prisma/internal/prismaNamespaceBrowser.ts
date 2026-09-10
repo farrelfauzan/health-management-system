@@ -66,6 +66,7 @@ export const ModelName = {
   DocumentDelivery: 'DocumentDelivery',
   DocumentDeliveryLink: 'DocumentDeliveryLink',
   PatientAllergy: 'PatientAllergy',
+  DoctorCredentialOption: 'DoctorCredentialOption',
   Specialty: 'Specialty',
   DoctorProfile: 'DoctorProfile',
   DoctorEducation: 'DoctorEducation',
@@ -154,7 +155,11 @@ export const ModelName = {
   LabResult: 'LabResult',
   LaboratorySettings: 'LaboratorySettings',
   LabReport: 'LabReport',
-  Immunization: 'Immunization'
+  Immunization: 'Immunization',
+  Province: 'Province',
+  Regency: 'Regency',
+  District: 'District',
+  Village: 'Village'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -227,7 +232,8 @@ export const UserInvitationScalarFieldEnum = {
   consumedAt: 'consumedAt',
   revokedAt: 'revokedAt',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  doctorProfileId: 'doctorProfileId'
 } as const
 
 export type UserInvitationScalarFieldEnum = (typeof UserInvitationScalarFieldEnum)[keyof typeof UserInvitationScalarFieldEnum]
@@ -292,6 +298,12 @@ export const PatientProfileScalarFieldEnum = {
   status: 'status',
   phoneNumber: 'phoneNumber',
   address: 'address',
+  provinceCode: 'provinceCode',
+  regencyCode: 'regencyCode',
+  districtCode: 'districtCode',
+  villageCode: 'villageCode',
+  rtRw: 'rtRw',
+  postalCode: 'postalCode',
   ownerUserId: 'ownerUserId',
   isActive: 'isActive',
   createdAt: 'createdAt',
@@ -430,6 +442,21 @@ export const PatientAllergyScalarFieldEnum = {
 } as const
 
 export type PatientAllergyScalarFieldEnum = (typeof PatientAllergyScalarFieldEnum)[keyof typeof PatientAllergyScalarFieldEnum]
+
+
+export const DoctorCredentialOptionScalarFieldEnum = {
+  id: 'id',
+  kind: 'kind',
+  code: 'code',
+  label: 'label',
+  sortOrder: 'sortOrder',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type DoctorCredentialOptionScalarFieldEnum = (typeof DoctorCredentialOptionScalarFieldEnum)[keyof typeof DoctorCredentialOptionScalarFieldEnum]
 
 
 export const SpecialtyScalarFieldEnum = {
@@ -1943,6 +1970,53 @@ export const ImmunizationScalarFieldEnum = {
 } as const
 
 export type ImmunizationScalarFieldEnum = (typeof ImmunizationScalarFieldEnum)[keyof typeof ImmunizationScalarFieldEnum]
+
+
+export const ProvinceScalarFieldEnum = {
+  code: 'code',
+  name: 'name',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProvinceScalarFieldEnum = (typeof ProvinceScalarFieldEnum)[keyof typeof ProvinceScalarFieldEnum]
+
+
+export const RegencyScalarFieldEnum = {
+  code: 'code',
+  name: 'name',
+  provinceCode: 'provinceCode',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RegencyScalarFieldEnum = (typeof RegencyScalarFieldEnum)[keyof typeof RegencyScalarFieldEnum]
+
+
+export const DistrictScalarFieldEnum = {
+  code: 'code',
+  name: 'name',
+  regencyCode: 'regencyCode',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DistrictScalarFieldEnum = (typeof DistrictScalarFieldEnum)[keyof typeof DistrictScalarFieldEnum]
+
+
+export const VillageScalarFieldEnum = {
+  code: 'code',
+  name: 'name',
+  districtCode: 'districtCode',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type VillageScalarFieldEnum = (typeof VillageScalarFieldEnum)[keyof typeof VillageScalarFieldEnum]
 
 
 export const SortOrder = {

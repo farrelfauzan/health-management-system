@@ -40,7 +40,7 @@ Identifier storage and MRN allocation are specified in [patient-identifiers.md](
 4. `P7-T04` Migration + schema: profile fields clinics expect on doctor listings.
    - `specialty` (enum or reference table: umum, gigi, spesialis codes), `title`/`degrees` (e.g. `dr., Sp.PD`).
    - `DoctorEducation` child table: institution, degree, fieldOfStudy, graduationYear (SATUSEHAT `Practitioner.qualification` maps from this + licenses).
-   - `phoneNumber`, `email` on DoctorProfile (SATUSEHAT Practitioner requires at least one ContactPoint).
+   - `phoneNumber` on DoctorProfile (SATUSEHAT Practitioner requires at least one ContactPoint). **Email is not a DoctorProfile column** and never became one: it is entered at creation and owned by `User`. Since `P19-T15` the create-doctor form takes an email and, in the same request, creates or attaches the linked account — an existing address is attached and granted DOCTOR, an unknown one gets the standard invitation bound to the new profile, and accepting it links `ownerUserId`. Changing an address afterwards stays an Administration action on the account, so the edit form shows it read-only.
 
 ### 2.3 Medication fields (`P7-T05`)
 

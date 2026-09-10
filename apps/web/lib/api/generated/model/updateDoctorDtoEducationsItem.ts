@@ -18,8 +18,9 @@ export type UpdateDoctorDtoEducationsItem = {
      */
   degree: string;
   /**
-     * @minLength 2
-     * @maxLength 120
+     * @minLength 1
+     * @maxLength 64
+     * @pattern ^[A-Z][A-Z0-9_]*$
      */
   fieldOfStudy?: string;
   /**

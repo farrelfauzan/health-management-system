@@ -1,6 +1,6 @@
-import { PatientsDirectoryPanel } from '#components/client/patients/patients-directory-panel';
-import { ActiveAlertCard } from '#components/server/patients/active-alert-card';
-import { AdmissionTrendsCard } from '#components/server/patients/admission-trends-card';
+import { PatientsWorkspace } from '#components/client/patients/patients-workspace';
+import { parseTabSearchParam } from '#lib/navigation/parse-tab-search-param';
+import { PATIENTS_TABS } from '#lib/patients/patients-tabs';
 import { parsePatientsSearchParams } from '#lib/patients/search-params';
 
 type AdminPatientsPageProps = {
@@ -8,15 +8,13 @@ type AdminPatientsPageProps = {
 };
 
 export default async function AdminPatientsPage({ searchParams }: AdminPatientsPageProps) {
-  const query = parsePatientsSearchParams(await searchParams);
+  const params = await searchParams;
+  const query = parsePatientsSearchParams(params);
 
   return (
-    <div className="space-y-6">
-      <PatientsDirectoryPanel initialQuery={query} />
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-        <AdmissionTrendsCard />
-        <ActiveAlertCard />
-      </div>
-    </div>
+    <PatientsWorkspace
+      initialQuery={query}
+      initialTab={parseTabSearchParam(params.tab, PATIENTS_TABS)}
+    />
   );
 }

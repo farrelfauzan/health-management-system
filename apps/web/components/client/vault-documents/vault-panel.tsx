@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Button, Card, CardContent, Icon, useAbility } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { NotUsedByAssistantNotice } from '#components/client/vault-documents/not-used-by-assistant-notice';
 import { VaultDocumentUploadDialog } from '#components/client/vault-documents/vault-document-upload-dialog';
 import { VaultDocumentsFilterBar } from '#components/client/vault-documents/vault-documents-filter-bar';
@@ -13,6 +14,7 @@ import { CursorPagination } from '#components/client/shared/cursor-pagination';
 import { SharedWithMePanel } from '#components/client/vault-shares/shared-with-me-panel';
 import { EmptyState } from '#components/shared/empty-state';
 import { PageHeader } from '#components/shared/page-header';
+import { useShellBreadcrumbRoot } from '#lib/navigation/use-shell-breadcrumb-root';
 import type { VaultDocumentsFilters } from '#lib/vault-documents/use-vault-documents';
 import { useVaultDocumentsPage } from '#lib/vault-documents/use-vault-documents-page';
 
@@ -33,6 +35,7 @@ import { useVaultDocumentsPage } from '#lib/vault-documents/use-vault-documents-
  */
 export function VaultPanel() {
   const t = useTranslations('vault');
+  const root = useShellBreadcrumbRoot();
   const ability = useAbility();
   // Visibility only, and scope-blind: this decides whether the button
   // renders, the API decides whether an upload is accepted. An offboarded
@@ -68,7 +71,7 @@ export function VaultPanel() {
       <PageHeader
         title={t('header.title')}
         subtitle={t('header.subtitle')}
-        breadcrumbs={[t('header.breadcrumbs.you'), t('header.breadcrumbs.documents')]}
+        breadcrumbs={[root, { label: t('header.breadcrumbs.documents') }]}
         actions={
           <>
             {/* Disabled only when the vault itself is empty — a filter that
@@ -90,19 +93,17 @@ export function VaultPanel() {
           and is looking at their documents is exactly who benefits from being
           reminded who can and cannot read them. */}
       <NotUsedByAssistantNotice />
-      {notice ? (
-        <p className="rounded-lg bg-emerald-50 px-4 py-3 text-sm text-emerald-900">{notice}</p>
-      ) : null}
-      {error ? (
-        <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-900">{error}</p>
-      ) : null}
+      {notice ? <InlineNotice tone="success">{notice}</InlineNotice> : null}
+      {error ? <InlineNotice tone="error">{error}</InlineNotice> : null}
       <Card className="gap-0 rounded-xl border-slate-200 py-0 shadow-none">
         <CardContent className="p-0">
           <VaultDocumentsFilterBar filters={filters} onChange={handleFiltersChange} />
           {documentsQuery.isLoading ? (
             <p className="p-6 text-sm text-slate-500">{t('states.loading')}</p>
           ) : documentsQuery.isError ? (
-            <p className="p-6 text-sm text-red-700">{t('states.error')}</p>
+            <InlineNotice tone="error" className="m-6">
+              {t('states.error')}
+            </InlineNotice>
           ) : rows.length === 0 && hasFilters ? (
             <EmptyState
               icon="search_off"

@@ -3,9 +3,8 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { ROOM_OPTION_LIST_LIMIT } from '#lib/rooms/option-list-limit';
 import { useWardsList } from '#lib/rooms/use-wards-list';
-
-const WARD_OPTIONS_LIMIT = 100;
 
 const ALL_WARDS_VALUE = 'all';
 
@@ -21,14 +20,12 @@ type WardFilterSelectProps = {
  */
 export function WardFilterSelect({ value, onChange }: WardFilterSelectProps) {
   const t = useTranslations('operations.rooms');
-  const wardsQuery = useWardsList({ page: 1, limit: WARD_OPTIONS_LIMIT, isActive: 'true' });
+  const wardsQuery = useWardsList({ page: 1, limit: ROOM_OPTION_LIST_LIMIT, isActive: 'true' });
 
   return (
     <Select
       value={value ?? ALL_WARDS_VALUE}
-      onValueChange={(nextValue) =>
-        onChange(nextValue === ALL_WARDS_VALUE ? undefined : nextValue)
-      }
+      onValueChange={(nextValue) => onChange(nextValue === ALL_WARDS_VALUE ? undefined : nextValue)}
     >
       <SelectTrigger className="w-56" aria-label={t('ward')}>
         <SelectValue placeholder={t('allWards')} />

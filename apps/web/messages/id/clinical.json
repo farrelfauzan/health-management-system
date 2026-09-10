@@ -27,7 +27,6 @@
     "patients": {
       "title": "Pasien",
       "subtitle": "Kelola rekam pasien, demografi, dan penetapan perawatan.",
-      "dashboard": "Dasbor Utama",
       "add": "Tambah Pasien Baru",
       "assignDoctor": "Tetapkan Dokter",
       "itemLabel": "pasien",
@@ -45,7 +44,8 @@
         "id": "ID Pasien",
         "lastVisit": "Kunjungan Terakhir",
         "lastVisitHelp": "Menampilkan pembaruan rekam terakhir hingga data kunjungan tersedia.",
-        "doctor": "Dokter yang Ditetapkan"
+        "doctor": "Dokter yang Ditetapkan",
+        "address": "Alamat"
       },
       "unassigned": "Belum ditetapkan",
       "sex": {
@@ -131,14 +131,6 @@
       "doctorRequired": "Pilih dokter yang akan ditetapkan.",
       "doctorDuplicate": "Dokter ini sudah ditetapkan kepada pasien.",
       "assignDoctorError": "Dokter gagal ditetapkan. Silakan coba lagi.",
-      "sample": "Contoh",
-      "activeAlert": "Peringatan Aktif",
-      "alertHeadline": "Kapasitas unit gawat darurat telah mencapai 95%",
-      "alertRecommendation": "Rekomendasi: Arahkan kasus tidak mendesak ke unit rawat jalan.",
-      "admissionTrends": "Tren Penerimaan",
-      "admissionSummary": "Okupansi naik 12% dibandingkan minggu lalu.",
-      "sampleData": "data contoh",
-      "admissionChartLabel": "Grafik contoh tren penerimaan",
       "csv": {
         "patientId": "ID Pasien",
         "fullName": "Nama Lengkap",
@@ -167,7 +159,6 @@
         "selectSex": "Pilih jenis kelamin",
         "selectStatus": "Pilih status",
         "phone": "Nomor Telepon",
-        "address": "Alamat",
         "identifiers": "Identitas Nasional",
         "identifierHelp": "NIK dan nomor BPJS tersimpan terenkripsi dan tersamar. Biarkan kosong untuk mempertahankan nilai; isi hanya untuk menggantinya.",
         "digits16": "16 digit",
@@ -186,7 +177,34 @@
         "guardianName": "Nama Penanggung Jawab",
         "relation": "Hubungan",
         "initialDoctors": "Dokter Awal (opsional)",
-        "createAction": "Buat Pasien"
+        "createAction": "Buat Pasien",
+        "addressSection": "Alamat",
+        "streetLine": "Alamat Jalan",
+        "province": "Provinsi",
+        "regency": "Kabupaten / Kota",
+        "district": "Kecamatan",
+        "village": "Kelurahan / Desa",
+        "rtRw": "RT / RW",
+        "postalCode": "Kode Pos",
+        "selectProvince": "Pilih provinsi",
+        "selectRegency": "Pilih kabupaten atau kota",
+        "selectDistrict": "Pilih kecamatan",
+        "selectVillage": "Pilih kelurahan atau desa",
+        "selectProvinceFirst": "Pilih provinsi terlebih dahulu",
+        "selectRegencyFirst": "Pilih kabupaten atau kota terlebih dahulu",
+        "selectDistrictFirst": "Pilih kecamatan terlebih dahulu",
+        "searchRegion": "Cari berdasarkan nama",
+        "searchVillage": "Ketik nama kelurahan atau desa",
+        "searchingRegions": "Mencari…",
+        "noRegions": "Wilayah tidak ditemukan.",
+        "villageSearchHint": "Baru sebagian kelurahan yang ditampilkan. Ketik namanya untuk mempersempit daftar.",
+        "provinceRequired": "Provinsi wajib diisi",
+        "regencyRequired": "Kabupaten atau kota wajib diisi",
+        "districtRequired": "Kecamatan wajib diisi",
+        "villageRequired": "Kelurahan atau desa wajib diisi",
+        "addressChainIncomplete": "Lengkapi keempat tingkat wilayah, atau kosongkan alamatnya sama sekali",
+        "rtRwInvalid": "RT/RW harus berbentuk 003/007",
+        "postalCodeInvalid": "Kode pos harus lima digit"
       },
       "noActiveDoctors": "Tidak ada dokter aktif yang tersedia.",
       "assignedDoctors": "Dokter yang Ditetapkan",
@@ -392,7 +410,10 @@
         "unreachable": "SATUSEHAT tidak dapat dihubungi. Coba lagi."
       },
       "noImmunizations": "Belum ada imunisasi tercatat untuk pasien ini.",
-      "loadingImmunizations": "Memuat riwayat imunisasi..."
+      "loadingImmunizations": "Memuat riwayat imunisasi...",
+      "noAddress": "Alamat belum dicatat",
+      "directoryTab": "Direktori",
+      "fromChatTab": "Dari chat"
     },
     "privacyNotice": {
       "title": "Pemberitahuan Privasi Pasien",
@@ -497,7 +518,6 @@
     "doctors": {
       "title": "Dokter",
       "subtitle": "Kelola profil tenaga medis, kredensial, jadwal, dan penetapan pasien.",
-      "dashboard": "Dasbor Utama",
       "add": "Tambah Dokter Baru",
       "assignPatient": "Tetapkan Pasien",
       "manageSchedule": "Kelola Jadwal",
@@ -582,7 +602,19 @@
         "institution": "Institusi",
         "degree": "Gelar",
         "field": "Bidang Studi",
-        "graduationYear": "Tahun Lulus"
+        "graduationYear": "Tahun Lulus",
+        "noTitle": "Tanpa gelar depan",
+        "selectDegrees": "Pilih gelar",
+        "searchDegrees": "Cari gelar",
+        "noDegreeMatch": "Gelar tidak ditemukan",
+        "removeDegree": "Hapus {label}",
+        "selectField": "Pilih bidang studi",
+        "searchField": "Cari bidang studi",
+        "noFieldMatch": "Bidang studi tidak ditemukan",
+        "noField": "Tanpa bidang studi",
+        "legacyValue": "Tersimpan: {value}",
+        "legacyNotice": "Tersimpan sebagai teks bebas: {value}. Pilih penggantinya dari daftar.",
+        "manageLink": "Pilihan belum ada? Tambahkan di Pengaturan."
       },
       "scheduleFields": {
         "day": "Hari untuk entri {index}",
@@ -616,6 +648,8 @@
         "digits16": "16 digit",
         "nikHelp": "NIK tersimpan terenkripsi dan tersamar. Biarkan kosong untuk mempertahankan nilai; isi hanya untuk menggantinya.",
         "initialPatients": "Pasien Awal (opsional)",
+        "emailReadOnly": "Alamat untuk masuk melekat pada akun dokter.",
+        "emailManageLink": "Kelola lewat menu Administrasi",
         "createAction": "Buat Dokter"
       },
       "identity": "Identitas Tenaga Medis",

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import type { ChannelArrivalView } from '@hms/shared-types';
+import { formatPhoneNumber, type ChannelArrivalView } from '@hms/shared-types';
 import {
   Button,
   Input,
@@ -18,6 +18,7 @@ import { useTranslations } from 'next-intl';
 
 import { ProspectiveMatchCandidateRow } from '#components/client/channel-arrivals/prospective-match-candidate-row';
 import { PatientFormDialog } from '#components/client/patients/patient-form-dialog';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { prospectivePatientControllerLinkToExistingPatientV1 } from '#lib/api/generated/customer-service/customer-service';
 import { resolveApiErrorMessage } from '#lib/api/resolve-api-error-message';
 import { invalidateProspectiveArrivalQueries } from '#lib/prospective-arrivals/invalidate-prospective-arrival-queries';
@@ -27,7 +28,13 @@ import { useProspectiveMatchCandidates } from '#lib/prospective-arrivals/use-pro
 type ProspectiveArrivalDrawerProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  arrival: ChannelArrivalView;
+  /**
+   * Only the name and number the person booked with: everything the drawer
+   * shows about them. Narrowed from the whole arrival view (`P19-T08`) so the
+   * patients page can open it from a prospective row, which has no booking
+   * reference or session of its own.
+   */
+  arrival: Pick<ChannelArrivalView, 'patientFullName' | 'patientPhoneNumber'>;
   /**
    * Passed explicitly rather than read off `arrival`, which carries it as
    * nullable: this drawer is only ever opened for a prospective booking, and
@@ -123,7 +130,7 @@ export function ProspectiveArrivalDrawer({
           <SheetDescription>
             {t('description', {
               name: arrival.patientFullName,
-              phone: arrival.patientPhoneNumber,
+              phone: formatPhoneNumber(arrival.patientPhoneNumber),
             })}
           </SheetDescription>
         </SheetHeader>
@@ -153,7 +160,7 @@ export function ProspectiveArrivalDrawer({
           {candidatesQuery.isLoading ? (
             <p className="text-sm text-slate-500">{t('searching')}</p>
           ) : candidatesQuery.isError ? (
-            <p className="text-sm text-red-700">{t('searchFailed')}</p>
+            <InlineNotice tone="error">{t('searchFailed')}</InlineNotice>
           ) : candidatesQuery.candidates.length === 0 ? (
             <p className="text-sm text-slate-500">{t('noCandidates')}</p>
           ) : (

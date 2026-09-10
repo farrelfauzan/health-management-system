@@ -43,6 +43,7 @@ import { OrganizationStructureModule } from './modules/organization-structure/or
 import { PatientManagementModule } from './modules/patient-management/patient-management.module';
 import { PharmacyFlowModule } from './modules/pharmacy-flow/pharmacy-flow.module';
 import { RbacModule } from './modules/rbac/rbac.module';
+import { RegionsModule } from './modules/regions/regions.module';
 import { RegistrationFlowModule } from './modules/registration-flow/registration-flow.module';
 import { RoomManagementModule } from './modules/room-management/room-management.module';
 import { SatusehatIntegrationModule } from './modules/satusehat/satusehat-integration.module';
@@ -84,6 +85,7 @@ import { UserInvitationModule } from './modules/user-invitation/user-invitation.
     DoctorManagementModule,
     DoctorPatientModule,
     AppointmentManagementModule,
+    RegionsModule,
     RegistrationFlowModule,
     RoomManagementModule,
     AdmissionFlowModule,

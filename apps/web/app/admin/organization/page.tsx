@@ -6,7 +6,13 @@ import { OrganizationWorkspace } from '#components/client/organization/organizat
 import { ACCESS_TOKEN_COOKIE_NAME } from '#lib/auth/access-token-cookie';
 import { resolveSessionClaims } from '#lib/auth/session-claims';
 import { SESSION_HINT_COOKIE_NAME } from '#lib/auth/session-hint-cookie';
+import { parseTabSearchParam } from '#lib/navigation/parse-tab-search-param';
+import { ORGANIZATION_TABS } from '#lib/organization/organization-tabs';
 import { resolveAppAbilityRules } from '#lib/rbac/app-ability.server';
+
+type AdminOrganizationPageProps = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
 
 /**
  * The org chart (SJ-1).
@@ -17,7 +23,8 @@ import { resolveAppAbilityRules } from '#lib/rbac/app-ability.server';
  * established that this is an admin session; this decides only whether the
  * feature is theirs.
  */
-export default async function AdminOrganizationPage() {
+export default async function AdminOrganizationPage({ searchParams }: AdminOrganizationPageProps) {
+  const params = await searchParams;
   const cookieStore = await cookies();
   const claims = resolveSessionClaims({
     accessToken: cookieStore.get(ACCESS_TOKEN_COOKIE_NAME)?.value,
@@ -29,5 +36,7 @@ export default async function AdminOrganizationPage() {
     redirect('/admin/dashboard');
   }
 
-  return <OrganizationWorkspace />;
+  return (
+    <OrganizationWorkspace initialTab={parseTabSearchParam(params.tab, ORGANIZATION_TABS)} />
+  );
 }

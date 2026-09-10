@@ -25,6 +25,7 @@ export {
 } from '#components/command';
 export { DatePicker } from '#components/date-picker';
 export { Input } from '#components/input';
+export { PhoneInput } from '#components/phone-input';
 export {
   Select,
   SelectContent,
@@ -56,6 +57,15 @@ export {
   AvatarImage,
 } from '#components/avatar';
 export { Badge, badgeVariants } from '#components/badge';
+export {
+  Breadcrumb,
+  BreadcrumbEllipsis,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '#components/breadcrumb';
 export {
   Dialog,
   DialogClose,
@@ -110,6 +120,7 @@ export {
   SheetTrigger,
 } from '#components/sheet';
 export {
+  SIDEBAR_COOKIE_NAME,
   Sidebar,
   SidebarContent,
   SidebarFooter,
@@ -150,6 +161,7 @@ export type { RichTextVariableDefinition } from '#lib/rich-text/rich-text-variab
 export type { Editor as RichTextEditorInstance } from '@tiptap/react';
 export { Textarea } from '#components/textarea';
 export { cn } from '#lib/utils';
+export { toNationalPhoneDigits } from '#lib/to-national-phone-digits';
 export {
   buildAppAbility,
   type AppAbility,

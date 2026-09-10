@@ -272,6 +272,11 @@ enum AuditAction {
   /// are two events, and the audit trail is how "which sheet did the patient
   /// get" is answered.
   LAB_REPORT_FILED
+  /// The front desk checked a patient in outside the doctor's practice window
+  /// (P19-T16). The override is the whole point of the row: the rule exists so
+  /// the queue only holds people somebody will see, and every deliberate
+  /// exception has to name who made it and which hours were bypassed.
+  REGISTRATION_CHECKIN_OVERRIDDEN
 }
 
 enum BpjsSubmissionType {
@@ -953,13 +958,32 @@ model UserInvitation {
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime  @updatedAt @map("updated_at")
 
-  invitedBy User @relation("UserInvitationInvitedBy", fields: [invitedById], references: [id])
+  /// The doctor profile this invitation was raised for (P19-T15), set when it
+  /// came from the create-doctor form rather than the staff invitation screen.
+  /// Null for every ordinary staff invitation.
+  ///
+  /// This column, not an `email` on `doctor_profiles`, is what lets an
+  /// administrator enter a doctor's sign-in address at creation. No `User` row
+  /// exists until someone accepts — `password_hash` is not nullable — so
+  /// `owner_user_id` cannot be filled at invite time. The binding is carried
+  /// here instead and consumed in the accept transaction, which creates the
+  /// account and links it to this profile in one write. Until then the address
+  /// is stored once, on this row, and read back through it.
+  ///
+  /// `SetNull` rather than `Cascade`: an invitation is an audit record of a
+  /// link that was minted and mailed, and hard-deleting a profile must not
+  /// erase the evidence that it was.
+  doctorProfileId String? @map("doctor_profile_id") @db.Uuid
+
+  invitedBy     User           @relation("UserInvitationInvitedBy", fields: [invitedById], references: [id])
+  doctorProfile DoctorProfile? @relation(fields: [doctorProfileId], references: [id], onDelete: SetNull)
 
   @@index([email])
   @@index([expiresAt])
   @@index([consumedAt])
   @@index([revokedAt])
   @@index([invitedById])
+  @@index([doctorProfileId])
   @@map("user_invitations")
 }
 
@@ -1125,7 +1149,24 @@ model PatientProfile {
   status       PatientStatus       @default(OUT_PATIENT)
   phoneNumber  String              @map("phone_number")
   /// Required again since `P17-T05`, for the same reason as {@link dateOfBirth}.
+  ///
+  /// Since `P19-T10` this is the **street line** of a structured address —
+  /// the part no master data can supply — and the column keeps its name so
+  /// the invoice token, the arrival worklist and every existing row stay
+  /// valid. The Kemendagri chain lives in the four code columns below.
   address      String
+  /// The structured address (P19-T10). Nullable for the rows that predate
+  /// the region master data and for chat-made drafts; a front-desk create
+  /// supplies all four codes, validated as a chain by the service before the
+  /// database sees them. `Restrict` on every relation: a region that has
+  /// patients in it must never be deleted, only deactivated.
+  provinceCode String?             @map("province_code")
+  regencyCode  String?             @map("regency_code")
+  districtCode String?             @map("district_code")
+  villageCode  String?             @map("village_code")
+  /// `003/007`, free text as the KTP prints it.
+  rtRw         String?             @map("rt_rw")
+  postalCode   String?             @map("postal_code")
   ownerUserId  String?             @map("owner_user_id") @db.Uuid
   isActive     Boolean             @default(true) @map("is_active")
   createdAt    DateTime            @default(now()) @map("created_at")
@@ -1173,6 +1214,10 @@ model PatientProfile {
   satusehatPatientIdLast4      String? @map("satusehat_patient_id_last4")
 
   ownerUser             User?                        @relation(fields: [ownerUserId], references: [id], onDelete: SetNull)
+  province              Province?                    @relation(fields: [provinceCode], references: [code], onDelete: Restrict)
+  regency               Regency?                     @relation(fields: [regencyCode], references: [code], onDelete: Restrict)
+  district              District?                    @relation(fields: [districtCode], references: [code], onDelete: Restrict)
+  village               Village?                     @relation(fields: [villageCode], references: [code], onDelete: Restrict)
   doctors               DoctorPatient[]
   appointments          Appointment[]
   registrations         Registration[]
@@ -1208,6 +1253,10 @@ model PatientProfile {
   /// stored text could never serve it, and carrying one would be an index that
   /// costs every write and answers no query anyone asks.
   @@index([source])
+  @@index([provinceCode])
+  @@index([regencyCode])
+  @@index([districtCode])
+  @@index([villageCode])
   @@map("patient_profiles")
 }
 
@@ -1443,6 +1492,46 @@ model PatientAllergy {
   @@map("patient_allergies")
 }
 
+/// Master data for the credentials that print alongside a doctor's name
+/// (P19-T14). Titles ("dr."), academic and specialist degrees ("Sp.PD") and
+/// education fields of study used to be free text on every form, so the same
+/// credential reached documents spelled five different ways.
+///
+/// One table for all three kinds rather than three near-identical tables: they
+/// share every column, every screen and every rule, and the only thing that
+/// differs is which list a field draws from.
+model DoctorCredentialOption {
+  id   String               @id @default(uuid()) @db.Uuid
+  kind DoctorCredentialKind
+  /// Stable upper-snake ASCII identifier ("SP_PD"). This is what is stored on
+  /// doctor profiles and education rows, so it must never be rewritten — an
+  /// option whose printed form changed gets a new `label`, not a new `code`.
+  code String
+  /// The printed form, exactly as it should appear on a document.
+  label     String
+  sortOrder Int       @default(0) @map("sort_order")
+  isActive  Boolean   @default(true) @map("is_active")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@unique([kind, code])
+  @@index([kind, isActive])
+  @@index([deletedAt])
+  @@map("doctor_credential_options")
+}
+
+enum DoctorCredentialKind {
+  /// Honorific printed before the name: "dr.", "drg.", "Prof. Dr.".
+  TITLE
+  /// Academic or specialist credential printed after the name: "Sp.PD", "M.Kes".
+  DEGREE
+  /// Programme an education row was taken in: "Pendidikan Dokter".
+  FIELD_OF_STUDY
+
+  @@map("doctor_credential_kind")
+}
+
 model Specialty {
   id           String    @id @default(uuid()) @db.Uuid
   name         String    @unique
@@ -1505,13 +1594,27 @@ model DoctorProfile {
   bpjsDoctorCode          String? @map("bpjs_doctor_code")
 
   // Listing/profile fields clinics expect on doctor directories (P7-T04).
-  // Specialty remains the existing Specialty reference table; title/degrees
-  // cover honorifics and academic credentials (e.g. "dr.", "Sp.PD").
+  // Specialty remains the existing Specialty reference table.
   //
-  // There is deliberately no `email` here: it lives on the linked `User`
-  // account and is read through `ownerUser`. Two copies of one address drift
-  // the moment a doctor changes it in one place, and the account address is
-  // the one that has to be correct — it is what they sign in with.
+  // `title` and `degrees` are no longer free text (P19-T14). Both now store
+  // DoctorCredentialOption *codes*: `title` a single TITLE code ("DR"), and
+  // `degrees` a comma-joined ordered list of DEGREE codes ("SP_PD,M_KES").
+  // The columns stay `String` rather than becoming foreign keys because rows
+  // written before the option table existed hold free text, and dropping them
+  // would erase credentials nobody can re-enter from the record. The read path
+  // resolves a stored value to an option by code first, then by
+  // case-insensitive label; whatever matches neither is returned as-is and
+  // flagged legacy so the form asks an admin to pick a replacement.
+  //
+  // There is deliberately no `email` column here, and that is not the same
+  // thing as there being no email on the create form. Since P19-T15 the
+  // address is *entered at creation* and *owned by `User`*: supplying it
+  // creates or attaches the account in the same request, and it is read back
+  // through `ownerUser` — or, while an invitation is still outstanding and no
+  // account exists yet, through `ownerInvitations`. Two copies of one address
+  // drift the moment a doctor changes it in one place, and the account address
+  // is the one that has to be correct: it is what they sign in with, so
+  // changing it stays an Administration action on the account itself.
   title   String?
   degrees String?
 
@@ -1530,6 +1633,11 @@ model DoctorProfile {
   labOrders           LabOrder[]
 
   managedDocuments ManagedDocument[]
+
+  /// Invitations raised for this profile's sign-in account (P19-T15). Plural
+  /// because a resend writes a replacement row rather than editing the old
+  /// one, so the history of every link minted for this doctor stays readable.
+  ownerInvitations UserInvitation[]
 
   @@index([deletedAt])
   @@index([isActive])
@@ -5308,4 +5416,76 @@ model Immunization {
   @@index([encounterId])
   @@index([deletedAt])
   @@map("immunizations")
+}
+
+/// Indonesian administrative regions (P19-T10), keyed by the Kemendagri
+/// `kode wilayah` — `11`, `11.01`, `11.01.01`, `11.01.01.2001` — because that
+/// code is what SATUSEHAT's `administrativeCode` extension carries and what
+/// every other national system joins on. Seeded from `prisma/wilayah.sql`
+/// (see docs/ops/region-master-data.md), never edited by a clinic: a region
+/// that Kemendagri retires is deactivated, not deleted, so the addresses that
+/// name it keep resolving.
+model Province {
+  code      String   @id
+  name      String
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  regencies Regency[]
+  patients  PatientProfile[]
+
+  @@map("provinces")
+}
+
+/// Kabupaten or kota. The dataset does not distinguish the two beyond the
+/// name prefix, and neither does any address form.
+model Regency {
+  code         String   @id
+  name         String
+  provinceCode String   @map("province_code")
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  province  Province         @relation(fields: [provinceCode], references: [code], onDelete: Restrict)
+  districts District[]
+  patients  PatientProfile[]
+
+  @@index([provinceCode])
+  @@map("regencies")
+}
+
+/// Kecamatan.
+model District {
+  code        String   @id
+  name        String
+  regencyCode String   @map("regency_code")
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  regency  Regency          @relation(fields: [regencyCode], references: [code], onDelete: Restrict)
+  villages Village[]
+  patients PatientProfile[]
+
+  @@index([regencyCode])
+  @@map("districts")
+}
+
+/// Kelurahan or desa — the level the form searches by typed prefix, hence the
+/// index on `(district_code, name)`.
+model Village {
+  code         String   @id
+  name         String
+  districtCode String   @map("district_code")
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  district District         @relation(fields: [districtCode], references: [code], onDelete: Restrict)
+  patients PatientProfile[]
+
+  @@index([districtCode, name])
+  @@map("villages")
 }

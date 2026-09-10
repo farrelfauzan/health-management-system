@@ -15,6 +15,7 @@ import {
   type AdminUsersFilterValues,
 } from '#components/client/administration/admin-users-filter-card';
 import { AdminUsersTable } from '#components/client/administration/admin-users-table';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { NumberedPagination } from '#components/client/shared/numbered-pagination';
 import { PageHeader } from '#components/shared/page-header';
 import { adminManagementControllerUpdateAdminUserV1 } from '#lib/api/generated/admin-management/admin-management';
@@ -26,6 +27,7 @@ import {
   type AdminUsersSearchParams,
 } from '#lib/admin-users/search-params';
 import { useAdminUsersList } from '#lib/admin-users/use-admin-users-list';
+import { useShellBreadcrumbRoot } from '#lib/navigation/use-shell-breadcrumb-root';
 
 type AdminUsersPanelProps = {
   initialQuery: AdminUsersSearchParams;
@@ -33,6 +35,7 @@ type AdminUsersPanelProps = {
 
 export function AdminUsersPanel({ initialQuery }: AdminUsersPanelProps) {
   const t = useTranslations('operations.administration');
+  const root = useShellBreadcrumbRoot();
   const router = useRouter();
   const pathname = usePathname();
   const queryClient = useQueryClient();
@@ -83,7 +86,7 @@ export function AdminUsersPanel({ initialQuery }: AdminUsersPanelProps) {
       <PageHeader
         title={t('title')}
         subtitle={t('subtitle')}
-        breadcrumbs={[t('title')]}
+        breadcrumbs={[root, { label: t('title') }]}
         actions={
           <Can action="create" subject="User">
             <Button
@@ -106,9 +109,7 @@ export function AdminUsersPanel({ initialQuery }: AdminUsersPanelProps) {
       />
 
       {usersQuery.error && usersQuery.users.length > 0 ? (
-        <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
-          {t('errorTitle')}
-        </p>
+        <InlineNotice tone="error">{t('errorTitle')}</InlineNotice>
       ) : null}
 
       <Card className="gap-0 rounded-xl border-slate-200 py-0 shadow-none">

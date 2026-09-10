@@ -1,6 +1,6 @@
 import { cookies } from 'next/headers';
 import type { CSSProperties, ReactNode } from 'react';
-import { buildAppAbility, SidebarInset, SidebarProvider } from '@hms/ui';
+import { buildAppAbility, SIDEBAR_COOKIE_NAME, SidebarInset, SidebarProvider } from '@hms/ui';
 
 import { AiAssistantProvider } from '#components/client/ai-assistant/ai-assistant-provider';
 import { ChatLauncher } from '#components/client/ai-assistant/chat-launcher';
@@ -20,6 +20,7 @@ import { DOCTOR_NAV_SECTIONS } from '#lib/shell/doctor-nav-items';
 import { filterNavSections } from '#lib/shell/filter-nav-sections';
 import { isFeatureEnabled } from '#lib/shell/is-feature-enabled';
 import { resolveDisabledNavHrefs } from '#lib/shell/resolve-disabled-nav-hrefs';
+import { resolveSidebarDefaultOpen } from '#lib/shell/resolve-sidebar-default-open';
 import { resolveShellProfile } from '#lib/shell/shell-profile';
 
 const SIDEBAR_STYLE: CSSProperties = { '--sidebar-width': '15rem' } as CSSProperties;
@@ -50,12 +51,14 @@ export default async function DoctorLayout({ children }: DoctorLayoutProps) {
   );
   const isChatEnabled = offboarding === null && isFeatureEnabled(claims, 'ai-chatbot');
   const profile = resolveShellProfile(claims);
-
   const idlePolicy = resolveSessionIdlePolicy();
+  // P19-T01. Same cookie read as the admin shell, so the choice follows the
+  // person across both portals.
+  const isSidebarOpen = resolveSidebarDefaultOpen(cookieStore.get(SIDEBAR_COOKIE_NAME)?.value);
   return (
     <AppAbilityProvider rules={rules}>
       <AiAssistantProvider displayName={profile.displayName} assistantPath={DOCTOR_ASSISTANT_PATH}>
-        <SidebarProvider style={SIDEBAR_STYLE}>
+        <SidebarProvider style={SIDEBAR_STYLE} defaultOpen={isSidebarOpen}>
           <AppSidebar sections={sections} homeHref="/doctor/dashboard" />
           <SidebarInset className="min-w-0">
             <TopBar profile={profile} excludedNavHrefs={excludedNavHrefs} />

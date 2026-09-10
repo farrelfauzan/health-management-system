@@ -29,6 +29,7 @@ import {
   DialogHeader,
   DialogTitle,
   Input,
+  PhoneInput,
   Select,
   SelectContent,
   SelectItem,
@@ -36,10 +37,12 @@ import {
   SelectValue,
 } from '@hms/ui';
 
+import { PatientAddressFields } from '#components/client/patients/patient-address-fields';
 import { PatientDoctorPicker } from '#components/client/patients/patient-doctor-picker';
 import { PrivacyNoticeCapture } from '#components/client/patients/privacy-notice-capture';
 import { FieldError } from '#components/client/shared/field-error';
 import { FormLabel } from '#components/client/shared/form-label';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { RequiredLegend } from '#components/client/shared/required-legend';
 import type { CreatePatientDto } from '#lib/api/generated/model/createPatientDto';
 import type { CreatePatientDtoPrivacyNotice } from '#lib/api/generated/model/createPatientDtoPrivacyNotice';
@@ -50,12 +53,19 @@ import {
 } from '#lib/api/generated/patient-management/patient-management';
 import { parseApiSuccess } from '#lib/api/response';
 import { notifyApiError } from '#lib/api/notify-api-error';
+import { buildPatientAddressDefaults } from '#lib/patients/build-patient-address-defaults';
 import { buildPatientCoreFields } from '#lib/patients/build-patient-core-fields';
+import { buildPatientCreateAddressFields } from '#lib/patients/build-patient-create-address-fields';
 import { buildPatientFieldValidator } from '#lib/patients/build-patient-field-validator';
 import { buildPatientOptionalFields } from '#lib/patients/build-patient-optional-fields';
+import { buildPatientUpdateAddressFields } from '#lib/patients/build-patient-update-address-fields';
 import { invalidatePatientQueries } from '#lib/patients/invalidate-patient-queries';
+import type { PatientAddressFieldErrors } from '#lib/patients/patient-address-field-errors.types';
+import type { PatientAddressFormValues } from '#lib/patients/patient-address-form-values.types';
 import { PATIENT_FORM_REQUIRED_FIELDS } from '#lib/patients/patient-form-required-fields';
+import { resolveAddressChainErrors } from '#lib/patients/resolve-address-chain-errors';
 import { useActiveDoctors } from '#lib/patients/use-active-doctors';
+import { validatePatientAddress } from '#lib/patients/validate-patient-address';
 import type { PatientConversionResult } from '#lib/prospective-arrivals/patient-conversion-result';
 import type { PatientFormConversion } from '#lib/prospective-arrivals/patient-form-conversion';
 import { invalidateProspectiveArrivalQueries } from '#lib/prospective-arrivals/invalidate-prospective-arrival-queries';
@@ -90,7 +100,31 @@ export function PatientFormDialog({
   const queryClient = useQueryClient();
   const [formError, setFormError] = useState<string | null>(null);
   const [identifierWarnings, setIdentifierWarnings] = useState<string[]>([]);
+  // Held beside the form rather than inside it: the address section is one
+  // controlled value, and TanStack's per-field meta has nowhere to put a
+  // message that belongs to the third of four selects inside it.
+  const [addressErrors, setAddressErrors] = useState<PatientAddressFieldErrors>({});
   const doctorsQuery = useActiveDoctors(open && !isEditMode);
+  /**
+   * Runs on both submit paths — the valid one and the blocked one — so a
+   * missing region chain is reported on the first press of Save, not only once
+   * every other field happens to be right.
+   */
+  function collectAddressErrors(values: PatientAddressFormValues): PatientAddressFieldErrors {
+    return validatePatientAddress({
+      values,
+      isChainRequired: !isEditMode,
+      messages: {
+        provinceRequired: t('patients.form.provinceRequired'),
+        regencyRequired: t('patients.form.regencyRequired'),
+        districtRequired: t('patients.form.districtRequired'),
+        villageRequired: t('patients.form.villageRequired'),
+        chainIncomplete: t('patients.form.addressChainIncomplete'),
+        rtRwInvalid: t('patients.form.rtRwInvalid'),
+        postalCodeInvalid: t('patients.form.postalCodeInvalid'),
+      },
+    });
+  }
   // Typed to the envelope both endpoints answer with rather than to either
   // one's generated payload: the two return different `data` shapes — a patient
   // profile and a resolution view — and each branch parses its own below.
@@ -114,6 +148,10 @@ export function PatientFormDialog({
       status: patient?.status ?? 'OUT_PATIENT',
       phoneNumber: patient?.phoneNumber ?? conversion?.phoneNumber ?? '',
       address: patient?.address ?? '',
+      // A conversion deliberately starts empty (P19-T08 carries no address on
+      // the booking) and an edit starts on the record's own chain, names
+      // included, so the four comboboxes show it before their lists arrive.
+      addressChain: buildPatientAddressDefaults(patient?.addressDetails),
       placeOfBirth: patient?.placeOfBirth ?? '',
       email: patient?.email ?? '',
       // Identifiers are write-only from this form: the profile carries masked
@@ -136,6 +174,14 @@ export function PatientFormDialog({
     onSubmit: async ({ value }) => {
       setFormError(null);
       setIdentifierWarnings([]);
+      // Before anything is sent: a chain the API would refuse is caught here so
+      // the message lands under the select that is wrong, not in the banner.
+      const nextAddressErrors = collectAddressErrors(value.addressChain);
+      setAddressErrors(nextAddressErrors);
+      if (Object.keys(nextAddressErrors).length > 0) {
+        setFormError(t('patients.form.validationError'));
+        return;
+      }
       let envelope: ApiSuccess<PatientProfile>;
       try {
         if (isEditMode && patient) {
@@ -148,6 +194,7 @@ export function PatientFormDialog({
             input: {
               ...buildPatientCoreFields(value),
               ...buildPatientOptionalFields(value),
+              ...buildPatientUpdateAddressFields(value.addressChain),
             },
           });
           envelope = parseApiSuccess<PatientProfile>(response, t('patients.form.saveError'));
@@ -175,6 +222,7 @@ export function PatientFormDialog({
             doctorIds: value.doctorIds.length > 0 ? value.doctorIds : undefined,
             privacyNotice: value.privacyNotice,
             ...buildPatientOptionalFields(value),
+            ...buildPatientCreateAddressFields(value.addressChain),
           });
           if (conversion) {
             const conversionEnvelope = parseApiSuccess<ProspectiveArrivalResolutionView>(
@@ -209,14 +257,20 @@ export function PatientFormDialog({
         }
         onOpenChange(false);
       } catch (error) {
+        // A chain the master data disagrees with — a village moved to another
+        // district, a code retired since the list was cached — is the one
+        // address failure the form cannot predict. Put it back on the level the
+        // API named rather than leaving it as one sentence in the banner.
+        setAddressErrors(resolveAddressChainErrors(error));
         setFormError(notifyApiError(error, t('patients.form.saveError')));
       }
     },
     // Without this a blocked submit is indistinguishable from a dead button:
     // the field errors render far down a dialog that scrolls, so the summary
     // at the top is the only feedback the person pressing Save can see.
-    onSubmitInvalid: () => {
+    onSubmitInvalid: ({ value }) => {
       setIdentifierWarnings([]);
+      setAddressErrors(collectAddressErrors(value.addressChain));
       setFormError(t('patients.form.validationError'));
     },
   });
@@ -242,28 +296,19 @@ export function PatientFormDialog({
           }}
         >
           {!isEditMode ? <RequiredLegend /> : null}
-          {formError ? (
-            <p
-              role="alert"
-              className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700"
-            >
-              {formError}
-            </p>
-          ) : null}
+          {formError ? <InlineNotice tone="error">{formError}</InlineNotice> : null}
 
           {identifierWarnings.length > 0 ? (
-            <div
-              role="status"
-              className="space-y-1 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900"
-            >
-              <p className="font-medium">{t('patients.form.warnings')}</p>
-              <ul className="list-inside list-disc">
-                {identifierWarnings.map((warning) => (
-                  <li key={warning}>{warning}</li>
-                ))}
-              </ul>
-              <p className="text-xs">{t('patients.form.warningHelp')}</p>
-            </div>
+            <InlineNotice tone="warning" title={t('patients.form.warnings')}>
+              <div className="space-y-1">
+                <ul className="list-inside list-disc">
+                  {identifierWarnings.map((warning) => (
+                    <li key={warning}>{warning}</li>
+                  ))}
+                </ul>
+                <p className="text-xs">{t('patients.form.warningHelp')}</p>
+              </div>
+            </InlineNotice>
           ) : null}
 
           {/* No MRN field: the server allocates it on create and it can never be
@@ -382,10 +427,7 @@ export function PatientFormDialog({
           <form.Field name="status">
             {(field) => (
               <div className="space-y-1.5">
-                <FormLabel
-                  htmlFor={field.name}
-                  className="font-heading text-xs text-slate-600"
-                >
+                <FormLabel htmlFor={field.name} className="font-heading text-xs text-slate-600">
                   {t('common.status')}
                 </FormLabel>
                 <Select
@@ -427,11 +469,11 @@ export function PatientFormDialog({
                 >
                   {t('patients.form.phone')}
                 </FormLabel>
-                <Input
+                <PhoneInput
                   id={field.name}
                   value={field.state.value}
-                  placeholder="+628123456789"
-                  onChange={(event) => field.handleChange(event.target.value)}
+                  placeholder="8123456789"
+                  onValueChange={(value) => field.handleChange(value)}
                   onBlur={field.handleBlur}
                   aria-invalid={field.state.meta.errors.length > 0}
                 />
@@ -440,36 +482,55 @@ export function PatientFormDialog({
             )}
           </form.Field>
 
-          <form.Field
-            name="address"
-            validators={{
-              onSubmit: buildPatientFieldValidator({
-                schema: createPatientSchema.shape.address,
-                allowBlank: isEditMode,
-              }),
-            }}
-          >
-            {(field) => (
-              <div className="space-y-1.5">
-                <FormLabel
-                  htmlFor={field.name}
-                  className="font-heading text-xs text-slate-600"
-                  required={!isEditMode && PATIENT_FORM_REQUIRED_FIELDS.has(field.name)}
-                >
-                  {t('patients.form.address')}
-                </FormLabel>
-                <Input
-                  id={field.name}
+          <div className="space-y-4 border-t border-slate-100 pt-4">
+            <p className="font-heading text-xs font-semibold uppercase tracking-wide text-slate-500">
+              {t('patients.form.addressSection')}
+            </p>
+            <form.Field
+              name="address"
+              validators={{
+                onSubmit: buildPatientFieldValidator({
+                  schema: createPatientSchema.shape.address,
+                  allowBlank: isEditMode,
+                }),
+              }}
+            >
+              {(field) => (
+                <div className="space-y-1.5">
+                  <FormLabel
+                    htmlFor={field.name}
+                    className="font-heading text-xs text-slate-600"
+                    required={!isEditMode && PATIENT_FORM_REQUIRED_FIELDS.has(field.name)}
+                  >
+                    {t('patients.form.streetLine')}
+                  </FormLabel>
+                  <Input
+                    id={field.name}
+                    value={field.state.value}
+                    placeholder="Jl. Melati No. 5"
+                    onChange={(event) => field.handleChange(event.target.value)}
+                    onBlur={field.handleBlur}
+                    aria-invalid={field.state.meta.errors.length > 0}
+                  />
+                  <FieldError errors={field.state.meta.errors} />
+                </div>
+              )}
+            </form.Field>
+            <form.Field name="addressChain">
+              {(field) => (
+                <PatientAddressFields
                   value={field.state.value}
-                  placeholder="Jl. Melati No. 5, Jakarta"
-                  onChange={(event) => field.handleChange(event.target.value)}
-                  onBlur={field.handleBlur}
-                  aria-invalid={field.state.meta.errors.length > 0}
+                  onChange={(nextValue) => {
+                    setAddressErrors({});
+                    field.handleChange(nextValue);
+                  }}
+                  errors={addressErrors}
+                  isRequired={!isEditMode}
+                  isEnabled={open}
                 />
-                <FieldError errors={field.state.meta.errors} />
-              </div>
-            )}
-          </form.Field>
+              )}
+            </form.Field>
+          </div>
 
           <div className="space-y-4 border-t border-slate-100 pt-4">
             <p className="font-heading text-xs font-semibold uppercase tracking-wide text-slate-500">
@@ -484,10 +545,7 @@ export function PatientFormDialog({
               <form.Field name="nik">
                 {(field) => (
                   <div className="space-y-1.5">
-                    <FormLabel
-                      htmlFor={field.name}
-                      className="font-heading text-xs text-slate-600"
-                    >
+                    <FormLabel htmlFor={field.name} className="font-heading text-xs text-slate-600">
                       NIK
                     </FormLabel>
                     <Input
@@ -504,10 +562,7 @@ export function PatientFormDialog({
               <form.Field name="bpjsNumber">
                 {(field) => (
                   <div className="space-y-1.5">
-                    <FormLabel
-                      htmlFor={field.name}
-                      className="font-heading text-xs text-slate-600"
-                    >
+                    <FormLabel htmlFor={field.name} className="font-heading text-xs text-slate-600">
                       {t('patients.bpjsNumber')}
                     </FormLabel>
                     <Input
@@ -532,10 +587,7 @@ export function PatientFormDialog({
               <form.Field name="placeOfBirth">
                 {(field) => (
                   <div className="space-y-1.5">
-                    <FormLabel
-                      htmlFor={field.name}
-                      className="font-heading text-xs text-slate-600"
-                    >
+                    <FormLabel htmlFor={field.name} className="font-heading text-xs text-slate-600">
                       {t('patients.form.birthPlace')}
                     </FormLabel>
                     <Input
@@ -551,10 +603,7 @@ export function PatientFormDialog({
               <form.Field name="email">
                 {(field) => (
                   <div className="space-y-1.5">
-                    <FormLabel
-                      htmlFor={field.name}
-                      className="font-heading text-xs text-slate-600"
-                    >
+                    <FormLabel htmlFor={field.name} className="font-heading text-xs text-slate-600">
                       {t('patients.form.email')}
                     </FormLabel>
                     <Input
@@ -573,10 +622,7 @@ export function PatientFormDialog({
               <form.Field name="bloodType">
                 {(field) => (
                   <div className="space-y-1.5">
-                    <FormLabel
-                      htmlFor={field.name}
-                      className="font-heading text-xs text-slate-600"
-                    >
+                    <FormLabel htmlFor={field.name} className="font-heading text-xs text-slate-600">
                       {t('patients.form.bloodType')}
                     </FormLabel>
                     <Select value={field.state.value} onValueChange={field.handleChange}>
@@ -597,10 +643,7 @@ export function PatientFormDialog({
               <form.Field name="rhesusFactor">
                 {(field) => (
                   <div className="space-y-1.5">
-                    <FormLabel
-                      htmlFor={field.name}
-                      className="font-heading text-xs text-slate-600"
-                    >
+                    <FormLabel htmlFor={field.name} className="font-heading text-xs text-slate-600">
                       {t('patients.form.rhesus')}
                     </FormLabel>
                     <Select value={field.state.value} onValueChange={field.handleChange}>
@@ -623,10 +666,7 @@ export function PatientFormDialog({
               <form.Field name="maritalStatus">
                 {(field) => (
                   <div className="space-y-1.5">
-                    <FormLabel
-                      htmlFor={field.name}
-                      className="font-heading text-xs text-slate-600"
-                    >
+                    <FormLabel htmlFor={field.name} className="font-heading text-xs text-slate-600">
                       {t('patients.form.maritalStatus')}
                     </FormLabel>
                     <Select value={field.state.value} onValueChange={field.handleChange}>
@@ -647,10 +687,7 @@ export function PatientFormDialog({
               <form.Field name="religion">
                 {(field) => (
                   <div className="space-y-1.5">
-                    <FormLabel
-                      htmlFor={field.name}
-                      className="font-heading text-xs text-slate-600"
-                    >
+                    <FormLabel htmlFor={field.name} className="font-heading text-xs text-slate-600">
                       {t('patients.form.religion')}
                     </FormLabel>
                     <Select value={field.state.value} onValueChange={field.handleChange}>
@@ -672,10 +709,7 @@ export function PatientFormDialog({
             <form.Field name="occupation">
               {(field) => (
                 <div className="space-y-1.5">
-                  <FormLabel
-                    htmlFor={field.name}
-                    className="font-heading text-xs text-slate-600"
-                  >
+                  <FormLabel htmlFor={field.name} className="font-heading text-xs text-slate-600">
                     {t('patients.form.occupation')}
                   </FormLabel>
                   <Input
@@ -698,10 +732,7 @@ export function PatientFormDialog({
               <form.Field name="emergencyContactName">
                 {(field) => (
                   <div className="space-y-1.5">
-                    <FormLabel
-                      htmlFor={field.name}
-                      className="font-heading text-xs text-slate-600"
-                    >
+                    <FormLabel htmlFor={field.name} className="font-heading text-xs text-slate-600">
                       {t('patients.form.contactName')}
                     </FormLabel>
                     <Input
@@ -716,17 +747,14 @@ export function PatientFormDialog({
               <form.Field name="emergencyContactPhone">
                 {(field) => (
                   <div className="space-y-1.5">
-                    <FormLabel
-                      htmlFor={field.name}
-                      className="font-heading text-xs text-slate-600"
-                    >
+                    <FormLabel htmlFor={field.name} className="font-heading text-xs text-slate-600">
                       {t('patients.form.contactPhone')}
                     </FormLabel>
-                    <Input
+                    <PhoneInput
                       id={field.name}
                       value={field.state.value}
-                      placeholder="+628123456789"
-                      onChange={(event) => field.handleChange(event.target.value)}
+                      placeholder="8123456789"
+                      onValueChange={(value) => field.handleChange(value)}
                       onBlur={field.handleBlur}
                     />
                   </div>
@@ -737,10 +765,7 @@ export function PatientFormDialog({
               <form.Field name="guardianName">
                 {(field) => (
                   <div className="space-y-1.5">
-                    <FormLabel
-                      htmlFor={field.name}
-                      className="font-heading text-xs text-slate-600"
-                    >
+                    <FormLabel htmlFor={field.name} className="font-heading text-xs text-slate-600">
                       {t('patients.form.guardianName')}
                     </FormLabel>
                     <Input
@@ -756,10 +781,7 @@ export function PatientFormDialog({
               <form.Field name="guardianRelation">
                 {(field) => (
                   <div className="space-y-1.5">
-                    <FormLabel
-                      htmlFor={field.name}
-                      className="font-heading text-xs text-slate-600"
-                    >
+                    <FormLabel htmlFor={field.name} className="font-heading text-xs text-slate-600">
                       {t('patients.form.relation')}
                     </FormLabel>
                     <Input

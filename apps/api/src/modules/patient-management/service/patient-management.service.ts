@@ -11,6 +11,7 @@ import {
   Actor,
   collectNikDemographicWarnings,
   ConvertsProspectivePatient,
+  CreatePatientBaseInput,
   CreatePatientFromProspectiveResult,
   CreatePatientRecordPayload,
   maskIdentifierLast4,
@@ -26,7 +27,7 @@ import {
 import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
 import { AuthRepository } from '../../auth/repository/auth.repository';
-import { CreatePatientDto } from '../dto/create-patient.dto';
+import { RegionsService } from '../../regions/service/regions.service';
 import { ImportPatientDto } from '../dto/import-patient.dto';
 import { ListPatientsQueryDto } from '../dto/list-patients-query.dto';
 import { UpdatePatientDto } from '../dto/update-patient.dto';
@@ -36,6 +37,7 @@ import {
   CurrentPrivacyNoticeEvidenceRequiredError,
   PrivacyNoticeRepository,
 } from '../../../common/privacy-notice/privacy-notice.repository';
+import { buildPatientAddressDetails } from './build-patient-address-details';
 
 const PATIENT_AUDIT_RESOURCE = 'PatientProfile';
 
@@ -85,6 +87,7 @@ export class PatientManagementService {
     private readonly authRepository: AuthRepository,
     private readonly auditService: AuditService,
     private readonly privacyNoticeRepository: PrivacyNoticeRepository,
+    private readonly regionsService: RegionsService,
   ) {}
 
   async listPatients(query: ListPatientsQueryDto, currentUser: CurrentUser) {
@@ -120,6 +123,7 @@ export class PatientManagementService {
         isActive: patient.isActive,
         doctorCount: patient._count.doctors,
         allergyCount: patient._count.allergies,
+        addressDetails: buildPatientAddressDetails(patient),
         doctors: patient.doctors.map((assignment) => ({
           id: assignment.doctor.id,
           assignmentId: assignment.id,
@@ -174,7 +178,7 @@ export class PatientManagementService {
     };
   }
 
-  async createPatient(payload: CreatePatientDto, currentUser: CurrentUser) {
+  async createPatient(payload: CreatePatientBaseInput, currentUser: CurrentUser) {
     await this.assertPatientCreatable(payload, currentUser);
 
     const created = await this.createPatientRecord(payload, currentUser);
@@ -204,7 +208,7 @@ export class PatientManagementService {
    * registry's rules; it does not own the channel's.
    */
   async createPatientFromProspective(
-    payload: CreatePatientDto,
+    payload: CreatePatientBaseInput,
     prospectivePatientId: string,
     currentUser: CurrentUser,
   ) {
@@ -232,7 +236,7 @@ export class PatientManagementService {
    * of them.
    */
   private async assertPatientCreatable(
-    payload: CreatePatientDto,
+    payload: CreatePatientBaseInput,
     currentUser: CurrentUser,
   ): Promise<void> {
     const actor = await this.getActorOrThrow(currentUser);
@@ -254,6 +258,11 @@ export class PatientManagementService {
 
     await this.assertAssignableDoctorIds(payload.doctorIds);
     await this.assertIdentifiersAvailable({ nik: payload.nik, bpjsNumber: payload.bpjsNumber });
+    // Every create path may carry all four codes or none. A chain that is
+    // present is proven against the master data before the row exists, so a
+    // foreign-key failure never reaches the client as a 500, and a partial
+    // chain is refused here rather than stored half-resolved.
+    await this.regionsService.assertOptionalAddressChain(payload);
   }
 
   /**
@@ -316,6 +325,7 @@ export class PatientManagementService {
 
     await this.assertAssignableDoctorIds(payload.doctorIds);
     await this.assertIdentifiersAvailable({ nik: payload.nik, bpjsNumber: payload.bpjsNumber });
+    await this.regionsService.assertOptionalAddressChain(payload);
 
     const created = await this.createPatientRecord(payload, currentUser);
 
@@ -423,6 +433,9 @@ export class PatientManagementService {
       { nik: payload.nik, bpjsNumber: payload.bpjsNumber },
       id,
     );
+    // The schema has already refused a partial chain and a prefix mismatch;
+    // this is the master-data check the schema cannot make.
+    await this.regionsService.assertOptionalAddressChain(payload);
 
     const updated = await this.updatePatientRecord(id, payload);
 
@@ -540,7 +553,7 @@ export class PatientManagementService {
   }
 
   private async createPatientRecord(
-    payload: CreatePatientDto & { mrn?: string },
+    payload: CreatePatientBaseInput & { mrn?: string },
     currentUser: CurrentUser,
   ): Promise<PatientRecord> {
     return this.runPatientCreate(this.buildCreatePayload(payload, currentUser));
@@ -552,7 +565,7 @@ export class PatientManagementService {
    * than reaching one and being silently dropped by the other.
    */
   private buildCreatePayload(
-    payload: CreatePatientDto & { mrn?: string },
+    payload: CreatePatientBaseInput & { mrn?: string },
     currentUser: CurrentUser,
   ): CreatePatientRecordPayload {
     return {
@@ -566,6 +579,12 @@ export class PatientManagementService {
       status: payload.status,
       phoneNumber: payload.phoneNumber,
       address: payload.address,
+      provinceCode: payload.provinceCode,
+      regencyCode: payload.regencyCode,
+      districtCode: payload.districtCode,
+      villageCode: payload.villageCode,
+      rtRw: payload.rtRw,
+      postalCode: payload.postalCode,
       nik: payload.nik,
       bpjsNumber: payload.bpjsNumber,
       email: payload.email,
@@ -600,6 +619,12 @@ export class PatientManagementService {
         status: payload.status,
         phoneNumber: payload.phoneNumber,
         address: payload.address,
+        provinceCode: payload.provinceCode,
+        regencyCode: payload.regencyCode,
+        districtCode: payload.districtCode,
+        villageCode: payload.villageCode,
+        rtRw: payload.rtRw,
+        postalCode: payload.postalCode,
         nik: payload.nik,
         bpjsNumber: payload.bpjsNumber,
         email: payload.email,
@@ -762,6 +787,7 @@ export class PatientManagementService {
       status: patient.status,
       phoneNumber: patient.phoneNumber,
       address: patient.address ?? undefined,
+      addressDetails: buildPatientAddressDetails(patient),
       nikMasked: maskIdentifierLast4(patient.nikLast4),
       bpjsNumberMasked: maskIdentifierLast4(patient.bpjsNumberLast4),
       hasSatusehatPatientId: patient.hasSatusehatPatientId,
@@ -785,7 +811,7 @@ export class PatientManagementService {
   }
 
   private assertPrivacyNoticeActorRules(
-    evidence: CreatePatientDto['privacyNotice'],
+    evidence: CreatePatientBaseInput['privacyNotice'],
     isOwnPatient: boolean,
     isSystemActor = false,
   ): void {

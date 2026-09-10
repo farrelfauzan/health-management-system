@@ -19,7 +19,11 @@ type RegistrationsTableProps = {
   variant: RegistrationsViewVariant;
   isPending: boolean;
   isError: boolean;
-  onTransition: (registration: RegistrationListItem, target: RegistrationTransitionTarget) => void;
+  onTransition: (
+    registration: RegistrationListItem,
+    target: RegistrationTransitionTarget,
+    isForced?: boolean,
+  ) => void;
   onOpenEncounter: (registration: RegistrationListItem) => void;
 };
 

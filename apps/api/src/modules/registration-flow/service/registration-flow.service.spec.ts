@@ -6,6 +6,8 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
+import { AuditService } from '../../../common/audit/audit.service';
+import { AppointmentManagementService } from '../../appointment-management/service/appointment-management.service';
 import { AuthRepository } from '../../auth/repository/auth.repository';
 import { RegistrationFlowRepository } from '../repository/registration-flow.repository';
 import { RegistrationFlowService } from './registration-flow.service';
@@ -58,12 +60,22 @@ describe('RegistrationFlowService', () => {
   } as unknown as AuthRepository;
 
   const configServiceMock = {
-    get: jest.fn().mockReturnValue('Asia/Jakarta'),
+    get: jest.fn((key: string) => (key === 'CLINIC_TIMEZONE' ? 'Asia/Jakarta' : undefined)),
   } as unknown as ConfigService;
+
+  const appointmentManagementServiceMock = {
+    listDoctorPracticeWindows: jest.fn(),
+  } as unknown as AppointmentManagementService;
+
+  const auditServiceMock = {
+    record: jest.fn(),
+  } as unknown as AuditService;
 
   const service = new RegistrationFlowService(
     registrationFlowRepositoryMock,
     authRepositoryMock,
+    appointmentManagementServiceMock,
+    auditServiceMock,
     configServiceMock,
   );
 
@@ -85,6 +97,7 @@ describe('RegistrationFlowService', () => {
     id: registrationId,
     patientId,
     appointmentId: null,
+    type: 'CONSULTATION',
     status: 'PENDING',
     queueNumber: 1,
     queueDate: new Date('2026-07-18T00:00:00.000Z'),
@@ -146,6 +159,39 @@ describe('RegistrationFlowService', () => {
 
   const authMock = authRepositoryMock as unknown as { findUserById: jest.Mock };
 
+  const appointmentServiceMock = appointmentManagementServiceMock as unknown as {
+    listDoctorPracticeWindows: jest.Mock;
+  };
+
+  const auditMock = auditServiceMock as unknown as { record: jest.Mock };
+
+  /**
+   * A registration linked to a session-based booking whose session is 14:00 to
+   * 17:00 Asia/Jakarta on 18 July 2026 — the ticket's own example hours.
+   */
+  const sessionRegistrationRecord = {
+    ...registrationRecord,
+    appointmentId,
+    appointment: {
+      id: appointmentId,
+      type: 'SESSION',
+      doctorId,
+      scheduledAt: new Date('2026-07-18T07:00:00.000Z'),
+      status: 'SCHEDULED',
+      doctor: {
+        id: doctorId,
+        fullName: 'dr. Ayu',
+        specialty: { name: 'Poli Umum' },
+      },
+      session: {
+        id: 'a9d4c0f6-1b2e-4c7a-9d3f-1de1a0050001',
+        sessionDate: new Date('2026-07-18T00:00:00.000Z'),
+        startTime: '14:00',
+        endTime: '17:00',
+      },
+    },
+  };
+
   function mockPermissions(
     permissions: Array<{ action: string; resource: string; scope: PermissionScope }>,
   ): void {
@@ -154,6 +200,7 @@ describe('RegistrationFlowService', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    appointmentServiceMock.listDoctorPracticeWindows.mockResolvedValue([]);
     repositoryMock.listRegistrations.mockResolvedValue({
       items: [registrationRecord],
       total: 1,
@@ -786,6 +833,261 @@ describe('RegistrationFlowService', () => {
       expect(repositoryMock.updateRegistration).toHaveBeenCalledWith(
         expect.objectContaining({ appointmentId: null }),
       );
+    });
+  });
+
+  describe('check-in practice window (P19-T16)', () => {
+    const checkInPermissions = [
+      { action: 'update' as const, resource: 'Registration', scope: 'ANY' as PermissionScope },
+    ];
+
+    function freezeClinicClock(instant: string): void {
+      jest.useFakeTimers().setSystemTime(new Date(instant));
+    }
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    it('checks in inside the session window', async () => {
+      mockPermissions(checkInPermissions);
+      repositoryMock.findRegistrationDetailById.mockResolvedValue(sessionRegistrationRecord);
+      // 08:00 UTC is 15:00 in Asia/Jakarta: inside 14:00-17:00.
+      freezeClinicClock('2026-07-18T08:00:00.000Z');
+
+      await service.updateRegistration(registrationId, { status: 'CHECKED_IN' }, currentUser);
+
+      expect(repositoryMock.updateRegistration).toHaveBeenCalledWith(
+        expect.objectContaining({ status: 'CHECKED_IN' }),
+      );
+    });
+
+    it('checks in within the early-arrival grace', async () => {
+      mockPermissions(checkInPermissions);
+      repositoryMock.findRegistrationDetailById.mockResolvedValue(sessionRegistrationRecord);
+      // 13:30 Jakarta, half an hour into the default 60-minute grace.
+      freezeClinicClock('2026-07-18T06:30:00.000Z');
+
+      await service.updateRegistration(registrationId, { status: 'CHECKED_IN' }, currentUser);
+
+      expect(repositoryMock.updateRegistration).toHaveBeenCalled();
+    });
+
+    it('refuses a check-in before the grace opens and quotes the opening time', async () => {
+      mockPermissions(checkInPermissions);
+      repositoryMock.findRegistrationDetailById.mockResolvedValue(sessionRegistrationRecord);
+      // 12:30 Jakarta, half an hour before check-in opens at 13:00.
+      freezeClinicClock('2026-07-18T05:30:00.000Z');
+
+      const actualError = await service
+        .updateRegistration(registrationId, { status: 'CHECKED_IN' }, currentUser)
+        .catch((err: unknown) => err);
+
+      expect(actualError).toBeInstanceOf(ConflictException);
+      expect((actualError as ConflictException).getResponse()).toEqual(
+        expect.objectContaining({
+          code: 'REGISTRATION_OUTSIDE_SESSION',
+          message: 'dr. Ayu practises 14:00-17:00 today; check-in opens at 13:00',
+          errors: expect.objectContaining({
+            reason: 'BEFORE_OPENING',
+            opensAt: '13:00',
+            sessionStart: '14:00',
+            sessionEnd: '17:00',
+          }),
+        }),
+      );
+      expect(repositoryMock.updateRegistration).not.toHaveBeenCalled();
+    });
+
+    it('refuses a check-in after the session has ended, with no grace', async () => {
+      mockPermissions(checkInPermissions);
+      repositoryMock.findRegistrationDetailById.mockResolvedValue(sessionRegistrationRecord);
+      // 17:01 Jakarta, one minute after the doctor stopped.
+      freezeClinicClock('2026-07-18T10:01:00.000Z');
+
+      const actualError = await service
+        .updateRegistration(registrationId, { status: 'CHECKED_IN' }, currentUser)
+        .catch((err: unknown) => err);
+
+      expect(actualError).toBeInstanceOf(ConflictException);
+      expect((actualError as ConflictException).getResponse()).toEqual(
+        expect.objectContaining({
+          errors: expect.objectContaining({ reason: 'AFTER_END' }),
+        }),
+      );
+    });
+
+    it('refuses a check-in when the doctor holds no window today', async () => {
+      mockPermissions(checkInPermissions);
+      repositoryMock.findRegistrationDetailById.mockResolvedValue({
+        ...sessionRegistrationRecord,
+        appointment: { ...sessionRegistrationRecord.appointment, session: null },
+      });
+      appointmentServiceMock.listDoctorPracticeWindows.mockResolvedValue([]);
+      freezeClinicClock('2026-07-18T08:00:00.000Z');
+
+      const actualError = await service
+        .updateRegistration(registrationId, { status: 'CHECKED_IN' }, currentUser)
+        .catch((err: unknown) => err);
+
+      expect(actualError).toBeInstanceOf(ConflictException);
+      expect((actualError as ConflictException).getResponse()).toEqual(
+        expect.objectContaining({
+          message: 'dr. Ayu has no session today, so this patient can not be checked in',
+          errors: expect.objectContaining({ reason: 'NO_SESSION' }),
+        }),
+      );
+    });
+
+    it('falls back to the doctor practice windows when the booking names no session', async () => {
+      mockPermissions(checkInPermissions);
+      repositoryMock.findRegistrationDetailById.mockResolvedValue({
+        ...sessionRegistrationRecord,
+        appointment: { ...sessionRegistrationRecord.appointment, session: null },
+      });
+      appointmentServiceMock.listDoctorPracticeWindows.mockResolvedValue([
+        {
+          doctorId,
+          date: '2026-07-18',
+          startTime: '14:00',
+          endTime: '17:00',
+          source: 'SCHEDULE',
+        },
+      ]);
+      freezeClinicClock('2026-07-18T08:00:00.000Z');
+
+      await service.updateRegistration(registrationId, { status: 'CHECKED_IN' }, currentUser);
+
+      expect(appointmentServiceMock.listDoctorPracticeWindows).toHaveBeenCalledWith({
+        doctorIds: [doctorId],
+        sessionDate: '2026-07-18',
+      });
+      expect(repositoryMock.updateRegistration).toHaveBeenCalled();
+    });
+
+    it('gives a special request the approved time plus and minus the grace', async () => {
+      mockPermissions(checkInPermissions);
+      repositoryMock.findRegistrationDetailById.mockResolvedValue({
+        ...sessionRegistrationRecord,
+        appointment: {
+          ...sessionRegistrationRecord.appointment,
+          type: 'SPECIAL_REQUEST',
+          // 09:00 Jakarta.
+          scheduledAt: new Date('2026-07-18T02:00:00.000Z'),
+          session: null,
+        },
+      });
+      // 09:45 Jakarta: three quarters of an hour late, still inside the grace.
+      freezeClinicClock('2026-07-18T02:45:00.000Z');
+
+      await service.updateRegistration(registrationId, { status: 'CHECKED_IN' }, currentUser);
+
+      expect(repositoryMock.updateRegistration).toHaveBeenCalled();
+      // The approved instant carries its own window, so no doctor-day lookup.
+      expect(appointmentServiceMock.listDoctorPracticeWindows).toHaveBeenCalledWith({
+        doctorIds: [],
+        sessionDate: '2026-07-18',
+      });
+    });
+
+    it('leaves a LAB_ONLY walk-in alone, whatever the hour', async () => {
+      mockPermissions(checkInPermissions);
+      repositoryMock.findRegistrationDetailById.mockResolvedValue({
+        ...sessionRegistrationRecord,
+        type: 'LAB_ONLY',
+      });
+      // 03:00 Jakarta, nowhere near any session.
+      freezeClinicClock('2026-07-17T20:00:00.000Z');
+
+      await service.updateRegistration(registrationId, { status: 'CHECKED_IN' }, currentUser);
+
+      expect(repositoryMock.updateRegistration).toHaveBeenCalledWith(
+        expect.objectContaining({ status: 'CHECKED_IN' }),
+      );
+    });
+
+    it('forbids force without the override permission', async () => {
+      mockPermissions(checkInPermissions);
+      repositoryMock.findRegistrationDetailById.mockResolvedValue(sessionRegistrationRecord);
+      freezeClinicClock('2026-07-18T05:30:00.000Z');
+
+      await expect(
+        service.updateRegistration(
+          registrationId,
+          { status: 'CHECKED_IN', force: true },
+          currentUser,
+        ),
+      ).rejects.toBeInstanceOf(ForbiddenException);
+      expect(repositoryMock.updateRegistration).not.toHaveBeenCalled();
+    });
+
+    it('forces the check-in and audits it when the override permission is held', async () => {
+      mockPermissions([
+        ...checkInPermissions,
+        { action: 'checkin-override', resource: 'Registration', scope: 'ANY' },
+      ]);
+      repositoryMock.findRegistrationDetailById.mockResolvedValue(sessionRegistrationRecord);
+      freezeClinicClock('2026-07-18T05:30:00.000Z');
+
+      await service.updateRegistration(
+        registrationId,
+        { status: 'CHECKED_IN', force: true },
+        currentUser,
+      );
+
+      expect(repositoryMock.updateRegistration).toHaveBeenCalledWith(
+        expect.objectContaining({ status: 'CHECKED_IN' }),
+      );
+      expect(auditMock.record).toHaveBeenCalledWith(
+        expect.objectContaining({
+          action: 'REGISTRATION_CHECKIN_OVERRIDDEN',
+          resource: 'Registration',
+          resourceId: registrationId,
+          actorUserId: currentUser.sub,
+          metadata: expect.objectContaining({ reason: 'BEFORE_OPENING', doctorName: 'dr. Ayu' }),
+        }),
+      );
+    });
+
+    it('records nothing when force was passed but the window allowed it anyway', async () => {
+      mockPermissions([
+        ...checkInPermissions,
+        { action: 'checkin-override', resource: 'Registration', scope: 'ANY' },
+      ]);
+      repositoryMock.findRegistrationDetailById.mockResolvedValue(sessionRegistrationRecord);
+      freezeClinicClock('2026-07-18T08:00:00.000Z');
+
+      await service.updateRegistration(
+        registrationId,
+        { status: 'CHECKED_IN', force: true },
+        currentUser,
+      );
+
+      expect(auditMock.record).not.toHaveBeenCalled();
+    });
+
+    it("puts today's session hours on the returned registration", async () => {
+      mockPermissions([{ action: 'read', resource: 'Registration', scope: 'ANY' }]);
+      repositoryMock.findRegistrationDetailById.mockResolvedValue(sessionRegistrationRecord);
+      freezeClinicClock('2026-07-18T08:00:00.000Z');
+
+      const actualRegistration = await service.getRegistrationById(registrationId, currentUser);
+
+      expect(actualRegistration.todaySession).toEqual({
+        start: '14:00',
+        end: '17:00',
+        opensAt: '13:00',
+        closesAt: '17:00',
+      });
+    });
+
+    it('leaves the session hours off a registration with no doctor', async () => {
+      mockPermissions([{ action: 'read', resource: 'Registration', scope: 'ANY' }]);
+      repositoryMock.findRegistrationDetailById.mockResolvedValue(registrationRecord);
+
+      const actualRegistration = await service.getRegistrationById(registrationId, currentUser);
+
+      expect(actualRegistration.todaySession).toBeUndefined();
     });
   });
 });

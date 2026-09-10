@@ -10,18 +10,25 @@ import { BedFormDialog } from '#components/client/rooms/bed-form-dialog';
 import { BedsTable } from '#components/client/rooms/beds-table';
 import { WardFilterSelect } from '#components/client/rooms/ward-filter-select';
 import { NumberedPagination } from '#components/client/shared/numbered-pagination';
+import { EmptyState } from '#components/shared/empty-state';
 import { bedControllerRetireBedV1 } from '#lib/api/generated/room-management/room-management';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { invalidateRoomQueries } from '#lib/rooms/invalidate-room-queries';
+import { ROOM_OPTION_LIST_LIMIT } from '#lib/rooms/option-list-limit';
 import { ROOM_INVENTORY_PAGE_SIZE } from '#lib/rooms/page-size';
 import { useBedsList } from '#lib/rooms/use-beds-list';
+import { useRoomsList } from '#lib/rooms/use-rooms-list';
 
 type BedDialogState = {
   isOpen: boolean;
   bed: BedResponse | null;
 };
 
-export function BedsPanel() {
+type BedsPanelProps = {
+  onGoToRooms?: () => void;
+};
+
+export function BedsPanel({ onGoToRooms }: BedsPanelProps) {
   const t = useTranslations('operations');
   const ability = useAbility();
   const queryClient = useQueryClient();
@@ -33,6 +40,8 @@ export function BedsPanel() {
     limit: ROOM_INVENTORY_PAGE_SIZE,
     ...(wardId ? { wardId } : {}),
   });
+  const roomsQuery = useRoomsList({ page: 1, limit: ROOM_OPTION_LIST_LIMIT, isActive: 'true' });
+  const hasNoRooms = roomsQuery.isSuccess && roomsQuery.rooms.length === 0;
   const canCreate = ability.can('create', 'Bed');
   const canUpdate = ability.can('update', 'Bed');
   const canDelete = ability.can('delete', 'Bed');
@@ -69,34 +78,51 @@ export function BedsPanel() {
         ) : null}
       </div>
 
-      <Card className="gap-0 rounded-xl border-slate-200 py-0 shadow-none">
-        <CardContent className="p-0">
-          <BedsTable
-            beds={bedsQuery.beds}
-            isPending={bedsQuery.isPending}
-            isError={bedsQuery.isError}
-            canUpdate={canUpdate}
-            canDelete={canDelete}
-            onEdit={(bed) => setDialogState({ isOpen: true, bed })}
-            onRetire={(bed) => void handleRetire(bed)}
-          />
-          <NumberedPagination
-            className="border-t border-slate-100 px-4 py-3"
-            page={page}
-            pageSize={ROOM_INVENTORY_PAGE_SIZE}
-            total={bedsQuery.meta?.total ?? 0}
-            itemLabel="beds"
-            isDisabled={bedsQuery.isFetching}
-            onPageChange={setPage}
-          />
-        </CardContent>
-      </Card>
+      {hasNoRooms ? (
+        <EmptyState
+          icon="king_bed"
+          title={t('rooms.emptyRooms')}
+          description={t('rooms.noRoomsDescription')}
+          action={
+            onGoToRooms ? (
+              <Button type="button" variant="outline" size="sm" onClick={onGoToRooms}>
+                {t('rooms.goToRooms')}
+              </Button>
+            ) : undefined
+          }
+        />
+      ) : null}
+      {!hasNoRooms ? (
+        <Card className="gap-0 rounded-xl border-slate-200 py-0 shadow-none">
+          <CardContent className="p-0">
+            <BedsTable
+              beds={bedsQuery.beds}
+              isPending={bedsQuery.isPending}
+              isError={bedsQuery.isError}
+              canUpdate={canUpdate}
+              canDelete={canDelete}
+              onEdit={(bed) => setDialogState({ isOpen: true, bed })}
+              onRetire={(bed) => void handleRetire(bed)}
+            />
+            <NumberedPagination
+              className="border-t border-slate-100 px-4 py-3"
+              page={page}
+              pageSize={ROOM_INVENTORY_PAGE_SIZE}
+              total={bedsQuery.meta?.total ?? 0}
+              itemLabel="beds"
+              isDisabled={bedsQuery.isFetching}
+              onPageChange={setPage}
+            />
+          </CardContent>
+        </Card>
+      ) : null}
 
       {dialogState.isOpen ? (
         <BedFormDialog
           key={dialogState.bed?.id ?? 'new'}
           open={dialogState.isOpen}
           bed={dialogState.bed}
+          onGoToRooms={onGoToRooms}
           onOpenChange={(isOpen) => {
             if (!isOpen) {
               setDialogState({ isOpen: false, bed: null });

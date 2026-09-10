@@ -56,6 +56,17 @@ export type UpdateDoctorRecordPayload = {
   isActive?: boolean;
 };
 
+/**
+ * One outstanding invitation to the account a doctor will sign in with
+ * (P19-T15). The address lives here rather than on `DoctorProfile` for the
+ * same reason it lives on `User` once accepted: one stored copy, and this row
+ * is where it is stored until the account exists.
+ */
+export type DoctorPendingInvitation = {
+  email: string;
+  expiresAt: Date;
+};
+
 export type DoctorRecord = {
   id: string;
   licenseNumber: string;
@@ -74,6 +85,14 @@ export type DoctorRecord = {
   ownerUserId: string | null;
   /** The doctor's email, read from their account — the only stored copy. */
   ownerUser: { email: string } | null;
+  /**
+   * Invitations raised for this profile that nobody has accepted and nobody
+   * has withdrawn, newest first. Optional because it is a projection some
+   * queries do not ask for; read it through a `?? []` rather than assuming the
+   * caller selected it. `expiresAt` rides along because a lapsed invitation is
+   * still an unconsumed row, and only the reader knows what "now" is.
+   */
+  ownerInvitations?: DoctorPendingInvitation[];
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;

@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { createPatientSchema, nikSchema } from '#patient-management/schemas';
+import { indonesianPhoneNumberSchema } from '#shared/phone-number-schema';
 
 /**
  * The messaging channels the customer-service gateway speaks. Mirrors the
@@ -340,12 +341,9 @@ export const bookAppointmentArgumentsSchema = z.object({
     .min(2)
     .max(120)
     .describe('Nama lengkap pasien seperti yang pelanggan tuliskan.'),
-  phoneNumber: z
-    .string()
-    .trim()
-    .min(6)
-    .max(32)
-    .describe('Nomor telepon yang bisa dihubungi, seperti yang pelanggan tuliskan.'),
+  phoneNumber: indonesianPhoneNumberSchema.describe(
+    'Nomor telepon yang bisa dihubungi, seperti yang pelanggan tuliskan.',
+  ),
   sessionId: z
     .string()
     .trim()
@@ -904,6 +902,28 @@ export const prospectiveMatchReasonSchema = z.enum(PROSPECTIVE_MATCH_REASONS);
 export type ProspectiveMatchReasonValue = z.infer<typeof prospectiveMatchReasonSchema>;
 
 /**
+ * What the back-office "From chat" table can order by (`P19-T08`).
+ *
+ * Only the two dates: `createdAt` is the worklist order the counter has always
+ * used (oldest enquiry first), and `expiresAt` is the one the back office asks
+ * for when it wants to see what is about to stop being kept.
+ */
+export const PROSPECTIVE_PATIENT_SORT_FIELDS = ['createdAt', 'expiresAt'] as const;
+
+export const prospectivePatientSortFieldSchema = z.enum(PROSPECTIVE_PATIENT_SORT_FIELDS);
+
+export type ProspectivePatientSortFieldValue = z.infer<typeof prospectivePatientSortFieldSchema>;
+
+export const PROSPECTIVE_PATIENT_SORT_ORDERS = ['asc', 'desc'] as const;
+
+export const prospectivePatientSortOrderSchema = z.enum(PROSPECTIVE_PATIENT_SORT_ORDERS);
+
+export type ProspectivePatientSortOrderValue = z.infer<typeof prospectivePatientSortOrderSchema>;
+
+/** Longer than any name or phone number; a longer string is a paste, not a search. */
+const MAX_PROSPECTIVE_SEARCH_LENGTH = 100;
+
+/**
  * The arrival worklist's own list, keyed on the prospective record rather than
  * on the appointment (`P17-T04`).
  *
@@ -915,6 +935,12 @@ export type ProspectiveMatchReasonValue = z.infer<typeof prospectiveMatchReasonS
  */
 export const listProspectivePatientsQuerySchema = z.object({
   status: prospectivePatientStatusSchema.default('AWAITING_ARRIVAL'),
+  channel: channelKindSchema.optional(),
+  /** Name or phone number, matched loosely; a phone is compared on its digits. */
+  q: z.string().trim().min(1).max(MAX_PROSPECTIVE_SEARCH_LENGTH).optional(),
+  sort: prospectivePatientSortFieldSchema.default('createdAt'),
+  order: prospectivePatientSortOrderSchema.default('asc'),
+  page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(25),
 });
 
@@ -962,13 +988,20 @@ export type LinkProspectivePatientInput = z.infer<typeof linkProspectivePatientS
  * The person at the counter is genuinely new, so this is where the MRN is
  * spent (`P17-T04`).
  *
- * **Deliberately `createPatientSchema` itself and not a variant of it.** The
- * whole safety of the conversion path is that it produces an ordinary patient
- * record through the ordinary create — same required demographics, same
- * identifier validation, same privacy-notice evidence, same encryption path. A
- * loosened "conversion create" would become the way a record gets registered
- * without a date of birth, which is the thing `P17-T01` opened the prospective
- * table to avoid in the first place.
+ * **Deliberately the patient create schema itself and not a variant of it.**
+ * The whole safety of the conversion path is that it produces an ordinary
+ * patient record through the ordinary create — same required demographics,
+ * same identifier validation, same privacy-notice evidence, same encryption
+ * path. A loosened "conversion create" would become the way a record gets
+ * registered without a date of birth, which is the thing `P17-T01` opened the
+ * prospective table to avoid in the first place.
+ *
+ * That includes the structured address (P19-T10, required since P19-T11). The
+ * chat booking this record came from could not collect one, but the person is
+ * standing at the counter when the conversion runs, and the same form with the
+ * same region picker is what the clerk fills in — it simply opens with the
+ * address section empty. Exempting the conversion would reintroduce the
+ * loophole this schema exists to close.
  */
 export const convertProspectivePatientSchema = createPatientSchema;
 

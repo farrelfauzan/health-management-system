@@ -1,5 +1,15 @@
 import { z } from 'zod';
 
+import {
+  districtCodeSchema,
+  postalCodeSchema,
+  provinceCodeSchema,
+  regencyCodeSchema,
+  rtRwSchema,
+  villageCodeSchema,
+} from '#regions/schemas';
+import { indonesianPhoneNumberSchema } from '#shared/phone-number-schema';
+
 export const patientDateSchema = z
   .string()
   .regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must use YYYY-MM-DD format');
@@ -367,12 +377,120 @@ export const listPatientsQuerySchema = z
   );
 
 /**
+ * The structured half of a patient address (P19-T10): the four Kemendagri
+ * codes, RT/RW and the postal code. `address` itself stays the street line.
+ *
+ * The prefix check below is structural — `11.01` cannot be a regency of
+ * province `12` whatever the master data says — and it answers with the same
+ * field-level issue the service raises when a code exists but sits under a
+ * different parent. The update schema applies it; the service applies the
+ * master-data check to every write.
+ */
+export const patientAddressSchema = z.object({
+  provinceCode: provinceCodeSchema,
+  regencyCode: regencyCodeSchema,
+  districtCode: districtCodeSchema,
+  villageCode: villageCodeSchema,
+  rtRw: rtRwSchema.optional(),
+  postalCode: postalCodeSchema.optional(),
+});
+
+export type PatientAddressInput = z.infer<typeof patientAddressSchema>;
+
+type AddressChainPrefixes = {
+  provinceCode?: string | null;
+  regencyCode?: string | null;
+  districtCode?: string | null;
+  villageCode?: string | null;
+};
+
+const ADDRESS_CHAIN_FIELDS = ['provinceCode', 'regencyCode', 'districtCode', 'villageCode'] as const;
+
+type AddressChainField = (typeof ADDRESS_CHAIN_FIELDS)[number];
+
+const ADDRESS_CHAIN_LINKS: ReadonlyArray<{ parent: AddressChainField; child: AddressChainField }> = [
+  { parent: 'provinceCode', child: 'regencyCode' },
+  { parent: 'regencyCode', child: 'districtCode' },
+  { parent: 'districtCode', child: 'villageCode' },
+];
+
+/**
+ * Adds an issue on the first code that does not extend the one above it.
+ * Exported so the API can reuse the wording where it checks the same chain
+ * against the master data.
+ */
+export function addAddressChainPrefixIssues(
+  value: AddressChainPrefixes,
+  context: z.RefinementCtx,
+): void {
+  for (const link of ADDRESS_CHAIN_LINKS) {
+    const parent = value[link.parent];
+    const child = value[link.child];
+    if (!parent || !child) {
+      continue;
+    }
+    if (!child.startsWith(`${parent}.`)) {
+      context.addIssue({
+        code: 'custom',
+        message: `${link.child} does not belong to ${link.parent} ${parent}`,
+        path: [link.child],
+      });
+      return;
+    }
+  }
+}
+
+/**
+ * On an update the codes are optional, but never individually: a chain is
+ * replaced whole or left alone, because a village stored under yesterday's
+ * district is an address nobody can print or send to SATUSEHAT.
+ */
+export function addAddressChainCompletenessIssues(
+  value: AddressChainPrefixes,
+  context: z.RefinementCtx,
+): void {
+  const provided = ADDRESS_CHAIN_FIELDS.filter((field) => value[field] !== undefined);
+  if (provided.length === 0 || provided.length === ADDRESS_CHAIN_FIELDS.length) {
+    return;
+  }
+  for (const field of ADDRESS_CHAIN_FIELDS) {
+    if (value[field] === undefined) {
+      context.addIssue({
+        code: 'custom',
+        message: 'All four region codes must be supplied together',
+        path: [field],
+      });
+    }
+  }
+}
+
+/**
+ * Everything a patient record can be created with, before the front-desk rule
+ * that the address must be structured. The four region codes are optional
+ * here — supplied together and validated as a chain by the service when they
+ * are, absent when they are not.
+ *
+ * This is the shape the create paths that have no person in front of them use.
+ * A BPJS antrean registration carries a free-text `alamat` and nothing else, a
+ * chat conversion is completed over later visits, and a legacy import copies
+ * what the previous system held. None of them can produce a Kemendagri chain,
+ * and refusing the record would leave the patient unregistered rather than
+ * imprecisely registered. The front desk, which can produce one, uses
+ * {@link createPatientSchema} instead.
+ *
  * `mrn` is deliberately absent: it is allocated by the server inside the create
  * transaction. A client-supplied MRN can collide with an existing record and
  * nothing stops a caller from inventing a format. Clinics importing MRNs that
  * already exist on paper use {@link importPatientSchema} instead.
+ *
+ * Deliberately a plain object with no chain refinement: the web reads
+ * `createPatientSchema.shape` field by field for its validators, and a
+ * `ZodEffects` has no shape. The service's master-data check catches a
+ * structurally wrong chain anyway — a village whose parent is not the given
+ * district is a mismatch whether or not the prefixes agree — and it is the
+ * service that rejects a partial chain on these optional-code paths.
  */
-export const createPatientSchema = z.object({
+export const createPatientBaseSchema = z.object({
   fullName: z.string().trim().min(2).max(120),
   dateOfBirth: patientDateSchema
     .refine(isValidDateValue, 'Date of birth must be a valid calendar date')
@@ -380,8 +498,10 @@ export const createPatientSchema = z.object({
   placeOfBirth: placeOfBirthSchema.optional(),
   sex: patientSexSchema,
   status: patientStatusSchema.optional().default('OUT_PATIENT'),
-  phoneNumber: z.string().trim().min(6).max(32),
+  phoneNumber: indonesianPhoneNumberSchema,
+  /** The street line. The Kemendagri chain lives in the four codes below. */
   address: z.string().trim().min(3).max(300),
+  ...patientAddressSchema.partial().shape,
   // Nullable: newborns have no NIK for weeks, foreign nationals carry a
   // passport or KITAS, and an unidentified emergency arrival needs a record
   // immediately. Never the primary key — `mrn` stays the internal anchor.
@@ -394,7 +514,7 @@ export const createPatientSchema = z.object({
   occupation: z.string().trim().min(2).max(120).optional(),
   religion: religionSchema.optional(),
   emergencyContactName: z.string().trim().min(2).max(120).optional(),
-  emergencyContactPhone: z.string().trim().min(6).max(32).optional(),
+  emergencyContactPhone: indonesianPhoneNumberSchema.optional(),
   guardianName: z.string().trim().min(2).max(120).optional(),
   guardianRelation: z.string().trim().min(2).max(60).optional(),
   allergies: patientAllergiesSchema.optional(),
@@ -410,12 +530,41 @@ export const createPatientSchema = z.object({
 });
 
 /**
- * Legacy import. Identical to a create except that the MRN comes from the
- * clinic's previous system, so it must be accepted verbatim — the number is
- * already printed on a folder and cannot be renumbered. Gated by
- * `patient.import-identifier`, never exposed on the ordinary create route.
+ * The front-desk create, and the prospective-patient conversion that shares
+ * its form. The four region codes are required: `P19-T11` put a cascading
+ * province → regency → district → village picker on the patient form, so the
+ * clerk registering somebody at the counter can always produce the chain, and
+ * an address without one cannot be printed on an invoice, searched by region
+ * or sent to SATUSEHAT.
+ *
+ * RT/RW and the postal code stay optional — plenty of Indonesian addresses
+ * carry neither, and refusing those would be inventing a rule the KTP does
+ * not have.
+ *
+ * Still a plain object rather than a refined one, for the reason
+ * {@link createPatientBaseSchema} gives: the web reads `.shape` field by field
+ * and the service checks the chain against the master data on every write.
  */
-export const importPatientSchema = createPatientSchema.extend({
+export const createPatientSchema = createPatientBaseSchema.extend({
+  provinceCode: provinceCodeSchema,
+  regencyCode: regencyCodeSchema,
+  districtCode: districtCodeSchema,
+  villageCode: villageCodeSchema,
+});
+
+/**
+ * Legacy import. Identical to {@link createPatientBaseSchema} except that the
+ * MRN comes from the clinic's previous system, so it must be accepted
+ * verbatim — the number is already printed on a folder and cannot be
+ * renumbered. Gated by `patient.import-identifier`, never exposed on the
+ * ordinary create route.
+ *
+ * Built on the base rather than on the front-desk create on purpose: an import
+ * copies the address the old system held, which is a free-text line, and
+ * demanding a Kemendagri chain would make every historical record
+ * unimportable.
+ */
+export const importPatientSchema = createPatientBaseSchema.extend({
   mrn: mrnSchema,
 });
 
@@ -434,8 +583,14 @@ export const updatePatientSchema = z
     placeOfBirth: placeOfBirthSchema.nullable().optional(),
     sex: patientSexSchema.optional(),
     status: patientStatusSchema.optional(),
-    phoneNumber: z.string().trim().min(6).max(32).optional(),
+    phoneNumber: indonesianPhoneNumberSchema.optional(),
     address: z.string().trim().min(3).max(300).optional(),
+    provinceCode: provinceCodeSchema.optional(),
+    regencyCode: regencyCodeSchema.optional(),
+    districtCode: districtCodeSchema.optional(),
+    villageCode: villageCodeSchema.optional(),
+    rtRw: rtRwSchema.nullable().optional(),
+    postalCode: postalCodeSchema.nullable().optional(),
     nik: nikSchema.nullable().optional(),
     bpjsNumber: bpjsNumberSchema.nullable().optional(),
     email: z.string().trim().email().max(254).nullable().optional(),
@@ -445,7 +600,7 @@ export const updatePatientSchema = z
     occupation: z.string().trim().min(2).max(120).nullable().optional(),
     religion: religionSchema.nullable().optional(),
     emergencyContactName: z.string().trim().min(2).max(120).nullable().optional(),
-    emergencyContactPhone: z.string().trim().min(6).max(32).nullable().optional(),
+    emergencyContactPhone: indonesianPhoneNumberSchema.nullable().optional(),
     guardianName: z.string().trim().min(2).max(120).nullable().optional(),
     guardianRelation: z.string().trim().min(2).max(60).nullable().optional(),
     // Replaces the whole list: the client always submits the complete set of
@@ -455,11 +610,20 @@ export const updatePatientSchema = z
     ownerUserId: z.string().uuid().nullable().optional(),
     isActive: z.boolean().optional(),
   })
+  .superRefine(addAddressChainCompletenessIssues)
+  .superRefine(addAddressChainPrefixIssues)
   .refine((payload) => Object.values(payload).some((value) => value !== undefined), {
     message: 'At least one field is required',
   });
 
 export type ListPatientsQueryInput = z.infer<typeof listPatientsQuerySchema>;
+/**
+ * What the patient service accepts on any create path. Deliberately the lax
+ * shape: the machine callers (BPJS antrean, chat conversion, legacy import)
+ * reach the service without a region chain, and the routes that do demand one
+ * enforce it at their DTO.
+ */
+export type CreatePatientBaseInput = z.infer<typeof createPatientBaseSchema>;
 export type CreatePatientInput = z.infer<typeof createPatientSchema>;
 export type ImportPatientInput = z.infer<typeof importPatientSchema>;
 export type UpdatePatientInput = z.infer<typeof updatePatientSchema>;

@@ -13,7 +13,11 @@ describe('ProspectiveArrivalService', () => {
   let mockRepository: jest.Mocked<
     Pick<
       ProspectiveArrivalRepository,
-      'listByStatus' | 'findById' | 'findPatientSummary' | 'findMatchCandidates' | 'linkToPatient'
+      | 'listProspectivePatients'
+      | 'findById'
+      | 'findPatientSummary'
+      | 'findMatchCandidates'
+      | 'linkToPatient'
     >
   >;
   let mockPatientService: jest.Mocked<Pick<PatientManagementService, 'createPatientFromProspective'>>;
@@ -53,7 +57,7 @@ describe('ProspectiveArrivalService', () => {
   beforeEach(() => {
     jest.spyOn(Logger.prototype, 'log').mockImplementation(() => undefined);
     mockRepository = {
-      listByStatus: jest.fn().mockResolvedValue([]),
+      listProspectivePatients: jest.fn().mockResolvedValue({ rows: [], total: 0 }),
       findById: jest.fn().mockResolvedValue(buildProspective()),
       findPatientSummary: jest.fn(),
       findMatchCandidates: jest.fn().mockResolvedValue([]),
@@ -74,6 +78,100 @@ describe('ProspectiveArrivalService', () => {
 
   afterEach(() => {
     jest.restoreAllMocks();
+  });
+
+  describe('listProspectivePatients', () => {
+    function buildListQuery(overrides: Record<string, unknown> = {}) {
+      return {
+        status: 'AWAITING_ARRIVAL' as const,
+        sort: 'createdAt' as const,
+        order: 'asc' as const,
+        page: 1,
+        limit: 25,
+        ...overrides,
+      };
+    }
+
+    function buildListRow(overrides: Record<string, unknown> = {}) {
+      return {
+        id: prospectiveId,
+        fullName: 'Siti Rahayu',
+        phoneNumber: '628123456789',
+        channel: 'TELEGRAM' as const,
+        status: 'AWAITING_ARRIVAL' as const,
+        patientId: null,
+        patient: null,
+        appointments: [],
+        expiresAt: new Date('2026-11-06T14:22:00.000Z'),
+        createdAt: new Date('2026-08-08T14:22:00.000Z'),
+        _count: { appointments: 1 },
+        ...overrides,
+      };
+    }
+
+    it('sends a typed phone number to the phone column, normalised like the stored value', async () => {
+      await prospectiveArrivalService.listProspectivePatients(
+        buildListQuery({ q: '0812 3456-789', channel: 'TELEGRAM' }),
+      );
+
+      const params = mockRepository.listProspectivePatients.mock.calls[0]?.[0];
+      expect(params).toMatchObject({
+        status: 'AWAITING_ARRIVAL',
+        channel: 'TELEGRAM',
+        phoneQuery: '628123456789',
+        sort: 'createdAt',
+        order: 'asc',
+        page: 1,
+        limit: 25,
+      });
+      expect(params).not.toHaveProperty('nameQuery');
+      expect(params?.upcomingFrom).toBeInstanceOf(Date);
+    });
+
+    it('sends a typed name to the name column and never to the phone column', async () => {
+      await prospectiveArrivalService.listProspectivePatients(buildListQuery({ q: 'Siti' }));
+
+      const params = mockRepository.listProspectivePatients.mock.calls[0]?.[0];
+      expect(params).toMatchObject({ nameQuery: 'Siti' });
+      expect(params).not.toHaveProperty('phoneQuery');
+    });
+
+    it('returns the page with its meta and surfaces the upcoming booking and MRN', async () => {
+      mockRepository.listProspectivePatients.mockResolvedValue({
+        rows: [
+          buildListRow({
+            status: 'CONVERTED',
+            patientId: 'patient-1',
+            patient: { mrn: 'RM-000119' },
+            appointments: [
+              {
+                id: 'appointment-1',
+                scheduledAt: new Date('2026-08-12T02:00:00.000Z'),
+                doctor: { fullName: 'dr. Andi Pratama' },
+              },
+            ],
+          }),
+          buildListRow({ id: 'prospective-2' }),
+        ],
+        total: 7,
+      });
+
+      const result = await prospectiveArrivalService.listProspectivePatients(
+        buildListQuery({ page: 2, limit: 2 }),
+      );
+
+      expect(result.meta).toEqual({ page: 2, limit: 2, total: 7 });
+      expect(result.items[0]).toMatchObject({
+        status: 'CONVERTED',
+        patientMrn: 'RM-000119',
+        upcomingAppointment: {
+          id: 'appointment-1',
+          scheduledAt: '2026-08-12T02:00:00.000Z',
+          doctorName: 'dr. Andi Pratama',
+        },
+      });
+      expect(result.items[1]).toMatchObject({ patientMrn: null, upcomingAppointment: null });
+    });
   });
 
   describe('listMatchCandidates', () => {

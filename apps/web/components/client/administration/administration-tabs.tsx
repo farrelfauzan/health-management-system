@@ -7,14 +7,20 @@ import { AdminInvitationsPanel } from '#components/client/administration/admin-i
 import { AdminUsersPanel } from '#components/client/administration/admin-users-panel';
 import { RolesPanel } from '#components/client/administration/roles-panel';
 import { ClinicProfilePanel } from '#components/client/clinic-profile/clinic-profile-panel';
+import {
+  ADMINISTRATION_TABS,
+  type AdministrationTab,
+} from '#lib/admin-users/administration-tabs';
 import type { AdminUsersSearchParams } from '#lib/admin-users/search-params';
+import { useTabSearchParam } from '#lib/navigation/use-tab-search-param';
 
 type AdministrationTabsProps = {
   initialQuery: AdminUsersSearchParams;
-  defaultTab: 'users' | 'invitations' | 'roles' | 'clinic';
+  /** A tab asked for by the URL; honoured only when this person may see it (SJ-162). */
+  initialTab?: AdministrationTab;
 };
 
-export function AdministrationTabs({ initialQuery, defaultTab }: AdministrationTabsProps) {
+export function AdministrationTabs({ initialQuery, initialTab }: AdministrationTabsProps) {
   const t = useTranslations('operations.administration');
   const ability = useAbility();
   const canReadRoles = ability.can('read', 'Role');
@@ -28,13 +34,28 @@ export function AdministrationTabs({ initialQuery, defaultTab }: AdministrationT
   // disabled form in that case rather than hiding the clinic's own details
   // from the people who put them on a document.
   const canReadClinicProfile = ability.can('read', 'ClinicProfile');
+  const readableTabs: Record<AdministrationTab, boolean> = {
+    users: true,
+    invitations: canReadUsers,
+    roles: canReadRoles,
+    clinic: canReadClinicProfile,
+  };
+  const { tab, setTab } = useTabSearchParam<AdministrationTab>({
+    allowed: ADMINISTRATION_TABS.filter((candidate) => readableTabs[candidate]),
+    fallback: 'users',
+    initialTab,
+  });
 
   if (!canReadRoles && !canReadClinicProfile) {
     return <AdminUsersPanel initialQuery={initialQuery} />;
   }
 
   return (
-    <Tabs defaultValue={defaultTab} className="space-y-5">
+    <Tabs
+      value={tab}
+      onValueChange={(value) => setTab(value as AdministrationTab)}
+      className="space-y-5"
+    >
       <TabsList>
         <TabsTrigger value="users">{t('usersTab')}</TabsTrigger>
         {canReadUsers ? (

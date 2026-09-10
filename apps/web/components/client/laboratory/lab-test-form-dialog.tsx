@@ -33,6 +33,7 @@ import { useTranslations } from 'next-intl';
 import { LabReferenceRangesEditor } from '#components/client/laboratory/lab-reference-ranges-editor';
 import { LabTariffPicker } from '#components/client/laboratory/lab-tariff-picker';
 import { FormLabel } from '#components/client/shared/form-label';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { RequiredLegend } from '#components/client/shared/required-legend';
 import {
   labTestControllerCreateLabTestV1,
@@ -241,17 +242,12 @@ export function LabTestFormDialog({ open, labTest, onOpenChange }: LabTestFormDi
           </DialogHeader>
           <div className="space-y-4 py-4">
             <RequiredLegend />
-            {actionError ? (
-              <p
-                role="alert"
-                className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700"
-              >
-                {actionError}
-              </p>
-            ) : null}
+            {actionError ? <InlineNotice tone="error">{actionError}</InlineNotice> : null}
             <div className="grid gap-3 sm:grid-cols-3">
               <div className="space-y-1 text-sm text-slate-700">
-                <FormLabel htmlFor="lab-test-code" required>{t('fields.code')}</FormLabel>
+                <FormLabel htmlFor="lab-test-code" required>
+                  {t('fields.code')}
+                </FormLabel>
                 <Input
                   id="lab-test-code"
                   value={code}
@@ -261,7 +257,9 @@ export function LabTestFormDialog({ open, labTest, onOpenChange }: LabTestFormDi
                 />
               </div>
               <div className="space-y-1 text-sm text-slate-700 sm:col-span-2">
-                <FormLabel htmlFor="lab-test-name" required>{t('fields.name')}</FormLabel>
+                <FormLabel htmlFor="lab-test-name" required>
+                  {t('fields.name')}
+                </FormLabel>
                 <Input
                   id="lab-test-name"
                   value={name}
@@ -298,7 +296,9 @@ export function LabTestFormDialog({ open, labTest, onOpenChange }: LabTestFormDi
             ) : null}
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-1 text-sm text-slate-700">
-                <FormLabel htmlFor="lab-test-specimen" required>{t('fields.specimen')}</FormLabel>
+                <FormLabel htmlFor="lab-test-specimen" required>
+                  {t('fields.specimen')}
+                </FormLabel>
                 <Select
                   value={specimenType}
                   onValueChange={(value) => setSpecimenType(value as LabSpecimenTypeValue)}
@@ -317,7 +317,9 @@ export function LabTestFormDialog({ open, labTest, onOpenChange }: LabTestFormDi
                 </Select>
               </div>
               <div className="space-y-1 text-sm text-slate-700">
-                <FormLabel htmlFor="lab-test-result-type" required>{t('fields.resultType')}</FormLabel>
+                <FormLabel htmlFor="lab-test-result-type" required>
+                  {t('fields.resultType')}
+                </FormLabel>
                 <Select
                   value={resultType}
                   onValueChange={(value) => setResultType(value as LabResultTypeValue)}
@@ -339,7 +341,9 @@ export function LabTestFormDialog({ open, labTest, onOpenChange }: LabTestFormDi
             {isNumeric ? (
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="space-y-1 text-sm text-slate-700">
-                  <FormLabel htmlFor="lab-test-unit" required>{t('fields.unit')}</FormLabel>
+                  <FormLabel htmlFor="lab-test-unit" required>
+                    {t('fields.unit')}
+                  </FormLabel>
                   <Input
                     id="lab-test-unit"
                     value={unit}
@@ -363,7 +367,9 @@ export function LabTestFormDialog({ open, labTest, onOpenChange }: LabTestFormDi
             ) : null}
             {resultType === 'CODED' ? (
               <div className="space-y-1 text-sm text-slate-700">
-                <FormLabel htmlFor="lab-test-coded-options" required>{t('fields.codedOptions')}</FormLabel>
+                <FormLabel htmlFor="lab-test-coded-options" required>
+                  {t('fields.codedOptions')}
+                </FormLabel>
                 <Textarea
                   id="lab-test-coded-options"
                   value={codedOptionsText}

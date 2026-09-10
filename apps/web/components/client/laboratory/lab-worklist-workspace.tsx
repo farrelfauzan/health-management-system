@@ -9,8 +9,12 @@ import { useFormatter, useTranslations } from 'next-intl';
 
 import { LabCollectDialog } from '#components/client/laboratory/lab-collect-dialog';
 import { LabWorklistTable } from '#components/client/laboratory/lab-worklist-table';
-import { LAB_WORKLIST_BUCKETS } from '#lib/laboratory/lab-worklist-buckets';
+import {
+  DEFAULT_LAB_WORKLIST_BUCKET,
+  LAB_WORKLIST_BUCKETS,
+} from '#lib/laboratory/lab-worklist-buckets';
 import { useLabWorklist } from '#lib/laboratory/use-lab-worklist';
+import { useTabSearchParam } from '#lib/navigation/use-tab-search-param';
 import {
   buildLabWorklistSearchParams,
   type LabWorklistSearchParams,
@@ -30,12 +34,21 @@ export function LabWorklistWorkspace({ initialQuery }: LabWorklistWorkspaceProps
   const format = useFormatter();
   const router = useRouter();
   const ability = useAbility();
-  const [query, setQuery] = useState<LabWorklistSearchParams>(initialQuery);
+  // The bucket is a tab, so it pushes a history entry and Back returns to the
+  // previous one (SJ-162); the day is a filter and keeps replacing in place.
+  const { tab: bucket, setTab: setBucket } = useTabSearchParam<LabWorklistBucketValue>({
+    key: 'bucket',
+    allowed: LAB_WORKLIST_BUCKETS,
+    fallback: DEFAULT_LAB_WORKLIST_BUCKET,
+    initialTab: initialQuery.bucket,
+  });
+  const [date, setDate] = useState<string | undefined>(initialQuery.date);
   const [collectTarget, setCollectTarget] = useState<LabWorklistItem | null>(null);
+  const query: LabWorklistSearchParams = { bucket, ...(date ? { date } : {}) };
   const worklist = useLabWorklist(query);
 
   function updateQuery(next: LabWorklistSearchParams): void {
-    setQuery(next);
+    setDate(next.date);
     router.replace(`/admin/laboratory?${buildLabWorklistSearchParams(next).toString()}`);
   }
 
@@ -43,10 +56,8 @@ export function LabWorklistWorkspace({ initialQuery }: LabWorklistWorkspaceProps
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <Tabs
-          value={query.bucket}
-          onValueChange={(value) =>
-            updateQuery({ ...query, bucket: value as LabWorklistBucketValue })
-          }
+          value={bucket}
+          onValueChange={(value) => setBucket(value as LabWorklistBucketValue)}
         >
           <TabsList>
             {LAB_WORKLIST_BUCKETS.map((bucket) => (

@@ -6,6 +6,7 @@ import type { TelegramWebhookHealth } from '@hms/shared-types';
 import { Button, Card, CardContent } from '@hms/ui';
 import { useFormatter, useTranslations } from 'next-intl';
 
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import {
   channelGatewayAdminControllerRegisterTelegramWebhookV1,
   getChannelGatewayAdminControllerGetTelegramWebhookHealthV1QueryKey,
@@ -117,11 +118,7 @@ export function TelegramWebhookCard() {
             time: format.dateTime(new Date(webhook.checkedAt), { timeStyle: 'medium' }),
           })}
         </p>
-        {error ? (
-          <p role="alert" className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-900">
-            {error}
-          </p>
-        ) : null}
+        {error ? <InlineNotice tone="error">{error}</InlineNotice> : null}
       </CardContent>
     </Card>
   );

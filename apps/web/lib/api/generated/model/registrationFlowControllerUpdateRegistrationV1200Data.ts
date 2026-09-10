@@ -6,6 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { RegistrationFlowControllerUpdateRegistrationV1200DataPoli } from './registrationFlowControllerUpdateRegistrationV1200DataPoli';
+import type { RegistrationFlowControllerUpdateRegistrationV1200DataTodaySession } from './registrationFlowControllerUpdateRegistrationV1200DataTodaySession';
 
 export type RegistrationFlowControllerUpdateRegistrationV1200Data = {
   id: string;
@@ -20,5 +21,6 @@ export type RegistrationFlowControllerUpdateRegistrationV1200Data = {
   createdById: string;
   createdAt: string;
   updatedAt: string;
+  todaySession: RegistrationFlowControllerUpdateRegistrationV1200DataTodaySession;
   checkedInAt: string;
 };

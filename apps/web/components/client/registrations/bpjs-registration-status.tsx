@@ -19,6 +19,7 @@ import {
 } from '@hms/ui';
 import { useFormatter, useTranslations } from 'next-intl';
 
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { bpjsEligibilityControllerCheckEligibilityV1 } from '#lib/api/generated/bpjs-pcare/bpjs-pcare';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { parseApiSuccess } from '#lib/api/response';
@@ -150,11 +151,7 @@ function BpjsRegistrationStatusContent({
               Contacting BPJS PCare…
             </div>
           ) : null}
-          {checkError ? (
-            <p role="alert" className="rounded-lg bg-rose-50 p-3 text-sm text-rose-700">
-              {checkError}
-            </p>
-          ) : null}
+          {checkError ? <InlineNotice tone="error">{checkError}</InlineNotice> : null}
           {result ? (
             <Card className={eligibilityStyle(result.state)}>
               <CardContent className="space-y-4 pt-6">

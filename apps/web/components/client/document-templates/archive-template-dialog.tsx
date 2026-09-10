@@ -14,6 +14,7 @@ import {
 } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { documentTemplateControllerArchiveTemplateV1 } from '#lib/api/generated/document-templates/document-templates';
 import { resolveApiErrorMessage } from '#lib/api/resolve-api-error-message';
 import { parseApiSuccess } from '#lib/api/response';
@@ -61,13 +62,7 @@ export function ArchiveTemplateDialog({
           <DialogDescription>{t('description')}</DialogDescription>
         </DialogHeader>
         {isDefault ? (
-          <p
-            role="alert"
-            className="flex items-start gap-2 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-900"
-          >
-            <Icon name="info" size={16} />
-            <span>{t('defaultBlocked')}</span>
-          </p>
+          <InlineNotice tone="warning">{t('defaultBlocked')}</InlineNotice>
         ) : (
           <p className="text-sm text-slate-600">{t('versionsNote')}</p>
         )}

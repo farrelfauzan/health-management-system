@@ -6,6 +6,7 @@ import { useForm } from '@tanstack/react-form';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   createDoctorSchema,
+  doctorEmailFormSchema,
   type CreateDoctorInput,
   type DoctorEducation,
   type DoctorLicense,
@@ -22,15 +23,21 @@ import {
   DialogHeader,
   DialogTitle,
   Input,
+  PhoneInput,
 } from '@hms/ui';
 
+import { CredentialCatalogHint } from '#components/client/doctors/credential-catalog-hint';
+import { DoctorAccountEmailNotice } from '#components/client/doctors/doctor-account-email-notice';
+import { DoctorDegreesPicker } from '#components/client/doctors/doctor-degrees-picker';
 import { DoctorEducationsField } from '#components/client/doctors/doctor-educations-field';
 import { DoctorLicensesField } from '#components/client/doctors/doctor-licenses-field';
 import { DoctorPatientPicker } from '#components/client/doctors/doctor-patient-picker';
+import { DoctorTitleSelect } from '#components/client/doctors/doctor-title-select';
 import { SpecialtyCombobox } from '#components/client/doctors/specialty-combobox';
 import { FieldDescription } from '#components/client/shared/field-description';
 import { FieldError } from '#components/client/shared/field-error';
 import { FormLabel } from '#components/client/shared/form-label';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { LabelInfoTooltip } from '#components/client/shared/label-info-tooltip';
 import { RequiredLegend } from '#components/client/shared/required-legend';
 import {
@@ -86,6 +93,14 @@ export function DoctorFormDialog({
     toEducationRows(educations),
   );
   const [rowKeyCounter, setRowKeyCounter] = useState<number>(0);
+  // Free text written before the credential catalog existed (P19-T14). It has
+  // no code to preselect, so the form shows what is on file and asks for a
+  // pick rather than dropping a credential nobody can re-derive.
+  const legacyTitle = doctor?.titleValue?.isLegacy ? doctor.titleValue.label : undefined;
+  const legacyDegrees = (doctor?.degreeValues ?? [])
+    .filter((value) => value.isLegacy)
+    .map((value) => value.label)
+    .join(', ');
 
   function addLicenseRow(): void {
     setLicenseRows((rows) => [...rows, buildEmptyLicenseRow(`new-license-${rowKeyCounter}`)]);
@@ -119,8 +134,14 @@ export function DoctorFormDialog({
       fullName: doctor?.fullName ?? '',
       specialtyId: doctor?.specialtyId ?? '',
       phoneNumber: doctor?.phoneNumber ?? '',
-      title: doctor?.title ?? '',
-      degrees: doctor?.degrees ?? '',
+      // Option codes, not the printed labels the response also carries.
+      title: doctor?.titleValue?.code ?? '',
+      degrees: (doctor?.degreeValues ?? [])
+        .map((value) => value.code)
+        .filter((code): code is string => Boolean(code)),
+      // Create-only (P19-T15): on edit the address is shown read-only and the
+      // update payload never carries it.
+      email: '',
       // Write-only, like the patient NIK: the profile carries only a mask, so
       // a blank leaves the stored value alone rather than clearing it.
       nik: '',
@@ -130,15 +151,16 @@ export function DoctorFormDialog({
     onSubmit: async ({ value }) => {
       setFormError(null);
       const trimmedTitle = value.title.trim();
-      const trimmedDegrees = value.degrees.trim();
       const trimmedNik = value.nik.trim();
+      const trimmedEmail = value.email.trim();
       const credentials = {
         licenses: buildLicensePayload(licenseRows),
         educations: buildEducationPayload(educationRows),
       };
       const profileFields = {
         ...(trimmedTitle.length > 0 ? { title: trimmedTitle } : {}),
-        ...(trimmedDegrees.length > 0 ? { degrees: trimmedDegrees } : {}),
+        // Always sent, so clearing every chip clears the stored degrees too.
+        degrees: value.degrees,
         ...(trimmedNik.length > 0 ? { nik: trimmedNik } : {}),
       };
       try {
@@ -165,6 +187,10 @@ export function DoctorFormDialog({
             patientIds: value.patientIds.length > 0 ? value.patientIds : undefined,
             ...profileFields,
             ...credentials,
+            // Omitted when blank rather than sent empty: absent means "no
+            // account for this doctor", which is not the same request as an
+            // address the API would then reject as invalid.
+            ...(trimmedEmail.length > 0 ? { email: trimmedEmail } : {}),
             nik: trimmedNik,
           });
           parseApiSuccess<DoctorProfile>(response, t('doctors.form.saveError'));
@@ -198,14 +224,7 @@ export function DoctorFormDialog({
           }}
         >
           <RequiredLegend />
-          {formError ? (
-            <p
-              role="alert"
-              className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700"
-            >
-              {formError}
-            </p>
-          ) : null}
+          {formError ? <InlineNotice tone="error">{formError}</InlineNotice> : null}
 
           {!isEditMode ? (
             <form.Field
@@ -310,11 +329,11 @@ export function DoctorFormDialog({
                   >
                     {t('doctors.form.phone')}
                   </FormLabel>
-                  <Input
+                  <PhoneInput
                     id={field.name}
                     value={field.state.value}
-                    placeholder="+628129876543"
-                    onChange={(event) => field.handleChange(event.target.value)}
+                    placeholder="8129876543"
+                    onValueChange={(value) => field.handleChange(value)}
                     onBlur={field.handleBlur}
                     aria-invalid={field.state.meta.errors.length > 0}
                   />
@@ -340,50 +359,74 @@ export function DoctorFormDialog({
             <p className="font-heading text-xs font-semibold uppercase tracking-wide text-slate-500">
               {t('doctors.form.identity')}
             </p>
+            {/* Picked from the credential catalog since P19-T14, never typed:
+                free text is how one credential reached documents spelled five
+                different ways. A missing option is added under Settings. */}
             <div className="grid grid-cols-2 gap-3">
               <form.Field name="title">
                 {(field) => (
                   <div className="space-y-1.5">
-                    <FormLabel
-                      htmlFor={field.name}
-                      className="font-heading text-xs text-slate-600"
-                    >
+                    <FormLabel htmlFor={field.name} className="font-heading text-xs text-slate-600">
                       {t('doctors.form.title')}
                     </FormLabel>
-                    <Input
+                    <DoctorTitleSelect
                       id={field.name}
                       value={field.state.value}
-                      placeholder="dr."
-                      onChange={(event) => field.handleChange(event.target.value)}
-                      onBlur={field.handleBlur}
+                      legacyValue={legacyTitle}
+                      onChange={(code) => field.handleChange(code)}
                     />
+                    <CredentialCatalogHint legacyValue={legacyTitle} />
                   </div>
                 )}
               </form.Field>
               <form.Field name="degrees">
                 {(field) => (
                   <div className="space-y-1.5">
-                    <FormLabel
-                      htmlFor={field.name}
-                      className="font-heading text-xs text-slate-600"
-                    >
+                    <FormLabel htmlFor={field.name} className="font-heading text-xs text-slate-600">
                       {t('doctors.form.degrees')}
                     </FormLabel>
-                    <Input
+                    <DoctorDegreesPicker
                       id={field.name}
-                      value={field.state.value}
-                      placeholder="Sp.PD"
-                      onChange={(event) => field.handleChange(event.target.value)}
-                      onBlur={field.handleBlur}
+                      values={field.state.value}
+                      onChange={(codes) => field.handleChange(codes)}
                     />
+                    <CredentialCatalogHint legacyValue={legacyDegrees || undefined} />
                   </div>
                 )}
               </form.Field>
             </div>
             <div className="grid grid-cols-2 gap-3">
-              {/* Email is not here on purpose: it is the address the doctor
-                  signs in with, managed on their user account under
-                  Administration, and read back through that relation. */}
+              {/* Optional on create, read-only on edit (P19-T15): entering it
+                  creates or attaches the account the doctor signs in with, in
+                  the same request. It is still not a field on the profile —
+                  changing it later is an Administration action on the account,
+                  which is what the edit-mode notice below points at. */}
+              {!isEditMode ? (
+                <form.Field name="email" validators={{ onSubmit: doctorEmailFormSchema }}>
+                  {(field) => (
+                    <div className="space-y-1.5">
+                      <FormLabel
+                        htmlFor={field.name}
+                        className="font-heading text-xs text-slate-600"
+                        required={DOCTOR_FORM_REQUIRED_FIELDS.has(field.name)}
+                      >
+                        {t('doctors.email')}
+                      </FormLabel>
+                      <Input
+                        id={field.name}
+                        type="email"
+                        autoComplete="email"
+                        value={field.state.value}
+                        placeholder="budi.santoso@clinic.local"
+                        onChange={(event) => field.handleChange(event.target.value)}
+                        onBlur={field.handleBlur}
+                        aria-invalid={field.state.meta.errors.length > 0}
+                      />
+                      <FieldError errors={field.state.meta.errors} />
+                    </div>
+                  )}
+                </form.Field>
+              ) : null}
               {/* Required on create, optional on edit: the API demands a NIK
                   for every new doctor because SATUSEHAT resolves the IHS
                   practitioner number from it and nothing else, while an edit
@@ -418,9 +461,15 @@ export function DoctorFormDialog({
               </form.Field>
             </div>
             {isEditMode ? (
-              <p className="rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-600">
-                {t('doctors.form.nikHelp')}
-              </p>
+              <>
+                <DoctorAccountEmailNotice
+                  email={doctor?.email}
+                  invitationStatus={doctor?.invitationStatus}
+                />
+                <p className="rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-600">
+                  {t('doctors.form.nikHelp')}
+                </p>
+              </>
             ) : null}
           </div>
 

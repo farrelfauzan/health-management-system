@@ -14,10 +14,14 @@ import { PATIENT_FORM_REQUIRED_FIELDS } from '#lib/patients/patient-form-require
 const EXPECTED_PATIENT_REQUIRED_FIELDS: ReadonlyArray<string> = [
   'address',
   'dateOfBirth',
+  'districtCode',
   'fullName',
   'phoneNumber',
   'privacyNotice',
+  'provinceCode',
+  'regencyCode',
   'sex',
+  'villageCode',
 ];
 
 const EXPECTED_DOCTOR_REQUIRED_FIELDS: ReadonlyArray<string> = [

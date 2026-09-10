@@ -16,6 +16,7 @@ import {
 } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { VaultCategorySelect } from '#components/client/vault-documents/vault-category-select';
 import { vaultDocumentControllerUpdateDocumentV1 } from '#lib/api/generated/document-management/document-management';
 import { resolveApiErrorMessage } from '#lib/api/resolve-api-error-message';
@@ -152,9 +153,9 @@ export function VaultDocumentEditDialog({
             </div>
           </div>
           {hasBackwardsDates ? (
-            <p className="text-sm text-red-700">{t('errors.backwardsDates')}</p>
+            <InlineNotice tone="error">{t('errors.backwardsDates')}</InlineNotice>
           ) : null}
-          {error ? <p className="text-sm text-red-700">{error}</p> : null}
+          {error ? <InlineNotice tone="error">{error}</InlineNotice> : null}
         </div>
         <DialogFooter>
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>

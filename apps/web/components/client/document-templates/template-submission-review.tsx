@@ -6,6 +6,7 @@ import { Button, Card, CardContent, Icon } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
 import { TemplateSubmissionDiff } from '#components/client/document-templates/template-submission-diff';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { documentTemplateControllerPreviewTemplateSubmissionV1 } from '#lib/api/generated/document-templates/document-templates';
 import { parseApiSuccess } from '#lib/api/response';
 import { resolveApiErrorMessage } from '#lib/api/resolve-api-error-message';
@@ -40,16 +41,19 @@ export function TemplateSubmissionReview({ templateId }: TemplateSubmissionRevie
   const review = reviewMutation.data?.data;
 
   return (
-    <Card className="rounded-xl border-slate-200 shadow-none" data-testid="template-submission-review">
+    <Card
+      className="rounded-xl border-slate-200 shadow-none"
+      data-testid="template-submission-review"
+    >
       <CardContent className="space-y-4 p-6">
         <div className="space-y-1">
           <h2 className="text-base font-medium text-slate-900">{t('title')}</h2>
           <p className="text-sm text-slate-600">{t('description')}</p>
         </div>
         {reviewMutation.isError ? (
-          <p role="alert" className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-900">
+          <InlineNotice tone="error">
             {resolveApiErrorMessage(reviewMutation.error, t('error'))}
-          </p>
+          </InlineNotice>
         ) : null}
         <div className="flex flex-wrap items-center gap-2">
           <Button

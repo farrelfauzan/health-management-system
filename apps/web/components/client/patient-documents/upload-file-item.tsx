@@ -4,6 +4,7 @@ import { Badge, Button, Icon, Input } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
 import { UploadProgressIndicator } from '#components/client/documents/upload-progress-indicator';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import type { DocumentUploadProgress } from '#lib/documents/upload-progress';
 import { formatDocumentSize } from '#lib/patient-documents/format-document-size';
 import type { UploadFileEntry } from '#lib/patient-documents/upload-file-entry';
@@ -83,7 +84,7 @@ export function UploadFileItem({
           label={resolveProgressLabel(entry.progress)}
         />
       ) : null}
-      {entry.errorMessage ? <p className="text-sm text-red-700">{entry.errorMessage}</p> : null}
+      {entry.errorMessage ? <InlineNotice tone="error">{entry.errorMessage}</InlineNotice> : null}
     </li>
   );
 }

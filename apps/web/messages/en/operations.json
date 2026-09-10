@@ -185,6 +185,16 @@
       "appointmentHelp": "Only scheduled or confirmed appointments can be linked.",
       "creating": "Registering...",
       "createAction": "Create Registration",
+      "session": {
+        "todayHours": "Practises {start}–{end} today",
+        "noSessionToday": "Not practising today",
+        "noSession": "{doctor} has no session today, so this patient can not be checked in",
+        "beforeOpening": "{doctor} practises {start}–{end} today; check-in opens at {opensAt}",
+        "afterEnd": "{doctor} practised {start}–{end} today; check-in for that session has closed",
+        "checkInAnyway": "Check In Anyway",
+        "overrideTitle": "Checking in outside the practice session",
+        "overrideDescription": "The doctor is not practising today. This override is recorded against your account."
+      },
       "labels": {
         "eligibility": "BPJS eligibility",
         "membership": "Membership",
@@ -873,7 +883,15 @@
       "quotaMustBePositive": "Quota must be a whole number of at least 1, or empty for no limit.",
       "emptyRoomClasses": "No room classes yet",
       "emptyRoomClassesDescription": "Add a class — VIP, Kelas 1, or whatever this clinic calls its wards — before creating rooms.",
-      "noRoomClasses": "No active room classes. Add one under the Classes tab first."
+      "noRoomClasses": "No active room classes. Add one under the Classes tab first.",
+      "selectWard": "Select a ward",
+      "selectRoom": "Select a room",
+      "noWards": "No wards yet. Create a ward under the Wards tab first.",
+      "noWardsDescription": "Every room belongs to a ward. Create one first, then come back to add rooms.",
+      "noRooms": "No rooms yet. Create a room under the Rooms tab first.",
+      "noRoomsDescription": "Every bed belongs to a room. Create one first, then come back to add beds.",
+      "goToWards": "Go to Wards",
+      "goToRooms": "Go to Rooms"
     },
     "admissions": {
       "title": "Admissions",
@@ -1814,8 +1832,50 @@
         "roles": {
           "title": "Roles & permissions",
           "description": "What each role may see and do."
+        },
+        "doctorCredentials": {
+          "title": "Doctor credentials",
+          "description": "The titles, degrees and fields of study doctor profiles are described by."
         }
       }
+    },
+    "doctorCredentials": {
+      "title": "Doctor credentials",
+      "description": "The lists the doctor form picks titles, degrees and fields of study from. Codes are permanent; labels are what prints on a document.",
+      "add": "Add option",
+      "kinds": {
+        "TITLE": "Titles",
+        "DEGREE": "Degrees",
+        "FIELD_OF_STUDY": "Fields of study"
+      },
+      "columns": {
+        "label": "Printed label",
+        "code": "Code",
+        "sortOrder": "Order",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "active": "Active",
+      "inactive": "Not offered",
+      "empty": "No options yet.",
+      "loading": "Loading the catalog…",
+      "loadError": "The credential catalog could not be loaded.",
+      "deactivate": "Stop offering",
+      "reactivate": "Offer again",
+      "deactivateHint": "Doctors who already carry this credential keep printing it; it only stops being offered on the form.",
+      "dialogTitle": "Add a credential option",
+      "dialogDescription": "The code is stored on every doctor that picks this option and can never be changed. The label is what prints.",
+      "fields": {
+        "kind": "List",
+        "code": "Code",
+        "label": "Printed label",
+        "sortOrder": "Order"
+      },
+      "codeHint": "Upper-snake ASCII, for example SP_PD.",
+      "saved": "Credential option saved.",
+      "saveError": "The credential option could not be saved.",
+      "codeRequired": "Enter a code in upper-snake ASCII, for example SP_PD.",
+      "labelRequired": "Enter the printed label."
     }
   },
   "channelArrivals": {
@@ -1944,6 +2004,58 @@
       "registerFailed": "The webhook could not be registered.",
       "lastErrorStale": "Last error {time}: {message}. Nothing is queued now, so this is a fault that already passed.",
       "lastErrorLive": "Last error {time}: {message}."
+    }
+  },
+  "prospectivePatients": {
+    "subtitle": "People who booked through WhatsApp or Telegram and are not patients yet. Convert them into a patient record, or link them to the record they already have.",
+    "itemLabel": "chat bookings",
+    "openBookings": "{count, plural, =0 {No booking outstanding} one {# booking outstanding} other {# bookings outstanding}}",
+    "noAppointment": "No booking ahead",
+    "converted": "{name} is registered. Medical record number {mrn}.",
+    "columns": {
+      "name": "Name",
+      "phone": "Phone",
+      "channel": "Channel",
+      "appointment": "Next booking",
+      "status": "Status",
+      "expires": "Kept until",
+      "received": "Enquiry received",
+      "actions": "Actions"
+    },
+    "status": {
+      "AWAITING_ARRIVAL": "Waiting",
+      "CONVERTED": "Registered",
+      "LINKED": "Linked",
+      "EXPIRED": "Expired"
+    },
+    "channel": {
+      "WHATSAPP": "WhatsApp",
+      "TELEGRAM": "Telegram"
+    },
+    "filters": {
+      "search": "Search",
+      "searchPlaceholder": "Name or phone number",
+      "status": "Status",
+      "channel": "Channel",
+      "allChannels": "All channels",
+      "sort": "Order",
+      "reset": "Reset"
+    },
+    "sort": {
+      "createdAt_asc": "Oldest enquiry first",
+      "createdAt_desc": "Newest enquiry first",
+      "expiresAt_asc": "Expiring soonest",
+      "expiresAt_desc": "Expiring last"
+    },
+    "actions": {
+      "convert": "Convert to patient",
+      "link": "Link to existing patient",
+      "openRecord": "Open record"
+    },
+    "states": {
+      "error": "Unable to load chat bookings.",
+      "emptyTitle": "Nobody is waiting",
+      "emptyDescription": "Nobody matching this filter booked through chat. Bookings appear here the moment somebody books through WhatsApp or Telegram."
     }
   }
 }

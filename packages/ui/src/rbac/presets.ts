@@ -36,6 +36,10 @@ export const ADMIN_PORTAL_ADMIN_RULES: AppRule[] = [
   { action: 'read', subject: 'Registration' },
   { action: 'create', subject: 'Registration' },
   { action: 'update', subject: 'Registration' },
+  // P19-T16. Administrators only: the front desk obeys the practice window,
+  // and somebody has to be able to override it when the doctor really did
+  // agree to see one more person.
+  { action: 'checkin-override', subject: 'Registration' },
   { action: 'read', subject: 'Encounter' },
   { action: 'write', subject: 'Encounter' },
   { action: 'read', subject: 'Icd10Code' },

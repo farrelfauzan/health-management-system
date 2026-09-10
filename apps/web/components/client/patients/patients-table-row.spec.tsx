@@ -18,6 +18,7 @@ const PATIENT: PatientListItem = {
   doctors: [
     { id: 'doctor-1', assignmentId: 'assignment-1', fullName: 'Dr. Budi', specialty: 'Cardiology' },
   ],
+  addressDetails: { formattedAddress: 'Jalan Merdeka No 12' },
 };
 
 const FULL_ACCESS_RULES: AppRule[] = [
@@ -55,6 +56,12 @@ describe('PatientsTableRow', () => {
     expect(screen.getByText('Dr. Budi')).toBeInTheDocument();
     expect(screen.getByText('+2')).toBeInTheDocument();
     expect(screen.getByText('Rawat inap')).toBeInTheDocument();
+  });
+
+  it('shows the one printable address line the API composed', () => {
+    renderRow(READ_ONLY_RULES);
+
+    expect(screen.getByText('Jalan Merdeka No 12')).toBeInTheDocument();
   });
 
   it('shows detail and assign actions when the ability allows them', async () => {

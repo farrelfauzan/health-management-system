@@ -45,6 +45,7 @@ export class UserInvitationRepository {
         roleCodes: payload.roleCodes,
         invitedById: payload.invitedById,
         expiresAt: payload.expiresAt,
+        doctorProfileId: payload.doctorProfileId ?? null,
       },
       include: INVITATION_INCLUDE,
     });
@@ -126,6 +127,10 @@ export class UserInvitationRepository {
           roleCodes: previous.roleCodes,
           invitedById: previous.invitedById,
           expiresAt: payload.expiresAt,
+          // Carried forward, or a resend would quietly turn a doctor's
+          // invitation into an ordinary staff one and the accepted account
+          // would never link back to the profile it was raised for.
+          doctorProfileId: previous.doctorProfileId,
         },
         include: INVITATION_INCLUDE,
       });
@@ -147,6 +152,7 @@ export class UserInvitationRepository {
     roleIds: string[];
     assignedById: string;
     consumedAt: Date;
+    doctorProfileId: string | null;
   }) {
     return this.prisma.executeTransaction(async (tx) => {
       const user = await tx.user.create({
@@ -164,6 +170,18 @@ export class UserInvitationRepository {
           assignedById: payload.assignedById,
         })),
       });
+      // The doctor link belongs in this transaction for the same reason the
+      // user and the role rows do: a crash between them would leave a doctor
+      // who can log in but whose profile still reads "no account", and the
+      // clinic would create a second profile for the same person. Writing
+      // another module's table here follows what this method already does for
+      // `users` and `user_roles` — atomicity is what makes it one write.
+      if (payload.doctorProfileId) {
+        await tx.doctorProfile.update({
+          where: { id: payload.doctorProfileId },
+          data: { ownerUserId: user.id },
+        });
+      }
       await tx.userInvitation.update({
         where: { id: payload.invitationId },
         data: { consumedAt: payload.consumedAt },

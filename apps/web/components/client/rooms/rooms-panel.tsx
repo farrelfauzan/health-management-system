@@ -10,18 +10,25 @@ import { RoomFormDialog } from '#components/client/rooms/room-form-dialog';
 import { RoomsTable } from '#components/client/rooms/rooms-table';
 import { WardFilterSelect } from '#components/client/rooms/ward-filter-select';
 import { NumberedPagination } from '#components/client/shared/numbered-pagination';
+import { EmptyState } from '#components/shared/empty-state';
 import { roomControllerRetireRoomV1 } from '#lib/api/generated/room-management/room-management';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { invalidateRoomQueries } from '#lib/rooms/invalidate-room-queries';
+import { ROOM_OPTION_LIST_LIMIT } from '#lib/rooms/option-list-limit';
 import { ROOM_INVENTORY_PAGE_SIZE } from '#lib/rooms/page-size';
 import { useRoomsList } from '#lib/rooms/use-rooms-list';
+import { useWardsList } from '#lib/rooms/use-wards-list';
 
 type RoomDialogState = {
   isOpen: boolean;
   room: RoomResponse | null;
 };
 
-export function RoomsPanel() {
+type RoomsPanelProps = {
+  onGoToWards?: () => void;
+};
+
+export function RoomsPanel({ onGoToWards }: RoomsPanelProps) {
   const t = useTranslations('operations');
   const ability = useAbility();
   const queryClient = useQueryClient();
@@ -33,6 +40,10 @@ export function RoomsPanel() {
     limit: ROOM_INVENTORY_PAGE_SIZE,
     ...(wardId ? { wardId } : {}),
   });
+  const wardsQuery = useWardsList({ page: 1, limit: ROOM_OPTION_LIST_LIMIT, isActive: 'true' });
+  // Told here, before the dialog: a rooms table with no ward to put a room in
+  // is a dead end, and "No rooms yet" alone does not say why.
+  const hasNoWards = wardsQuery.isSuccess && wardsQuery.wards.length === 0;
   const canCreate = ability.can('create', 'Room');
   const canUpdate = ability.can('update', 'Room');
   const canDelete = ability.can('delete', 'Room');
@@ -69,34 +80,51 @@ export function RoomsPanel() {
         ) : null}
       </div>
 
-      <Card className="gap-0 rounded-xl border-slate-200 py-0 shadow-none">
-        <CardContent className="p-0">
-          <RoomsTable
-            rooms={roomsQuery.rooms}
-            isPending={roomsQuery.isPending}
-            isError={roomsQuery.isError}
-            canUpdate={canUpdate}
-            canDelete={canDelete}
-            onEdit={(room) => setDialogState({ isOpen: true, room })}
-            onRetire={(room) => void handleRetire(room)}
-          />
-          <NumberedPagination
-            className="border-t border-slate-100 px-4 py-3"
-            page={page}
-            pageSize={ROOM_INVENTORY_PAGE_SIZE}
-            total={roomsQuery.meta?.total ?? 0}
-            itemLabel="rooms"
-            isDisabled={roomsQuery.isFetching}
-            onPageChange={setPage}
-          />
-        </CardContent>
-      </Card>
+      {hasNoWards ? (
+        <EmptyState
+          icon="door_front"
+          title={t('rooms.emptyWards')}
+          description={t('rooms.noWardsDescription')}
+          action={
+            onGoToWards ? (
+              <Button type="button" variant="outline" size="sm" onClick={onGoToWards}>
+                {t('rooms.goToWards')}
+              </Button>
+            ) : undefined
+          }
+        />
+      ) : null}
+      {!hasNoWards ? (
+        <Card className="gap-0 rounded-xl border-slate-200 py-0 shadow-none">
+          <CardContent className="p-0">
+            <RoomsTable
+              rooms={roomsQuery.rooms}
+              isPending={roomsQuery.isPending}
+              isError={roomsQuery.isError}
+              canUpdate={canUpdate}
+              canDelete={canDelete}
+              onEdit={(room) => setDialogState({ isOpen: true, room })}
+              onRetire={(room) => void handleRetire(room)}
+            />
+            <NumberedPagination
+              className="border-t border-slate-100 px-4 py-3"
+              page={page}
+              pageSize={ROOM_INVENTORY_PAGE_SIZE}
+              total={roomsQuery.meta?.total ?? 0}
+              itemLabel="rooms"
+              isDisabled={roomsQuery.isFetching}
+              onPageChange={setPage}
+            />
+          </CardContent>
+        </Card>
+      ) : null}
 
       {dialogState.isOpen ? (
         <RoomFormDialog
           key={dialogState.room?.id ?? 'new'}
           open={dialogState.isOpen}
           room={dialogState.room}
+          onGoToWards={onGoToWards}
           onOpenChange={(isOpen) => {
             if (!isOpen) {
               setDialogState({ isOpen: false, room: null });

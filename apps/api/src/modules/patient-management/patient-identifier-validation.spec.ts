@@ -1,7 +1,9 @@
 import {
   bpjsNumberSchema,
   collectNikDemographicWarnings,
+  createPatientBaseSchema,
   createPatientSchema,
+  importPatientSchema,
   maskIdentifierLast4,
   nikSchema,
   normaliseIdentifierDigits,
@@ -16,7 +18,13 @@ const inputBasePatient = {
   dateOfBirth: '1990-05-12',
   sex: 'FEMALE' as const,
   phoneNumber: '+628123456789',
-  address: 'Jakarta',
+  address: 'Jl. Merdeka No. 10',
+  // Required on the front-desk create since P19-T11. Structurally a valid
+  // chain; the master-data check that these codes exist lives in the service.
+  provinceCode: '31',
+  regencyCode: '31.71',
+  districtCode: '31.71.01',
+  villageCode: '31.71.01.1001',
   privacyNotice: {
     privacyNoticeVersionId: 'c2a3ecb0-a352-4d49-a47c-39d1b67904c9',
     locale: 'id' as const,
@@ -172,6 +180,60 @@ describe('createPatientSchema identifiers', () => {
 
   it('leaves identifiers optional', () => {
     expect(createPatientSchema.safeParse(inputBasePatient).success).toBe(true);
+  });
+});
+
+describe('createPatientSchema address chain', () => {
+  it('requires all four region codes on the front-desk create', () => {
+    const actual = createPatientSchema.safeParse({
+      ...inputBasePatient,
+      provinceCode: undefined,
+      regencyCode: undefined,
+      districtCode: undefined,
+      villageCode: undefined,
+    });
+    expect(actual.success).toBe(false);
+    expect(actual.success === false ? actual.error.issues.map((issue) => issue.path) : []).toEqual(
+      expect.arrayContaining([
+        ['provinceCode'],
+        ['regencyCode'],
+        ['districtCode'],
+        ['villageCode'],
+      ]),
+    );
+  });
+
+  it('leaves the codes optional on the base schema the machine callers use', () => {
+    const actual = createPatientBaseSchema.safeParse({
+      ...inputBasePatient,
+      provinceCode: undefined,
+      regencyCode: undefined,
+      districtCode: undefined,
+      villageCode: undefined,
+    });
+    expect(actual.success).toBe(true);
+  });
+
+  it('leaves the codes optional on the legacy import', () => {
+    const actual = importPatientSchema.safeParse({
+      ...inputBasePatient,
+      provinceCode: undefined,
+      regencyCode: undefined,
+      districtCode: undefined,
+      villageCode: undefined,
+    });
+    expect(actual.success).toBe(true);
+  });
+
+  it('keeps RT/RW and the postal code optional even on the front-desk create', () => {
+    expect(createPatientSchema.safeParse(inputBasePatient).success).toBe(true);
+    expect(
+      createPatientSchema.safeParse({ ...inputBasePatient, rtRw: '1/2', postalCode: '10110' })
+        .success,
+    ).toBe(true);
+    expect(createPatientSchema.safeParse({ ...inputBasePatient, rtRw: '001-002' }).success).toBe(
+      false,
+    );
   });
 });
 

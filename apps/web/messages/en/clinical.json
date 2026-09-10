@@ -27,7 +27,6 @@
     "patients": {
       "title": "Patients",
       "subtitle": "Manage patient records, demographics, and care assignments.",
-      "dashboard": "Main Dashboard",
       "add": "Add New Patient",
       "assignDoctor": "Assign Doctor",
       "itemLabel": "patients",
@@ -45,7 +44,8 @@
         "id": "Patient ID",
         "lastVisit": "Last Visit",
         "lastVisitHelp": "Shows the latest record update until encounter data exists.",
-        "doctor": "Assigned Doctor"
+        "doctor": "Assigned Doctor",
+        "address": "Address"
       },
       "unassigned": "Unassigned",
       "sex": {
@@ -131,14 +131,6 @@
       "doctorRequired": "Select a doctor to assign.",
       "doctorDuplicate": "This doctor is already assigned to the patient.",
       "assignDoctorError": "Unable to assign the doctor. Please try again.",
-      "sample": "Sample",
-      "activeAlert": "Active Alert",
-      "alertHeadline": "Emergency room capacity has reached 95%",
-      "alertRecommendation": "Recommended: Redirect non-urgent cases to the outpatient wing.",
-      "admissionTrends": "Admission Trends",
-      "admissionSummary": "Occupancy is up 12% from last week.",
-      "sampleData": "sample data",
-      "admissionChartLabel": "Sample admission trend chart",
       "csv": {
         "patientId": "Patient ID",
         "fullName": "Full Name",
@@ -167,7 +159,6 @@
         "selectSex": "Select sex",
         "selectStatus": "Select status",
         "phone": "Phone Number",
-        "address": "Address",
         "identifiers": "National Identifiers",
         "identifierHelp": "Stored NIK and BPJS numbers are encrypted and masked. Leave blank to keep them; enter a value only to replace one.",
         "digits16": "16 digits",
@@ -186,7 +177,34 @@
         "guardianName": "Guardian Name",
         "relation": "Relation",
         "initialDoctors": "Initial Doctors (optional)",
-        "createAction": "Create Patient"
+        "createAction": "Create Patient",
+        "addressSection": "Address",
+        "streetLine": "Street Address",
+        "province": "Province",
+        "regency": "City / Regency",
+        "district": "District (Kecamatan)",
+        "village": "Village (Kelurahan / Desa)",
+        "rtRw": "RT / RW",
+        "postalCode": "Postal Code",
+        "selectProvince": "Select province",
+        "selectRegency": "Select city or regency",
+        "selectDistrict": "Select district",
+        "selectVillage": "Select village",
+        "selectProvinceFirst": "Select a province first",
+        "selectRegencyFirst": "Select a city or regency first",
+        "selectDistrictFirst": "Select a district first",
+        "searchRegion": "Search by name",
+        "searchVillage": "Type a village name",
+        "searchingRegions": "Searching…",
+        "noRegions": "No matching areas found.",
+        "villageSearchHint": "Only the first villages are listed. Type a name to narrow the list.",
+        "provinceRequired": "Province is required",
+        "regencyRequired": "City or regency is required",
+        "districtRequired": "District is required",
+        "villageRequired": "Village is required",
+        "addressChainIncomplete": "Complete all four levels, or clear the address entirely",
+        "rtRwInvalid": "RT/RW must look like 003/007",
+        "postalCodeInvalid": "Postal code must be five digits"
       },
       "noActiveDoctors": "No active doctors available.",
       "assignedDoctors": "Assigned Doctors",
@@ -392,7 +410,10 @@
         "unreachable": "SATUSEHAT could not be reached. Try again."
       },
       "noImmunizations": "No vaccination recorded for this patient.",
-      "loadingImmunizations": "Loading the immunisation history..."
+      "loadingImmunizations": "Loading the immunisation history...",
+      "noAddress": "No address recorded",
+      "directoryTab": "Directory",
+      "fromChatTab": "From chat"
     },
     "privacyNotice": {
       "title": "Patient Privacy Notice",
@@ -497,7 +518,6 @@
     "doctors": {
       "title": "Doctors",
       "subtitle": "Manage practitioner profiles, credentials, schedules, and patient assignments.",
-      "dashboard": "Main Dashboard",
       "add": "Add New Doctor",
       "assignPatient": "Assign Patient",
       "manageSchedule": "Manage Schedule",
@@ -582,7 +602,19 @@
         "institution": "Institution",
         "degree": "Degree",
         "field": "Field of Study",
-        "graduationYear": "Graduation Year"
+        "graduationYear": "Graduation Year",
+        "noTitle": "No title",
+        "selectDegrees": "Select degrees",
+        "searchDegrees": "Search degrees",
+        "noDegreeMatch": "No matching degree",
+        "removeDegree": "Remove {label}",
+        "selectField": "Select a field of study",
+        "searchField": "Search fields of study",
+        "noFieldMatch": "No matching field of study",
+        "noField": "No field of study",
+        "legacyValue": "On file: {value}",
+        "legacyNotice": "On file as free text: {value}. Pick a replacement from the list.",
+        "manageLink": "Missing an option? Add it under Settings."
       },
       "scheduleFields": {
         "day": "Day for entry {index}",
@@ -616,6 +648,8 @@
         "digits16": "16 digits",
         "nikHelp": "The stored NIK is encrypted and masked. Leave it blank to keep it; enter a value only to replace it.",
         "initialPatients": "Initial Patients (optional)",
+        "emailReadOnly": "The sign-in address belongs to the doctor's account.",
+        "emailManageLink": "Manage it under Administration",
         "createAction": "Create Doctor"
       },
       "identity": "Practitioner Identity",

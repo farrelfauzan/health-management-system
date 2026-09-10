@@ -4,6 +4,9 @@ const TONE_BY_STATUS: Record<string, StatusTone> = {
   confirmed: 'success',
   completed: 'success',
   active: 'success',
+  // A doctor who has accepted their invitation can sign in (P19-T15) — the
+  // same "this is done" as the other success states, not a neutral fallback.
+  accepted: 'success',
   'out-patient': 'success',
   dispensed: 'success',
   scheduled: 'info',
@@ -31,6 +34,11 @@ const TONE_BY_STATUS: Record<string, StatusTone> = {
   stat: 'danger',
   urgent: 'danger',
   regular: 'neutral',
+  // Prospective patients (P19-T08): waiting, became a record, matched one, gone.
+  'awaiting-arrival': 'warning',
+  converted: 'success',
+  linked: 'success',
+  expired: 'neutral',
   draft: 'neutral',
   discharged: 'neutral',
   inactive: 'neutral',

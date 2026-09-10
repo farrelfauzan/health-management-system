@@ -13,6 +13,7 @@ import {
 } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import {
   chatControllerDeleteSessionV1,
   getChatControllerListSessionsV1QueryKey,
@@ -70,14 +71,7 @@ export function DeleteConsultationDialog({
             {t('deleteDescription', { title: entry?.title ?? '' })}
           </DialogDescription>
         </DialogHeader>
-        {deleteError ? (
-          <p
-            role="alert"
-            className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700"
-          >
-            {deleteError}
-          </p>
-        ) : null}
+        {deleteError ? <InlineNotice tone="error">{deleteError}</InlineNotice> : null}
         <DialogFooter>
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
             {t('deleteCancel')}
