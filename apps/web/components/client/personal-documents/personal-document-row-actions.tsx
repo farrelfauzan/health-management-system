@@ -8,6 +8,7 @@ import { useTranslations } from 'next-intl';
 
 import { PersonalDocumentActionButton } from '#components/client/personal-documents/personal-document-action-button';
 import { PersonalDocumentRenameDialog } from '#components/client/personal-documents/personal-document-rename-dialog';
+import { ConfirmDialog } from '#components/client/shared/confirm-dialog';
 import {
   personalDocumentControllerDeleteDocumentV1,
   personalDocumentControllerGetDownloadUrlV1,
@@ -31,6 +32,7 @@ export function PersonalDocumentRowActions({
   const t = useTranslations('personalKnowledgeBase.actions');
   const queryClient = useQueryClient();
   const [isRenameOpen, setIsRenameOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
   /**
    * Downloads are minted per request and never persisted. The URL is opened
@@ -71,19 +73,14 @@ export function PersonalDocumentRowActions({
     },
     onSuccess: async () => {
       await invalidatePersonalDocumentQueries(queryClient);
+      setIsDeleteOpen(false);
       onResult(t('success.delete'));
     },
-    onError: (err: unknown) => onError(resolveApiErrorMessage(err, t('errors.delete'))),
+    onError: (err: unknown) => {
+      setIsDeleteOpen(false);
+      onError(resolveApiErrorMessage(err, t('errors.delete')));
+    },
   });
-
-  function confirmDelete(): void {
-    // Deleting takes the chunks and their vectors with it, which is what makes
-    // the document stop answering. That is not recoverable by re-uploading the
-    // same file — the ingest has to run again — so it is worth one confirm.
-    if (window.confirm(t('confirm.delete', { title: document.title }))) {
-      deleteMutation.mutate();
-    }
-  }
 
   return (
     // One provider per row rather than one per button: Radix needs an ancestor
@@ -112,7 +109,7 @@ export function PersonalDocumentRowActions({
           icon="delete"
           label={t('delete')}
           disabled={deleteMutation.isPending}
-          onClick={confirmDelete}
+          onClick={() => setIsDeleteOpen(true)}
         />
         <PersonalDocumentRenameDialog
           open={isRenameOpen}
@@ -120,6 +117,21 @@ export function PersonalDocumentRowActions({
           document={document}
           onSaved={onResult}
           onFailed={onError}
+        />
+        {/* Deleting takes the chunks and their vectors with it, which is what
+            makes the document stop answering. That is not recoverable by
+            re-uploading the same file — the ingest has to run again — and the
+            dialog says so, because it is the part an owner cannot guess. */}
+        <ConfirmDialog
+          open={isDeleteOpen}
+          onOpenChange={setIsDeleteOpen}
+          title={t('confirm.delete.title')}
+          description={t('confirm.delete.body', { title: document.title })}
+          confirmLabel={t('confirm.delete.confirm')}
+          cancelLabel={t('confirm.delete.cancel')}
+          isDestructive
+          isPending={deleteMutation.isPending}
+          onConfirm={() => deleteMutation.mutate()}
         />
       </div>
     </TooltipProvider>

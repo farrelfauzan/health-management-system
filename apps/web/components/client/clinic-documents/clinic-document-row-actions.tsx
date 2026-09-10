@@ -8,6 +8,7 @@ import { useTranslations } from 'next-intl';
 
 import { ClinicDocumentEditDialog } from '#components/client/clinic-documents/clinic-document-edit-dialog';
 import { SendForReviewButton } from '#components/client/clinic-documents/send-for-review-button';
+import { ConfirmDialog } from '#components/client/shared/confirm-dialog';
 import {
   documentAdminControllerDeleteDocumentV1,
   documentAdminControllerGetDownloadUrlV1,
@@ -31,6 +32,7 @@ export function ClinicDocumentRowActions({
   const t = useTranslations('clinicCorpus.actions');
   const queryClient = useQueryClient();
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
   /**
    * Downloads are minted per request and never persisted. The URL is opened
@@ -71,20 +73,14 @@ export function ClinicDocumentRowActions({
     },
     onSuccess: async () => {
       await invalidateClinicDocumentQueries(queryClient);
+      setIsDeleteOpen(false);
       onResult(t('success.delete'));
     },
-    onError: (err: unknown) => onError(resolveApiErrorMessage(err, t('errors.delete'))),
+    onError: (err: unknown) => {
+      setIsDeleteOpen(false);
+      onError(resolveApiErrorMessage(err, t('errors.delete')));
+    },
   });
-
-  function confirmDelete(): void {
-    // Retiring takes the chunks and their vectors with it, which is what makes
-    // the document stop answering — on the in-app assistant and on the public
-    // channel alike. Re-uploading the same file does not undo it; the ingest
-    // has to run again. That is worth one confirm.
-    if (window.confirm(t('confirm.delete', { title: document.title }))) {
-      deleteMutation.mutate();
-    }
-  }
 
   return (
     <div className="flex justify-end gap-2">
@@ -114,7 +110,7 @@ export function ClinicDocumentRowActions({
         variant="ghost"
         size="sm"
         disabled={deleteMutation.isPending}
-        onClick={confirmDelete}
+        onClick={() => setIsDeleteOpen(true)}
       >
         {t('delete')}
       </Button>
@@ -125,6 +121,21 @@ export function ClinicDocumentRowActions({
         document={document}
         onSaved={onResult}
         onFailed={onError}
+      />
+      {/* Retiring takes the chunks and their vectors with it, which is what
+          makes the document stop answering — on the in-app assistant and on
+          the public channel alike. Re-uploading the same file does not undo
+          it; the ingest has to run again, and the dialog says so. */}
+      <ConfirmDialog
+        open={isDeleteOpen}
+        onOpenChange={setIsDeleteOpen}
+        title={t('confirm.delete.title')}
+        description={t('confirm.delete.body', { title: document.title })}
+        confirmLabel={t('confirm.delete.confirm')}
+        cancelLabel={t('confirm.delete.cancel')}
+        isDestructive
+        isPending={deleteMutation.isPending}
+        onConfirm={() => deleteMutation.mutate()}
       />
     </div>
   );

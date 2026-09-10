@@ -8,6 +8,7 @@ import { useTranslations } from 'next-intl';
 
 import { VaultDocumentEditDialog } from '#components/client/vault-documents/vault-document-edit-dialog';
 import { DocumentSharingPanel } from '#components/client/vault-shares/document-sharing-panel';
+import { ConfirmDialog } from '#components/client/shared/confirm-dialog';
 import { RowActionsMenu, type RowAction } from '#components/client/shared/row-actions-menu';
 import { vaultDocumentControllerDeleteDocumentV1 } from '#lib/api/generated/document-management/document-management';
 import { resolveApiErrorMessage } from '#lib/api/resolve-api-error-message';
@@ -31,6 +32,7 @@ export function VaultDocumentRowActions({
   const queryClient = useQueryClient();
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isSharingOpen, setIsSharingOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
   const downloadMutation = useMutation({
     mutationFn: async () => {
@@ -49,21 +51,14 @@ export function VaultDocumentRowActions({
     },
     onSuccess: async () => {
       await invalidateVaultDocumentQueries(queryClient);
+      setIsDeleteOpen(false);
       onResult(t('success.delete'));
     },
-    onError: (err: unknown) => onError(resolveApiErrorMessage(err, t('errors.delete'))),
+    onError: (err: unknown) => {
+      setIsDeleteOpen(false);
+      onError(resolveApiErrorMessage(err, t('errors.delete')));
+    },
   });
-
-  function confirmDelete(): void {
-    // Worth a confirm for a reason the knowledge base's delete is not: this
-    // one is a **hard** delete. The row, the stored file and every reminder
-    // about it go, and there is no soft-deleted copy an administrator could
-    // restore — which is the promise the vault makes, and the reason the
-    // person clicking should have meant it.
-    if (window.confirm(t('confirm.delete', { title: document.title }))) {
-      deleteMutation.mutate();
-    }
-  }
 
   // Visibility only. An offboarded person's session (P16-T41) carries read
   // and delete and nothing else, so their row offers download and delete —
@@ -86,7 +81,9 @@ export function VaultDocumentRowActions({
     ...(canShare
       ? [{ label: t('sharing'), icon: 'group', onSelect: () => setIsSharingOpen(true) }]
       : []),
-    ...(canDelete ? [{ label: t('delete'), icon: 'delete', onSelect: confirmDelete }] : []),
+    ...(canDelete
+      ? [{ label: t('delete'), icon: 'delete', onSelect: () => setIsDeleteOpen(true) }]
+      : []),
   ];
 
   return (
@@ -104,6 +101,22 @@ export function VaultDocumentRowActions({
         document={document}
         onResult={onResult}
         onError={onError}
+      />
+      {/* Worth a confirm for a reason the knowledge base's delete is not:
+          this one is a **hard** delete. The row, the stored file and every
+          reminder about it go, and there is no soft-deleted copy an
+          administrator could restore — which is the promise the vault makes,
+          and the reason the person clicking should have meant it. */}
+      <ConfirmDialog
+        open={isDeleteOpen}
+        onOpenChange={setIsDeleteOpen}
+        title={t('confirm.delete.title')}
+        description={t('confirm.delete.body', { title: document.title })}
+        confirmLabel={t('confirm.delete.confirm')}
+        cancelLabel={t('confirm.delete.cancel')}
+        isDestructive
+        isPending={deleteMutation.isPending}
+        onConfirm={() => deleteMutation.mutate()}
       />
     </>
   );

@@ -401,7 +401,12 @@
       "reingest": "Proses ulang",
       "delete": "Hapus",
       "confirm": {
-        "delete": "Hapus \"{title}\"? Cuplikannya ikut terhapus dan asisten berhenti memakainya."
+        "delete": {
+          "title": "Hapus dokumen ini?",
+          "body": "Menghapus “{title}” ikut menghapus cuplikan dan vektornya, dan asisten berhenti memakainya. Mengunggah ulang berkas yang sama tidak membatalkan hal itu: dokumennya harus diproses dari awal.",
+          "confirm": "Hapus",
+          "cancel": "Batal"
+        }
       },
       "success": {
         "reingest": "Dokumen dimasukkan ke antrean pemrosesan ulang.",
@@ -537,7 +542,12 @@
       "reingest": "Proses ulang",
       "delete": "Pensiunkan",
       "confirm": {
-        "delete": "Pensiunkan \"{title}\"? Cuplikannya ikut terhapus dan asisten berhenti memakainya."
+        "delete": {
+          "title": "Pensiunkan dokumen ini?",
+          "body": "Memensiunkan “{title}” ikut menghapus cuplikan dan vektornya, dan dokumen ini berhenti menjawab baik di asisten dalam aplikasi maupun di kanal publik. Mengunggah ulang berkas yang sama tidak membatalkan hal itu: dokumennya harus diproses dari awal.",
+          "confirm": "Pensiunkan",
+          "cancel": "Batal"
+        }
       },
       "success": {
         "reingest": "Dokumen dimasukkan ke antrean pemrosesan ulang.",

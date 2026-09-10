@@ -401,7 +401,12 @@
       "reingest": "Reprocess",
       "delete": "Delete",
       "confirm": {
-        "delete": "Delete \"{title}\"? Its passages are removed with it and the assistant will stop using it."
+        "delete": {
+          "title": "Delete this document?",
+          "body": "Deleting “{title}” takes its passages and their vectors with it, and the assistant stops using it. Uploading the same file again does not undo that: the document has to be processed from scratch.",
+          "confirm": "Delete",
+          "cancel": "Cancel"
+        }
       },
       "success": {
         "reingest": "Document queued for reprocessing.",
@@ -537,7 +542,12 @@
       "reingest": "Reprocess",
       "delete": "Retire",
       "confirm": {
-        "delete": "Retire \"{title}\"? Its passages are removed with it and the assistant will stop using it."
+        "delete": {
+          "title": "Retire this document?",
+          "body": "Retiring “{title}” takes its passages and their vectors with it, and it stops answering on the in-app assistant and on the public channel alike. Uploading the same file again does not undo that: the document has to be processed from scratch.",
+          "confirm": "Retire",
+          "cancel": "Cancel"
+        }
       },
       "success": {
         "reingest": "Document queued for reprocessing.",

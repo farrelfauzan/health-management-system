@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { NextIntlClientProvider } from 'next-intl';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -9,13 +9,14 @@ import idAuthShellMessages from '../../../messages/id/auth-shell.json';
 import idSharedMessages from '../../../messages/id/shared.json';
 
 const listDocumentsMock = vi.hoisted(() => vi.fn());
+const deleteDocumentMock = vi.hoisted(() => vi.fn());
 
 vi.mock('#lib/api/generated/document-management/document-management', () => ({
   personalDocumentControllerListDocumentsV1: listDocumentsMock,
   personalDocumentControllerCreateUploadUrlV1: vi.fn(),
   personalDocumentControllerConfirmUploadV1: vi.fn(),
   personalDocumentControllerUpdateDocumentV1: vi.fn(),
-  personalDocumentControllerDeleteDocumentV1: vi.fn(),
+  personalDocumentControllerDeleteDocumentV1: deleteDocumentMock,
   personalDocumentControllerGetDownloadUrlV1: vi.fn(),
   personalDocumentControllerReingestDocumentV1: vi.fn(),
   getPersonalDocumentControllerListDocumentsV1QueryKey: () => ['personal-documents'],
@@ -64,10 +65,19 @@ const POLL_INTERVAL_MS = 5_000;
 
 const pagination = idSharedMessages.shared.pagination;
 
+const deleteConfirm = getDashboardAiMessages('id').personalKnowledgeBase.actions.confirm.delete;
+
+async function openDeleteDialog(): Promise<HTMLElement> {
+  await screen.findByText('Panduan Tatalaksana Hipertensi');
+  await userEvent.click(screen.getByRole('button', { name: 'Hapus' }));
+  return screen.findByRole('dialog');
+}
+
 describe('PersonalKnowledgeBasePanel', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     listDocumentsMock.mockResolvedValue({ status: 200, data: { data: [buildDocument()] } });
+    deleteDocumentMock.mockResolvedValue({ status: 200, data: { data: { id: 'doc-1' } } });
   });
 
   afterEach(() => {
@@ -212,5 +222,85 @@ describe('PersonalKnowledgeBasePanel', () => {
     const callsOnceSettled = listDocumentsMock.mock.calls.length;
     await vi.advanceTimersByTimeAsync(POLL_INTERVAL_MS * 3);
     expect(listDocumentsMock.mock.calls.length).toBe(callsOnceSettled);
+  });
+
+  it('asks about a delete in the app, not through the browser\u2019s own confirm', async () => {
+    // window.confirm is unstyled, unlocalised in its own buttons, says the
+    // origin rather than the product above copy the reader is meant to trust,
+    // and Chrome suppresses it after a few in a row — at which point a delete
+    // goes unconfirmed.
+    const confirmSpy = vi.spyOn(window, 'confirm');
+    renderPanel();
+
+    const dialog = await openDeleteDialog();
+
+    expect(confirmSpy).not.toHaveBeenCalled();
+    expect(within(dialog).getByText(deleteConfirm.title)).toBeInTheDocument();
+    // The copy names the document, and says the part an owner cannot guess:
+    // the vectors go too, so re-uploading the same file is not enough.
+    expect(within(dialog).getByText(/Panduan Tatalaksana Hipertensi/)).toBeInTheDocument();
+    expect(
+      within(dialog).getByText(/Mengunggah ulang berkas yang sama tidak membatalkan/),
+    ).toBeInTheDocument();
+    // Reflex-pressing Enter must not delete anything.
+    await waitFor(() =>
+      expect(within(dialog).getByRole('button', { name: deleteConfirm.cancel })).toHaveFocus(),
+    );
+  });
+
+  it('deletes nothing when the owner backs out', async () => {
+    renderPanel();
+    const dialog = await openDeleteDialog();
+
+    await userEvent.click(
+      within(dialog).getByRole('button', { name: deleteConfirm.cancel }),
+    );
+
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    expect(deleteDocumentMock).not.toHaveBeenCalled();
+  });
+
+  it('deletes nothing when the owner presses Escape', async () => {
+    renderPanel();
+    await openDeleteDialog();
+
+    await userEvent.keyboard('{Escape}');
+
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    expect(deleteDocumentMock).not.toHaveBeenCalled();
+  });
+
+  it('calls the delete once when the owner confirms, and says so', async () => {
+    renderPanel();
+    const dialog = await openDeleteDialog();
+
+    await userEvent.click(
+      within(dialog).getByRole('button', { name: deleteConfirm.confirm }),
+    );
+
+    await waitFor(() => expect(deleteDocumentMock).toHaveBeenCalledTimes(1));
+    expect(deleteDocumentMock).toHaveBeenCalledWith('doc-1');
+    expect(
+      await screen.findByText(getDashboardAiMessages('id').personalKnowledgeBase.actions.success.delete),
+    ).toBeInTheDocument();
+  });
+
+  it('holds the dialog open and the confirm disabled while the delete is in flight', async () => {
+    // Not cosmetic: a native confirm cannot show a pending state at all, so a
+    // slow delete looked like nothing had happened and invited a second click.
+    deleteDocumentMock.mockReturnValue(new Promise(() => {}));
+    renderPanel();
+    const dialog = await openDeleteDialog();
+
+    await userEvent.click(
+      within(dialog).getByRole('button', { name: deleteConfirm.confirm }),
+    );
+
+    await waitFor(() =>
+      expect(within(dialog).getByRole('button', { name: deleteConfirm.confirm })).toBeDisabled(),
+    );
+    await userEvent.keyboard('{Escape}');
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+    expect(deleteDocumentMock).toHaveBeenCalledTimes(1);
   });
 });
