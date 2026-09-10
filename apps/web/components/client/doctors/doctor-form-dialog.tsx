@@ -30,6 +30,7 @@ import { DoctorPatientPicker } from '#components/client/doctors/doctor-patient-p
 import { SpecialtyCombobox } from '#components/client/doctors/specialty-combobox';
 import { FieldError } from '#components/client/shared/field-error';
 import { FormLabel } from '#components/client/shared/form-label';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { RequiredLegend } from '#components/client/shared/required-legend';
 import {
   buildEducationPayload,
@@ -195,14 +196,7 @@ export function DoctorFormDialog({
           }}
         >
           <RequiredLegend />
-          {formError ? (
-            <p
-              role="alert"
-              className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700"
-            >
-              {formError}
-            </p>
-          ) : null}
+          {formError ? <InlineNotice tone="error">{formError}</InlineNotice> : null}
 
           {!isEditMode ? (
             <form.Field
@@ -328,10 +322,7 @@ export function DoctorFormDialog({
               <form.Field name="title">
                 {(field) => (
                   <div className="space-y-1.5">
-                    <FormLabel
-                      htmlFor={field.name}
-                      className="font-heading text-xs text-slate-600"
-                    >
+                    <FormLabel htmlFor={field.name} className="font-heading text-xs text-slate-600">
                       {t('doctors.form.title')}
                     </FormLabel>
                     <Input
@@ -347,10 +338,7 @@ export function DoctorFormDialog({
               <form.Field name="degrees">
                 {(field) => (
                   <div className="space-y-1.5">
-                    <FormLabel
-                      htmlFor={field.name}
-                      className="font-heading text-xs text-slate-600"
-                    >
+                    <FormLabel htmlFor={field.name} className="font-heading text-xs text-slate-600">
                       {t('doctors.form.degrees')}
                     </FormLabel>
                     <Input

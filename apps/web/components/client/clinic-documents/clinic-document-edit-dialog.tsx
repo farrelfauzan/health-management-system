@@ -25,6 +25,7 @@ import {
 } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { documentAdminControllerUpdateDocumentV1 } from '#lib/api/generated/document-management/document-management';
 import { resolveApiErrorMessage } from '#lib/api/resolve-api-error-message';
 import { parseApiSuccess } from '#lib/api/response';
@@ -138,7 +139,7 @@ export function ClinicDocumentEditDialog({
             </Select>
           </div>
           {isVisibilityChanged ? (
-            <p className="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-900">
+            <InlineNotice tone="warning">
               {/*
                 FR-E5-20: on an *issued* document, changing visibility is a
                 new decision rather than an edit — the field decides whether
@@ -151,7 +152,7 @@ export function ClinicDocumentEditDialog({
               {document.approval.status === 'ISSUED'
                 ? t('reapprovalWarning')
                 : t('reingestWarning')}
-            </p>
+            </InlineNotice>
           ) : null}
         </div>
         <DialogFooter>

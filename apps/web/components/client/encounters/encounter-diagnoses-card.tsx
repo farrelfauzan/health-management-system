@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 
 import { EncounterDiagnosisForm } from '#components/client/encounters/encounter-diagnosis-form';
 import { EncounterDiagnosisRow } from '#components/client/encounters/encounter-diagnosis-row';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 
 type EncounterDiagnosesCardProps = {
   encounterId: string;
@@ -39,9 +40,7 @@ export function EncounterDiagnosesCard({
           />
         ) : null}
         {!hasPrimaryDiagnosis ? (
-          <p className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
-            {t('encounters.diagnosis.primaryRequired')}
-          </p>
+          <InlineNotice tone="warning">{t('encounters.diagnosis.primaryRequired')}</InlineNotice>
         ) : null}
         {orderedDiagnoses.length > 0 ? (
           <ul className="space-y-2">

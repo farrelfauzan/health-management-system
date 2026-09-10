@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Button, Card, CardContent, Icon, useAbility } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { NotUsedByAssistantNotice } from '#components/client/vault-documents/not-used-by-assistant-notice';
 import { VaultDocumentUploadDialog } from '#components/client/vault-documents/vault-document-upload-dialog';
 import { VaultDocumentsFilterBar } from '#components/client/vault-documents/vault-documents-filter-bar';
@@ -90,19 +91,17 @@ export function VaultPanel() {
           and is looking at their documents is exactly who benefits from being
           reminded who can and cannot read them. */}
       <NotUsedByAssistantNotice />
-      {notice ? (
-        <p className="rounded-lg bg-emerald-50 px-4 py-3 text-sm text-emerald-900">{notice}</p>
-      ) : null}
-      {error ? (
-        <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-900">{error}</p>
-      ) : null}
+      {notice ? <InlineNotice tone="success">{notice}</InlineNotice> : null}
+      {error ? <InlineNotice tone="error">{error}</InlineNotice> : null}
       <Card className="gap-0 rounded-xl border-slate-200 py-0 shadow-none">
         <CardContent className="p-0">
           <VaultDocumentsFilterBar filters={filters} onChange={handleFiltersChange} />
           {documentsQuery.isLoading ? (
             <p className="p-6 text-sm text-slate-500">{t('states.loading')}</p>
           ) : documentsQuery.isError ? (
-            <p className="p-6 text-sm text-red-700">{t('states.error')}</p>
+            <InlineNotice tone="error" className="m-6">
+              {t('states.error')}
+            </InlineNotice>
           ) : rows.length === 0 && hasFilters ? (
             <EmptyState
               icon="search_off"

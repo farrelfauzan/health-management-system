@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import type { MfaEnrolment, MfaEnrolmentCompleted } from '@hms/shared-types';
 import { Button, Input, Label } from '@hms/ui';
 
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import {
   authControllerBeginMfaEnrolmentV1,
   authControllerVerifyMfaEnrolmentV1,
@@ -101,14 +102,7 @@ export function MfaEnrolmentForm({ ticket, onEnrolled }: MfaEnrolmentFormProps) 
         <p className="text-sm text-slate-500">{t('subtitle')}</p>
       </div>
 
-      {enrolmentError ? (
-        <p
-          role="alert"
-          className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700"
-        >
-          {enrolmentError}
-        </p>
-      ) : null}
+      {enrolmentError ? <InlineNotice tone="error">{enrolmentError}</InlineNotice> : null}
 
       {enrolment ? (
         <div className="space-y-3">

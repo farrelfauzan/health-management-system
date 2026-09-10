@@ -27,6 +27,7 @@ import { useTranslations } from 'next-intl';
 
 import { DocumentFilePicker } from '#components/client/documents/document-file-picker';
 import { UploadProgressIndicator } from '#components/client/documents/upload-progress-indicator';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { VaultCategorySelect } from '#components/client/vault-documents/vault-category-select';
 import { VaultPatientDataNotice } from '#components/client/vault-documents/vault-patient-data-notice';
 import { resolveApiErrorMessage } from '#lib/api/resolve-api-error-message';
@@ -219,9 +220,9 @@ export function VaultDocumentUploadDialog({
             </Select>
           </div>
           {hasBackwardsDates ? (
-            <p className="text-sm text-red-700">{t('errors.backwardsDates')}</p>
+            <InlineNotice tone="error">{t('errors.backwardsDates')}</InlineNotice>
           ) : null}
-          {error ? <p className="text-sm text-red-700">{error}</p> : null}
+          {error ? <InlineNotice tone="error">{error}</InlineNotice> : null}
           {progress && uploadMutation.isPending ? (
             <UploadProgressIndicator progress={progress} label={resolveProgressLabel(progress)} />
           ) : null}

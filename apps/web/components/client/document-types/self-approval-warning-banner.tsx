@@ -1,7 +1,8 @@
 'use client';
 
-import { Icon } from '@hms/ui';
 import { useTranslations } from 'next-intl';
+
+import { InlineNotice } from '#components/client/shared/inline-notice';
 
 /**
  * The persistent warning FR-E5-14 asks for while self-approval is on: a
@@ -12,13 +13,5 @@ import { useTranslations } from 'next-intl';
 export function SelfApprovalWarningBanner() {
   const t = useTranslations('operations.documents.types.approval');
 
-  return (
-    <p
-      role="alert"
-      className="flex items-start gap-2 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-900"
-    >
-      <Icon name="warning" size={16} className="mt-0.5 shrink-0" />
-      <span>{t('selfApprovalWarning')}</span>
-    </p>
-  );
+  return <InlineNotice tone="warning">{t('selfApprovalWarning')}</InlineNotice>;
 }

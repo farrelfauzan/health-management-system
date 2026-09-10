@@ -9,6 +9,7 @@ import { useTranslations } from 'next-intl';
 import { ExpiredLicenceWarning } from '#components/client/appointments/expired-licence-warning';
 import { SessionOptionCard } from '#components/client/appointments/session-option-card';
 import { FormLabel } from '#components/client/shared/form-label';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { appointmentManagementControllerCreateAppointmentV1 } from '#lib/api/generated/appointment-management/appointment-management';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { parseApiSuccess } from '#lib/api/response';
@@ -80,14 +81,7 @@ export function SessionBookingForm({
 
   return (
     <div className="space-y-4">
-      {formError ? (
-        <p
-          role="alert"
-          className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700"
-        >
-          {formError}
-        </p>
-      ) : null}
+      {formError ? <InlineNotice tone="error">{formError}</InlineNotice> : null}
 
       <div className="space-y-1.5">
         <FormLabel
@@ -145,10 +139,7 @@ export function SessionBookingForm({
       </div>
 
       <div className="space-y-1.5">
-        <FormLabel
-          htmlFor="session-reason"
-          className="font-heading text-xs text-slate-600"
-        >
+        <FormLabel htmlFor="session-reason" className="font-heading text-xs text-slate-600">
           Reason (optional)
         </FormLabel>
         <Textarea

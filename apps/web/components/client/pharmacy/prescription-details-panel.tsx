@@ -12,6 +12,7 @@ import { useFormatter, useTranslations } from 'next-intl';
 
 import { PrescriptionItemCard } from '#components/client/pharmacy/prescription-item-card';
 import { VerificationChecklist } from '#components/client/pharmacy/verification-checklist';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { AvatarInitials } from '#components/shared/avatar-initials';
 import { dispenseControllerCreateDispenseV1 } from '#lib/api/generated/pharmacy-flow/pharmacy-flow';
 import type { CreateDispenseDto } from '#lib/api/generated/model/createDispenseDto';
@@ -162,14 +163,7 @@ export function PrescriptionDetailsPanel({
           isDisabled={dispenseMutation.isPending}
         />
 
-        {actionError ? (
-          <p
-            role="alert"
-            className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700"
-          >
-            {actionError}
-          </p>
-        ) : null}
+        {actionError ? <InlineNotice tone="error">{actionError}</InlineNotice> : null}
 
         <div className="grid grid-cols-2 gap-4">
           <Button

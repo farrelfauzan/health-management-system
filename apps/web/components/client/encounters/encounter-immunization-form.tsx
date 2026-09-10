@@ -19,13 +19,11 @@ import {
 } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { encounterClinicalDataControllerAddImmunizationV1 } from '#lib/api/generated/encounters/encounters';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { parseApiSuccess } from '#lib/api/response';
-import {
-  IMMUNIZATION_ROUTES,
-  IMMUNIZATION_SITES,
-} from '#lib/encounters/immunization-options';
+import { IMMUNIZATION_ROUTES, IMMUNIZATION_SITES } from '#lib/encounters/immunization-options';
 import { invalidateEncounterQueries } from '#lib/encounters/invalidate-encounter-queries';
 import { useVaccineCatalog } from '#lib/encounters/use-vaccine-catalog';
 
@@ -163,11 +161,7 @@ export function EncounterImmunizationForm({ encounterId }: EncounterImmunization
           </SelectContent>
         </Select>
       </div>
-      {actionError ? (
-        <p role="alert" className="text-xs text-rose-600">
-          {actionError}
-        </p>
-      ) : null}
+      {actionError ? <InlineNotice tone="error">{actionError}</InlineNotice> : null}
       <Button
         type="submit"
         size="sm"

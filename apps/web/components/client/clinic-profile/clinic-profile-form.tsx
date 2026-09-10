@@ -8,6 +8,7 @@ import { useTranslations } from 'next-intl';
 
 import { ClinicProfileLogoField } from '#components/client/clinic-profile/clinic-profile-logo-field';
 import { ClinicProfileTextField } from '#components/client/clinic-profile/clinic-profile-text-field';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { RequiredLegend } from '#components/client/shared/required-legend';
 import { clinicProfileControllerUpdateClinicProfileV1 } from '#lib/api/generated/clinic-profile/clinic-profile';
 import { parseApiSuccess } from '#lib/api/response';
@@ -108,12 +109,8 @@ export function ClinicProfileForm({ profile, canWrite }: ClinicProfileFormProps)
   return (
     <Card>
       <CardContent className="space-y-6 p-6">
-        {notice ? (
-          <p className="rounded-lg bg-emerald-50 px-4 py-3 text-sm text-emerald-900">{notice}</p>
-        ) : null}
-        {error ? (
-          <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-900">{error}</p>
-        ) : null}
+        {notice ? <InlineNotice tone="success">{notice}</InlineNotice> : null}
+        {error ? <InlineNotice tone="error">{error}</InlineNotice> : null}
         <RequiredLegend />
         <div className="grid gap-4 md:grid-cols-2">
           <ClinicProfileTextField
