@@ -24,6 +24,7 @@ import { useFormatter, useTranslations } from 'next-intl';
 
 import { PrivacyNoticeCapture } from '#components/client/patients/privacy-notice-capture';
 import { FormLabel } from '#components/client/shared/form-label';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { RequiredLegend } from '#components/client/shared/required-legend';
 import type { CreateRegistrationDto } from '#lib/api/generated/model/createRegistrationDto';
 import type { CreateRegistrationDtoPrivacyNotice } from '#lib/api/generated/model/createRegistrationDtoPrivacyNotice';
@@ -137,14 +138,7 @@ export function RegistrationCreateDialog({
           }}
         >
           <RequiredLegend />
-          {formError ? (
-            <p
-              role="alert"
-              className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700"
-            >
-              {formError}
-            </p>
-          ) : null}
+          {formError ? <InlineNotice tone="error">{formError}</InlineNotice> : null}
 
           <form.Field name="patientId">
             {(field) => (
@@ -216,9 +210,7 @@ export function RegistrationCreateDialog({
                     ))}
                   </SelectContent>
                 </Select>
-                <p className="text-xs text-slate-500">
-                  {t('registrations.appointmentHelp')}
-                </p>
+                <p className="text-xs text-slate-500">{t('registrations.appointmentHelp')}</p>
               </div>
             )}
           </form.Field>
@@ -245,9 +237,7 @@ export function RegistrationCreateDialog({
                   disabled={isSubmitting}
                   className="bg-primary-container hover:bg-primary"
                 >
-                  {isSubmitting
-                    ? t('registrations.creating')
-                    : t('registrations.createAction')}
+                  {isSubmitting ? t('registrations.creating') : t('registrations.createAction')}
                 </Button>
               )}
             </form.Subscribe>

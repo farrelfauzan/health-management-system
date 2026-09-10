@@ -15,6 +15,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { organizationUnitControllerDeleteUnitV1 } from '#lib/api/generated/organization-structure/organization-structure';
 import { invalidateOrganizationQueries } from '#lib/organization/invalidate-organization-queries';
@@ -62,11 +63,7 @@ export function OrganizationUnitDeleteDialog({
           </DialogTitle>
           <DialogDescription>{t('deleteDescription')}</DialogDescription>
         </DialogHeader>
-        {actionError ? (
-          <p role="alert" className="text-sm text-danger">
-            {actionError}
-          </p>
-        ) : null}
+        {actionError ? <InlineNotice tone="error">{actionError}</InlineNotice> : null}
         <DialogFooter>
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
             {common('cancel')}

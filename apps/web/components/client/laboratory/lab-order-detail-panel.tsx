@@ -2,7 +2,16 @@
 
 import { useMemo } from 'react';
 import type { LabTestView } from '@hms/shared-types';
-import { Button, Icon, Skeleton, Tabs, TabsContent, TabsList, TabsTrigger, useAbility } from '@hms/ui';
+import {
+  Button,
+  Icon,
+  Skeleton,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+  useAbility,
+} from '@hms/ui';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 
@@ -14,15 +23,20 @@ import { LabSpecimensTable } from '#components/client/laboratory/lab-specimens-t
 import { LabValidationPanel } from '#components/client/laboratory/lab-validation-panel';
 import { EmptyState } from '#components/shared/empty-state';
 import { PageHeader } from '#components/shared/page-header';
+import { LAB_ORDER_TABS, type LabOrderTab } from '#lib/laboratory/lab-order-tabs';
 import { useLabOrderBench } from '#lib/laboratory/use-lab-order-bench';
 import { useLabTests } from '#lib/laboratory/use-lab-tests';
 import { useLaboratorySettings } from '#lib/laboratory/use-laboratory-settings';
+import { useShellBreadcrumbRoot } from '#lib/navigation/use-shell-breadcrumb-root';
+import { useTabSearchParam } from '#lib/navigation/use-tab-search-param';
 
 const ENTRY_STATUSES = ['COLLECTED', 'IN_PROGRESS', 'RESULTED'] as const;
 
 type LabOrderDetailPanelProps = {
   labOrderId: string;
   currentUserId: string | null;
+  /** A tab asked for by the URL (SJ-162); absent, the order's status picks one. */
+  initialTab?: LabOrderTab;
   isTechnicianOnly: boolean;
 };
 
@@ -35,11 +49,13 @@ type LabOrderDetailPanelProps = {
 export function LabOrderDetailPanel({
   labOrderId,
   currentUserId,
+  initialTab,
   isTechnicianOnly,
 }: LabOrderDetailPanelProps) {
   const t = useTranslations('operations.laboratory.order');
   const tEntry = useTranslations('operations.laboratory.entry');
   const tWorklist = useTranslations('operations.laboratory.worklist');
+  const root = useShellBreadcrumbRoot();
   const ability = useAbility();
   const canWriteResults = ability.can('write', 'LabResult');
   const canVerify = ability.can('verify', 'LabResult');
@@ -51,6 +67,20 @@ export function LabOrderDetailPanel({
     () => new Map<string, LabTestView>(tests.labTests.map((test) => [test.id, test])),
     [tests.labTests],
   );
+  const loadedOrder = bench.bench?.order;
+  const isEntryOpen =
+    canWriteResults &&
+    loadedOrder?.fulfilmentSite === 'INTERNAL' &&
+    ENTRY_STATUSES.some((status) => status === loadedOrder.status);
+  const isValidationOpen = loadedOrder?.status === 'RESULTED' || loadedOrder?.status === 'RELEASED';
+  // Before the order arrives the fallback is the first tab; once it has, the
+  // status decides, exactly as the uncontrolled default did. The hook reads
+  // the URL on every render, so the switch happens without any stored state.
+  const { tab, setTab } = useTabSearchParam<LabOrderTab>({
+    allowed: LAB_ORDER_TABS,
+    fallback: isValidationOpen || isEntryOpen ? 'results' : 'specimens',
+    initialTab,
+  });
 
   if (bench.isPending) {
     return (
@@ -66,17 +96,16 @@ export function LabOrderDetailPanel({
   }
 
   const { order, patient } = bench.bench;
-  const isEntryOpen =
-    canWriteResults &&
-    order.fulfilmentSite === 'INTERNAL' &&
-    ENTRY_STATUSES.some((status) => status === order.status);
-  const isValidationOpen = order.status === 'RESULTED' || order.status === 'RELEASED';
 
   return (
     <div className="space-y-6">
       <PageHeader
         title={t('title', { orderNumber: order.orderNumber })}
-        breadcrumbs={[tWorklist('title'), order.orderNumber]}
+        breadcrumbs={[
+          root,
+          { label: tWorklist('title'), href: '/admin/laboratory' },
+          { label: order.orderNumber },
+        ]}
         actions={
           <Button asChild type="button" variant="outline" size="sm">
             <Link href="/admin/laboratory">
@@ -87,7 +116,7 @@ export function LabOrderDetailPanel({
         }
       />
       <LabOrderSummaryCard order={order} patient={patient} />
-      <Tabs defaultValue={isValidationOpen || isEntryOpen ? 'results' : 'specimens'}>
+      <Tabs value={tab} onValueChange={(value) => setTab(value as LabOrderTab)}>
         <TabsList>
           <TabsTrigger value="specimens">{t('tabs.specimens')}</TabsTrigger>
           <TabsTrigger value="results">{t('tabs.results')}</TabsTrigger>

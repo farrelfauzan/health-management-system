@@ -5,6 +5,7 @@ import { Skeleton } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
 import { ReleaseDispatchChannelOption } from '#components/client/patient-documents/release-dispatch-channel-option';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 
 type ReleaseDispatchOptionsProps = {
   readiness: readonly DeliveryChannelReadinessView[];
@@ -40,11 +41,7 @@ export function ReleaseDispatchOptions({
       <p className="text-sm font-medium text-slate-900">{t('dispatchTitle')}</p>
       <p className="text-xs text-slate-500">{t('dispatchDescription')}</p>
       {isPending ? <Skeleton className="h-16 w-full" /> : null}
-      {isError ? (
-        <p role="alert" className="text-xs text-rose-700">
-          {tc('loadError')}
-        </p>
-      ) : null}
+      {isError ? <InlineNotice tone="error">{tc('loadError')}</InlineNotice> : null}
       {readiness.length > 0 ? (
         <ul className="space-y-2">
           {readiness.map((entry) => (

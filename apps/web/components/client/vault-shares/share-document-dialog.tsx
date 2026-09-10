@@ -16,6 +16,7 @@ import {
 } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { ShareRecipientPicker } from '#components/client/vault-shares/share-recipient-picker';
 import { ShareRevocationNotice } from '#components/client/vault-shares/share-revocation-notice';
 import { vaultDocumentShareControllerCreateShareV1 } from '#lib/api/generated/document-management/document-management';
@@ -132,7 +133,7 @@ export function ShareDocumentDialog({
             />
             <p className="text-xs text-slate-500">{t('fields.expiresAtHint')}</p>
           </div>
-          {error ? <p className="text-sm text-red-700">{error}</p> : null}
+          {error ? <InlineNotice tone="error">{error}</InlineNotice> : null}
         </div>
         <DialogFooter>
           <Button

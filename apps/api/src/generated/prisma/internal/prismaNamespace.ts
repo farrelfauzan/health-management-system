@@ -487,7 +487,11 @@ export const ModelName = {
   LabResult: 'LabResult',
   LaboratorySettings: 'LaboratorySettings',
   LabReport: 'LabReport',
-  Immunization: 'Immunization'
+  Immunization: 'Immunization',
+  Province: 'Province',
+  Regency: 'Regency',
+  District: 'District',
+  Village: 'Village'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -503,7 +507,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientDeliveryConsent" | "documentDelivery" | "documentDeliveryLink" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorLicenseExpiryNotice" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "prescriptionItemComponent" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "vaultDocumentExpiryNotice" | "vaultDocumentShare" | "userOffboardingNotice" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit" | "documentType" | "documentTypeApprover" | "managedDocument" | "documentApprovalRequest" | "documentApprovalApprover" | "documentApprovalDecision" | "labTest" | "labReferenceRange" | "labPanel" | "labPanelMember" | "labOrderCounter" | "labOrder" | "labOrderItem" | "labSpecimenCounter" | "labSpecimen" | "labResult" | "laboratorySettings" | "labReport" | "immunization"
+    modelProps: "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientDeliveryConsent" | "documentDelivery" | "documentDeliveryLink" | "patientAllergy" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorLicenseExpiryNotice" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "prescriptionItemComponent" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "vaultDocumentExpiryNotice" | "vaultDocumentShare" | "userOffboardingNotice" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit" | "documentType" | "documentTypeApprover" | "managedDocument" | "documentApprovalRequest" | "documentApprovalApprover" | "documentApprovalDecision" | "labTest" | "labReferenceRange" | "labPanel" | "labPanelMember" | "labOrderCounter" | "labOrder" | "labOrderItem" | "labSpecimenCounter" | "labSpecimen" | "labResult" | "laboratorySettings" | "labReport" | "immunization" | "province" | "regency" | "district" | "village"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -8203,6 +8207,302 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    Province: {
+      payload: Prisma.$ProvincePayload<ExtArgs>
+      fields: Prisma.ProvinceFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ProvinceFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProvincePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ProvinceFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProvincePayload>
+        }
+        findFirst: {
+          args: Prisma.ProvinceFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProvincePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ProvinceFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProvincePayload>
+        }
+        findMany: {
+          args: Prisma.ProvinceFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProvincePayload>[]
+        }
+        create: {
+          args: Prisma.ProvinceCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProvincePayload>
+        }
+        createMany: {
+          args: Prisma.ProvinceCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ProvinceCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProvincePayload>[]
+        }
+        delete: {
+          args: Prisma.ProvinceDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProvincePayload>
+        }
+        update: {
+          args: Prisma.ProvinceUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProvincePayload>
+        }
+        deleteMany: {
+          args: Prisma.ProvinceDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ProvinceUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ProvinceUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProvincePayload>[]
+        }
+        upsert: {
+          args: Prisma.ProvinceUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProvincePayload>
+        }
+        aggregate: {
+          args: Prisma.ProvinceAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateProvince>
+        }
+        groupBy: {
+          args: Prisma.ProvinceGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProvinceGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ProvinceCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProvinceCountAggregateOutputType> | number
+        }
+      }
+    }
+    Regency: {
+      payload: Prisma.$RegencyPayload<ExtArgs>
+      fields: Prisma.RegencyFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.RegencyFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RegencyPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.RegencyFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RegencyPayload>
+        }
+        findFirst: {
+          args: Prisma.RegencyFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RegencyPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.RegencyFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RegencyPayload>
+        }
+        findMany: {
+          args: Prisma.RegencyFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RegencyPayload>[]
+        }
+        create: {
+          args: Prisma.RegencyCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RegencyPayload>
+        }
+        createMany: {
+          args: Prisma.RegencyCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.RegencyCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RegencyPayload>[]
+        }
+        delete: {
+          args: Prisma.RegencyDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RegencyPayload>
+        }
+        update: {
+          args: Prisma.RegencyUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RegencyPayload>
+        }
+        deleteMany: {
+          args: Prisma.RegencyDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.RegencyUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.RegencyUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RegencyPayload>[]
+        }
+        upsert: {
+          args: Prisma.RegencyUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RegencyPayload>
+        }
+        aggregate: {
+          args: Prisma.RegencyAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateRegency>
+        }
+        groupBy: {
+          args: Prisma.RegencyGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RegencyGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.RegencyCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RegencyCountAggregateOutputType> | number
+        }
+      }
+    }
+    District: {
+      payload: Prisma.$DistrictPayload<ExtArgs>
+      fields: Prisma.DistrictFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.DistrictFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DistrictPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.DistrictFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DistrictPayload>
+        }
+        findFirst: {
+          args: Prisma.DistrictFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DistrictPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.DistrictFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DistrictPayload>
+        }
+        findMany: {
+          args: Prisma.DistrictFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DistrictPayload>[]
+        }
+        create: {
+          args: Prisma.DistrictCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DistrictPayload>
+        }
+        createMany: {
+          args: Prisma.DistrictCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.DistrictCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DistrictPayload>[]
+        }
+        delete: {
+          args: Prisma.DistrictDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DistrictPayload>
+        }
+        update: {
+          args: Prisma.DistrictUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DistrictPayload>
+        }
+        deleteMany: {
+          args: Prisma.DistrictDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.DistrictUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.DistrictUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DistrictPayload>[]
+        }
+        upsert: {
+          args: Prisma.DistrictUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DistrictPayload>
+        }
+        aggregate: {
+          args: Prisma.DistrictAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateDistrict>
+        }
+        groupBy: {
+          args: Prisma.DistrictGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DistrictGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.DistrictCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DistrictCountAggregateOutputType> | number
+        }
+      }
+    }
+    Village: {
+      payload: Prisma.$VillagePayload<ExtArgs>
+      fields: Prisma.VillageFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.VillageFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VillagePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.VillageFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VillagePayload>
+        }
+        findFirst: {
+          args: Prisma.VillageFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VillagePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.VillageFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VillagePayload>
+        }
+        findMany: {
+          args: Prisma.VillageFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VillagePayload>[]
+        }
+        create: {
+          args: Prisma.VillageCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VillagePayload>
+        }
+        createMany: {
+          args: Prisma.VillageCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.VillageCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VillagePayload>[]
+        }
+        delete: {
+          args: Prisma.VillageDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VillagePayload>
+        }
+        update: {
+          args: Prisma.VillageUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VillagePayload>
+        }
+        deleteMany: {
+          args: Prisma.VillageDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.VillageUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.VillageUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VillagePayload>[]
+        }
+        upsert: {
+          args: Prisma.VillageUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VillagePayload>
+        }
+        aggregate: {
+          args: Prisma.VillageAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateVillage>
+        }
+        groupBy: {
+          args: Prisma.VillageGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.VillageGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.VillageCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.VillageCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -8362,6 +8662,12 @@ export const PatientProfileScalarFieldEnum = {
   status: 'status',
   phoneNumber: 'phoneNumber',
   address: 'address',
+  provinceCode: 'provinceCode',
+  regencyCode: 'regencyCode',
+  districtCode: 'districtCode',
+  villageCode: 'villageCode',
+  rtRw: 'rtRw',
+  postalCode: 'postalCode',
   ownerUserId: 'ownerUserId',
   isActive: 'isActive',
   createdAt: 'createdAt',
@@ -10015,6 +10321,53 @@ export const ImmunizationScalarFieldEnum = {
 export type ImmunizationScalarFieldEnum = (typeof ImmunizationScalarFieldEnum)[keyof typeof ImmunizationScalarFieldEnum]
 
 
+export const ProvinceScalarFieldEnum = {
+  code: 'code',
+  name: 'name',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProvinceScalarFieldEnum = (typeof ProvinceScalarFieldEnum)[keyof typeof ProvinceScalarFieldEnum]
+
+
+export const RegencyScalarFieldEnum = {
+  code: 'code',
+  name: 'name',
+  provinceCode: 'provinceCode',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RegencyScalarFieldEnum = (typeof RegencyScalarFieldEnum)[keyof typeof RegencyScalarFieldEnum]
+
+
+export const DistrictScalarFieldEnum = {
+  code: 'code',
+  name: 'name',
+  regencyCode: 'regencyCode',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DistrictScalarFieldEnum = (typeof DistrictScalarFieldEnum)[keyof typeof DistrictScalarFieldEnum]
+
+
+export const VillageScalarFieldEnum = {
+  code: 'code',
+  name: 'name',
+  districtCode: 'districtCode',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type VillageScalarFieldEnum = (typeof VillageScalarFieldEnum)[keyof typeof VillageScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -11591,6 +11944,10 @@ export type GlobalOmitConfig = {
   laboratorySettings?: Prisma.LaboratorySettingsOmit
   labReport?: Prisma.LabReportOmit
   immunization?: Prisma.ImmunizationOmit
+  province?: Prisma.ProvinceOmit
+  regency?: Prisma.RegencyOmit
+  district?: Prisma.DistrictOmit
+  village?: Prisma.VillageOmit
 }
 
 /* Types for Logging */

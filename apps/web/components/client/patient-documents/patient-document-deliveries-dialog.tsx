@@ -14,6 +14,7 @@ import {
 import { useTranslations } from 'next-intl';
 
 import { PatientDocumentDeliveryRow } from '#components/client/patient-documents/patient-document-delivery-row';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { usePatientDocumentDeliveries } from '#lib/patient-documents/use-patient-document-deliveries';
 
 type PatientDocumentDeliveriesDialogProps = {
@@ -46,11 +47,7 @@ export function PatientDocumentDeliveriesDialog({
           <DialogDescription>{t('description')}</DialogDescription>
         </DialogHeader>
         {query.isPending ? <Skeleton className="h-16 w-full" /> : null}
-        {query.isError ? (
-          <p role="alert" className="text-sm text-rose-700">
-            {t('loadError')}
-          </p>
-        ) : null}
+        {query.isError ? <InlineNotice tone="error">{t('loadError')}</InlineNotice> : null}
         {!query.isPending && !query.isError && deliveries.length === 0 ? (
           <p className="text-sm text-slate-500">{t('empty')}</p>
         ) : null}

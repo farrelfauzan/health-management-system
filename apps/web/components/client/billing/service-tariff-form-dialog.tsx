@@ -29,6 +29,7 @@ import {
 import { useTranslations } from 'next-intl';
 
 import { RoomClassSelect } from '#components/client/rooms/room-class-select';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import {
   serviceTariffControllerCreateServiceTariffV1,
   serviceTariffControllerUpdateServiceTariffV1,
@@ -144,14 +145,7 @@ export function ServiceTariffFormDialog({
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-3 py-4">
-            {actionError ? (
-              <p
-                role="alert"
-                className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700"
-              >
-                {actionError}
-              </p>
-            ) : null}
+            {actionError ? <InlineNotice tone="error">{actionError}</InlineNotice> : null}
             <div className="grid gap-3 sm:grid-cols-2">
               <div>
                 <Label

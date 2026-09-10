@@ -451,6 +451,52 @@ export type SatusehatFhirExtension = {
   valueCodeableConcept: SatusehatFhirCodeableConcept;
 };
 
+/**
+ * One `url`/`valueCode` pair inside the Kemenkes `administrativeCode`
+ * extension (`province`, `city`, `district`, `village`, `rt`, `rw`).
+ */
+export type SatusehatFhirAdministrativeCodeEntry = {
+  url: 'province' | 'city' | 'district' | 'village' | 'rt' | 'rw';
+  valueCode: string;
+};
+
+export type SatusehatFhirAdministrativeCodeExtension = {
+  url: 'https://fhir.kemkes.go.id/r4/StructureDefinition/administrativeCode';
+  extension: SatusehatFhirAdministrativeCodeEntry[];
+};
+
+/**
+ * A FHIR R4 `Address` as SATUSEHAT's Patient profile wants it (P19-T10): the
+ * street in `line`, the regency name in `city`, and the Kemendagri codes in
+ * the `administrativeCode` extension — present only when the patient record
+ * carries a structured address.
+ */
+export type SatusehatFhirAddress = {
+  use: 'home';
+  line: string[];
+  city?: string;
+  postalCode?: string;
+  country: 'ID';
+  extension?: SatusehatFhirAdministrativeCodeExtension[];
+};
+
+/**
+ * What the mapper needs to build a patient's FHIR address: the street line
+ * plus whatever of the structured address (P19-T10) the record holds. Codes
+ * are the dotted Kemendagri form the registry stores; the mapper strips the
+ * dots, which is how SATUSEHAT spells them.
+ */
+export type SatusehatPatientAddressMapInput = {
+  street: string;
+  provinceCode?: string | null;
+  regencyCode?: string | null;
+  regencyName?: string | null;
+  districtCode?: string | null;
+  villageCode?: string | null;
+  rtRw?: string | null;
+  postalCode?: string | null;
+};
+
 export type SatusehatFhirSimpleQuantity = {
   value: number;
   unit?: string;

@@ -27,7 +27,6 @@
     "patients": {
       "title": "Pasien",
       "subtitle": "Kelola rekam pasien, demografi, dan penetapan perawatan.",
-      "dashboard": "Dasbor Utama",
       "add": "Tambah Pasien Baru",
       "assignDoctor": "Tetapkan Dokter",
       "itemLabel": "pasien",
@@ -131,14 +130,6 @@
       "doctorRequired": "Pilih dokter yang akan ditetapkan.",
       "doctorDuplicate": "Dokter ini sudah ditetapkan kepada pasien.",
       "assignDoctorError": "Dokter gagal ditetapkan. Silakan coba lagi.",
-      "sample": "Contoh",
-      "activeAlert": "Peringatan Aktif",
-      "alertHeadline": "Kapasitas unit gawat darurat telah mencapai 95%",
-      "alertRecommendation": "Rekomendasi: Arahkan kasus tidak mendesak ke unit rawat jalan.",
-      "admissionTrends": "Tren Penerimaan",
-      "admissionSummary": "Okupansi naik 12% dibandingkan minggu lalu.",
-      "sampleData": "data contoh",
-      "admissionChartLabel": "Grafik contoh tren penerimaan",
       "csv": {
         "patientId": "ID Pasien",
         "fullName": "Nama Lengkap",
@@ -392,7 +383,9 @@
         "unreachable": "SATUSEHAT tidak dapat dihubungi. Coba lagi."
       },
       "noImmunizations": "Belum ada imunisasi tercatat untuk pasien ini.",
-      "loadingImmunizations": "Memuat riwayat imunisasi..."
+      "loadingImmunizations": "Memuat riwayat imunisasi...",
+      "directoryTab": "Direktori",
+      "fromChatTab": "Dari chat"
     },
     "privacyNotice": {
       "title": "Pemberitahuan Privasi Pasien",
@@ -497,7 +490,6 @@
     "doctors": {
       "title": "Dokter",
       "subtitle": "Kelola profil tenaga medis, kredensial, jadwal, dan penetapan pasien.",
-      "dashboard": "Dasbor Utama",
       "add": "Tambah Dokter Baru",
       "assignPatient": "Tetapkan Pasien",
       "manageSchedule": "Kelola Jadwal",

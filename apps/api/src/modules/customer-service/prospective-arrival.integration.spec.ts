@@ -1,6 +1,10 @@
 import { ConfigService } from '@nestjs/config';
 
-import { CreatePatientInput } from '@hms/shared-types';
+import {
+  ChannelKindValue,
+  CreatePatientInput,
+  listProspectivePatientsQuerySchema,
+} from '@hms/shared-types';
 
 import { AuditService } from '../../common/audit/audit.service';
 import { CurrentUser } from '../../common/auth/current-user.type';
@@ -11,6 +15,8 @@ import { PrivacyNoticeRepository } from '../../common/privacy-notice/privacy-not
 import { AuthRepository } from '../auth/repository/auth.repository';
 import { PatientManagementRepository } from '../patient-management/repository/patient-management.repository';
 import { PatientManagementService } from '../patient-management/service/patient-management.service';
+import { RegionsRepository } from '../regions/repository/regions.repository';
+import { RegionsService } from '../regions/service/regions.service';
 import { ProspectiveArrivalRepository } from './repository/prospective-arrival.repository';
 import { ProspectiveArrivalService } from './service/prospective-arrival.service';
 
@@ -85,14 +91,18 @@ describe('prospective arrival conversion against Postgres', () => {
     suffix: string;
     fullName?: string;
     phoneNumber?: string;
+    channel?: ChannelKindValue;
+    scheduledAt?: Date;
+    expiresAt?: Date;
   }): Promise<{ prospectivePatientId: string; appointmentId: string }> {
+    const channel = params.channel ?? 'TELEGRAM';
     const prospective = await prisma.prospectivePatient.create({
       data: {
         fullName: params.fullName ?? `${TEST_MARKER} ${params.suffix}`,
         phoneNumber: params.phoneNumber ?? '628121000004',
-        channel: 'TELEGRAM',
+        channel,
         externalChatId: `${TEST_MARKER}-${params.suffix}`,
-        expiresAt: new Date(Date.now() + 86_400_000),
+        expiresAt: params.expiresAt ?? new Date(Date.now() + 86_400_000),
       },
       select: { id: true },
     });
@@ -101,13 +111,20 @@ describe('prospective arrival conversion against Postgres', () => {
         prospectivePatientId: prospective.id,
         doctorId,
         type: 'SESSION',
-        scheduledAt: new Date('2026-09-01T02:00:00.000Z'),
-        bookingSource: 'TELEGRAM',
+        scheduledAt: params.scheduledAt ?? new Date('2026-09-01T02:00:00.000Z'),
+        bookingSource: channel,
         bookingReferenceCode: `${TEST_MARKER}-${params.suffix}`,
       },
       select: { id: true },
     });
     return { prospectivePatientId: prospective.id, appointmentId: appointment.id };
+  }
+
+  /** The back-office list, always scoped to this file's rows by the marker. */
+  function listTestRows(overrides: Record<string, unknown> = {}) {
+    return arrivalService.listProspectivePatients(
+      listProspectivePatientsQuerySchema.parse({ q: TEST_MARKER, ...overrides }),
+    );
   }
 
   async function readMrnCounter(): Promise<bigint> {
@@ -224,6 +241,7 @@ describe('prospective arrival conversion against Postgres', () => {
         authRepositoryStub,
         { record: jest.fn() } as unknown as AuditService,
         privacyNoticeRepository,
+        new RegionsService(new RegionsRepository(prisma)),
       ),
       identifierCrypto,
       { record: jest.fn() } as unknown as AuditService,
@@ -408,6 +426,163 @@ describe('prospective arrival conversion against Postgres', () => {
 
       const found = candidates.find((candidate) => candidate.id === existing.id);
       expect(found?.reasons).toEqual(expect.arrayContaining(['PHONE_EXACT', 'NAME_SIMILAR']));
+    });
+  });
+
+  describe('list (the back-office "From chat" view, P19-T08)', () => {
+    const DAY_MS = 86_400_000;
+
+    it('defaults to AWAITING_ARRIVAL and leaves resolved rows out', async () => {
+      const { prospectivePatientId: waiting } = await createProspectiveWithBooking({
+        suffix: 'list-waiting',
+      });
+      const { prospectivePatientId: resolved } = await createProspectiveWithBooking({
+        suffix: 'list-resolved',
+      });
+      await prisma.prospectivePatient.update({
+        where: { id: resolved },
+        data: { status: 'EXPIRED' },
+      });
+
+      const page = await listTestRows();
+      const ids = page.items.map((item) => item.id);
+
+      expect(ids).toContain(waiting);
+      expect(ids).not.toContain(resolved);
+      expect(page.items.every((item) => item.status === 'AWAITING_ARRIVAL')).toBe(true);
+      expect(page.meta).toEqual({ page: 1, limit: 25, total: page.items.length });
+    });
+
+    it('narrows to one channel', async () => {
+      const { prospectivePatientId: viaWhatsApp } = await createProspectiveWithBooking({
+        suffix: 'list-wa',
+        channel: 'WHATSAPP',
+      });
+      const { prospectivePatientId: viaTelegram } = await createProspectiveWithBooking({
+        suffix: 'list-tg',
+        channel: 'TELEGRAM',
+      });
+
+      const page = await listTestRows({ channel: 'WHATSAPP' });
+      const ids = page.items.map((item) => item.id);
+
+      expect(ids).toContain(viaWhatsApp);
+      expect(ids).not.toContain(viaTelegram);
+      expect(page.meta.total).toBe(page.items.length);
+    });
+
+    it('finds a row by part of the name, case-insensitively', async () => {
+      const { prospectivePatientId } = await createProspectiveWithBooking({
+        suffix: 'list-name',
+        fullName: `${TEST_MARKER} Dewi Lestari`,
+      });
+
+      const page = await listTestRows({ q: `${TEST_MARKER} dewi lest` });
+
+      expect(page.items.map((item) => item.id)).toEqual([prospectivePatientId]);
+      expect(page.meta.total).toBe(1);
+    });
+
+    it('finds a row by a phone number typed the way a person writes it', async () => {
+      const { prospectivePatientId } = await createProspectiveWithBooking({
+        suffix: 'list-phone',
+        phoneNumber: '628121000777',
+      });
+
+      const page = await listTestRows({ q: '0812-1000 777' });
+
+      expect(page.items.map((item) => item.id)).toEqual([prospectivePatientId]);
+    });
+
+    it('orders by expiry, soonest first, when asked', async () => {
+      const { prospectivePatientId: later } = await createProspectiveWithBooking({
+        suffix: 'list-expiry-later',
+        expiresAt: new Date(Date.now() + 30 * DAY_MS),
+      });
+      const { prospectivePatientId: sooner } = await createProspectiveWithBooking({
+        suffix: 'list-expiry-sooner',
+        expiresAt: new Date(Date.now() + 2 * DAY_MS),
+      });
+
+      const page = await listTestRows({ q: `${TEST_MARKER} list-expiry`, sort: 'expiresAt', order: 'asc' });
+
+      expect(page.items.map((item) => item.id)).toEqual([sooner, later]);
+
+      const reversed = await listTestRows({ q: `${TEST_MARKER} list-expiry`, sort: 'expiresAt', order: 'desc' });
+
+      expect(reversed.items.map((item) => item.id)).toEqual([later, sooner]);
+    });
+
+    it('pages with a total that counts the whole filter', async () => {
+      await createProspectiveWithBooking({ suffix: 'list-page-1' });
+      await createProspectiveWithBooking({ suffix: 'list-page-2' });
+      await createProspectiveWithBooking({ suffix: 'list-page-3' });
+
+      const first = await listTestRows({ q: `${TEST_MARKER} list-page`, page: 1, limit: 2 });
+      const second = await listTestRows({ q: `${TEST_MARKER} list-page`, page: 2, limit: 2 });
+
+      expect(first.items).toHaveLength(2);
+      expect(second.items).toHaveLength(1);
+      expect(first.meta).toEqual({ page: 1, limit: 2, total: 3 });
+      expect(second.meta.total).toBe(3);
+      expect(new Set([...first.items, ...second.items].map((item) => item.id)).size).toBe(3);
+    });
+
+    it('surfaces the next booking still ahead, and none once it is behind', async () => {
+      const ahead = new Date(Date.now() + 3 * DAY_MS);
+      const { prospectivePatientId: coming, appointmentId } = await createProspectiveWithBooking({
+        suffix: 'list-upcoming',
+        scheduledAt: ahead,
+      });
+      const { prospectivePatientId: past } = await createProspectiveWithBooking({
+        suffix: 'list-past-booking',
+        scheduledAt: new Date(Date.now() - 3 * DAY_MS),
+      });
+
+      const page = await listTestRows({ q: `${TEST_MARKER} list-` });
+      const comingRow = page.items.find((item) => item.id === coming);
+      const pastRow = page.items.find((item) => item.id === past);
+
+      expect(comingRow?.upcomingAppointment).toEqual({
+        id: appointmentId,
+        scheduledAt: ahead.toISOString(),
+        doctorName: `${TEST_MARKER} dokter`,
+      });
+      expect(comingRow?.patientMrn).toBeNull();
+      expect(pastRow?.upcomingAppointment).toBeNull();
+      expect(pastRow?.openAppointments).toBe(1);
+    });
+
+    it('names the MRN a linked row resolved to', async () => {
+      const existing = await prisma.patientProfile.create({
+        data: {
+          sex: 'MALE',
+          mrn: `${TEST_MARKER}-list-linked`,
+          fullName: `${TEST_MARKER} Agus Salim`,
+          phoneNumber: '628121000888',
+          dateOfBirth: new Date('1979-06-20T00:00:00.000Z'),
+          address: 'Bandung',
+        },
+        select: { id: true },
+      });
+      const { prospectivePatientId } = await createProspectiveWithBooking({
+        suffix: 'list-linked',
+        phoneNumber: '628121000888',
+      });
+      await arrivalService.linkToExistingPatient(
+        prospectivePatientId,
+        { patientId: existing.id },
+        actor,
+      );
+
+      const page = await listTestRows({ q: `${TEST_MARKER} list-linked`, status: 'LINKED' });
+
+      expect(page.items.map((item) => item.id)).toEqual([prospectivePatientId]);
+      expect(page.items[0]).toMatchObject({
+        status: 'LINKED',
+        patientId: existing.id,
+        patientMrn: `${TEST_MARKER}-list-linked`,
+      });
     });
   });
 });

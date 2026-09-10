@@ -873,7 +873,15 @@
       "quotaMustBePositive": "Quota must be a whole number of at least 1, or empty for no limit.",
       "emptyRoomClasses": "No room classes yet",
       "emptyRoomClassesDescription": "Add a class — VIP, Kelas 1, or whatever this clinic calls its wards — before creating rooms.",
-      "noRoomClasses": "No active room classes. Add one under the Classes tab first."
+      "noRoomClasses": "No active room classes. Add one under the Classes tab first.",
+      "selectWard": "Select a ward",
+      "selectRoom": "Select a room",
+      "noWards": "No wards yet. Create a ward under the Wards tab first.",
+      "noWardsDescription": "Every room belongs to a ward. Create one first, then come back to add rooms.",
+      "noRooms": "No rooms yet. Create a room under the Rooms tab first.",
+      "noRoomsDescription": "Every bed belongs to a room. Create one first, then come back to add beds.",
+      "goToWards": "Go to Wards",
+      "goToRooms": "Go to Rooms"
     },
     "admissions": {
       "title": "Admissions",
@@ -1944,6 +1952,58 @@
       "registerFailed": "The webhook could not be registered.",
       "lastErrorStale": "Last error {time}: {message}. Nothing is queued now, so this is a fault that already passed.",
       "lastErrorLive": "Last error {time}: {message}."
+    }
+  },
+  "prospectivePatients": {
+    "subtitle": "People who booked through WhatsApp or Telegram and are not patients yet. Convert them into a patient record, or link them to the record they already have.",
+    "itemLabel": "chat bookings",
+    "openBookings": "{count, plural, =0 {No booking outstanding} one {# booking outstanding} other {# bookings outstanding}}",
+    "noAppointment": "No booking ahead",
+    "converted": "{name} is registered. Medical record number {mrn}.",
+    "columns": {
+      "name": "Name",
+      "phone": "Phone",
+      "channel": "Channel",
+      "appointment": "Next booking",
+      "status": "Status",
+      "expires": "Kept until",
+      "received": "Enquiry received",
+      "actions": "Actions"
+    },
+    "status": {
+      "AWAITING_ARRIVAL": "Waiting",
+      "CONVERTED": "Registered",
+      "LINKED": "Linked",
+      "EXPIRED": "Expired"
+    },
+    "channel": {
+      "WHATSAPP": "WhatsApp",
+      "TELEGRAM": "Telegram"
+    },
+    "filters": {
+      "search": "Search",
+      "searchPlaceholder": "Name or phone number",
+      "status": "Status",
+      "channel": "Channel",
+      "allChannels": "All channels",
+      "sort": "Order",
+      "reset": "Reset"
+    },
+    "sort": {
+      "createdAt_asc": "Oldest enquiry first",
+      "createdAt_desc": "Newest enquiry first",
+      "expiresAt_asc": "Expiring soonest",
+      "expiresAt_desc": "Expiring last"
+    },
+    "actions": {
+      "convert": "Convert to patient",
+      "link": "Link to existing patient",
+      "openRecord": "Open record"
+    },
+    "states": {
+      "error": "Unable to load chat bookings.",
+      "emptyTitle": "Nobody is waiting",
+      "emptyDescription": "Nobody matching this filter booked through chat. Bookings appear here the moment somebody books through WhatsApp or Telegram."
     }
   }
 }

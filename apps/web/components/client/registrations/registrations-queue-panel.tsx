@@ -15,8 +15,10 @@ import {
   type RegistrationsFilterValues,
 } from '#components/client/registrations/registrations-filter-card';
 import { RegistrationsTable } from '#components/client/registrations/registrations-table';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { NumberedPagination } from '#components/client/shared/numbered-pagination';
 import { PageHeader } from '#components/shared/page-header';
+import { useShellBreadcrumbRoot } from '#lib/navigation/use-shell-breadcrumb-root';
 import type { RegistrationTransitionTarget } from '#lib/registrations/registration-transition-meta';
 import type { RegistrationsViewVariant } from '#lib/registrations/registrations-view-variant';
 import {
@@ -42,6 +44,7 @@ export function RegistrationsQueuePanel({
   openCreateOnMount = false,
 }: RegistrationsQueuePanelProps) {
   const t = useTranslations('operations.registrations');
+  const root = useShellBreadcrumbRoot();
   const router = useRouter();
   const pathname = usePathname();
   const registrationsQuery = useRegistrationsList(initialQuery);
@@ -79,7 +82,9 @@ export function RegistrationsQueuePanel({
       <PageHeader
         title={variant === 'admin' ? t('title') : t('myTitle')}
         subtitle={variant === 'admin' ? t('subtitle') : t('mySubtitle')}
-        breadcrumbs={[variant === 'admin' ? t('title') : t('myTitle')]}
+        breadcrumbs={
+          variant === 'admin' ? [root, { label: t('title') }] : [{ label: t('myTitle') }]
+        }
         actions={
           <Can action="create" subject="Registration">
             <Button
@@ -112,9 +117,7 @@ export function RegistrationsQueuePanel({
       />
 
       {registrationsQuery.error && registrationsQuery.registrations.length > 0 ? (
-        <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
-          {t('errorTitle')}
-        </p>
+        <InlineNotice tone="error">{t('errorTitle')}</InlineNotice>
       ) : null}
 
       <Card className="gap-0 rounded-xl border-slate-200 py-0 shadow-none">

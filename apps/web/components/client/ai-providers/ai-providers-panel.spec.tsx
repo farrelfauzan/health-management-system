@@ -5,6 +5,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { getDashboardAiMessages } from '#lib/dashboard/localization';
+import idAuthShellMessages from '../../../messages/id/auth-shell.json';
 
 const listConfigsMock = vi.hoisted(() => vi.fn());
 const activateConfigMock = vi.hoisted(() => vi.fn());
@@ -50,7 +51,10 @@ function renderPanel(canWrite = true): void {
   });
   render(
     <QueryClientProvider client={queryClient}>
-      <NextIntlClientProvider locale="id" messages={getDashboardAiMessages('id')}>
+      <NextIntlClientProvider
+        locale="id"
+        messages={{ ...getDashboardAiMessages('id'), ...idAuthShellMessages }}
+      >
         <AiProvidersPanel canWrite={canWrite} />
       </NextIntlClientProvider>
     </QueryClientProvider>,

@@ -3,10 +3,11 @@ import { redirect } from 'next/navigation';
 import { buildAppAbility } from '@hms/ui';
 
 import { BillingWorkspace } from '#components/client/billing/billing-workspace';
-import { isBillingTab, type BillingTab } from '#lib/billing/billing-tab';
+import { BILLING_TABS } from '#lib/billing/billing-tab';
 import { ACCESS_TOKEN_COOKIE_NAME } from '#lib/auth/access-token-cookie';
 import { SESSION_HINT_COOKIE_NAME } from '#lib/auth/session-hint-cookie';
 import { resolveSessionClaims } from '#lib/auth/session-claims';
+import { parseTabSearchParam } from '#lib/navigation/parse-tab-search-param';
 import { resolveAppAbilityRules } from '#lib/rbac/app-ability.server';
 
 type AdminBillingPageProps = {
@@ -30,18 +31,12 @@ export default async function AdminBillingPage({ searchParams }: AdminBillingPag
     redirect('/admin/dashboard');
   }
 
+  // SJ-156. The settings hub links straight to the tariffs and templates tabs;
+  // an unknown or absent value leaves the workspace to pick its own default.
   return (
     <BillingWorkspace
       currentUserId={claims?.sub ?? null}
-      initialTab={resolveInitialTab(params.tab)}
+      initialTab={parseTabSearchParam(params.tab, BILLING_TABS)}
     />
   );
-}
-
-/**
- * SJ-156. The settings hub links straight to the tariffs and templates tabs;
- * an unknown or absent value leaves the workspace to pick its own default.
- */
-function resolveInitialTab(tab: string | string[] | undefined): BillingTab | undefined {
-  return typeof tab === 'string' && isBillingTab(tab) ? tab : undefined;
 }

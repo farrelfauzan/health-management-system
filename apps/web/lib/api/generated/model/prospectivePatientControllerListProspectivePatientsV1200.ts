@@ -6,7 +6,9 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { ProspectivePatientControllerListProspectivePatientsV1200DataItem } from './prospectivePatientControllerListProspectivePatientsV1200DataItem';
+import type { ProspectivePatientControllerListProspectivePatientsV1200Meta } from './prospectivePatientControllerListProspectivePatientsV1200Meta';
 
 export type ProspectivePatientControllerListProspectivePatientsV1200 = {
   data: ProspectivePatientControllerListProspectivePatientsV1200DataItem[];
+  meta: ProspectivePatientControllerListProspectivePatientsV1200Meta;
 };

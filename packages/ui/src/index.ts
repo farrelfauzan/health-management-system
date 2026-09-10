@@ -57,6 +57,15 @@ export {
 } from '#components/avatar';
 export { Badge, badgeVariants } from '#components/badge';
 export {
+  Breadcrumb,
+  BreadcrumbEllipsis,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '#components/breadcrumb';
+export {
   Dialog,
   DialogClose,
   DialogContent,
@@ -110,6 +119,7 @@ export {
   SheetTrigger,
 } from '#components/sheet';
 export {
+  SIDEBAR_COOKIE_NAME,
   Sidebar,
   SidebarContent,
   SidebarFooter,
