@@ -334,6 +334,7 @@ export type DoctorProfileWhereInput = {
   immunizations?: Prisma.ImmunizationListRelationFilter
   labOrders?: Prisma.LabOrderListRelationFilter
   managedDocuments?: Prisma.ManagedDocumentListRelationFilter
+  ownerInvitations?: Prisma.UserInvitationListRelationFilter
 }
 
 export type DoctorProfileOrderByWithRelationInput = {
@@ -369,6 +370,7 @@ export type DoctorProfileOrderByWithRelationInput = {
   immunizations?: Prisma.ImmunizationOrderByRelationAggregateInput
   labOrders?: Prisma.LabOrderOrderByRelationAggregateInput
   managedDocuments?: Prisma.ManagedDocumentOrderByRelationAggregateInput
+  ownerInvitations?: Prisma.UserInvitationOrderByRelationAggregateInput
 }
 
 export type DoctorProfileWhereUniqueInput = Prisma.AtLeast<{
@@ -407,6 +409,7 @@ export type DoctorProfileWhereUniqueInput = Prisma.AtLeast<{
   immunizations?: Prisma.ImmunizationListRelationFilter
   labOrders?: Prisma.LabOrderListRelationFilter
   managedDocuments?: Prisma.ManagedDocumentListRelationFilter
+  ownerInvitations?: Prisma.UserInvitationListRelationFilter
 }, "id" | "licenseNumber" | "ownerUserId" | "nikIndex">
 
 export type DoctorProfileOrderByWithAggregationInput = {
@@ -490,6 +493,7 @@ export type DoctorProfileCreateInput = {
   immunizations?: Prisma.ImmunizationCreateNestedManyWithoutPerformedByInput
   labOrders?: Prisma.LabOrderCreateNestedManyWithoutOrderedByInput
   managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutDoctorInput
+  ownerInvitations?: Prisma.UserInvitationCreateNestedManyWithoutDoctorProfileInput
 }
 
 export type DoctorProfileUncheckedCreateInput = {
@@ -523,6 +527,7 @@ export type DoctorProfileUncheckedCreateInput = {
   immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutPerformedByInput
   labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutOrderedByInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutDoctorInput
+  ownerInvitations?: Prisma.UserInvitationUncheckedCreateNestedManyWithoutDoctorProfileInput
 }
 
 export type DoctorProfileUpdateInput = {
@@ -556,6 +561,7 @@ export type DoctorProfileUpdateInput = {
   immunizations?: Prisma.ImmunizationUpdateManyWithoutPerformedByNestedInput
   labOrders?: Prisma.LabOrderUpdateManyWithoutOrderedByNestedInput
   managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutDoctorNestedInput
+  ownerInvitations?: Prisma.UserInvitationUpdateManyWithoutDoctorProfileNestedInput
 }
 
 export type DoctorProfileUncheckedUpdateInput = {
@@ -589,6 +595,7 @@ export type DoctorProfileUncheckedUpdateInput = {
   immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutPerformedByNestedInput
   labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutOrderedByNestedInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutDoctorNestedInput
+  ownerInvitations?: Prisma.UserInvitationUncheckedUpdateManyWithoutDoctorProfileNestedInput
 }
 
 export type DoctorProfileCreateManyInput = {
@@ -773,6 +780,22 @@ export type DoctorProfileUncheckedUpdateOneWithoutOwnerUserNestedInput = {
   delete?: Prisma.DoctorProfileWhereInput | boolean
   connect?: Prisma.DoctorProfileWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.DoctorProfileUpdateToOneWithWhereWithoutOwnerUserInput, Prisma.DoctorProfileUpdateWithoutOwnerUserInput>, Prisma.DoctorProfileUncheckedUpdateWithoutOwnerUserInput>
+}
+
+export type DoctorProfileCreateNestedOneWithoutOwnerInvitationsInput = {
+  create?: Prisma.XOR<Prisma.DoctorProfileCreateWithoutOwnerInvitationsInput, Prisma.DoctorProfileUncheckedCreateWithoutOwnerInvitationsInput>
+  connectOrCreate?: Prisma.DoctorProfileCreateOrConnectWithoutOwnerInvitationsInput
+  connect?: Prisma.DoctorProfileWhereUniqueInput
+}
+
+export type DoctorProfileUpdateOneWithoutOwnerInvitationsNestedInput = {
+  create?: Prisma.XOR<Prisma.DoctorProfileCreateWithoutOwnerInvitationsInput, Prisma.DoctorProfileUncheckedCreateWithoutOwnerInvitationsInput>
+  connectOrCreate?: Prisma.DoctorProfileCreateOrConnectWithoutOwnerInvitationsInput
+  upsert?: Prisma.DoctorProfileUpsertWithoutOwnerInvitationsInput
+  disconnect?: Prisma.DoctorProfileWhereInput | boolean
+  delete?: Prisma.DoctorProfileWhereInput | boolean
+  connect?: Prisma.DoctorProfileWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.DoctorProfileUpdateToOneWithWhereWithoutOwnerInvitationsInput, Prisma.DoctorProfileUpdateWithoutOwnerInvitationsInput>, Prisma.DoctorProfileUncheckedUpdateWithoutOwnerInvitationsInput>
 }
 
 export type DoctorProfileCreateNestedManyWithoutSpecialtyInput = {
@@ -1021,6 +1044,7 @@ export type DoctorProfileCreateWithoutOwnerUserInput = {
   immunizations?: Prisma.ImmunizationCreateNestedManyWithoutPerformedByInput
   labOrders?: Prisma.LabOrderCreateNestedManyWithoutOrderedByInput
   managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutDoctorInput
+  ownerInvitations?: Prisma.UserInvitationCreateNestedManyWithoutDoctorProfileInput
 }
 
 export type DoctorProfileUncheckedCreateWithoutOwnerUserInput = {
@@ -1053,6 +1077,7 @@ export type DoctorProfileUncheckedCreateWithoutOwnerUserInput = {
   immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutPerformedByInput
   labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutOrderedByInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutDoctorInput
+  ownerInvitations?: Prisma.UserInvitationUncheckedCreateNestedManyWithoutDoctorProfileInput
 }
 
 export type DoctorProfileCreateOrConnectWithoutOwnerUserInput = {
@@ -1101,6 +1126,7 @@ export type DoctorProfileUpdateWithoutOwnerUserInput = {
   immunizations?: Prisma.ImmunizationUpdateManyWithoutPerformedByNestedInput
   labOrders?: Prisma.LabOrderUpdateManyWithoutOrderedByNestedInput
   managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutDoctorNestedInput
+  ownerInvitations?: Prisma.UserInvitationUpdateManyWithoutDoctorProfileNestedInput
 }
 
 export type DoctorProfileUncheckedUpdateWithoutOwnerUserInput = {
@@ -1109,6 +1135,155 @@ export type DoctorProfileUncheckedUpdateWithoutOwnerUserInput = {
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
   specialtyId?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nikCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikIndex?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  degrees?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  patients?: Prisma.DoctorPatientUncheckedUpdateManyWithoutDoctorNestedInput
+  schedules?: Prisma.DoctorScheduleUncheckedUpdateManyWithoutDoctorNestedInput
+  appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutDoctorNestedInput
+  appointmentSessions?: Prisma.AppointmentSessionUncheckedUpdateManyWithoutDoctorNestedInput
+  prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutDoctorNestedInput
+  licenses?: Prisma.DoctorLicenseUncheckedUpdateManyWithoutDoctorNestedInput
+  educations?: Prisma.DoctorEducationUncheckedUpdateManyWithoutDoctorNestedInput
+  encounters?: Prisma.EncounterUncheckedUpdateManyWithoutDoctorNestedInput
+  admissions?: Prisma.AdmissionUncheckedUpdateManyWithoutAdmittingDoctorNestedInput
+  immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutPerformedByNestedInput
+  labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutOrderedByNestedInput
+  managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutDoctorNestedInput
+  ownerInvitations?: Prisma.UserInvitationUncheckedUpdateManyWithoutDoctorProfileNestedInput
+}
+
+export type DoctorProfileCreateWithoutOwnerInvitationsInput = {
+  id?: string
+  licenseNumber: string
+  fullName: string
+  phoneNumber?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  nikCiphertext?: string | null
+  nikIndex?: string | null
+  nikLast4?: string | null
+  nikKeyVersion?: number | null
+  satusehatPractitionerId?: string | null
+  bpjsDoctorCode?: string | null
+  title?: string | null
+  degrees?: string | null
+  specialty: Prisma.SpecialtyCreateNestedOneWithoutDoctorsInput
+  ownerUser?: Prisma.UserCreateNestedOneWithoutDoctorProfileInput
+  patients?: Prisma.DoctorPatientCreateNestedManyWithoutDoctorInput
+  schedules?: Prisma.DoctorScheduleCreateNestedManyWithoutDoctorInput
+  appointments?: Prisma.AppointmentCreateNestedManyWithoutDoctorInput
+  appointmentSessions?: Prisma.AppointmentSessionCreateNestedManyWithoutDoctorInput
+  prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutDoctorInput
+  licenses?: Prisma.DoctorLicenseCreateNestedManyWithoutDoctorInput
+  educations?: Prisma.DoctorEducationCreateNestedManyWithoutDoctorInput
+  encounters?: Prisma.EncounterCreateNestedManyWithoutDoctorInput
+  admissions?: Prisma.AdmissionCreateNestedManyWithoutAdmittingDoctorInput
+  immunizations?: Prisma.ImmunizationCreateNestedManyWithoutPerformedByInput
+  labOrders?: Prisma.LabOrderCreateNestedManyWithoutOrderedByInput
+  managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutDoctorInput
+}
+
+export type DoctorProfileUncheckedCreateWithoutOwnerInvitationsInput = {
+  id?: string
+  licenseNumber: string
+  fullName: string
+  specialtyId: string
+  phoneNumber?: string | null
+  ownerUserId?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  nikCiphertext?: string | null
+  nikIndex?: string | null
+  nikLast4?: string | null
+  nikKeyVersion?: number | null
+  satusehatPractitionerId?: string | null
+  bpjsDoctorCode?: string | null
+  title?: string | null
+  degrees?: string | null
+  patients?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutDoctorInput
+  schedules?: Prisma.DoctorScheduleUncheckedCreateNestedManyWithoutDoctorInput
+  appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutDoctorInput
+  appointmentSessions?: Prisma.AppointmentSessionUncheckedCreateNestedManyWithoutDoctorInput
+  prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutDoctorInput
+  licenses?: Prisma.DoctorLicenseUncheckedCreateNestedManyWithoutDoctorInput
+  educations?: Prisma.DoctorEducationUncheckedCreateNestedManyWithoutDoctorInput
+  encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutDoctorInput
+  admissions?: Prisma.AdmissionUncheckedCreateNestedManyWithoutAdmittingDoctorInput
+  immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutPerformedByInput
+  labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutOrderedByInput
+  managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutDoctorInput
+}
+
+export type DoctorProfileCreateOrConnectWithoutOwnerInvitationsInput = {
+  where: Prisma.DoctorProfileWhereUniqueInput
+  create: Prisma.XOR<Prisma.DoctorProfileCreateWithoutOwnerInvitationsInput, Prisma.DoctorProfileUncheckedCreateWithoutOwnerInvitationsInput>
+}
+
+export type DoctorProfileUpsertWithoutOwnerInvitationsInput = {
+  update: Prisma.XOR<Prisma.DoctorProfileUpdateWithoutOwnerInvitationsInput, Prisma.DoctorProfileUncheckedUpdateWithoutOwnerInvitationsInput>
+  create: Prisma.XOR<Prisma.DoctorProfileCreateWithoutOwnerInvitationsInput, Prisma.DoctorProfileUncheckedCreateWithoutOwnerInvitationsInput>
+  where?: Prisma.DoctorProfileWhereInput
+}
+
+export type DoctorProfileUpdateToOneWithWhereWithoutOwnerInvitationsInput = {
+  where?: Prisma.DoctorProfileWhereInput
+  data: Prisma.XOR<Prisma.DoctorProfileUpdateWithoutOwnerInvitationsInput, Prisma.DoctorProfileUncheckedUpdateWithoutOwnerInvitationsInput>
+}
+
+export type DoctorProfileUpdateWithoutOwnerInvitationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  licenseNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nikCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikIndex?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  degrees?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  specialty?: Prisma.SpecialtyUpdateOneRequiredWithoutDoctorsNestedInput
+  ownerUser?: Prisma.UserUpdateOneWithoutDoctorProfileNestedInput
+  patients?: Prisma.DoctorPatientUpdateManyWithoutDoctorNestedInput
+  schedules?: Prisma.DoctorScheduleUpdateManyWithoutDoctorNestedInput
+  appointments?: Prisma.AppointmentUpdateManyWithoutDoctorNestedInput
+  appointmentSessions?: Prisma.AppointmentSessionUpdateManyWithoutDoctorNestedInput
+  prescriptions?: Prisma.PrescriptionUpdateManyWithoutDoctorNestedInput
+  licenses?: Prisma.DoctorLicenseUpdateManyWithoutDoctorNestedInput
+  educations?: Prisma.DoctorEducationUpdateManyWithoutDoctorNestedInput
+  encounters?: Prisma.EncounterUpdateManyWithoutDoctorNestedInput
+  admissions?: Prisma.AdmissionUpdateManyWithoutAdmittingDoctorNestedInput
+  immunizations?: Prisma.ImmunizationUpdateManyWithoutPerformedByNestedInput
+  labOrders?: Prisma.LabOrderUpdateManyWithoutOrderedByNestedInput
+  managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutDoctorNestedInput
+}
+
+export type DoctorProfileUncheckedUpdateWithoutOwnerInvitationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  licenseNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  specialtyId?: Prisma.StringFieldUpdateOperationsInput | string
+  phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ownerUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1165,6 +1340,7 @@ export type DoctorProfileCreateWithoutSpecialtyInput = {
   immunizations?: Prisma.ImmunizationCreateNestedManyWithoutPerformedByInput
   labOrders?: Prisma.LabOrderCreateNestedManyWithoutOrderedByInput
   managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutDoctorInput
+  ownerInvitations?: Prisma.UserInvitationCreateNestedManyWithoutDoctorProfileInput
 }
 
 export type DoctorProfileUncheckedCreateWithoutSpecialtyInput = {
@@ -1197,6 +1373,7 @@ export type DoctorProfileUncheckedCreateWithoutSpecialtyInput = {
   immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutPerformedByInput
   labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutOrderedByInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutDoctorInput
+  ownerInvitations?: Prisma.UserInvitationUncheckedCreateNestedManyWithoutDoctorProfileInput
 }
 
 export type DoctorProfileCreateOrConnectWithoutSpecialtyInput = {
@@ -1279,6 +1456,7 @@ export type DoctorProfileCreateWithoutEducationsInput = {
   immunizations?: Prisma.ImmunizationCreateNestedManyWithoutPerformedByInput
   labOrders?: Prisma.LabOrderCreateNestedManyWithoutOrderedByInput
   managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutDoctorInput
+  ownerInvitations?: Prisma.UserInvitationCreateNestedManyWithoutDoctorProfileInput
 }
 
 export type DoctorProfileUncheckedCreateWithoutEducationsInput = {
@@ -1311,6 +1489,7 @@ export type DoctorProfileUncheckedCreateWithoutEducationsInput = {
   immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutPerformedByInput
   labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutOrderedByInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutDoctorInput
+  ownerInvitations?: Prisma.UserInvitationUncheckedCreateNestedManyWithoutDoctorProfileInput
 }
 
 export type DoctorProfileCreateOrConnectWithoutEducationsInput = {
@@ -1359,6 +1538,7 @@ export type DoctorProfileUpdateWithoutEducationsInput = {
   immunizations?: Prisma.ImmunizationUpdateManyWithoutPerformedByNestedInput
   labOrders?: Prisma.LabOrderUpdateManyWithoutOrderedByNestedInput
   managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutDoctorNestedInput
+  ownerInvitations?: Prisma.UserInvitationUpdateManyWithoutDoctorProfileNestedInput
 }
 
 export type DoctorProfileUncheckedUpdateWithoutEducationsInput = {
@@ -1391,6 +1571,7 @@ export type DoctorProfileUncheckedUpdateWithoutEducationsInput = {
   immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutPerformedByNestedInput
   labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutOrderedByNestedInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutDoctorNestedInput
+  ownerInvitations?: Prisma.UserInvitationUncheckedUpdateManyWithoutDoctorProfileNestedInput
 }
 
 export type DoctorProfileCreateWithoutLicensesInput = {
@@ -1423,6 +1604,7 @@ export type DoctorProfileCreateWithoutLicensesInput = {
   immunizations?: Prisma.ImmunizationCreateNestedManyWithoutPerformedByInput
   labOrders?: Prisma.LabOrderCreateNestedManyWithoutOrderedByInput
   managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutDoctorInput
+  ownerInvitations?: Prisma.UserInvitationCreateNestedManyWithoutDoctorProfileInput
 }
 
 export type DoctorProfileUncheckedCreateWithoutLicensesInput = {
@@ -1455,6 +1637,7 @@ export type DoctorProfileUncheckedCreateWithoutLicensesInput = {
   immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutPerformedByInput
   labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutOrderedByInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutDoctorInput
+  ownerInvitations?: Prisma.UserInvitationUncheckedCreateNestedManyWithoutDoctorProfileInput
 }
 
 export type DoctorProfileCreateOrConnectWithoutLicensesInput = {
@@ -1503,6 +1686,7 @@ export type DoctorProfileUpdateWithoutLicensesInput = {
   immunizations?: Prisma.ImmunizationUpdateManyWithoutPerformedByNestedInput
   labOrders?: Prisma.LabOrderUpdateManyWithoutOrderedByNestedInput
   managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutDoctorNestedInput
+  ownerInvitations?: Prisma.UserInvitationUpdateManyWithoutDoctorProfileNestedInput
 }
 
 export type DoctorProfileUncheckedUpdateWithoutLicensesInput = {
@@ -1535,6 +1719,7 @@ export type DoctorProfileUncheckedUpdateWithoutLicensesInput = {
   immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutPerformedByNestedInput
   labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutOrderedByNestedInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutDoctorNestedInput
+  ownerInvitations?: Prisma.UserInvitationUncheckedUpdateManyWithoutDoctorProfileNestedInput
 }
 
 export type DoctorProfileCreateWithoutSchedulesInput = {
@@ -1567,6 +1752,7 @@ export type DoctorProfileCreateWithoutSchedulesInput = {
   immunizations?: Prisma.ImmunizationCreateNestedManyWithoutPerformedByInput
   labOrders?: Prisma.LabOrderCreateNestedManyWithoutOrderedByInput
   managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutDoctorInput
+  ownerInvitations?: Prisma.UserInvitationCreateNestedManyWithoutDoctorProfileInput
 }
 
 export type DoctorProfileUncheckedCreateWithoutSchedulesInput = {
@@ -1599,6 +1785,7 @@ export type DoctorProfileUncheckedCreateWithoutSchedulesInput = {
   immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutPerformedByInput
   labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutOrderedByInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutDoctorInput
+  ownerInvitations?: Prisma.UserInvitationUncheckedCreateNestedManyWithoutDoctorProfileInput
 }
 
 export type DoctorProfileCreateOrConnectWithoutSchedulesInput = {
@@ -1647,6 +1834,7 @@ export type DoctorProfileUpdateWithoutSchedulesInput = {
   immunizations?: Prisma.ImmunizationUpdateManyWithoutPerformedByNestedInput
   labOrders?: Prisma.LabOrderUpdateManyWithoutOrderedByNestedInput
   managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutDoctorNestedInput
+  ownerInvitations?: Prisma.UserInvitationUpdateManyWithoutDoctorProfileNestedInput
 }
 
 export type DoctorProfileUncheckedUpdateWithoutSchedulesInput = {
@@ -1679,6 +1867,7 @@ export type DoctorProfileUncheckedUpdateWithoutSchedulesInput = {
   immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutPerformedByNestedInput
   labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutOrderedByNestedInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutDoctorNestedInput
+  ownerInvitations?: Prisma.UserInvitationUncheckedUpdateManyWithoutDoctorProfileNestedInput
 }
 
 export type DoctorProfileCreateWithoutAppointmentSessionsInput = {
@@ -1711,6 +1900,7 @@ export type DoctorProfileCreateWithoutAppointmentSessionsInput = {
   immunizations?: Prisma.ImmunizationCreateNestedManyWithoutPerformedByInput
   labOrders?: Prisma.LabOrderCreateNestedManyWithoutOrderedByInput
   managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutDoctorInput
+  ownerInvitations?: Prisma.UserInvitationCreateNestedManyWithoutDoctorProfileInput
 }
 
 export type DoctorProfileUncheckedCreateWithoutAppointmentSessionsInput = {
@@ -1743,6 +1933,7 @@ export type DoctorProfileUncheckedCreateWithoutAppointmentSessionsInput = {
   immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutPerformedByInput
   labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutOrderedByInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutDoctorInput
+  ownerInvitations?: Prisma.UserInvitationUncheckedCreateNestedManyWithoutDoctorProfileInput
 }
 
 export type DoctorProfileCreateOrConnectWithoutAppointmentSessionsInput = {
@@ -1791,6 +1982,7 @@ export type DoctorProfileUpdateWithoutAppointmentSessionsInput = {
   immunizations?: Prisma.ImmunizationUpdateManyWithoutPerformedByNestedInput
   labOrders?: Prisma.LabOrderUpdateManyWithoutOrderedByNestedInput
   managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutDoctorNestedInput
+  ownerInvitations?: Prisma.UserInvitationUpdateManyWithoutDoctorProfileNestedInput
 }
 
 export type DoctorProfileUncheckedUpdateWithoutAppointmentSessionsInput = {
@@ -1823,6 +2015,7 @@ export type DoctorProfileUncheckedUpdateWithoutAppointmentSessionsInput = {
   immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutPerformedByNestedInput
   labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutOrderedByNestedInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutDoctorNestedInput
+  ownerInvitations?: Prisma.UserInvitationUncheckedUpdateManyWithoutDoctorProfileNestedInput
 }
 
 export type DoctorProfileCreateWithoutPatientsInput = {
@@ -1855,6 +2048,7 @@ export type DoctorProfileCreateWithoutPatientsInput = {
   immunizations?: Prisma.ImmunizationCreateNestedManyWithoutPerformedByInput
   labOrders?: Prisma.LabOrderCreateNestedManyWithoutOrderedByInput
   managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutDoctorInput
+  ownerInvitations?: Prisma.UserInvitationCreateNestedManyWithoutDoctorProfileInput
 }
 
 export type DoctorProfileUncheckedCreateWithoutPatientsInput = {
@@ -1887,6 +2081,7 @@ export type DoctorProfileUncheckedCreateWithoutPatientsInput = {
   immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutPerformedByInput
   labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutOrderedByInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutDoctorInput
+  ownerInvitations?: Prisma.UserInvitationUncheckedCreateNestedManyWithoutDoctorProfileInput
 }
 
 export type DoctorProfileCreateOrConnectWithoutPatientsInput = {
@@ -1935,6 +2130,7 @@ export type DoctorProfileUpdateWithoutPatientsInput = {
   immunizations?: Prisma.ImmunizationUpdateManyWithoutPerformedByNestedInput
   labOrders?: Prisma.LabOrderUpdateManyWithoutOrderedByNestedInput
   managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutDoctorNestedInput
+  ownerInvitations?: Prisma.UserInvitationUpdateManyWithoutDoctorProfileNestedInput
 }
 
 export type DoctorProfileUncheckedUpdateWithoutPatientsInput = {
@@ -1967,6 +2163,7 @@ export type DoctorProfileUncheckedUpdateWithoutPatientsInput = {
   immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutPerformedByNestedInput
   labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutOrderedByNestedInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutDoctorNestedInput
+  ownerInvitations?: Prisma.UserInvitationUncheckedUpdateManyWithoutDoctorProfileNestedInput
 }
 
 export type DoctorProfileCreateWithoutAppointmentsInput = {
@@ -1999,6 +2196,7 @@ export type DoctorProfileCreateWithoutAppointmentsInput = {
   immunizations?: Prisma.ImmunizationCreateNestedManyWithoutPerformedByInput
   labOrders?: Prisma.LabOrderCreateNestedManyWithoutOrderedByInput
   managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutDoctorInput
+  ownerInvitations?: Prisma.UserInvitationCreateNestedManyWithoutDoctorProfileInput
 }
 
 export type DoctorProfileUncheckedCreateWithoutAppointmentsInput = {
@@ -2031,6 +2229,7 @@ export type DoctorProfileUncheckedCreateWithoutAppointmentsInput = {
   immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutPerformedByInput
   labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutOrderedByInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutDoctorInput
+  ownerInvitations?: Prisma.UserInvitationUncheckedCreateNestedManyWithoutDoctorProfileInput
 }
 
 export type DoctorProfileCreateOrConnectWithoutAppointmentsInput = {
@@ -2079,6 +2278,7 @@ export type DoctorProfileUpdateWithoutAppointmentsInput = {
   immunizations?: Prisma.ImmunizationUpdateManyWithoutPerformedByNestedInput
   labOrders?: Prisma.LabOrderUpdateManyWithoutOrderedByNestedInput
   managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutDoctorNestedInput
+  ownerInvitations?: Prisma.UserInvitationUpdateManyWithoutDoctorProfileNestedInput
 }
 
 export type DoctorProfileUncheckedUpdateWithoutAppointmentsInput = {
@@ -2111,6 +2311,7 @@ export type DoctorProfileUncheckedUpdateWithoutAppointmentsInput = {
   immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutPerformedByNestedInput
   labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutOrderedByNestedInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutDoctorNestedInput
+  ownerInvitations?: Prisma.UserInvitationUncheckedUpdateManyWithoutDoctorProfileNestedInput
 }
 
 export type DoctorProfileCreateWithoutEncountersInput = {
@@ -2143,6 +2344,7 @@ export type DoctorProfileCreateWithoutEncountersInput = {
   immunizations?: Prisma.ImmunizationCreateNestedManyWithoutPerformedByInput
   labOrders?: Prisma.LabOrderCreateNestedManyWithoutOrderedByInput
   managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutDoctorInput
+  ownerInvitations?: Prisma.UserInvitationCreateNestedManyWithoutDoctorProfileInput
 }
 
 export type DoctorProfileUncheckedCreateWithoutEncountersInput = {
@@ -2175,6 +2377,7 @@ export type DoctorProfileUncheckedCreateWithoutEncountersInput = {
   immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutPerformedByInput
   labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutOrderedByInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutDoctorInput
+  ownerInvitations?: Prisma.UserInvitationUncheckedCreateNestedManyWithoutDoctorProfileInput
 }
 
 export type DoctorProfileCreateOrConnectWithoutEncountersInput = {
@@ -2223,6 +2426,7 @@ export type DoctorProfileUpdateWithoutEncountersInput = {
   immunizations?: Prisma.ImmunizationUpdateManyWithoutPerformedByNestedInput
   labOrders?: Prisma.LabOrderUpdateManyWithoutOrderedByNestedInput
   managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutDoctorNestedInput
+  ownerInvitations?: Prisma.UserInvitationUpdateManyWithoutDoctorProfileNestedInput
 }
 
 export type DoctorProfileUncheckedUpdateWithoutEncountersInput = {
@@ -2255,6 +2459,7 @@ export type DoctorProfileUncheckedUpdateWithoutEncountersInput = {
   immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutPerformedByNestedInput
   labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutOrderedByNestedInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutDoctorNestedInput
+  ownerInvitations?: Prisma.UserInvitationUncheckedUpdateManyWithoutDoctorProfileNestedInput
 }
 
 export type DoctorProfileCreateWithoutPrescriptionsInput = {
@@ -2287,6 +2492,7 @@ export type DoctorProfileCreateWithoutPrescriptionsInput = {
   immunizations?: Prisma.ImmunizationCreateNestedManyWithoutPerformedByInput
   labOrders?: Prisma.LabOrderCreateNestedManyWithoutOrderedByInput
   managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutDoctorInput
+  ownerInvitations?: Prisma.UserInvitationCreateNestedManyWithoutDoctorProfileInput
 }
 
 export type DoctorProfileUncheckedCreateWithoutPrescriptionsInput = {
@@ -2319,6 +2525,7 @@ export type DoctorProfileUncheckedCreateWithoutPrescriptionsInput = {
   immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutPerformedByInput
   labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutOrderedByInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutDoctorInput
+  ownerInvitations?: Prisma.UserInvitationUncheckedCreateNestedManyWithoutDoctorProfileInput
 }
 
 export type DoctorProfileCreateOrConnectWithoutPrescriptionsInput = {
@@ -2367,6 +2574,7 @@ export type DoctorProfileUpdateWithoutPrescriptionsInput = {
   immunizations?: Prisma.ImmunizationUpdateManyWithoutPerformedByNestedInput
   labOrders?: Prisma.LabOrderUpdateManyWithoutOrderedByNestedInput
   managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutDoctorNestedInput
+  ownerInvitations?: Prisma.UserInvitationUpdateManyWithoutDoctorProfileNestedInput
 }
 
 export type DoctorProfileUncheckedUpdateWithoutPrescriptionsInput = {
@@ -2399,6 +2607,7 @@ export type DoctorProfileUncheckedUpdateWithoutPrescriptionsInput = {
   immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutPerformedByNestedInput
   labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutOrderedByNestedInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutDoctorNestedInput
+  ownerInvitations?: Prisma.UserInvitationUncheckedUpdateManyWithoutDoctorProfileNestedInput
 }
 
 export type DoctorProfileCreateWithoutAdmissionsInput = {
@@ -2431,6 +2640,7 @@ export type DoctorProfileCreateWithoutAdmissionsInput = {
   immunizations?: Prisma.ImmunizationCreateNestedManyWithoutPerformedByInput
   labOrders?: Prisma.LabOrderCreateNestedManyWithoutOrderedByInput
   managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutDoctorInput
+  ownerInvitations?: Prisma.UserInvitationCreateNestedManyWithoutDoctorProfileInput
 }
 
 export type DoctorProfileUncheckedCreateWithoutAdmissionsInput = {
@@ -2463,6 +2673,7 @@ export type DoctorProfileUncheckedCreateWithoutAdmissionsInput = {
   immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutPerformedByInput
   labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutOrderedByInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutDoctorInput
+  ownerInvitations?: Prisma.UserInvitationUncheckedCreateNestedManyWithoutDoctorProfileInput
 }
 
 export type DoctorProfileCreateOrConnectWithoutAdmissionsInput = {
@@ -2511,6 +2722,7 @@ export type DoctorProfileUpdateWithoutAdmissionsInput = {
   immunizations?: Prisma.ImmunizationUpdateManyWithoutPerformedByNestedInput
   labOrders?: Prisma.LabOrderUpdateManyWithoutOrderedByNestedInput
   managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutDoctorNestedInput
+  ownerInvitations?: Prisma.UserInvitationUpdateManyWithoutDoctorProfileNestedInput
 }
 
 export type DoctorProfileUncheckedUpdateWithoutAdmissionsInput = {
@@ -2543,6 +2755,7 @@ export type DoctorProfileUncheckedUpdateWithoutAdmissionsInput = {
   immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutPerformedByNestedInput
   labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutOrderedByNestedInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutDoctorNestedInput
+  ownerInvitations?: Prisma.UserInvitationUncheckedUpdateManyWithoutDoctorProfileNestedInput
 }
 
 export type DoctorProfileCreateWithoutManagedDocumentsInput = {
@@ -2575,6 +2788,7 @@ export type DoctorProfileCreateWithoutManagedDocumentsInput = {
   admissions?: Prisma.AdmissionCreateNestedManyWithoutAdmittingDoctorInput
   immunizations?: Prisma.ImmunizationCreateNestedManyWithoutPerformedByInput
   labOrders?: Prisma.LabOrderCreateNestedManyWithoutOrderedByInput
+  ownerInvitations?: Prisma.UserInvitationCreateNestedManyWithoutDoctorProfileInput
 }
 
 export type DoctorProfileUncheckedCreateWithoutManagedDocumentsInput = {
@@ -2607,6 +2821,7 @@ export type DoctorProfileUncheckedCreateWithoutManagedDocumentsInput = {
   admissions?: Prisma.AdmissionUncheckedCreateNestedManyWithoutAdmittingDoctorInput
   immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutPerformedByInput
   labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutOrderedByInput
+  ownerInvitations?: Prisma.UserInvitationUncheckedCreateNestedManyWithoutDoctorProfileInput
 }
 
 export type DoctorProfileCreateOrConnectWithoutManagedDocumentsInput = {
@@ -2655,6 +2870,7 @@ export type DoctorProfileUpdateWithoutManagedDocumentsInput = {
   admissions?: Prisma.AdmissionUpdateManyWithoutAdmittingDoctorNestedInput
   immunizations?: Prisma.ImmunizationUpdateManyWithoutPerformedByNestedInput
   labOrders?: Prisma.LabOrderUpdateManyWithoutOrderedByNestedInput
+  ownerInvitations?: Prisma.UserInvitationUpdateManyWithoutDoctorProfileNestedInput
 }
 
 export type DoctorProfileUncheckedUpdateWithoutManagedDocumentsInput = {
@@ -2687,6 +2903,7 @@ export type DoctorProfileUncheckedUpdateWithoutManagedDocumentsInput = {
   admissions?: Prisma.AdmissionUncheckedUpdateManyWithoutAdmittingDoctorNestedInput
   immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutPerformedByNestedInput
   labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutOrderedByNestedInput
+  ownerInvitations?: Prisma.UserInvitationUncheckedUpdateManyWithoutDoctorProfileNestedInput
 }
 
 export type DoctorProfileCreateWithoutLabOrdersInput = {
@@ -2719,6 +2936,7 @@ export type DoctorProfileCreateWithoutLabOrdersInput = {
   admissions?: Prisma.AdmissionCreateNestedManyWithoutAdmittingDoctorInput
   immunizations?: Prisma.ImmunizationCreateNestedManyWithoutPerformedByInput
   managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutDoctorInput
+  ownerInvitations?: Prisma.UserInvitationCreateNestedManyWithoutDoctorProfileInput
 }
 
 export type DoctorProfileUncheckedCreateWithoutLabOrdersInput = {
@@ -2751,6 +2969,7 @@ export type DoctorProfileUncheckedCreateWithoutLabOrdersInput = {
   admissions?: Prisma.AdmissionUncheckedCreateNestedManyWithoutAdmittingDoctorInput
   immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutPerformedByInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutDoctorInput
+  ownerInvitations?: Prisma.UserInvitationUncheckedCreateNestedManyWithoutDoctorProfileInput
 }
 
 export type DoctorProfileCreateOrConnectWithoutLabOrdersInput = {
@@ -2799,6 +3018,7 @@ export type DoctorProfileUpdateWithoutLabOrdersInput = {
   admissions?: Prisma.AdmissionUpdateManyWithoutAdmittingDoctorNestedInput
   immunizations?: Prisma.ImmunizationUpdateManyWithoutPerformedByNestedInput
   managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutDoctorNestedInput
+  ownerInvitations?: Prisma.UserInvitationUpdateManyWithoutDoctorProfileNestedInput
 }
 
 export type DoctorProfileUncheckedUpdateWithoutLabOrdersInput = {
@@ -2831,6 +3051,7 @@ export type DoctorProfileUncheckedUpdateWithoutLabOrdersInput = {
   admissions?: Prisma.AdmissionUncheckedUpdateManyWithoutAdmittingDoctorNestedInput
   immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutPerformedByNestedInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutDoctorNestedInput
+  ownerInvitations?: Prisma.UserInvitationUncheckedUpdateManyWithoutDoctorProfileNestedInput
 }
 
 export type DoctorProfileCreateWithoutImmunizationsInput = {
@@ -2863,6 +3084,7 @@ export type DoctorProfileCreateWithoutImmunizationsInput = {
   admissions?: Prisma.AdmissionCreateNestedManyWithoutAdmittingDoctorInput
   labOrders?: Prisma.LabOrderCreateNestedManyWithoutOrderedByInput
   managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutDoctorInput
+  ownerInvitations?: Prisma.UserInvitationCreateNestedManyWithoutDoctorProfileInput
 }
 
 export type DoctorProfileUncheckedCreateWithoutImmunizationsInput = {
@@ -2895,6 +3117,7 @@ export type DoctorProfileUncheckedCreateWithoutImmunizationsInput = {
   admissions?: Prisma.AdmissionUncheckedCreateNestedManyWithoutAdmittingDoctorInput
   labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutOrderedByInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutDoctorInput
+  ownerInvitations?: Prisma.UserInvitationUncheckedCreateNestedManyWithoutDoctorProfileInput
 }
 
 export type DoctorProfileCreateOrConnectWithoutImmunizationsInput = {
@@ -2943,6 +3166,7 @@ export type DoctorProfileUpdateWithoutImmunizationsInput = {
   admissions?: Prisma.AdmissionUpdateManyWithoutAdmittingDoctorNestedInput
   labOrders?: Prisma.LabOrderUpdateManyWithoutOrderedByNestedInput
   managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutDoctorNestedInput
+  ownerInvitations?: Prisma.UserInvitationUpdateManyWithoutDoctorProfileNestedInput
 }
 
 export type DoctorProfileUncheckedUpdateWithoutImmunizationsInput = {
@@ -2975,6 +3199,7 @@ export type DoctorProfileUncheckedUpdateWithoutImmunizationsInput = {
   admissions?: Prisma.AdmissionUncheckedUpdateManyWithoutAdmittingDoctorNestedInput
   labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutOrderedByNestedInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutDoctorNestedInput
+  ownerInvitations?: Prisma.UserInvitationUncheckedUpdateManyWithoutDoctorProfileNestedInput
 }
 
 export type DoctorProfileCreateManySpecialtyInput = {
@@ -3027,6 +3252,7 @@ export type DoctorProfileUpdateWithoutSpecialtyInput = {
   immunizations?: Prisma.ImmunizationUpdateManyWithoutPerformedByNestedInput
   labOrders?: Prisma.LabOrderUpdateManyWithoutOrderedByNestedInput
   managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutDoctorNestedInput
+  ownerInvitations?: Prisma.UserInvitationUpdateManyWithoutDoctorProfileNestedInput
 }
 
 export type DoctorProfileUncheckedUpdateWithoutSpecialtyInput = {
@@ -3059,6 +3285,7 @@ export type DoctorProfileUncheckedUpdateWithoutSpecialtyInput = {
   immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutPerformedByNestedInput
   labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutOrderedByNestedInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutDoctorNestedInput
+  ownerInvitations?: Prisma.UserInvitationUncheckedUpdateManyWithoutDoctorProfileNestedInput
 }
 
 export type DoctorProfileUncheckedUpdateManyWithoutSpecialtyInput = {
@@ -3099,6 +3326,7 @@ export type DoctorProfileCountOutputType = {
   immunizations: number
   labOrders: number
   managedDocuments: number
+  ownerInvitations: number
 }
 
 export type DoctorProfileCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -3114,6 +3342,7 @@ export type DoctorProfileCountOutputTypeSelect<ExtArgs extends runtime.Types.Ext
   immunizations?: boolean | DoctorProfileCountOutputTypeCountImmunizationsArgs
   labOrders?: boolean | DoctorProfileCountOutputTypeCountLabOrdersArgs
   managedDocuments?: boolean | DoctorProfileCountOutputTypeCountManagedDocumentsArgs
+  ownerInvitations?: boolean | DoctorProfileCountOutputTypeCountOwnerInvitationsArgs
 }
 
 /**
@@ -3210,6 +3439,13 @@ export type DoctorProfileCountOutputTypeCountManagedDocumentsArgs<ExtArgs extend
   where?: Prisma.ManagedDocumentWhereInput
 }
 
+/**
+ * DoctorProfileCountOutputType without action
+ */
+export type DoctorProfileCountOutputTypeCountOwnerInvitationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.UserInvitationWhereInput
+}
+
 
 export type DoctorProfileSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -3244,6 +3480,7 @@ export type DoctorProfileSelect<ExtArgs extends runtime.Types.Extensions.Interna
   immunizations?: boolean | Prisma.DoctorProfile$immunizationsArgs<ExtArgs>
   labOrders?: boolean | Prisma.DoctorProfile$labOrdersArgs<ExtArgs>
   managedDocuments?: boolean | Prisma.DoctorProfile$managedDocumentsArgs<ExtArgs>
+  ownerInvitations?: boolean | Prisma.DoctorProfile$ownerInvitationsArgs<ExtArgs>
   _count?: boolean | Prisma.DoctorProfileCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["doctorProfile"]>
 
@@ -3330,6 +3567,7 @@ export type DoctorProfileInclude<ExtArgs extends runtime.Types.Extensions.Intern
   immunizations?: boolean | Prisma.DoctorProfile$immunizationsArgs<ExtArgs>
   labOrders?: boolean | Prisma.DoctorProfile$labOrdersArgs<ExtArgs>
   managedDocuments?: boolean | Prisma.DoctorProfile$managedDocumentsArgs<ExtArgs>
+  ownerInvitations?: boolean | Prisma.DoctorProfile$ownerInvitationsArgs<ExtArgs>
   _count?: boolean | Prisma.DoctorProfileCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type DoctorProfileIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -3358,6 +3596,12 @@ export type $DoctorProfilePayload<ExtArgs extends runtime.Types.Extensions.Inter
     immunizations: Prisma.$ImmunizationPayload<ExtArgs>[]
     labOrders: Prisma.$LabOrderPayload<ExtArgs>[]
     managedDocuments: Prisma.$ManagedDocumentPayload<ExtArgs>[]
+    /**
+     * Invitations raised for this profile's sign-in account (P19-T15). Plural
+     * because a resend writes a replacement row rather than editing the old
+     * one, so the history of every link minted for this doctor stays readable.
+     */
+    ownerInvitations: Prisma.$UserInvitationPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -3786,6 +4030,7 @@ export interface Prisma__DoctorProfileClient<T, Null = never, ExtArgs extends ru
   immunizations<T extends Prisma.DoctorProfile$immunizationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DoctorProfile$immunizationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ImmunizationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   labOrders<T extends Prisma.DoctorProfile$labOrdersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DoctorProfile$labOrdersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LabOrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   managedDocuments<T extends Prisma.DoctorProfile$managedDocumentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DoctorProfile$managedDocumentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ManagedDocumentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  ownerInvitations<T extends Prisma.DoctorProfile$ownerInvitationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DoctorProfile$ownerInvitationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserInvitationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4538,6 +4783,30 @@ export type DoctorProfile$managedDocumentsArgs<ExtArgs extends runtime.Types.Ext
   take?: number
   skip?: number
   distinct?: Prisma.ManagedDocumentScalarFieldEnum | Prisma.ManagedDocumentScalarFieldEnum[]
+}
+
+/**
+ * DoctorProfile.ownerInvitations
+ */
+export type DoctorProfile$ownerInvitationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the UserInvitation
+   */
+  select?: Prisma.UserInvitationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the UserInvitation
+   */
+  omit?: Prisma.UserInvitationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInvitationInclude<ExtArgs> | null
+  where?: Prisma.UserInvitationWhereInput
+  orderBy?: Prisma.UserInvitationOrderByWithRelationInput | Prisma.UserInvitationOrderByWithRelationInput[]
+  cursor?: Prisma.UserInvitationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.UserInvitationScalarFieldEnum | Prisma.UserInvitationScalarFieldEnum[]
 }
 
 /**

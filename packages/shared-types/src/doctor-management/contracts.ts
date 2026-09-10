@@ -1,4 +1,7 @@
-import type { DoctorLicenseTypeValue } from '#doctor-management/schemas';
+import type {
+  DoctorInvitationStatusValue,
+  DoctorLicenseTypeValue,
+} from '#doctor-management/schemas';
 
 export type DoctorProfile = {
   id: string;
@@ -8,11 +11,22 @@ export type DoctorProfile = {
   specialty: string;
   phoneNumber?: string;
   /**
-   * Read from the linked user account, not stored on the profile. Absent when
-   * the doctor has no account yet — the address is the one they sign in with,
-   * so there is exactly one copy of it.
+   * Read from the linked user account, not stored on the profile. While an
+   * invitation raised at creation is still outstanding there is no account
+   * yet, so it is read from that invitation instead — either way there is
+   * exactly one stored copy of the address, and it is the one they sign in
+   * with. Absent only when the doctor has neither an account nor a live
+   * invitation.
    */
   email?: string;
+  /**
+   * Whether the doctor can sign in yet (P19-T15). `ACCEPTED` means an account
+   * is linked, whether it was created by accepting the invitation or already
+   * existed and was attached. `PENDING` means an invitation is outstanding and
+   * still usable. Absent means neither — the doctor was created without an
+   * email, or the invitation lapsed or was withdrawn without being replaced.
+   */
+  invitationStatus?: DoctorInvitationStatusValue;
   title?: string;
   degrees?: string;
   /**

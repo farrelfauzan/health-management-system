@@ -606,6 +606,8 @@
         "digits16": "16 digits",
         "nikHelp": "The stored NIK is encrypted and masked. Leave it blank to keep it; enter a value only to replace it.",
         "initialPatients": "Initial Patients (optional)",
+        "emailReadOnly": "The sign-in address belongs to the doctor's account.",
+        "emailManageLink": "Manage it under Administration",
         "createAction": "Create Doctor"
       },
       "identity": "Practitioner Identity",

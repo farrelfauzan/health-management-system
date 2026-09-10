@@ -606,6 +606,8 @@
         "digits16": "16 digit",
         "nikHelp": "NIK tersimpan terenkripsi dan tersamar. Biarkan kosong untuk mempertahankan nilai; isi hanya untuk menggantinya.",
         "initialPatients": "Pasien Awal (opsional)",
+        "emailReadOnly": "Alamat untuk masuk melekat pada akun dokter.",
+        "emailManageLink": "Kelola lewat menu Administrasi",
         "createAction": "Buat Dokter"
       },
       "identity": "Identitas Tenaga Medis",

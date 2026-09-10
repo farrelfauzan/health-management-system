@@ -214,6 +214,7 @@ const doctor = {
   email: 'budi.santoso@clinic.local',
   title: 'dr.',
   degrees: 'Sp.PD',
+  invitationStatus: 'ACCEPTED',
   nikMasked: '••••••••0002',
   satusehatPractitionerId: '10009880728',
   ownerUserId: userId,
@@ -694,13 +695,18 @@ export const PHASE_THREE_EXAMPLES = {
           graduationYear: 2010,
         },
       ],
-      ownerUserId: userId,
+      // No `ownerUserId` beside the email (P19-T15): the address is now how a
+      // doctor's account is created or attached, and naming both is refused
+      // unless they resolve to the same user. `ownerUserId` remains accepted
+      // on its own for callers that already hold a user id.
       patientIds: [patientId],
     },
+    // No `email` here on purpose: `updateDoctorSchema` does not accept one, and
+    // changing a sign-in address stays an Administration action on the account.
+    // It used to be shown, which was a promise the schema silently dropped.
     updateRequest: {
       specialtyId,
       phoneNumber: '+628129876500',
-      email: 'budi.santoso@clinic.local',
       title: 'dr.',
       degrees: 'Sp.PD',
       isActive: true,

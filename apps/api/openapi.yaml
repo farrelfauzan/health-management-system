@@ -23388,6 +23388,8 @@ paths:
                           type: string
                         degrees:
                           type: string
+                        invitationStatus:
+                          type: string
                         nikMasked:
                           type: string
                         satusehatPractitionerId:
@@ -23433,6 +23435,7 @@ paths:
                         - email
                         - title
                         - degrees
+                        - invitationStatus
                         - nikMasked
                         - satusehatPractitionerId
                         - ownerUserId
@@ -23468,6 +23471,7 @@ paths:
                       email: budi.santoso@clinic.local
                       title: dr.
                       degrees: Sp.PD
+                      invitationStatus: ACCEPTED
                       nikMasked: ••••••••0002
                       satusehatPractitionerId: "10009880728"
                       ownerUserId: 33333333-3333-4333-8333-333333333333
@@ -23546,7 +23550,6 @@ paths:
                       degree: Sp.PD
                       fieldOfStudy: Penyakit Dalam
                       graduationYear: 2010
-                  ownerUserId: 33333333-3333-4333-8333-333333333333
                   patientIds:
                     - 11111111-1111-4111-8111-111111111111
       responses:
@@ -23578,6 +23581,8 @@ paths:
                         type: string
                       degrees:
                         type: string
+                      invitationStatus:
+                        type: string
                       nikMasked:
                         type: string
                       satusehatPractitionerId:
@@ -23600,6 +23605,7 @@ paths:
                       - email
                       - title
                       - degrees
+                      - invitationStatus
                       - nikMasked
                       - satusehatPractitionerId
                       - ownerUserId
@@ -23622,6 +23628,7 @@ paths:
                     email: budi.santoso@clinic.local
                     title: dr.
                     degrees: Sp.PD
+                    invitationStatus: ACCEPTED
                     nikMasked: ••••••••0002
                     satusehatPractitionerId: "10009880728"
                     ownerUserId: 33333333-3333-4333-8333-333333333333
@@ -23697,6 +23704,8 @@ paths:
                       title:
                         type: string
                       degrees:
+                        type: string
+                      invitationStatus:
                         type: string
                       nikMasked:
                         type: string
@@ -23812,6 +23821,7 @@ paths:
                       - email
                       - title
                       - degrees
+                      - invitationStatus
                       - nikMasked
                       - satusehatPractitionerId
                       - ownerUserId
@@ -23836,6 +23846,7 @@ paths:
                     email: budi.santoso@clinic.local
                     title: dr.
                     degrees: Sp.PD
+                    invitationStatus: ACCEPTED
                     nikMasked: ••••••••0002
                     satusehatPractitionerId: "10009880728"
                     ownerUserId: 33333333-3333-4333-8333-333333333333
@@ -23934,7 +23945,6 @@ paths:
                 value:
                   specialtyId: eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee
                   phoneNumber: "+628129876500"
-                  email: budi.santoso@clinic.local
                   title: dr.
                   degrees: Sp.PD
                   isActive: true
@@ -23967,6 +23977,8 @@ paths:
                         type: string
                       degrees:
                         type: string
+                      invitationStatus:
+                        type: string
                       nikMasked:
                         type: string
                       satusehatPractitionerId:
@@ -23989,6 +24001,7 @@ paths:
                       - email
                       - title
                       - degrees
+                      - invitationStatus
                       - nikMasked
                       - satusehatPractitionerId
                       - ownerUserId
@@ -24011,6 +24024,7 @@ paths:
                     email: budi.santoso@clinic.local
                     title: dr.
                     degrees: Sp.PD
+                    invitationStatus: ACCEPTED
                     nikMasked: ••••••••0002
                     satusehatPractitionerId: "10009880728"
                     ownerUserId: 33333333-3333-4333-8333-333333333333
@@ -24407,6 +24421,605 @@ paths:
       summary: List practitioner licences by expiry urgency
       tags:
         - Doctor Management
+  /api/v1/users/invitations:
+    get:
+      operationId: UserInvitationAdminController_listInvitations_v1
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            exclusiveMinimum: false
+            default: 1
+            type: integer
+        - name: limit
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            exclusiveMaximum: false
+            exclusiveMinimum: false
+            default: 10
+            type: integer
+        - name: status
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - PENDING
+              - ACCEPTED
+              - REVOKED
+              - EXPIRED
+      responses:
+        "200":
+          description: Newest first, paged. Carries no token or token hash — the raw token
+            exists only in the emailed link.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        email:
+                          type: string
+                        status:
+                          type: string
+                        roles:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              code:
+                                type: string
+                              name:
+                                type: string
+                            required:
+                              - code
+                              - name
+                        invitedByEmail:
+                          type: string
+                        expiresAt:
+                          type: string
+                        createdAt:
+                          type: string
+                        consumedAt:
+                          nullable: true
+                        revokedAt:
+                          nullable: true
+                      required:
+                        - id
+                        - email
+                        - status
+                        - roles
+                        - invitedByEmail
+                        - expiresAt
+                        - createdAt
+                        - consumedAt
+                        - revokedAt
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                    required:
+                      - page
+                      - limit
+                      - total
+                required:
+                  - data
+                  - meta
+                example:
+                  data:
+                    - id: 0f9a4c31-2b7e-4d58-9c16-8ea3f5d0b742
+                      email: siti.rahayu@example.com
+                      status: PENDING
+                      roles:
+                        - code: NURSE
+                          name: Perawat
+                      invitedByEmail: admin@salingjaga.com
+                      expiresAt: 2026-08-29T04:00:00.000Z
+                      createdAt: 2026-08-26T04:00:00.000Z
+                      consumedAt: null
+                      revokedAt: null
+                    - id: 6c81de07-5a34-4f92-b0d8-1e73a9c4f6b5
+                      email: budi.santoso@example.com
+                      status: REVOKED
+                      roles:
+                        - code: RECEPTIONIST
+                          name: Resepsionis
+                      invitedByEmail: admin@salingjaga.com
+                      expiresAt: 2026-08-29T02:15:00.000Z
+                      createdAt: 2026-08-26T02:15:00.000Z
+                      consumedAt: null
+                      revokedAt: 2026-08-26T06:41:00.000Z
+                  meta:
+                    page: 1
+                    limit: 10
+                    total: 2
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: List staff invitations
+      tags: &a34
+        - Admin Management
+    post:
+      operationId: UserInvitationAdminController_createInvitation_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateUserInvitationDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  email: siti.rahayu@example.com
+                  roleCodes:
+                    - NURSE
+      responses:
+        "201":
+          description: The invitation was recorded and the email dispatched. A delivery
+            failure does not fail this call — the invitation appears in the
+            pending list with a resend action.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      email:
+                        type: string
+                      status:
+                        type: string
+                      roles:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            code:
+                              type: string
+                            name:
+                              type: string
+                          required:
+                            - code
+                            - name
+                      invitedByEmail:
+                        type: string
+                      expiresAt:
+                        type: string
+                      createdAt:
+                        type: string
+                      consumedAt:
+                        nullable: true
+                      revokedAt:
+                        nullable: true
+                    required:
+                      - id
+                      - email
+                      - status
+                      - roles
+                      - invitedByEmail
+                      - expiresAt
+                      - createdAt
+                      - consumedAt
+                      - revokedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 0f9a4c31-2b7e-4d58-9c16-8ea3f5d0b742
+                    email: siti.rahayu@example.com
+                    status: PENDING
+                    roles:
+                      - code: NURSE
+                        name: Perawat
+                    invitedByEmail: admin@salingjaga.com
+                    expiresAt: 2026-08-29T04:00:00.000Z
+                    createdAt: 2026-08-26T04:00:00.000Z
+                    consumedAt: null
+                    revokedAt: null
+                  message: Invitation sent
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Invite a staff user by email
+      tags: *a34
+  /api/v1/users/invitations/{id}/resend:
+    post:
+      operationId: UserInvitationAdminController_resendInvitation_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "201":
+          description: A fresh token and expiry were issued. The previous link stops
+            working immediately, whether or not the new email is delivered.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      email:
+                        type: string
+                      status:
+                        type: string
+                      roles:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            code:
+                              type: string
+                            name:
+                              type: string
+                          required:
+                            - code
+                            - name
+                      invitedByEmail:
+                        type: string
+                      expiresAt:
+                        type: string
+                      createdAt:
+                        type: string
+                      consumedAt:
+                        nullable: true
+                      revokedAt:
+                        nullable: true
+                    required:
+                      - id
+                      - email
+                      - status
+                      - roles
+                      - invitedByEmail
+                      - expiresAt
+                      - createdAt
+                      - consumedAt
+                      - revokedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 0f9a4c31-2b7e-4d58-9c16-8ea3f5d0b742
+                    email: siti.rahayu@example.com
+                    status: PENDING
+                    roles:
+                      - code: NURSE
+                        name: Perawat
+                    invitedByEmail: admin@salingjaga.com
+                    expiresAt: 2026-08-29T04:00:00.000Z
+                    createdAt: 2026-08-26T04:00:00.000Z
+                    consumedAt: null
+                    revokedAt: null
+                  message: Invitation resent
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Invitation not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Invitation not found.
+      security:
+        - bearer: []
+      summary: Resend a staff invitation
+      tags: *a34
+  /api/v1/users/invitations/{id}:
+    delete:
+      operationId: UserInvitationAdminController_revokeInvitation_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The link is dead. The row stays, so the withdrawal is readable
+            after the fact.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      email:
+                        type: string
+                      status:
+                        type: string
+                      roles:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            code:
+                              type: string
+                            name:
+                              type: string
+                          required:
+                            - code
+                            - name
+                      invitedByEmail:
+                        type: string
+                      expiresAt:
+                        type: string
+                      createdAt:
+                        type: string
+                      consumedAt:
+                        nullable: true
+                      revokedAt:
+                        type: string
+                    required:
+                      - id
+                      - email
+                      - status
+                      - roles
+                      - invitedByEmail
+                      - expiresAt
+                      - createdAt
+                      - consumedAt
+                      - revokedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 6c81de07-5a34-4f92-b0d8-1e73a9c4f6b5
+                    email: budi.santoso@example.com
+                    status: REVOKED
+                    roles:
+                      - code: RECEPTIONIST
+                        name: Resepsionis
+                    invitedByEmail: admin@salingjaga.com
+                    expiresAt: 2026-08-29T02:15:00.000Z
+                    createdAt: 2026-08-26T02:15:00.000Z
+                    consumedAt: null
+                    revokedAt: 2026-08-26T06:41:00.000Z
+                  message: Invitation revoked
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Invitation not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Invitation not found.
+      security:
+        - bearer: []
+      summary: Revoke a staff invitation
+      tags: *a34
+  /api/v1/invitations/{token}:
+    get:
+      operationId: UserInvitationPublicController_previewInvitation_v1
+      parameters:
+        - name: token
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "The address the invitation was sent to, so the invitee can confirm
+            they opened the right link. Roles are omitted: publishing the
+            clinic's role catalogue on an unauthenticated URL buys the invitee
+            nothing."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      email:
+                        type: string
+                      expiresAt:
+                        type: string
+                    required:
+                      - email
+                      - expiresAt
+                required:
+                  - data
+                example:
+                  data:
+                    email: siti.rahayu@example.com
+                    expiresAt: 2026-08-29T04:00:00.000Z
+        "404":
+          description: No invitation matches this link.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: No invitation matches this link.
+      summary: Validate an invitation link
+      tags: &a35
+        - Admin Management
+  /api/v1/invitations/{token}/accept:
+    post:
+      operationId: UserInvitationPublicController_acceptInvitation_v1
+      parameters:
+        - name: token
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AcceptUserInvitationDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  password: kunci-anggrek-lembayung
+      responses:
+        "201":
+          description: The account is live and the invitation consumed. The password is
+            chosen here and nowhere else — no administrator ever knows it.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      email:
+                        type: string
+                    required:
+                      - email
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    email: siti.rahayu@example.com
+                  message: Invitation accepted
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "404":
+          description: No invitation matches this link.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: No invitation matches this link.
+      summary: Accept an invitation and set a password
+      tags: *a35
   /api/v1/doctor-patient-assignments:
     post:
       operationId: DoctorPatientController_assignDoctorToPatient_v1
@@ -24501,7 +25114,7 @@ paths:
       security:
         - bearer: []
       summary: Assign a doctor to a patient
-      tags: &a34
+      tags: &a36
         - Doctor Patient
   /api/v1/doctor-patient-assignments/activity:
     get:
@@ -24648,7 +25261,7 @@ paths:
       security:
         - bearer: []
       summary: List doctor-patient assignment activity
-      tags: *a34
+      tags: *a36
   /api/v1/doctor-patient-assignments/{id}:
     delete:
       operationId: DoctorPatientController_unassignDoctorFromPatient_v1
@@ -24744,7 +25357,7 @@ paths:
       security:
         - bearer: []
       summary: Unassign a doctor from a patient
-      tags: *a34
+      tags: *a36
   /api/v1/registrations:
     get:
       operationId: RegistrationFlowController_listRegistrations_v1
@@ -24976,7 +25589,7 @@ paths:
       security:
         - bearer: []
       summary: List registrations
-      tags: &a35
+      tags: &a37
         - Registration Flow
     post:
       operationId: RegistrationFlowController_createRegistration_v1
@@ -25101,7 +25714,7 @@ paths:
       security:
         - bearer: []
       summary: Create a registration
-      tags: *a35
+      tags: *a37
   /api/v1/registrations/queue-board:
     get:
       operationId: RegistrationFlowController_getQueueBoard_v1
@@ -25317,7 +25930,7 @@ paths:
       security:
         - bearer: []
       summary: Get a day's queue board
-      tags: *a35
+      tags: *a37
   /api/v1/registrations/{id}:
     get:
       operationId: RegistrationFlowController_getRegistrationById_v1
@@ -25431,7 +26044,7 @@ paths:
       security:
         - bearer: []
       summary: Get a registration
-      tags: *a35
+      tags: *a37
     patch:
       operationId: RegistrationFlowController_updateRegistration_v1
       parameters:
@@ -25572,7 +26185,7 @@ paths:
       security:
         - bearer: []
       summary: Update a registration
-      tags: *a35
+      tags: *a37
   /api/v1/medications:
     get:
       operationId: MedicationController_listMedications_v1
@@ -25733,7 +26346,7 @@ paths:
       security:
         - bearer: []
       summary: List medications
-      tags: &a36
+      tags: &a38
         - Pharmacy Flow
     post:
       operationId: MedicationController_createMedication_v1
@@ -25858,7 +26471,7 @@ paths:
       security:
         - bearer: []
       summary: Create a medication
-      tags: *a36
+      tags: *a38
   /api/v1/medications/{id}:
     patch:
       operationId: MedicationController_updateMedication_v1
@@ -25992,7 +26605,7 @@ paths:
       security:
         - bearer: []
       summary: Update a medication
-      tags: *a36
+      tags: *a38
   /api/v1/prescriptions:
     get:
       operationId: PrescriptionController_listPrescriptions_v1
@@ -26213,7 +26826,7 @@ paths:
       security:
         - bearer: []
       summary: List prescriptions
-      tags: &a37
+      tags: &a39
         - Pharmacy Flow
     post:
       operationId: PrescriptionController_createPrescription_v1
@@ -26405,7 +27018,7 @@ paths:
       security:
         - bearer: []
       summary: Create a prescription
-      tags: *a37
+      tags: *a39
   /api/v1/prescriptions/{id}/document:
     post:
       operationId: PrescriptionController_printPrescriptionDocument_v1
@@ -26488,7 +27101,7 @@ paths:
       security:
         - bearer: []
       summary: Print the resep for a prescription
-      tags: *a37
+      tags: *a39
   /api/v1/dispenses:
     post:
       operationId: DispenseController_createDispense_v1
@@ -26762,7 +27375,7 @@ paths:
       security:
         - bearer: []
       summary: List stock receipts
-      tags: &a38
+      tags: &a40
         - Pharmacy Inventory
     post:
       operationId: InventoryController_createReceipt_v1
@@ -26885,7 +27498,7 @@ paths:
       security:
         - bearer: []
       summary: Record a stock receipt
-      tags: *a38
+      tags: *a40
   /api/v1/inventory/summary:
     get:
       operationId: InventoryController_getSummary_v1
@@ -26984,7 +27597,7 @@ paths:
       security:
         - bearer: []
       summary: Get inventory summary
-      tags: *a38
+      tags: *a40
   /api/v1/inventory/expiry-report:
     get:
       operationId: InventoryController_getExpiryReport_v1
@@ -27112,605 +27725,6 @@ paths:
       security:
         - bearer: []
       summary: Get medication expiry report
-      tags: *a38
-  /api/v1/users/invitations:
-    get:
-      operationId: UserInvitationAdminController_listInvitations_v1
-      parameters:
-        - name: page
-          required: false
-          in: query
-          schema:
-            minimum: 1
-            exclusiveMinimum: false
-            default: 1
-            type: integer
-        - name: limit
-          required: false
-          in: query
-          schema:
-            minimum: 1
-            maximum: 100
-            exclusiveMaximum: false
-            exclusiveMinimum: false
-            default: 10
-            type: integer
-        - name: status
-          required: false
-          in: query
-          schema:
-            type: string
-            enum:
-              - PENDING
-              - ACCEPTED
-              - REVOKED
-              - EXPIRED
-      responses:
-        "200":
-          description: Newest first, paged. Carries no token or token hash — the raw token
-            exists only in the emailed link.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        id:
-                          type: string
-                        email:
-                          type: string
-                        status:
-                          type: string
-                        roles:
-                          type: array
-                          items:
-                            type: object
-                            properties:
-                              code:
-                                type: string
-                              name:
-                                type: string
-                            required:
-                              - code
-                              - name
-                        invitedByEmail:
-                          type: string
-                        expiresAt:
-                          type: string
-                        createdAt:
-                          type: string
-                        consumedAt:
-                          nullable: true
-                        revokedAt:
-                          nullable: true
-                      required:
-                        - id
-                        - email
-                        - status
-                        - roles
-                        - invitedByEmail
-                        - expiresAt
-                        - createdAt
-                        - consumedAt
-                        - revokedAt
-                  meta:
-                    type: object
-                    properties:
-                      page:
-                        type: integer
-                      limit:
-                        type: integer
-                      total:
-                        type: integer
-                    required:
-                      - page
-                      - limit
-                      - total
-                required:
-                  - data
-                  - meta
-                example:
-                  data:
-                    - id: 0f9a4c31-2b7e-4d58-9c16-8ea3f5d0b742
-                      email: siti.rahayu@example.com
-                      status: PENDING
-                      roles:
-                        - code: NURSE
-                          name: Perawat
-                      invitedByEmail: admin@salingjaga.com
-                      expiresAt: 2026-08-29T04:00:00.000Z
-                      createdAt: 2026-08-26T04:00:00.000Z
-                      consumedAt: null
-                      revokedAt: null
-                    - id: 6c81de07-5a34-4f92-b0d8-1e73a9c4f6b5
-                      email: budi.santoso@example.com
-                      status: REVOKED
-                      roles:
-                        - code: RECEPTIONIST
-                          name: Resepsionis
-                      invitedByEmail: admin@salingjaga.com
-                      expiresAt: 2026-08-29T02:15:00.000Z
-                      createdAt: 2026-08-26T02:15:00.000Z
-                      consumedAt: null
-                      revokedAt: 2026-08-26T06:41:00.000Z
-                  meta:
-                    page: 1
-                    limit: 10
-                    total: 2
-        "401":
-          description: Authentication is required.
-          content:
-            application/json:
-              schema:
-                example:
-                  error:
-                    code: UNAUTHORIZED
-                    message: Authentication is required
-        "403":
-          description: The authenticated user does not have the required permission.
-          content:
-            application/json:
-              schema:
-                example:
-                  error:
-                    code: FORBIDDEN
-                    message: Insufficient permission
-      security:
-        - bearer: []
-      summary: List staff invitations
-      tags: &a39
-        - Admin Management
-    post:
-      operationId: UserInvitationAdminController_createInvitation_v1
-      parameters: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/CreateUserInvitationDto"
-            examples:
-              default:
-                summary: Valid request
-                value:
-                  email: siti.rahayu@example.com
-                  roleCodes:
-                    - NURSE
-      responses:
-        "201":
-          description: The invitation was recorded and the email dispatched. A delivery
-            failure does not fail this call — the invitation appears in the
-            pending list with a resend action.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: object
-                    properties:
-                      id:
-                        type: string
-                      email:
-                        type: string
-                      status:
-                        type: string
-                      roles:
-                        type: array
-                        items:
-                          type: object
-                          properties:
-                            code:
-                              type: string
-                            name:
-                              type: string
-                          required:
-                            - code
-                            - name
-                      invitedByEmail:
-                        type: string
-                      expiresAt:
-                        type: string
-                      createdAt:
-                        type: string
-                      consumedAt:
-                        nullable: true
-                      revokedAt:
-                        nullable: true
-                    required:
-                      - id
-                      - email
-                      - status
-                      - roles
-                      - invitedByEmail
-                      - expiresAt
-                      - createdAt
-                      - consumedAt
-                      - revokedAt
-                  message:
-                    type: string
-                required:
-                  - data
-                  - message
-                example:
-                  data:
-                    id: 0f9a4c31-2b7e-4d58-9c16-8ea3f5d0b742
-                    email: siti.rahayu@example.com
-                    status: PENDING
-                    roles:
-                      - code: NURSE
-                        name: Perawat
-                    invitedByEmail: admin@salingjaga.com
-                    expiresAt: 2026-08-29T04:00:00.000Z
-                    createdAt: 2026-08-26T04:00:00.000Z
-                    consumedAt: null
-                    revokedAt: null
-                  message: Invitation sent
-        "400":
-          description: Request validation failed.
-          content:
-            application/json:
-              schema:
-                example:
-                  error:
-                    code: BAD_REQUEST
-                    message: Request validation failed
-        "401":
-          description: Authentication is required.
-          content:
-            application/json:
-              schema:
-                example:
-                  error:
-                    code: UNAUTHORIZED
-                    message: Authentication is required
-        "403":
-          description: The authenticated user does not have the required permission.
-          content:
-            application/json:
-              schema:
-                example:
-                  error:
-                    code: FORBIDDEN
-                    message: Insufficient permission
-      security:
-        - bearer: []
-      summary: Invite a staff user by email
-      tags: *a39
-  /api/v1/users/invitations/{id}/resend:
-    post:
-      operationId: UserInvitationAdminController_resendInvitation_v1
-      parameters:
-        - name: id
-          required: true
-          in: path
-          schema:
-            type: string
-      responses:
-        "201":
-          description: A fresh token and expiry were issued. The previous link stops
-            working immediately, whether or not the new email is delivered.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: object
-                    properties:
-                      id:
-                        type: string
-                      email:
-                        type: string
-                      status:
-                        type: string
-                      roles:
-                        type: array
-                        items:
-                          type: object
-                          properties:
-                            code:
-                              type: string
-                            name:
-                              type: string
-                          required:
-                            - code
-                            - name
-                      invitedByEmail:
-                        type: string
-                      expiresAt:
-                        type: string
-                      createdAt:
-                        type: string
-                      consumedAt:
-                        nullable: true
-                      revokedAt:
-                        nullable: true
-                    required:
-                      - id
-                      - email
-                      - status
-                      - roles
-                      - invitedByEmail
-                      - expiresAt
-                      - createdAt
-                      - consumedAt
-                      - revokedAt
-                  message:
-                    type: string
-                required:
-                  - data
-                  - message
-                example:
-                  data:
-                    id: 0f9a4c31-2b7e-4d58-9c16-8ea3f5d0b742
-                    email: siti.rahayu@example.com
-                    status: PENDING
-                    roles:
-                      - code: NURSE
-                        name: Perawat
-                    invitedByEmail: admin@salingjaga.com
-                    expiresAt: 2026-08-29T04:00:00.000Z
-                    createdAt: 2026-08-26T04:00:00.000Z
-                    consumedAt: null
-                    revokedAt: null
-                  message: Invitation resent
-        "401":
-          description: Authentication is required.
-          content:
-            application/json:
-              schema:
-                example:
-                  error:
-                    code: UNAUTHORIZED
-                    message: Authentication is required
-        "403":
-          description: The authenticated user does not have the required permission.
-          content:
-            application/json:
-              schema:
-                example:
-                  error:
-                    code: FORBIDDEN
-                    message: Insufficient permission
-        "404":
-          description: Invitation not found.
-          content:
-            application/json:
-              schema:
-                example:
-                  error:
-                    code: NOT_FOUND
-                    message: Invitation not found.
-      security:
-        - bearer: []
-      summary: Resend a staff invitation
-      tags: *a39
-  /api/v1/users/invitations/{id}:
-    delete:
-      operationId: UserInvitationAdminController_revokeInvitation_v1
-      parameters:
-        - name: id
-          required: true
-          in: path
-          schema:
-            type: string
-      responses:
-        "200":
-          description: The link is dead. The row stays, so the withdrawal is readable
-            after the fact.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: object
-                    properties:
-                      id:
-                        type: string
-                      email:
-                        type: string
-                      status:
-                        type: string
-                      roles:
-                        type: array
-                        items:
-                          type: object
-                          properties:
-                            code:
-                              type: string
-                            name:
-                              type: string
-                          required:
-                            - code
-                            - name
-                      invitedByEmail:
-                        type: string
-                      expiresAt:
-                        type: string
-                      createdAt:
-                        type: string
-                      consumedAt:
-                        nullable: true
-                      revokedAt:
-                        type: string
-                    required:
-                      - id
-                      - email
-                      - status
-                      - roles
-                      - invitedByEmail
-                      - expiresAt
-                      - createdAt
-                      - consumedAt
-                      - revokedAt
-                  message:
-                    type: string
-                required:
-                  - data
-                  - message
-                example:
-                  data:
-                    id: 6c81de07-5a34-4f92-b0d8-1e73a9c4f6b5
-                    email: budi.santoso@example.com
-                    status: REVOKED
-                    roles:
-                      - code: RECEPTIONIST
-                        name: Resepsionis
-                    invitedByEmail: admin@salingjaga.com
-                    expiresAt: 2026-08-29T02:15:00.000Z
-                    createdAt: 2026-08-26T02:15:00.000Z
-                    consumedAt: null
-                    revokedAt: 2026-08-26T06:41:00.000Z
-                  message: Invitation revoked
-        "401":
-          description: Authentication is required.
-          content:
-            application/json:
-              schema:
-                example:
-                  error:
-                    code: UNAUTHORIZED
-                    message: Authentication is required
-        "403":
-          description: The authenticated user does not have the required permission.
-          content:
-            application/json:
-              schema:
-                example:
-                  error:
-                    code: FORBIDDEN
-                    message: Insufficient permission
-        "404":
-          description: Invitation not found.
-          content:
-            application/json:
-              schema:
-                example:
-                  error:
-                    code: NOT_FOUND
-                    message: Invitation not found.
-      security:
-        - bearer: []
-      summary: Revoke a staff invitation
-      tags: *a39
-  /api/v1/invitations/{token}:
-    get:
-      operationId: UserInvitationPublicController_previewInvitation_v1
-      parameters:
-        - name: token
-          required: true
-          in: path
-          schema:
-            type: string
-      responses:
-        "200":
-          description: "The address the invitation was sent to, so the invitee can confirm
-            they opened the right link. Roles are omitted: publishing the
-            clinic's role catalogue on an unauthenticated URL buys the invitee
-            nothing."
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: object
-                    properties:
-                      email:
-                        type: string
-                      expiresAt:
-                        type: string
-                    required:
-                      - email
-                      - expiresAt
-                required:
-                  - data
-                example:
-                  data:
-                    email: siti.rahayu@example.com
-                    expiresAt: 2026-08-29T04:00:00.000Z
-        "404":
-          description: No invitation matches this link.
-          content:
-            application/json:
-              schema:
-                example:
-                  error:
-                    code: NOT_FOUND
-                    message: No invitation matches this link.
-      summary: Validate an invitation link
-      tags: &a40
-        - Admin Management
-  /api/v1/invitations/{token}/accept:
-    post:
-      operationId: UserInvitationPublicController_acceptInvitation_v1
-      parameters:
-        - name: token
-          required: true
-          in: path
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/AcceptUserInvitationDto"
-            examples:
-              default:
-                summary: Valid request
-                value:
-                  password: kunci-anggrek-lembayung
-      responses:
-        "201":
-          description: The account is live and the invitation consumed. The password is
-            chosen here and nowhere else — no administrator ever knows it.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: object
-                    properties:
-                      email:
-                        type: string
-                    required:
-                      - email
-                  message:
-                    type: string
-                required:
-                  - data
-                  - message
-                example:
-                  data:
-                    email: siti.rahayu@example.com
-                  message: Invitation accepted
-        "400":
-          description: Request validation failed.
-          content:
-            application/json:
-              schema:
-                example:
-                  error:
-                    code: BAD_REQUEST
-                    message: Request validation failed
-        "404":
-          description: No invitation matches this link.
-          content:
-            application/json:
-              schema:
-                example:
-                  error:
-                    code: NOT_FOUND
-                    message: No invitation matches this link.
-      summary: Accept an invitation and set a password
       tags: *a40
   /api/v1/organization-units/tree:
     get:
@@ -46744,6 +46758,10 @@ components:
           type: string
           minLength: 6
           maxLength: 32
+        email:
+          type: string
+          format: email
+          maxLength: 255
         title:
           type: string
           minLength: 1
@@ -46951,6 +46969,30 @@ components:
               - endTime
       required:
         - schedules
+    CreateUserInvitationDto:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        roleCodes:
+          type: array
+          minItems: 1
+          items:
+            type: string
+            minLength: 1
+      required:
+        - email
+        - roleCodes
+    AcceptUserInvitationDto:
+      type: object
+      properties:
+        password:
+          type: string
+          minLength: 12
+          maxLength: 200
+      required:
+        - password
     CreateDoctorPatientAssignmentDto:
       type: object
       properties:
@@ -47348,30 +47390,6 @@ components:
         - batchNumber
         - expiryDate
         - quantity
-    CreateUserInvitationDto:
-      type: object
-      properties:
-        email:
-          type: string
-          format: email
-        roleCodes:
-          type: array
-          minItems: 1
-          items:
-            type: string
-            minLength: 1
-      required:
-        - email
-        - roleCodes
-    AcceptUserInvitationDto:
-      type: object
-      properties:
-        password:
-          type: string
-          minLength: 12
-          maxLength: 200
-      required:
-        - password
     CreateOrganizationUnitDto:
       type: object
       properties:
