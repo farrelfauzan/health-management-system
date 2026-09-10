@@ -1,12 +1,12 @@
 'use client';
 
-import { useMutation } from '@tanstack/react-query';
 import type { ManagedDocumentDetailView } from '@hms/shared-types';
-import { Button, Card, CardContent, Icon, toast } from '@hms/ui';
+import { Card, CardContent } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
-import { resolveApiErrorMessage } from '#lib/api/resolve-api-error-message';
-import { openManagedDocument } from '#lib/managed-documents/open-managed-document';
+import { ManagedDocumentDownloadButton } from '#components/client/managed-documents/managed-document-download-button';
+import { ManagedDocumentPreview } from '#components/client/managed-documents/managed-document-preview';
+import { canPreviewManagedDocument } from '#lib/managed-documents/can-preview-managed-document';
 
 type ManagedDocumentBodyProps = {
   document: ManagedDocumentDetailView;
@@ -18,36 +18,35 @@ type ManagedDocumentBodyProps = {
  * A drafted body is rendered from HTML the **API** sanitised on every write
  * (NFR-SEC-01) — the allowlist lives server-side, so the client is not the
  * thing standing between a pasted `<script>` and the reader. An uploaded body
- * is a signed, attachment-disposition download and is never framed in this
- * origin (NFR-SEC-04).
+ * is never framed in this origin (NFR-SEC-04): it is a signed,
+ * attachment-disposition download, and since `P19-T18` a markdown or
+ * plain-text one is additionally readable as *text*, extracted and stripped
+ * of markup on the API. Neither path puts uploaded bytes into the DOM as
+ * markup.
+ *
+ * The preview is rendered here only for a type that needs no approval. When
+ * approval is in play the panel above already carries it, next to the decide
+ * controls where the reading matters — and one document read twice on one
+ * screen reads as two documents.
  */
 export function ManagedDocumentBody({ document }: ManagedDocumentBodyProps) {
   const t = useTranslations('operations.documents.workspace');
-  const registry = useTranslations('operations.documents.registry');
-  const downloadMutation = useMutation({
-    mutationFn: () =>
-      openManagedDocument({
-        documentId: document.id,
-        errorMessage: registry('actions.downloadError'),
-      }),
-    onError: (err: unknown) =>
-      toast.error(resolveApiErrorMessage(err, registry('actions.downloadError'))),
-  });
 
   if (document.storageKey !== null) {
+    if (!document.isApprovalRequired && canPreviewManagedDocument(document)) {
+      return (
+        <Card className="rounded-xl border-slate-200 shadow-none">
+          <CardContent className="p-4">
+            <ManagedDocumentPreview document={document} />
+          </CardContent>
+        </Card>
+      );
+    }
     return (
       <Card className="rounded-xl border-slate-200 shadow-none">
         <CardContent className="flex flex-wrap items-center justify-between gap-3 p-4">
           <p className="text-sm text-slate-600">{t('uploadedBody')}</p>
-          <Button
-            type="button"
-            variant="outline"
-            disabled={downloadMutation.isPending}
-            onClick={() => downloadMutation.mutate()}
-          >
-            <Icon name="download" size={18} />
-            {registry('actions.download')}
-          </Button>
+          <ManagedDocumentDownloadButton documentId={document.id} />
         </CardContent>
       </Card>
     );

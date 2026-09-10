@@ -1198,6 +1198,13 @@
           "issued": "Sudah diterbitkan"
         }
       },
+      "preview": {
+        "title": "Pratinjau dokumen",
+        "loading": "Memuat teks dokumen…",
+        "loadError": "Teks dokumen tidak dapat dimuat. Unduh berkasnya untuk membaca.",
+        "empty": "Tidak ada teks yang bisa dibaca dari berkas ini. Unduh berkasnya untuk memeriksa langsung.",
+        "truncated": "Menampilkan {shown} dari {total} karakter pertama. Unduh berkasnya untuk membaca selengkapnya."
+      },
       "form": {
         "title": "Dokumen baru",
         "description": "Pilih jenis — formulir dibentuk dari apa yang diminta jenis tersebut.",
