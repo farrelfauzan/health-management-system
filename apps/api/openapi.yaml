@@ -19707,6 +19707,47 @@ paths:
               - CONVERTED
               - LINKED
               - EXPIRED
+        - name: channel
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - WHATSAPP
+              - TELEGRAM
+        - name: q
+          required: false
+          in: query
+          schema:
+            minLength: 1
+            maxLength: 100
+            type: string
+        - name: sort
+          required: false
+          in: query
+          schema:
+            default: createdAt
+            type: string
+            enum:
+              - createdAt
+              - expiresAt
+        - name: order
+          required: false
+          in: query
+          schema:
+            default: asc
+            type: string
+            enum:
+              - asc
+              - desc
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            exclusiveMinimum: false
+            default: 1
+            type: integer
         - name: limit
           required: false
           in: query
@@ -19719,12 +19760,18 @@ paths:
             type: integer
       responses:
         "200":
-          description: Prospective records in the requested status, oldest enquiry first —
-            a worklist, so the record closest to expiring unresolved leads it.
-            Defaults to AWAITING_ARRIVAL. No MRN and no clinical field appears
-            here because none exists yet; `openAppointments` counts what is
-            still riding on the record, so a row whose only booking was
-            cancelled reads as nothing to do.
+          description: Prospective records in the requested status, paged, oldest enquiry
+            first by default — a worklist, so the record closest to expiring
+            unresolved leads it. Defaults to AWAITING_ARRIVAL; `channel` narrows
+            to one messenger, `q` matches a name loosely or a phone number on
+            its digits, and `sort`/`order` switch between the enquiry date and
+            the expiry. `meta.total` counts the whole filter, which is what the
+            Patients page shows on its "From chat" badge. No clinical field
+            appears here because none exists yet; `patientMrn` and
+            `upcomingAppointment` are null until a record resolves or a booking
+            is ahead, and `openAppointments` counts what is still riding on the
+            record, so a row whose only booking was cancelled reads as nothing
+            to do.
           content:
             application/json:
               schema:
@@ -19747,8 +19794,23 @@ paths:
                           type: string
                         patientId:
                           type: string
+                        patientMrn:
+                          type: string
                         openAppointments:
                           type: integer
+                        upcomingAppointment:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            scheduledAt:
+                              type: string
+                            doctorName:
+                              type: string
+                          required:
+                            - id
+                            - scheduledAt
+                            - doctorName
                         expiresAt:
                           type: string
                         createdAt:
@@ -19762,8 +19824,22 @@ paths:
                         - openAppointments
                         - expiresAt
                         - createdAt
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                    required:
+                      - page
+                      - limit
+                      - total
                 required:
                   - data
+                  - meta
                 example:
                   data:
                     - id: 9a1b2c3d-4e5f-4061-8a72-b3c4d5e6f708
@@ -19772,9 +19848,18 @@ paths:
                       channel: TELEGRAM
                       status: AWAITING_ARRIVAL
                       patientId: 6d90a1c3-2f84-4b57-8e10-3c7f5a9d0b28
+                      patientMrn: RM-000119
                       openAppointments: 1
+                      upcomingAppointment:
+                        id: 0f3c9d61-7a2b-4c58-9e14-5b6d8a7c2f10
+                        scheduledAt: 2026-08-12T02:00:00.000Z
+                        doctorName: dr. Andi Pratama
                       expiresAt: 2026-11-06T14:22:00.000Z
                       createdAt: 2026-08-08T14:22:00.000Z
+                  meta:
+                    page: 1
+                    limit: 25
+                    total: 1
         "401":
           description: Authentication is required.
           content:

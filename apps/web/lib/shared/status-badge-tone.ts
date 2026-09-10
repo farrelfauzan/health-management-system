@@ -31,6 +31,11 @@ const TONE_BY_STATUS: Record<string, StatusTone> = {
   stat: 'danger',
   urgent: 'danger',
   regular: 'neutral',
+  // Prospective patients (P19-T08): waiting, became a record, matched one, gone.
+  'awaiting-arrival': 'warning',
+  converted: 'success',
+  linked: 'success',
+  expired: 'neutral',
   draft: 'neutral',
   discharged: 'neutral',
   inactive: 'neutral',
