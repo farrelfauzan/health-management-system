@@ -3,11 +3,12 @@
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { ClinicDocumentView } from '@hms/shared-types';
-import { Button } from '@hms/ui';
+import { TooltipProvider } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
 import { ClinicDocumentEditDialog } from '#components/client/clinic-documents/clinic-document-edit-dialog';
 import { SendForReviewButton } from '#components/client/clinic-documents/send-for-review-button';
+import { DocumentActionButton } from '#components/client/documents/document-action-button';
 import { ConfirmDialog } from '#components/client/shared/confirm-dialog';
 import {
   documentAdminControllerDeleteDocumentV1,
@@ -83,60 +84,55 @@ export function ClinicDocumentRowActions({
   });
 
   return (
-    <div className="flex justify-end gap-2">
-      <Button
-        type="button"
-        variant="ghost"
-        size="sm"
-        disabled={downloadMutation.isPending}
-        onClick={() => downloadMutation.mutate()}
-      >
-        {t('download')}
-      </Button>
-      <Button type="button" variant="ghost" size="sm" onClick={() => setIsEditOpen(true)}>
-        {t('edit')}
-      </Button>
-      <Button
-        type="button"
-        variant="ghost"
-        size="sm"
-        disabled={reingestMutation.isPending}
-        onClick={() => reingestMutation.mutate()}
-      >
-        {t('reingest')}
-      </Button>
-      <Button
-        type="button"
-        variant="ghost"
-        size="sm"
-        disabled={deleteMutation.isPending}
-        onClick={() => setIsDeleteOpen(true)}
-      >
-        {t('delete')}
-      </Button>
-      <SendForReviewButton document={document} onResult={onResult} onError={onError} />
-      <ClinicDocumentEditDialog
-        open={isEditOpen}
-        onOpenChange={setIsEditOpen}
-        document={document}
-        onSaved={onResult}
-        onFailed={onError}
-      />
-      {/* Retiring takes the chunks and their vectors with it, which is what
-          makes the document stop answering — on the in-app assistant and on
-          the public channel alike. Re-uploading the same file does not undo
-          it; the ingest has to run again, and the dialog says so. */}
-      <ConfirmDialog
-        open={isDeleteOpen}
-        onOpenChange={setIsDeleteOpen}
-        title={t('confirm.delete.title')}
-        description={t('confirm.delete.body', { title: document.title })}
-        confirmLabel={t('confirm.delete.confirm')}
-        cancelLabel={t('confirm.delete.cancel')}
-        isDestructive
-        isPending={deleteMutation.isPending}
-        onConfirm={() => deleteMutation.mutate()}
-      />
-    </div>
+    // One provider per row rather than one per button: Radix needs an ancestor
+    // provider, and five of them in a row would each carry their own delay
+    // timer for controls the user reads as a single group. The provider also
+    // has to sit above SendForReviewButton, which renders its own tooltip.
+    <TooltipProvider>
+      <div className="flex justify-end gap-1">
+        <DocumentActionButton
+          icon="download"
+          label={t('download')}
+          disabled={downloadMutation.isPending}
+          onClick={() => downloadMutation.mutate()}
+        />
+        <DocumentActionButton icon="edit" label={t('edit')} onClick={() => setIsEditOpen(true)} />
+        <DocumentActionButton
+          icon="refresh"
+          label={t('reingest')}
+          disabled={reingestMutation.isPending}
+          onClick={() => reingestMutation.mutate()}
+        />
+        <DocumentActionButton
+          icon="delete"
+          label={t('delete')}
+          disabled={deleteMutation.isPending}
+          onClick={() => setIsDeleteOpen(true)}
+        />
+        <SendForReviewButton document={document} onResult={onResult} onError={onError} />
+        <ClinicDocumentEditDialog
+          open={isEditOpen}
+          onOpenChange={setIsEditOpen}
+          document={document}
+          onSaved={onResult}
+          onFailed={onError}
+        />
+        {/* Retiring takes the chunks and their vectors with it, which is what
+            makes the document stop answering — on the in-app assistant and on
+            the public channel alike. Re-uploading the same file does not undo
+            it; the ingest has to run again, and the dialog says so. */}
+        <ConfirmDialog
+          open={isDeleteOpen}
+          onOpenChange={setIsDeleteOpen}
+          title={t('confirm.delete.title')}
+          description={t('confirm.delete.body', { title: document.title })}
+          confirmLabel={t('confirm.delete.confirm')}
+          cancelLabel={t('confirm.delete.cancel')}
+          isDestructive
+          isPending={deleteMutation.isPending}
+          onConfirm={() => deleteMutation.mutate()}
+        />
+      </div>
+    </TooltipProvider>
   );
 }

@@ -576,7 +576,12 @@
       "notRetrievableYet": "The assistant cannot retrieve this yet.",
       "sendForReview": "Send for review",
       "confirm": {
-        "sendForReview": "Send “{title}” for approval? The assistant stops being able to cite it until somebody approves it."
+        "sendForReview": {
+          "title": "Send this document for approval?",
+          "body": "Sending “{title}” for approval takes it out of the assistant’s reach right away: it stops being cited on the in-app assistant and on the public channel until somebody approves it. Nothing is deleted, and approving it puts the document back in use.",
+          "confirm": "Send for review",
+          "cancel": "Cancel"
+        }
       },
       "success": {
         "sendForReview": "Document sent for approval."
