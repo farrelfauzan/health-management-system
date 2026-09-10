@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import type { LabWorklistBucketValue, LabWorklistItem } from '@hms/shared-types';
-import { Button, Icon, Input, Label, Tabs, TabsList, TabsTrigger, useAbility } from '@hms/ui';
+import { Button, Icon, Label, Tabs, TabsList, TabsTrigger, useAbility } from '@hms/ui';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useFormatter, useTranslations } from 'next-intl';
@@ -13,6 +13,7 @@ import {
   DEFAULT_LAB_WORKLIST_BUCKET,
   LAB_WORKLIST_BUCKETS,
 } from '#lib/laboratory/lab-worklist-buckets';
+import { LocalizedDatePicker } from '#components/client/shared/localized-date-picker';
 import { useLabWorklist } from '#lib/laboratory/use-lab-worklist';
 import { useTabSearchParam } from '#lib/navigation/use-tab-search-param';
 import {
@@ -55,10 +56,7 @@ export function LabWorklistWorkspace({ initialQuery }: LabWorklistWorkspaceProps
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <Tabs
-          value={bucket}
-          onValueChange={(value) => setBucket(value as LabWorklistBucketValue)}
-        >
+        <Tabs value={bucket} onValueChange={(value) => setBucket(value as LabWorklistBucketValue)}>
           <TabsList>
             {LAB_WORKLIST_BUCKETS.map((bucket) => (
               <TabsTrigger key={bucket} value={bucket}>
@@ -68,20 +66,20 @@ export function LabWorklistWorkspace({ initialQuery }: LabWorklistWorkspaceProps
           </TabsList>
         </Tabs>
         <div className="flex flex-wrap items-center gap-2">
-          <Label className="flex items-center gap-2 text-sm text-slate-600 font-normal">
+          <Label htmlFor="lab-worklist-date" className="text-sm text-slate-600 font-normal">
             {t('dateLabel')}
-            <Input
-              type="date"
-              className="w-40"
-              value={query.date ?? ''}
-              onChange={(event) =>
-                updateQuery({
-                  bucket: query.bucket,
-                  ...(event.target.value ? { date: event.target.value } : {}),
-                })
-              }
-            />
           </Label>
+          <LocalizedDatePicker
+            id="lab-worklist-date"
+            className="w-40"
+            value={query.date ?? ''}
+            onValueChange={(value) =>
+              updateQuery({
+                bucket: query.bucket,
+                ...(value ? { date: value } : {}),
+              })
+            }
+          />
           <Button
             type="button"
             size="sm"

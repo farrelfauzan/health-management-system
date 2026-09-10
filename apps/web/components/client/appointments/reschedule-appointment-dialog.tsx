@@ -13,12 +13,12 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  Input,
   Label,
 } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
 import { InlineNotice } from '#components/client/shared/inline-notice';
+import { LocalizedTimePicker } from '#components/client/shared/localized-time-picker';
 import { appointmentManagementControllerUpdateAppointmentV1 } from '#lib/api/generated/appointment-management/appointment-management';
 import { parseApiSuccess } from '#lib/api/response';
 import { notifyApiError } from '#lib/api/notify-api-error';
@@ -120,11 +120,10 @@ export function RescheduleAppointmentDialog({
                   >
                     Time
                   </Label>
-                  <Input
+                  <LocalizedTimePicker
                     id={`reschedule-${field.name}`}
-                    type="time"
                     value={field.state.value}
-                    onChange={(event) => field.handleChange(event.target.value)}
+                    onValueChange={(value) => field.handleChange(value)}
                     onBlur={field.handleBlur}
                   />
                 </div>

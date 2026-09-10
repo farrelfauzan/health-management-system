@@ -4,11 +4,12 @@ import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { AppointmentResponse } from '@hms/shared-types';
 import { SPECIAL_REQUEST_MIN_LEAD_DAYS } from '@hms/shared-types';
-import { Button, DatePicker, DialogFooter, Input, Textarea, useAbility } from '@hms/ui';
+import { Button, DatePicker, DialogFooter, Textarea, useAbility } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
 import { FormLabel } from '#components/client/shared/form-label';
 import { InlineNotice } from '#components/client/shared/inline-notice';
+import { LocalizedTimePicker } from '#components/client/shared/localized-time-picker';
 import { appointmentManagementControllerCreateAppointmentV1 } from '#lib/api/generated/appointment-management/appointment-management';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { parseApiSuccess } from '#lib/api/response';
@@ -109,12 +110,7 @@ export function SpecialRequestForm({
           >
             Time
           </FormLabel>
-          <Input
-            id="special-request-time"
-            type="time"
-            value={time}
-            onChange={(event) => setTime(event.target.value)}
-          />
+          <LocalizedTimePicker id="special-request-time" value={time} onValueChange={setTime} />
         </div>
       </div>
 

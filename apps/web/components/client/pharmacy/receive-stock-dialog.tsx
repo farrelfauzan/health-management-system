@@ -24,12 +24,14 @@ import { useTranslations } from 'next-intl';
 import { FieldDescription } from '#components/client/shared/field-description';
 import { FormLabel } from '#components/client/shared/form-label';
 import { InlineNotice } from '#components/client/shared/inline-notice';
+import { LocalizedDatePicker } from '#components/client/shared/localized-date-picker';
 import { RequiredLegend } from '#components/client/shared/required-legend';
 import { inventoryControllerCreateReceiptV1 } from '#lib/api/generated/pharmacy-inventory/pharmacy-inventory';
 import type { CreateStockReceiptDto } from '#lib/api/generated/model/createStockReceiptDto';
 import { parseApiSuccess } from '#lib/api/response';
 import { resolveApiErrorMessage } from '#lib/api/resolve-api-error-message';
 import { invalidatePharmacyQueries } from '#lib/pharmacy/invalidate-pharmacy-queries';
+import { LocalizedDateTimePicker } from '#components/client/shared/localized-date-time-picker';
 
 type ReceiveStockDialogProps = {
   open: boolean;
@@ -140,11 +142,10 @@ export function ReceiveStockDialog({
                 <FormLabel htmlFor="receive-stock-expiry-date" required>
                   {t('expiryDate')}
                 </FormLabel>
-                <Input
+                <LocalizedDatePicker
                   id="receive-stock-expiry-date"
-                  type="date"
                   value={expiryDate}
-                  onChange={(event) => setExpiryDate(event.target.value)}
+                  onValueChange={setExpiryDate}
                 />
               </div>
               <div className="space-y-1.5">
@@ -166,12 +167,11 @@ export function ReceiveStockDialog({
               </div>
               <div className="space-y-1.5">
                 <FormLabel htmlFor="receive-stock-received-at">{t('receivedAt')}</FormLabel>
-                <Input
+                <LocalizedDateTimePicker
                   id="receive-stock-received-at"
-                  type="datetime-local"
                   aria-describedby="receive-stock-received-at-description"
                   value={receivedAt}
-                  onChange={(event) => setReceivedAt(event.target.value)}
+                  onValueChange={setReceivedAt}
                 />
                 <FieldDescription id="receive-stock-received-at-description">
                   {t('receivedAtDescription')}

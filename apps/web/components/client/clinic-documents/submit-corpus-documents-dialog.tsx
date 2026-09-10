@@ -11,7 +11,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  Input,
   Label,
 } from '@hms/ui';
 import { useTranslations } from 'next-intl';
@@ -21,6 +20,7 @@ import {
   type ApproverOption,
 } from '#components/client/document-approvals/approver-picker';
 import { InlineNotice } from '#components/client/shared/inline-notice';
+import { LocalizedDateTimePicker } from '#components/client/shared/localized-date-time-picker';
 import { documentAdminControllerSubmitDocumentsForApprovalV1 } from '#lib/api/generated/document-management/document-management';
 import { resolveApiErrorMessage } from '#lib/api/resolve-api-error-message';
 import { parseApiSuccess } from '#lib/api/response';
@@ -142,11 +142,10 @@ export function SubmitCorpusDocumentsDialog({
         {isSelfOnly ? <InlineNotice tone="warning">{t('selfApprovalOnly')}</InlineNotice> : null}
         <div className="space-y-2">
           <Label htmlFor="clinic-corpus-due-at">{t('dueAt')}</Label>
-          <Input
+          <LocalizedDateTimePicker
             id="clinic-corpus-due-at"
-            type="datetime-local"
             value={dueAt}
-            onChange={(event) => setDueAt(event.target.value)}
+            onValueChange={setDueAt}
           />
           <p className="text-xs text-slate-500">{t('dueAtHint')}</p>
         </div>

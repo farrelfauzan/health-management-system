@@ -12,6 +12,7 @@ type SharedMessages = {
   shared: {
     accessibility: typeof idSharedMessages.shared.accessibility;
     pagination: typeof idSharedMessages.shared.pagination;
+    pickers: typeof idSharedMessages.shared.pickers;
     statuses: Record<string, string>;
     documentUpload: typeof idSharedMessages.shared.documentUpload;
     form: typeof idSharedMessages.shared.form;

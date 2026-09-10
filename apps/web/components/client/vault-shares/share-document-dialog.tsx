@@ -11,12 +11,12 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  Input,
   Label,
 } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
 import { InlineNotice } from '#components/client/shared/inline-notice';
+import { LocalizedDatePicker } from '#components/client/shared/localized-date-picker';
 import { ShareRecipientPicker } from '#components/client/vault-shares/share-recipient-picker';
 import { ShareRevocationNotice } from '#components/client/vault-shares/share-revocation-notice';
 import { vaultDocumentShareControllerCreateShareV1 } from '#lib/api/generated/document-management/document-management';
@@ -125,11 +125,10 @@ export function ShareDocumentDialog({
           <ShareRecipientPicker selected={recipients} onChange={setRecipients} />
           <div className="space-y-2">
             <Label htmlFor="vault-share-expiry">{t('fields.expiresAt')}</Label>
-            <Input
+            <LocalizedDatePicker
               id="vault-share-expiry"
-              type="date"
               value={expiresAt}
-              onChange={(event) => setExpiresAt(event.target.value)}
+              onValueChange={setExpiresAt}
             />
             <p className="text-xs text-slate-500">{t('fields.expiresAtHint')}</p>
           </div>

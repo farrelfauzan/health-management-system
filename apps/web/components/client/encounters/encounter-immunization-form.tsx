@@ -20,6 +20,7 @@ import {
 import { useTranslations } from 'next-intl';
 
 import { InlineNotice } from '#components/client/shared/inline-notice';
+import { LocalizedDatePicker } from '#components/client/shared/localized-date-picker';
 import { encounterClinicalDataControllerAddImmunizationV1 } from '#lib/api/generated/encounters/encounters';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { parseApiSuccess } from '#lib/api/response';
@@ -118,11 +119,11 @@ export function EncounterImmunizationForm({ encounterId }: EncounterImmunization
           value={lotNumber}
           onChange={(event) => setLotNumber(event.target.value)}
         />
-        <Input
-          type="date"
+        <LocalizedDatePicker
           aria-label={t('encounters.immunization.expirationDate')}
+          placeholder={t('encounters.immunization.expirationDate')}
           value={expirationDate}
-          onChange={(event) => setExpirationDate(event.target.value)}
+          onValueChange={setExpirationDate}
         />
         <Input
           type="number"

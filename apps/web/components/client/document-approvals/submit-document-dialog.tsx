@@ -11,7 +11,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  Input,
   Label,
   toast,
 } from '@hms/ui';
@@ -23,6 +22,7 @@ import {
 } from '#components/client/document-approvals/approver-picker';
 import { SelfApprovalNotice } from '#components/client/document-approvals/self-approval-notice';
 import { InlineNotice } from '#components/client/shared/inline-notice';
+import { LocalizedDateTimePicker } from '#components/client/shared/localized-date-time-picker';
 import { managedDocumentControllerSubmitDocumentV1 } from '#lib/api/generated/documents/documents';
 import { parseApiSuccess } from '#lib/api/response';
 import { resolveApiErrorMessage } from '#lib/api/resolve-api-error-message';
@@ -91,11 +91,10 @@ export function SubmitDocumentDialog({
         {isSelfOnly ? <SelfApprovalNotice /> : null}
         <div className="space-y-2">
           <Label htmlFor="document-approval-due-at">{t('dueAt')}</Label>
-          <Input
+          <LocalizedDateTimePicker
             id="document-approval-due-at"
-            type="datetime-local"
             value={dueAt}
-            onChange={(event) => setDueAt(event.target.value)}
+            onValueChange={setDueAt}
           />
           <p className="text-xs text-slate-500">{t('dueAtHint')}</p>
         </div>

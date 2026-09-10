@@ -28,6 +28,7 @@ import { useTranslations } from 'next-intl';
 import { DocumentFilePicker } from '#components/client/documents/document-file-picker';
 import { UploadProgressIndicator } from '#components/client/documents/upload-progress-indicator';
 import { InlineNotice } from '#components/client/shared/inline-notice';
+import { LocalizedDatePicker } from '#components/client/shared/localized-date-picker';
 import { VaultCategorySelect } from '#components/client/vault-documents/vault-category-select';
 import { VaultPatientDataNotice } from '#components/client/vault-documents/vault-patient-data-notice';
 import { resolveApiErrorMessage } from '#lib/api/resolve-api-error-message';
@@ -184,20 +185,18 @@ export function VaultDocumentUploadDialog({
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="vault-document-issued">{t('fields.issuedAt')}</Label>
-              <Input
+              <LocalizedDatePicker
                 id="vault-document-issued"
-                type="date"
                 value={issuedAt}
-                onChange={(event) => setIssuedAt(event.target.value)}
+                onValueChange={setIssuedAt}
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor="vault-document-expires">{t('fields.expiresAt')}</Label>
-              <Input
+              <LocalizedDatePicker
                 id="vault-document-expires"
-                type="date"
                 value={expiresAt}
-                onChange={(event) => setExpiresAt(event.target.value)}
+                onValueChange={setExpiresAt}
               />
             </div>
           </div>
