@@ -19,9 +19,11 @@ import {
   DocumentApprovalPendingCountView,
   DocumentApprovalQueueView,
   DocumentApprovalRequestRecord,
+  DocumentApproverCandidateView,
   DocumentBulkApprovalItemView,
   DocumentBulkApprovalView,
   ListDocumentApprovalsQueryInput,
+  ListEligibleApproversQueryInput,
   ManagedDocumentDetailView,
   ManagedDocumentRecord,
   RejectDocumentApprovalInput,
@@ -290,6 +292,28 @@ export class DocumentApprovalService {
     };
   }
 
+  /**
+   * Who may be named on a panel (`P19`), for the approver pickers.
+   *
+   * The same predicate {@link assertApproversEligible} enforces, read from
+   * one place so the list a picker offers and the list a submit accepts
+   * cannot drift apart. It is a convenience, not a control: the refusal on
+   * submit is what actually holds.
+   */
+  async listEligibleApprovers(
+    query: ListEligibleApproversQueryInput,
+  ): Promise<DocumentApproverCandidateView[]> {
+    const records = await this.approvalRepository.listEligibleApprovers({
+      ...(query.search === undefined ? {} : { search: query.search }),
+      limit: query.limit,
+    });
+    return records.map((record) => ({
+      id: record.id,
+      email: record.email,
+      roleCodes: record.roleCodes,
+    }));
+  }
+
   /** The sidebar badge (FR-E5-27): what is waiting on me, and how much of it is late. */
   async getPendingCount(actor: CurrentUser): Promise<DocumentApprovalPendingCountView> {
     return this.approvalRepository.countPendingForApprover(actor.sub, new Date());
@@ -523,6 +547,15 @@ export class DocumentApprovalService {
    * all; a panel that is only the drafter is refused here rather than at
    * approve time, because a drafter who learns at the last moment that
    * nobody can sign has already waited for nothing (§7.5.10).
+   *
+   * Since `P19` the bar is `document-approval.decide:any` rather than "live
+   * staff, not a patient". The old rule let a submitter name somebody who
+   * would never be able to act, and a round nobody can resolve is
+   * indistinguishable from a round nobody has got to yet — the drafter waits,
+   * the document stays out of the assistant's reach, and no error is ever
+   * raised. Being named is still not the same as being permitted at decide
+   * time (FR-E5-13); this refuses only the panel that could never satisfy
+   * both.
    */
   private async assertApproversEligible(
     approverIds: readonly string[],
@@ -531,10 +564,14 @@ export class DocumentApprovalService {
   ): Promise<void> {
     const candidates = await this.approvalRepository.findApproverCandidates(approverIds);
     const byId = new Map(candidates.map((candidate) => [candidate.id, candidate]));
-    const rejected = approverIds.filter((id) => byId.get(id) === undefined || byId.get(id)!.isPatient);
+    const rejected = approverIds.filter((id) => {
+      const candidate = byId.get(id);
+      return candidate === undefined || candidate.isPatient || !candidate.canDecide;
+    });
     if (rejected.length > 0) {
       throw new UnprocessableEntityException({
-        message: 'An approver must be a live staff account',
+        message:
+          'An approver must be a live staff account that can approve documents — that is, one holding document-approval.decide:any',
         code: DOCUMENT_APPROVER_INELIGIBLE_ERROR_CODE,
         errors: { approverIds: rejected },
       });

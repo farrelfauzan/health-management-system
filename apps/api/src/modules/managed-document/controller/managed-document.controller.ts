@@ -27,6 +27,7 @@ import { SubmitDocumentForApprovalDto } from '../dto/submit-document-for-approva
 import { DocumentApprovalService } from '../service/document-approval.service';
 import { CreateManagedDocumentUploadUrlDto } from '../dto/create-managed-document-upload-url.dto';
 import { ExportManagedDocumentsQueryDto } from '../dto/export-managed-documents-query.dto';
+import { ListEligibleApproversQueryDto } from '../dto/list-eligible-approvers-query.dto';
 import { ListManagedDocumentsQueryDto } from '../dto/list-managed-documents-query.dto';
 import { UpdateManagedDocumentDto } from '../dto/update-managed-document.dto';
 import { ManagedDocumentService } from '../service/managed-document.service';
@@ -100,6 +101,29 @@ export class ManagedDocumentController {
     response.setHeader('Content-Type', 'text/csv; charset=utf-8');
     response.setHeader('Content-Disposition', `attachment; filename="${exported.fileName}"`);
     response.end(exported.csv);
+  }
+
+  /**
+   * Declared before `:id` so `eligible-approvers` is not parsed as a document
+   * id. Read under `managed-document.read` rather than
+   * `document-approval.decide`: the caller of this route is the person doing
+   * the *submitting*, who by design is not the person who decides (§7.5.9),
+   * and gating it on `decide` would mean only approvers could name a panel.
+   */
+  @Get('eligible-approvers')
+  @Auth([{ action: 'read', subject: 'ManagedDocument' }])
+  @ApiEndpoint({
+    summary: 'List who may be named as an approver',
+    responseDescription:
+      'Live, non-system accounts holding `document-approval.decide:any`, ordered by email, optionally narrowed by a case-insensitive `search` over the address. The predicate is the permission that governs the decision and not a role name, so a clinic that moves the key onto another role gets that role’s holders here without a code change. Naming somebody absent from this list is refused on submit with 422 `DOCUMENT_APPROVER_INELIGIBLE` — this list is the convenience, that refusal is the control.',
+    responseExample: { data: MANAGED_DOCUMENT_EXAMPLES.eligibleApprovers },
+  })
+  async listEligibleApprovers(
+    @Query() query: ListEligibleApproversQueryDto,
+    @AuthUser() currentUser?: CurrentUser,
+  ) {
+    this.assertAuthenticated(currentUser);
+    return { data: await this.documentApprovalService.listEligibleApprovers(query) };
   }
 
   @Post('upload-url')

@@ -279,6 +279,7 @@ class InMemoryDocumentApprovalRepository {
   reset(): void {
     this.rounds.clear();
     this.nextId = 1;
+    this.clearDecideKeyDenials();
   }
 
   async createRequest(
@@ -450,13 +451,34 @@ class InMemoryDocumentApprovalRepository {
     return 1;
   }
 
+  /**
+   * Accounts that exist and are staff but hold no decide key — the case
+   * `P19` closed. Naming one used to be accepted and produced a round nobody
+   * could resolve.
+   */
+  private readonly cannotDecideIds = new Set<string>();
+
+  denyDecideKey(userId: string): void {
+    this.cannotDecideIds.add(userId);
+  }
+
+  clearDecideKeyDenials(): void {
+    this.cannotDecideIds.clear();
+  }
+
   async findApproverCandidates(approverIds: readonly string[]) {
     return approverIds.map((id) => ({
       id,
       email: `${id}@hms.local`,
       isPatient: false,
-      canDecide: true,
+      canDecide: !this.cannotDecideIds.has(id),
     }));
+  }
+
+  async listEligibleApprovers(params: { search?: string; limit: number }) {
+    return [{ id: APPROVER_USER_ID, email: `${APPROVER_USER_ID}@hms.local`, roleCodes: ['ADMIN'] }]
+      .filter((row) => params.search === undefined || row.email.includes(params.search))
+      .slice(0, params.limit);
   }
 }
 
@@ -904,6 +926,61 @@ describe('Documents registry integration', () => {
       expect(response.body.data.status).toBe('PENDING_APPROVAL');
       expect(response.body.data.approval.approverCount).toBe(1);
       expect(response.body.data.approval.isOverdue).toBe(false);
+    });
+
+    it('refuses a panel naming a staff account that cannot approve (P19)', async () => {
+      // Live, not a patient, and still unable to act. Accepting this name is
+      // what produced rounds that waited on a signature nobody could give.
+      fakeApprovalRepository.denyDecideKey(APPROVER_USER_ID);
+      const documentId = seedApprovalDocument();
+
+      const response = await submitAsDrafter(documentId);
+
+      expect(response.status).toBe(422);
+      expect(response.body.error.code).toBe('DOCUMENT_APPROVER_INELIGIBLE');
+      expect(response.body.error.details.approverIds).toEqual([APPROVER_USER_ID]);
+    });
+
+    it('refuses a panel of only the drafter when the type forbids self-approval', async () => {
+      const documentId = seedApprovalDocument();
+
+      const response = await callAs(
+        OWNER_USER_ID,
+        [REGISTRY_READ, REGISTRY_WRITE],
+        'post',
+        `${DOCUMENTS_PATH}/${documentId}/submit`,
+        { approverIds: [OWNER_USER_ID] },
+      );
+
+      // Refused at submit, while the drafter can still fix the panel
+      // (§7.5.10), rather than at approve time when they have already waited.
+      expect(response.status).toBe(422);
+      expect(response.body.error.code).toBe('DOCUMENT_SELF_APPROVAL_FORBIDDEN');
+    });
+
+    it('offers only accounts that can decide as approver candidates (P19)', async () => {
+      const response = await callAs(
+        OWNER_USER_ID,
+        [REGISTRY_READ, REGISTRY_WRITE],
+        'get',
+        `${DOCUMENTS_PATH}/eligible-approvers`,
+      );
+
+      expect(response.status).toBe(200);
+      expect(response.body.data).toEqual([
+        { id: APPROVER_USER_ID, email: `${APPROVER_USER_ID}@hms.local`, roleCodes: ['ADMIN'] },
+      ]);
+    });
+
+    it('refuses the approver candidates to a caller with no registry read', async () => {
+      const response = await callAs(
+        OTHER_USER_ID,
+        [REGISTRY_WRITE],
+        'get',
+        `${DOCUMENTS_PATH}/eligible-approvers`,
+      );
+
+      expect(response.status).toBe(403);
     });
 
     it('refuses a second submission while a round is open', async () => {
