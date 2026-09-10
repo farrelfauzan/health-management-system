@@ -4,6 +4,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { useTranslations } from 'next-intl';
 
 import { SessionQueueTable } from '#components/client/appointments/session-queue-table';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { useSessionQueue } from '#lib/appointments/use-session-queue';
 
 type SessionQueueDialogProps = {
@@ -36,12 +37,7 @@ export function SessionQueueDialog({ open, onOpenChange, sessionId }: SessionQue
         {queueQuery.isPending ? (
           <p className="text-sm text-slate-500">{t('loadingQueue')}</p>
         ) : queueQuery.isError ? (
-          <p
-            role="alert"
-            className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700"
-          >
-            Failed to load the session queue.
-          </p>
+          <InlineNotice tone="error">Failed to load the session queue.</InlineNotice>
         ) : queueQuery.queue.length === 0 ? (
           <p className="text-sm text-slate-500">{t('noSessionPatients')}</p>
         ) : (

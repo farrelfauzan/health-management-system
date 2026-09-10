@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, Icon, Skeleton, useAbility } 
 import { useTranslations } from 'next-intl';
 
 import { PatientDeliveryConsentRow } from '#components/client/patients/patient-delivery-consent-row';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { usePatientDeliveryConsents } from '#lib/document-delivery/use-patient-delivery-consents';
 import { useUpsertPatientDeliveryConsent } from '#lib/document-delivery/use-upsert-patient-delivery-consent';
@@ -30,7 +31,7 @@ export function PatientDeliveryConsentCard({ patientId }: PatientDeliveryConsent
   }
 
   return (
-    <Card className="rounded-xl border-slate-200 shadow-none">
+    <Card className="min-w-0 rounded-xl border-slate-200 shadow-none">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 font-heading text-base">
           <Icon name="send" size={18} />
@@ -39,11 +40,7 @@ export function PatientDeliveryConsentCard({ patientId }: PatientDeliveryConsent
       </CardHeader>
       <CardContent className="space-y-3">
         {query.isPending ? <Skeleton className="h-24 w-full" /> : null}
-        {query.isError ? (
-          <p role="alert" className="text-sm text-rose-700">
-            {t('loadError')}
-          </p>
-        ) : null}
+        {query.isError ? <InlineNotice tone="error">{t('loadError')}</InlineNotice> : null}
         {query.consents ? (
           <ul className="space-y-2">
             {query.consents.channels.map((readiness) => (

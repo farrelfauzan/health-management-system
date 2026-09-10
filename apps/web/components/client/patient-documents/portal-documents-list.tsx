@@ -5,6 +5,7 @@ import { Button } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
 import { PortalDocumentRow } from '#components/client/patient-documents/portal-document-row';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { usePortalDocuments } from '#lib/patient-documents/use-portal-documents';
 
 /**
@@ -38,7 +39,7 @@ export function PortalDocumentsList() {
           on. A patient can act on none of it, and "Request failed with status
           code 500" is a worse thing to hand someone waiting on a test result
           than a plain sentence saying it did not load. */}
-      {query.isError ? <p className="text-sm text-red-600">{t('loadError')}</p> : null}
+      {query.isError ? <InlineNotice tone="error">{t('loadError')}</InlineNotice> : null}
 
       {query.isSuccess && query.documents.length === 0 ? (
         <div className="rounded-lg border border-dashed border-slate-300 px-4 py-8 text-center">
@@ -70,7 +71,7 @@ export function PortalDocumentsList() {
         <p className="text-xs text-slate-400">{t('downloadNotice')}</p>
       ) : null}
 
-      {errorMessage === null ? null : <p className="text-sm text-red-600">{errorMessage}</p>}
+      {errorMessage === null ? null : <InlineNotice tone="error">{errorMessage}</InlineNotice>}
     </section>
   );
 }

@@ -10,6 +10,7 @@ import { ChatThread } from '#components/client/ai-assistant/chat-thread';
 import { ConfidentialDisclaimer } from '#components/client/ai-assistant/confidential-disclaimer';
 import { ConsultationPanelDrawer } from '#components/client/ai-assistant/consultation-panel-drawer';
 import { ConsultationSidebar } from '#components/client/ai-assistant/consultation-sidebar';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { PageHeader } from '#components/shared/page-header';
 import { usePersistedBoolean } from '#hooks/use-persisted-boolean';
 import { useAiAssistant } from '#lib/ai-assistant/ai-assistant-context';
@@ -129,9 +130,9 @@ export function AiAssistantPanel() {
             <span className="text-sm font-medium text-slate-700">{tSidebar('panelTitle')}</span>
           </div>
           {assistant.hasTranscriptFailed ? (
-            <p role="status" className="px-6 pt-4 text-sm text-destructive">
+            <InlineNotice tone="error" className="mx-6 mt-4">
               {tConversation('transcriptFailed')}
-            </p>
+            </InlineNotice>
           ) : null}
           {assistant.isTranscriptLoading ? (
             <p role="status" className="px-6 pt-4 text-sm text-slate-500">

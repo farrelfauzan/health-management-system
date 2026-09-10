@@ -21,6 +21,7 @@ import {
 } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { inventoryControllerCreateReceiptV1 } from '#lib/api/generated/pharmacy-inventory/pharmacy-inventory';
 import type { CreateStockReceiptDto } from '#lib/api/generated/model/createStockReceiptDto';
 import { parseApiSuccess } from '#lib/api/response';
@@ -98,19 +99,73 @@ export function ReceiveStockDialog({
             <DialogDescription>{t('noAbsoluteStock')}</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-5">
-            {error ? <p role="alert" className="rounded-lg bg-rose-50 p-3 text-sm text-rose-700">{error}</p> : null}
-            <label className="space-y-1.5 text-sm">{t('medication')}<Select value={medicationId} onValueChange={setMedicationId}><SelectTrigger className="w-full"><SelectValue placeholder={t('selectMedication')} /></SelectTrigger><SelectContent>{medications.map((medication) => <SelectItem key={medication.id} value={medication.id}>{medication.code} · {medication.name}</SelectItem>)}</SelectContent></Select></label>
+            {error ? <InlineNotice tone="error">{error}</InlineNotice> : null}
+            <label className="space-y-1.5 text-sm">
+              {t('medication')}
+              <Select value={medicationId} onValueChange={setMedicationId}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder={t('selectMedication')} />
+                </SelectTrigger>
+                <SelectContent>
+                  {medications.map((medication) => (
+                    <SelectItem key={medication.id} value={medication.id}>
+                      {medication.code} · {medication.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </label>
             <div className="grid gap-4 sm:grid-cols-2">
-              <label className="space-y-1.5 text-sm">{t('batchNumber')}<Input value={batchNumber} onChange={(event) => setBatchNumber(event.target.value)} /></label>
-              <label className="space-y-1.5 text-sm">{t('expiryDate')}<Input type="date" value={expiryDate} onChange={(event) => setExpiryDate(event.target.value)} /></label>
-              <label className="space-y-1.5 text-sm">{t('quantity')}<Input type="number" min="1" max="1000000" value={quantity} onChange={(event) => setQuantity(event.target.value)} /></label>
-              <label className="space-y-1.5 text-sm">{t('receivedAt')}<Input type="datetime-local" value={receivedAt} onChange={(event) => setReceivedAt(event.target.value)} /></label>
+              <label className="space-y-1.5 text-sm">
+                {t('batchNumber')}
+                <Input
+                  value={batchNumber}
+                  onChange={(event) => setBatchNumber(event.target.value)}
+                />
+              </label>
+              <label className="space-y-1.5 text-sm">
+                {t('expiryDate')}
+                <Input
+                  type="date"
+                  value={expiryDate}
+                  onChange={(event) => setExpiryDate(event.target.value)}
+                />
+              </label>
+              <label className="space-y-1.5 text-sm">
+                {t('quantity')}
+                <Input
+                  type="number"
+                  min="1"
+                  max="1000000"
+                  value={quantity}
+                  onChange={(event) => setQuantity(event.target.value)}
+                />
+              </label>
+              <label className="space-y-1.5 text-sm">
+                {t('receivedAt')}
+                <Input
+                  type="datetime-local"
+                  value={receivedAt}
+                  onChange={(event) => setReceivedAt(event.target.value)}
+                />
+              </label>
             </div>
-            <label className="space-y-1.5 text-sm">{t('notes')}<Textarea maxLength={1000} value={notes} onChange={(event) => setNotes(event.target.value)} /></label>
+            <label className="space-y-1.5 text-sm">
+              {t('notes')}
+              <Textarea
+                maxLength={1000}
+                value={notes}
+                onChange={(event) => setNotes(event.target.value)}
+              />
+            </label>
           </div>
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>{t('cancel')}</Button>
-            <Button type="submit" disabled={receiveMutation.isPending}>{receiveMutation.isPending ? t('receiving') : t('receiveStock')}</Button>
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+              {t('cancel')}
+            </Button>
+            <Button type="submit" disabled={receiveMutation.isPending}>
+              {receiveMutation.isPending ? t('receiving') : t('receiveStock')}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

@@ -23,13 +23,13 @@ vi.mock('next/navigation', () => ({
  * request fails in jsdom, which is the state under test here — the sidebar
  * must render its links whether or not the count ever arrives.
  */
-function renderAppSidebar(rules: AppRule[]): void {
+function renderAppSidebar(rules: AppRule[], defaultOpen: boolean = true): void {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false } },
   });
   render(
     <QueryClientProvider client={queryClient}>
-      <SidebarProvider>
+      <SidebarProvider defaultOpen={defaultOpen}>
         <NextIntlClientProvider
           locale="id"
           messages={{ ...messages, ...dashboardAiMessages }}
@@ -95,6 +95,37 @@ describe('AppSidebar', () => {
     expect(screen.queryByRole('link', { name: 'Dokter' })).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Farmasi' })).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Administrasi' })).not.toBeInTheDocument();
+  });
+
+  it('collapses to an icon rail on desktop, keeping every nav item reachable', () => {
+    usePathnameMock.mockReturnValue('/admin/dashboard');
+    renderAppSidebar(ADMIN_PORTAL_ADMIN_RULES, false);
+
+    const sidebar = document.querySelector('[data-slot="sidebar"]');
+    expect(sidebar).toHaveAttribute('data-state', 'collapsed');
+    expect(sidebar).toHaveAttribute('data-collapsible', 'icon');
+    const expectedLabels = [
+      'Dasbor',
+      'Pasien',
+      'Dokter',
+      'Janji temu',
+      'Pendaftaran',
+      'Farmasi',
+      'Asisten AI',
+      'Percakapan',
+      'Integrasi',
+      'Administrasi',
+    ];
+    expectedLabels.forEach((label) => {
+      expect(screen.getByRole('link', { name: label })).toBeInTheDocument();
+    });
+    expect(screen.getByRole('button', { name: 'Bentangkan bilah sisi' })).toBeInTheDocument();
+  });
+
+  it('stays an icon rail rather than sliding offcanvas when collapsed', () => {
+    renderAppSidebar(ADMIN_PORTAL_ADMIN_RULES, false);
+
+    expect(document.querySelector('[data-collapsible="offcanvas"]')).toBeNull();
   });
 
   it('shows Integrations when either provider monitor is granted', () => {

@@ -7,6 +7,7 @@ import { Button, Checkbox, Icon, Input } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
 import { EncounterLabTestPicker } from '#components/client/encounters/encounter-lab-test-picker';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { encounterLabOrderControllerCreateLabOrderV1 } from '#lib/api/generated/laboratory-orders/laboratory-orders';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { parseApiSuccess } from '#lib/api/response';
@@ -115,7 +116,7 @@ export function EncounterLabOrderForm({ encounterId }: EncounterLabOrderFormProp
           {t('encounters.laboratory.form.submit')}
         </Button>
       </div>
-      {actionError ? <p className="text-sm text-red-600">{actionError}</p> : null}
+      {actionError ? <InlineNotice tone="error">{actionError}</InlineNotice> : null}
     </form>
   );
 }

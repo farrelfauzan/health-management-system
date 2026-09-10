@@ -24,6 +24,7 @@ import { useTranslations } from 'next-intl';
 import { DocumentFilePicker } from '#components/client/documents/document-file-picker';
 import { UploadProgressIndicator } from '#components/client/documents/upload-progress-indicator';
 import { NoPatientDataNotice } from '#components/client/personal-documents/no-patient-data-notice';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { resolveApiErrorMessage } from '#lib/api/resolve-api-error-message';
 import { isAcceptedDocumentMimeType } from '#lib/documents/is-accepted-document-mime-type';
 import type { DocumentUploadProgress } from '#lib/documents/upload-progress';
@@ -155,7 +156,7 @@ export function PersonalDocumentUploadDialog({
               </SelectContent>
             </Select>
           </div>
-          {error ? <p className="text-sm text-red-700">{error}</p> : null}
+          {error ? <InlineNotice tone="error">{error}</InlineNotice> : null}
           {progress && uploadMutation.isPending ? (
             <UploadProgressIndicator progress={progress} label={resolveProgressLabel(progress)} />
           ) : null}

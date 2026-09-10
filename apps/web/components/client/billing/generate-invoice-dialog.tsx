@@ -17,6 +17,7 @@ import { useTranslations } from 'next-intl';
 
 import { InvoiceItemsList } from '#components/client/billing/invoice-items-list';
 import { InvoiceGenerationGapList } from '#components/client/billing/invoice-generation-gap-list';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { invoiceControllerGenerateInvoiceV1 } from '#lib/api/generated/invoices/invoices';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { parseApiSuccess } from '#lib/api/response';
@@ -70,14 +71,7 @@ export function GenerateInvoiceDialog({
           </DialogDescription>
         </DialogHeader>
 
-        {actionError ? (
-          <p
-            role="alert"
-            className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700"
-          >
-            {actionError}
-          </p>
-        ) : null}
+        {actionError ? <InlineNotice tone="error">{actionError}</InlineNotice> : null}
 
         {invoice ? (
           <div className="space-y-3">

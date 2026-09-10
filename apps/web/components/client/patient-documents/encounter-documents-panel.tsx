@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, Icon } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
 import { EncounterDocumentsGroup } from '#components/client/patient-documents/encounter-documents-group';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { isForbiddenError } from '#lib/api/is-forbidden-error';
 import { resolveApiErrorMessage } from '#lib/api/resolve-api-error-message';
 import { useEncounterDocuments } from '#lib/patient-documents/use-encounter-documents';
@@ -69,7 +70,9 @@ export function EncounterDocumentsPanel({ encounterId }: EncounterDocumentsPanel
           {query.isPending ? <p className="text-sm text-slate-400">{t('loading')}</p> : null}
           {isAccessLost ? <p className="text-sm text-slate-500">{t('accessLost')}</p> : null}
           {query.isError && !isAccessLost ? (
-            <p className="text-sm text-red-600">{resolveApiErrorMessage(query.error, t('loadError'))}</p>
+            <InlineNotice tone="error">
+              {resolveApiErrorMessage(query.error, t('loadError'))}
+            </InlineNotice>
           ) : null}
           {query.isSuccess ? (
             <>
@@ -94,7 +97,7 @@ export function EncounterDocumentsPanel({ encounterId }: EncounterDocumentsPanel
           {resultMessage === null ? null : (
             <p className="text-sm text-emerald-700">{resultMessage}</p>
           )}
-          {errorMessage === null ? null : <p className="text-sm text-red-600">{errorMessage}</p>}
+          {errorMessage === null ? null : <InlineNotice tone="error">{errorMessage}</InlineNotice>}
         </CardContent>
       ) : null}
     </Card>
