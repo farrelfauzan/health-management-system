@@ -28,8 +28,10 @@ import { DoctorEducationsField } from '#components/client/doctors/doctor-educati
 import { DoctorLicensesField } from '#components/client/doctors/doctor-licenses-field';
 import { DoctorPatientPicker } from '#components/client/doctors/doctor-patient-picker';
 import { SpecialtyCombobox } from '#components/client/doctors/specialty-combobox';
+import { FieldDescription } from '#components/client/shared/field-description';
 import { FieldError } from '#components/client/shared/field-error';
 import { FormLabel } from '#components/client/shared/form-label';
+import { LabelInfoTooltip } from '#components/client/shared/label-info-tooltip';
 import { RequiredLegend } from '#components/client/shared/required-legend';
 import {
   buildEducationPayload,
@@ -53,6 +55,7 @@ import { usePatientsList } from '#lib/patients/use-patients-list';
 import { useSpecialtiesList } from '#lib/specialties/use-specialties-list';
 
 const PATIENT_PICKER_PAGE = { page: 1, limit: 100 };
+const LICENSE_DESCRIPTION_ID = 'licenseNumber-description';
 
 type DoctorFormDialogProps = {
   open: boolean;
@@ -211,21 +214,34 @@ export function DoctorFormDialog({
             >
               {(field) => (
                 <div className="space-y-1.5">
-                  <FormLabel
-                    htmlFor={field.name}
-                    className="font-heading text-xs text-slate-600"
-                    required={DOCTOR_FORM_REQUIRED_FIELDS.has(field.name)}
-                  >
-                    {t('doctors.form.license')}
-                  </FormLabel>
+                  {/* P19-T13 / D-032. The flat unique number is the STR, not a
+                      SIP: one per doctor, lifetime, which is what a unique
+                      identity column can hold. SIPs are per practice site and
+                      belong in the typed licence list. */}
+                  <div className="flex items-center gap-1.5">
+                    <FormLabel
+                      htmlFor={field.name}
+                      className="font-heading text-xs text-slate-600"
+                      required={DOCTOR_FORM_REQUIRED_FIELDS.has(field.name)}
+                    >
+                      {t('doctors.form.license')}
+                    </FormLabel>
+                    <LabelInfoTooltip field={t('doctors.form.license')}>
+                      {t('doctors.form.licenseTooltip')}
+                    </LabelInfoTooltip>
+                  </div>
                   <Input
                     id={field.name}
                     value={field.state.value}
-                    placeholder="SIP-2026-0001"
+                    placeholder="AB12345678901234"
+                    aria-describedby={LICENSE_DESCRIPTION_ID}
                     onChange={(event) => field.handleChange(event.target.value)}
                     onBlur={field.handleBlur}
                     aria-invalid={field.state.meta.errors.length > 0}
                   />
+                  <FieldDescription id={LICENSE_DESCRIPTION_ID}>
+                    {t('doctors.form.licenseDescription')}
+                  </FieldDescription>
                   <FieldError errors={field.state.meta.errors} />
                 </div>
               )}

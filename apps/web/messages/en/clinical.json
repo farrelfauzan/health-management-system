@@ -503,7 +503,7 @@
       "manageSchedule": "Manage Schedule",
       "itemLabel": "doctors",
       "quickFilter": "Quick Filter",
-      "searchPlaceholder": "Name, license, or specialty...",
+      "searchPlaceholder": "Name, STR number, or specialty...",
       "specialty": "Specialty",
       "allSpecialties": "All Specialties",
       "emptyTitle": "No doctors found",
@@ -512,7 +512,7 @@
       "errorDescription": "Something went wrong while fetching the doctor directory. It retries automatically.",
       "columns": {
         "name": "Doctor Name",
-        "license": "License Number",
+        "license": "STR Number",
         "schedule": "Schedule",
         "patients": "Patients"
       },
@@ -532,7 +532,7 @@
         "6": "Sat"
       },
       "profile": "Profile",
-      "license": "License Number",
+      "license": "STR Number",
       "titleLabel": "Title",
       "degrees": "Degrees",
       "phone": "Phone Number",
@@ -602,7 +602,9 @@
         "editDescription": "Update the doctor profile.",
         "createDescription": "Register a new doctor profile, optionally assigning initial patients.",
         "saveError": "Unable to save the doctor. Please try again.",
-        "license": "License Number",
+        "license": "STR Number",
+        "licenseDescription": "The doctor's STR number, exactly as printed on their STR or shown in SATUSEHAT SDMK.",
+        "licenseTooltip": "The STR (Surat Tanda Registrasi) is issued per doctor by the Konsil Kesehatan Indonesia and is lifetime under UU 17/2023, which is why it identifies a doctor here. Numbers issued since September 2023 are two letters followed by 14 digits; older all-digit numbers are still valid. A SIP is different, one per practice location, so record each SIP under Licenses on the doctor's record.",
         "fullName": "Full Name",
         "specialty": "Specialty",
         "phone": "Phone Number",
