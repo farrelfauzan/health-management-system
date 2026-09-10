@@ -117,6 +117,9 @@
   /* Text-grade semantic tones (see the `:root` note on --success / --warning) */
   --color-success-emphasis: var(--success);
   --color-warning-emphasis: var(--warning);
+  --color-placeholder: var(--placeholder);
+  --color-tooltip: var(--tooltip);
+  --color-tooltip-foreground: var(--tooltip-foreground);
 }
 
 :root {
@@ -147,6 +150,25 @@
    */
   --success: #047857;
   --warning: #b45309;
+  /*
+   * Placeholder text. It used to borrow --muted-foreground (#424656), which
+   * is 9.37:1 on white — as dark as body text — so every empty field read as
+   * a field somebody had already filled in. This sits at 3.34:1 on white and
+   * 3.18:1 on the page background: unmistakably a prompt rather than a value,
+   * and still above the 3:1 floor, which matters because a placeholder is the
+   * one hint some fields give about their format.
+   */
+  --placeholder: #828da3;
+  /*
+   * Tooltips. A near-black bubble (--foreground) read as a system error next
+   * to this palette's blues, so they use the same light blue family as the
+   * accent surfaces, one step stronger so the bubble separates from a white
+   * card. Text stays --foreground at 14.72:1. The separation from the card
+   * underneath is only 1.24:1, so the shadow, not the fill, is what makes it
+   * read as a floating layer.
+   */
+  --tooltip: #dbe8ff;
+  --tooltip-foreground: #0b1c30;
   --border: #e2e8f0;
   --input: #e2e8f0;
   --ring: #0066ff;

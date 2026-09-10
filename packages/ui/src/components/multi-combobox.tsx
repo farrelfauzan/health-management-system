@@ -128,7 +128,7 @@ function MultiCombobox({
           )}
         >
           {selectedChips.length === 0 ? (
-            <span className="truncate text-muted-foreground">
+            <span className="truncate text-placeholder">
               {isLoading ? 'Loading…' : placeholder}
             </span>
           ) : (

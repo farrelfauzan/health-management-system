@@ -89,7 +89,7 @@ function Combobox({
           <span
             className={cn(
               'truncate',
-              !resolvedSelectedLabel && !emptyOptionLabel && 'text-muted-foreground',
+              !resolvedSelectedLabel && !emptyOptionLabel && 'text-placeholder',
             )}
           >
             {resolvedSelectedLabel ?? unselectedLabel}
