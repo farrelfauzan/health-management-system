@@ -23,16 +23,17 @@ import {
 import { useTranslations } from 'next-intl';
 
 import { DocumentFilePicker } from '#components/client/documents/document-file-picker';
-import { UploadFileItem } from '#components/client/patient-documents/upload-file-item';
+import { UploadFileItem } from '#components/client/documents/upload-file-item';
 import { VisitLinkSelect } from '#components/client/patient-documents/visit-link-select';
 import { InlineNotice } from '#components/client/shared/inline-notice';
 import { resolveApiErrorMessage } from '#lib/api/resolve-api-error-message';
+import type { UploadFileEntry } from '#lib/documents/upload-file-entry';
+import type { UploadFileItemLabels } from '#lib/documents/upload-file-item-labels';
 import type { DocumentUploadProgress } from '#lib/documents/upload-progress';
 import { invalidatePatientDocumentQueries } from '#lib/patient-documents/invalidate-patient-document-queries';
 import { parseVisitLinkValue } from '#lib/patient-documents/parse-visit-link-value';
 import { PATIENT_DOCUMENT_ACCEPTED_MIME_TYPES } from '#lib/patient-documents/patient-document-accepted-mime-types';
 import { PatientDocumentUploadError } from '#lib/patient-documents/patient-document-upload-error';
-import type { UploadFileEntry } from '#lib/patient-documents/upload-file-entry';
 import { uploadPatientDocumentBatch } from '#lib/patient-documents/upload-patient-document-batch';
 import { VISIT_LINK_NONE } from '#lib/patient-documents/visit-link-value';
 
@@ -208,6 +209,17 @@ export function UploadDocumentDialog({
 
   const retryableCount = resolveRetryable().length;
   const isRunning = uploadMutation.isPending;
+  const itemLabels: UploadFileItemLabels = {
+    recorded: t('outcome.recorded'),
+    alreadyRecorded: t('outcome.alreadyRecorded'),
+    failed: t('outcome.failed'),
+    buildRemoveLabel: (name) => t('remove', { name }),
+    buildTitleLabel: (name) => t('fileTitle', { name }),
+    buildProgressLabel: (progress) =>
+      progress.stage === 'uploading'
+        ? t('progress.uploading', { percent: progress.percent })
+        : t(`progress.${progress.stage}`),
+  };
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -247,6 +259,7 @@ export function UploadDocumentDialog({
                     key={entry.id}
                     entry={entry}
                     isBatchRunning={isRunning}
+                    labels={itemLabels}
                     onTitleChange={(id, title) => updateEntry(id, { title })}
                     onRemove={(id) =>
                       setEntries((current) => current.filter((entry) => entry.id !== id))
