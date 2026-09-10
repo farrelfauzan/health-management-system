@@ -9,6 +9,7 @@ import {
   patientDeliveryConsentControllerListConsentsV1,
   patientDeliveryConsentControllerUpsertConsentV1,
 } from '#lib/api/generated/patient-delivery-consent/patient-delivery-consent';
+import englishMessages from '../../../messages/en/clinical.json';
 import messages from '../../../messages/id/clinical.json';
 
 vi.mock('#lib/api/generated/patient-delivery-consent/patient-delivery-consent', () => ({
@@ -59,6 +60,21 @@ const OPTED_OUT_WHATSAPP = {
   refusalReason: 'CONSENT_REVOKED',
 };
 
+const WITHDRAWN_EMAIL = {
+  channel: 'EMAIL',
+  consent: {
+    channel: 'EMAIL',
+    isGranted: false,
+    noticeVersion: null,
+    grantedAt: null,
+    grantedBy: null,
+    revokedAt: '2026-09-29T08:00:00.000Z',
+    revokedReason: 'STAFF',
+  },
+  isDeliveryAllowed: false,
+  refusalReason: 'CONSENT_REVOKED',
+};
+
 const NEVER_ASKED_EMAIL = {
   channel: 'EMAIL',
   consent: null,
@@ -74,10 +90,14 @@ function mockList(channels: unknown[]): void {
   } as never);
 }
 
-function renderCard(): void {
+type Locale = 'id' | 'en';
+
+const MESSAGES_BY_LOCALE = { id: messages, en: englishMessages } as const;
+
+function renderCard(locale: Locale = 'id'): void {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   render(
-    <NextIntlClientProvider locale="id" messages={messages}>
+    <NextIntlClientProvider locale={locale} messages={MESSAGES_BY_LOCALE[locale]}>
       <QueryClientProvider client={queryClient}>
         <PatientDeliveryConsentCard patientId="patient-1" />
       </QueryClientProvider>
@@ -151,6 +171,30 @@ describe('PatientDeliveryConsentCard', () => {
       });
     });
   });
+
+  // P19-T12. The longest label ("Catat ulang persetujuan") used to push the
+  // card past its column: the button sat on one non-wrapping line with the
+  // status block. Every state's button must render, and the row must wrap.
+  it.each([
+    ['id', ['Cabut', 'Catat ulang persetujuan', 'Catat ulang persetujuan', 'Catat persetujuan']],
+    ['en', ['Withdraw', 'Re-capture consent', 'Re-capture consent', 'Capture consent']],
+  ] as const)(
+    'renders a wrapping action button for all four states in %s',
+    async (locale, expectedLabels) => {
+      mockList([GRANTED_WHATSAPP, OPTED_OUT_WHATSAPP, WITHDRAWN_EMAIL, NEVER_ASKED_EMAIL]);
+
+      renderCard(locale);
+      const actualButtons = await screen.findAllByRole('button');
+
+      expect(actualButtons.map((button) => button.textContent)).toEqual(expectedLabels);
+      for (const button of actualButtons) {
+        expect(button.className).not.toContain('whitespace-nowrap');
+        expect(button.className).toContain('whitespace-normal');
+        expect(button.className).not.toMatch(/\bw-\d/);
+        expect(button.parentElement?.className).toContain('flex-wrap');
+      }
+    },
+  );
 
   it('hides the actions from a reader who cannot update the patient', async () => {
     canMock.mockReturnValue(false);
