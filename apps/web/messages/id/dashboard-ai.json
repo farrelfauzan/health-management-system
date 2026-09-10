@@ -576,7 +576,12 @@
       "notRetrievableYet": "Asisten belum dapat mengambil dokumen ini.",
       "sendForReview": "Kirim untuk ditinjau",
       "confirm": {
-        "sendForReview": "Kirim “{title}” untuk disetujui? Asisten berhenti dapat mengutipnya sampai ada yang menyetujui."
+        "sendForReview": {
+          "title": "Kirim dokumen ini untuk disetujui?",
+          "body": "Mengirim “{title}” untuk disetujui langsung menariknya dari jangkauan asisten: dokumen ini berhenti dikutip di asisten dalam aplikasi maupun di kanal publik sampai ada yang menyetujuinya. Tidak ada yang dihapus, dan begitu disetujui dokumen ini kembali dipakai.",
+          "confirm": "Kirim untuk ditinjau",
+          "cancel": "Batal"
+        }
       },
       "success": {
         "sendForReview": "Dokumen dikirim untuk disetujui."
