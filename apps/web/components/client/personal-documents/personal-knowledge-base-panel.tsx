@@ -7,10 +7,11 @@ import { useTranslations } from 'next-intl';
 import { NoPatientDataNotice } from '#components/client/personal-documents/no-patient-data-notice';
 import { PersonalDocumentUploadDialog } from '#components/client/personal-documents/personal-document-upload-dialog';
 import { PersonalDocumentsTable } from '#components/client/personal-documents/personal-documents-table';
+import { CursorPagination } from '#components/client/shared/cursor-pagination';
 import { InlineNotice } from '#components/client/shared/inline-notice';
 import { PageHeader } from '#components/shared/page-header';
 import { useShellBreadcrumbRoot } from '#lib/navigation/use-shell-breadcrumb-root';
-import { usePersonalDocuments } from '#lib/personal-documents/use-personal-documents';
+import { usePersonalDocumentsPage } from '#lib/personal-documents/use-personal-documents-page';
 
 /**
  * A doctor's or admin's own knowledge base.
@@ -20,7 +21,9 @@ import { usePersonalDocuments } from '#lib/personal-documents/use-personal-docum
  * parameterise by role.
  *
  * The list refetches itself while anything is still ingesting; that decision
- * lives in `usePersonalDocuments`, next to the data it depends on.
+ * lives in `usePersonalDocuments`, next to the data it depends on. Where the
+ * owner is in the list lives one layer up from that, in
+ * `usePersonalDocumentsPage`.
  */
 export function PersonalKnowledgeBasePanel() {
   const t = useTranslations('personalKnowledgeBase');
@@ -28,12 +31,23 @@ export function PersonalKnowledgeBasePanel() {
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const documentsQuery = usePersonalDocuments();
-  const rows = documentsQuery.data ?? [];
+  const documentsQuery = usePersonalDocumentsPage();
+  const rows = documentsQuery.rows;
+  const isPaged = documentsQuery.hasPreviousPage || documentsQuery.hasNextPage;
 
   function handleResult(message: string): void {
     setError(null);
     setNotice(message);
+  }
+
+  /**
+   * An upload lands on page one, because the list is newest-first — so that is
+   * where the owner is put, rather than left looking at page three wondering
+   * where the file they just chose went.
+   */
+  function handleUploaded(message: string): void {
+    documentsQuery.resetPage();
+    handleResult(message);
   }
 
   function handleError(message: string): void {
@@ -70,18 +84,31 @@ export function PersonalKnowledgeBasePanel() {
           ) : rows.length === 0 ? (
             <p className="p-6 text-sm text-slate-500">{t('states.empty')}</p>
           ) : (
-            <PersonalDocumentsTable
-              documents={rows}
-              onResult={handleResult}
-              onError={handleError}
-            />
+            <>
+              <PersonalDocumentsTable
+                documents={rows}
+                onResult={handleResult}
+                onError={handleError}
+              />
+              {isPaged ? (
+                <CursorPagination
+                  className="border-t border-slate-200 px-4 py-3"
+                  pageNumber={documentsQuery.pageNumber}
+                  hasPreviousPage={documentsQuery.hasPreviousPage}
+                  hasNextPage={documentsQuery.hasNextPage}
+                  isDisabled={documentsQuery.isFetching}
+                  onPrevious={documentsQuery.goToPreviousPage}
+                  onNext={() => void documentsQuery.goToNextPage()}
+                />
+              ) : null}
+            </>
           )}
         </CardContent>
       </Card>
       <PersonalDocumentUploadDialog
         open={isUploadOpen}
         onOpenChange={setIsUploadOpen}
-        onUploaded={handleResult}
+        onUploaded={handleUploaded}
       />
     </div>
   );
