@@ -1,5 +1,9 @@
 import { z } from 'zod';
 
+import {
+  MAX_DOCUMENT_APPROVAL_APPROVERS,
+  MIN_DOCUMENT_APPROVAL_APPROVERS,
+} from '#document-approval/schemas';
 import { requestClinicalDispatchSchema } from '#document-delivery/schemas';
 
 /**
@@ -748,3 +752,60 @@ export const releasePatientDocumentSchema = z
   .strict();
 
 export type ReleasePatientDocumentInput = z.infer<typeof releasePatientDocumentSchema>;
+
+/**
+ * How many corpus documents one submission may name (`P19`, R-18).
+ *
+ * Matched to `MAX_BULK_DOCUMENT_APPROVALS` on the approval side: the two ends
+ * of the same backlog should have the same ceiling, so a corpus an admin can
+ * submit in one action is one the approver can clear in one action.
+ */
+export const MAX_BULK_CLINIC_DOCUMENT_SUBMISSIONS = 50;
+
+/**
+ * Submit clinic-corpus documents for approval.
+ *
+ * One panel for the whole selection, which is the shape the case actually
+ * has: a clinic that has just uploaded its twenty-eight SOPs is asking one
+ * group of people to read them, not twenty-eight different groups. Naming
+ * the panel once is the difference between one dialog and twenty-eight.
+ *
+ * A document with no registry row gets one here; a document already at
+ * `DRAFT` is submitted as it stands. Anything already `PENDING_APPROVAL`,
+ * `ISSUED` or `ARCHIVED` is refused per item with `DOCUMENT_NOT_SUBMITTABLE`
+ * — silently re-submitting an issued document would take it out of the
+ * assistant's reach without anybody asking for that.
+ *
+ * `dueAt` carries the same meaning it does everywhere else: reminders and an
+ * overdue flag, never a decision (FR-E5-28).
+ */
+export const submitClinicDocumentsForApprovalSchema = z
+  .object({
+    documentIds: z
+      .array(z.string().uuid())
+      .min(1)
+      .max(MAX_BULK_CLINIC_DOCUMENT_SUBMISSIONS)
+      .refine((ids) => new Set(ids).size === ids.length, {
+        message: 'Each document may appear once',
+      }),
+    approverIds: z
+      .array(z.string().uuid())
+      .min(MIN_DOCUMENT_APPROVAL_APPROVERS)
+      .max(MAX_DOCUMENT_APPROVAL_APPROVERS)
+      .refine((ids) => new Set(ids).size === ids.length, {
+        message: 'Each approver may appear once',
+      }),
+    dueAt: z.string().datetime().optional(),
+  })
+  .strict();
+
+export type SubmitClinicDocumentsForApprovalInput = z.infer<
+  typeof submitClinicDocumentsForApprovalSchema
+>;
+
+/**
+ * The fallback code on a per-item submission failure, for the refusals that
+ * did not carry one of their own. Never the whole story on its own — the
+ * item's `message` is what a person reads.
+ */
+export const CLINIC_DOCUMENT_SUBMISSION_FAILED_ERROR_CODE = 'CLINIC_DOCUMENT_SUBMISSION_FAILED';

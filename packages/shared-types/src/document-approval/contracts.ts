@@ -17,6 +17,22 @@ export type DocumentApprovalActorView = {
   email: string;
 };
 
+/**
+ * Somebody who could be named on a panel (`P19`).
+ *
+ * "Eligible" is the permission that governs the decision,
+ * `document-approval.decide:any`, and not a role name. Naming a live staff
+ * account that will never hold that key produces a round nobody can resolve,
+ * which is how twenty-eight documents end up waiting on a signature that
+ * cannot come. `roleCodes` is shown next to the address so a picker of
+ * near-identical clinic emails is still readable.
+ */
+export type DocumentApproverCandidateView = {
+  id: string;
+  email: string;
+  roleCodes: string[];
+};
+
 /** One named approver on a round. */
 export type DocumentApproverView = {
   id: string;

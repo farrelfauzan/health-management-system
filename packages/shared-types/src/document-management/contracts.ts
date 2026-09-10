@@ -1,3 +1,4 @@
+import type { DocumentApprovalActorView } from '#document-approval/contracts';
 import type { ClinicalDispatchRefusalView, DeliveryView } from '#document-delivery/contracts';
 import type { ManagedDocumentApprovalSummaryView } from '#managed-document/contracts';
 import type { ManagedDocumentStatusValue } from '#managed-document/schemas';
@@ -428,4 +429,41 @@ export type ClinicDocumentApprovalView = {
   managedDocumentId: string | null;
   status: ManagedDocumentStatusValue | null;
   pendingRound: ManagedDocumentApprovalSummaryView | null;
+};
+
+/**
+ * What the corpus submit dialog needs before it can name a panel (`P19`).
+ *
+ * Read once for the screen rather than repeated on every row: all of it is a
+ * property of the `CLINIC_CORPUS_DOCUMENT` type and not of any one document,
+ * and twenty-eight identical copies of the same default panel would be
+ * twenty-eight chances for the rows to disagree with each other.
+ */
+export type ClinicCorpusApprovalContextView = {
+  isApprovalRequired: boolean;
+  allowSelfApproval: boolean;
+  requiredApprovals: number;
+  /** The type's configured panel, offered as the dialog's opening selection. */
+  defaultApprovers: DocumentApprovalActorView[];
+};
+
+/**
+ * One line of a corpus submission's result.
+ *
+ * Every item reports for itself, exactly as a bulk approval does. Submitting
+ * twenty-eight documents must not lose twenty-seven good submissions because
+ * the twenty-eighth had already been issued, and the admin must not be left
+ * to work out on their own which one that was.
+ */
+export type ClinicDocumentSubmissionItemView = {
+  documentId: string;
+  isSubmitted: boolean;
+  /** The refusal, verbatim from the single-document path that produced it. */
+  error: { code: string; message: string } | null;
+};
+
+export type ClinicDocumentBulkSubmissionView = {
+  submittedCount: number;
+  failedCount: number;
+  items: ClinicDocumentSubmissionItemView[];
 };

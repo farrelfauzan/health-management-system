@@ -113,6 +113,20 @@ export type DocumentApproverCandidateRecord = {
   canDecide: boolean;
 };
 
+/** What the service hands the repository to list who may be named (`P19`). */
+export type ListEligibleApproversParams = {
+  /** Case-insensitive substring of the email address. */
+  search?: string;
+  limit: number;
+};
+
+/** One eligible approver as the repository projects it. */
+export type EligibleApproverRecord = {
+  id: string;
+  email: string;
+  roleCodes: string[];
+};
+
 /** The two counts behind the sidebar badge (FR-E5-27). */
 export type DocumentApprovalPendingCounts = {
   pending: number;

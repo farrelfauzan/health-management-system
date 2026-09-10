@@ -159,5 +159,37 @@ export const DOCUMENT_APPROVAL_ALREADY_DECIDED_ERROR_CODE = 'DOCUMENT_APPROVAL_A
 /** A caller holding `decide` who is not on this round's panel (FR-E5-13). */
 export const DOCUMENT_APPROVAL_NOT_AN_APPROVER_ERROR_CODE = 'DOCUMENT_APPROVAL_NOT_AN_APPROVER';
 
-/** A panel naming an account that is not live staff — a patient, or nobody. */
+/**
+ * A panel naming somebody who cannot approve: a patient, a deactivated or
+ * unknown account, or — since `P19` — a live staff account that does not hold
+ * `document-approval.decide:any`.
+ *
+ * The last one was previously accepted, and accepting it is what produced
+ * rounds waiting on a signature nobody could give. Being named and being
+ * permitted are still separate at decide time (FR-E5-13); this only refuses a
+ * panel that could never satisfy both.
+ */
 export const DOCUMENT_APPROVER_INELIGIBLE_ERROR_CODE = 'DOCUMENT_APPROVER_INELIGIBLE';
+
+const ELIGIBLE_APPROVER_MAX_LIMIT = 100;
+
+const ELIGIBLE_APPROVER_DEFAULT_LIMIT = 50;
+
+/**
+ * Who may be named on a panel (`P19`).
+ *
+ * The source the approver pickers read, so that the list they offer and the
+ * list the service accepts are the same list. `search` matches the email
+ * address, which is the only human-readable identifier an account has.
+ */
+export const listEligibleApproversQuerySchema = z.object({
+  search: z.string().trim().min(1).max(200).optional(),
+  limit: z.coerce
+    .number()
+    .int()
+    .min(1)
+    .max(ELIGIBLE_APPROVER_MAX_LIMIT)
+    .default(ELIGIBLE_APPROVER_DEFAULT_LIMIT),
+});
+
+export type ListEligibleApproversQueryInput = z.infer<typeof listEligibleApproversQuerySchema>;
