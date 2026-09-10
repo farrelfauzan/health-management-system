@@ -13,6 +13,8 @@ import {
 } from '@hms/ui';
 import { useFormatter, useTranslations } from 'next-intl';
 
+import { InlineNotice } from '#components/client/shared/inline-notice';
+
 type TemplatePreviewDialogProps = {
   open: boolean;
   preview: DocumentTemplatePreviewView | null;
@@ -52,16 +54,18 @@ export function TemplatePreviewDialog({ open, preview, onOpenChange }: TemplateP
               data-testid="template-preview-frame"
             />
             {preview.warnings.length > 0 ? (
-              <div className="rounded-lg bg-amber-50 px-4 py-2 text-xs text-amber-900">
-                <p className="font-medium">{t('warningsTitle', { count: preview.warnings.length })}</p>
-                <ul className="list-disc pl-4">
+              <InlineNotice
+                tone="warning"
+                title={t('warningsTitle', { count: preview.warnings.length })}
+              >
+                <ul className="list-disc pl-4 text-xs">
                   {preview.warnings.map((warning) => (
                     <li key={`${warning.token}-${warning.reason}`}>
                       <code className="font-mono">{warning.token}</code> — {warning.reason}
                     </li>
                   ))}
                 </ul>
-              </div>
+              </InlineNotice>
             ) : null}
             <DialogFooter className="items-center sm:justify-between">
               <p className="text-xs text-slate-500">

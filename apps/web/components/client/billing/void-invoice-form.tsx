@@ -3,9 +3,10 @@
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { InvoiceDetail, VoidInvoiceInput } from '@hms/shared-types';
-import { Button, Textarea } from '@hms/ui';
+import { Button, Label, Textarea } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { invoiceControllerVoidInvoiceV1 } from '#lib/api/generated/invoices/invoices';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { parseApiSuccess } from '#lib/api/response';
@@ -56,18 +57,14 @@ export function VoidInvoiceForm({ invoiceId, onVoided, onCancel }: VoidInvoiceFo
         Voiding is terminal. Correcting an issued invoice means voiding this one and generating a
         fresh invoice — it is never edited in place.
       </p>
-      {actionError ? (
-        <p role="alert" className="text-sm text-rose-700">
-          {actionError}
-        </p>
-      ) : null}
+      {actionError ? <InlineNotice tone="error">{actionError}</InlineNotice> : null}
       <div>
-        <label
+        <Label
           htmlFor="void-reason"
-          className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
+          className="mb-1.5 font-heading text-xs text-slate-600"
         >
           Reason
-        </label>
+        </Label>
         <Textarea
           id="void-reason"
           rows={2}

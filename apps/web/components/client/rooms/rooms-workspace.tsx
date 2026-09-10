@@ -70,12 +70,16 @@ export function RoomsWorkspace({ initialTab }: RoomsWorkspaceProps) {
         ) : null}
         {canReadRooms ? (
           <TabsContent value="rooms">
-            <RoomsPanel />
+            {/* SJ-159's "create a ward first" prompt sends the user to the ward
+                tab; since SJ-162 that is a URL change, so the trip is in the
+                history and the back button returns to the room they were
+                filling in. */}
+            <RoomsPanel onGoToWards={canReadWards ? () => setTab('wards') : undefined} />
           </TabsContent>
         ) : null}
         {canReadBeds ? (
           <TabsContent value="beds">
-            <BedsPanel />
+            <BedsPanel onGoToRooms={canReadRooms ? () => setTab('rooms') : undefined} />
           </TabsContent>
         ) : null}
         {canReadClasses ? (

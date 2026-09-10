@@ -3,6 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle, Icon, Skeleton } from '@hms/ui';
 import { useFormatter, useTranslations } from 'next-intl';
 
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import type { PatientManagementControllerGetPatientPrivacyNoticeHistoryV1200Data } from '#lib/api/generated/model/patientManagementControllerGetPatientPrivacyNoticeHistoryV1200Data';
 import {
   getPatientManagementControllerGetPatientPrivacyNoticeHistoryV1QueryKey,
@@ -39,7 +40,7 @@ export function PatientPrivacyHistoryCard({ patientId }: PatientPrivacyHistoryCa
       </CardHeader>
       <CardContent className="space-y-3">
         {query.isPending ? <Skeleton className="h-20 w-full" /> : null}
-        {query.isError ? <p className="text-sm text-rose-700">{t('historyError')}</p> : null}
+        {query.isError ? <InlineNotice tone="error">{t('historyError')}</InlineNotice> : null}
         {query.data ? (
           <>
             <div

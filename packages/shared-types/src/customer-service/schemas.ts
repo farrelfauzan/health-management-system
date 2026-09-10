@@ -962,13 +962,18 @@ export type LinkProspectivePatientInput = z.infer<typeof linkProspectivePatientS
  * The person at the counter is genuinely new, so this is where the MRN is
  * spent (`P17-T04`).
  *
- * **Deliberately `createPatientSchema` itself and not a variant of it.** The
- * whole safety of the conversion path is that it produces an ordinary patient
- * record through the ordinary create — same required demographics, same
- * identifier validation, same privacy-notice evidence, same encryption path. A
- * loosened "conversion create" would become the way a record gets registered
- * without a date of birth, which is the thing `P17-T01` opened the prospective
- * table to avoid in the first place.
+ * **Deliberately the patient create schema itself and not a variant of it.**
+ * The whole safety of the conversion path is that it produces an ordinary
+ * patient record through the ordinary create — same required demographics,
+ * same identifier validation, same privacy-notice evidence, same encryption
+ * path. A loosened "conversion create" would become the way a record gets
+ * registered without a date of birth, which is the thing `P17-T01` opened the
+ * prospective table to avoid in the first place.
+ *
+ * The base schema, not the front-desk one (P19-T10): the region codes are
+ * optional on a conversion, because the person arrived on a chat booking that
+ * could not collect an address and the counter completes it over later
+ * visits. Given at all, they are still validated as a chain by the service.
  */
 export const convertProspectivePatientSchema = createPatientSchema;
 

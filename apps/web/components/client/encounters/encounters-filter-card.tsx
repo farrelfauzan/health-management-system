@@ -6,6 +6,7 @@ import { ENCOUNTER_STATUSES, type EncounterStatusValue } from '@hms/shared-types
 import {
   Button,
   DatePicker,
+  Label,
   Select,
   SelectContent,
   SelectItem,
@@ -87,12 +88,12 @@ export function EncountersFilterCard({
         }
       >
         <div className="w-44">
-          <label
+          <Label
             htmlFor="encounters-status-filter"
-            className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
+            className="mb-1.5 font-heading text-xs text-slate-600"
           >
             {t('common.status')}
-          </label>
+          </Label>
           <Select value={status} onValueChange={setStatus}>
             <SelectTrigger id="encounters-status-filter" className="w-full">
               <SelectValue placeholder={t('common.allStatuses')} />
@@ -108,12 +109,12 @@ export function EncountersFilterCard({
           </Select>
         </div>
         <div className="w-56">
-          <label
+          <Label
             htmlFor="encounters-doctor-filter"
-            className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
+            className="mb-1.5 font-heading text-xs text-slate-600"
           >
             {t('encounters.doctor')}
-          </label>
+          </Label>
           <DoctorCombobox
             id="encounters-doctor-filter"
             doctors={doctorsQuery.doctors}

@@ -150,7 +150,7 @@ export function PatientDetailPanel({
               <PatientIdentifiersCard patient={patient} isSatusehatEnabled={isSatusehatEnabled} />
               <PatientImmunizationsCard patientId={patient.id} />
             </div>
-            <div className="space-y-6">
+            <div className="min-w-0 space-y-6">
               <PatientAllergiesCard allergies={patient.allergies} />
               <PatientPrivacyHistoryCard patientId={patient.id} />
               <PatientDeliveryConsentCard patientId={patient.id} />

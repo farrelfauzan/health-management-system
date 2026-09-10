@@ -6,6 +6,7 @@ import { Button, Card, CardContent, CardHeader, CardTitle, Icon, useAbility } fr
 import { useTranslations } from 'next-intl';
 
 import { PatientSatusehatLinkButton } from '#components/client/patients/patient-satusehat-link-button';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { usePatientIdentifiers } from '#lib/patients/use-patient-identifiers';
 
 type PatientIdentifiersCardProps = {
@@ -74,21 +75,23 @@ export function PatientIdentifiersCard({
         ) : null}
 
         {identifiersQuery.error ? (
-          <p
-            role="alert"
-            className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700"
-          >
-            {t('patients.identifiersError')}
-          </p>
+          <InlineNotice tone="error">{t('patients.identifiersError')}</InlineNotice>
         ) : null}
 
         {isRevealed && identifiers ? (
-          <div className="flex items-center justify-between gap-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2">
-            <p className="text-xs text-amber-900">{t('patients.auditNotice')}</p>
-            <Button type="button" size="sm" variant="outline" onClick={() => setIsRevealed(false)}>
-              {t('patients.hide')}
-            </Button>
-          </div>
+          <InlineNotice tone="warning">
+            <div className="flex items-center justify-between gap-3">
+              <p>{t('patients.auditNotice')}</p>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={() => setIsRevealed(false)}
+              >
+                {t('patients.hide')}
+              </Button>
+            </div>
+          </InlineNotice>
         ) : null}
 
         {!canReveal ? (

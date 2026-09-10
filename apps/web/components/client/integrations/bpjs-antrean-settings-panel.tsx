@@ -27,6 +27,7 @@ import {
 } from '@hms/ui';
 import { useFormatter, useTranslations } from 'next-intl';
 
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import {
   bpjsAntreanConfigControllerDeleteConfigV1,
   bpjsAntreanConfigControllerTestConnectionV1,
@@ -160,11 +161,7 @@ export function BpjsAntreanSettingsPanel() {
   }
 
   if (configQuery.isError && !isUnconfigured) {
-    return (
-      <p role="alert" className="rounded-lg bg-rose-50 p-3 text-sm text-rose-700">
-        {t('antrean.configError')}
-      </p>
-    );
+    return <InlineNotice tone="error">{t('antrean.configError')}</InlineNotice>;
   }
 
   return (
@@ -175,9 +172,7 @@ export function BpjsAntreanSettingsPanel() {
       </CardHeader>
       <CardContent>
         <form className="space-y-5" onSubmit={(event) => void handleSubmit(event)}>
-          <p className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
-            {t('antrean.unverified')}
-          </p>
+          <InlineNotice tone="warning">{t('antrean.unverified')}</InlineNotice>
           {isUnconfigured ? (
             <div className="rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700">
               {t('antrean.notConfigured')}
@@ -273,13 +268,13 @@ export function BpjsAntreanSettingsPanel() {
                 onChange={(event) => updateField('inboundPassword', event.target.value)}
               />
             </div>
-            <label className="flex items-center gap-3 self-end pb-2 text-sm font-medium">
+            <Label className="flex items-center gap-3 self-end pb-2 text-sm font-medium">
               <Checkbox
                 checked={form.isActive}
                 onCheckedChange={(checked) => updateField('isActive', checked === true)}
               />
               {t('antrean.enable')}
-            </label>
+            </Label>
           </div>
 
           <p className="text-xs text-slate-500">{t('antrean.inboundHint')}</p>
@@ -294,11 +289,7 @@ export function BpjsAntreanSettingsPanel() {
               })}
             </p>
           ) : null}
-          {formError ? (
-            <p role="alert" className="rounded-lg bg-rose-50 p-3 text-sm text-rose-700">
-              {formError}
-            </p>
-          ) : null}
+          {formError ? <InlineNotice tone="error">{formError}</InlineNotice> : null}
 
           <div className="flex flex-wrap gap-3">
             <Button type="submit" disabled={saveMutation.isPending}>

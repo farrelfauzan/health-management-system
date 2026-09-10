@@ -3,10 +3,11 @@
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { AddProcedureInput, ProcedureResponse } from '@hms/shared-types';
-import { Button, Input } from '@hms/ui';
+import { Button, Input, Label } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
 import { CodeSearchPicker } from '#components/client/encounters/code-search-picker';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { encounterClinicalDataControllerAddProcedureV1 } from '#lib/api/generated/encounters/encounters';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { parseApiSuccess } from '#lib/api/response';
@@ -60,14 +61,7 @@ export function EncounterProcedureForm({ encounterId }: EncounterProcedureFormPr
 
   return (
     <form noValidate className="space-y-3" onSubmit={(event) => void handleSubmit(event)}>
-      {actionError ? (
-        <p
-          role="alert"
-          className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700"
-        >
-          {actionError}
-        </p>
-      ) : null}
+      {actionError ? <InlineNotice tone="error">{actionError}</InlineNotice> : null}
       <CodeSearchPicker
         id="procedure-code-search"
         label={t('encounters.procedure.label')}
@@ -82,12 +76,12 @@ export function EncounterProcedureForm({ encounterId }: EncounterProcedureFormPr
       />
       <div className="flex flex-wrap items-end gap-3">
         <div className="min-w-48 flex-1">
-          <label
+          <Label
             htmlFor="procedure-notes"
-            className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
+            className="mb-1.5 font-heading text-xs text-slate-600"
           >
             {t('encounters.notes')}
-          </label>
+          </Label>
           <Input
             id="procedure-notes"
             placeholder={t('encounters.procedure.notes')}

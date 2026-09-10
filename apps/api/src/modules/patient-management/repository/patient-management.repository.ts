@@ -3,6 +3,7 @@ import {
   CreatePatientFromProspectiveResult,
   CreatePatientRecordPayload,
   ListPatientsParams,
+  PatientAddressFields,
   PatientAllergyInput,
   PatientDemographicFields,
   PatientIdentifierPlaintext,
@@ -44,6 +45,18 @@ const PATIENT_RECORD_SELECT = {
   status: true,
   phoneNumber: true,
   address: true,
+  provinceCode: true,
+  regencyCode: true,
+  districtCode: true,
+  villageCode: true,
+  rtRw: true,
+  postalCode: true,
+  // Names resolved through the master data at read time, never stored on
+  // the row (P19-T10): a renamed regency renames every address at once.
+  province: { select: { name: true } },
+  regency: { select: { name: true } },
+  district: { select: { name: true } },
+  village: { select: { name: true } },
   nikLast4: true,
   bpjsNumberLast4: true,
   satusehatPatientIdCiphertext: true,
@@ -91,6 +104,21 @@ const PATIENT_DEMOGRAPHIC_FIELDS = [
   'guardianRelation',
 ] as const;
 
+/**
+ * Structured-address columns (P19-T10), same write convention as the
+ * demographic ones: `undefined` leaves a column untouched. The four codes are
+ * only ever written as a chain the service has already resolved against the
+ * master data, so no check is repeated here.
+ */
+const PATIENT_ADDRESS_FIELDS = [
+  'provinceCode',
+  'regencyCode',
+  'districtCode',
+  'villageCode',
+  'rtRw',
+  'postalCode',
+] as const;
+
 const RELATED_DOCTOR_SELECT = {
   id: true,
   doctor: {
@@ -102,8 +130,17 @@ const RELATED_DOCTOR_SELECT = {
   },
 } as const;
 
-type PatientProfileRow = Omit<PatientRecord, 'hasSatusehatPatientId'> & {
+type RegionNameRow = { name: string } | null;
+
+type PatientProfileRow = Omit<
+  PatientRecord,
+  'hasSatusehatPatientId' | 'provinceName' | 'regencyName' | 'districtName' | 'villageName'
+> & {
   satusehatPatientIdCiphertext: string | null;
+  province: RegionNameRow;
+  regency: RegionNameRow;
+  district: RegionNameRow;
+  village: RegionNameRow;
 };
 
 function buildInclusiveEndOfDay(date: Date): Date {
@@ -116,10 +153,14 @@ function buildInclusiveEndOfDay(date: Date): Date {
  * no reason to decrypt it on a read path.
  */
 function toPatientRecord(row: PatientProfileRow): PatientRecord {
-  const { satusehatPatientIdCiphertext, ...record } = row;
+  const { satusehatPatientIdCiphertext, province, regency, district, village, ...record } = row;
   return {
     ...record,
     hasSatusehatPatientId: satusehatPatientIdCiphertext !== null,
+    provinceName: province?.name ?? null,
+    regencyName: regency?.name ?? null,
+    districtName: district?.name ?? null,
+    villageName: village?.name ?? null,
   };
 }
 
@@ -140,6 +181,17 @@ function buildDemographicColumns(
 ): Record<string, string | null> {
   const columns: Record<string, string | null> = {};
   for (const field of PATIENT_DEMOGRAPHIC_FIELDS) {
+    const value = payload[field];
+    if (value !== undefined) {
+      columns[field] = value;
+    }
+  }
+  return columns;
+}
+
+function buildAddressColumns(payload: PatientAddressFields): Record<string, string | null> {
+  const columns: Record<string, string | null> = {};
+  for (const field of PATIENT_ADDRESS_FIELDS) {
     const value = payload[field];
     if (value !== undefined) {
       columns[field] = value;
@@ -338,11 +390,12 @@ export class PatientManagementRepository {
    * actor's scope is `null`, indistinguishable from a missing record.
    */
   async findPatientById(id: string, actor: PatientScopeActor): Promise<PatientRecord | null> {
+    const scopedWhere: Prisma.PatientProfileWhereInput = {
+      id,
+      AND: [buildPatientScopeWhere({ actor, ownership: 'SELF' })],
+    };
     const patient = await this.prisma.findFirstActive(this.prisma.patientProfile, {
-      where: {
-        id,
-        AND: [buildPatientScopeWhere({ actor, ownership: 'SELF' })],
-      },
+      where: scopedWhere,
       select: PATIENT_RECORD_SELECT,
     });
 
@@ -640,6 +693,7 @@ export class PatientManagementRepository {
           bpjsNumber: payload.bpjsNumber ?? null,
         }),
         ...buildDemographicColumns(payload),
+        ...buildAddressColumns(payload),
         allergies: {
           create: (payload.allergies ?? []).map(toAllergyCreateData),
         },
@@ -711,6 +765,7 @@ export class PatientManagementRepository {
               bpjsNumber: payload.bpjsNumber,
             }),
             ...buildDemographicColumns(payload),
+            ...buildAddressColumns(payload),
             ...(payload.allergies !== undefined
               ? { allergies: { create: payload.allergies.map(toAllergyCreateData) } }
               : {}),

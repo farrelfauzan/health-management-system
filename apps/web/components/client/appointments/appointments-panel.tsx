@@ -19,6 +19,7 @@ import { ScheduleAppointmentDialog } from '#components/client/appointments/sched
 import { SessionDetailsDialog } from '#components/client/appointments/session-details-dialog';
 import { SessionQueueDialog } from '#components/client/appointments/session-queue-dialog';
 import { WeekView } from '#components/client/appointments/week-view';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { NumberedPagination } from '#components/client/shared/numbered-pagination';
 import { PageHeader } from '#components/shared/page-header';
 import { appointmentManagementControllerGetAppointmentByIdV1 } from '#lib/api/generated/appointment-management/appointment-management';
@@ -190,9 +191,7 @@ export function AppointmentsPanel({
       />
 
       {appointmentsQuery.error && appointmentsQuery.appointments.length > 0 ? (
-        <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
-          {t('errorTitle')}
-        </p>
+        <InlineNotice tone="error">{t('errorTitle')}</InlineNotice>
       ) : null}
 
       <AppointmentRequestsPanel />

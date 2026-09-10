@@ -3,6 +3,7 @@
 import { Icon, Input } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { FormLabel } from '#components/client/shared/form-label';
 import type { EducationRow } from '#lib/doctors/doctor-credential-rows';
 
 type DoctorEducationRowFieldsProps = {
@@ -36,12 +37,13 @@ export function DoctorEducationRowFields({
       </div>
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5">
-          <label
+          <FormLabel
             htmlFor={`education-institution-${row.key}`}
-            className="block font-heading text-xs font-medium text-slate-600"
+            className="font-heading text-xs text-slate-600"
+            required
           >
             {t('doctors.credentials.institution')}
-          </label>
+          </FormLabel>
           <Input
             id={`education-institution-${row.key}`}
             value={row.institution}
@@ -50,12 +52,13 @@ export function DoctorEducationRowFields({
           />
         </div>
         <div className="space-y-1.5">
-          <label
+          <FormLabel
             htmlFor={`education-degree-${row.key}`}
-            className="block font-heading text-xs font-medium text-slate-600"
+            className="font-heading text-xs text-slate-600"
+            required
           >
             {t('doctors.credentials.degree')}
-          </label>
+          </FormLabel>
           <Input
             id={`education-degree-${row.key}`}
             value={row.degree}
@@ -66,12 +69,12 @@ export function DoctorEducationRowFields({
       </div>
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5">
-          <label
+          <FormLabel
             htmlFor={`education-field-${row.key}`}
-            className="block font-heading text-xs font-medium text-slate-600"
+            className="font-heading text-xs text-slate-600"
           >
             {t('doctors.credentials.field')}
-          </label>
+          </FormLabel>
           <Input
             id={`education-field-${row.key}`}
             value={row.fieldOfStudy}
@@ -80,12 +83,12 @@ export function DoctorEducationRowFields({
           />
         </div>
         <div className="space-y-1.5">
-          <label
+          <FormLabel
             htmlFor={`education-year-${row.key}`}
-            className="block font-heading text-xs font-medium text-slate-600"
+            className="font-heading text-xs text-slate-600"
           >
             {t('doctors.credentials.graduationYear')}
-          </label>
+          </FormLabel>
           <Input
             id={`education-year-${row.key}`}
             inputMode="numeric"

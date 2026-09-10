@@ -17,11 +17,13 @@ import {
   DialogHeader,
   DialogTitle,
   Input,
+  Label,
 } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
 import { AdminUserRolePicker } from '#components/client/administration/admin-user-role-picker';
 import { FieldError } from '#components/client/shared/field-error';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { userInvitationAdminControllerCreateInvitationV1 } from '#lib/api/generated/admin-management/admin-management';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { parseApiSuccess } from '#lib/api/response';
@@ -84,14 +86,7 @@ export function AdminUserInviteDialog({ open, onOpenChange }: AdminUserInviteDia
             void form.handleSubmit();
           }}
         >
-          {formError ? (
-            <p
-              role="alert"
-              className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700"
-            >
-              {formError}
-            </p>
-          ) : null}
+          {formError ? <InlineNotice tone="error">{formError}</InlineNotice> : null}
 
           <form.Field
             name="email"
@@ -99,12 +94,12 @@ export function AdminUserInviteDialog({ open, onOpenChange }: AdminUserInviteDia
           >
             {(field) => (
               <div className="space-y-1.5">
-                <label
+                <Label
                   htmlFor={field.name}
-                  className="block font-heading text-xs font-medium text-slate-600"
+                  className="font-heading text-xs text-slate-600"
                 >
                   {t('invitations.emailLabel')}
-                </label>
+                </Label>
                 <Input
                   id={field.name}
                   type="email"

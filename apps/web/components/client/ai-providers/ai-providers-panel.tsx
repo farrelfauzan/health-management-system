@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl';
 
 import { AiProviderFormDialog } from '#components/client/ai-providers/ai-provider-form-dialog';
 import { AiProvidersTable } from '#components/client/ai-providers/ai-providers-table';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { PageHeader } from '#components/shared/page-header';
 import { useAiProviderConfigs } from '#lib/ai-providers/use-ai-provider-configs';
 import { useShellBreadcrumbRoot } from '#lib/navigation/use-shell-breadcrumb-root';
@@ -59,18 +60,16 @@ export function AiProvidersPanel({ canWrite }: AiProvidersPanelProps) {
           ) : null
         }
       />
-      {notice ? (
-        <p className="rounded-lg bg-emerald-50 px-4 py-3 text-sm text-emerald-900">{notice}</p>
-      ) : null}
-      {error ? (
-        <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-900">{error}</p>
-      ) : null}
+      {notice ? <InlineNotice tone="success">{notice}</InlineNotice> : null}
+      {error ? <InlineNotice tone="error">{error}</InlineNotice> : null}
       <Card>
         <CardContent className="p-0">
           {configsQuery.isLoading ? (
             <p className="p-6 text-sm text-slate-500">{t('states.loading')}</p>
           ) : configsQuery.isError ? (
-            <p className="p-6 text-sm text-red-600">{t('states.loadFailed')}</p>
+            <InlineNotice tone="error" className="m-6">
+              {t('states.loadFailed')}
+            </InlineNotice>
           ) : configs.length === 0 ? (
             <p className="p-6 text-sm text-slate-500">{t('states.empty')}</p>
           ) : (

@@ -28,6 +28,7 @@ import {
 import { useTranslations } from 'next-intl';
 
 import { VisitLinkSelect } from '#components/client/patient-documents/visit-link-select';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { patientDocumentDetailControllerUpdateDocumentV1 } from '#lib/api/generated/document-management/document-management';
 import type { UpdatePatientDocumentDto } from '#lib/api/generated/model/updatePatientDocumentDto';
 import { resolveApiErrorMessage } from '#lib/api/resolve-api-error-message';
@@ -186,7 +187,7 @@ export function EditDocumentDialog({
               onChange={(event) => setNotes(event.target.value)}
             />
           </div>
-          {error ? <p className="text-sm text-red-700">{error}</p> : null}
+          {error ? <InlineNotice tone="error">{error}</InlineNotice> : null}
         </div>
         <DialogFooter>
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>

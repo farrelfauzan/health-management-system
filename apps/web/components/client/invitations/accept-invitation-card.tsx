@@ -8,11 +8,12 @@ import {
   type UserInvitationAcceptedView,
   type UserInvitationPreview,
 } from '@hms/shared-types';
-import { Button, Card, CardContent, Input } from '@hms/ui';
+import { Button, Card, CardContent, Input, Label } from '@hms/ui';
 import Link from 'next/link';
 import { useFormatter, useTranslations } from 'next-intl';
 
 import { FieldError } from '#components/client/shared/field-error';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import {
   getUserInvitationPublicControllerPreviewInvitationV1QueryKey,
   userInvitationPublicControllerAcceptInvitationV1,
@@ -136,14 +137,7 @@ export function AcceptInvitationCard({ token }: AcceptInvitationCardProps) {
             void form.handleSubmit();
           }}
         >
-          {formError ? (
-            <p
-              role="alert"
-              className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700"
-            >
-              {formError}
-            </p>
-          ) : null}
+          {formError ? <InlineNotice tone="error">{formError}</InlineNotice> : null}
 
           <form.Field
             name="password"
@@ -151,12 +145,12 @@ export function AcceptInvitationCard({ token }: AcceptInvitationCardProps) {
           >
             {(field) => (
               <div className="space-y-1.5">
-                <label
+                <Label
                   htmlFor={field.name}
-                  className="block font-heading text-xs font-medium text-slate-600"
+                  className="font-heading text-xs text-slate-600"
                 >
                   {t('passwordLabel')}
-                </label>
+                </Label>
                 <Input
                   id={field.name}
                   type="password"
@@ -181,12 +175,12 @@ export function AcceptInvitationCard({ token }: AcceptInvitationCardProps) {
               >
                 {(field) => (
                   <div className="space-y-1.5">
-                    <label
+                    <Label
                       htmlFor={field.name}
-                      className="block font-heading text-xs font-medium text-slate-600"
+                      className="font-heading text-xs text-slate-600"
                     >
                       {t('confirmPasswordLabel')}
-                    </label>
+                    </Label>
                     <Input
                       id={field.name}
                       type="password"

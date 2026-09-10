@@ -6,6 +6,7 @@ import {
   Checkbox,
   Icon,
   Input,
+  Label,
   Select,
   SelectContent,
   SelectItem,
@@ -81,7 +82,7 @@ export function DoctorScheduleEntryRow({
         maxPatients={entry.maxPatients}
         onChange={(maxPatients) => onChange(index, { ...entry, maxPatients })}
       />
-      <label className="flex cursor-pointer items-center gap-1.5 text-xs text-slate-600">
+      <Label className="flex cursor-pointer items-center gap-1.5 text-xs text-slate-600 font-normal">
         <Checkbox
           checked={entry.isAvailable}
           aria-label={t('doctors.scheduleFields.availability', { index: index + 1 })}
@@ -90,7 +91,7 @@ export function DoctorScheduleEntryRow({
           }
         />
         {t('doctors.scheduleFields.available')}
-      </label>
+      </Label>
       <Button
         type="button"
         variant="ghost"

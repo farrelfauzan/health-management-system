@@ -3,6 +3,7 @@
 import { Combobox } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { FormLabel } from '#components/client/shared/form-label';
 import { useDoctorsList } from '#lib/doctors/use-doctors-list';
 import { usePatientsList } from '#lib/patients/use-patients-list';
 
@@ -29,12 +30,13 @@ export function AppointmentParticipantFields({
   return (
     <>
       <div className="space-y-1.5">
-        <label
+        <FormLabel
           htmlFor="appointment-patient-select"
-          className="block font-heading text-xs font-medium text-slate-600"
+          className="font-heading text-xs text-slate-600"
+          required
         >
           {t('common.patient')}
-        </label>
+        </FormLabel>
         <Combobox
           id="appointment-patient-select"
           options={patientsQuery.patients.map((patient) => ({
@@ -50,12 +52,13 @@ export function AppointmentParticipantFields({
         />
       </div>
       <div className="space-y-1.5">
-        <label
+        <FormLabel
           htmlFor="appointment-doctor-select"
-          className="block font-heading text-xs font-medium text-slate-600"
+          className="font-heading text-xs text-slate-600"
+          required
         >
           {t('common.doctor')}
-        </label>
+        </FormLabel>
         <Combobox
           id="appointment-doctor-select"
           options={doctorsQuery.doctors.map((doctor) => ({

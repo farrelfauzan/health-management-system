@@ -14,6 +14,7 @@ import {
   type DoctorsFilterValues,
 } from '#components/client/doctors/doctors-filter-card';
 import { DoctorsTable } from '#components/client/doctors/doctors-table';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { NumberedPagination } from '#components/client/shared/numbered-pagination';
 import { PageHeader } from '#components/shared/page-header';
 import { buildExpiredLicenseIndex } from '#lib/doctors/expired-license-doctor-ids';
@@ -117,9 +118,7 @@ export function DoctorsDirectoryPanel({ initialQuery }: DoctorsDirectoryPanelPro
       />
 
       {doctorsQuery.error && doctorsQuery.doctors.length > 0 ? (
-        <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
-          {t('doctors.errorDescription')}
-        </p>
+        <InlineNotice tone="error">{t('doctors.errorDescription')}</InlineNotice>
       ) : null}
 
       <Card className="gap-0 rounded-xl border-slate-200 py-0 shadow-none">

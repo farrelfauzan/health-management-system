@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import {
   CompleteInvoiceDocumentRenderPayload,
   CreateInvoiceDocumentRecordPayload,
+  formatPatientAddress,
   InvoiceDeliverySubjectRecord,
   InvoiceDocumentRecord,
   InvoiceItemRecord,
@@ -29,6 +30,15 @@ const RENDER_CONTEXT_INCLUDE = {
       dateOfBirth: true,
       sex: true,
       address: true,
+      // The structured address (P19-T10), resolved to names so the
+      // `patient.address` token prints one full line rather than the street
+      // alone. Names come from the region tables, never from the row.
+      rtRw: true,
+      postalCode: true,
+      village: { select: { name: true } },
+      district: { select: { name: true } },
+      regency: { select: { name: true } },
+      province: { select: { name: true } },
       phoneNumber: true,
       // The only identifier column this query touches. The ciphertext is
       // never fetched — the render path holds no plaintext NIK at any point.
@@ -90,7 +100,15 @@ export class InvoiceDocumentRepository {
               mrn: row.patient.mrn,
               dateOfBirth: row.patient.dateOfBirth,
               sex: row.patient.sex,
-              address: row.patient.address,
+              address: formatPatientAddress({
+                address: row.patient.address,
+                rtRw: row.patient.rtRw,
+                villageName: row.patient.village?.name,
+                districtName: row.patient.district?.name,
+                regencyName: row.patient.regency?.name,
+                provinceName: row.patient.province?.name,
+                postalCode: row.patient.postalCode,
+              }),
               phoneNumber: row.patient.phoneNumber,
               nikLast4: row.patient.nikLast4,
             },

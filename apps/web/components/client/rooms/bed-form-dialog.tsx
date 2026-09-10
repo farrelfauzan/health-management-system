@@ -18,38 +18,44 @@ import {
   DialogHeader,
   DialogTitle,
   Input,
-  Label,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
+  Skeleton,
 } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { MissingParentNotice } from '#components/client/rooms/missing-parent-notice';
 import {
   bedControllerCreateBedV1,
   bedControllerUpdateBedV1,
 } from '#lib/api/generated/room-management/room-management';
+import { FormLabel } from '#components/client/shared/form-label';
+import { RequiredLegend } from '#components/client/shared/required-legend';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { parseApiSuccess } from '#lib/api/response';
 import { invalidateRoomQueries } from '#lib/rooms/invalidate-room-queries';
+import { ROOM_OPTION_LIST_LIMIT } from '#lib/rooms/option-list-limit';
 import { useRoomsList } from '#lib/rooms/use-rooms-list';
 import { formatStatusLabel } from '#lib/shared/status-label';
-
-const ROOM_OPTIONS_LIMIT = 100;
 
 type BedFormDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   bed: BedResponse | null;
+  onGoToRooms?: () => void;
 };
 
-export function BedFormDialog({ open, onOpenChange, bed }: BedFormDialogProps) {
+export function BedFormDialog({ open, onOpenChange, bed, onGoToRooms }: BedFormDialogProps) {
   const t = useTranslations('operations');
   const queryClient = useQueryClient();
   const isEditing = bed !== null;
-  const roomsQuery = useRoomsList({ page: 1, limit: ROOM_OPTIONS_LIMIT, isActive: 'true' });
+  const roomsQuery = useRoomsList({ page: 1, limit: ROOM_OPTION_LIST_LIMIT, isActive: 'true' });
+  // Mirrors the room dialog: only a new bed can be stranded, and a failed
+  // load is not "no rooms yet".
+  const hasNoRooms = !isEditing && roomsQuery.isSuccess && roomsQuery.rooms.length === 0;
   const [roomId, setRoomId] = useState<string>(bed?.roomId ?? '');
   const [code, setCode] = useState<string>(bed?.code ?? '');
   const [status, setStatus] = useState<SettableBedStatusValue>(
@@ -68,6 +74,11 @@ export function BedFormDialog({ open, onOpenChange, bed }: BedFormDialogProps) {
     event.preventDefault();
     setActionError(null);
     const trimmedCode = code.trim();
+
+    if (hasNoRooms) {
+      setActionError(t('rooms.noRooms'));
+      return;
+    }
 
     if (!isEditing && (trimmedCode.length === 0 || !roomId)) {
       setActionError(t('rooms.requiredFields'));
@@ -92,6 +103,11 @@ export function BedFormDialog({ open, onOpenChange, bed }: BedFormDialogProps) {
     }
   }
 
+  function handleGoToRooms(): void {
+    onOpenChange(false);
+    onGoToRooms?.();
+  }
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg">
@@ -105,24 +121,41 @@ export function BedFormDialog({ open, onOpenChange, bed }: BedFormDialogProps) {
           <DialogDescription>{t('rooms.occupiedBedLocked')}</DialogDescription>
         </DialogHeader>
         <form noValidate className="space-y-4" onSubmit={(event) => void handleSubmit(event)}>
+          {!isEditing ? <RequiredLegend /> : null}
           <div className="space-y-2">
-            <Label htmlFor="bed-room">{t('rooms.room')}</Label>
-            <Select value={roomId} onValueChange={setRoomId} disabled={isEditing}>
-              <SelectTrigger id="bed-room" className="w-full">
-                <SelectValue placeholder={t('rooms.room')} />
-              </SelectTrigger>
-              <SelectContent>
-                {roomsQuery.rooms.map((room) => (
-                  <SelectItem key={room.id} value={room.id}>
-                    {room.ward.name} / {room.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <FormLabel htmlFor="bed-room" required={!isEditing}>
+              {t('rooms.room')}
+            </FormLabel>
+            {roomsQuery.isPending ? (
+              <Skeleton className="h-9 w-full" data-testid="bed-room-skeleton" />
+            ) : null}
+            {hasNoRooms ? (
+              <MissingParentNotice
+                message={t('rooms.noRooms')}
+                actionLabel={onGoToRooms ? t('rooms.goToRooms') : undefined}
+                onAction={handleGoToRooms}
+              />
+            ) : null}
+            {!roomsQuery.isPending && !hasNoRooms ? (
+              <Select value={roomId} onValueChange={setRoomId} disabled={isEditing}>
+                <SelectTrigger id="bed-room" className="w-full">
+                  <SelectValue placeholder={t('rooms.selectRoom')} />
+                </SelectTrigger>
+                <SelectContent>
+                  {roomsQuery.rooms.map((room) => (
+                    <SelectItem key={room.id} value={room.id}>
+                      {room.ward.name} / {room.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            ) : null}
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="bed-code">{t('rooms.code')}</Label>
+              <FormLabel htmlFor="bed-code" required={!isEditing}>
+                {t('rooms.code')}
+              </FormLabel>
               <Input
                 id="bed-code"
                 value={code}
@@ -131,7 +164,7 @@ export function BedFormDialog({ open, onOpenChange, bed }: BedFormDialogProps) {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="bed-status">{t('rooms.status')}</Label>
+              <FormLabel htmlFor="bed-status">{t('rooms.status')}</FormLabel>
               <Select
                 value={status}
                 onValueChange={(value) => setStatus(value as SettableBedStatusValue)}
@@ -150,15 +183,19 @@ export function BedFormDialog({ open, onOpenChange, bed }: BedFormDialogProps) {
             </div>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="bed-notes">{t('rooms.notes')}</Label>
-            <Input id="bed-notes" value={notes} onChange={(event) => setNotes(event.target.value)} />
+            <FormLabel htmlFor="bed-notes">{t('rooms.notes')}</FormLabel>
+            <Input
+              id="bed-notes"
+              value={notes}
+              onChange={(event) => setNotes(event.target.value)}
+            />
           </div>
           {actionError ? <p className="text-sm text-danger">{actionError}</p> : null}
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               {t('common.cancel')}
             </Button>
-            <Button type="submit" disabled={saveMutation.isPending}>
+            <Button type="submit" disabled={saveMutation.isPending || hasNoRooms}>
               {saveMutation.isPending ? t('common.saving') : t('rooms.save')}
             </Button>
           </DialogFooter>

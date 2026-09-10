@@ -28,6 +28,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import {
   organizationUnitControllerCreateUnitV1,
@@ -104,11 +105,7 @@ export function OrganizationUnitFormDialog({
         <DialogHeader>
           <DialogTitle>{isEditing ? t('editUnit') : t('newUnit')}</DialogTitle>
           <DialogDescription>
-            {isEditing
-              ? t('subtitle')
-              : parent
-                ? t('parent') + ': ' + parent.name
-                : t('topLevel')}
+            {isEditing ? t('subtitle') : parent ? t('parent') + ': ' + parent.name : t('topLevel')}
           </DialogDescription>
         </DialogHeader>
         <form noValidate className="space-y-4" onSubmit={(event) => void handleSubmit(event)}>
@@ -138,11 +135,7 @@ export function OrganizationUnitFormDialog({
               </SelectContent>
             </Select>
           </div>
-          {actionError ? (
-            <p role="alert" className="text-sm text-danger">
-              {actionError}
-            </p>
-          ) : null}
+          {actionError ? <InlineNotice tone="error">{actionError}</InlineNotice> : null}
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               {common('cancel')}

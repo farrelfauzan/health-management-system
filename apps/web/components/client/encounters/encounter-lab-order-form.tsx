@@ -3,10 +3,11 @@
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { CreateLabOrderInput, LabOrderPriorityValue, LabOrderView } from '@hms/shared-types';
-import { Button, Checkbox, Icon, Input } from '@hms/ui';
+import { Button, Checkbox, Icon, Input, Label } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
 import { EncounterLabTestPicker } from '#components/client/encounters/encounter-lab-test-picker';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { encounterLabOrderControllerCreateLabOrderV1 } from '#lib/api/generated/laboratory-orders/laboratory-orders';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { parseApiSuccess } from '#lib/api/response';
@@ -89,22 +90,22 @@ export function EncounterLabOrderForm({ encounterId }: EncounterLabOrderFormProp
       />
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-4">
-          <label className="flex items-center gap-2 text-sm text-slate-700">
+          <Label className="flex items-center gap-2 text-sm text-slate-700 font-normal">
             <Checkbox
               checked={priority === 'URGENT'}
               onCheckedChange={(checked) => setPriority(checked === true ? 'URGENT' : 'ROUTINE')}
               disabled={createMutation.isPending}
             />
             {t('encounters.laboratory.form.urgent')}
-          </label>
-          <label className="flex items-center gap-2 text-sm text-slate-700">
+          </Label>
+          <Label className="flex items-center gap-2 text-sm text-slate-700 font-normal">
             <Checkbox
               checked={isFasting}
               onCheckedChange={(checked) => setIsFasting(checked === true)}
               disabled={createMutation.isPending}
             />
             {t('encounters.laboratory.form.fasting')}
-          </label>
+          </Label>
         </div>
         <Button
           type="submit"
@@ -115,7 +116,7 @@ export function EncounterLabOrderForm({ encounterId }: EncounterLabOrderFormProp
           {t('encounters.laboratory.form.submit')}
         </Button>
       </div>
-      {actionError ? <p className="text-sm text-red-600">{actionError}</p> : null}
+      {actionError ? <InlineNotice tone="error">{actionError}</InlineNotice> : null}
     </form>
   );
 }

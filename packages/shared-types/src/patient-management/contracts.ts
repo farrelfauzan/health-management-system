@@ -105,6 +105,34 @@ export type PatientProfile = {
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
+  /**
+   * The structured address (P19-T10): codes, resolved names and one printable
+   * line. Always present; its code and name fields are absent on a legacy row
+   * that predates the region master data, and `formattedAddress` then carries
+   * the street line alone.
+   */
+  addressDetails: PatientAddressDetails;
+};
+
+/**
+ * The Kemendagri chain a patient lives in, resolved to names, plus the one
+ * line that prints it. The names are looked up at read time from the region
+ * master data, never stored on the patient — a renamed regency renames every
+ * address at once.
+ */
+export type PatientAddressDetails = {
+  provinceCode?: string;
+  provinceName?: string;
+  regencyCode?: string;
+  regencyName?: string;
+  districtCode?: string;
+  districtName?: string;
+  villageCode?: string;
+  villageName?: string;
+  rtRw?: string;
+  postalCode?: string;
+  /** Street, RT/RW, village, district, regency, province, postal code. */
+  formattedAddress: string;
 };
 
 /**
@@ -132,6 +160,11 @@ export type PatientListItem = {
   doctors: PatientRelatedDoctor[];
   /** Allergy count only — the full list is on the detail response. */
   allergyCount: number;
+  /**
+   * The structured address (P19-T10), resolved to names, so a worklist can
+   * show where a patient lives without a second request per row.
+   */
+  addressDetails: PatientAddressDetails;
 };
 
 export type PatientDetail = PatientProfile & {

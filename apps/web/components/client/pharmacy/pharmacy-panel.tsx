@@ -8,6 +8,7 @@ import { useTranslations } from 'next-intl';
 import { PrescriptionDetailsPanel } from '#components/client/pharmacy/prescription-details-panel';
 import { PrescriptionQueue } from '#components/client/pharmacy/prescription-queue';
 import type { PrescriptionQueueFilter } from '#components/client/pharmacy/prescription-queue-toggle';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { buildPharmacySearchParams, type PharmacySearchParams } from '#lib/pharmacy/search-params';
 import { usePendingPrescriptions } from '#lib/pharmacy/use-pending-prescriptions';
 
@@ -44,19 +45,10 @@ export function PharmacyPanel({ initialQuery }: PharmacyPanelProps) {
 
   return (
     <div className="space-y-6">
-      {dispenseMessage ? (
-        <p
-          role="status"
-          className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700"
-        >
-          {dispenseMessage}
-        </p>
-      ) : null}
+      {dispenseMessage ? <InlineNotice tone="success">{dispenseMessage}</InlineNotice> : null}
 
       {prescriptionsQuery.error && prescriptionsQuery.prescriptions.length > 0 ? (
-        <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
-          {t('queueErrorTitle')}
-        </p>
+        <InlineNotice tone="error">{t('queueErrorTitle')}</InlineNotice>
       ) : null}
 
       <div className="flex flex-col gap-6 xl:flex-row xl:items-start">

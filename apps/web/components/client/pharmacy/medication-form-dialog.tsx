@@ -27,6 +27,9 @@ import {
 } from '@hms/ui';
 import { useLocale, useTranslations } from 'next-intl';
 
+import { FormLabel } from '#components/client/shared/form-label';
+import { InlineNotice } from '#components/client/shared/inline-notice';
+import { RequiredLegend } from '#components/client/shared/required-legend';
 import {
   medicationControllerCreateMedicationV1,
   medicationControllerUpdateMedicationV1,
@@ -114,23 +117,119 @@ export function MedicationFormDialog({
             <DialogDescription>{t('noAbsoluteStock')}</DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-5 sm:grid-cols-2">
-            {error ? <p role="alert" className="rounded-lg bg-rose-50 p-3 text-sm text-rose-700 sm:col-span-2">{error}</p> : null}
-            <label className="space-y-1.5 text-sm">{t('code')}<Input value={code} onChange={(event) => setCode(event.target.value)} /></label>
-            <label className="space-y-1.5 text-sm">{t('kfaCode')}<Input inputMode="numeric" value={kfaCode} onChange={(event) => setKfaCode(event.target.value)} /></label>
-            <label className="space-y-1.5 text-sm sm:col-span-2">{t('name')}<Input value={name} onChange={(event) => setName(event.target.value)} /></label>
-            <label className="space-y-1.5 text-sm">{t('form')}<Input value={form} onChange={(event) => setForm(event.target.value)} /></label>
-            <label className="space-y-1.5 text-sm">{t('strength')}<Input value={strength} onChange={(event) => setStrength(event.target.value)} /></label>
-            <label className="space-y-1.5 text-sm">{t('unit')}<Select value={unit} onValueChange={(value) => setUnit(value as MedicationUnitValue)}><SelectTrigger className="w-full"><SelectValue /></SelectTrigger><SelectContent>{MEDICATION_UNITS.map((value) => <SelectItem key={value} value={value}>{formatStatusLabel(value, locale)}</SelectItem>)}</SelectContent></Select></label>
-            <label className="space-y-1.5 text-sm">{t('category')}<Select value={category} onValueChange={(value) => setCategory(value as MedicationCategoryValue)}><SelectTrigger className="w-full"><SelectValue /></SelectTrigger><SelectContent>{MEDICATION_CATEGORIES.map((value) => <SelectItem key={value} value={value}>{formatStatusLabel(value, locale)}</SelectItem>)}</SelectContent></Select></label>
-            <label className="space-y-1.5 text-sm sm:col-span-2">{t('reorderLevel')}<Input type="number" min="0" max="1000000" value={reorderLevel} onChange={(event) => setReorderLevel(event.target.value)} /></label>
+            <RequiredLegend className="sm:col-span-2" />
+            {error ? (
+              <InlineNotice tone="error" className="sm:col-span-2">
+                {error}
+              </InlineNotice>
+            ) : null}
+            <div className="space-y-1.5">
+              <FormLabel htmlFor="medication-code" required>
+                {t('code')}
+              </FormLabel>
+              <Input
+                id="medication-code"
+                value={code}
+                onChange={(event) => setCode(event.target.value)}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <FormLabel htmlFor="medication-kfa-code">{t('kfaCode')}</FormLabel>
+              <Input
+                id="medication-kfa-code"
+                inputMode="numeric"
+                value={kfaCode}
+                onChange={(event) => setKfaCode(event.target.value)}
+              />
+            </div>
+            <div className="space-y-1.5 sm:col-span-2">
+              <FormLabel htmlFor="medication-name" required>
+                {t('name')}
+              </FormLabel>
+              <Input
+                id="medication-name"
+                value={name}
+                onChange={(event) => setName(event.target.value)}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <FormLabel htmlFor="medication-form">{t('form')}</FormLabel>
+              <Input
+                id="medication-form"
+                value={form}
+                onChange={(event) => setForm(event.target.value)}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <FormLabel htmlFor="medication-strength">{t('strength')}</FormLabel>
+              <Input
+                id="medication-strength"
+                value={strength}
+                onChange={(event) => setStrength(event.target.value)}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <FormLabel htmlFor="medication-unit">{t('unit')}</FormLabel>
+              <Select value={unit} onValueChange={(value) => setUnit(value as MedicationUnitValue)}>
+                <SelectTrigger id="medication-unit" className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {MEDICATION_UNITS.map((value) => (
+                    <SelectItem key={value} value={value}>
+                      {formatStatusLabel(value, locale)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <FormLabel htmlFor="medication-category">{t('category')}</FormLabel>
+              <Select
+                value={category}
+                onValueChange={(value) => setCategory(value as MedicationCategoryValue)}
+              >
+                <SelectTrigger id="medication-category" className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {MEDICATION_CATEGORIES.map((value) => (
+                    <SelectItem key={value} value={value}>
+                      {formatStatusLabel(value, locale)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5 sm:col-span-2">
+              <FormLabel htmlFor="medication-reorder-level">{t('reorderLevel')}</FormLabel>
+              <Input
+                id="medication-reorder-level"
+                type="number"
+                min="0"
+                max="1000000"
+                value={reorderLevel}
+                onChange={(event) => setReorderLevel(event.target.value)}
+              />
+            </div>
             {/* P10-T16. The flag is what filters the immunisation picker on
                 the encounter: a catalog row nobody marks here cannot be
                 recorded as a vaccination at all. */}
-            <label className="flex items-center gap-2 text-sm sm:col-span-2"><Checkbox checked={isVaccine} onCheckedChange={(value) => setIsVaccine(value === true)} />{t('isVaccine')}</label>
+            <FormLabel className="flex items-center gap-2 text-sm sm:col-span-2 font-normal">
+              <Checkbox
+                checked={isVaccine}
+                onCheckedChange={(value) => setIsVaccine(value === true)}
+              />
+              {t('isVaccine')}
+            </FormLabel>
           </div>
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>{t('cancel')}</Button>
-            <Button type="submit" disabled={saveMutation.isPending}>{saveMutation.isPending ? t('saving') : t('saveMedication')}</Button>
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+              {t('cancel')}
+            </Button>
+            <Button type="submit" disabled={saveMutation.isPending}>
+              {saveMutation.isPending ? t('saving') : t('saveMedication')}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

@@ -3,9 +3,10 @@
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { RecordVitalSignsInput, VitalSignsResponse } from '@hms/shared-types';
-import { Button, Input, Textarea } from '@hms/ui';
+import { Button, Input, Label, Textarea } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { encounterClinicalDataControllerRecordVitalSignsV1 } from '#lib/api/generated/encounters/encounters';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { parseApiSuccess } from '#lib/api/response';
@@ -73,24 +74,17 @@ export function EncounterVitalsForm({ encounterId }: EncounterVitalsFormProps) {
 
   return (
     <form noValidate className="space-y-3" onSubmit={(event) => void handleSubmit(event)}>
-      {actionError ? (
-        <p
-          role="alert"
-          className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700"
-        >
-          {actionError}
-        </p>
-      ) : null}
+      {actionError ? <InlineNotice tone="error">{actionError}</InlineNotice> : null}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         {VITAL_SIGNS_FIELDS.map((field) => (
           <div key={field.key}>
-            <label
+            <Label
               htmlFor={`vitals-${field.key}`}
-              className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
+              className="mb-1.5 font-heading text-xs text-slate-600"
             >
               {t(`encounters.vitals.fields.${field.key}`)}{' '}
               <span className="text-slate-400">({t(`encounters.vitals.units.${field.key}`)})</span>
-            </label>
+            </Label>
             <Input
               id={`vitals-${field.key}`}
               inputMode="decimal"
@@ -104,12 +98,12 @@ export function EncounterVitalsForm({ encounterId }: EncounterVitalsFormProps) {
         ))}
       </div>
       <div>
-        <label
+        <Label
           htmlFor="vitals-notes"
-          className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
+          className="mb-1.5 font-heading text-xs text-slate-600"
         >
           {t('encounters.notes')}
-        </label>
+        </Label>
         <Textarea
           id="vitals-notes"
           rows={2}

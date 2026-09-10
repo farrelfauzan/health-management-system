@@ -5,6 +5,7 @@ import { INVOICE_STATUSES, type InvoiceStatusValue } from '@hms/shared-types';
 import {
   Button,
   DatePicker,
+  Label,
   Select,
   SelectContent,
   SelectItem,
@@ -76,12 +77,12 @@ export function InvoicesFilterCard({ initialQuery, onApply, onReset }: InvoicesF
         }
       >
         <div className="w-44">
-          <label
+          <Label
             htmlFor="invoices-status-filter"
-            className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
+            className="mb-1.5 font-heading text-xs text-slate-600"
           >
             {t('common.status')}
-          </label>
+          </Label>
           <Select value={status} onValueChange={setStatus}>
             <SelectTrigger id="invoices-status-filter" className="w-full">
               <SelectValue placeholder={t('billing.allStatuses')} />

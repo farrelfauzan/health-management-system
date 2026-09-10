@@ -7,13 +7,14 @@ import type {
   LabOrderPriorityValue,
   LabOrderView,
 } from '@hms/shared-types';
-import { Button, Card, CardContent, Checkbox, Icon, Input, toast } from '@hms/ui';
+import { Button, Card, CardContent, Checkbox, Icon, Input, Label, toast } from '@hms/ui';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 
 import { EncounterLabTestPicker } from '#components/client/encounters/encounter-lab-test-picker';
 import { LabIntakePatientPicker } from '#components/client/laboratory/lab-intake-patient-picker';
 import { LabIntakeSourceChoice } from '#components/client/laboratory/lab-intake-source-choice';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import type { LabIntakePatient } from '#lib/laboratory/lab-intake-patient';
 import { labOrderControllerCreateWalkInLabOrderV1 } from '#lib/api/generated/laboratory-orders/laboratory-orders';
 import { notifyApiError } from '#lib/api/notify-api-error';
@@ -156,7 +157,7 @@ export function LabIntakeWorkspace() {
 
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex flex-wrap items-center gap-4">
-              <label className="flex items-center gap-2 text-sm text-slate-700">
+              <Label className="flex items-center gap-2 text-sm text-slate-700 font-normal">
                 <Checkbox
                   checked={priority === 'URGENT'}
                   onCheckedChange={(checked) =>
@@ -165,15 +166,15 @@ export function LabIntakeWorkspace() {
                   disabled={isBusy}
                 />
                 {t('urgent')}
-              </label>
-              <label className="flex items-center gap-2 text-sm text-slate-700">
+              </Label>
+              <Label className="flex items-center gap-2 text-sm text-slate-700 font-normal">
                 <Checkbox
                   checked={isFasting}
                   onCheckedChange={(checked) => setIsFasting(checked === true)}
                   disabled={isBusy}
                 />
                 {t('fasting')}
-              </label>
+              </Label>
             </div>
             <Button
               type="submit"
@@ -184,7 +185,7 @@ export function LabIntakeWorkspace() {
               {t('submit')}
             </Button>
           </div>
-          {formError ? <p className="text-sm text-red-600">{formError}</p> : null}
+          {formError ? <InlineNotice tone="error">{formError}</InlineNotice> : null}
         </form>
       </CardContent>
     </Card>
