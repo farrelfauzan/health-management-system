@@ -187,6 +187,17 @@ Appointment scheduling model (session-based — see [docs/revamp/appointment-sch
 | `POST /api/v1/registrations`      | `registration.create:any` or `registration.create:own` | `SUPER_ADMIN`, `ADMIN`, `PATIENT` (own)                 |
 | `PATCH /api/v1/registrations/:id` | `registration.update:any` or `registration.update:own` | `SUPER_ADMIN`, `ADMIN`, `PATIENT` (own, limited fields) |
 
+A `PATCH` to `CHECKED_IN` is refused with `409 REGISTRATION_OUTSIDE_SESSION` when
+the registration's doctor holds no practice window containing the moment, with an
+early-arrival grace of `REGISTRATION_CHECKIN_GRACE_MINUTES` (default 60) before it
+and none after it (P19-T16). The `details` name the doctor, the reason
+(`NO_SESSION`, `BEFORE_OPENING`, `AFTER_END`) and the clinic-local hours, so a
+client can say it in its own language. A caller holding
+`registration.checkin-override:any` (seeded to `ADMIN` and `SUPER_ADMIN`) may send
+`force: true` to check in anyway; the override is audited as
+`REGISTRATION_CHECKIN_OVERRIDDEN`. A `LAB_ONLY` visit and any registration with no
+appointment have no doctor, and the rule does not apply to them.
+
 ### Pharmacy Flow
 
 | Endpoint                     | Permission                                           | Default Roles                                  |

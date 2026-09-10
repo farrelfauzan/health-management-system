@@ -1,5 +1,38 @@
 import type { AppointmentStatusValue } from '#appointment-management/schemas';
+import type { CheckInWindowReason } from '#registration-flow/resolve-checkin-window';
 import type { RegistrationStatusValue } from '#registration-flow/schemas';
+
+/**
+ * The doctor's practice hours for this registration today, and when the desk
+ * may start checking the patient in (P19-T16). Null when the registration has
+ * no doctor to be practising — a LAB_ONLY visit or a walk-in with no
+ * appointment — and equally null when the doctor holds no window today, which
+ * is the case the queue row has to render as "not practising".
+ */
+export type RegistrationCheckInWindow = {
+  /** Clinic-local HH:mm. */
+  start: string;
+  end: string;
+  /** `start` minus the early-arrival grace. */
+  opensAt: string;
+  /** When check-in stops; later than `end` only for an exact-time request. */
+  closesAt: string;
+};
+
+/**
+ * Why a check-in was refused, alongside the hours to quote (P19-T16). Rides in
+ * the `details` of the `REGISTRATION_OUTSIDE_SESSION` error so the web can
+ * render the sentence in the reader's own locale rather than echoing the
+ * English message the API composed for logs and API clients.
+ */
+export type RegistrationOutsideSessionDetails = {
+  doctorName: string;
+  reason: CheckInWindowReason;
+  sessionStart?: string;
+  sessionEnd?: string;
+  opensAt?: string;
+  closesAt?: string;
+};
 
 export type RegistrationPoli = {
   id: string;
@@ -27,6 +60,13 @@ export type RegistrationResponse = {
   createdById?: string;
   createdAt: string;
   updatedAt: string;
+  /**
+   * Today's practice window for this registration's doctor (P19-T16). Absent
+   * when there is no doctor or the doctor is not practising today; the queue
+   * row renders the hours when it is present and disables Check in when it is
+   * not, without waiting for the API to refuse.
+   */
+  todaySession?: RegistrationCheckInWindow;
 };
 
 export type RegistrationRelatedPatient = {

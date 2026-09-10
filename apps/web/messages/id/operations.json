@@ -185,6 +185,16 @@
       "appointmentHelp": "Hanya janji temu terjadwal atau terkonfirmasi yang dapat ditautkan.",
       "creating": "Mendaftarkan...",
       "createAction": "Buat Pendaftaran",
+      "session": {
+        "todayHours": "Praktik {start}–{end} hari ini",
+        "noSessionToday": "Tidak praktik hari ini",
+        "noSession": "{doctor} tidak memiliki sesi praktik hari ini, jadi pasien ini belum bisa diproses masuk",
+        "beforeOpening": "{doctor} praktik {start}–{end} hari ini; proses masuk dibuka pukul {opensAt}",
+        "afterEnd": "{doctor} praktik {start}–{end} hari ini; proses masuk untuk sesi tersebut sudah ditutup",
+        "checkInAnyway": "Tetap Proses Masuk",
+        "overrideTitle": "Memproses masuk di luar sesi praktik",
+        "overrideDescription": "Dokter tidak praktik hari ini. Penggantian aturan ini dicatat atas nama akun Anda."
+      },
       "labels": {
         "eligibility": "Kelayakan BPJS",
         "membership": "Kepesertaan",

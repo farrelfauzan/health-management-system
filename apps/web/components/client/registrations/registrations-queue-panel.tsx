@@ -30,6 +30,12 @@ import { useRegistrationsList } from '#lib/registrations/use-registrations-list'
 type PendingTransition = {
   registration: RegistrationListItem;
   target: RegistrationTransitionTarget;
+  /**
+   * The desk chose "Check in anyway" on a doctor who is not practising
+   * (P19-T16). Carried into the dialog so the confirmation says what is being
+   * overridden before the request goes out.
+   */
+  isForced: boolean;
 };
 
 type RegistrationsQueuePanelProps = {
@@ -73,8 +79,9 @@ export function RegistrationsQueuePanel({
   function handleTransition(
     registration: RegistrationListItem,
     target: RegistrationTransitionTarget,
+    isForced = false,
   ): void {
-    setPendingTransition({ registration, target });
+    setPendingTransition({ registration, target, isForced });
   }
 
   return (
@@ -165,7 +172,7 @@ export function RegistrationsQueuePanel({
 
       {pendingTransition ? (
         <RegistrationTransitionDialog
-          key={`${pendingTransition.registration.id}-${pendingTransition.target}`}
+          key={`${pendingTransition.registration.id}-${pendingTransition.target}-${String(pendingTransition.isForced)}`}
           open={Boolean(pendingTransition)}
           onOpenChange={(dialogOpen) => {
             if (!dialogOpen) {
@@ -174,6 +181,7 @@ export function RegistrationsQueuePanel({
           }}
           registration={pendingTransition.registration}
           targetStatus={pendingTransition.target}
+          isForced={pendingTransition.isForced}
         />
       ) : null}
     </div>

@@ -9,6 +9,7 @@ import {
   CreateAppointmentInput,
   CreateSessionAppointmentInput,
   CreateSpecialRequestAppointmentInput,
+  DoctorPracticeWindowRecord,
   DoctorSessionCalendarItem,
   DoctorSessionListItem,
   ExpiredDoctorLicence,
@@ -306,6 +307,55 @@ export class AppointmentManagementService {
     });
 
     return this.toAppointmentListItem(rejected);
+  }
+
+  /**
+   * The practice windows the given doctors hold on one clinic-local day
+   * (P19-T16), for the registration desk's check-in rule.
+   *
+   * No permission check and no scope: this answers "is the doctor in today",
+   * which the caller has already been authorised to ask by its own
+   * `registration.*` grant, and it returns opening hours rather than anybody's
+   * booking. It exists here rather than as a registration-flow query because
+   * sessions and schedules are this module's tables, and one rule for "what
+   * counts as practising" is the point.
+   */
+  async listDoctorPracticeWindows(params: {
+    doctorIds: readonly string[];
+    sessionDate: string;
+  }): Promise<DoctorPracticeWindowRecord[]> {
+    const doctorIds = [...new Set(params.doctorIds)];
+    if (doctorIds.length === 0) {
+      return [];
+    }
+    const { sessions, schedules } =
+      await this.appointmentManagementRepository.listDoctorPracticeWindows(
+        { doctorIds, sessionDate: params.sessionDate },
+        getDayOfWeekForDate(params.sessionDate),
+      );
+    const doctorsWithSessions = new Set(sessions.map((session) => session.doctorId));
+    const sessionWindows = sessions
+      .filter((session) => session.status !== 'CANCELLED')
+      .map((session) => ({
+        doctorId: session.doctorId,
+        date: params.sessionDate,
+        startTime: session.startTime,
+        endTime: session.endTime,
+        source: 'SESSION' as const,
+      }));
+    // A doctor whose day is already described by session rows is described by
+    // them entirely — a cancelled session means "not today", and the standing
+    // weekly pattern must not put the doctor back in the building.
+    const scheduleWindows = schedules
+      .filter((schedule) => !doctorsWithSessions.has(schedule.doctorId))
+      .map((schedule) => ({
+        doctorId: schedule.doctorId,
+        date: params.sessionDate,
+        startTime: schedule.startTime,
+        endTime: schedule.endTime,
+        source: 'SCHEDULE' as const,
+      }));
+    return [...sessionWindows, ...scheduleWindows];
   }
 
   async listDoctorSessions(

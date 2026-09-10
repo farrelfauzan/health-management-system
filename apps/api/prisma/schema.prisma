@@ -272,6 +272,11 @@ enum AuditAction {
   /// are two events, and the audit trail is how "which sheet did the patient
   /// get" is answered.
   LAB_REPORT_FILED
+  /// The front desk checked a patient in outside the doctor's practice window
+  /// (P19-T16). The override is the whole point of the row: the rule exists so
+  /// the queue only holds people somebody will see, and every deliberate
+  /// exception has to name who made it and which hours were bypassed.
+  REGISTRATION_CHECKIN_OVERRIDDEN
 }
 
 enum BpjsSubmissionType {

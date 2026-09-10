@@ -8,6 +8,7 @@
 import type { RegistrationFlowControllerListRegistrationsV1200DataItemAppointment } from './registrationFlowControllerListRegistrationsV1200DataItemAppointment';
 import type { RegistrationFlowControllerListRegistrationsV1200DataItemPatient } from './registrationFlowControllerListRegistrationsV1200DataItemPatient';
 import type { RegistrationFlowControllerListRegistrationsV1200DataItemPoli } from './registrationFlowControllerListRegistrationsV1200DataItemPoli';
+import type { RegistrationFlowControllerListRegistrationsV1200DataItemTodaySession } from './registrationFlowControllerListRegistrationsV1200DataItemTodaySession';
 
 export type RegistrationFlowControllerListRegistrationsV1200DataItem = {
   id: string;
@@ -22,6 +23,7 @@ export type RegistrationFlowControllerListRegistrationsV1200DataItem = {
   createdById: string;
   createdAt: string;
   updatedAt: string;
+  todaySession: RegistrationFlowControllerListRegistrationsV1200DataItemTodaySession;
   patient: RegistrationFlowControllerListRegistrationsV1200DataItemPatient;
   appointment: RegistrationFlowControllerListRegistrationsV1200DataItemAppointment;
 };
