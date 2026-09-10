@@ -480,14 +480,14 @@
     },
     "upload": {
       "title": "Upload to the clinic corpus",
-      "description": "The file goes straight to secure storage. It becomes answerable once processing finishes.",
+      "description": "Pick one or more files. Each becomes its own document, and each becomes answerable once processing finishes.",
       "fields": {
-        "file": "File",
-        "fileHint": "PDF, Markdown, plain text, or a scan (JPEG, PNG, WebP). Up to 20 MB.",
-        "title": "Title",
+        "files": "Files",
+        "filesHint": "PDF, Markdown, plain text, or a scan (JPEG, PNG, WebP). Up to 20 MB each.",
         "visibility": "Who can be shown this",
-        "visibilityHint": "Staff only is the safe default. Choosing patients means passages from this document can be quoted to anyone who messages the clinic.",
-        "language": "Language"
+        "visibilityHint": "Staff only is the safe default, and it applies to every file in this upload. Choosing patients means passages from these documents can be quoted to anyone who messages the clinic.",
+        "language": "Language",
+        "languageHint": "Applies to every file in this upload."
       },
       "visibilities": {
         "PATIENT": "Patients only",
@@ -498,10 +498,17 @@
         "ID": "Indonesian",
         "EN": "English"
       },
+      "selected": "{count, plural, one {# file selected} other {# files selected}}",
+      "outcome": {
+        "recorded": "Uploaded",
+        "failed": "Failed"
+      },
       "actions": {
         "cancel": "Cancel",
-        "upload": "Upload",
-        "uploading": "Uploading…"
+        "remove": "Remove {name}",
+        "upload": "Upload {count, plural, one {# file} other {# files}}",
+        "uploading": "Uploading…",
+        "done": "Done"
       },
       "progress": {
         "preparing": "Preparing upload…",
@@ -510,11 +517,11 @@
         "complete": "Done"
       },
       "errors": {
-        "noFile": "Choose a file first.",
+        "noFiles": "Choose at least one file.",
         "unsupportedType": "That file type is not accepted. Use PDF, Markdown or plain text.",
         "failed": "The upload did not complete."
       },
-      "success": "Document uploaded. It will be answerable once processing finishes."
+      "summary": "{recorded, plural, =0 {No documents uploaded} one {# document uploaded} other {# documents uploaded}}, {failed, plural, =0 {none failed} one {# failed} other {# failed}}."
     },
     "edit": {
       "title": "Edit document",

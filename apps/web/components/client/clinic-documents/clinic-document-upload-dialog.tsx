@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   DOCUMENT_LANGUAGES,
@@ -16,7 +16,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  Input,
   Label,
   Select,
   SelectContent,
@@ -27,12 +26,14 @@ import {
 import { useTranslations } from 'next-intl';
 
 import { DocumentFilePicker } from '#components/client/documents/document-file-picker';
-import { UploadProgressIndicator } from '#components/client/documents/upload-progress-indicator';
+import { UploadFileItem } from '#components/client/documents/upload-file-item';
 import { InlineNotice } from '#components/client/shared/inline-notice';
-import { invalidateClinicDocumentQueries } from '#lib/clinic-documents/invalidate-clinic-document-queries';
-import { uploadClinicDocument } from '#lib/clinic-documents/upload-clinic-document';
 import { resolveApiErrorMessage } from '#lib/api/resolve-api-error-message';
-import { isAcceptedDocumentMimeType } from '#lib/documents/is-accepted-document-mime-type';
+import { uploadClinicDocumentBatch } from '#lib/clinic-documents/upload-clinic-document-batch';
+import { invalidateClinicDocumentQueries } from '#lib/clinic-documents/invalidate-clinic-document-queries';
+import { UnsupportedDocumentTypeError } from '#lib/documents/unsupported-document-type-error';
+import type { UploadFileEntry } from '#lib/documents/upload-file-entry';
+import type { UploadFileItemLabels } from '#lib/documents/upload-file-item-labels';
 import type { DocumentUploadProgress } from '#lib/documents/upload-progress';
 
 type ClinicDocumentUploadDialogProps = {
@@ -42,13 +43,34 @@ type ClinicDocumentUploadDialogProps = {
 };
 
 /**
- * The upload flow for the shared corpus.
+ * Multi-file upload into the shared corpus (`P19-T15`).
  *
- * **Visibility defaults to `DOCTOR`, not `BOTH`.** The safe default is the
- * narrow one: an admin who forgets the field gets a staff-only document, which
- * is a document that answers too few questions, rather than a patient-facing
- * one, which is an internal SOP quoted to a stranger on WhatsApp. Only one of
- * those two mistakes is recoverable by editing the row afterwards.
+ * Seeding a clinic corpus is a bulk act — an admin arrives with the folder of
+ * SOPs and FAQs the clinic already has, not with one file — so the dialog
+ * takes as many files as the picker will give it and uploads them one after
+ * another. It is the same batch the knowledge base got, over the same shared
+ * row and the same picker.
+ *
+ * The batch is not all-or-nothing. Each file gets its own progress bar and its
+ * own outcome, a failure settles its row and the rest continue, and pressing
+ * upload again retries only the rows that failed. The list refreshes only when
+ * at least one document was actually recorded.
+ *
+ * Titles are not editable here. Each document is recorded under its own
+ * filename, which is what a curated folder of references already carries, and
+ * the one document in twenty whose name is wrong is renamed afterwards from
+ * the edit dialog — a row of twenty text inputs would make the common case
+ * worse to spare the rare one.
+ *
+ * **Visibility defaults to `DOCTOR`, not `BOTH`, and stays one control for the
+ * whole batch.** The safe default is the narrow one: an admin who forgets the
+ * field gets staff-only documents, which answer too few questions, rather than
+ * patient-facing ones, which are internal SOPs quoted to a stranger on
+ * WhatsApp. Only one of those two mistakes is recoverable by editing the row
+ * afterwards. Bulk does not weaken that — a folder is loaded for one audience
+ * at a time, and a per-row audience picker would turn the field that carries
+ * the consequence into twenty chances to leave one where the last pick left
+ * it.
  */
 export function ClinicDocumentUploadDialog({
   open,
@@ -57,65 +79,115 @@ export function ClinicDocumentUploadDialog({
 }: ClinicDocumentUploadDialogProps) {
   const t = useTranslations('clinicCorpus.upload');
   const queryClient = useQueryClient();
-  const [file, setFile] = useState<File | null>(null);
-  const [title, setTitle] = useState('');
+  const nextEntryId = useRef(0);
+  const [entries, setEntries] = useState<UploadFileEntry[]>([]);
   const [visibility, setVisibility] = useState<DocumentVisibilityValue>('DOCTOR');
   const [language, setLanguage] = useState<DocumentLanguageValue>('ID');
-  const [error, setError] = useState<string | null>(null);
-  const [progress, setProgress] = useState<DocumentUploadProgress | null>(null);
+  const [pickerErrors, setPickerErrors] = useState<string[]>([]);
+  const [formError, setFormError] = useState<string | null>(null);
+
+  function resetForm(): void {
+    setEntries([]);
+    setVisibility('DOCTOR');
+    setLanguage('ID');
+    setPickerErrors([]);
+    setFormError(null);
+  }
+
+  function updateEntry(id: string, patch: Partial<UploadFileEntry>): void {
+    setEntries((current) =>
+      current.map((entry) => (entry.id === id ? { ...entry, ...patch } : entry)),
+    );
+  }
+
+  function handleFilesPicked(files: File[]): void {
+    setFormError(null);
+    const picked = files.map((file): UploadFileEntry => {
+      nextEntryId.current += 1;
+      return {
+        id: `clinic-upload-${nextEntryId.current}`,
+        file,
+        title: file.name,
+        progress: null,
+        outcome: 'pending',
+        errorMessage: null,
+      };
+    });
+    setEntries((current) => [...current, ...picked]);
+  }
+
+  function handleRejected(message: string): void {
+    setPickerErrors((current) => [...current, message]);
+  }
+
+  function resolveEntryError(error: unknown): string {
+    if (error instanceof UnsupportedDocumentTypeError) {
+      return t('errors.unsupportedType');
+    }
+    return resolveApiErrorMessage(error, t('errors.failed'));
+  }
+
+  function resolveRetryable(): UploadFileEntry[] {
+    return entries.filter((entry) => entry.outcome === 'pending' || entry.outcome === 'failed');
+  }
 
   const uploadMutation = useMutation({
     mutationFn: async () => {
-      if (!file) {
-        throw new Error(t('errors.noFile'));
+      const retryable = resolveRetryable();
+      if (retryable.length === 0) {
+        throw new Error(t('errors.noFiles'));
       }
-      if (!isAcceptedDocumentMimeType(file.type)) {
-        throw new Error(t('errors.unsupportedType'));
+      for (const entry of retryable) {
+        updateEntry(entry.id, { outcome: 'pending', errorMessage: null, progress: null });
       }
-      await uploadClinicDocument({
-        file,
-        title: title.trim() === '' ? file.name : title.trim(),
-        mimeType: file.type,
+      return uploadClinicDocumentBatch({
+        items: retryable.map((entry) => ({ file: entry.file, title: entry.title })),
         // Pinned rather than offered. This screen is the FAQ corpus; a
         // GENERAL document would be stored and never embedded, which on a
         // knowledge-base screen is a silently useless upload.
         purpose: 'FAQ_KNOWLEDGE_BASE',
         visibility,
         language,
-        onProgress: setProgress,
+        onItemProgress: (index: number, progress: DocumentUploadProgress) => {
+          const target = retryable[index];
+          if (target) {
+            updateEntry(target.id, { progress });
+          }
+        },
+        onItemSettled: (result) => {
+          const target = retryable[result.index];
+          if (!target) {
+            return;
+          }
+          updateEntry(target.id, {
+            outcome: result.outcome,
+            errorMessage: result.outcome === 'failed' ? resolveEntryError(result.error) : null,
+          });
+        },
       });
     },
-    onSuccess: async () => {
-      await invalidateClinicDocumentQueries(queryClient);
-      resetForm();
-      onOpenChange(false);
-      onUploaded(t('success'));
+    onSuccess: async (results) => {
+      const failed = results.filter((result) => result.outcome === 'failed').length;
+      const recorded = results.length - failed;
+      // Nothing landed means nothing changed on the server; refetching the
+      // list would only make the table flicker for no new rows.
+      if (recorded > 0) {
+        await invalidateClinicDocumentQueries(queryClient);
+      }
+      onUploaded(t('summary', { recorded, failed }));
+      if (failed === 0) {
+        resetForm();
+        onOpenChange(false);
+      }
     },
     onError: (err: unknown) => {
-      setProgress(null);
-      setError(resolveApiErrorMessage(err, t('errors.failed')));
+      setFormError(resolveApiErrorMessage(err, t('errors.failed')));
     },
   });
 
-  function resetForm(): void {
-    setFile(null);
-    setTitle('');
-    setVisibility('DOCTOR');
-    setLanguage('ID');
-    setError(null);
-    setProgress(null);
-  }
-
-  function resolveProgressLabel(current: DocumentUploadProgress): string {
-    if (current.stage === 'uploading') {
-      return t('progress.uploading', { percent: current.percent });
-    }
-    return t(`progress.${current.stage}`);
-  }
-
   function handleOpenChange(nextOpen: boolean): void {
-    // Closing mid-upload would hide a request that is still running; the
-    // dialog stays open until the upload settles either way.
+    // Closing mid-batch would hide uploads that are still running; the dialog
+    // stays open until every row has settled.
     if (!nextOpen && uploadMutation.isPending) {
       return;
     }
@@ -125,40 +197,76 @@ export function ClinicDocumentUploadDialog({
     onOpenChange(nextOpen);
   }
 
+  const retryableCount = resolveRetryable().length;
+  const isRunning = uploadMutation.isPending;
+  const itemLabels: UploadFileItemLabels = {
+    recorded: t('outcome.recorded'),
+    // The clinic confirm has no conflict case, so a row never settles as
+    // already-recorded here; the label exists only to satisfy the shared
+    // row's contract.
+    alreadyRecorded: t('outcome.recorded'),
+    failed: t('outcome.failed'),
+    buildRemoveLabel: (name) => t('actions.remove', { name }),
+    buildProgressLabel: (progress) =>
+      progress.stage === 'uploading'
+        ? t('progress.uploading', { percent: progress.percent })
+        : t(`progress.${progress.stage}`),
+  };
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>{t('title')}</DialogTitle>
           <DialogDescription>{t('description')}</DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
           <DocumentFilePicker
-            id="clinic-document-file"
-            label={t('fields.file')}
-            hint={t('fields.fileHint')}
-            onFileSelected={(selected) => {
-              setError(null);
-              setFile(selected);
-            }}
-            onRejected={setError}
+            id="clinic-document-files"
+            label={t('fields.files')}
+            hint={t('fields.filesHint')}
+            multiple
+            disabled={isRunning}
+            onFilesSelected={handleFilesPicked}
+            onRejected={handleRejected}
           />
-          <div className="space-y-2">
-            <Label htmlFor="clinic-document-title">{t('fields.title')}</Label>
-            <Input
-              id="clinic-document-title"
-              value={title}
-              placeholder={file?.name ?? ''}
-              onChange={(event) => setTitle(event.target.value)}
-            />
-          </div>
+          {pickerErrors.length > 0 ? (
+            <InlineNotice tone="error">
+              <ul className="space-y-1">
+                {pickerErrors.map((message, index) => (
+                  <li key={`${index}-${message}`}>{message}</li>
+                ))}
+              </ul>
+            </InlineNotice>
+          ) : null}
+          {entries.length > 0 ? (
+            <div className="space-y-2">
+              <p className="text-xs font-medium text-slate-500">
+                {t('selected', { count: entries.length })}
+              </p>
+              <ul className="space-y-2">
+                {entries.map((entry) => (
+                  <UploadFileItem
+                    key={entry.id}
+                    entry={entry}
+                    isBatchRunning={isRunning}
+                    labels={itemLabels}
+                    onRemove={(id) =>
+                      setEntries((current) => current.filter((item) => item.id !== id))
+                    }
+                  />
+                ))}
+              </ul>
+            </div>
+          ) : null}
           <div className="space-y-2">
             <Label htmlFor="clinic-document-visibility">{t('fields.visibility')}</Label>
             <Select
               value={visibility}
+              disabled={isRunning}
               onValueChange={(value) => setVisibility(value as DocumentVisibilityValue)}
             >
-              <SelectTrigger id="clinic-document-visibility">
+              <SelectTrigger id="clinic-document-visibility" className="w-full">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -175,9 +283,10 @@ export function ClinicDocumentUploadDialog({
             <Label htmlFor="clinic-document-language">{t('fields.language')}</Label>
             <Select
               value={language}
+              disabled={isRunning}
               onValueChange={(value) => setLanguage(value as DocumentLanguageValue)}
             >
-              <SelectTrigger id="clinic-document-language">
+              <SelectTrigger id="clinic-document-language" className="w-full">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -188,27 +297,25 @@ export function ClinicDocumentUploadDialog({
                 ))}
               </SelectContent>
             </Select>
+            <p className="text-xs text-slate-500">{t('fields.languageHint')}</p>
           </div>
-          {error ? <InlineNotice tone="error">{error}</InlineNotice> : null}
-          {progress && uploadMutation.isPending ? (
-            <UploadProgressIndicator progress={progress} label={resolveProgressLabel(progress)} />
-          ) : null}
+          {formError ? <InlineNotice tone="error">{formError}</InlineNotice> : null}
         </div>
         <DialogFooter>
           <Button
             type="button"
             variant="outline"
-            disabled={uploadMutation.isPending}
+            disabled={isRunning}
             onClick={() => handleOpenChange(false)}
           >
-            {t('actions.cancel')}
+            {retryableCount === 0 && entries.length > 0 ? t('actions.done') : t('actions.cancel')}
           </Button>
           <Button
             type="button"
-            disabled={!file || uploadMutation.isPending}
+            disabled={isRunning || retryableCount === 0}
             onClick={() => uploadMutation.mutate()}
           >
-            {uploadMutation.isPending ? t('actions.uploading') : t('actions.upload')}
+            {isRunning ? t('actions.uploading') : t('actions.upload', { count: retryableCount })}
           </Button>
         </DialogFooter>
       </DialogContent>
