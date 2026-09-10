@@ -24,8 +24,18 @@ describe('Region master data seed against Postgres', () => {
     return Number(match?.[1]);
   }
 
+  /**
+   * Counts the dataset's own rows. Other suites share this database and seed
+   * a synthetic chain under province `99` — a code Kemendagri does not issue,
+   * chosen precisely so it cannot be mistaken for real data — and a patient
+   * that is retired rather than deleted keeps referencing it, so those rows
+   * outlive the suite that made them. Excluding them keeps this assertion
+   * about the seed file instead of about whatever else ran first.
+   */
   async function countRows(table: RegionTable): Promise<number> {
-    const result = await client.query<{ count: string }>(`SELECT count(*) AS count FROM "${table}"`);
+    const result = await client.query<{ count: string }>(
+      `SELECT count(*) AS count FROM "${table}" WHERE "code" NOT LIKE '99%'`,
+    );
     return Number(result.rows[0]?.count);
   }
 

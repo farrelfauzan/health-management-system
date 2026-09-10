@@ -35,6 +35,14 @@ describe('Billing patient journey (end to end)', () => {
   const STAFF_USER_ID = 'c26e0c6e-7d7c-4b6a-9c1e-2f3a4b5c6d80';
   const STAFF_ROLE_CODE = 'E2E_JOURNEY_STAFF';
   const NOTICE_VERSION_CODE = 'e2e-journey-notice';
+  // The front desk cannot create a patient without a region chain (P19-T11),
+  // and CI never loads `prisma/wilayah.sql`, so this spec seeds the one chain
+  // it needs. Code 99 is outside the Kemendagri range, so these rows cannot
+  // collide with the real dataset on a database that does have it.
+  const PROVINCE_CODE = '99';
+  const REGENCY_CODE = '99.99';
+  const DISTRICT_CODE = '99.99.99';
+  const VILLAGE_CODE = '99.99.99.9999';
   const PROCEDURE_CODE = `E2E${RUN_SUFFIX}`;
   const CONSULTATION_PRICE = 150_000;
   const PROCEDURE_PRICE = 75_000;
@@ -119,7 +127,31 @@ describe('Billing patient journey (end to end)', () => {
     });
   }
 
+  async function seedRegionChain(): Promise<void> {
+    await prisma.province.upsert({
+      where: { code: PROVINCE_CODE },
+      update: {},
+      create: { code: PROVINCE_CODE, name: 'Provinsi Uji' },
+    });
+    await prisma.regency.upsert({
+      where: { code: REGENCY_CODE },
+      update: {},
+      create: { code: REGENCY_CODE, name: 'Kota Uji', provinceCode: PROVINCE_CODE },
+    });
+    await prisma.district.upsert({
+      where: { code: DISTRICT_CODE },
+      update: {},
+      create: { code: DISTRICT_CODE, name: 'Kecamatan Uji', regencyCode: REGENCY_CODE },
+    });
+    await prisma.village.upsert({
+      where: { code: VILLAGE_CODE },
+      update: {},
+      create: { code: VILLAGE_CODE, name: 'Kelurahan Uji', districtCode: DISTRICT_CODE },
+    });
+  }
+
   async function seedClinic(): Promise<void> {
+    await seedRegionChain();
     const specialty = await prisma.specialty.create({
       data: { name: `${TEST_MARKER} Poli Umum` },
       select: { id: true },
@@ -324,6 +356,11 @@ describe('Billing patient journey (end to end)', () => {
         sex: 'FEMALE',
         phoneNumber: '0812-0000-1990',
         address: `Jl. Uji ${TEST_MARKER}`,
+        provinceCode: PROVINCE_CODE,
+        regencyCode: REGENCY_CODE,
+        districtCode: DISTRICT_CODE,
+        villageCode: VILLAGE_CODE,
+        rtRw: '003/007',
         privacyNotice: {
           privacyNoticeVersionId: noticeVersionId,
           locale: 'id',
