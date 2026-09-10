@@ -6,6 +6,7 @@ import type { ImmunizationResponse } from '@hms/shared-types';
 import { Icon } from '@hms/ui';
 import { useFormatter, useTranslations } from 'next-intl';
 
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { encounterClinicalDataControllerRemoveImmunizationV1 } from '#lib/api/generated/encounters/encounters';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { invalidateEncounterQueries } from '#lib/encounters/invalidate-encounter-queries';
@@ -65,11 +66,7 @@ export function EncounterImmunizationRow({
           // but without a KFA code it never reaches the national record.
           <p className="text-xs text-amber-700">{t('encounters.immunization.noKfa')}</p>
         )}
-        {actionError ? (
-          <p role="alert" className="text-xs text-rose-600">
-            {actionError}
-          </p>
-        ) : null}
+        {actionError ? <InlineNotice tone="error">{actionError}</InlineNotice> : null}
       </div>
       {isEditable ? (
         <button

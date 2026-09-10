@@ -2,6 +2,8 @@
 
 import { useTranslations } from 'next-intl';
 
+import { InlineNotice } from '#components/client/shared/inline-notice';
+
 /**
  * Every named approver has been deactivated or has lost the decide key, so
  * this round cannot resolve however long anyone waits (§7.5.10).
@@ -13,9 +15,5 @@ import { useTranslations } from 'next-intl';
 export function NoEligibleApproverBanner() {
   const t = useTranslations('operations.documents.approvals.panel');
 
-  return (
-    <p role="alert" className="rounded-lg bg-amber-50 px-4 py-3 text-sm text-amber-900">
-      {t('noEligibleApprover')}
-    </p>
-  );
+  return <InlineNotice tone="warning">{t('noEligibleApprover')}</InlineNotice>;
 }

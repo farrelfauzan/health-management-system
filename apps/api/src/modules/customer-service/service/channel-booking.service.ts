@@ -8,6 +8,7 @@ import {
   CustomerServiceConfig,
   DoctorSessionCalendarItem,
   LINKABLE_VERIFICATION_STATUSES,
+  normalizePhoneNumber,
   PatientPhoneMatch,
   PendingChannelBooking,
 } from '@hms/shared-types';
@@ -25,7 +26,6 @@ import { CS_REPLY_TEMPLATES } from './cs-reply-templates';
 import { decodeChannelSessionReference } from './channel-session-reference';
 import { generateBookingReferenceCode } from './generate-booking-reference-code';
 import { normalizeClaimedName } from './normalize-claimed-name';
-import { normalizePhoneNumber } from './normalize-phone-number';
 
 const DAY_IN_MS = 86_400_000;
 

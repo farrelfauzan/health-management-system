@@ -22,6 +22,7 @@ export type DoctorManagementControllerListDoctorsV1200DataItem = {
   titleValue: DoctorManagementControllerListDoctorsV1200DataItemTitleValue;
   degreeValues: DoctorManagementControllerListDoctorsV1200DataItemDegreeValuesItem[];
   displayName: string;
+  invitationStatus: string;
   nikMasked: string;
   satusehatPractitionerId: string;
   ownerUserId: string;

@@ -185,6 +185,16 @@
       "appointmentHelp": "Hanya janji temu terjadwal atau terkonfirmasi yang dapat ditautkan.",
       "creating": "Mendaftarkan...",
       "createAction": "Buat Pendaftaran",
+      "session": {
+        "todayHours": "Praktik {start}–{end} hari ini",
+        "noSessionToday": "Tidak praktik hari ini",
+        "noSession": "{doctor} tidak memiliki sesi praktik hari ini, jadi pasien ini belum bisa diproses masuk",
+        "beforeOpening": "{doctor} praktik {start}–{end} hari ini; proses masuk dibuka pukul {opensAt}",
+        "afterEnd": "{doctor} praktik {start}–{end} hari ini; proses masuk untuk sesi tersebut sudah ditutup",
+        "checkInAnyway": "Tetap Proses Masuk",
+        "overrideTitle": "Memproses masuk di luar sesi praktik",
+        "overrideDescription": "Dokter tidak praktik hari ini. Penggantian aturan ini dicatat atas nama akun Anda."
+      },
       "labels": {
         "eligibility": "Kelayakan BPJS",
         "membership": "Kepesertaan",
@@ -873,7 +883,15 @@
       "quotaMustBePositive": "Kuota harus bilangan bulat minimal 1, atau dikosongkan untuk tanpa batas.",
       "emptyRoomClasses": "Belum ada kelas perawatan",
       "emptyRoomClassesDescription": "Tambahkan kelas — VIP, Kelas 1, atau sebutan lain yang dipakai klinik ini — sebelum membuat kamar.",
-      "noRoomClasses": "Belum ada kelas aktif. Tambahkan lebih dulu pada tab Kelas."
+      "noRoomClasses": "Belum ada kelas aktif. Tambahkan lebih dulu pada tab Kelas.",
+      "selectWard": "Pilih bangsal",
+      "selectRoom": "Pilih kamar",
+      "noWards": "Belum ada bangsal. Buat bangsal lebih dulu pada tab Bangsal.",
+      "noWardsDescription": "Setiap kamar berada di dalam sebuah bangsal. Buat bangsal lebih dulu, lalu kembali ke sini untuk menambahkan kamar.",
+      "noRooms": "Belum ada kamar. Buat kamar lebih dulu pada tab Kamar.",
+      "noRoomsDescription": "Setiap tempat tidur berada di dalam sebuah kamar. Buat kamar lebih dulu, lalu kembali ke sini untuk menambahkan tempat tidur.",
+      "goToWards": "Buka tab Bangsal",
+      "goToRooms": "Buka tab Kamar"
     },
     "admissions": {
       "title": "Rawat Inap",
@@ -1986,6 +2004,58 @@
       "registerFailed": "Pendaftaran webhook gagal.",
       "lastErrorStale": "Error terakhir {time}: {message}. Sudah tidak ada antrean tertahan, jadi ini sisa gangguan yang berlalu.",
       "lastErrorLive": "Error terakhir {time}: {message}."
+    }
+  },
+  "prospectivePatients": {
+    "subtitle": "Orang yang memesan lewat WhatsApp atau Telegram dan belum menjadi pasien. Daftarkan mereka sebagai pasien baru, atau tautkan ke rekam medis yang sudah mereka miliki.",
+    "itemLabel": "booking chat",
+    "openBookings": "{count, plural, =0 {Tidak ada booking berjalan} other {# booking berjalan}}",
+    "noAppointment": "Tidak ada booking mendatang",
+    "converted": "{name} sudah terdaftar. Nomor rekam medis {mrn}.",
+    "columns": {
+      "name": "Nama",
+      "phone": "Telepon",
+      "channel": "Kanal",
+      "appointment": "Booking berikutnya",
+      "status": "Status",
+      "expires": "Disimpan sampai",
+      "received": "Permintaan masuk",
+      "actions": "Aksi"
+    },
+    "status": {
+      "AWAITING_ARRIVAL": "Menunggu",
+      "CONVERTED": "Terdaftar",
+      "LINKED": "Tertaut",
+      "EXPIRED": "Kedaluwarsa"
+    },
+    "channel": {
+      "WHATSAPP": "WhatsApp",
+      "TELEGRAM": "Telegram"
+    },
+    "filters": {
+      "search": "Cari",
+      "searchPlaceholder": "Nama atau nomor telepon",
+      "status": "Status",
+      "channel": "Kanal",
+      "allChannels": "Semua kanal",
+      "sort": "Urutan",
+      "reset": "Atur ulang"
+    },
+    "sort": {
+      "createdAt_asc": "Permintaan terlama dulu",
+      "createdAt_desc": "Permintaan terbaru dulu",
+      "expiresAt_asc": "Paling cepat kedaluwarsa",
+      "expiresAt_desc": "Paling lama kedaluwarsa"
+    },
+    "actions": {
+      "convert": "Daftarkan sebagai pasien",
+      "link": "Tautkan ke pasien terdaftar",
+      "openRecord": "Buka rekam medis"
+    },
+    "states": {
+      "error": "Booking chat tidak dapat dimuat.",
+      "emptyTitle": "Tidak ada yang menunggu",
+      "emptyDescription": "Tidak ada yang cocok dengan filter ini. Booking muncul di sini begitu ada orang memesan lewat WhatsApp atau Telegram."
     }
   }
 }

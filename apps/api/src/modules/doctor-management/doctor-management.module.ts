@@ -1,7 +1,9 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 
+import { AdminManagementModule } from '../admin-management/admin-management.module';
 import { AuthModule } from '../auth/auth.module';
 import { NotificationModule } from '../notification/notification.module';
+import { UserInvitationModule } from '../user-invitation/user-invitation.module';
 import { DoctorCredentialOptionController } from './controller/doctor-credential-option.controller';
 import { DoctorLicenseExpiryController } from './controller/doctor-license-expiry.controller';
 import { DoctorManagementController } from './controller/doctor-management.controller';
@@ -21,7 +23,20 @@ import { DoctorManagementService } from './service/doctor-management.service';
  * timezone the day boundary is counted in.
  */
 @Module({
-  imports: [AuthModule, NotificationModule],
+  imports: [
+    AuthModule,
+    NotificationModule,
+    // `forwardRef` on both because P19-T15 closes a loop that already ran most
+    // of the way round the application: `AdminManagementModule` reaches
+    // `AppointmentManagementModule` through the document and channel modules,
+    // and that one imports this module for the scheduling warning. Creating a
+    // doctor's login is genuinely this module's business, so the edge is real
+    // rather than a layering slip — `UserInvitationModule` gets the same
+    // treatment because it imports `AdminManagementModule` and would otherwise
+    // be evaluated mid-loop for the same reason.
+    forwardRef(() => AdminManagementModule),
+    forwardRef(() => UserInvitationModule),
+  ],
   controllers: [
     DoctorManagementController,
     DoctorLicenseExpiryController,

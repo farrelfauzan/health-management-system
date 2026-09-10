@@ -1398,3 +1398,31 @@ export type LabReport = Prisma.LabReportModel
  * procedure is a vaccination that cannot be reported (P10-T16).
  */
 export type Immunization = Prisma.ImmunizationModel
+/**
+ * Model Province
+ * Indonesian administrative regions (P19-T10), keyed by the Kemendagri
+ * `kode wilayah` — `11`, `11.01`, `11.01.01`, `11.01.01.2001` — because that
+ * code is what SATUSEHAT's `administrativeCode` extension carries and what
+ * every other national system joins on. Seeded from `prisma/wilayah.sql`
+ * (see docs/ops/region-master-data.md), never edited by a clinic: a region
+ * that Kemendagri retires is deactivated, not deleted, so the addresses that
+ * name it keep resolving.
+ */
+export type Province = Prisma.ProvinceModel
+/**
+ * Model Regency
+ * Kabupaten or kota. The dataset does not distinguish the two beyond the
+ * name prefix, and neither does any address form.
+ */
+export type Regency = Prisma.RegencyModel
+/**
+ * Model District
+ * Kecamatan.
+ */
+export type District = Prisma.DistrictModel
+/**
+ * Model Village
+ * Kelurahan or desa — the level the form searches by typed prefix, hence the
+ * index on `(district_code, name)`.
+ */
+export type Village = Prisma.VillageModel

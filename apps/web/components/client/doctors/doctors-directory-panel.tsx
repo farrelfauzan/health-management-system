@@ -14,12 +14,14 @@ import {
   type DoctorsFilterValues,
 } from '#components/client/doctors/doctors-filter-card';
 import { DoctorsTable } from '#components/client/doctors/doctors-table';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { NumberedPagination } from '#components/client/shared/numbered-pagination';
 import { PageHeader } from '#components/shared/page-header';
 import { buildExpiredLicenseIndex } from '#lib/doctors/expired-license-doctor-ids';
 import { buildDoctorsSearchParams, type DoctorsSearchParams } from '#lib/doctors/search-params';
 import { useDoctorLicenseExpiry } from '#lib/doctors/use-doctor-license-expiry';
 import { useDoctorsList } from '#lib/doctors/use-doctors-list';
+import { useShellBreadcrumbRoot } from '#lib/navigation/use-shell-breadcrumb-root';
 
 type DoctorsDirectoryPanelProps = {
   initialQuery: DoctorsSearchParams;
@@ -29,6 +31,7 @@ export function DoctorsDirectoryPanel({ initialQuery }: DoctorsDirectoryPanelPro
   const router = useRouter();
   const pathname = usePathname();
   const t = useTranslations('clinical');
+  const root = useShellBreadcrumbRoot();
   const ability = useAbility();
   const doctorsQuery = useDoctorsList(initialQuery);
   // Gated rather than merely hidden: the roster is an administrator-only
@@ -80,7 +83,7 @@ export function DoctorsDirectoryPanel({ initialQuery }: DoctorsDirectoryPanelPro
       <PageHeader
         title={t('doctors.title')}
         subtitle={t('doctors.subtitle')}
-        breadcrumbs={[t('doctors.dashboard'), t('doctors.title')]}
+        breadcrumbs={[root, { label: t('doctors.title') }]}
         actions={
           <>
             <Can action="read" subject="DoctorLicenseExpiry">
@@ -115,9 +118,7 @@ export function DoctorsDirectoryPanel({ initialQuery }: DoctorsDirectoryPanelPro
       />
 
       {doctorsQuery.error && doctorsQuery.doctors.length > 0 ? (
-        <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
-          {t('doctors.errorDescription')}
-        </p>
+        <InlineNotice tone="error">{t('doctors.errorDescription')}</InlineNotice>
       ) : null}
 
       <Card className="gap-0 rounded-xl border-slate-200 py-0 shadow-none">

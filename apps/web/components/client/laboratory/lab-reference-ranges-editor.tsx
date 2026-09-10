@@ -4,6 +4,7 @@ import { Button, Icon } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
 import { LabReferenceRangeRow } from '#components/client/laboratory/lab-reference-range-row';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import {
   createEmptyLabReferenceRangeDraft,
   type LabReferenceRangeDraft,
@@ -67,9 +68,9 @@ export function LabReferenceRangesEditor({
         />
       ))}
       {error ? (
-        <p role="alert" className="text-xs text-rose-600" data-testid="lab-reference-ranges-error">
+        <InlineNotice tone="error" data-testid="lab-reference-ranges-error">
           {error}
-        </p>
+        </InlineNotice>
       ) : null}
       <Button type="button" variant="outline" size="sm" disabled={disabled} onClick={handleAdd}>
         <Icon name="add" size={16} />

@@ -1,6 +1,6 @@
 import { cookies } from 'next/headers';
 import type { CSSProperties, ReactNode } from 'react';
-import { buildAppAbility, SidebarInset, SidebarProvider } from '@hms/ui';
+import { buildAppAbility, SIDEBAR_COOKIE_NAME, SidebarInset, SidebarProvider } from '@hms/ui';
 
 import { AiAssistantProvider } from '#components/client/ai-assistant/ai-assistant-provider';
 import { ChatLauncher } from '#components/client/ai-assistant/chat-launcher';
@@ -20,6 +20,7 @@ import { resolveAppAbilityRules } from '#lib/rbac/app-ability.server';
 import { filterNavSections } from '#lib/shell/filter-nav-sections';
 import { isFeatureEnabled } from '#lib/shell/is-feature-enabled';
 import { resolveDisabledNavHrefs } from '#lib/shell/resolve-disabled-nav-hrefs';
+import { resolveSidebarDefaultOpen } from '#lib/shell/resolve-sidebar-default-open';
 import { resolveShellProfile } from '#lib/shell/shell-profile';
 
 const SIDEBAR_STYLE: CSSProperties = { '--sidebar-width': '15rem' } as CSSProperties;
@@ -58,6 +59,9 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
   const isChatEnabled = offboarding === null && isFeatureEnabled(claims, 'ai-chatbot');
   const profile = resolveShellProfile(claims);
   const idlePolicy = resolveSessionIdlePolicy();
+  // P19-T01. The kit writes this cookie on every toggle; reading it here means
+  // a collapsed sidebar renders collapsed on the server, with no flash.
+  const isSidebarOpen = resolveSidebarDefaultOpen(cookieStore.get(SIDEBAR_COOKIE_NAME)?.value);
   return (
     <AppAbilityProvider rules={rules}>
       {/*
@@ -78,7 +82,7 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
         channel={isAdmin ? 'ADMIN' : 'DOCTOR'}
         assistantPath={ADMIN_ASSISTANT_PATH}
       >
-        <SidebarProvider style={SIDEBAR_STYLE}>
+        <SidebarProvider style={SIDEBAR_STYLE} defaultOpen={isSidebarOpen}>
           <AppSidebar sections={sections} />
           {/*
             min-w-0 is load-bearing: the inset is a flex item, and a flex item

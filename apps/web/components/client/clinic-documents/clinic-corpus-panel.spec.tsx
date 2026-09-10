@@ -4,6 +4,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { getDashboardAiMessages } from '#lib/dashboard/localization';
+import idAuthShellMessages from '../../../messages/id/auth-shell.json';
 
 const listDocumentsMock = vi.hoisted(() => vi.fn());
 
@@ -55,7 +56,10 @@ function renderPanel(): void {
   });
   render(
     <QueryClientProvider client={queryClient}>
-      <NextIntlClientProvider locale="id" messages={getDashboardAiMessages('id')}>
+      <NextIntlClientProvider
+        locale="id"
+        messages={{ ...getDashboardAiMessages('id'), ...idAuthShellMessages }}
+      >
         <ClinicCorpusPanel />
       </NextIntlClientProvider>
     </QueryClientProvider>,
@@ -138,9 +142,7 @@ describe('ClinicCorpusPanel', () => {
     renderPanel();
 
     expect(await screen.findByText('Gagal')).toBeInTheDocument();
-    expect(
-      screen.getByText(/No text could be extracted from this document/i),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/No text could be extracted from this document/i)).toBeInTheDocument();
   });
 
   it('renders an empty state when no document matches the filters', async () => {

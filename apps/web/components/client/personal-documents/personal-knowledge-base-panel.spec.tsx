@@ -4,6 +4,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { getDashboardAiMessages } from '#lib/dashboard/localization';
+import idAuthShellMessages from '../../../messages/id/auth-shell.json';
 
 const listDocumentsMock = vi.hoisted(() => vi.fn());
 
@@ -46,7 +47,10 @@ function renderPanel(): void {
   });
   render(
     <QueryClientProvider client={queryClient}>
-      <NextIntlClientProvider locale="id" messages={getDashboardAiMessages('id')}>
+      <NextIntlClientProvider
+        locale="id"
+        messages={{ ...getDashboardAiMessages('id'), ...idAuthShellMessages }}
+      >
         <PersonalKnowledgeBasePanel />
       </NextIntlClientProvider>
     </QueryClientProvider>,
@@ -72,21 +76,21 @@ describe('PersonalKnowledgeBasePanel', () => {
     expect(screen.queryByText(/belum bisa menjawab/i)).not.toBeInTheDocument();
   });
 
-  it.each([['PENDING', 'Menunggu diproses'], ['PROCESSING', 'Sedang diproses']])(
-    'says the assistant cannot answer yet while %s',
-    async (ingestStatus, label) => {
-      listDocumentsMock.mockResolvedValue({
-        status: 200,
-        data: { data: [buildDocument({ ingestStatus, chunkCount: 0 })] },
-      });
-      renderPanel();
+  it.each([
+    ['PENDING', 'Menunggu diproses'],
+    ['PROCESSING', 'Sedang diproses'],
+  ])('says the assistant cannot answer yet while %s', async (ingestStatus, label) => {
+    listDocumentsMock.mockResolvedValue({
+      status: 200,
+      data: { data: [buildDocument({ ingestStatus, chunkCount: 0 })] },
+    });
+    renderPanel();
 
-      expect(await screen.findByText(label)).toBeInTheDocument();
-      // The load-bearing claim: uploaded is not the same as retrievable, and a
-      // clinician must not assume the assistant is already using this.
-      expect(screen.getByText(/belum bisa menjawab/i)).toBeInTheDocument();
-    },
-  );
+    expect(await screen.findByText(label)).toBeInTheDocument();
+    // The load-bearing claim: uploaded is not the same as retrievable, and a
+    // clinician must not assume the assistant is already using this.
+    expect(screen.getByText(/belum bisa menjawab/i)).toBeInTheDocument();
+  });
 
   it('shows the ingest error on a failed document instead of an empty state', async () => {
     listDocumentsMock.mockResolvedValue({
@@ -104,9 +108,7 @@ describe('PersonalKnowledgeBasePanel', () => {
     renderPanel();
 
     expect(await screen.findByText('Gagal')).toBeInTheDocument();
-    expect(
-      screen.getByText(/the PDF has no extractable text layer/i),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/the PDF has no extractable text layer/i)).toBeInTheDocument();
   });
 
   it('renders an empty state when nothing has been uploaded', async () => {

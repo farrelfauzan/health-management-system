@@ -6,6 +6,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { AppAbilityProvider } from '#components/client/app-ability-provider';
 import { getDashboardAiMessages } from '#lib/dashboard/localization';
+import idAuthShellMessages from '../../../messages/id/auth-shell.json';
 
 const createSessionMock = vi.hoisted(() => vi.fn());
 const sendMessageMock = vi.hoisted(() => vi.fn());
@@ -41,7 +42,10 @@ function renderPanel(canDelete = true, channel: 'PATIENT' | 'DOCTOR' | 'ADMIN' =
   render(
     <QueryClientProvider client={queryClient}>
       <AppAbilityProvider rules={canDelete ? [{ action: 'delete', subject: 'ChatSession' }] : []}>
-        <NextIntlClientProvider locale="id" messages={getDashboardAiMessages('id')}>
+        <NextIntlClientProvider
+          locale="id"
+          messages={{ ...getDashboardAiMessages('id'), ...idAuthShellMessages }}
+        >
           <AiAssistantProvider
             displayName="Dr. Sarah"
             channel={channel}

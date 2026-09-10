@@ -37,6 +37,17 @@ const DOCTOR_RECORD_SELECT = {
   // The doctor's email lives on their account; selecting it here keeps the
   // response shape unchanged while there is only one stored copy.
   ownerUser: { select: { email: true } },
+  // Where the address lives before the account does (P19-T15). An invitation
+  // raised on the create form holds it until somebody accepts, at which point
+  // `ownerUser` above takes over and this select returns nothing, because the
+  // row is then consumed. Newest first and capped at one: a resend supersedes
+  // its predecessor, so only the latest link is the live one.
+  ownerInvitations: {
+    where: { consumedAt: null, revokedAt: null },
+    orderBy: { createdAt: 'desc' },
+    take: 1,
+    select: { email: true, expiresAt: true },
+  },
   isActive: true,
   createdAt: true,
   updatedAt: true,

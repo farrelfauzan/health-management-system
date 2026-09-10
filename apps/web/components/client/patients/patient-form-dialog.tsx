@@ -29,6 +29,7 @@ import {
   DialogHeader,
   DialogTitle,
   Input,
+  PhoneInput,
   Select,
   SelectContent,
   SelectItem,
@@ -40,6 +41,7 @@ import { PatientDoctorPicker } from '#components/client/patients/patient-doctor-
 import { PrivacyNoticeCapture } from '#components/client/patients/privacy-notice-capture';
 import { FieldError } from '#components/client/shared/field-error';
 import { FormLabel } from '#components/client/shared/form-label';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { RequiredLegend } from '#components/client/shared/required-legend';
 import type { CreatePatientDto } from '#lib/api/generated/model/createPatientDto';
 import type { CreatePatientDtoPrivacyNotice } from '#lib/api/generated/model/createPatientDtoPrivacyNotice';
@@ -242,28 +244,19 @@ export function PatientFormDialog({
           }}
         >
           {!isEditMode ? <RequiredLegend /> : null}
-          {formError ? (
-            <p
-              role="alert"
-              className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700"
-            >
-              {formError}
-            </p>
-          ) : null}
+          {formError ? <InlineNotice tone="error">{formError}</InlineNotice> : null}
 
           {identifierWarnings.length > 0 ? (
-            <div
-              role="status"
-              className="space-y-1 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900"
-            >
-              <p className="font-medium">{t('patients.form.warnings')}</p>
-              <ul className="list-inside list-disc">
-                {identifierWarnings.map((warning) => (
-                  <li key={warning}>{warning}</li>
-                ))}
-              </ul>
-              <p className="text-xs">{t('patients.form.warningHelp')}</p>
-            </div>
+            <InlineNotice tone="warning" title={t('patients.form.warnings')}>
+              <div className="space-y-1">
+                <ul className="list-inside list-disc">
+                  {identifierWarnings.map((warning) => (
+                    <li key={warning}>{warning}</li>
+                  ))}
+                </ul>
+                <p className="text-xs">{t('patients.form.warningHelp')}</p>
+              </div>
+            </InlineNotice>
           ) : null}
 
           {/* No MRN field: the server allocates it on create and it can never be
@@ -382,10 +375,7 @@ export function PatientFormDialog({
           <form.Field name="status">
             {(field) => (
               <div className="space-y-1.5">
-                <FormLabel
-                  htmlFor={field.name}
-                  className="font-heading text-xs text-slate-600"
-                >
+                <FormLabel htmlFor={field.name} className="font-heading text-xs text-slate-600">
                   {t('common.status')}
                 </FormLabel>
                 <Select
@@ -427,11 +417,11 @@ export function PatientFormDialog({
                 >
                   {t('patients.form.phone')}
                 </FormLabel>
-                <Input
+                <PhoneInput
                   id={field.name}
                   value={field.state.value}
-                  placeholder="+628123456789"
-                  onChange={(event) => field.handleChange(event.target.value)}
+                  placeholder="8123456789"
+                  onValueChange={(value) => field.handleChange(value)}
                   onBlur={field.handleBlur}
                   aria-invalid={field.state.meta.errors.length > 0}
                 />
@@ -484,10 +474,7 @@ export function PatientFormDialog({
               <form.Field name="nik">
                 {(field) => (
                   <div className="space-y-1.5">
-                    <FormLabel
-                      htmlFor={field.name}
-                      className="font-heading text-xs text-slate-600"
-                    >
+                    <FormLabel htmlFor={field.name} className="font-heading text-xs text-slate-600">
                       NIK
                     </FormLabel>
                     <Input
@@ -504,10 +491,7 @@ export function PatientFormDialog({
               <form.Field name="bpjsNumber">
                 {(field) => (
                   <div className="space-y-1.5">
-                    <FormLabel
-                      htmlFor={field.name}
-                      className="font-heading text-xs text-slate-600"
-                    >
+                    <FormLabel htmlFor={field.name} className="font-heading text-xs text-slate-600">
                       {t('patients.bpjsNumber')}
                     </FormLabel>
                     <Input
@@ -532,10 +516,7 @@ export function PatientFormDialog({
               <form.Field name="placeOfBirth">
                 {(field) => (
                   <div className="space-y-1.5">
-                    <FormLabel
-                      htmlFor={field.name}
-                      className="font-heading text-xs text-slate-600"
-                    >
+                    <FormLabel htmlFor={field.name} className="font-heading text-xs text-slate-600">
                       {t('patients.form.birthPlace')}
                     </FormLabel>
                     <Input
@@ -551,10 +532,7 @@ export function PatientFormDialog({
               <form.Field name="email">
                 {(field) => (
                   <div className="space-y-1.5">
-                    <FormLabel
-                      htmlFor={field.name}
-                      className="font-heading text-xs text-slate-600"
-                    >
+                    <FormLabel htmlFor={field.name} className="font-heading text-xs text-slate-600">
                       {t('patients.form.email')}
                     </FormLabel>
                     <Input
@@ -573,10 +551,7 @@ export function PatientFormDialog({
               <form.Field name="bloodType">
                 {(field) => (
                   <div className="space-y-1.5">
-                    <FormLabel
-                      htmlFor={field.name}
-                      className="font-heading text-xs text-slate-600"
-                    >
+                    <FormLabel htmlFor={field.name} className="font-heading text-xs text-slate-600">
                       {t('patients.form.bloodType')}
                     </FormLabel>
                     <Select value={field.state.value} onValueChange={field.handleChange}>
@@ -597,10 +572,7 @@ export function PatientFormDialog({
               <form.Field name="rhesusFactor">
                 {(field) => (
                   <div className="space-y-1.5">
-                    <FormLabel
-                      htmlFor={field.name}
-                      className="font-heading text-xs text-slate-600"
-                    >
+                    <FormLabel htmlFor={field.name} className="font-heading text-xs text-slate-600">
                       {t('patients.form.rhesus')}
                     </FormLabel>
                     <Select value={field.state.value} onValueChange={field.handleChange}>
@@ -623,10 +595,7 @@ export function PatientFormDialog({
               <form.Field name="maritalStatus">
                 {(field) => (
                   <div className="space-y-1.5">
-                    <FormLabel
-                      htmlFor={field.name}
-                      className="font-heading text-xs text-slate-600"
-                    >
+                    <FormLabel htmlFor={field.name} className="font-heading text-xs text-slate-600">
                       {t('patients.form.maritalStatus')}
                     </FormLabel>
                     <Select value={field.state.value} onValueChange={field.handleChange}>
@@ -647,10 +616,7 @@ export function PatientFormDialog({
               <form.Field name="religion">
                 {(field) => (
                   <div className="space-y-1.5">
-                    <FormLabel
-                      htmlFor={field.name}
-                      className="font-heading text-xs text-slate-600"
-                    >
+                    <FormLabel htmlFor={field.name} className="font-heading text-xs text-slate-600">
                       {t('patients.form.religion')}
                     </FormLabel>
                     <Select value={field.state.value} onValueChange={field.handleChange}>
@@ -672,10 +638,7 @@ export function PatientFormDialog({
             <form.Field name="occupation">
               {(field) => (
                 <div className="space-y-1.5">
-                  <FormLabel
-                    htmlFor={field.name}
-                    className="font-heading text-xs text-slate-600"
-                  >
+                  <FormLabel htmlFor={field.name} className="font-heading text-xs text-slate-600">
                     {t('patients.form.occupation')}
                   </FormLabel>
                   <Input
@@ -698,10 +661,7 @@ export function PatientFormDialog({
               <form.Field name="emergencyContactName">
                 {(field) => (
                   <div className="space-y-1.5">
-                    <FormLabel
-                      htmlFor={field.name}
-                      className="font-heading text-xs text-slate-600"
-                    >
+                    <FormLabel htmlFor={field.name} className="font-heading text-xs text-slate-600">
                       {t('patients.form.contactName')}
                     </FormLabel>
                     <Input
@@ -716,17 +676,14 @@ export function PatientFormDialog({
               <form.Field name="emergencyContactPhone">
                 {(field) => (
                   <div className="space-y-1.5">
-                    <FormLabel
-                      htmlFor={field.name}
-                      className="font-heading text-xs text-slate-600"
-                    >
+                    <FormLabel htmlFor={field.name} className="font-heading text-xs text-slate-600">
                       {t('patients.form.contactPhone')}
                     </FormLabel>
-                    <Input
+                    <PhoneInput
                       id={field.name}
                       value={field.state.value}
-                      placeholder="+628123456789"
-                      onChange={(event) => field.handleChange(event.target.value)}
+                      placeholder="8123456789"
+                      onValueChange={(value) => field.handleChange(value)}
                       onBlur={field.handleBlur}
                     />
                   </div>
@@ -737,10 +694,7 @@ export function PatientFormDialog({
               <form.Field name="guardianName">
                 {(field) => (
                   <div className="space-y-1.5">
-                    <FormLabel
-                      htmlFor={field.name}
-                      className="font-heading text-xs text-slate-600"
-                    >
+                    <FormLabel htmlFor={field.name} className="font-heading text-xs text-slate-600">
                       {t('patients.form.guardianName')}
                     </FormLabel>
                     <Input
@@ -756,10 +710,7 @@ export function PatientFormDialog({
               <form.Field name="guardianRelation">
                 {(field) => (
                   <div className="space-y-1.5">
-                    <FormLabel
-                      htmlFor={field.name}
-                      className="font-heading text-xs text-slate-600"
-                    >
+                    <FormLabel htmlFor={field.name} className="font-heading text-xs text-slate-600">
                       {t('patients.form.relation')}
                     </FormLabel>
                     <Input

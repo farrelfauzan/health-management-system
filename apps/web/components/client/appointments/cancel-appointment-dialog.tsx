@@ -17,6 +17,7 @@ import {
 } from '@hms/ui';
 import { useFormatter, useTranslations } from 'next-intl';
 
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { appointmentManagementControllerCancelAppointmentV1 } from '#lib/api/generated/appointment-management/appointment-management';
 import { parseApiSuccess } from '#lib/api/response';
 import { notifyApiError } from '#lib/api/notify-api-error';
@@ -76,14 +77,7 @@ export function CancelAppointmentDialog({
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-3">
-          {cancelError ? (
-            <p
-              role="alert"
-              className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700"
-            >
-              {cancelError}
-            </p>
-          ) : null}
+          {cancelError ? <InlineNotice tone="error">{cancelError}</InlineNotice> : null}
           <div className="space-y-1.5">
             <Label
               htmlFor="cancel-appointment-reason"

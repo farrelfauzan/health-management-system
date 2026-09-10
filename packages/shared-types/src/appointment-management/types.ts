@@ -163,6 +163,33 @@ export type ListDoctorSessionsParams = {
   toDate: string;
 };
 
+/**
+ * Which doctors, and which clinic-local day, a practice-window lookup covers
+ * (P19-T16). One call per page of registrations rather than one per row.
+ */
+export type ListDoctorPracticeWindowsParams = {
+  doctorIds: readonly string[];
+  /** Clinic-local YYYY-MM-DD. */
+  sessionDate: string;
+};
+
+/**
+ * One doctor's practice hours on a clinic day, and where they came from.
+ *
+ * `SESSION` rows are what the doctor is actually running; `SCHEDULE` rows are
+ * the standing weekly pattern, used only when no session exists for the date
+ * at all. The distinction matters at the desk: a doctor who cancelled today's
+ * session must not be revived by their Tuesday template.
+ */
+export type DoctorPracticeWindowRecord = {
+  doctorId: string;
+  /** Clinic-local YYYY-MM-DD. */
+  date: string;
+  startTime: string;
+  endTime: string;
+  source: 'SESSION' | 'SCHEDULE';
+};
+
 export type UpdateAppointmentSessionRecordPayload = {
   id: string;
   maxPatients?: number | null;

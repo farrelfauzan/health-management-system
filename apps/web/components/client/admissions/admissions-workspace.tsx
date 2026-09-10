@@ -27,6 +27,7 @@ import { WardFilterSelect } from '#components/client/rooms/ward-filter-select';
 import { NumberedPagination } from '#components/client/shared/numbered-pagination';
 import { PageHeader } from '#components/shared/page-header';
 import { useAdmissionsList } from '#lib/admissions/use-admissions-list';
+import { useShellBreadcrumbRoot } from '#lib/navigation/use-shell-breadcrumb-root';
 import { formatStatusLabel } from '#lib/shared/status-label';
 import { ROOM_INVENTORY_PAGE_SIZE } from '#lib/rooms/page-size';
 
@@ -38,6 +39,7 @@ type ActiveDialog = 'admit' | 'cancel' | 'detail' | 'discharge' | 'transfer' | n
 
 export function AdmissionsWorkspace() {
   const t = useTranslations('operations');
+  const root = useShellBreadcrumbRoot();
   const ability = useAbility();
   const [page, setPage] = useState<number>(1);
   const [search, setSearch] = useState<string>('');
@@ -72,7 +74,7 @@ export function AdmissionsWorkspace() {
       <PageHeader
         title={t('admissions.title')}
         subtitle={t('admissions.subtitle')}
-        breadcrumbs={[t('admissions.title')]}
+        breadcrumbs={[root, { label: t('admissions.title') }]}
         actions={
           canAdmit ? (
             <Button

@@ -114,6 +114,9 @@
   --color-sidebar-primary: var(--sidebar-primary);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar: var(--sidebar);
+  /* Text-grade semantic tones (see the `:root` note on --success / --warning) */
+  --color-success-emphasis: var(--success);
+  --color-warning-emphasis: var(--warning);
 }
 
 :root {
@@ -133,6 +136,17 @@
   --accent: #e5eeff;
   --accent-foreground: #0b1c30;
   --destructive: #ba1a1a;
+  /*
+   * Text-grade semantic tones used by statement notices (sonner toasts and
+   * the web InlineNotice). They sit one step darker than the badge colours
+   * (--color-success #059669, --color-warning #d97706) so a bold title clears
+   * WCAG AA 4.5:1 on white (#047857: 5.48, #b45309: 5.02) and on the 10%
+   * badge tints (4.99 / 4.65). Errors use --destructive (6.46 on white) and
+   * info uses --primary (6.98). Exposed to Tailwind as text-success-emphasis
+   * and text-warning-emphasis via the @theme inline block above.
+   */
+  --success: #047857;
+  --warning: #b45309;
   --border: #e2e8f0;
   --input: #e2e8f0;
   --ring: #0066ff;

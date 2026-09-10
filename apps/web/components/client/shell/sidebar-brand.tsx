@@ -7,6 +7,8 @@ import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@hms/ui';
 
 import { FACILITY_CONFIG } from '#lib/facility/facility-config';
 
+import { SidebarBrandToggle } from './sidebar-brand-toggle';
+
 type SidebarBrandProps = {
   homeHref?: string;
 };
@@ -16,7 +18,18 @@ export function SidebarBrand({ homeHref = '/admin/dashboard' }: SidebarBrandProp
   return (
     <SidebarMenu>
       <SidebarMenuItem>
-        <SidebarMenuButton asChild size="lg" className="hover:bg-transparent active:bg-transparent">
+        {/*
+          P19-T01. `pr-10` keeps the name clear of the collapse control that
+          appears on hover, so nothing shifts when it does. On the icon rail
+          the kit zeroes the padding and the row shrinks to the 2rem mark;
+          the text is clipped by the button's overflow, so neither locale can
+          push the row wider than the rail.
+        */}
+        <SidebarMenuButton
+          asChild
+          size="lg"
+          className="pr-10 hover:bg-transparent active:bg-transparent"
+        >
           <Link href={homeHref}>
             <Image
               src="/saling-jaga-mark.png"
@@ -34,6 +47,7 @@ export function SidebarBrand({ homeHref = '/admin/dashboard' }: SidebarBrandProp
             </span>
           </Link>
         </SidebarMenuButton>
+        <SidebarBrandToggle />
       </SidebarMenuItem>
     </SidebarMenu>
   );

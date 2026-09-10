@@ -4,6 +4,7 @@ import { Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } 
 import { useLocale, useTranslations } from 'next-intl';
 
 import { FormLabel } from '#components/client/shared/form-label';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import type { CreatePatientDtoPrivacyNotice } from '#lib/api/generated/model/createPatientDtoPrivacyNotice';
 import { CreatePatientDtoPrivacyNoticeOutcome } from '#lib/api/generated/model/createPatientDtoPrivacyNoticeOutcome';
 import { CreatePatientDtoPrivacyNoticeSubjectType } from '#lib/api/generated/model/createPatientDtoPrivacyNoticeSubjectType';
@@ -52,20 +53,11 @@ export function PrivacyNoticeCapture({
       </div>
 
       {noticeQuery.isPending ? <p className="text-sm text-slate-500">{t('loading')}</p> : null}
-      {noticeQuery.isError ? (
-        <p role="alert" className="text-sm text-rose-700">
-          {t('loadError')}
-        </p>
-      ) : null}
+      {noticeQuery.isError ? <InlineNotice tone="error">{t('loadError')}</InlineNotice> : null}
       {notice ? (
         <>
           {!notice.counselApproved ? (
-            <p
-              role="status"
-              className="rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-sm font-medium text-amber-900"
-            >
-              {t('counselPending')}
-            </p>
+            <InlineNotice tone="warning">{t('counselPending')}</InlineNotice>
           ) : null}
           <div className="max-h-48 overflow-y-auto whitespace-pre-wrap rounded-lg border border-slate-200 bg-white p-3 text-sm leading-6 text-slate-700">
             {notice.content[locale]}
@@ -73,7 +65,11 @@ export function PrivacyNoticeCapture({
           <p className="text-xs text-slate-500">{t('version', { version: notice.version })}</p>
 
           <div className="space-y-1.5">
-            <FormLabel className="font-heading text-xs text-slate-600" htmlFor="privacy-outcome" required>
+            <FormLabel
+              className="font-heading text-xs text-slate-600"
+              htmlFor="privacy-outcome"
+              required
+            >
               {t('outcomeLabel')}
             </FormLabel>
             <Select
@@ -114,7 +110,10 @@ export function PrivacyNoticeCapture({
           {!isPatientOwnVariant ? (
             <div className="space-y-3">
               <div className="space-y-1.5">
-                <FormLabel className="font-heading text-xs text-slate-600" htmlFor="privacy-subject">
+                <FormLabel
+                  className="font-heading text-xs text-slate-600"
+                  htmlFor="privacy-subject"
+                >
                   {t('subjectLabel')}
                 </FormLabel>
                 <Select
@@ -133,7 +132,9 @@ export function PrivacyNoticeCapture({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value={CreatePatientDtoPrivacyNoticeSubjectType.SELF}>{t('self')}</SelectItem>
+                    <SelectItem value={CreatePatientDtoPrivacyNoticeSubjectType.SELF}>
+                      {t('self')}
+                    </SelectItem>
                     <SelectItem value={CreatePatientDtoPrivacyNoticeSubjectType.REPRESENTATIVE}>
                       {t('representative')}
                     </SelectItem>
@@ -146,7 +147,9 @@ export function PrivacyNoticeCapture({
                     aria-label={t('representativeName')}
                     placeholder={t('representativeName')}
                     value={value.representativeName ?? ''}
-                    onChange={(event) => onChange({ ...value, representativeName: event.target.value })}
+                    onChange={(event) =>
+                      onChange({ ...value, representativeName: event.target.value })
+                    }
                   />
                   <Input
                     aria-label={t('representativeRelation')}

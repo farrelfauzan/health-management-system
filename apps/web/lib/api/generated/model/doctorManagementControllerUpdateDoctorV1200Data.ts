@@ -21,6 +21,7 @@ export type DoctorManagementControllerUpdateDoctorV1200Data = {
   titleValue: DoctorManagementControllerUpdateDoctorV1200DataTitleValue;
   degreeValues: DoctorManagementControllerUpdateDoctorV1200DataDegreeValuesItem[];
   displayName: string;
+  invitationStatus: string;
   nikMasked: string;
   satusehatPractitionerId: string;
   ownerUserId: string;

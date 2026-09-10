@@ -1,5 +1,7 @@
 import { ConfigService } from '@nestjs/config';
 
+import { normalizePhoneNumber } from '@hms/shared-types';
+
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { NationalIdentifierCryptoService } from '../../common/crypto/national-identifier-crypto.service';
 import { MrnAllocatorRepository } from '../../common/mrn/mrn-allocator.repository';
@@ -7,7 +9,6 @@ import { PrivacyNoticeRepository } from '../../common/privacy-notice/privacy-not
 import { PatientManagementRepository } from '../patient-management/repository/patient-management.repository';
 import { ChannelOtpChallengeRepository } from './repository/channel-otp-challenge.repository';
 import { ProspectivePatientRepository } from './repository/prospective-patient.repository';
-import { normalizePhoneNumber } from './service/normalize-phone-number';
 
 /**
  * The `PCS-T07` guarantees that live in SQL rather than in TypeScript, and so

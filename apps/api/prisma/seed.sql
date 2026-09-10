@@ -183,6 +183,12 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     ('registration.create:own', 'Registration', 'create', 'OWN', 'Create own registrations'),
     ('registration.update:any', 'Registration', 'update', 'ANY', 'Update all registrations'),
     ('registration.update:own', 'Registration', 'update', 'OWN', 'Update own registrations'),
+    -- P19-T16. Not a wider `update`: checking somebody in when the doctor is
+    -- not practising is a deliberate exception to the rule that keeps the
+    -- queue honest, and every desk clerk holds `registration.update:any`.
+    -- Granted to ADMIN below and to nobody else; SUPER_ADMIN picks it up from
+    -- the catalog-wide union.
+    ('registration.checkin-override:any', 'Registration', 'checkin-override', 'ANY', 'Check a patient in outside the doctor practice session'),
     ('encounter.read:any', 'Encounter', 'read', 'ANY', 'Read all clinical encounters'),
     ('encounter.read:own', 'Encounter', 'read', 'OWN', 'Read own clinical encounters'),
     ('encounter.write:any', 'Encounter', 'write', 'ANY', 'Open, record, and close any clinical encounter'),
@@ -484,6 +490,7 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('ADMIN', 'registration.read:any'),
     ('ADMIN', 'registration.create:any'),
     ('ADMIN', 'registration.update:any'),
+    ('ADMIN', 'registration.checkin-override:any'),
     -- Front-desk staff open the encounter and record the vitals they take at
     -- check-in, which is how an Indonesian clinic actually runs; the doctor
     -- signs the SOAP note and the codes. Authorship is recorded per row

@@ -7,6 +7,7 @@ import {
   ChannelVerificationMethodValue,
   CustomerServiceConfig,
   extractPhoneNumberFromJid,
+  normalizePhoneNumber,
   PendingChannelBooking,
   SharedContact,
 } from '@hms/shared-types';
@@ -14,7 +15,6 @@ import {
 import { buildSafeErrorLog } from '../../../common/observability/safe-logging';
 import { resolveCustomerServiceConfig } from '../customer-service.config';
 import { ChannelOtpChallengeRepository } from '../repository/channel-otp-challenge.repository';
-import { normalizePhoneNumber } from './normalize-phone-number';
 import { generateOtpCode } from './otp-code';
 import { OtpDeliveryService } from './otp-delivery.service';
 

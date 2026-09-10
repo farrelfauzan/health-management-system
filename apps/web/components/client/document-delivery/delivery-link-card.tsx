@@ -4,6 +4,7 @@ import type { DeliveryLinkResolutionView } from '@hms/shared-types';
 import { Button, Card, CardContent, Icon } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import {
   deliveryLinkPublicControllerResolveLinkV1,
   getDeliveryLinkPublicControllerResolveLinkV1QueryKey,
@@ -48,9 +49,7 @@ export function DeliveryLinkCard({ token }: DeliveryLinkCardProps) {
       <Card className="border-slate-200 shadow-none">
         <CardContent className="space-y-3 p-6">
           <h1 className="font-heading text-lg text-slate-900">{t('invalidTitle')}</h1>
-          <p role="alert" className="text-sm text-slate-600">
-            {t(messageKey)}
-          </p>
+          <InlineNotice tone="error">{t(messageKey)}</InlineNotice>
           <p className="text-sm text-slate-600">{t('invalidHelp')}</p>
         </CardContent>
       </Card>

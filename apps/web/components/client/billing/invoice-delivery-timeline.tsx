@@ -6,6 +6,7 @@ import { Skeleton } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
 import { InvoiceDeliveryTimelineRow } from '#components/client/billing/invoice-delivery-timeline-row';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { useDeliveryAction } from '#lib/document-delivery/use-delivery-action';
 import { useInvoiceDeliveries } from '#lib/document-delivery/use-invoice-deliveries';
@@ -43,11 +44,7 @@ export function InvoiceDeliveryTimeline({ invoiceId, canAct }: InvoiceDeliveryTi
     return <Skeleton className="h-16 w-full" />;
   }
   if (query.isError) {
-    return (
-      <p role="alert" className="text-sm text-rose-700">
-        {t('timelineError')}
-      </p>
-    );
+    return <InlineNotice tone="error">{t('timelineError')}</InlineNotice>;
   }
   const deliveries = query.timeline?.deliveries ?? [];
   if (deliveries.length === 0) {

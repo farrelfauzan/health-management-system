@@ -24,6 +24,7 @@ import {
   type EncounterTransitionTarget,
 } from '#lib/encounters/encounter-transition-meta';
 import { useEncounterDetail } from '#lib/encounters/use-encounter-detail';
+import { useShellBreadcrumbRoot } from '#lib/navigation/use-shell-breadcrumb-root';
 
 type EncounterWorkspaceProps = {
   encounterId: string;
@@ -35,22 +36,24 @@ type EncounterWorkspaceProps = {
    */
   isLaboratoryEnabled?: boolean;
   /**
-   * Breadcrumb root and patient-link shell. A doctor session has no patient
-   * directory to reach, so the link is omitted rather than pointing at a route
-   * their session cannot open.
+   * The encounter list this record was opened from, for the trail's parent
+   * link, and the patient-link shell. A doctor session has no patient
+   * directory to reach, so that link is omitted rather than pointing at a
+   * route their session cannot open.
    */
-  breadcrumbRoot?: string;
+  encountersHref?: string;
   patientHrefPrefix?: string;
 };
 
 export function EncounterWorkspace({
   encounterId,
-  breadcrumbRoot = 'Main Dashboard',
+  encountersHref = '/admin/encounters',
   patientHrefPrefix = '/admin/patients',
   isLaboratoryEnabled = false,
 }: EncounterWorkspaceProps) {
   const encounterQuery = useEncounterDetail(encounterId);
   const t = useTranslations('clinical');
+  const root = useShellBreadcrumbRoot();
   const [pendingTransition, setPendingTransition] = useState<EncounterTransitionTarget | null>(
     null,
   );
@@ -80,7 +83,11 @@ export function EncounterWorkspace({
       <PageHeader
         title={t('encounters.workspaceTitle', { name: encounter.patient.fullName })}
         subtitle={t('encounters.workspaceSubtitle')}
-        breadcrumbs={[breadcrumbRoot, t('encounters.title'), encounter.patient.mrn]}
+        breadcrumbs={[
+          root,
+          { label: t('encounters.title'), href: encountersHref },
+          { label: encounter.patient.mrn },
+        ]}
         actions={
           !isEditable && encounter.status === 'FINISHED' ? (
             // Billing starts where the clinical record ends: only a finished

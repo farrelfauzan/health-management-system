@@ -16,6 +16,7 @@ import {
 } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { documentTypeControllerDeleteTypeV1 } from '#lib/api/generated/document-types/document-types';
 import { parseApiSuccess } from '#lib/api/response';
 import { resolveApiErrorMessage } from '#lib/api/resolve-api-error-message';
@@ -74,29 +75,11 @@ export function DeleteDocumentTypeDialog({
           <DialogTitle>{t('delete.title', { name: type.name })}</DialogTitle>
           <DialogDescription>{t('delete.description')}</DialogDescription>
         </DialogHeader>
-        {type.isSystem ? (
-          <p
-            role="alert"
-            className="flex items-start gap-2 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-900"
-          >
-            <Icon name="info" size={16} className="mt-0.5 shrink-0" />
-            <span>{t('form.systemNote')}</span>
-          </p>
-        ) : null}
+        {type.isSystem ? <InlineNotice tone="warning">{t('form.systemNote')}</InlineNotice> : null}
         {!type.isSystem && inUseCount !== null ? (
-          <p
-            role="alert"
-            className="flex items-start gap-2 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-900"
-          >
-            <Icon name="info" size={16} className="mt-0.5 shrink-0" />
-            <span>{t('delete.inUse', { count: inUseCount })}</span>
-          </p>
+          <InlineNotice tone="warning">{t('delete.inUse', { count: inUseCount })}</InlineNotice>
         ) : null}
-        {error ? (
-          <p role="alert" className="text-sm text-danger">
-            {error}
-          </p>
-        ) : null}
+        {error ? <InlineNotice tone="error">{error}</InlineNotice> : null}
         <DialogFooter>
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
             {common('cancel')}

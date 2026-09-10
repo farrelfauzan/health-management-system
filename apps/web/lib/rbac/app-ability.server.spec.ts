@@ -433,4 +433,30 @@ describe('resolveAppAbilityRules for a seeded DOCTOR', () => {
 
     expect(ability.can('decide', 'DocumentApproval')).toBe(true);
   });
+
+  it('maps the check-in override key without widening ordinary registration update', () => {
+    // P19-T16. The same trap once more: without `checkin-override` in
+    // SUPPORTED_ACTIONS the key resolves to no rule and "Check in anyway"
+    // never renders. A desk clerk holding only `registration.update:any` must
+    // not see it.
+    const withOverride = buildAppAbility(
+      resolveAppAbilityRules({
+        permissions: ['registration.update:any', 'registration.checkin-override:any'],
+      }),
+    );
+    const deskOnly = buildAppAbility(
+      resolveAppAbilityRules({ permissions: ['registration.update:any'] }),
+    );
+
+    expect(withOverride.can('checkin-override', 'Registration')).toBe(true);
+    expect(withOverride.can('update', 'Registration')).toBe(true);
+    expect(deskOnly.can('update', 'Registration')).toBe(true);
+    expect(deskOnly.can('checkin-override', 'Registration')).toBe(false);
+  });
+
+  it('gives the ADMIN fallback preset the check-in override grant', () => {
+    const ability = buildAppAbility(resolveAppAbilityRules({ roles: ['ADMIN'] }));
+
+    expect(ability.can('checkin-override', 'Registration')).toBe(true);
+  });
 });

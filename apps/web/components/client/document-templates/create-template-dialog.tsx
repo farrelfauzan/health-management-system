@@ -20,6 +20,7 @@ import {
 } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { documentTemplateControllerCreateTemplateV1 } from '#lib/api/generated/document-templates/document-templates';
 import { parseApiSuccess } from '#lib/api/response';
 import { resolveApiErrorMessage } from '#lib/api/resolve-api-error-message';
@@ -79,11 +80,7 @@ export function CreateTemplateDialog({
             <DialogTitle>{t('title')}</DialogTitle>
             <DialogDescription>{t('description')}</DialogDescription>
           </DialogHeader>
-          {error ? (
-            <p role="alert" className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-900">
-              {error}
-            </p>
-          ) : null}
+          {error ? <InlineNotice tone="error">{error}</InlineNotice> : null}
           <div className="space-y-2">
             <Label htmlFor="document-template-name">{t('name')}</Label>
             <Input

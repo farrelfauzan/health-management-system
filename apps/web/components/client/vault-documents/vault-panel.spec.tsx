@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { NextIntlClientProvider } from 'next-intl';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import idAuthShellMessages from '../../../messages/id/auth-shell.json';
 import idSharedMessages from '../../../messages/id/shared.json';
 import idMessages from '../../../messages/id/vault.json';
 
@@ -58,7 +59,10 @@ function renderPanel(): void {
   });
   render(
     <QueryClientProvider client={queryClient}>
-      <NextIntlClientProvider locale="id" messages={{ ...idMessages, ...idSharedMessages }}>
+      <NextIntlClientProvider
+        locale="id"
+        messages={{ ...idMessages, ...idSharedMessages, ...idAuthShellMessages }}
+      >
         <VaultPanel />
       </NextIntlClientProvider>
     </QueryClientProvider>,
@@ -86,9 +90,7 @@ describe('VaultPanel', () => {
 
     expect(await screen.findByText('STR Dokter Umum')).toBeInTheDocument();
     expect(screen.getByText('STR-EXAMPLE-0000')).toBeInTheDocument();
-    expect(
-      screen.getByText(idMessages.vault.categories.REGISTRATION_LICENCE),
-    ).toBeInTheDocument();
+    expect(screen.getByText(idMessages.vault.categories.REGISTRATION_LICENCE)).toBeInTheDocument();
   });
 
   it('flags a document nearing its expiry on the row itself', async () => {
@@ -116,10 +118,7 @@ describe('VaultPanel', () => {
     await userEvent.type(screen.getByLabelText(idMessages.vault.filters.search), 'ijazah');
 
     await waitFor(() =>
-      expect(listDocumentsMock).toHaveBeenLastCalledWith(
-        { search: 'ijazah' },
-        expect.anything(),
-      ),
+      expect(listDocumentsMock).toHaveBeenLastCalledWith({ search: 'ijazah' }, expect.anything()),
     );
     expect(await screen.findByText(idMessages.vault.states.noMatchesTitle)).toBeInTheDocument();
     // A filter that matches nothing is not an empty vault.
@@ -130,7 +129,13 @@ describe('VaultPanel', () => {
   it('pages forward with the cursor the API returns, and back without refetching', async () => {
     listDocumentsMock.mockImplementation(async (params?: { cursor?: string }) =>
       params?.cursor === 'doc-1'
-        ? { status: 200, data: { data: [buildDocument({ id: 'doc-2', title: 'Ijazah Kedokteran' })], meta: { nextCursor: null } } }
+        ? {
+            status: 200,
+            data: {
+              data: [buildDocument({ id: 'doc-2', title: 'Ijazah Kedokteran' })],
+              meta: { nextCursor: null },
+            },
+          }
         : { status: 200, data: { data: [buildDocument()], meta: { nextCursor: 'doc-1' } } },
     );
     renderPanel();
@@ -166,8 +171,6 @@ describe('VaultPanel', () => {
     expect(screen.getByRole('button', { name: idMessages.vault.export.label })).toBeDisabled();
     // The two empty states are distinct copy, so an owner can tell "I have
     // uploaded nothing" from "nobody has shared anything with me".
-    expect(
-      screen.getByText(idMessages.vault.sharedWithMe.states.emptyTitle),
-    ).toBeInTheDocument();
+    expect(screen.getByText(idMessages.vault.sharedWithMe.states.emptyTitle)).toBeInTheDocument();
   });
 });

@@ -160,6 +160,45 @@ export class AdminManagementRepository {
     return this.findActiveUserById(created.id);
   }
 
+  /**
+   * Adds roles the user does not already hold, and touches nothing else
+   * (P19-T15).
+   *
+   * Deliberately not {@link updateUserWithRoles}, which takes the complete
+   * target set and soft-deletes every grant missing from it. Attaching an
+   * existing account to a doctor profile knows one role code and nothing about
+   * the rest of that person's access, so reusing the replacing call would
+   * silently strip a receptionist of everything but DOCTOR. A grant that is
+   * already live is left alone rather than re-stamped, so `assignedAt` keeps
+   * saying when the access actually started.
+   */
+  async addUserRoles(payload: { userId: string; roleIds: string[]; assignedById: string }) {
+    const { userId, roleIds, assignedById } = payload;
+    if (roleIds.length === 0) {
+      return;
+    }
+    await this.prisma.executeTransaction(async (tx) => {
+      const activeUserRoles = await tx.userRole.findMany({
+        where: { userId, roleId: { in: roleIds }, deletedAt: null },
+        select: { roleId: true },
+      });
+      const activeRoleIds = new Set(activeUserRoles.map((item) => item.roleId));
+      for (const roleId of roleIds.filter((candidate) => !activeRoleIds.has(candidate))) {
+        await tx.userRole.upsert({
+          where: { userId_roleId: { userId, roleId } },
+          update: {
+            deletedAt: null,
+            assignedAt: new Date(),
+            assignedById,
+            unassignedAt: null,
+            unassignedById: null,
+          },
+          create: { userId, roleId, assignedById },
+        });
+      }
+    });
+  }
+
   async updateUserWithRoles(payload: {
     userId: string;
     email?: string;

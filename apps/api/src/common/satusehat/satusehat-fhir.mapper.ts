@@ -13,6 +13,8 @@ import {
   SatusehatConditionMapInput,
   SatusehatEncounterMapInput,
   SatusehatEncounterStatusHistoryEntry,
+  SatusehatFhirAddress,
+  SatusehatFhirAdministrativeCodeEntry,
   SatusehatFhirAllergyIntolerance,
   SatusehatFhirClinicalImpression,
   SatusehatFhirComposition,
@@ -37,6 +39,7 @@ import {
   SatusehatCompoundMedicationMapInput,
   SatusehatMedicationMapInput,
   SatusehatMedicationRequestMapInput,
+  SatusehatPatientAddressMapInput,
   SatusehatDiagnosticReportMapInput,
   SatusehatLabObservationMapInput,
   SatusehatLabOnlyEncounterMapInput,
@@ -49,6 +52,8 @@ import {
 import { SatusehatConfig } from './satusehat.types';
 
 const ENCOUNTER_IDENTIFIER_SYSTEM_PREFIX = 'http://sys-ids.kemkes.go.id/encounter';
+const ADMINISTRATIVE_CODE_EXTENSION_URL =
+  'https://fhir.kemkes.go.id/r4/StructureDefinition/administrativeCode';
 const ICD10_SYSTEM = 'http://hl7.org/fhir/sid/icd-10';
 const ICD9CM_SYSTEM = 'http://hl7.org/fhir/sid/icd-9-cm';
 const PROCEDURE_IDENTIFIER_SYSTEM_PREFIX = 'http://sys-ids.kemkes.go.id/procedure';
@@ -285,6 +290,61 @@ export class SatusehatFhirMapper {
       ...this.buildEncounterDiagnosis(input),
       serviceProvider: { reference: `Organization/${organizationId}` },
     };
+  }
+
+  /**
+   * A patient's home address for the SATUSEHAT Patient profile (P19-T10).
+   *
+   * The `administrativeCode` extension is emitted only when the record
+   * carries the structured address, so a legacy row goes out as a plain
+   * `line` and never as an extension full of empty codes. SATUSEHAT spells
+   * the Kemendagri codes without their dots (`3171011001`, not
+   * `31.71.01.1001`), and `rt`/`rw` travel as two codes rather than the one
+   * `003/007` string the KTP prints. Nothing in the pipeline posts a Patient
+   * resource yet — the integration resolves patients by NIK — so this is the
+   * building block that create/update will call when it does.
+   */
+  mapPatientAddress(input: SatusehatPatientAddressMapInput): SatusehatFhirAddress {
+    const hasChain = Boolean(
+      input.provinceCode && input.regencyCode && input.districtCode && input.villageCode,
+    );
+    return {
+      use: 'home',
+      line: [input.street],
+      ...(input.regencyName ? { city: input.regencyName } : {}),
+      ...(input.postalCode ? { postalCode: input.postalCode } : {}),
+      country: 'ID',
+      ...(hasChain
+        ? {
+            extension: [
+              {
+                url: ADMINISTRATIVE_CODE_EXTENSION_URL,
+                extension: this.buildAdministrativeCodeEntries(input),
+              },
+            ],
+          }
+        : {}),
+    };
+  }
+
+  private buildAdministrativeCodeEntries(
+    input: SatusehatPatientAddressMapInput,
+  ): SatusehatFhirAdministrativeCodeEntry[] {
+    const [rt, rw] = (input.rtRw ?? '').split('/');
+    const entries: SatusehatFhirAdministrativeCodeEntry[] = [
+      { url: 'province', valueCode: this.stripRegionCodeDots(input.provinceCode ?? '') },
+      { url: 'city', valueCode: this.stripRegionCodeDots(input.regencyCode ?? '') },
+      { url: 'district', valueCode: this.stripRegionCodeDots(input.districtCode ?? '') },
+      { url: 'village', valueCode: this.stripRegionCodeDots(input.villageCode ?? '') },
+    ];
+    if (rt && rw) {
+      entries.push({ url: 'rt', valueCode: rt }, { url: 'rw', valueCode: rw });
+    }
+    return entries;
+  }
+
+  private stripRegionCodeDots(code: string): string {
+    return code.replace(/\./g, '');
   }
 
   /**

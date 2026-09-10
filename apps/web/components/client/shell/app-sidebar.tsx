@@ -26,8 +26,11 @@ type AppSidebarProps = {
 export function AppSidebar({ sections, homeHref }: AppSidebarProps) {
   const pathname = usePathname();
   const t = useTranslations('authShell.shell.navigation');
+  // P19-T01. `icon` collapses the desktop column to a 3rem rail; the mobile
+  // sheet is unaffected. The brand row carries the toggle, the kit keeps
+  // Cmd/Ctrl+B, and the nav items fall back to their tooltip for a label.
   return (
-    <Sidebar>
+    <Sidebar collapsible="icon">
       <SidebarHeader>
         <SidebarBrand homeHref={homeHref} />
       </SidebarHeader>

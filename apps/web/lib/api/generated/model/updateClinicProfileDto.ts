@@ -23,7 +23,9 @@ export interface UpdateClinicProfileDto {
      */
   address?: string | null;
   /**
-     * @maxLength 255
+     * Indonesian phone number. Accepts 0812…, +62 812-…, 62812… and punctuated forms; stored as 62812….
+     * @minLength 6
+     * @maxLength 32
      * @nullable
      */
   phoneNumber?: string | null;

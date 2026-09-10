@@ -9,6 +9,7 @@ import { ACCESS_TOKEN_COOKIE_NAME } from '#lib/auth/access-token-cookie';
 import { resolveSessionClaims } from '#lib/auth/session-claims';
 import { SESSION_HINT_COOKIE_NAME } from '#lib/auth/session-hint-cookie';
 import { parseLabWorklistSearchParams } from '#lib/laboratory/worklist-search-params';
+import { resolveShellBreadcrumbRoot } from '#lib/navigation/resolve-shell-breadcrumb-root.server';
 import { resolveAppAbilityRules } from '#lib/rbac/app-ability.server';
 import { isFeatureEnabled } from '#lib/shell/is-feature-enabled';
 
@@ -43,11 +44,16 @@ export default async function AdminLaboratoryPage({ searchParams }: AdminLaborat
   }
 
   const t = await getTranslations('operations.laboratory.worklist');
+  const root = await resolveShellBreadcrumbRoot();
   const query = parseLabWorklistSearchParams(await searchParams);
 
   return (
     <div className="space-y-6">
-      <PageHeader title={t('title')} subtitle={t('subtitle')} breadcrumbs={[t('title')]} />
+      <PageHeader
+        title={t('title')}
+        subtitle={t('subtitle')}
+        breadcrumbs={[root, { label: t('title') }]}
+      />
       <LabWorklistWorkspace initialQuery={query} />
     </div>
   );
