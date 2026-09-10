@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import type { ChannelArrivalView } from '@hms/shared-types';
+import { formatPhoneNumber, type ChannelArrivalView } from '@hms/shared-types';
 import {
   Button,
   Dialog,
@@ -137,7 +137,7 @@ export function ChannelArrivalMergeDialog({
                       {patient.fullName}
                     </span>
                     <span className="block text-xs text-slate-500">
-                      {patient.mrn} · {patient.phoneNumber}
+                      {patient.mrn} · {formatPhoneNumber(patient.phoneNumber)}
                       {patient.dateOfBirth === null ? '' : ` · ${patient.dateOfBirth}`}
                     </span>
                   </button>

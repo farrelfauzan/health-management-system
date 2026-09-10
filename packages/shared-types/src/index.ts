@@ -12,12 +12,19 @@ export type ApiError = {
   };
 };
 
+export * from '#shared/phone-number';
+export * from '#shared/phone-number-schema';
+export * from '#shared/format-phone-number';
 export * from '#admin-management/schemas';
 export * from '#admin-management/contracts';
 export * from '#admin-management/types';
 export * from '#patient-management/schemas';
 export * from '#patient-management/contracts';
 export * from '#patient-management/types';
+export * from '#patient-management/format-patient-address';
+export * from '#regions/schemas';
+export * from '#regions/contracts';
+export * from '#regions/types';
 export * from '#doctor-management/schemas';
 export * from '#doctor-management/contracts';
 export * from '#doctor-management/types';

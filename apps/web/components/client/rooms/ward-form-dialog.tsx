@@ -13,10 +13,11 @@ import {
   DialogHeader,
   DialogTitle,
   Input,
-  Label,
 } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { FormLabel } from '#components/client/shared/form-label';
+import { RequiredLegend } from '#components/client/shared/required-legend';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { parseApiSuccess } from '#lib/api/response';
 import {
@@ -88,8 +89,9 @@ export function WardFormDialog({ open, onOpenChange, ward }: WardFormDialogProps
           </DialogDescription>
         </DialogHeader>
         <form noValidate className="space-y-4" onSubmit={(event) => void handleSubmit(event)}>
+          <RequiredLegend />
           <div className="space-y-2">
-            <Label htmlFor="ward-code">{t('rooms.code')}</Label>
+            <FormLabel htmlFor="ward-code" required={!isEditing}>{t('rooms.code')}</FormLabel>
             <Input
               id="ward-code"
               value={code}
@@ -98,11 +100,11 @@ export function WardFormDialog({ open, onOpenChange, ward }: WardFormDialogProps
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="ward-name">{t('rooms.name')}</Label>
+            <FormLabel htmlFor="ward-name" required>{t('rooms.name')}</FormLabel>
             <Input id="ward-name" value={name} onChange={(event) => setName(event.target.value)} />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="ward-description">{t('rooms.description')}</Label>
+            <FormLabel htmlFor="ward-description">{t('rooms.description')}</FormLabel>
             <Input
               id="ward-description"
               value={description}
@@ -115,7 +117,7 @@ export function WardFormDialog({ open, onOpenChange, ward }: WardFormDialogProps
               checked={isActive}
               onCheckedChange={(checked) => setIsActive(checked === true)}
             />
-            <Label htmlFor="ward-active">{t('rooms.active')}</Label>
+            <FormLabel htmlFor="ward-active">{t('rooms.active')}</FormLabel>
           </div>
           {actionError ? <p className="text-sm text-danger">{actionError}</p> : null}
           <DialogFooter>

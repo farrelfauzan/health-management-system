@@ -4,10 +4,10 @@ import {
   DeliveryGateChannelLinkRecord,
   DeliveryGatePatientRecord,
   DeliveryRefusalReasonValue,
+  normalizePhoneNumber,
   WhatsappDeliveryGateResult,
 } from '@hms/shared-types';
 
-import { normalizePhoneNumber } from '../../customer-service/service/normalize-phone-number';
 import { DeliveryGateRepository } from '../repository/delivery-gate.repository';
 
 /**

@@ -33,7 +33,7 @@ export function DoctorTodayPanel({ today }: DoctorTodayPanelProps) {
       <PageHeader
         title={t('encounters.today')}
         subtitle={t('encounters.todaySubtitle')}
-        breadcrumbs={[t('encounters.doctor'), t('encounters.today')]}
+        breadcrumbs={[{ label: t('encounters.today') }]}
       />
 
       <section className="space-y-3">

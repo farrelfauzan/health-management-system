@@ -1,6 +1,6 @@
 'use client';
 
-import { Icon, Input } from '@hms/ui';
+import { Icon, Input, Label } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
 import type { CodeSearchOption } from '#lib/encounters/code-search-option';
@@ -57,9 +57,9 @@ export function CodeSearchPicker({
 
   return (
     <div>
-      <label htmlFor={id} className="mb-1.5 block font-heading text-xs font-medium text-slate-600">
+      <Label htmlFor={id} className="mb-1.5 font-heading text-xs text-slate-600">
         {label}
-      </label>
+      </Label>
       <Input
         id={id}
         autoComplete="off"

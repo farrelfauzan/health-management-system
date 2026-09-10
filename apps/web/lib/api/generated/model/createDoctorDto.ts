@@ -21,10 +21,13 @@ export interface CreateDoctorDto {
   fullName: string;
   specialtyId: string;
   /**
+     * Indonesian phone number. Accepts 0812…, +62 812-…, 62812… and punctuated forms; stored as 62812….
      * @minLength 6
      * @maxLength 32
      */
   phoneNumber: string;
+  /** @maxLength 255 */
+  email?: string;
   /**
      * @minLength 1
      * @maxLength 32

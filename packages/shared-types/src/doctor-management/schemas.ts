@@ -4,6 +4,7 @@ import { z } from 'zod';
 // adopted national identifiers first; practitioners share the exact same
 // 16-digit Dukcapil format, so reuse it instead of diverging.
 import { nikSchema } from '#patient-management/schemas';
+import { indonesianPhoneNumberSchema } from '#shared/phone-number-schema';
 
 export const MAX_INITIAL_PATIENT_ASSIGNMENTS = 20;
 export const MAX_SCHEDULE_ENTRIES = 28;
@@ -151,6 +152,35 @@ export const updateDoctorScheduleSchema = z
     message: 'Schedule entries must not overlap on the same day',
   });
 
+/**
+ * Whether a doctor can sign in yet (P19-T15).
+ *
+ * Deliberately two states rather than the four `UserInvitationStatusValue`
+ * carries. This answers one question a directory row has room for — "does this
+ * doctor have a working login" — and both a withdrawn and a lapsed invitation
+ * answer it the same way: no, and there is no live link either, which is the
+ * absent case rather than a state of its own. The four-state view of an
+ * individual invitation stays on the Administration invitations screen, which
+ * is where the resend button lives.
+ */
+export const DOCTOR_INVITATION_STATUSES = ['PENDING', 'ACCEPTED'] as const;
+
+export type DoctorInvitationStatusValue = (typeof DOCTOR_INVITATION_STATUSES)[number];
+
+/** The address a doctor signs in with (P19-T15). See `createDoctorSchema`. */
+export const doctorEmailSchema = z.string().trim().toLowerCase().email().max(255);
+
+/**
+ * The same address as a form field.
+ *
+ * A form has no way to type "absent" — an untouched box is an empty string,
+ * and to the API that has to become an omitted key, because omitted means "no
+ * account for this doctor" while `""` is just an invalid address. The form
+ * drops the key when it is blank; this schema is what stops blank lighting up
+ * as an error before it gets the chance.
+ */
+export const doctorEmailFormSchema = z.union([z.literal(''), doctorEmailSchema]);
+
 export const listDoctorsQuerySchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(10),
@@ -177,7 +207,15 @@ export const createDoctorSchema = z.object({
   specialtyId: z.string().uuid(),
   // SATUSEHAT Practitioner requires at least one ContactPoint, and phone is
   // the one the profile owns — the email lives on the user account.
-  phoneNumber: z.string().trim().min(6).max(32),
+  phoneNumber: indonesianPhoneNumberSchema,
+  // The address the doctor signs in with (P19-T15). Optional, and still not a
+  // column on `DoctorProfile`: supplying it here creates or attaches the
+  // linked `User` in the same request instead of leaving the account to a
+  // second, forgettable trip through Administration. Absent behaves exactly as
+  // before — a profile with no login. There is no counterpart on
+  // `updateDoctorSchema`: changing a sign-in address stays an Administration
+  // action, so the edit form reads it back and never writes it.
+  email: doctorEmailSchema.optional(),
   title: doctorTitleSchema.optional(),
   degrees: doctorDegreesSchema.optional(),
   // Required. The IHS practitioner number is resolved from the master
@@ -203,7 +241,7 @@ export const updateDoctorSchema = z
   .object({
     fullName: z.string().trim().min(2).max(120).optional(),
     specialtyId: z.string().uuid().optional(),
-    phoneNumber: z.string().trim().min(6).max(32).optional(),
+    phoneNumber: indonesianPhoneNumberSchema.optional(),
     title: doctorTitleSchema.nullable().optional(),
     degrees: doctorDegreesSchema.nullable().optional(),
     // Settable but not clearable: a doctor who has a NIK must keep one, or

@@ -3,12 +3,23 @@
 import * as React from "react"
 import { Label as LabelPrimitive } from "radix-ui"
 
+import { RequiredMarker } from "#components/required-marker"
 import { cn } from "#lib/utils"
+
+type LabelProps = React.ComponentProps<typeof LabelPrimitive.Root> & {
+  /** Appends a red asterisk plus a screen-reader-only "required" word. */
+  required?: boolean
+  /** Translated word announced for `required`; defaults to English. */
+  requiredText?: string
+}
 
 function Label({
   className,
+  children,
+  required = false,
+  requiredText,
   ...props
-}: React.ComponentProps<typeof LabelPrimitive.Root>) {
+}: LabelProps) {
   return (
     <LabelPrimitive.Root
       data-slot="label"
@@ -17,7 +28,10 @@ function Label({
         className
       )}
       {...props}
-    />
+    >
+      {children}
+      {required ? <RequiredMarker requiredText={requiredText} /> : null}
+    </LabelPrimitive.Root>
   )
 }
 

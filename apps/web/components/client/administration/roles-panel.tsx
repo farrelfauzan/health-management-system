@@ -10,10 +10,13 @@ import { RoleFormDialog } from '#components/client/administration/role-form-dial
 import { RolePermissionsDialog } from '#components/client/administration/role-permissions-dialog';
 import { RolesTable } from '#components/client/administration/roles-table';
 import { PageHeader } from '#components/shared/page-header';
+import { useShellBreadcrumbRoot } from '#lib/navigation/use-shell-breadcrumb-root';
 import { useRolesList } from '#lib/rbac/use-roles-list';
 
 export function RolesPanel() {
   const t = useTranslations('operations.administration.roles');
+  const tAdministration = useTranslations('operations.administration');
+  const root = useShellBreadcrumbRoot();
   const rolesQuery = useRolesList();
   const [isFormDialogOpen, setIsFormDialogOpen] = useState<boolean>(false);
   const [editingRole, setEditingRole] = useState<RoleListItem | null>(null);
@@ -35,7 +38,11 @@ export function RolesPanel() {
       <PageHeader
         title={t('title')}
         subtitle={t('subtitle')}
-        breadcrumbs={[t('title')]}
+        breadcrumbs={[
+          root,
+          { label: tAdministration('title'), href: '/admin/administration' },
+          { label: t('title') },
+        ]}
         actions={
           <Can action="create" subject="Role">
             <Button

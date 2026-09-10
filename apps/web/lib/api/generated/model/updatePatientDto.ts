@@ -30,6 +30,7 @@ export interface UpdatePatientDto {
   sex?: UpdatePatientDtoSex;
   status?: UpdatePatientDtoStatus;
   /**
+     * Indonesian phone number. Accepts 0812…, +62 812-…, 62812… and punctuated forms; stored as 62812….
      * @minLength 6
      * @maxLength 32
      */
@@ -39,6 +40,24 @@ export interface UpdatePatientDto {
      * @maxLength 300
      */
   address?: string;
+  /** @pattern ^\d{2}$ */
+  provinceCode?: string;
+  /** @pattern ^\d{2}\.\d{2}$ */
+  regencyCode?: string;
+  /** @pattern ^\d{2}\.\d{2}\.\d{2}$ */
+  districtCode?: string;
+  /** @pattern ^\d{2}\.\d{2}\.\d{2}\.\d{4}$ */
+  villageCode?: string;
+  /**
+     * @nullable
+     * @pattern ^\d{1,3}\/\d{1,3}$
+     */
+  rtRw?: string | null;
+  /**
+     * @nullable
+     * @pattern ^\d{5}$
+     */
+  postalCode?: string | null;
   /** @nullable */
   nik?: string | null;
   /** @nullable */
@@ -69,6 +88,7 @@ export interface UpdatePatientDto {
      */
   emergencyContactName?: string | null;
   /**
+     * Indonesian phone number. Accepts 0812…, +62 812-…, 62812… and punctuated forms; stored as 62812….
      * @minLength 6
      * @maxLength 32
      * @nullable

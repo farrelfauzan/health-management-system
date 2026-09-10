@@ -17,12 +17,15 @@ import {
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { parseApiSuccess } from '#lib/api/response';
 import { invalidateAdminUserQueries } from '#lib/admin-users/invalidate-admin-user-queries';
+import { useShellBreadcrumbRoot } from '#lib/navigation/use-shell-breadcrumb-root';
 import { useUserInvitationsList } from '#lib/user-invitations/use-user-invitations-list';
 
 const PAGE_SIZE = 10;
 
 export function AdminInvitationsPanel() {
   const t = useTranslations('operations.administration.invitations');
+  const tAdministration = useTranslations('operations.administration');
+  const root = useShellBreadcrumbRoot();
   const queryClient = useQueryClient();
   const [page, setPage] = useState<number>(1);
   const [isInviteDialogOpen, setIsInviteDialogOpen] = useState<boolean>(false);
@@ -61,7 +64,11 @@ export function AdminInvitationsPanel() {
       <PageHeader
         title={t('title')}
         subtitle={t('subtitle')}
-        breadcrumbs={[t('title')]}
+        breadcrumbs={[
+          root,
+          { label: tAdministration('title'), href: '/admin/administration' },
+          { label: t('title') },
+        ]}
         actions={
           <Can action="create" subject="User">
             <Button

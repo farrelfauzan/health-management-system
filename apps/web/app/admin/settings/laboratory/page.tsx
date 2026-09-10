@@ -7,8 +7,14 @@ import { LabReleasePolicyPanel } from '#components/client/laboratory/lab-release
 import { ACCESS_TOKEN_COOKIE_NAME } from '#lib/auth/access-token-cookie';
 import { resolveSessionClaims } from '#lib/auth/session-claims';
 import { SESSION_HINT_COOKIE_NAME } from '#lib/auth/session-hint-cookie';
+import { LAB_CATALOG_TABS } from '#lib/laboratory/lab-catalog-tabs';
+import { parseTabSearchParam } from '#lib/navigation/parse-tab-search-param';
 import { resolveAppAbilityRules } from '#lib/rbac/app-ability.server';
 import { isFeatureEnabled } from '#lib/shell/is-feature-enabled';
+
+type AdminLaboratorySettingsPageProps = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
 
 /**
  * The laboratory catalog settings screen (`P18-T01`).
@@ -19,7 +25,10 @@ import { isFeatureEnabled } from '#lib/shell/is-feature-enabled';
  * render an empty screen, and both are visibility only — `FeatureGuard` and
  * `PermissionsGuard` refuse the endpoints regardless.
  */
-export default async function AdminLaboratorySettingsPage() {
+export default async function AdminLaboratorySettingsPage({
+  searchParams,
+}: AdminLaboratorySettingsPageProps) {
+  const params = await searchParams;
   const cookieStore = await cookies();
   const claims = resolveSessionClaims({
     accessToken: cookieStore.get(ACCESS_TOKEN_COOKIE_NAME)?.value,
@@ -37,7 +46,7 @@ export default async function AdminLaboratorySettingsPage() {
   return (
     <div className="space-y-6">
       {ability.can('read', 'LaboratorySettings') ? <LabReleasePolicyPanel /> : null}
-      <LabCatalogPanel />
+      <LabCatalogPanel initialTab={parseTabSearchParam(params.tab, LAB_CATALOG_TABS)} />
     </div>
   );
 }

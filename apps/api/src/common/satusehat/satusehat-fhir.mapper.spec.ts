@@ -1370,3 +1370,92 @@ describe('SatusehatFhirMapper', () => {
     });
   });
 });
+
+describe('SatusehatFhirMapper patient address (P19-T10)', () => {
+  const mapper = new SatusehatFhirMapper(buildConfigService());
+
+  it('emits the administrativeCode extension, dots stripped and RT/RW split, when the chain is present', () => {
+    const actual = mapper.mapPatientAddress({
+      street: 'Jl. Merdeka No. 10',
+      provinceCode: '31',
+      regencyCode: '31.71',
+      regencyName: 'Kota Administrasi Jakarta Pusat',
+      districtCode: '31.71.01',
+      villageCode: '31.71.01.1001',
+      rtRw: '001/002',
+      postalCode: '10110',
+    });
+
+    expect(actual).toEqual({
+      use: 'home',
+      line: ['Jl. Merdeka No. 10'],
+      city: 'Kota Administrasi Jakarta Pusat',
+      postalCode: '10110',
+      country: 'ID',
+      extension: [
+        {
+          url: 'https://fhir.kemkes.go.id/r4/StructureDefinition/administrativeCode',
+          extension: [
+            { url: 'province', valueCode: '31' },
+            { url: 'city', valueCode: '3171' },
+            { url: 'district', valueCode: '317101' },
+            { url: 'village', valueCode: '3171011001' },
+            { url: 'rt', valueCode: '001' },
+            { url: 'rw', valueCode: '002' },
+          ],
+        },
+      ],
+    });
+  });
+
+  it('leaves RT/RW out of the extension when the record has none', () => {
+    const actual = mapper.mapPatientAddress({
+      street: 'Jl. Braga No. 5',
+      provinceCode: '32',
+      regencyCode: '32.73',
+      regencyName: 'Kota Bandung',
+      districtCode: '32.73.01',
+      villageCode: '32.73.01.1001',
+      rtRw: null,
+      postalCode: null,
+    });
+
+    expect(actual.postalCode).toBeUndefined();
+    expect(actual.extension?.[0]?.extension.map((entry) => entry.url)).toEqual([
+      'province',
+      'city',
+      'district',
+      'village',
+    ]);
+  });
+
+  it('sends a legacy row as a plain line with no extension at all', () => {
+    const actual = mapper.mapPatientAddress({
+      street: 'Jl. Lama No. 1',
+      provinceCode: null,
+      regencyCode: null,
+      regencyName: null,
+      districtCode: null,
+      villageCode: null,
+      rtRw: null,
+      postalCode: null,
+    });
+
+    expect(actual).toEqual({ use: 'home', line: ['Jl. Lama No. 1'], country: 'ID' });
+    expect(actual).not.toHaveProperty('extension');
+  });
+
+  it('withholds the extension from a partial chain rather than sending empty codes', () => {
+    const actual = mapper.mapPatientAddress({
+      street: 'Jl. Setengah No. 2',
+      provinceCode: '31',
+      regencyCode: '31.71',
+      regencyName: 'Kota Administrasi Jakarta Pusat',
+      districtCode: null,
+      villageCode: null,
+    });
+
+    expect(actual).not.toHaveProperty('extension');
+    expect(actual.city).toBe('Kota Administrasi Jakarta Pusat');
+  });
+});

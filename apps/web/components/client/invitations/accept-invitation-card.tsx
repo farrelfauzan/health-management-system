@@ -8,7 +8,7 @@ import {
   type UserInvitationAcceptedView,
   type UserInvitationPreview,
 } from '@hms/shared-types';
-import { Button, Card, CardContent, Input } from '@hms/ui';
+import { Button, Card, CardContent, Input, Label } from '@hms/ui';
 import Link from 'next/link';
 import { useFormatter, useTranslations } from 'next-intl';
 
@@ -145,12 +145,12 @@ export function AcceptInvitationCard({ token }: AcceptInvitationCardProps) {
           >
             {(field) => (
               <div className="space-y-1.5">
-                <label
+                <Label
                   htmlFor={field.name}
-                  className="block font-heading text-xs font-medium text-slate-600"
+                  className="font-heading text-xs text-slate-600"
                 >
                   {t('passwordLabel')}
-                </label>
+                </Label>
                 <Input
                   id={field.name}
                   type="password"
@@ -175,12 +175,12 @@ export function AcceptInvitationCard({ token }: AcceptInvitationCardProps) {
               >
                 {(field) => (
                   <div className="space-y-1.5">
-                    <label
+                    <Label
                       htmlFor={field.name}
-                      className="block font-heading text-xs font-medium text-slate-600"
+                      className="font-heading text-xs text-slate-600"
                     >
                       {t('confirmPasswordLabel')}
-                    </label>
+                    </Label>
                     <Input
                       id={field.name}
                       type="password"

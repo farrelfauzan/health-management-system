@@ -14,6 +14,7 @@ import { ClinicDocumentsTable } from '#components/client/clinic-documents/clinic
 import { InlineNotice } from '#components/client/shared/inline-notice';
 import { PageHeader } from '#components/shared/page-header';
 import { useClinicDocuments } from '#lib/clinic-documents/use-clinic-documents';
+import { useShellBreadcrumbRoot } from '#lib/navigation/use-shell-breadcrumb-root';
 
 type IngestStatusFilter = DocumentIngestStatusValue | typeof CLINIC_DOCUMENT_FILTER_ALL;
 type VisibilityFilter = DocumentVisibilityValue | typeof CLINIC_DOCUMENT_FILTER_ALL;
@@ -36,6 +37,7 @@ type VisibilityFilter = DocumentVisibilityValue | typeof CLINIC_DOCUMENT_FILTER_
  */
 export function ClinicCorpusPanel() {
   const t = useTranslations('clinicCorpus');
+  const root = useShellBreadcrumbRoot();
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [ingestStatus, setIngestStatus] = useState<IngestStatusFilter>(CLINIC_DOCUMENT_FILTER_ALL);
   const [visibility, setVisibility] = useState<VisibilityFilter>(CLINIC_DOCUMENT_FILTER_ALL);
@@ -66,7 +68,7 @@ export function ClinicCorpusPanel() {
       <PageHeader
         title={t('header.title')}
         subtitle={t('header.subtitle')}
-        breadcrumbs={[t('header.breadcrumbs.assistant'), t('header.breadcrumbs.clinicCorpus')]}
+        breadcrumbs={[root, { label: t('header.breadcrumbs.clinicCorpus') }]}
         actions={
           <Button type="button" onClick={() => setIsUploadOpen(true)}>
             {t('header.upload')}

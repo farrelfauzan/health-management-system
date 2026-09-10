@@ -10,6 +10,7 @@ import { AiProvidersTable } from '#components/client/ai-providers/ai-providers-t
 import { InlineNotice } from '#components/client/shared/inline-notice';
 import { PageHeader } from '#components/shared/page-header';
 import { useAiProviderConfigs } from '#lib/ai-providers/use-ai-provider-configs';
+import { useShellBreadcrumbRoot } from '#lib/navigation/use-shell-breadcrumb-root';
 
 type AiProvidersPanelProps = {
   canWrite: boolean;
@@ -17,6 +18,7 @@ type AiProvidersPanelProps = {
 
 export function AiProvidersPanel({ canWrite }: AiProvidersPanelProps) {
   const t = useTranslations('aiProviders');
+  const root = useShellBreadcrumbRoot();
   const configsQuery = useAiProviderConfigs();
   const [editingConfig, setEditingConfig] = useState<AiProviderConfigView | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -49,7 +51,7 @@ export function AiProvidersPanel({ canWrite }: AiProvidersPanelProps) {
       <PageHeader
         title={t('header.title')}
         subtitle={t('header.subtitle')}
-        breadcrumbs={[t('header.breadcrumbs.advanced'), t('header.breadcrumbs.aiProviders')]}
+        breadcrumbs={[root, { label: t('header.breadcrumbs.aiProviders') }]}
         actions={
           canWrite ? (
             <Button type="button" onClick={openCreateDialog}>

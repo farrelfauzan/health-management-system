@@ -49,11 +49,13 @@ import {
 } from '#lib/api/generated/bpjs-pcare/bpjs-pcare';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { parseApiSuccess } from '#lib/api/response';
+import { BPJS_MAPPING_TABS, type BpjsMappingTab } from '#lib/integrations/bpjs-mapping-tabs';
 import {
   useBpjsMappingOverview,
   useBpjsReferenceCatalog,
   useBpjsReferenceStatus,
 } from '#lib/integrations/use-integration-queries';
+import { useTabSearchParam } from '#lib/navigation/use-tab-search-param';
 import { useMedicationStock } from '#lib/pharmacy/use-medication-stock';
 import { formatStatusLabel } from '#lib/shared/status-label';
 
@@ -69,7 +71,13 @@ export function BpjsMappingsPanel() {
   const format = useFormatter();
   const ability = useAbility();
   const queryClient = useQueryClient();
-  const [tab, setTab] = useState('doctors');
+  // `mapping`, not `tab`: this strip sits inside the integrations page's own
+  // strip (`?tab=mappings`), and the two must compose in one URL (SJ-162).
+  const { tab, setTab } = useTabSearchParam<BpjsMappingTab>({
+    key: 'mapping',
+    allowed: BPJS_MAPPING_TABS,
+    fallback: 'doctors',
+  });
   const [referenceSearch, setReferenceSearch] = useState('');
   const [dphoSearch, setDphoSearch] = useState('');
   const canReadReferences = ability.can('read', 'BpjsReference');
@@ -265,7 +273,7 @@ export function BpjsMappingsPanel() {
           <Tabs
             value={tab}
             onValueChange={(value) => {
-              setTab(value);
+              setTab(value as BpjsMappingTab);
               setReferenceSearch('');
             }}
           >

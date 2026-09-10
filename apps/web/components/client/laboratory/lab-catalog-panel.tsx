@@ -22,10 +22,15 @@ import { LabPanelFormDialog } from '#components/client/laboratory/lab-panel-form
 import { LabPanelsTable } from '#components/client/laboratory/lab-panels-table';
 import { LabTestFormDialog } from '#components/client/laboratory/lab-test-form-dialog';
 import { LabTestsTable } from '#components/client/laboratory/lab-tests-table';
+import { LAB_CATALOG_TABS, type LabCatalogTab } from '#lib/laboratory/lab-catalog-tabs';
 import { useLabPanels } from '#lib/laboratory/use-lab-panels';
 import { useLabTests } from '#lib/laboratory/use-lab-tests';
+import { useTabSearchParam } from '#lib/navigation/use-tab-search-param';
 
-type CatalogTab = 'tests' | 'panels';
+type LabCatalogPanelProps = {
+  /** A tab asked for by the URL, `tests` or `panels` (SJ-162). */
+  initialTab?: LabCatalogTab;
+};
 
 type TestDialogState = { isOpen: boolean; labTest: LabTestView | null };
 
@@ -38,11 +43,15 @@ type PanelDialogState = { isOpen: boolean; labPanel: LabPanelView | null };
  * read grant; the buttons render only for `lab-test.write` — visibility
  * only, `PermissionsGuard` refuses the four write routes regardless.
  */
-export function LabCatalogPanel() {
+export function LabCatalogPanel({ initialTab }: LabCatalogPanelProps) {
   const t = useTranslations('operations.laboratory');
   const ability = useAbility();
   const canManage = ability.can('write', 'LabTest');
-  const [tab, setTab] = useState<CatalogTab>('tests');
+  const { tab, setTab } = useTabSearchParam<LabCatalogTab>({
+    allowed: LAB_CATALOG_TABS,
+    fallback: 'tests',
+    initialTab,
+  });
   const [search, setSearch] = useState<string>('');
   const [testDialog, setTestDialog] = useState<TestDialogState>({ isOpen: false, labTest: null });
   const [panelDialog, setPanelDialog] = useState<PanelDialogState>({
@@ -77,7 +86,7 @@ export function LabCatalogPanel() {
             </Button>
           ) : null}
         </div>
-        <Tabs value={tab} onValueChange={(value) => setTab(value as CatalogTab)}>
+        <Tabs value={tab} onValueChange={(value) => setTab(value as LabCatalogTab)}>
           <TabsList>
             <TabsTrigger value="tests">{t('tabs.tests')}</TabsTrigger>
             <TabsTrigger value="panels">{t('tabs.panels')}</TabsTrigger>

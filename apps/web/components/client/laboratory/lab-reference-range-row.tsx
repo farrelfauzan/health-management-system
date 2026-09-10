@@ -4,6 +4,7 @@ import {
   Button,
   Icon,
   Input,
+  Label,
   Select,
   SelectContent,
   SelectItem,
@@ -52,7 +53,7 @@ export function LabReferenceRangeRow({
       data-testid="lab-reference-range-row"
     >
       <legend className="px-1 text-xs font-medium text-slate-600">{rowLabel}</legend>
-      <label className="space-y-1 text-xs text-slate-600">
+      <Label className="block space-y-1 text-xs text-slate-600 font-normal">
         {t('sex')}
         <Select
           value={draft.sex === '' ? ANY_SEX_VALUE : draft.sex}
@@ -68,8 +69,8 @@ export function LabReferenceRangeRow({
             <SelectItem value="FEMALE">{t('female')}</SelectItem>
           </SelectContent>
         </Select>
-      </label>
-      <label className="space-y-1 text-xs text-slate-600">
+      </Label>
+      <Label className="block space-y-1 text-xs text-slate-600 font-normal">
         {t('ageMin')}
         <Input
           inputMode="numeric"
@@ -77,8 +78,8 @@ export function LabReferenceRangeRow({
           disabled={disabled}
           onChange={(event) => setField('ageMinDays', event.target.value)}
         />
-      </label>
-      <label className="space-y-1 text-xs text-slate-600">
+      </Label>
+      <Label className="block space-y-1 text-xs text-slate-600 font-normal">
         {t('ageMax')}
         <Input
           inputMode="numeric"
@@ -86,7 +87,7 @@ export function LabReferenceRangeRow({
           disabled={disabled}
           onChange={(event) => setField('ageMaxDays', event.target.value)}
         />
-      </label>
+      </Label>
       <div className="flex items-end justify-end">
         <Button
           type="button"
@@ -102,7 +103,7 @@ export function LabReferenceRangeRow({
       </div>
       {isNumeric ? (
         <>
-          <label className="space-y-1 text-xs text-slate-600">
+          <Label className="block space-y-1 text-xs text-slate-600 font-normal">
             {t('low')}
             <Input
               inputMode="decimal"
@@ -110,8 +111,8 @@ export function LabReferenceRangeRow({
               disabled={disabled}
               onChange={(event) => setField('low', event.target.value)}
             />
-          </label>
-          <label className="space-y-1 text-xs text-slate-600">
+          </Label>
+          <Label className="block space-y-1 text-xs text-slate-600 font-normal">
             {t('high')}
             <Input
               inputMode="decimal"
@@ -119,8 +120,8 @@ export function LabReferenceRangeRow({
               disabled={disabled}
               onChange={(event) => setField('high', event.target.value)}
             />
-          </label>
-          <label className="space-y-1 text-xs text-slate-600">
+          </Label>
+          <Label className="block space-y-1 text-xs text-slate-600 font-normal">
             {t('criticalLow')}
             <Input
               inputMode="decimal"
@@ -128,8 +129,8 @@ export function LabReferenceRangeRow({
               disabled={disabled}
               onChange={(event) => setField('criticalLow', event.target.value)}
             />
-          </label>
-          <label className="space-y-1 text-xs text-slate-600">
+          </Label>
+          <Label className="block space-y-1 text-xs text-slate-600 font-normal">
             {t('criticalHigh')}
             <Input
               inputMode="decimal"
@@ -137,17 +138,17 @@ export function LabReferenceRangeRow({
               disabled={disabled}
               onChange={(event) => setField('criticalHigh', event.target.value)}
             />
-          </label>
+          </Label>
         </>
       ) : (
-        <label className="col-span-2 space-y-1 text-xs text-slate-600 sm:col-span-4">
+        <Label className="block col-span-2 space-y-1 text-xs text-slate-600 sm:col-span-4 font-normal">
           {t('textNormal')}
           <Input
             value={draft.textNormal}
             disabled={disabled}
             onChange={(event) => setField('textNormal', event.target.value)}
           />
-        </label>
+        </Label>
       )}
     </fieldset>
   );

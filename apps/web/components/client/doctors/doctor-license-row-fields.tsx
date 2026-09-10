@@ -13,6 +13,7 @@ import {
 } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { FormLabel } from '#components/client/shared/form-label';
 import type { LicenseRow } from '#lib/doctors/doctor-credential-rows';
 
 type DoctorLicenseRowFieldsProps = {
@@ -46,12 +47,13 @@ export function DoctorLicenseRowFields({
       </div>
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5">
-          <label
+          <FormLabel
             htmlFor={`license-type-${row.key}`}
-            className="block font-heading text-xs font-medium text-slate-600"
+            className="font-heading text-xs text-slate-600"
+            required
           >
             {t('doctors.credentials.type')}
-          </label>
+          </FormLabel>
           <Select
             value={row.type}
             onValueChange={(value) => onChange(row.key, { type: value as DoctorLicenseTypeValue })}
@@ -69,12 +71,13 @@ export function DoctorLicenseRowFields({
           </Select>
         </div>
         <div className="space-y-1.5">
-          <label
+          <FormLabel
             htmlFor={`license-number-${row.key}`}
-            className="block font-heading text-xs font-medium text-slate-600"
+            className="font-heading text-xs text-slate-600"
+            required
           >
             {t('doctors.credentials.number')}
-          </label>
+          </FormLabel>
           <Input
             id={`license-number-${row.key}`}
             value={row.licenseNumber}

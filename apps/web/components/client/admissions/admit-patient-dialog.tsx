@@ -12,13 +12,14 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  Label,
   Textarea,
 } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
 import { BedPickerField } from '#components/client/admissions/bed-picker-field';
 import { DoctorCombobox } from '#components/client/doctors/doctor-combobox';
+import { FormLabel } from '#components/client/shared/form-label';
+import { RequiredLegend } from '#components/client/shared/required-legend';
 import { admissionFlowControllerAdmitPatientV1 } from '#lib/api/generated/admission-flow/admission-flow';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { parseApiSuccess } from '#lib/api/response';
@@ -111,8 +112,9 @@ export function AdmitPatientDialog({ open, onOpenChange }: AdmitPatientDialogPro
           <DialogDescription>{t('admissions.subtitle')}</DialogDescription>
         </DialogHeader>
         <form noValidate className="space-y-4" onSubmit={(event) => void handleSubmit(event)}>
+          <RequiredLegend />
           <div className="space-y-2">
-            <Label htmlFor="admit-patient">{t('admissions.patient')}</Label>
+            <FormLabel htmlFor="admit-patient" required>{t('admissions.patient')}</FormLabel>
             <Combobox
               id="admit-patient"
               options={patientOptions.patients.map((patient) => ({
@@ -131,7 +133,7 @@ export function AdmitPatientDialog({ open, onOpenChange }: AdmitPatientDialogPro
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="admit-doctor">{t('admissions.doctor')}</Label>
+            <FormLabel htmlFor="admit-doctor" required>{t('admissions.doctor')}</FormLabel>
             <DoctorCombobox
               id="admit-doctor"
               doctors={doctorOptions.doctors}
@@ -143,11 +145,12 @@ export function AdmitPatientDialog({ open, onOpenChange }: AdmitPatientDialogPro
           <BedPickerField
             id="admit-bed"
             label={t('admissions.bed')}
+            isRequired
             value={bedId}
             onChange={setBedId}
           />
           <div className="space-y-2">
-            <Label htmlFor="admit-reason">{t('admissions.reason')}</Label>
+            <FormLabel htmlFor="admit-reason">{t('admissions.reason')}</FormLabel>
             <Textarea
               id="admit-reason"
               rows={3}

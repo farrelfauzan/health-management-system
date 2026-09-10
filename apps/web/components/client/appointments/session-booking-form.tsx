@@ -3,11 +3,12 @@
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { AppointmentResponse, DoctorSessionListItem } from '@hms/shared-types';
-import { Button, DatePicker, DialogFooter, Textarea } from '@hms/ui';
+import { Button, DatePicker, DialogFooter, RequiredMarker, Textarea } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
 import { ExpiredLicenceWarning } from '#components/client/appointments/expired-licence-warning';
 import { SessionOptionCard } from '#components/client/appointments/session-option-card';
+import { FormLabel } from '#components/client/shared/form-label';
 import { InlineNotice } from '#components/client/shared/inline-notice';
 import { appointmentManagementControllerCreateAppointmentV1 } from '#lib/api/generated/appointment-management/appointment-management';
 import { notifyApiError } from '#lib/api/notify-api-error';
@@ -31,6 +32,7 @@ export function SessionBookingForm({
   onCancel,
 }: SessionBookingFormProps) {
   const t = useTranslations('operations');
+  const tForm = useTranslations('shared.form');
   const queryClient = useQueryClient();
   const [sessionDate, setSessionDate] = useState<string>(initialDate);
   const [selectedScheduleId, setSelectedScheduleId] = useState<string>('');
@@ -82,12 +84,13 @@ export function SessionBookingForm({
       {formError ? <InlineNotice tone="error">{formError}</InlineNotice> : null}
 
       <div className="space-y-1.5">
-        <label
+        <FormLabel
           htmlFor="session-date-picker"
-          className="block font-heading text-xs font-medium text-slate-600"
+          className="font-heading text-xs text-slate-600"
+          required
         >
           Date
-        </label>
+        </FormLabel>
         <DatePicker
           id="session-date-picker"
           value={sessionDate}
@@ -102,6 +105,7 @@ export function SessionBookingForm({
       <div className="space-y-1.5">
         <p className="font-heading text-xs font-medium text-slate-600">
           {t('appointments.labels.availableSessions')}
+          <RequiredMarker requiredText={tForm('required')} />
         </p>
         {!doctorId ? (
           <p className="text-sm text-slate-500">{t('appointments.labels.selectDoctorSessions')}</p>
@@ -135,12 +139,9 @@ export function SessionBookingForm({
       </div>
 
       <div className="space-y-1.5">
-        <label
-          htmlFor="session-reason"
-          className="block font-heading text-xs font-medium text-slate-600"
-        >
+        <FormLabel htmlFor="session-reason" className="font-heading text-xs text-slate-600">
           Reason (optional)
-        </label>
+        </FormLabel>
         <Textarea
           id="session-reason"
           rows={2}

@@ -16,6 +16,7 @@ import { DoctorScheduleDialog } from '#components/client/doctors/doctor-schedule
 import { EmptyState } from '#components/shared/empty-state';
 import { PageHeader } from '#components/shared/page-header';
 import { useDoctorDetail } from '#lib/doctors/use-doctor-detail';
+import { useShellBreadcrumbRoot } from '#lib/navigation/use-shell-breadcrumb-root';
 
 type DoctorDetailPanelProps = {
   doctorId: string;
@@ -24,6 +25,7 @@ type DoctorDetailPanelProps = {
 
 export function DoctorDetailPanel({ doctorId, isSatusehatEnabled }: DoctorDetailPanelProps) {
   const t = useTranslations('clinical');
+  const root = useShellBreadcrumbRoot();
   const detailQuery = useDoctorDetail(doctorId);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState<boolean>(false);
   const [isScheduleDialogOpen, setIsScheduleDialogOpen] = useState<boolean>(false);
@@ -59,7 +61,11 @@ export function DoctorDetailPanel({ doctorId, isSatusehatEnabled }: DoctorDetail
       <PageHeader
         title={doctor.fullName}
         subtitle={`${doctor.specialty} · ${doctor.licenseNumber}`}
-        breadcrumbs={[t('doctors.dashboard'), t('doctors.title'), doctor.fullName]}
+        breadcrumbs={[
+          root,
+          { label: t('doctors.title'), href: '/admin/doctors' },
+          { label: doctor.fullName },
+        ]}
         actions={
           <Can action="update" subject="Doctor">
             <Button type="button" variant="outline" onClick={() => setIsEditDialogOpen(true)}>

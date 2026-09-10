@@ -23,7 +23,9 @@ import {
 import { useFormatter, useTranslations } from 'next-intl';
 
 import { PrivacyNoticeCapture } from '#components/client/patients/privacy-notice-capture';
+import { FormLabel } from '#components/client/shared/form-label';
 import { InlineNotice } from '#components/client/shared/inline-notice';
+import { RequiredLegend } from '#components/client/shared/required-legend';
 import type { CreateRegistrationDto } from '#lib/api/generated/model/createRegistrationDto';
 import type { CreateRegistrationDtoPrivacyNotice } from '#lib/api/generated/model/createRegistrationDtoPrivacyNotice';
 import { registrationFlowControllerCreateRegistrationV1 } from '#lib/api/generated/registration-flow/registration-flow';
@@ -135,17 +137,19 @@ export function RegistrationCreateDialog({
             void form.handleSubmit();
           }}
         >
+          <RequiredLegend />
           {formError ? <InlineNotice tone="error">{formError}</InlineNotice> : null}
 
           <form.Field name="patientId">
             {(field) => (
               <div className="space-y-1.5">
-                <label
+                <FormLabel
                   htmlFor="registration-patient-select"
-                  className="block font-heading text-xs font-medium text-slate-600"
+                  className="font-heading text-xs text-slate-600"
+                  required
                 >
                   {t('common.patient')}
-                </label>
+                </FormLabel>
                 <Combobox
                   id="registration-patient-select"
                   options={patientsQuery.patients.map((patient) => ({
@@ -171,12 +175,12 @@ export function RegistrationCreateDialog({
           <form.Field name="appointmentId">
             {(field) => (
               <div className="space-y-1.5">
-                <label
+                <FormLabel
                   htmlFor="registration-appointment-select"
-                  className="block font-heading text-xs font-medium text-slate-600"
+                  className="font-heading text-xs text-slate-600"
                 >
                   {t('registrations.linkedAppointmentOptional')}
-                </label>
+                </FormLabel>
                 <Select
                   value={field.state.value}
                   disabled={!selectedPatientId}

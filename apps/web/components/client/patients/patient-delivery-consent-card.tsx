@@ -31,7 +31,7 @@ export function PatientDeliveryConsentCard({ patientId }: PatientDeliveryConsent
   }
 
   return (
-    <Card className="rounded-xl border-slate-200 shadow-none">
+    <Card className="min-w-0 rounded-xl border-slate-200 shadow-none">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 font-heading text-base">
           <Icon name="send" size={18} />

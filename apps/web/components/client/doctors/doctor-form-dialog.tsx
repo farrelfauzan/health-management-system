@@ -6,6 +6,7 @@ import { useForm } from '@tanstack/react-form';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   createDoctorSchema,
+  doctorEmailFormSchema,
   type CreateDoctorInput,
   type DoctorEducation,
   type DoctorLicense,
@@ -22,14 +23,18 @@ import {
   DialogHeader,
   DialogTitle,
   Input,
+  PhoneInput,
 } from '@hms/ui';
 
+import { DoctorAccountEmailNotice } from '#components/client/doctors/doctor-account-email-notice';
 import { DoctorEducationsField } from '#components/client/doctors/doctor-educations-field';
 import { DoctorLicensesField } from '#components/client/doctors/doctor-licenses-field';
 import { DoctorPatientPicker } from '#components/client/doctors/doctor-patient-picker';
 import { SpecialtyCombobox } from '#components/client/doctors/specialty-combobox';
 import { FieldError } from '#components/client/shared/field-error';
+import { FormLabel } from '#components/client/shared/form-label';
 import { InlineNotice } from '#components/client/shared/inline-notice';
+import { RequiredLegend } from '#components/client/shared/required-legend';
 import {
   buildEducationPayload,
   buildEmptyEducationRow,
@@ -47,6 +52,7 @@ import {
 import { parseApiSuccess } from '#lib/api/response';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { invalidateDoctorQueries } from '#lib/doctors/invalidate-doctor-queries';
+import { DOCTOR_FORM_REQUIRED_FIELDS } from '#lib/doctors/doctor-form-required-fields';
 import { usePatientsList } from '#lib/patients/use-patients-list';
 import { useSpecialtiesList } from '#lib/specialties/use-specialties-list';
 
@@ -116,6 +122,9 @@ export function DoctorFormDialog({
       phoneNumber: doctor?.phoneNumber ?? '',
       title: doctor?.title ?? '',
       degrees: doctor?.degrees ?? '',
+      // Create-only (P19-T15): on edit the address is shown read-only and the
+      // update payload never carries it.
+      email: '',
       // Write-only, like the patient NIK: the profile carries only a mask, so
       // a blank leaves the stored value alone rather than clearing it.
       nik: '',
@@ -127,6 +136,7 @@ export function DoctorFormDialog({
       const trimmedTitle = value.title.trim();
       const trimmedDegrees = value.degrees.trim();
       const trimmedNik = value.nik.trim();
+      const trimmedEmail = value.email.trim();
       const credentials = {
         licenses: buildLicensePayload(licenseRows),
         educations: buildEducationPayload(educationRows),
@@ -160,6 +170,10 @@ export function DoctorFormDialog({
             patientIds: value.patientIds.length > 0 ? value.patientIds : undefined,
             ...profileFields,
             ...credentials,
+            // Omitted when blank rather than sent empty: absent means "no
+            // account for this doctor", which is not the same request as an
+            // address the API would then reject as invalid.
+            ...(trimmedEmail.length > 0 ? { email: trimmedEmail } : {}),
             nik: trimmedNik,
           });
           parseApiSuccess<DoctorProfile>(response, t('doctors.form.saveError'));
@@ -192,6 +206,7 @@ export function DoctorFormDialog({
             void form.handleSubmit();
           }}
         >
+          <RequiredLegend />
           {formError ? <InlineNotice tone="error">{formError}</InlineNotice> : null}
 
           {!isEditMode ? (
@@ -201,12 +216,13 @@ export function DoctorFormDialog({
             >
               {(field) => (
                 <div className="space-y-1.5">
-                  <label
+                  <FormLabel
                     htmlFor={field.name}
-                    className="block font-heading text-xs font-medium text-slate-600"
+                    className="font-heading text-xs text-slate-600"
+                    required={DOCTOR_FORM_REQUIRED_FIELDS.has(field.name)}
                   >
                     {t('doctors.form.license')}
-                  </label>
+                  </FormLabel>
                   <Input
                     id={field.name}
                     value={field.state.value}
@@ -224,12 +240,13 @@ export function DoctorFormDialog({
           <form.Field name="fullName" validators={{ onSubmit: createDoctorSchema.shape.fullName }}>
             {(field) => (
               <div className="space-y-1.5">
-                <label
+                <FormLabel
                   htmlFor={field.name}
-                  className="block font-heading text-xs font-medium text-slate-600"
+                  className="font-heading text-xs text-slate-600"
+                  required={DOCTOR_FORM_REQUIRED_FIELDS.has(field.name)}
                 >
                   {t('doctors.form.fullName')}
-                </label>
+                </FormLabel>
                 <Input
                   id={field.name}
                   value={field.state.value}
@@ -250,12 +267,13 @@ export function DoctorFormDialog({
             >
               {(field) => (
                 <div className="space-y-1.5">
-                  <label
+                  <FormLabel
                     htmlFor={field.name}
-                    className="block font-heading text-xs font-medium text-slate-600"
+                    className="font-heading text-xs text-slate-600"
+                    required={DOCTOR_FORM_REQUIRED_FIELDS.has(field.name)}
                   >
                     {t('doctors.form.specialty')}
-                  </label>
+                  </FormLabel>
                   <SpecialtyCombobox
                     id={field.name}
                     specialties={specialtiesQuery.specialties}
@@ -274,17 +292,18 @@ export function DoctorFormDialog({
             >
               {(field) => (
                 <div className="space-y-1.5">
-                  <label
+                  <FormLabel
                     htmlFor={field.name}
-                    className="block font-heading text-xs font-medium text-slate-600"
+                    className="font-heading text-xs text-slate-600"
+                    required={DOCTOR_FORM_REQUIRED_FIELDS.has(field.name)}
                   >
                     {t('doctors.form.phone')}
-                  </label>
-                  <Input
+                  </FormLabel>
+                  <PhoneInput
                     id={field.name}
                     value={field.state.value}
-                    placeholder="+628129876543"
-                    onChange={(event) => field.handleChange(event.target.value)}
+                    placeholder="8129876543"
+                    onValueChange={(value) => field.handleChange(value)}
                     onBlur={field.handleBlur}
                     aria-invalid={field.state.meta.errors.length > 0}
                   />
@@ -296,13 +315,13 @@ export function DoctorFormDialog({
 
           <form.Field name="isActive">
             {(field) => (
-              <label className="flex cursor-pointer items-center gap-2.5">
+              <FormLabel className="flex cursor-pointer items-center gap-2.5 font-normal">
                 <Checkbox
                   checked={field.state.value}
                   onCheckedChange={(checked) => field.handleChange(checked === true)}
                 />
                 <span className="text-sm text-slate-700">{t('doctors.form.active')}</span>
-              </label>
+              </FormLabel>
             )}
           </form.Field>
 
@@ -314,12 +333,9 @@ export function DoctorFormDialog({
               <form.Field name="title">
                 {(field) => (
                   <div className="space-y-1.5">
-                    <label
-                      htmlFor={field.name}
-                      className="block font-heading text-xs font-medium text-slate-600"
-                    >
+                    <FormLabel htmlFor={field.name} className="font-heading text-xs text-slate-600">
                       {t('doctors.form.title')}
-                    </label>
+                    </FormLabel>
                     <Input
                       id={field.name}
                       value={field.state.value}
@@ -333,12 +349,9 @@ export function DoctorFormDialog({
               <form.Field name="degrees">
                 {(field) => (
                   <div className="space-y-1.5">
-                    <label
-                      htmlFor={field.name}
-                      className="block font-heading text-xs font-medium text-slate-600"
-                    >
+                    <FormLabel htmlFor={field.name} className="font-heading text-xs text-slate-600">
                       {t('doctors.form.degrees')}
-                    </label>
+                    </FormLabel>
                     <Input
                       id={field.name}
                       value={field.state.value}
@@ -351,9 +364,37 @@ export function DoctorFormDialog({
               </form.Field>
             </div>
             <div className="grid grid-cols-2 gap-3">
-              {/* Email is not here on purpose: it is the address the doctor
-                  signs in with, managed on their user account under
-                  Administration, and read back through that relation. */}
+              {/* Optional on create, read-only on edit (P19-T15): entering it
+                  creates or attaches the account the doctor signs in with, in
+                  the same request. It is still not a field on the profile —
+                  changing it later is an Administration action on the account,
+                  which is what the edit-mode notice below points at. */}
+              {!isEditMode ? (
+                <form.Field name="email" validators={{ onSubmit: doctorEmailFormSchema }}>
+                  {(field) => (
+                    <div className="space-y-1.5">
+                      <FormLabel
+                        htmlFor={field.name}
+                        className="font-heading text-xs text-slate-600"
+                        required={DOCTOR_FORM_REQUIRED_FIELDS.has(field.name)}
+                      >
+                        {t('doctors.email')}
+                      </FormLabel>
+                      <Input
+                        id={field.name}
+                        type="email"
+                        autoComplete="email"
+                        value={field.state.value}
+                        placeholder="budi.santoso@clinic.local"
+                        onChange={(event) => field.handleChange(event.target.value)}
+                        onBlur={field.handleBlur}
+                        aria-invalid={field.state.meta.errors.length > 0}
+                      />
+                      <FieldError errors={field.state.meta.errors} />
+                    </div>
+                  )}
+                </form.Field>
+              ) : null}
               {/* Required on create, optional on edit: the API demands a NIK
                   for every new doctor because SATUSEHAT resolves the IHS
                   practitioner number from it and nothing else, while an edit
@@ -364,12 +405,13 @@ export function DoctorFormDialog({
               >
                 {(field) => (
                   <div className="space-y-1.5">
-                    <label
+                    <FormLabel
                       htmlFor={field.name}
-                      className="block font-heading text-xs font-medium text-slate-600"
+                      className="font-heading text-xs text-slate-600"
+                      required={!isEditMode && DOCTOR_FORM_REQUIRED_FIELDS.has(field.name)}
                     >
                       NIK
-                    </label>
+                    </FormLabel>
                     <Input
                       id={field.name}
                       inputMode="numeric"
@@ -387,9 +429,15 @@ export function DoctorFormDialog({
               </form.Field>
             </div>
             {isEditMode ? (
-              <p className="rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-600">
-                {t('doctors.form.nikHelp')}
-              </p>
+              <>
+                <DoctorAccountEmailNotice
+                  email={doctor?.email}
+                  invitationStatus={doctor?.invitationStatus}
+                />
+                <p className="rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-600">
+                  {t('doctors.form.nikHelp')}
+                </p>
+              </>
             ) : null}
           </div>
 

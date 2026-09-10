@@ -78,6 +78,17 @@ export function DoctorsTableRow({
           <div>
             <p className="text-sm font-medium text-slate-900">{doctor.fullName}</p>
             <p className="text-xs text-slate-500">{doctor.specialty}</p>
+            {/* Under the name rather than in a column of its own (P19-T15):
+                the address only matters alongside whether the account it
+                belongs to works yet, and the two read as one fact. */}
+            {doctor.email ? (
+              <div className="mt-0.5 flex flex-wrap items-center gap-1.5">
+                <span className="text-xs text-slate-500">{doctor.email}</span>
+                {doctor.invitationStatus ? (
+                  <StatusBadge status={doctor.invitationStatus} />
+                ) : null}
+              </div>
+            ) : null}
             <DoctorSatusehatWarning nikMasked={doctor.nikMasked} />
             <DoctorExpiredLicenseWarning expiredAt={expiredLicenseAt} />
           </div>

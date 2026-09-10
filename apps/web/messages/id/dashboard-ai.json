@@ -2,7 +2,6 @@
   "dashboard": {
     "header": {
       "breadcrumbs": {
-        "dashboard": "Dasbor Utama",
         "overview": "Ringkasan"
       },
       "title": "Ringkasan Klinik",
@@ -65,7 +64,6 @@
   "aiAssistant": {
     "header": {
       "breadcrumbs": {
-        "advanced": "Lanjutan",
         "assistant": "Asisten AI"
       },
       "title": "Asisten Klinis AI",
@@ -258,7 +256,6 @@
       "title": "Penyedia AI",
       "subtitle": "Atur penyedia AI yang menjawab percakapan chatbot. Kunci API hanya dapat ditulis — hanya empat karakter terakhir yang ditampilkan.",
       "breadcrumbs": {
-        "advanced": "Lanjutan",
         "aiProviders": "Penyedia AI"
       },
       "addProvider": "Tambah penyedia"
@@ -320,7 +317,6 @@
       "subtitle": "Panduan, formularium, dan bahan rujukan yang boleh dipakai asisten saat menjawab Anda. Bersifat pribadi — tidak ada orang lain yang dapat melihat atau mengambil dokumen ini.",
       "upload": "Unggah dokumen",
       "breadcrumbs": {
-        "assistant": "Asisten",
         "knowledgeBase": "Basis pengetahuan"
       }
     },
@@ -417,7 +413,6 @@
       "subtitle": "Dokumen FAQ dan SOP bersama yang dipakai asisten untuk menjawab. Dokumen yang ditandai untuk pasien bisa dikutip ke siapa pun yang menghubungi klinik.",
       "upload": "Unggah dokumen",
       "breadcrumbs": {
-        "assistant": "Asisten",
         "clinicCorpus": "Korpus klinik"
       }
     },
@@ -572,7 +567,6 @@
       "title": "Percakapan kanal",
       "subtitle": "Percakapan WhatsApp dan Telegram, antrean alih tangan, dan pengambilalihan.",
       "breadcrumbs": {
-        "assistant": "Asisten",
         "conversations": "Percakapan"
       }
     },
@@ -637,7 +631,6 @@
       "backToInbox": "Kembali ke daftar",
       "olderTurnsHidden": "Percakapan yang lebih lama tidak ditampilkan.",
       "breadcrumbs": {
-        "assistant": "Asisten",
         "conversations": "Percakapan"
       },
       "roles": {

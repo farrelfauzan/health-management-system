@@ -14,6 +14,7 @@ import { CursorPagination } from '#components/client/shared/cursor-pagination';
 import { SharedWithMePanel } from '#components/client/vault-shares/shared-with-me-panel';
 import { EmptyState } from '#components/shared/empty-state';
 import { PageHeader } from '#components/shared/page-header';
+import { useShellBreadcrumbRoot } from '#lib/navigation/use-shell-breadcrumb-root';
 import type { VaultDocumentsFilters } from '#lib/vault-documents/use-vault-documents';
 import { useVaultDocumentsPage } from '#lib/vault-documents/use-vault-documents-page';
 
@@ -34,6 +35,7 @@ import { useVaultDocumentsPage } from '#lib/vault-documents/use-vault-documents-
  */
 export function VaultPanel() {
   const t = useTranslations('vault');
+  const root = useShellBreadcrumbRoot();
   const ability = useAbility();
   // Visibility only, and scope-blind: this decides whether the button
   // renders, the API decides whether an upload is accepted. An offboarded
@@ -69,7 +71,7 @@ export function VaultPanel() {
       <PageHeader
         title={t('header.title')}
         subtitle={t('header.subtitle')}
-        breadcrumbs={[t('header.breadcrumbs.you'), t('header.breadcrumbs.documents')]}
+        breadcrumbs={[root, { label: t('header.breadcrumbs.documents') }]}
         actions={
           <>
             {/* Disabled only when the vault itself is empty — a filter that

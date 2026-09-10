@@ -42,6 +42,15 @@ if (typeof Element !== 'undefined' && !Element.prototype.scrollIntoView) {
   Element.prototype.scrollIntoView = vi.fn();
 }
 
+// jsdom implements no part of the Pointer Capture API, and Radix's select
+// calls into it on the first pointer-down. Without these a spec cannot open a
+// `Select` at all — it throws before the listbox mounts (`P19-T08`).
+if (typeof Element !== 'undefined' && !Element.prototype.hasPointerCapture) {
+  Element.prototype.hasPointerCapture = () => false;
+  Element.prototype.setPointerCapture = () => undefined;
+  Element.prototype.releasePointerCapture = () => undefined;
+}
+
 afterEach(() => {
   cleanup();
 });

@@ -19,6 +19,7 @@ import {
   DialogHeader,
   DialogTitle,
   Input,
+  Label,
   Select,
   SelectContent,
   SelectItem,
@@ -147,12 +148,12 @@ export function ServiceTariffFormDialog({
             {actionError ? <InlineNotice tone="error">{actionError}</InlineNotice> : null}
             <div className="grid gap-3 sm:grid-cols-2">
               <div>
-                <label
+                <Label
                   htmlFor="tariff-code"
-                  className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
+                  className="mb-1.5 font-heading text-xs text-slate-600"
                 >
                   Code
-                </label>
+                </Label>
                 <Input
                   id="tariff-code"
                   value={code}
@@ -165,12 +166,12 @@ export function ServiceTariffFormDialog({
                 ) : null}
               </div>
               <div>
-                <label
+                <Label
                   htmlFor="tariff-price"
-                  className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
+                  className="mb-1.5 font-heading text-xs text-slate-600"
                 >
                   Price (Rp)
-                </label>
+                </Label>
                 <Input
                   id="tariff-price"
                   inputMode="decimal"
@@ -180,12 +181,12 @@ export function ServiceTariffFormDialog({
               </div>
             </div>
             <div>
-              <label
+              <Label
                 htmlFor="tariff-name"
-                className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
+                className="mb-1.5 font-heading text-xs text-slate-600"
               >
                 Name
-              </label>
+              </Label>
               <Input
                 id="tariff-name"
                 value={name}
@@ -194,12 +195,12 @@ export function ServiceTariffFormDialog({
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
               <div>
-                <label
+                <Label
                   htmlFor="tariff-category"
-                  className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
+                  className="mb-1.5 font-heading text-xs text-slate-600"
                 >
                   Category
-                </label>
+                </Label>
                 <Select
                   value={category}
                   onValueChange={(value) => setCategory(value as ServiceTariffCategoryValue)}
@@ -217,12 +218,12 @@ export function ServiceTariffFormDialog({
                 </Select>
               </div>
               <div>
-                <label
+                <Label
                   htmlFor="tariff-icd9cm"
-                  className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
+                  className="mb-1.5 font-heading text-xs text-slate-600"
                 >
                   ICD-9-CM Code
-                </label>
+                </Label>
                 <Input
                   id="tariff-icd9cm"
                   placeholder={t('billing.labels.procedureLink')}
@@ -238,13 +239,13 @@ export function ServiceTariffFormDialog({
                 onChange={setRoomClassId}
               />
             ) : null}
-            <label className="flex items-center gap-2 text-sm text-slate-700">
+            <Label className="flex items-center gap-2 text-sm text-slate-700 font-normal">
               <Checkbox
                 checked={isActive}
                 onCheckedChange={(checked) => setIsActive(checked === true)}
               />
               Active
-            </label>
+            </Label>
           </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>

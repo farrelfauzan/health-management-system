@@ -6,6 +6,7 @@ import { DIAGNOSIS_TYPES, type AddDiagnosisInput, type DiagnosisResponse } from 
 import {
   Button,
   Input,
+  Label,
   Select,
   SelectContent,
   SelectItem,
@@ -94,12 +95,12 @@ export function EncounterDiagnosisForm({
       />
       <div className="flex flex-wrap items-end gap-3">
         <div className="w-40">
-          <label
+          <Label
             htmlFor="diagnosis-type"
-            className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
+            className="mb-1.5 font-heading text-xs text-slate-600"
           >
             {t('encounters.type')}
-          </label>
+          </Label>
           <Select value={type} onValueChange={setType}>
             <SelectTrigger id="diagnosis-type" className="w-full">
               <SelectValue />
@@ -114,12 +115,12 @@ export function EncounterDiagnosisForm({
           </Select>
         </div>
         <div className="min-w-48 flex-1">
-          <label
+          <Label
             htmlFor="diagnosis-notes"
-            className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
+            className="mb-1.5 font-heading text-xs text-slate-600"
           >
             {t('encounters.notes')}
-          </label>
+          </Label>
           <Input
             id="diagnosis-notes"
             placeholder={t('encounters.diagnosis.notes')}

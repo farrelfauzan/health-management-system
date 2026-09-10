@@ -16,6 +16,7 @@ export type DoctorManagementControllerCreateDoctorV1201Data = {
   email: string;
   title: string;
   degrees: string;
+  invitationStatus: string;
   nikMasked: string;
   satusehatPractitionerId: string;
   ownerUserId: string;

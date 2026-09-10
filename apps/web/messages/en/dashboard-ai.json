@@ -2,7 +2,6 @@
   "dashboard": {
     "header": {
       "breadcrumbs": {
-        "dashboard": "Main Dashboard",
         "overview": "Overview"
       },
       "title": "Clinic Overview",
@@ -65,7 +64,6 @@
   "aiAssistant": {
     "header": {
       "breadcrumbs": {
-        "advanced": "Advanced",
         "assistant": "AI Assistant"
       },
       "title": "AI Clinical Assistant",
@@ -258,7 +256,6 @@
       "title": "AI Providers",
       "subtitle": "Configure the upstream provider that answers chatbot conversations. API keys are write-only — only the last four characters are ever shown.",
       "breadcrumbs": {
-        "advanced": "Advanced",
         "aiProviders": "AI Providers"
       },
       "addProvider": "Add provider"
@@ -320,7 +317,6 @@
       "subtitle": "Guidelines, formularies and reference material the assistant may use when answering you. Private to you — nobody else can see or retrieve these documents.",
       "upload": "Upload document",
       "breadcrumbs": {
-        "assistant": "Assistant",
         "knowledgeBase": "Knowledge base"
       }
     },
@@ -417,7 +413,6 @@
       "subtitle": "The shared FAQ and SOP documents the assistant answers from. Documents marked for patients can be quoted to anyone who messages the clinic.",
       "upload": "Upload document",
       "breadcrumbs": {
-        "assistant": "Assistant",
         "clinicCorpus": "Clinic corpus"
       }
     },
@@ -572,7 +567,6 @@
       "title": "Channel conversations",
       "subtitle": "WhatsApp and Telegram conversations, the handoff queue, and takeover.",
       "breadcrumbs": {
-        "assistant": "Assistant",
         "conversations": "Conversations"
       }
     },
@@ -637,7 +631,6 @@
       "backToInbox": "Back to the inbox",
       "olderTurnsHidden": "Older turns are not shown.",
       "breadcrumbs": {
-        "assistant": "Assistant",
         "conversations": "Conversations"
       },
       "roles": {

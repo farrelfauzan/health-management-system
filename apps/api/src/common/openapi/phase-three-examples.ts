@@ -15,6 +15,23 @@ const paginationMeta = { page: 1, limit: 10, total: 1 };
 // DD+40 (female) / MM / YY for 1990-05-12.
 const syntheticNik = '3201015205900001';
 const syntheticBpjsNumber = '0001234567890';
+// A real chain from the Kemendagri master data: Jakarta Pusat, Gambir,
+// Gambir. Wrapped as optional field by field, never as a whole, because the
+// object itself is always on the response.
+const patientAddressDetails = {
+  provinceCode: optionalExample('31'),
+  provinceName: optionalExample('Daerah Khusus Ibukota Jakarta'),
+  regencyCode: optionalExample('31.71'),
+  regencyName: optionalExample('Kota Administrasi Jakarta Pusat'),
+  districtCode: optionalExample('31.71.01'),
+  districtName: optionalExample('Gambir'),
+  villageCode: optionalExample('31.71.01.1001'),
+  villageName: optionalExample('Gambir'),
+  rtRw: optionalExample('001/002'),
+  postalCode: optionalExample('10110'),
+  formattedAddress:
+    'Jl. Merdeka No. 10, RT/RW 001/002, Gambir, Gambir, Kota Administrasi Jakarta Pusat, Daerah Khusus Ibukota Jakarta, 10110',
+};
 const patient = {
   id: patientId,
   // Server-allocated: zero-padded to PATIENT_MRN_WIDTH, never client-supplied.
@@ -32,7 +49,11 @@ const patient = {
   sex: 'FEMALE',
   status: 'OUT_PATIENT',
   phoneNumber: '+628123456789',
-  address: optionalExample('Jakarta'),
+  address: optionalExample('Jl. Merdeka No. 10'),
+  // The structured address (P19-T10). Its codes and names are wrapped as
+  // optional because a legacy row and a chat-made draft carry none of them;
+  // `formattedAddress` is always present and falls back to the street line.
+  addressDetails: patientAddressDetails,
   nikMasked: '••••••••0001',
   bpjsNumberMasked: '••••••••7890',
   hasSatusehatPatientId: false,
@@ -193,6 +214,7 @@ const doctor = {
   email: 'budi.santoso@clinic.local',
   title: 'dr.',
   degrees: 'Sp.PD',
+  invitationStatus: 'ACCEPTED',
   nikMasked: '••••••••0002',
   satusehatPractitionerId: '10009880728',
   ownerUserId: userId,
@@ -563,7 +585,13 @@ export const PHASE_THREE_EXAMPLES = {
       sex: 'FEMALE',
       status: 'OUT_PATIENT',
       phoneNumber: '+628123456789',
-      address: 'Jakarta',
+      address: 'Jl. Merdeka No. 10',
+      provinceCode: '31',
+      regencyCode: '31.71',
+      districtCode: '31.71.01',
+      villageCode: '31.71.01.1001',
+      rtRw: '001/002',
+      postalCode: '10110',
       nik: syntheticNik,
       bpjsNumber: syntheticBpjsNumber,
       email: 'aisha.rahman@example.com',
@@ -593,7 +621,13 @@ export const PHASE_THREE_EXAMPLES = {
     },
     updateRequest: {
       phoneNumber: '+628123456780',
-      address: 'Bandung',
+      address: 'Jl. Braga No. 5',
+      provinceCode: '32',
+      regencyCode: '32.73',
+      districtCode: '32.73.01',
+      villageCode: '32.73.01.1001',
+      rtRw: '003/007',
+      postalCode: '40111',
       status: 'IN_PATIENT',
       allergies: [{ substance: 'Penicillin', severity: 'MODERATE' }],
     },
@@ -619,6 +653,13 @@ export const PHASE_THREE_EXAMPLES = {
   },
   specialty: {
     item: specialty,
+  },
+  regions: {
+    province: { code: '31', name: 'Daerah Khusus Ibukota Jakarta' },
+    regency: { code: '31.71', name: 'Kota Administrasi Jakarta Pusat', parentCode: '31' },
+    district: { code: '31.71.01', name: 'Gambir', parentCode: '31.71' },
+    village: { code: '31.71.01.1001', name: 'Gambir', parentCode: '31.71.01' },
+    villagesMeta: { page: 1, limit: 50, total: 6 },
   },
   terminology: {
     icd10Code,
@@ -657,13 +698,18 @@ export const PHASE_THREE_EXAMPLES = {
           graduationYear: 2010,
         },
       ],
-      ownerUserId: userId,
+      // No `ownerUserId` beside the email (P19-T15): the address is now how a
+      // doctor's account is created or attached, and naming both is refused
+      // unless they resolve to the same user. `ownerUserId` remains accepted
+      // on its own for callers that already hold a user id.
       patientIds: [patientId],
     },
+    // No `email` here on purpose: `updateDoctorSchema` does not accept one, and
+    // changing a sign-in address stays an Administration action on the account.
+    // It used to be shown, which was a promise the schema silently dropped.
     updateRequest: {
       specialtyId,
       phoneNumber: '+628129876500',
-      email: 'budi.santoso@clinic.local',
       title: 'dr.',
       degrees: 'Sp.PD',
       isActive: true,

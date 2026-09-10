@@ -25,7 +25,15 @@ import { OrganizationUnitMembersDialog } from '#components/client/organization/o
 import { OrganizationUnitMoveDialog } from '#components/client/organization/organization-unit-move-dialog';
 import { OrganizationTreeTable } from '#components/client/organization/organization-tree-table';
 import { PageHeader } from '#components/shared/page-header';
+import { useShellBreadcrumbRoot } from '#lib/navigation/use-shell-breadcrumb-root';
+import { useTabSearchParam } from '#lib/navigation/use-tab-search-param';
+import { ORGANIZATION_TABS, type OrganizationTab } from '#lib/organization/organization-tabs';
 import { useOrganizationTree } from '#lib/organization/use-organization-tree';
+
+type OrganizationWorkspaceProps = {
+  /** The view asked for by the URL, `list` or `chart` (SJ-162). */
+  initialTab?: OrganizationTab;
+};
 
 type UnitDialogState = {
   mode: 'archive' | 'create' | 'delete' | 'edit' | 'members' | 'move' | null;
@@ -41,9 +49,15 @@ const CLOSED_DIALOG: UnitDialogState = { mode: null, unit: null, parent: null };
  * visibility only, since the API refuses every write regardless of what this
  * renders.
  */
-export function OrganizationWorkspace() {
+export function OrganizationWorkspace({ initialTab }: OrganizationWorkspaceProps) {
   const t = useTranslations('operations.organization');
+  const root = useShellBreadcrumbRoot();
   const ability = useAbility();
+  const { tab, setTab } = useTabSearchParam<OrganizationTab>({
+    allowed: ORGANIZATION_TABS,
+    fallback: 'list',
+    initialTab,
+  });
   const [showArchived, setShowArchived] = useState<boolean>(false);
   const [dialogState, setDialogState] = useState<UnitDialogState>(CLOSED_DIALOG);
   const treeQuery = useOrganizationTree(showArchived ? { includeArchived: 'true' } : {});
@@ -58,7 +72,7 @@ export function OrganizationWorkspace() {
       <PageHeader
         title={t('title')}
         subtitle={canManage ? t('subtitle') : t('readOnlyNotice')}
-        breadcrumbs={[t('title')]}
+        breadcrumbs={[root, { label: t('title') }]}
         actions={
           canManage ? (
             <Button
@@ -78,7 +92,11 @@ export function OrganizationWorkspace() {
           {/* One Tabs root around both views: the toggle is view state, not a
               route or a second query, so switching renders the same fetched
               tree — with "Show archived" still applied — without a refetch. */}
-          <Tabs defaultValue="list" className="space-y-4">
+          <Tabs
+            value={tab}
+            onValueChange={(value) => setTab(value as OrganizationTab)}
+            className="space-y-4"
+          >
             <div className="flex flex-wrap items-center justify-between gap-3">
               <p className="text-sm text-slate-500">
                 {t('unitCount', { count: treeQuery.tree.totalUnits })}

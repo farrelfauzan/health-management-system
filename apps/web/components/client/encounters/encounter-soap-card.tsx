@@ -7,7 +7,7 @@ import type {
   EncounterPrognosisValue,
   UpdateEncounterSoapInput,
 } from '@hms/shared-types';
-import { Button, Card, CardContent, CardHeader, CardTitle, Textarea } from '@hms/ui';
+import { Button, Card, CardContent, CardHeader, CardTitle, Label, Textarea } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
 import { InlineNotice } from '#components/client/shared/inline-notice';
@@ -94,12 +94,12 @@ export function EncounterSoapCard({ encounter, isEditable }: EncounterSoapCardPr
         {actionError ? <InlineNotice tone="error">{actionError}</InlineNotice> : null}
         {SOAP_SECTIONS.map((section) => (
           <div key={section.key}>
-            <label
+            <Label
               htmlFor={`soap-${section.key}`}
-              className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
+              className="mb-1.5 font-heading text-xs text-slate-600"
             >
               {t(`encounters.soap.${section.key}`)}
-            </label>
+            </Label>
             {isEditable ? (
               <Textarea
                 id={`soap-${section.key}`}
