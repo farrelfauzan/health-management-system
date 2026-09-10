@@ -9,6 +9,7 @@ import { PersonalDocumentUploadDialog } from '#components/client/personal-docume
 import { PersonalDocumentsTable } from '#components/client/personal-documents/personal-documents-table';
 import { InlineNotice } from '#components/client/shared/inline-notice';
 import { PageHeader } from '#components/shared/page-header';
+import { useShellBreadcrumbRoot } from '#lib/navigation/use-shell-breadcrumb-root';
 import { usePersonalDocuments } from '#lib/personal-documents/use-personal-documents';
 
 /**
@@ -23,6 +24,7 @@ import { usePersonalDocuments } from '#lib/personal-documents/use-personal-docum
  */
 export function PersonalKnowledgeBasePanel() {
   const t = useTranslations('personalKnowledgeBase');
+  const root = useShellBreadcrumbRoot();
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -44,7 +46,7 @@ export function PersonalKnowledgeBasePanel() {
       <PageHeader
         title={t('header.title')}
         subtitle={t('header.subtitle')}
-        breadcrumbs={[t('header.breadcrumbs.assistant'), t('header.breadcrumbs.knowledgeBase')]}
+        breadcrumbs={[root, { label: t('header.breadcrumbs.knowledgeBase') }]}
         actions={
           <Button type="button" onClick={() => setIsUploadOpen(true)}>
             {t('header.upload')}

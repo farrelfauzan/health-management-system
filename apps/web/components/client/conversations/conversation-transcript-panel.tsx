@@ -12,6 +12,7 @@ import { ConversationTranscriptMessage } from '#components/client/conversations/
 import { InlineNotice } from '#components/client/shared/inline-notice';
 import { PageHeader } from '#components/shared/page-header';
 import { useConversationTranscript } from '#lib/conversations/use-conversation-transcript';
+import { useShellBreadcrumbRoot } from '#lib/navigation/use-shell-breadcrumb-root';
 
 type ConversationTranscriptPanelProps = {
   conversationId: string;
@@ -29,6 +30,7 @@ type ConversationTranscriptPanelProps = {
  */
 export function ConversationTranscriptPanel({ conversationId }: ConversationTranscriptPanelProps) {
   const t = useTranslations('conversations.transcript');
+  const root = useShellBreadcrumbRoot();
   const [notice, setNotice] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const transcriptQuery = useConversationTranscript(conversationId);
@@ -63,7 +65,11 @@ export function ConversationTranscriptPanel({ conversationId }: ConversationTran
       <PageHeader
         title={conversation.senderDisplayName ?? t('unnamed')}
         subtitle={`${conversation.channel} · ${conversation.externalChatId}`}
-        breadcrumbs={[t('breadcrumbs.assistant'), t('breadcrumbs.conversations')]}
+        breadcrumbs={[
+          root,
+          { label: t('breadcrumbs.conversations'), href: '/admin/conversations' },
+          { label: conversation.senderDisplayName ?? t('unnamed') },
+        ]}
         actions={
           <ConversationHandoffActions
             conversation={conversation}

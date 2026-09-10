@@ -28,9 +28,12 @@ import { PatientDoctorsCard } from '#components/client/patients/patient-doctors-
 import { PatientFormDialog } from '#components/client/patients/patient-form-dialog';
 import { EmptyState } from '#components/shared/empty-state';
 import { PageHeader } from '#components/shared/page-header';
+import { useShellBreadcrumbRoot } from '#lib/navigation/use-shell-breadcrumb-root';
 import { useTabSearchParam } from '#lib/navigation/use-tab-search-param';
 import { PATIENT_DETAIL_TABS, type PatientDetailTab } from '#lib/patients/patient-detail-tabs';
 import { usePatientDetail } from '#lib/patients/use-patient-detail';
+
+const DEFAULT_PATIENTS_HREF = '/admin/patients';
 
 type PatientDetailPanelProps = {
   patientId: string;
@@ -43,6 +46,11 @@ type PatientDetailPanelProps = {
    * whatever this says.
    */
   isLaboratoryEnabled?: boolean;
+  /**
+   * The list this record was opened from, for the trail's parent link: the
+   * directory in the admin shell, the doctor's own panel in theirs.
+   */
+  patientsHref?: string;
 };
 
 export function PatientDetailPanel({
@@ -50,8 +58,10 @@ export function PatientDetailPanel({
   initialTab,
   isSatusehatEnabled,
   isLaboratoryEnabled = false,
+  patientsHref = DEFAULT_PATIENTS_HREF,
 }: PatientDetailPanelProps) {
   const t = useTranslations('clinical');
+  const root = useShellBreadcrumbRoot();
   const ability = useAbility();
   // Visibility only. The tab hides for a role without the grant; the API's
   // guard is what refuses the list to anyone who reaches the route anyway.
@@ -104,7 +114,11 @@ export function PatientDetailPanel({
       <PageHeader
         title={patient.fullName}
         subtitle={t('patients.record', { mrn: patient.mrn })}
-        breadcrumbs={[t('patients.dashboard'), t('patients.title'), patient.fullName]}
+        breadcrumbs={[
+          root,
+          { label: t('patients.title'), href: patientsHref },
+          { label: patient.fullName },
+        ]}
         actions={
           <Can action="update" subject="Patient">
             <Button type="button" variant="outline" onClick={() => setIsEditDialogOpen(true)}>
@@ -133,10 +147,7 @@ export function PatientDetailPanel({
           <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">
             <div className="space-y-6">
               <PatientDemographicsCard patient={patient} />
-              <PatientIdentifiersCard
-                patient={patient}
-                isSatusehatEnabled={isSatusehatEnabled}
-              />
+              <PatientIdentifiersCard patient={patient} isSatusehatEnabled={isSatusehatEnabled} />
               <PatientImmunizationsCard patientId={patient.id} />
             </div>
             <div className="min-w-0 space-y-6">

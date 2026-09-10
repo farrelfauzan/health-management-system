@@ -21,6 +21,7 @@ import { buildExpiredLicenseIndex } from '#lib/doctors/expired-license-doctor-id
 import { buildDoctorsSearchParams, type DoctorsSearchParams } from '#lib/doctors/search-params';
 import { useDoctorLicenseExpiry } from '#lib/doctors/use-doctor-license-expiry';
 import { useDoctorsList } from '#lib/doctors/use-doctors-list';
+import { useShellBreadcrumbRoot } from '#lib/navigation/use-shell-breadcrumb-root';
 
 type DoctorsDirectoryPanelProps = {
   initialQuery: DoctorsSearchParams;
@@ -30,6 +31,7 @@ export function DoctorsDirectoryPanel({ initialQuery }: DoctorsDirectoryPanelPro
   const router = useRouter();
   const pathname = usePathname();
   const t = useTranslations('clinical');
+  const root = useShellBreadcrumbRoot();
   const ability = useAbility();
   const doctorsQuery = useDoctorsList(initialQuery);
   // Gated rather than merely hidden: the roster is an administrator-only
@@ -81,7 +83,7 @@ export function DoctorsDirectoryPanel({ initialQuery }: DoctorsDirectoryPanelPro
       <PageHeader
         title={t('doctors.title')}
         subtitle={t('doctors.subtitle')}
-        breadcrumbs={[t('doctors.dashboard'), t('doctors.title')]}
+        breadcrumbs={[root, { label: t('doctors.title') }]}
         actions={
           <>
             <Can action="read" subject="DoctorLicenseExpiry">

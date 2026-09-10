@@ -9,6 +9,7 @@ import { RoomClassesPanel } from '#components/client/rooms/room-classes-panel';
 import { RoomsPanel } from '#components/client/rooms/rooms-panel';
 import { WardsPanel } from '#components/client/rooms/wards-panel';
 import { PageHeader } from '#components/shared/page-header';
+import { useShellBreadcrumbRoot } from '#lib/navigation/use-shell-breadcrumb-root';
 import { useTabSearchParam } from '#lib/navigation/use-tab-search-param';
 import { ROOMS_TABS, type RoomsTab } from '#lib/rooms/rooms-tabs';
 
@@ -19,6 +20,7 @@ type RoomsWorkspaceProps = {
 
 export function RoomsWorkspace({ initialTab }: RoomsWorkspaceProps) {
   const t = useTranslations('operations.rooms');
+  const root = useShellBreadcrumbRoot();
   const ability = useAbility();
   const canReadClasses = ability.can('read', 'RoomClass');
   const canReadWards = ability.can('read', 'Ward');
@@ -43,7 +45,11 @@ export function RoomsWorkspace({ initialTab }: RoomsWorkspaceProps) {
 
   return (
     <div className="space-y-6">
-      <PageHeader title={t('title')} subtitle={t('subtitle')} breadcrumbs={[t('title')]} />
+      <PageHeader
+        title={t('title')}
+        subtitle={t('subtitle')}
+        breadcrumbs={[root, { label: t('title') }]}
+      />
       <Tabs value={tab} onValueChange={(value) => setTab(value as RoomsTab)} className="space-y-5">
         <TabsList>
           {canReadBeds ? <TabsTrigger value="occupancy">{t('occupancy')}</TabsTrigger> : null}

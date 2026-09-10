@@ -10,6 +10,7 @@ import { SESSION_HINT_COOKIE_NAME } from '#lib/auth/session-hint-cookie';
 import { resolveSessionClaims } from '#lib/auth/session-claims';
 import { resolveDashboardDayPart } from '#lib/dashboard/greeting';
 import { FACILITY_CONFIG } from '#lib/facility/facility-config';
+import { resolveShellBreadcrumbRoot } from '#lib/navigation/resolve-shell-breadcrumb-root.server';
 import { resolveShellProfile } from '#lib/shell/shell-profile';
 
 export async function DashboardHeader() {
@@ -19,6 +20,7 @@ export async function DashboardHeader() {
   const claims = resolveSessionClaims({ accessToken, sessionHint });
   const profile = resolveShellProfile(claims);
   const t = await getTranslations('dashboard.header');
+  const root = await resolveShellBreadcrumbRoot('admin');
   const date = new Date();
   const greeting = t(`greeting.${resolveDashboardDayPart(date.getHours())}`, {
     displayName: profile.displayName,
@@ -28,7 +30,7 @@ export async function DashboardHeader() {
     <PageHeader
       title={t('title')}
       subtitle={greeting}
-      breadcrumbs={[t('breadcrumbs.dashboard'), t('breadcrumbs.overview')]}
+      breadcrumbs={[root, { label: t('breadcrumbs.overview') }]}
       actions={
         <>
           <CurrentDateChip date={date} />

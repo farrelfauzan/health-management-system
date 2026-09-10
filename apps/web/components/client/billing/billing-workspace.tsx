@@ -9,6 +9,7 @@ import { ServiceTariffsPanel } from '#components/client/billing/service-tariffs-
 import { DocumentTemplatesPanel } from '#components/client/document-templates/document-templates-panel';
 import { PageHeader } from '#components/shared/page-header';
 import { BILLING_TABS, type BillingTab } from '#lib/billing/billing-tab';
+import { useShellBreadcrumbRoot } from '#lib/navigation/use-shell-breadcrumb-root';
 import { useTabSearchParam } from '#lib/navigation/use-tab-search-param';
 
 type BillingWorkspaceProps = {
@@ -24,6 +25,7 @@ type BillingWorkspaceProps = {
 
 export function BillingWorkspace({ currentUserId, initialTab }: BillingWorkspaceProps) {
   const t = useTranslations('operations.billing');
+  const root = useShellBreadcrumbRoot();
   const ability = useAbility();
   const canReadInvoices = ability.can('read', 'Invoice');
   const canReadTariffs = ability.can('read', 'ServiceTariff');
@@ -43,7 +45,11 @@ export function BillingWorkspace({ currentUserId, initialTab }: BillingWorkspace
 
   return (
     <div className="space-y-6">
-      <PageHeader title={t('title')} subtitle={t('subtitle')} breadcrumbs={[t('title')]} />
+      <PageHeader
+        title={t('title')}
+        subtitle={t('subtitle')}
+        breadcrumbs={[root, { label: t('title') }]}
+      />
       <Tabs
         value={tab}
         onValueChange={(value) => setTab(value as BillingTab)}

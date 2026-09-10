@@ -16,6 +16,7 @@ import { PatientsTable } from '#components/client/patients/patients-table';
 import { InlineNotice } from '#components/client/shared/inline-notice';
 import { NumberedPagination } from '#components/client/shared/numbered-pagination';
 import { PageHeader } from '#components/shared/page-header';
+import { useShellBreadcrumbRoot } from '#lib/navigation/use-shell-breadcrumb-root';
 import { buildPatientsCsv } from '#lib/patients/build-patients-csv';
 import { buildPatientsSearchParams, type PatientsSearchParams } from '#lib/patients/search-params';
 import { usePatientsList } from '#lib/patients/use-patients-list';
@@ -37,6 +38,7 @@ export function PatientsDirectoryPanel({
   const router = useRouter();
   const pathname = usePathname();
   const t = useTranslations('clinical');
+  const root = useShellBreadcrumbRoot();
   const patientsQuery = usePatientsList(initialQuery);
   const [isFormDialogOpen, setIsFormDialogOpen] = useState<boolean>(false);
   const [assigningPatient, setAssigningPatient] = useState<PatientListItem | null>(null);
@@ -81,7 +83,7 @@ export function PatientsDirectoryPanel({
       <PageHeader
         title={t('patients.title')}
         subtitle={t('patients.subtitle')}
-        breadcrumbs={[t('patients.dashboard'), t('patients.title')]}
+        breadcrumbs={[root, { label: t('patients.title') }]}
         actions={
           <Can action="create" subject="Patient">
             <Button

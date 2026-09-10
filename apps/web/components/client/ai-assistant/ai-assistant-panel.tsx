@@ -19,6 +19,7 @@ import type { ConsultationPanelProps } from '#lib/ai-assistant/consultation-pane
 import { buildSuggestedPrompts, type SuggestedPrompt } from '#lib/ai-assistant/suggested-prompts';
 import { useChatAvailability } from '#lib/ai-assistant/use-chat-availability';
 import { useChatSessions } from '#lib/ai-assistant/use-chat-sessions';
+import { useShellBreadcrumbRoot } from '#lib/navigation/use-shell-breadcrumb-root';
 import type { AppLocale } from '../../../i18n/config';
 
 const SIDEBAR_COLLAPSED_STORAGE_KEY = 'hms.ai-assistant.sidebar-collapsed';
@@ -32,6 +33,7 @@ const SIDEBAR_COLLAPSED_STORAGE_KEY = 'hms.ai-assistant.sidebar-collapsed';
 export function AiAssistantPanel() {
   const locale = useLocale() as AppLocale;
   const t = useTranslations('aiAssistant.header');
+  const root = useShellBreadcrumbRoot();
   const tSidebar = useTranslations('aiAssistant.sidebar');
   const tConversation = useTranslations('aiAssistant.conversation');
   const assistant = useAiAssistant();
@@ -96,13 +98,7 @@ export function AiAssistantPanel() {
       <PageHeader
         title={t('title')}
         subtitle={t('subtitle')}
-        // "Advanced" is an admin sidebar section; the doctor shell has no such
-        // group, so naming one there would describe navigation that isn't there.
-        breadcrumbs={
-          assistant.assistantPath?.startsWith('/doctor')
-            ? [t('breadcrumbs.assistant')]
-            : [t('breadcrumbs.advanced'), t('breadcrumbs.assistant')]
-        }
+        breadcrumbs={[root, { label: t('breadcrumbs.assistant') }]}
       />
       {isUnavailable ? <AssistantUnavailableNotice isEnabled={availability.isEnabled} /> : null}
       <section className="flex h-[calc(100vh-16rem)] min-h-[540px] overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">

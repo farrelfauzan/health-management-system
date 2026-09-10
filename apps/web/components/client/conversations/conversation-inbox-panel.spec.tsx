@@ -4,6 +4,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { getDashboardAiMessages } from '#lib/dashboard/localization';
+import idAuthShellMessages from '../../../messages/id/auth-shell.json';
 
 const listConversationsMock = vi.hoisted(() => vi.fn());
 const handoffSummaryMock = vi.hoisted(() => vi.fn());
@@ -19,10 +20,7 @@ vi.mock('#lib/api/generated/customer-service/customer-service', () => ({
   csAdminControllerReplyV1: vi.fn(),
   csAdminControllerBlockV1: vi.fn(),
   csAdminControllerUnblockV1: vi.fn(),
-  getCsAdminControllerListConversationsV1QueryKey: (params: unknown) => [
-    'conversations',
-    params,
-  ],
+  getCsAdminControllerListConversationsV1QueryKey: (params: unknown) => ['conversations', params],
   getCsAdminControllerGetHandoffSummaryV1QueryKey: () => ['conversation-handoff'],
   getCsAdminControllerGetMetricsV1QueryKey: () => ['conversation-metrics'],
   getCsAdminControllerGetTranscriptV1QueryKey: () => ['conversation-transcript'],
@@ -53,7 +51,10 @@ function renderPanel(): void {
   });
   render(
     <QueryClientProvider client={queryClient}>
-      <NextIntlClientProvider locale="id" messages={getDashboardAiMessages('id')}>
+      <NextIntlClientProvider
+        locale="id"
+        messages={{ ...getDashboardAiMessages('id'), ...idAuthShellMessages }}
+      >
         <ConversationInboxPanel />
       </NextIntlClientProvider>
     </QueryClientProvider>,

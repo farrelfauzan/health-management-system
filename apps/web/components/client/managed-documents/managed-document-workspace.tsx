@@ -12,6 +12,7 @@ import { InlineNotice } from '#components/client/shared/inline-notice';
 import { PageHeader } from '#components/shared/page-header';
 import { useManagedDocument } from '#lib/managed-documents/use-managed-document';
 import { useManagedDocumentHistory } from '#lib/managed-documents/use-managed-document-history';
+import { useShellBreadcrumbRoot } from '#lib/navigation/use-shell-breadcrumb-root';
 
 type ManagedDocumentWorkspaceProps = {
   documentId: string;
@@ -31,6 +32,7 @@ export function ManagedDocumentWorkspace({
   isApprovalEnabled,
 }: ManagedDocumentWorkspaceProps) {
   const t = useTranslations('operations.documents.workspace');
+  const root = useShellBreadcrumbRoot();
   const ability = useAbility();
   const documentQuery = useManagedDocument(documentId);
   const historyQuery = useManagedDocumentHistory(documentId);
@@ -54,7 +56,11 @@ export function ManagedDocumentWorkspace({
       <PageHeader
         title={document.title}
         subtitle={document.type.name}
-        breadcrumbs={[t('breadcrumb'), document.title]}
+        breadcrumbs={[
+          root,
+          { label: t('breadcrumb'), href: '/admin/documents' },
+          { label: document.title },
+        ]}
       />
       <ManagedDocumentHeader document={document} />
       <DocumentApprovalPanel

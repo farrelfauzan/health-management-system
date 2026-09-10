@@ -11,6 +11,7 @@ import { BpjsSettingsPanel } from '#components/client/integrations/bpjs-settings
 import { IntegrationSubmissionMonitor } from '#components/client/integrations/integration-submission-monitor';
 import { PageHeader } from '#components/shared/page-header';
 import { INTEGRATIONS_TABS, type IntegrationsTab } from '#lib/integrations/integrations-tabs';
+import { useShellBreadcrumbRoot } from '#lib/navigation/use-shell-breadcrumb-root';
 import { useTabSearchParam } from '#lib/navigation/use-tab-search-param';
 
 type IntegrationsPanelProps = {
@@ -20,6 +21,7 @@ type IntegrationsPanelProps = {
 
 export function IntegrationsPanel({ initialTab }: IntegrationsPanelProps) {
   const t = useTranslations('operations.integrations');
+  const root = useShellBreadcrumbRoot();
   const ability = useAbility();
   const canMonitor =
     ability.can('read', 'BpjsSubmission') || ability.can('read', 'SatusehatSubmission');
@@ -39,7 +41,11 @@ export function IntegrationsPanel({ initialTab }: IntegrationsPanelProps) {
 
   return (
     <div className="space-y-6">
-      <PageHeader title={t('title')} subtitle={t('subtitle')} breadcrumbs={[t('title')]} />
+      <PageHeader
+        title={t('title')}
+        subtitle={t('subtitle')}
+        breadcrumbs={[root, { label: t('title') }]}
+      />
       {/* Above the tabs rather than inside one, because both of these fail
           silently (§8.4) and a warning behind a tab is a warning nobody sees.
           A logged-out WhatsApp session and a webhook pointed at another
