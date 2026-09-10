@@ -11,9 +11,10 @@ import {
 } from '#components/client/clinic-documents/clinic-document-filters';
 import { ClinicDocumentUploadDialog } from '#components/client/clinic-documents/clinic-document-upload-dialog';
 import { ClinicDocumentsTable } from '#components/client/clinic-documents/clinic-documents-table';
+import { CursorPagination } from '#components/client/shared/cursor-pagination';
 import { InlineNotice } from '#components/client/shared/inline-notice';
 import { PageHeader } from '#components/shared/page-header';
-import { useClinicDocuments } from '#lib/clinic-documents/use-clinic-documents';
+import { useClinicDocumentsPage } from '#lib/clinic-documents/use-clinic-documents-page';
 import { useShellBreadcrumbRoot } from '#lib/navigation/use-shell-breadcrumb-root';
 
 type IngestStatusFilter = DocumentIngestStatusValue | typeof CLINIC_DOCUMENT_FILTER_ALL;
@@ -33,7 +34,9 @@ type VisibilityFilter = DocumentVisibilityValue | typeof CLINIC_DOCUMENT_FILTER_
  * structurally impossible.
  *
  * The list refetches itself while anything is still ingesting; that decision
- * lives in `useClinicDocuments`, next to the data it depends on.
+ * lives in `useClinicDocuments`, next to the data it depends on. Where the
+ * admin is in the list lives one layer up from that, in
+ * `useClinicDocumentsPage`.
  */
 export function ClinicCorpusPanel() {
   const t = useTranslations('clinicCorpus');
@@ -43,7 +46,7 @@ export function ClinicCorpusPanel() {
   const [visibility, setVisibility] = useState<VisibilityFilter>(CLINIC_DOCUMENT_FILTER_ALL);
   const [notice, setNotice] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const documentsQuery = useClinicDocuments({
+  const documentsQuery = useClinicDocumentsPage({
     // Pinned to the FAQ corpus. A `GENERAL` clinic document is stored and
     // never embedded, so listing it here would offer a re-ingest that can
     // only ever be refused.
@@ -51,11 +54,36 @@ export function ClinicCorpusPanel() {
     ...(ingestStatus === CLINIC_DOCUMENT_FILTER_ALL ? {} : { ingestStatus }),
     ...(visibility === CLINIC_DOCUMENT_FILTER_ALL ? {} : { visibility }),
   });
-  const rows = documentsQuery.data ?? [];
+  const rows = documentsQuery.rows;
+  const isPaged = documentsQuery.hasPreviousPage || documentsQuery.hasNextPage;
 
   function handleResult(message: string): void {
     setError(null);
     setNotice(message);
+  }
+
+  /**
+   * An upload lands on page one, because the list is newest-first — so that is
+   * where the admin is put, rather than left looking at page three wondering
+   * where the fifteen files they just chose went.
+   */
+  function handleUploaded(message: string): void {
+    documentsQuery.resetPage();
+    handleResult(message);
+  }
+
+  /**
+   * A narrower list is a different list, and page three of the old one names
+   * nothing in it. Both filters send the admin back to its first page.
+   */
+  function handleIngestStatusChange(next: IngestStatusFilter): void {
+    documentsQuery.resetPage();
+    setIngestStatus(next);
+  }
+
+  function handleVisibilityChange(next: VisibilityFilter): void {
+    documentsQuery.resetPage();
+    setVisibility(next);
   }
 
   function handleError(message: string): void {
@@ -78,8 +106,8 @@ export function ClinicCorpusPanel() {
       <ClinicDocumentFilters
         ingestStatus={ingestStatus}
         visibility={visibility}
-        onIngestStatusChange={setIngestStatus}
-        onVisibilityChange={setVisibility}
+        onIngestStatusChange={handleIngestStatusChange}
+        onVisibilityChange={handleVisibilityChange}
       />
       {notice ? <InlineNotice tone="success">{notice}</InlineNotice> : null}
       {error ? <InlineNotice tone="error">{error}</InlineNotice> : null}
@@ -94,14 +122,31 @@ export function ClinicCorpusPanel() {
           ) : rows.length === 0 ? (
             <p className="p-6 text-sm text-slate-500">{t('states.empty')}</p>
           ) : (
-            <ClinicDocumentsTable documents={rows} onResult={handleResult} onError={handleError} />
+            <>
+              <ClinicDocumentsTable
+                documents={rows}
+                onResult={handleResult}
+                onError={handleError}
+              />
+              {isPaged ? (
+                <CursorPagination
+                  className="border-t border-slate-200 px-4 py-3"
+                  pageNumber={documentsQuery.pageNumber}
+                  hasPreviousPage={documentsQuery.hasPreviousPage}
+                  hasNextPage={documentsQuery.hasNextPage}
+                  isDisabled={documentsQuery.isFetching}
+                  onPrevious={documentsQuery.goToPreviousPage}
+                  onNext={() => void documentsQuery.goToNextPage()}
+                />
+              ) : null}
+            </>
           )}
         </CardContent>
       </Card>
       <ClinicDocumentUploadDialog
         open={isUploadOpen}
         onOpenChange={setIsUploadOpen}
-        onUploaded={handleResult}
+        onUploaded={handleUploaded}
       />
     </div>
   );
