@@ -109,6 +109,7 @@ export {
   SheetTrigger,
 } from '#components/sheet';
 export {
+  SIDEBAR_COOKIE_NAME,
   Sidebar,
   SidebarContent,
   SidebarFooter,
