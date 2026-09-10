@@ -19,9 +19,11 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  Skeleton,
 } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { MissingParentNotice } from '#components/client/rooms/missing-parent-notice';
 import { RoomClassSelect } from '#components/client/rooms/room-class-select';
 import {
   roomControllerCreateRoomV1,
@@ -30,21 +32,25 @@ import {
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { parseApiSuccess } from '#lib/api/response';
 import { invalidateRoomQueries } from '#lib/rooms/invalidate-room-queries';
+import { ROOM_OPTION_LIST_LIMIT } from '#lib/rooms/option-list-limit';
 import { useWardsList } from '#lib/rooms/use-wards-list';
-
-const WARD_OPTIONS_LIMIT = 100;
 
 type RoomFormDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   room: RoomResponse | null;
+  onGoToWards?: () => void;
 };
 
-export function RoomFormDialog({ open, onOpenChange, room }: RoomFormDialogProps) {
+export function RoomFormDialog({ open, onOpenChange, room, onGoToWards }: RoomFormDialogProps) {
   const t = useTranslations('operations');
   const queryClient = useQueryClient();
   const isEditing = room !== null;
-  const wardsQuery = useWardsList({ page: 1, limit: WARD_OPTIONS_LIMIT, isActive: 'true' });
+  const wardsQuery = useWardsList({ page: 1, limit: ROOM_OPTION_LIST_LIMIT, isActive: 'true' });
+  // A room being edited already has its ward, so only a new room can be
+  // stranded by an empty ward list. `isSuccess` rather than `!isPending`: a
+  // failed load is not "no wards yet", and must not be told as one.
+  const hasNoWards = !isEditing && wardsQuery.isSuccess && wardsQuery.wards.length === 0;
   const [wardId, setWardId] = useState<string>(room?.wardId ?? '');
   const [code, setCode] = useState<string>(room?.code ?? '');
   const [name, setName] = useState<string>(room?.name ?? '');
@@ -63,6 +69,11 @@ export function RoomFormDialog({ open, onOpenChange, room }: RoomFormDialogProps
     setActionError(null);
     const trimmedName = name.trim();
     const trimmedCode = code.trim();
+
+    if (hasNoWards) {
+      setActionError(t('rooms.noWards'));
+      return;
+    }
 
     if (
       trimmedName.length === 0 ||
@@ -89,6 +100,11 @@ export function RoomFormDialog({ open, onOpenChange, room }: RoomFormDialogProps
     }
   }
 
+  function handleGoToWards(): void {
+    onOpenChange(false);
+    onGoToWards?.();
+  }
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg">
@@ -101,18 +117,35 @@ export function RoomFormDialog({ open, onOpenChange, room }: RoomFormDialogProps
         <form noValidate className="space-y-4" onSubmit={(event) => void handleSubmit(event)}>
           <div className="space-y-2">
             <Label htmlFor="room-ward">{t('rooms.ward')}</Label>
-            <Select value={wardId} onValueChange={setWardId} disabled={isEditing}>
-              <SelectTrigger id="room-ward" className="w-full">
-                <SelectValue placeholder={t('rooms.allWards')} />
-              </SelectTrigger>
-              <SelectContent>
-                {wardsQuery.wards.map((ward) => (
-                  <SelectItem key={ward.id} value={ward.id}>
-                    {ward.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            {/*
+              Three states, kept apart on purpose: a skeleton while the list
+              loads (a disabled select would read as "you may not"), the
+              notice when there is nothing to pick, and the select otherwise.
+            */}
+            {wardsQuery.isPending ? (
+              <Skeleton className="h-9 w-full" data-testid="room-ward-skeleton" />
+            ) : null}
+            {hasNoWards ? (
+              <MissingParentNotice
+                message={t('rooms.noWards')}
+                actionLabel={onGoToWards ? t('rooms.goToWards') : undefined}
+                onAction={handleGoToWards}
+              />
+            ) : null}
+            {!wardsQuery.isPending && !hasNoWards ? (
+              <Select value={wardId} onValueChange={setWardId} disabled={isEditing}>
+                <SelectTrigger id="room-ward" className="w-full">
+                  <SelectValue placeholder={t('rooms.selectWard')} />
+                </SelectTrigger>
+                <SelectContent>
+                  {wardsQuery.wards.map((ward) => (
+                    <SelectItem key={ward.id} value={ward.id}>
+                      {ward.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            ) : null}
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="space-y-2">
@@ -143,7 +176,7 @@ export function RoomFormDialog({ open, onOpenChange, room }: RoomFormDialogProps
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               {t('common.cancel')}
             </Button>
-            <Button type="submit" disabled={saveMutation.isPending}>
+            <Button type="submit" disabled={saveMutation.isPending || hasNoWards}>
               {saveMutation.isPending ? t('common.saving') : t('rooms.save')}
             </Button>
           </DialogFooter>
