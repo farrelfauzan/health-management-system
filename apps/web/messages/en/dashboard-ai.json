@@ -458,8 +458,11 @@
         "chunks": "Passages",
         "size": "Size",
         "actions": "Actions",
-        "approval": "Approval"
-      }
+        "approval": "Approval",
+        "select": "Selection"
+      },
+      "selectAll": "Select every document that can be sent for approval",
+      "selectRow": "Select {title}"
     },
     "visibility": {
       "labels": {
@@ -588,6 +591,23 @@
       },
       "errors": {
         "sendForReview": "Unable to send this document for approval."
+      },
+      "submit": {
+        "title": "{count, plural, one {Send this document for approval} other {Send # documents for approval}}",
+        "description": "Choose who approves this. Only accounts that are allowed to approve documents can be named, and the same panel covers everything in this selection.",
+        "dueAt": "Due by (optional)",
+        "dueAtHint": "A due date drives reminders and an overdue flag. It never approves or rejects anything on its own.",
+        "consequence": "While a document is waiting for approval the assistant cannot cite it, on the in-app assistant or on the public channel. Approving it puts the document back in use.",
+        "selfApprovalOnly": "You cannot be the only approver of a document you sent. Add somebody else, or turn on self-approval for this document type.",
+        "cancel": "Cancel",
+        "submit": "Send for approval",
+        "submitting": "Sending…",
+        "success": "{count, plural, one {# document sent for approval} other {# documents sent for approval}}.",
+        "partial": "{submitted, plural, =0 {No documents were sent} one {# document sent} other {# documents sent}}, {failed, plural, one {# was refused} other {# were refused}}. {reason}",
+        "error": "Unable to send these documents for approval."
+      },
+      "bulk": {
+        "action": "Send {count, plural, one {# document} other {# documents}} for approval"
       }
     }
   },

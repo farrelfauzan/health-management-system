@@ -1860,6 +1860,81 @@ paths:
         - bearer: []
       summary: List clinic documents
       tags: *a4
+  /api/v1/admin/documents/approval-context:
+    get:
+      operationId: DocumentAdminController_getApprovalContext_v1
+      parameters: []
+      responses:
+        "200":
+          description: "The `CLINIC_CORPUS_DOCUMENT` type’s approval policy and configured
+            default approvers, which is what the submit dialog opens with. Read
+            once for the screen rather than repeated onto every row of the list:
+            all of it is a property of the type and not of any one document. A
+            clinic with no corpus type configured gets the all-off answer rather
+            than a 404."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      isApprovalRequired:
+                        type: boolean
+                      allowSelfApproval:
+                        type: boolean
+                      requiredApprovals:
+                        type: integer
+                      defaultApprovers:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            email:
+                              type: string
+                          required:
+                            - id
+                            - email
+                    required:
+                      - isApprovalRequired
+                      - allowSelfApproval
+                      - requiredApprovals
+                      - defaultApprovers
+                required:
+                  - data
+                example:
+                  data:
+                    isApprovalRequired: true
+                    allowSelfApproval: false
+                    requiredApprovals: 1
+                    defaultApprovers:
+                      - id: d7c3b2a1-4e5f-4a6b-8c9d-0e1f2a3b4c5d
+                        email: kepala.klinik@salingjaga.id
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Read the corpus approval policy and its default panel
+      tags: *a4
   /api/v1/admin/documents/{id}:
     get:
       operationId: DocumentAdminController_getDocument_v1
@@ -2466,6 +2541,123 @@ paths:
       security:
         - bearer: []
       summary: Queue a clinic document for re-ingestion
+      tags: *a4
+  /api/v1/admin/documents/submit-for-approval:
+    post:
+      operationId: DocumentAdminController_submitDocumentsForApproval_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubmitClinicDocumentsForApprovalDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  documentIds:
+                    - 2f6d1a4c-8b9e-4c1d-9a2f-5e7b3c0d8a11
+                    - 9f1c7c2e-3a52-4f0b-9e33-1c9a5f0a77b1
+                  approverIds:
+                    - d7c3b2a1-4e5f-4a6b-8c9d-0e1f2a3b4c5d
+                  dueAt: 2026-09-17T09:00:00.000Z
+      responses:
+        "200":
+          description: 'Registers each document with the registry if it has no row yet,
+            then opens one approval round per document against the panel named
+            here (FR-E5-09/10). This is the whole action from the corpus screen:
+            an upload under an active policy already parks its document at
+            DRAFT, so "register" alone left the admin with a governed document,
+            no round, and no way to make one. One panel covers the whole
+            selection, because a clinic onboarding twenty-eight SOPs is asking
+            one group to read them, not twenty-eight different groups. Not a
+            transaction: every document reports its own outcome, so one
+            already-issued row costs the rest nothing. Per-item refusals are the
+            ones the single-document path raises — `DOCUMENT_NOT_SUBMITTABLE`
+            for anything not at DRAFT, `DOCUMENT_APPROVER_INELIGIBLE` for a name
+            that cannot approve, `DOCUMENT_SELF_APPROVAL_FORBIDDEN` for a panel
+            of only the submitter.'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      submittedCount:
+                        type: integer
+                      failedCount:
+                        type: integer
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            documentId:
+                              type: string
+                            isSubmitted:
+                              type: boolean
+                            error:
+                              nullable: true
+                          required:
+                            - documentId
+                            - isSubmitted
+                            - error
+                    required:
+                      - submittedCount
+                      - failedCount
+                      - items
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    submittedCount: 1
+                    failedCount: 1
+                    items:
+                      - documentId: 2f6d1a4c-8b9e-4c1d-9a2f-5e7b3c0d8a11
+                        isSubmitted: true
+                        error: null
+                      - documentId: 9f1c7c2e-3a52-4f0b-9e33-1c9a5f0a77b1
+                        isSubmitted: false
+                        error:
+                          code: DOCUMENT_NOT_SUBMITTABLE
+                          message: This document is already waiting for approval
+                  message: Documents submitted for approval
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Submit clinic corpus documents for approval
       tags: *a4
   /api/v1/admin/documents/{id}/send-for-review:
     post:
@@ -15556,6 +15748,89 @@ paths:
             export with the row count and the filters (NFR-PRIV-01). Capped at
             5000 rows.
       summary: Export the filtered registry as CSV
+      tags: *a23
+  /api/v1/documents/eligible-approvers:
+    get:
+      operationId: ManagedDocumentController_listEligibleApprovers_v1
+      parameters:
+        - name: search
+          required: false
+          in: query
+          schema:
+            minLength: 1
+            maxLength: 200
+            type: string
+        - name: limit
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            exclusiveMaximum: false
+            exclusiveMinimum: false
+            default: 50
+            type: integer
+      responses:
+        "200":
+          description: Live, non-system accounts holding `document-approval.decide:any`,
+            ordered by email, optionally narrowed by a case-insensitive `search`
+            over the address. The predicate is the permission that governs the
+            decision and not a role name, so a clinic that moves the key onto
+            another role gets that role’s holders here without a code change.
+            Naming somebody absent from this list is refused on submit with 422
+            `DOCUMENT_APPROVER_INELIGIBLE` — this list is the convenience, that
+            refusal is the control.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        email:
+                          type: string
+                        roleCodes:
+                          type: array
+                          items:
+                            type: string
+                      required:
+                        - id
+                        - email
+                        - roleCodes
+                required:
+                  - data
+                example:
+                  data:
+                    - id: 8c7d6e5f-4a3b-42c1-9d0e-7f6a5b4c3d2e
+                      email: dr.sari@klinik.example
+                      roleCodes:
+                        - ADMIN
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: List who may be named as an approver
       tags: *a23
   /api/v1/documents/upload-url:
     post:
@@ -45415,6 +45690,29 @@ components:
           enum:
             - ID
             - EN
+    SubmitClinicDocumentsForApprovalDto:
+      type: object
+      properties:
+        documentIds:
+          type: array
+          minItems: 1
+          maxItems: 50
+          items:
+            type: string
+            format: uuid
+        approverIds:
+          type: array
+          minItems: 1
+          maxItems: 10
+          items:
+            type: string
+            format: uuid
+        dueAt:
+          type: string
+          format: date-time
+      required:
+        - documentIds
+        - approverIds
     CreatePersonalDocumentUploadUrlDto:
       type: object
       properties:

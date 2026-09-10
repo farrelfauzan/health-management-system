@@ -6,11 +6,9 @@ import { Label, MultiCombobox, type MultiComboboxOption } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
 import { useDebouncedValue } from '#hooks/use-debounced-value';
-import { useAdminUsersList } from '#lib/admin-users/use-admin-users-list';
-import { filterStaffUsers } from '#lib/managed-documents/filter-staff-users';
+import { useEligibleApprovers } from '#lib/document-approvals/use-eligible-approvers';
 
 const SEARCH_DEBOUNCE_MS = 300;
-const STAFF_OPTIONS_LIMIT = 50;
 
 type DefaultApproverPickerProps = {
   selected: DocumentTypeApproverView[];
@@ -18,32 +16,30 @@ type DefaultApproverPickerProps = {
 };
 
 /**
- * Names the staff who usually approve a type (FR-E5-38). Draws on the admin
- * user list — this screen sits behind `user.read:any` in practice — and
- * drops anyone holding the PATIENT role client-side so the picker never
- * offers what the API would refuse (§7.5.4). The API checks again.
+ * Names the people who usually approve a type (FR-E5-38).
+ *
+ * Since `P19` it draws on the eligible-approver route, the same source the
+ * per-document panel picker uses, so a configured default is always somebody
+ * the submit endpoint will accept. A default that named a staff account
+ * without `document-approval.decide:any` used to prefill happily and then be
+ * refused on every submission that inherited it. The API checks again.
  */
 export function DefaultApproverPicker({ selected, onChange }: DefaultApproverPickerProps) {
   const t = useTranslations('operations.documents.types.approvers');
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebouncedValue(search.trim(), SEARCH_DEBOUNCE_MS);
-  const usersQuery = useAdminUsersList({
-    page: 1,
-    limit: STAFF_OPTIONS_LIMIT,
-    isActive: 'true',
-    ...(debouncedSearch === '' ? {} : { search: debouncedSearch }),
-  });
-  const staff = filterStaffUsers(usersQuery.users);
-  const options: MultiComboboxOption[] = staff.map((user) => ({
-    value: user.id,
-    label: user.email,
-    description: user.roles.map((role) => role.code).join(', '),
+  const approversQuery = useEligibleApprovers(debouncedSearch);
+  const eligible = approversQuery.approvers;
+  const options: MultiComboboxOption[] = eligible.map((approver) => ({
+    value: approver.id,
+    label: approver.email,
+    description: approver.roleCodes.join(', '),
   }));
   const knownApprovers = new Map<string, DocumentTypeApproverView>(
-    [...selected, ...staff.map((user) => ({ id: user.id, email: user.email }))].map((approver) => [
-      approver.id,
-      approver,
-    ]),
+    [
+      ...selected,
+      ...eligible.map((approver) => ({ id: approver.id, email: approver.email })),
+    ].map((approver) => [approver.id, approver]),
   );
   const selectedLabels = Object.fromEntries(
     selected.map((approver) => [approver.id, approver.email]),
@@ -58,10 +54,10 @@ export function DefaultApproverPicker({ selected, onChange }: DefaultApproverPic
   }
 
   function resolveEmptyMessage(): string {
-    if (usersQuery.isPending) {
+    if (approversQuery.isPending) {
       return t('searchPlaceholder');
     }
-    return usersQuery.isError ? t('loadError') : t('empty');
+    return approversQuery.isError ? t('loadError') : t('empty');
   }
 
   return (
@@ -75,8 +71,8 @@ export function DefaultApproverPicker({ selected, onChange }: DefaultApproverPic
         placeholder={t('placeholder')}
         searchPlaceholder={t('searchPlaceholder')}
         emptyMessage={resolveEmptyMessage()}
-        isLoading={usersQuery.isPending}
-        hasError={usersQuery.isError}
+        isLoading={approversQuery.isPending}
+        hasError={approversQuery.isError}
         searchValue={search}
         onSearchValueChange={setSearch}
         shouldFilter={false}

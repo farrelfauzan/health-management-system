@@ -99,6 +99,9 @@ export const MANAGED_DOCUMENT_EXAMPLES = {
     approverIds: [APPROVER_EXAMPLE.id],
     dueAt: '2026-10-03T10:00:00.000Z',
   },
+  eligibleApprovers: [
+    { id: APPROVER_EXAMPLE.id, email: APPROVER_EXAMPLE.email, roleCodes: ['ADMIN'] },
+  ],
   rejectRequest: { reason: 'Pasal 4 bertentangan dengan kebijakan pengembalian dana klinik.' },
   bulkApproveRequest: {
     requestIds: [

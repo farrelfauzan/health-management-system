@@ -10,7 +10,9 @@ import {
   DocumentApprovalRequestRecord,
   DocumentApprovalStatusValue,
   DocumentApproverCandidateRecord,
+  EligibleApproverRecord,
   ListDocumentApprovalsParams,
+  ListEligibleApproversParams,
 } from '@hms/shared-types';
 
 import { PrismaService } from '../../../common/prisma/prisma.service';
@@ -416,6 +418,56 @@ export class DocumentApprovalRepository {
         kind === 'DUE_SOON' ? { dueSoonNotifiedAt: new Date() } : { overdueNotifiedAt: new Date() },
     });
     return result.count > 0;
+  }
+
+  /**
+   * Everybody who could be named on a panel (`P19`).
+   *
+   * The predicate is the permission that governs the decision, not a role
+   * name: a clinic that moves `document-approval.decide:any` onto a new role
+   * gets the new role's holders here without anybody editing this file, and a
+   * clinic that takes it away from `ADMIN` stops offering admins. Ordered by
+   * email so the same search returns the same list twice.
+   */
+  async listEligibleApprovers(params: ListEligibleApproversParams): Promise<EligibleApproverRecord[]> {
+    const rows = await this.prismaService.user.findMany({
+      where: {
+        isActive: true,
+        isSystem: false,
+        deletedAt: null,
+        ...(params.search === undefined
+          ? {}
+          : { email: { contains: params.search, mode: 'insensitive' as const } }),
+        roles: {
+          some: {
+            deletedAt: null,
+            unassignedAt: null,
+            role: {
+              permissions: {
+                some: {
+                  permission: { permissionKey: DOCUMENT_APPROVAL_DECIDE_PERMISSION_KEY },
+                },
+              },
+            },
+          },
+        },
+      },
+      orderBy: { email: 'asc' },
+      take: params.limit,
+      select: {
+        id: true,
+        email: true,
+        roles: {
+          where: { deletedAt: null, unassignedAt: null },
+          select: { role: { select: { code: true } } },
+        },
+      },
+    });
+    return rows.map((row) => ({
+      id: row.id,
+      email: row.email,
+      roleCodes: [...new Set(row.roles.map((assignment) => assignment.role.code))],
+    }));
   }
 
   /**

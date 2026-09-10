@@ -7,7 +7,7 @@ import { TooltipProvider } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
 import { ClinicDocumentEditDialog } from '#components/client/clinic-documents/clinic-document-edit-dialog';
-import { SendForReviewButton } from '#components/client/clinic-documents/send-for-review-button';
+import { SubmitCorpusDocumentsDialog } from '#components/client/clinic-documents/submit-corpus-documents-dialog';
 import { DocumentActionButton } from '#components/client/documents/document-action-button';
 import { ConfirmDialog } from '#components/client/shared/confirm-dialog';
 import {
@@ -17,23 +17,28 @@ import {
 } from '#lib/api/generated/document-management/document-management';
 import { resolveApiErrorMessage } from '#lib/api/resolve-api-error-message';
 import { parseApiSuccess } from '#lib/api/response';
+import { canSubmitClinicDocument } from '#lib/clinic-documents/can-submit-clinic-document';
 import { invalidateClinicDocumentQueries } from '#lib/clinic-documents/invalidate-clinic-document-queries';
 
 type ClinicDocumentRowActionsProps = {
   document: ClinicDocumentView;
+  currentUserId: string | null;
   onResult: (message: string) => void;
   onError: (message: string) => void;
 };
 
 export function ClinicDocumentRowActions({
   document,
+  currentUserId,
   onResult,
   onError,
 }: ClinicDocumentRowActionsProps) {
   const t = useTranslations('clinicCorpus.actions');
+  const approval = useTranslations('clinicCorpus.approval');
   const queryClient = useQueryClient();
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [isSubmitOpen, setIsSubmitOpen] = useState(false);
 
   /**
    * Downloads are minted per request and never persisted. The URL is opened
@@ -86,8 +91,7 @@ export function ClinicDocumentRowActions({
   return (
     // One provider per row rather than one per button: Radix needs an ancestor
     // provider, and five of them in a row would each carry their own delay
-    // timer for controls the user reads as a single group. The provider also
-    // has to sit above SendForReviewButton, which renders its own tooltip.
+    // timer for controls the user reads as a single group.
     <TooltipProvider>
       <div className="flex justify-end gap-1">
         <DocumentActionButton
@@ -109,7 +113,23 @@ export function ClinicDocumentRowActions({
           disabled={deleteMutation.isPending}
           onClick={() => setIsDeleteOpen(true)}
         />
-        <SendForReviewButton document={document} onResult={onResult} onError={onError} />
+        {/* Offered while there is something to submit — no registry row, or a
+            draft — and hidden on the three states the API can only refuse. */}
+        {canSubmitClinicDocument(document.approval) ? (
+          <DocumentActionButton
+            icon="rate_review"
+            label={approval('sendForReview')}
+            onClick={() => setIsSubmitOpen(true)}
+          />
+        ) : null}
+        <SubmitCorpusDocumentsDialog
+          open={isSubmitOpen}
+          documentIds={[document.id]}
+          currentUserId={currentUserId}
+          onOpenChange={setIsSubmitOpen}
+          onSubmitted={onResult}
+          onFailed={onError}
+        />
         <ClinicDocumentEditDialog
           open={isEditOpen}
           onOpenChange={setIsEditOpen}

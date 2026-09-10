@@ -33,5 +33,5 @@ export default async function AdminClinicCorpusPage() {
   if (!ability.can('read', 'Document')) {
     redirect('/admin/dashboard');
   }
-  return <ClinicCorpusPanel />;
+  return <ClinicCorpusPanel currentUserId={claims?.sub ?? null} />;
 }

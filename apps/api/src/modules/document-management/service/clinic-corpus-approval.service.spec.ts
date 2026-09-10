@@ -203,6 +203,111 @@ describe('ClinicCorpusApprovalService', () => {
     });
   });
 
+  describe('submit for approval (P19)', () => {
+    const PANEL = { approverIds: ['approver-1'] };
+
+    it('registers a document that has no row yet, then submits it', async () => {
+      managedDocumentServiceMock.syncGovernedDocument.mockResolvedValue(buildGoverned('DRAFT'));
+
+      await service.submitForApproval(buildDocument(), PANEL, ACTOR);
+
+      expect(managedDocumentServiceMock.syncGovernedDocument).toHaveBeenCalled();
+      expect(approvalServiceMock.submitForApproval).toHaveBeenCalledWith(
+        'managed-1',
+        PANEL,
+        ACTOR,
+      );
+    });
+
+    it('submits a document an upload already parked at DRAFT', async () => {
+      // The reporter's case: twenty-eight documents whose registry row was
+      // created by the upload itself, none of which the assistant can cite.
+      managedDocumentServiceMock.findGovernedDocument.mockResolvedValue(buildGoverned('DRAFT'));
+      managedDocumentServiceMock.syncGovernedDocument.mockResolvedValue(buildGoverned('DRAFT'));
+
+      await service.submitForApproval(buildDocument(), PANEL, ACTOR);
+
+      expect(approvalServiceMock.submitForApproval).toHaveBeenCalledWith(
+        'managed-1',
+        PANEL,
+        ACTOR,
+      );
+    });
+
+    it('passes the deadline straight through to the approval engine', async () => {
+      managedDocumentServiceMock.syncGovernedDocument.mockResolvedValue(buildGoverned('DRAFT'));
+      const input = { approverIds: ['approver-1'], dueAt: '2026-09-17T09:00:00.000Z' };
+
+      await service.submitForApproval(buildDocument(), input, ACTOR);
+
+      expect(approvalServiceMock.submitForApproval).toHaveBeenCalledWith(
+        'managed-1',
+        input,
+        ACTOR,
+      );
+    });
+
+    it.each(['PENDING_APPROVAL', 'ISSUED', 'ARCHIVED'] as const)(
+      'refuses a %s document, and writes nothing on the way to refusing',
+      async (status) => {
+        managedDocumentServiceMock.findGovernedDocument.mockResolvedValue(buildGoverned(status));
+
+        await expect(
+          service.submitForApproval(buildDocument(), PANEL, ACTOR),
+        ).rejects.toBeInstanceOf(ConflictException);
+        // The check runs before the register, because registering an ISSUED
+        // row would already have taken the document out of the assistant's
+        // reach by the time the refusal arrived.
+        expect(managedDocumentServiceMock.syncGovernedDocument).not.toHaveBeenCalled();
+        expect(approvalServiceMock.submitForApproval).not.toHaveBeenCalled();
+      },
+    );
+
+    it('names the status in the refusal so the caller can say which state it is in', async () => {
+      managedDocumentServiceMock.findGovernedDocument.mockResolvedValue(
+        buildGoverned('PENDING_APPROVAL'),
+      );
+
+      await expect(
+        service.submitForApproval(buildDocument(), PANEL, ACTOR),
+      ).rejects.toMatchObject({
+        response: {
+          code: 'DOCUMENT_NOT_SUBMITTABLE',
+          errors: { status: 'PENDING_APPROVAL' },
+        },
+      });
+    });
+  });
+
+  describe('approval context (P19)', () => {
+    it('reports the type policy and its configured panel', async () => {
+      documentTypeServiceMock.findTypeByCode.mockResolvedValue({
+        isApprovalRequired: true,
+        allowSelfApproval: false,
+        requiredApprovals: 2,
+        defaultApprovers: [{ id: 'approver-1', email: 'kepala.klinik@salingjaga.id' }],
+      } as DocumentTypeRecord);
+
+      await expect(service.resolveApprovalContext()).resolves.toEqual({
+        isApprovalRequired: true,
+        allowSelfApproval: false,
+        requiredApprovals: 2,
+        defaultApprovers: [{ id: 'approver-1', email: 'kepala.klinik@salingjaga.id' }],
+      });
+    });
+
+    it('answers all-off rather than throwing when the type row is not seeded', async () => {
+      documentTypeServiceMock.findTypeByCode.mockResolvedValue(null);
+
+      await expect(service.resolveApprovalContext()).resolves.toEqual({
+        isApprovalRequired: false,
+        allowSelfApproval: false,
+        requiredApprovals: 1,
+        defaultApprovers: [],
+      });
+    });
+  });
+
   describe('list view', () => {
     it('reports every document in one pass, governed or not', async () => {
       managedDocumentServiceMock.findGovernedDocuments.mockResolvedValue(

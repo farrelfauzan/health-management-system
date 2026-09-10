@@ -1,6 +1,7 @@
 import { ConflictException, ForbiddenException, UnprocessableEntityException } from '@nestjs/common';
 
 import {
+  DOCUMENT_APPROVER_INELIGIBLE_ERROR_CODE,
   DocumentApprovalRequestRecord,
   ManagedDocumentRecord,
   ManagedDocumentStatusValue,
@@ -109,6 +110,7 @@ describe('DocumentApprovalService', () => {
     resolveWithoutDecision: jest.fn(),
     supersedePendingForDocument: jest.fn(),
     findApproverCandidates: jest.fn(),
+    listEligibleApprovers: jest.fn(),
   };
   const managedDocumentRepositoryMock = {
     findVisibleById: jest.fn(),
@@ -193,6 +195,41 @@ describe('DocumentApprovalService', () => {
       await expect(
         service.submitForApproval(DOCUMENT_ID, { approverIds: [APPROVER_ID] }, DRAFTER),
       ).rejects.toBeInstanceOf(UnprocessableEntityException);
+    });
+
+    it('refuses a live staff account that cannot approve documents', async () => {
+      // The failure this closes is silent: a round naming somebody without
+      // `document-approval.decide:any` looks exactly like a round nobody has
+      // got to yet. The drafter waits, the document stays out of the
+      // assistant's reach, and no error is ever raised.
+      approvalRepositoryMock.findApproverCandidates.mockResolvedValue([
+        { id: APPROVER_ID, email: 'perawat@klinik.example', isPatient: false, canDecide: false },
+      ]);
+
+      await expect(
+        service.submitForApproval(DOCUMENT_ID, { approverIds: [APPROVER_ID] }, DRAFTER),
+      ).rejects.toBeInstanceOf(UnprocessableEntityException);
+      expect(approvalRepositoryMock.createRequest).not.toHaveBeenCalled();
+    });
+
+    it('names the ineligible approvers in the refusal rather than only the count', async () => {
+      approvalRepositoryMock.findApproverCandidates.mockResolvedValue([
+        { id: APPROVER_ID, email: 'perawat@klinik.example', isPatient: false, canDecide: false },
+        { id: DRAFTER_ID, email: 'drafter@klinik.example', isPatient: false, canDecide: true },
+      ]);
+
+      await expect(
+        service.submitForApproval(
+          DOCUMENT_ID,
+          { approverIds: [APPROVER_ID, DRAFTER_ID] },
+          DRAFTER,
+        ),
+      ).rejects.toMatchObject({
+        response: {
+          code: DOCUMENT_APPROVER_INELIGIBLE_ERROR_CODE,
+          errors: { approverIds: [APPROVER_ID] },
+        },
+      });
     });
 
     it('refuses a second round while one is open', async () => {
@@ -443,6 +480,41 @@ describe('DocumentApprovalService', () => {
       await expect(service.withdraw(DOCUMENT_ID, DRAFTER)).rejects.toBeInstanceOf(
         ConflictException,
       );
+    });
+  });
+
+  describe('listEligibleApprovers', () => {
+    it('offers the accounts a panel may name, with the roles that grant it', async () => {
+      approvalRepositoryMock.listEligibleApprovers.mockResolvedValue([
+        { id: APPROVER_ID, email: 'kepala.klinik@salingjaga.id', roleCodes: ['ADMIN'] },
+      ]);
+
+      const actual = await service.listEligibleApprovers({ limit: 50 });
+
+      expect(actual).toEqual([
+        { id: APPROVER_ID, email: 'kepala.klinik@salingjaga.id', roleCodes: ['ADMIN'] },
+      ]);
+    });
+
+    it('passes the search through rather than filtering the page it got back', async () => {
+      approvalRepositoryMock.listEligibleApprovers.mockResolvedValue([]);
+
+      await service.listEligibleApprovers({ search: 'kepala', limit: 10 });
+
+      expect(approvalRepositoryMock.listEligibleApprovers).toHaveBeenCalledWith({
+        search: 'kepala',
+        limit: 10,
+      });
+    });
+
+    it('omits the search key entirely when none was given', async () => {
+      // An explicit `search: undefined` reaches Prisma as a filter on
+      // undefined rather than as no filter at all.
+      approvalRepositoryMock.listEligibleApprovers.mockResolvedValue([]);
+
+      await service.listEligibleApprovers({ limit: 50 });
+
+      expect(approvalRepositoryMock.listEligibleApprovers).toHaveBeenCalledWith({ limit: 50 });
     });
   });
 });
