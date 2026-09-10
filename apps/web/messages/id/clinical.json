@@ -523,7 +523,7 @@
       "manageSchedule": "Kelola Jadwal",
       "itemLabel": "dokter",
       "quickFilter": "Filter Cepat",
-      "searchPlaceholder": "Nama, nomor izin, atau spesialisasi...",
+      "searchPlaceholder": "Nama, nomor STR, atau spesialisasi...",
       "specialty": "Spesialisasi",
       "allSpecialties": "Semua Spesialisasi",
       "emptyTitle": "Dokter tidak ditemukan",
@@ -532,7 +532,7 @@
       "errorDescription": "Terjadi kesalahan saat mengambil direktori dokter. Sistem mencoba kembali secara otomatis.",
       "columns": {
         "name": "Nama Dokter",
-        "license": "Nomor Izin",
+        "license": "Nomor STR",
         "schedule": "Jadwal",
         "patients": "Pasien"
       },
@@ -552,7 +552,7 @@
         "6": "Sab"
       },
       "profile": "Profil",
-      "license": "Nomor Izin",
+      "license": "Nomor STR",
       "titleLabel": "Gelar Depan",
       "degrees": "Gelar Belakang",
       "phone": "Nomor Telepon",
@@ -634,7 +634,9 @@
         "editDescription": "Perbarui profil dokter.",
         "createDescription": "Daftarkan profil dokter baru dan, bila perlu, tetapkan pasien awal.",
         "saveError": "Dokter gagal disimpan. Silakan coba lagi.",
-        "license": "Nomor Izin",
+        "license": "Nomor STR",
+        "licenseDescription": "Nomor STR dokter, persis seperti tercetak pada STR atau yang tertera di SATUSEHAT SDMK.",
+        "licenseTooltip": "STR (Surat Tanda Registrasi) diterbitkan Konsil Kesehatan Indonesia untuk tiap dokter dan berlaku seumur hidup berdasarkan UU 17/2023, karena itu nomor ini dipakai sebagai identitas dokter di sini. Nomor yang terbit sejak September 2023 berupa dua huruf diikuti 14 angka; nomor lama yang seluruhnya angka tetap berlaku. SIP berbeda, satu untuk tiap tempat praktik, jadi catat setiap SIP di bagian Izin Praktik pada data dokter.",
         "fullName": "Nama Lengkap",
         "specialty": "Spesialisasi",
         "phone": "Nomor Telepon",
