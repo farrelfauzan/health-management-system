@@ -21,7 +21,9 @@ import {
 } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { FormLabel } from '#components/client/shared/form-label';
 import { InlineNotice } from '#components/client/shared/inline-notice';
+import { RequiredLegend } from '#components/client/shared/required-legend';
 import { inventoryControllerCreateReceiptV1 } from '#lib/api/generated/pharmacy-inventory/pharmacy-inventory';
 import type { CreateStockReceiptDto } from '#lib/api/generated/model/createStockReceiptDto';
 import { parseApiSuccess } from '#lib/api/response';
@@ -99,11 +101,14 @@ export function ReceiveStockDialog({
             <DialogDescription>{t('noAbsoluteStock')}</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-5">
+            <RequiredLegend />
             {error ? <InlineNotice tone="error">{error}</InlineNotice> : null}
-            <label className="space-y-1.5 text-sm">
-              {t('medication')}
+            <div className="space-y-1.5">
+              <FormLabel htmlFor="receive-stock-medication" required>
+                {t('medication')}
+              </FormLabel>
               <Select value={medicationId} onValueChange={setMedicationId}>
-                <SelectTrigger className="w-full">
+                <SelectTrigger id="receive-stock-medication" className="w-full">
                   <SelectValue placeholder={t('selectMedication')} />
                 </SelectTrigger>
                 <SelectContent>
@@ -114,50 +119,61 @@ export function ReceiveStockDialog({
                   ))}
                 </SelectContent>
               </Select>
-            </label>
+            </div>
             <div className="grid gap-4 sm:grid-cols-2">
-              <label className="space-y-1.5 text-sm">
-                {t('batchNumber')}
+              <div className="space-y-1.5">
+                <FormLabel htmlFor="receive-stock-batch-number" required>
+                  {t('batchNumber')}
+                </FormLabel>
                 <Input
+                  id="receive-stock-batch-number"
                   value={batchNumber}
                   onChange={(event) => setBatchNumber(event.target.value)}
                 />
-              </label>
-              <label className="space-y-1.5 text-sm">
-                {t('expiryDate')}
+              </div>
+              <div className="space-y-1.5">
+                <FormLabel htmlFor="receive-stock-expiry-date" required>
+                  {t('expiryDate')}
+                </FormLabel>
                 <Input
+                  id="receive-stock-expiry-date"
                   type="date"
                   value={expiryDate}
                   onChange={(event) => setExpiryDate(event.target.value)}
                 />
-              </label>
-              <label className="space-y-1.5 text-sm">
-                {t('quantity')}
+              </div>
+              <div className="space-y-1.5">
+                <FormLabel htmlFor="receive-stock-quantity" required>
+                  {t('quantity')}
+                </FormLabel>
                 <Input
+                  id="receive-stock-quantity"
                   type="number"
                   min="1"
                   max="1000000"
                   value={quantity}
                   onChange={(event) => setQuantity(event.target.value)}
                 />
-              </label>
-              <label className="space-y-1.5 text-sm">
-                {t('receivedAt')}
+              </div>
+              <div className="space-y-1.5">
+                <FormLabel htmlFor="receive-stock-received-at">{t('receivedAt')}</FormLabel>
                 <Input
+                  id="receive-stock-received-at"
                   type="datetime-local"
                   value={receivedAt}
                   onChange={(event) => setReceivedAt(event.target.value)}
                 />
-              </label>
+              </div>
             </div>
-            <label className="space-y-1.5 text-sm">
-              {t('notes')}
+            <div className="space-y-1.5">
+              <FormLabel htmlFor="receive-stock-notes">{t('notes')}</FormLabel>
               <Textarea
+                id="receive-stock-notes"
                 maxLength={1000}
                 value={notes}
                 onChange={(event) => setNotes(event.target.value)}
               />
-            </label>
+            </div>
           </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>

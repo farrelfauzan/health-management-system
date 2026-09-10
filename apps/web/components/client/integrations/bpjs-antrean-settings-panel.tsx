@@ -268,13 +268,13 @@ export function BpjsAntreanSettingsPanel() {
                 onChange={(event) => updateField('inboundPassword', event.target.value)}
               />
             </div>
-            <label className="flex items-center gap-3 self-end pb-2 text-sm font-medium">
+            <Label className="flex items-center gap-3 self-end pb-2 text-sm font-medium">
               <Checkbox
                 checked={form.isActive}
                 onCheckedChange={(checked) => updateField('isActive', checked === true)}
               />
               {t('antrean.enable')}
-            </label>
+            </Label>
           </div>
 
           <p className="text-xs text-slate-500">{t('antrean.inboundHint')}</p>

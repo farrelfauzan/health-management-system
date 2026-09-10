@@ -1,9 +1,10 @@
 'use client';
 
-import { Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@hms/ui';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
 import { MissingParentNotice } from '#components/client/rooms/missing-parent-notice';
+import { FormLabel } from '#components/client/shared/form-label';
 import { ROOM_OPTION_LIST_LIMIT } from '#lib/rooms/option-list-limit';
 import { useRoomClassesList } from '#lib/rooms/use-room-classes-list';
 
@@ -12,6 +13,8 @@ type RoomClassSelectProps = {
   value: string;
   onChange: (roomClassId: string) => void;
   isDisabled?: boolean;
+  /** Marks the label when the consuming form cannot submit without a class. */
+  isRequired?: boolean;
 };
 
 /**
@@ -23,7 +26,13 @@ type RoomClassSelectProps = {
  * Only active classes are offered: a retired class is refused by the API, and
  * offering it would be an option that always fails.
  */
-export function RoomClassSelect({ id, value, onChange, isDisabled }: RoomClassSelectProps) {
+export function RoomClassSelect({
+  id,
+  value,
+  onChange,
+  isDisabled,
+  isRequired = false,
+}: RoomClassSelectProps) {
   const t = useTranslations('operations.rooms');
   const roomClassesQuery = useRoomClassesList({
     page: 1,
@@ -33,7 +42,9 @@ export function RoomClassSelect({ id, value, onChange, isDisabled }: RoomClassSe
 
   return (
     <div className="space-y-2">
-      <Label htmlFor={id}>{t('roomClass')}</Label>
+      <FormLabel htmlFor={id} required={isRequired}>
+        {t('roomClass')}
+      </FormLabel>
       <Select value={value} onValueChange={onChange} disabled={isDisabled}>
         <SelectTrigger id={id} className="w-full">
           <SelectValue placeholder={t('roomClass')} />

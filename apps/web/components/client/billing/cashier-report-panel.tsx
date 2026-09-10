@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, DatePicker } from '@hms/ui';
+import { Card, CardContent, DatePicker, Label } from '@hms/ui';
 import { useFormatter, useTranslations } from 'next-intl';
 
 import { CashierReportBreakdownCard } from '#components/client/billing/cashier-report-breakdown-card';
@@ -22,12 +22,12 @@ export function CashierReportPanel() {
       <Card className="rounded-xl border-slate-200 shadow-none">
         <CardContent className="flex flex-wrap items-end justify-between gap-4 p-4">
           <div>
-            <label
+            <Label
               htmlFor="cashier-report-date"
-              className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
+              className="mb-1.5 font-heading text-xs text-slate-600"
             >
               Clinic Day
-            </label>
+            </Label>
             <DatePicker
               id="cashier-report-date"
               className="w-48"

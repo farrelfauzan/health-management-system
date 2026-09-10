@@ -14,6 +14,7 @@ import {
   Checkbox,
   Icon,
   Input,
+  Label,
   Select,
   SelectContent,
   SelectItem,
@@ -177,7 +178,7 @@ export function InventoryPanel() {
                 ))}
               </SelectContent>
             </Select>
-            <label className="flex items-center gap-2 rounded-md border border-slate-200 px-3 text-sm">
+            <Label className="flex items-center gap-2 rounded-md border border-slate-200 px-3 text-sm font-normal">
               <Checkbox
                 checked={reorderOnly}
                 onCheckedChange={(checked) => {
@@ -186,7 +187,7 @@ export function InventoryPanel() {
                 }}
               />
               {t('reorderOnly')}
-            </label>
+            </Label>
           </div>
           {medicationsQuery.isError ? (
             <InlineNotice tone="error">{t('catalogLoadError')}</InlineNotice>

@@ -73,7 +73,7 @@ describe('BedFormDialog', () => {
     renderDialog({ onGoToRooms, onOpenChange });
 
     expect(await screen.findByText(operations.operations.rooms.noRooms)).toBeInTheDocument();
-    expect(screen.queryByRole('combobox', { name: 'Room' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('combobox', { name: /^Room/ })).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled();
 
     await user.click(screen.getByRole('button', { name: 'Go to Rooms' }));
@@ -88,7 +88,7 @@ describe('BedFormDialog', () => {
     renderDialog({});
 
     expect(screen.getByTestId('bed-room-skeleton')).toBeInTheDocument();
-    expect(screen.queryByRole('combobox', { name: 'Room' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('combobox', { name: /^Room/ })).not.toBeInTheDocument();
   });
 
   it('offers the rooms under a "select" placeholder once there are some', async () => {
@@ -96,7 +96,7 @@ describe('BedFormDialog', () => {
 
     renderDialog({});
 
-    expect(await screen.findByRole('combobox', { name: 'Room' })).toHaveTextContent(
+    expect(await screen.findByRole('combobox', { name: /^Room/ })).toHaveTextContent(
       'Select a room',
     );
     expect(screen.queryByText(operations.operations.rooms.noRooms)).not.toBeInTheDocument();

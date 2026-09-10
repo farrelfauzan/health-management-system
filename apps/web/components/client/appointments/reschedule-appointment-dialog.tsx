@@ -14,6 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
   Input,
+  Label,
 } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
@@ -94,12 +95,12 @@ export function RescheduleAppointmentDialog({
             <form.Field name="date">
               {(field) => (
                 <div className="space-y-1.5">
-                  <label
+                  <Label
                     htmlFor={`reschedule-${field.name}`}
-                    className="block font-heading text-xs font-medium text-slate-600"
+                    className="font-heading text-xs text-slate-600"
                   >
                     Date
-                  </label>
+                  </Label>
                   <DatePicker
                     id={`reschedule-${field.name}`}
                     value={field.state.value}
@@ -113,12 +114,12 @@ export function RescheduleAppointmentDialog({
             <form.Field name="time">
               {(field) => (
                 <div className="space-y-1.5">
-                  <label
+                  <Label
                     htmlFor={`reschedule-${field.name}`}
-                    className="block font-heading text-xs font-medium text-slate-600"
+                    className="font-heading text-xs text-slate-600"
                   >
                     Time
-                  </label>
+                  </Label>
                   <Input
                     id={`reschedule-${field.name}`}
                     type="time"

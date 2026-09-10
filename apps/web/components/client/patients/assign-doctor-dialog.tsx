@@ -16,6 +16,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  Label,
 } from '@hms/ui';
 
 import { InlineNotice } from '#components/client/shared/inline-notice';
@@ -92,12 +93,12 @@ export function AssignDoctorDialog({
         <div className="space-y-3">
           {assignError ? <InlineNotice tone="error">{assignError}</InlineNotice> : null}
           <div className="space-y-1.5">
-            <label
+            <Label
               htmlFor="assign-doctor-select"
-              className="block font-heading text-xs font-medium text-slate-600"
+              className="font-heading text-xs text-slate-600"
             >
               {t('encounters.doctor')}
-            </label>
+            </Label>
             <Combobox
               id="assign-doctor-select"
               options={selectableDoctors.map((doctor) => ({

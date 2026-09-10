@@ -17,6 +17,7 @@ import {
   DialogHeader,
   DialogTitle,
   Input,
+  Label,
 } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
@@ -93,12 +94,12 @@ export function AdminUserInviteDialog({ open, onOpenChange }: AdminUserInviteDia
           >
             {(field) => (
               <div className="space-y-1.5">
-                <label
+                <Label
                   htmlFor={field.name}
-                  className="block font-heading text-xs font-medium text-slate-600"
+                  className="font-heading text-xs text-slate-600"
                 >
                   {t('invitations.emailLabel')}
-                </label>
+                </Label>
                 <Input
                   id={field.name}
                   type="email"

@@ -267,13 +267,13 @@ export function BpjsSettingsPanel() {
                 onChange={(event) => updateField('pcarePassword', event.target.value)}
               />
             </div>
-            <label className="flex items-center gap-3 self-end pb-2 text-sm font-medium">
+            <Label className="flex items-center gap-3 self-end pb-2 text-sm font-medium">
               <Checkbox
                 checked={form.isActive}
                 onCheckedChange={(checked) => updateField('isActive', checked === true)}
               />
               Enable PCare bridging
-            </label>
+            </Label>
           </div>
 
           {config?.lastTestedAt ? (

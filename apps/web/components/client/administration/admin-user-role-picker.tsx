@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 
 import type { AdminRoleOption } from '@hms/shared-types';
-import { Checkbox, cn } from '@hms/ui';
+import { Checkbox, cn, Label } from '@hms/ui';
 
 type AdminUserRolePickerProps = {
   roles: AdminRoleOption[];
@@ -37,13 +37,13 @@ export function AdminUserRolePicker({
       )}
     >
       {roles.map((role) => (
-        <label key={role.id} className="flex cursor-pointer items-center gap-2.5">
+        <Label key={role.id} className="flex cursor-pointer items-center gap-2.5 font-normal">
           <Checkbox
             checked={selectedRoleCodes.includes(role.code)}
             onCheckedChange={() => onToggleRole(role.code)}
           />
           <span className="text-sm text-slate-700">{role.name}</span>
-        </label>
+        </Label>
       ))}
     </div>
   );

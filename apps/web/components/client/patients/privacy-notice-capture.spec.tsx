@@ -45,7 +45,7 @@ describe('PrivacyNoticeCapture', () => {
     renderCapture(false);
 
     expect(screen.getByText('Penerima pemberitahuan')).toBeInTheDocument();
-    expect(screen.getByRole('combobox', { name: 'Hasil penyampaian' })).toHaveAttribute(
+    expect(screen.getByRole('combobox', { name: /^Hasil penyampaian/ })).toHaveAttribute(
       'data-allowed-outcomes',
       'ACKNOWLEDGED,PROVIDED_ACKNOWLEDGEMENT_DECLINED,DEFERRED_EMERGENCY',
     );
@@ -55,7 +55,7 @@ describe('PrivacyNoticeCapture', () => {
     renderCapture(true);
 
     expect(screen.queryByText('Penerima pemberitahuan')).not.toBeInTheDocument();
-    expect(screen.getByRole('combobox', { name: 'Hasil penyampaian' })).toHaveAttribute(
+    expect(screen.getByRole('combobox', { name: /^Hasil penyampaian/ })).toHaveAttribute(
       'data-allowed-outcomes',
       'ACKNOWLEDGED,PROVIDED_ACKNOWLEDGEMENT_DECLINED',
     );

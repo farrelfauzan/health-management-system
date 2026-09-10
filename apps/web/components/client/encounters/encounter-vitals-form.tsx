@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { RecordVitalSignsInput, VitalSignsResponse } from '@hms/shared-types';
-import { Button, Input, Textarea } from '@hms/ui';
+import { Button, Input, Label, Textarea } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
 import { InlineNotice } from '#components/client/shared/inline-notice';
@@ -78,13 +78,13 @@ export function EncounterVitalsForm({ encounterId }: EncounterVitalsFormProps) {
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         {VITAL_SIGNS_FIELDS.map((field) => (
           <div key={field.key}>
-            <label
+            <Label
               htmlFor={`vitals-${field.key}`}
-              className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
+              className="mb-1.5 font-heading text-xs text-slate-600"
             >
               {t(`encounters.vitals.fields.${field.key}`)}{' '}
               <span className="text-slate-400">({t(`encounters.vitals.units.${field.key}`)})</span>
-            </label>
+            </Label>
             <Input
               id={`vitals-${field.key}`}
               inputMode="decimal"
@@ -98,12 +98,12 @@ export function EncounterVitalsForm({ encounterId }: EncounterVitalsFormProps) {
         ))}
       </div>
       <div>
-        <label
+        <Label
           htmlFor="vitals-notes"
-          className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
+          className="mb-1.5 font-heading text-xs text-slate-600"
         >
           {t('encounters.notes')}
-        </label>
+        </Label>
         <Textarea
           id="vitals-notes"
           rows={2}

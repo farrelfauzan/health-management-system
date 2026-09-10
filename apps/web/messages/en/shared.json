@@ -65,6 +65,10 @@
         "unsupportedTypeNamed": "{name} is not an accepted file type.",
         "tooLargeNamed": "{name} is larger than the {limitMb} MB limit."
       }
+    },
+    "form": {
+      "required": "required",
+      "requiredLegend": "Required"
     }
   }
 }

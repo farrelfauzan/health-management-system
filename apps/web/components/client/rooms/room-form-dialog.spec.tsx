@@ -91,7 +91,7 @@ describe('RoomFormDialog', () => {
     renderDialog({ onGoToWards, onOpenChange });
 
     expect(await screen.findByText(operations.operations.rooms.noWards)).toBeInTheDocument();
-    expect(screen.queryByRole('combobox', { name: 'Ward' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('combobox', { name: /^Ward/ })).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled();
 
     await user.click(screen.getByRole('button', { name: 'Go to Wards' }));
@@ -107,7 +107,7 @@ describe('RoomFormDialog', () => {
     renderDialog({});
 
     expect(screen.getByTestId('room-ward-skeleton')).toBeInTheDocument();
-    expect(screen.queryByRole('combobox', { name: 'Ward' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('combobox', { name: /^Ward/ })).not.toBeInTheDocument();
     expect(screen.queryByText(operations.operations.rooms.noWards)).not.toBeInTheDocument();
   });
 
@@ -116,7 +116,7 @@ describe('RoomFormDialog', () => {
 
     renderDialog({});
 
-    expect(await screen.findByRole('combobox', { name: 'Ward' })).toHaveTextContent(
+    expect(await screen.findByRole('combobox', { name: /^Ward/ })).toHaveTextContent(
       'Select a ward',
     );
     expect(screen.queryByText(operations.operations.rooms.noWards)).not.toBeInTheDocument();

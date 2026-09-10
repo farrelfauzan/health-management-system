@@ -3,6 +3,7 @@
 import { Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@hms/ui';
 import { useLocale, useTranslations } from 'next-intl';
 
+import { FormLabel } from '#components/client/shared/form-label';
 import { InlineNotice } from '#components/client/shared/inline-notice';
 import type { CreatePatientDtoPrivacyNotice } from '#lib/api/generated/model/createPatientDtoPrivacyNotice';
 import { CreatePatientDtoPrivacyNoticeOutcome } from '#lib/api/generated/model/createPatientDtoPrivacyNoticeOutcome';
@@ -64,12 +65,13 @@ export function PrivacyNoticeCapture({
           <p className="text-xs text-slate-500">{t('version', { version: notice.version })}</p>
 
           <div className="space-y-1.5">
-            <label
-              className="block font-heading text-xs font-medium text-slate-600"
+            <FormLabel
+              className="font-heading text-xs text-slate-600"
               htmlFor="privacy-outcome"
+              required
             >
               {t('outcomeLabel')}
-            </label>
+            </FormLabel>
             <Select
               value={value?.outcome ?? ''}
               onValueChange={(outcome) =>
@@ -108,12 +110,12 @@ export function PrivacyNoticeCapture({
           {!isPatientOwnVariant ? (
             <div className="space-y-3">
               <div className="space-y-1.5">
-                <label
-                  className="block font-heading text-xs font-medium text-slate-600"
+                <FormLabel
+                  className="font-heading text-xs text-slate-600"
                   htmlFor="privacy-subject"
                 >
                   {t('subjectLabel')}
-                </label>
+                </FormLabel>
                 <Select
                   value={value?.subjectType ?? CreatePatientDtoPrivacyNoticeSubjectType.SELF}
                   onValueChange={(subjectType) => {

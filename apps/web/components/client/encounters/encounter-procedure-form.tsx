@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { AddProcedureInput, ProcedureResponse } from '@hms/shared-types';
-import { Button, Input } from '@hms/ui';
+import { Button, Input, Label } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
 import { CodeSearchPicker } from '#components/client/encounters/code-search-picker';
@@ -76,12 +76,12 @@ export function EncounterProcedureForm({ encounterId }: EncounterProcedureFormPr
       />
       <div className="flex flex-wrap items-end gap-3">
         <div className="min-w-48 flex-1">
-          <label
+          <Label
             htmlFor="procedure-notes"
-            className="mb-1.5 block font-heading text-xs font-medium text-slate-600"
+            className="mb-1.5 font-heading text-xs text-slate-600"
           >
             {t('encounters.notes')}
-          </label>
+          </Label>
           <Input
             id="procedure-notes"
             placeholder={t('encounters.procedure.notes')}
