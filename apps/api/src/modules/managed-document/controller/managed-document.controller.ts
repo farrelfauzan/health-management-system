@@ -225,6 +225,24 @@ export class ManagedDocumentController {
     return { data: await this.managedDocumentService.getDownloadUrl(id, actor) };
   }
 
+  @Get(':id/preview')
+  @Auth([{ action: 'read', subject: 'ManagedDocument' }])
+  @Audited({ resource: MANAGED_DOCUMENT_AUDIT_RESOURCE, action: AuditAction.READ })
+  @ApiEndpoint({
+    summary: 'Read an uploaded document’s text, for review before a decision',
+    responseDescription:
+      'The document’s text, extracted server-side, stripped of every tag and capped at 20,000 characters — so an approver can read what they are signing off without the file ever being framed in the app origin (`P19-T18`, NFR-SEC-04). `isTruncated` says the document continues past what came back, and the signed download stays the way to read all of it. Markdown and plain text only: a PDF, an image, or a document drafted in the editor is 409 `MANAGED_DOCUMENT_NOT_PREVIEWABLE`. Authorised as a read of the document itself, so a row outside the caller’s reach is 404 here exactly as it is on the detail.',
+    responseExample: { data: MANAGED_DOCUMENT_EXAMPLES.preview },
+    notFoundDescription: 'Document not found.',
+  })
+  async getPreview(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @AuthUser() currentUser?: CurrentUser,
+  ) {
+    const actor = this.assertAuthenticated(currentUser);
+    return { data: await this.managedDocumentService.getPreview(id, actor) };
+  }
+
   @Get(':id/history')
   @Auth([{ action: 'read', subject: 'ManagedDocument' }])
   @ApiEndpoint({

@@ -8,6 +8,7 @@ import {
   DocumentApprovalRequestRecord,
   DocumentTypeRecord,
   ListManagedDocumentsParams,
+  MANAGED_DOCUMENT_PREVIEW_MAX_CHARACTERS,
   ManagedDocumentAccessContext,
   ManagedDocumentPage,
   ManagedDocumentRecord,
@@ -41,6 +42,7 @@ type Permission = { action: string; resource: string; scope: 'ANY' | 'OWN' };
 const REGISTRY_READ: Permission = { action: 'read', resource: 'ManagedDocument', scope: 'ANY' };
 const REGISTRY_WRITE: Permission = { action: 'write', resource: 'ManagedDocument', scope: 'ANY' };
 const INVOICE_READ: Permission = { action: 'read', resource: 'Invoice', scope: 'ANY' };
+const CORPUS_READ: Permission = { action: 'read', resource: 'Document', scope: 'ANY' };
 const APPROVAL_DECIDE: Permission = {
   action: 'decide',
   resource: 'DocumentApproval',
@@ -675,6 +677,123 @@ describe('Documents registry integration', () => {
       .set('Authorization', `Bearer ${token}`);
 
     expect(response.status).toBe(404);
+  });
+
+  describe('preview of an uploaded body (`P19-T18`)', () => {
+    const CORPUS_STORAGE_KEY = 'documents/managed/9f1c7c2e-3a52-4f0b-9e33-1c9a5f0a77b1.md';
+
+    function seedCorpusDocument(storageMimeType: string) {
+      return fakeRepository.seed({
+        title: 'seeded corpus policy',
+        typeId: UPLOAD_ONLY_TYPE_ID,
+        contentHtml: null,
+        storageKey: CORPUS_STORAGE_KEY,
+        storageMimeType,
+        storageSizeBytes: 2_048,
+        subjectDocumentId: '00000000-0000-4000-8000-0000000000d3',
+        subjectDocument: { purpose: 'FAQ_KNOWLEDGE_BASE', ownerId: OWNER_USER_ID },
+      });
+    }
+
+    async function previewAs(documentId: string, userId: string, permissions: Permission[]) {
+      mockActor(userId, permissions);
+      const token = await buildToken(userId);
+      return request(app.getHttpServer())
+        .get(`${DOCUMENTS_PATH}/${documentId}/preview`)
+        .set('Authorization', `Bearer ${token}`);
+    }
+
+    it('returns the markdown text to a caller entitled to read the row', async () => {
+      const seeded = seedCorpusDocument('text/markdown');
+      objectStorageMock.getObject.mockResolvedValue({
+        key: CORPUS_STORAGE_KEY,
+        body: Buffer.from('# Kebijakan\n\nPasien wajib membawa kartu.', 'utf8'),
+        contentType: 'text/markdown',
+      });
+
+      const response = await previewAs(seeded.id, OTHER_USER_ID, [REGISTRY_READ, CORPUS_READ]);
+
+      expect(response.status).toBe(200);
+      expect(response.body.data).toEqual({
+        documentId: seeded.id,
+        mimeType: 'text/markdown',
+        text: '# Kebijakan\n\nPasien wajib membawa kartu.',
+        characterCount: 40,
+        totalCharacterCount: 40,
+        isTruncated: false,
+      });
+      expect(objectStorageMock.getObject).toHaveBeenCalledWith({ key: CORPUS_STORAGE_KEY });
+    });
+
+    it('strips markup the uploaded file carries rather than passing it through', async () => {
+      const seeded = seedCorpusDocument('text/markdown');
+      objectStorageMock.getObject.mockResolvedValue({
+        key: CORPUS_STORAGE_KEY,
+        body: Buffer.from('Catatan<script>alert(1)</script> penting.', 'utf8'),
+        contentType: 'text/markdown',
+      });
+
+      const response = await previewAs(seeded.id, OTHER_USER_ID, [REGISTRY_READ, CORPUS_READ]);
+
+      expect(response.status).toBe(200);
+      expect(response.body.data.text).toBe('Catatan penting.');
+    });
+
+    it('truncates past the cap and says the document continues', async () => {
+      const seeded = seedCorpusDocument('text/plain');
+      const longText = 'kata '.repeat(MANAGED_DOCUMENT_PREVIEW_MAX_CHARACTERS);
+      objectStorageMock.getObject.mockResolvedValue({
+        key: CORPUS_STORAGE_KEY,
+        body: Buffer.from(longText, 'utf8'),
+        contentType: 'text/plain',
+      });
+
+      const response = await previewAs(seeded.id, OTHER_USER_ID, [REGISTRY_READ, CORPUS_READ]);
+
+      expect(response.status).toBe(200);
+      expect(response.body.data.isTruncated).toBe(true);
+      expect(response.body.data.characterCount).toBeLessThanOrEqual(
+        MANAGED_DOCUMENT_PREVIEW_MAX_CHARACTERS,
+      );
+      expect(response.body.data.totalCharacterCount).toBe(longText.length);
+    });
+
+    it('answers 404, never 403, for a row outside the caller’s reach', async () => {
+      const seeded = seedCorpusDocument('text/markdown');
+
+      const response = await previewAs(seeded.id, OTHER_USER_ID, [REGISTRY_READ]);
+
+      expect(response.status).toBe(404);
+      expect(objectStorageMock.getObject).not.toHaveBeenCalled();
+    });
+
+    it('refuses a caller without the registry read grant', async () => {
+      const seeded = seedCorpusDocument('text/markdown');
+
+      const response = await previewAs(seeded.id, OTHER_USER_ID, [REGISTRY_WRITE, CORPUS_READ]);
+
+      expect(response.status).toBe(403);
+      expect(objectStorageMock.getObject).not.toHaveBeenCalled();
+    });
+
+    it('refuses a PDF, which keeps its download instead', async () => {
+      const seeded = seedCorpusDocument('application/pdf');
+
+      const response = await previewAs(seeded.id, OTHER_USER_ID, [REGISTRY_READ, CORPUS_READ]);
+
+      expect(response.status).toBe(409);
+      expect(response.body.error.code).toBe('MANAGED_DOCUMENT_NOT_PREVIEWABLE');
+      expect(objectStorageMock.getObject).not.toHaveBeenCalled();
+    });
+
+    it('refuses a document drafted in the editor, which has no file at all', async () => {
+      const seeded = fakeRepository.seed({ title: 'seeded drafted letter' });
+
+      const response = await previewAs(seeded.id, OTHER_USER_ID, [REGISTRY_READ]);
+
+      expect(response.status).toBe(409);
+      expect(response.body.error.code).toBe('MANAGED_DOCUMENT_NOT_PREVIEWABLE');
+    });
   });
 
   it('refuses a body naming both drafted and uploaded content', async () => {

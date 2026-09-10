@@ -253,3 +253,23 @@ export type SyncGovernedDocumentPayload = {
   storageMimeType?: string | null;
   storageSizeBytes?: number | null;
 };
+
+/**
+ * Input to the preview truncation step (`P19-T18`). `limit` is passed rather
+ * than read from the constant so the rule can be exercised at test sizes.
+ */
+export type TruncateDocumentPreviewTextParams = {
+  text: string;
+  limit: number;
+};
+
+/**
+ * The truncation's outcome, carried into
+ * {@link ManagedDocumentPreviewView} unchanged.
+ */
+export type TruncateDocumentPreviewTextResult = {
+  text: string;
+  characterCount: number;
+  totalCharacterCount: number;
+  isTruncated: boolean;
+};
