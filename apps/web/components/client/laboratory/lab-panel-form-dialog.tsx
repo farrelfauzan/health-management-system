@@ -20,6 +20,7 @@ import {
 import { useTranslations } from 'next-intl';
 
 import { LabTariffPicker } from '#components/client/laboratory/lab-tariff-picker';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import {
   labPanelControllerCreateLabPanelV1,
   labPanelControllerUpdateLabPanelV1,
@@ -113,14 +114,7 @@ export function LabPanelFormDialog({ open, labPanel, onOpenChange }: LabPanelFor
             <DialogDescription>{t('panelDescription')}</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
-            {actionError ? (
-              <p
-                role="alert"
-                className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700"
-              >
-                {actionError}
-              </p>
-            ) : null}
+            {actionError ? <InlineNotice tone="error">{actionError}</InlineNotice> : null}
             <div className="grid gap-3 sm:grid-cols-3">
               <label className="space-y-1 text-sm text-slate-700">
                 {t('fields.code')}

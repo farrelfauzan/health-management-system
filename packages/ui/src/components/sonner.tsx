@@ -10,6 +10,28 @@ import {
 import { useTheme } from "next-themes"
 import { Toaster as Sonner, type ToasterProps } from "sonner"
 
+/**
+ * Per-type classes keep every toast on the dashboard palette: card background,
+ * a tone accent on the leading edge, and the tone colour on icon and title.
+ * Statement tones (error, warning) also set the title bold so a refusal or a
+ * blocking condition can never be mistaken for info text. The `!` modifiers are
+ * needed because sonner's own stylesheet targets `[data-sonner-toast][data-styled]`
+ * with higher specificity than a single utility class.
+ */
+const STATEMENT_TITLE = "[&_[data-title]]:font-semibold!"
+
+const toastOptions: ToasterProps["toastOptions"] = {
+  classNames: {
+    title: "font-heading",
+    description: "text-muted-foreground!",
+    success:
+      "border-l-4! border-l-success! [&_[data-icon]]:text-success [&_[data-title]]:text-success-emphasis!",
+    info: "border-l-4! border-l-info! [&_[data-icon]]:text-info [&_[data-title]]:text-info!",
+    warning: `border-l-4! border-l-warning! [&_[data-icon]]:text-warning [&_[data-title]]:text-warning-emphasis! ${STATEMENT_TITLE}`,
+    error: `border-l-4! border-l-destructive! [&_[data-icon]]:text-destructive [&_[data-title]]:text-destructive! ${STATEMENT_TITLE}`,
+  },
+}
+
 const Toaster = ({ ...props }: ToasterProps) => {
   const { theme = "system" } = useTheme()
 
@@ -32,6 +54,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
           "--border-radius": "var(--radius)",
         } as React.CSSProperties
       }
+      toastOptions={toastOptions}
       {...props}
     />
   )

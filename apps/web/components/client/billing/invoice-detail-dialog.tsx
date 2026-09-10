@@ -22,6 +22,7 @@ import { InvoiceItemsList } from '#components/client/billing/invoice-items-list'
 import { InvoicePaymentSummary } from '#components/client/billing/invoice-payment-summary';
 import { RecordPaymentForm } from '#components/client/billing/record-payment-form';
 import { VoidInvoiceForm } from '#components/client/billing/void-invoice-form';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { StatusBadge } from '#components/shared/status-badge';
 import {
   invoiceControllerIssueInvoiceV1,
@@ -103,9 +104,7 @@ export function InvoiceDetailDialog({ invoiceId, open, onOpenChange }: InvoiceDe
         ) : null}
 
         {!invoiceQuery.isPending && !invoice ? (
-          <p role="alert" className="text-sm text-rose-700">
-            {t('billing.invoiceError')}
-          </p>
+          <InlineNotice tone="error">{t('billing.invoiceError')}</InlineNotice>
         ) : null}
 
         {invoice ? (
@@ -134,14 +133,7 @@ export function InvoiceDetailDialog({ invoiceId, open, onOpenChange }: InvoiceDe
 
             <InvoiceDeliverySection invoice={invoice} />
 
-            {actionError ? (
-              <p
-                role="alert"
-                className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700"
-              >
-                {actionError}
-              </p>
-            ) : null}
+            {actionError ? <InlineNotice tone="error">{actionError}</InlineNotice> : null}
 
             {invoice.status === 'DRAFT' && canWriteInvoice ? (
               <div className="flex justify-end">

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Card, CardContent, TableBody, TableHeader, TableRow } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { SharedWithMeRow } from '#components/client/vault-shares/shared-with-me-row';
 import { DataTable } from '#components/shared/data-table';
 import { DataTableHeaderCell } from '#components/shared/data-table-header-cell';
@@ -34,15 +35,15 @@ export function SharedWithMePanel() {
         <h2 className="font-heading text-lg font-semibold text-slate-900">{t('title')}</h2>
         <p className="text-sm text-slate-500">{t('subtitle')}</p>
       </div>
-      {error ? (
-        <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-900">{error}</p>
-      ) : null}
+      {error ? <InlineNotice tone="error">{error}</InlineNotice> : null}
       <Card className="gap-0 rounded-xl border-slate-200 py-0 shadow-none">
         <CardContent className="p-0">
           {sharedQuery.isLoading ? (
             <p className="p-6 text-sm text-slate-500">{t('states.loading')}</p>
           ) : sharedQuery.isError ? (
-            <p className="p-6 text-sm text-red-700">{t('states.error')}</p>
+            <InlineNotice tone="error" className="m-6">
+              {t('states.error')}
+            </InlineNotice>
           ) : sharedQuery.documents.length === 0 ? (
             <EmptyState
               icon="folder_shared"

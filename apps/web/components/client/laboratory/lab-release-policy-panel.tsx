@@ -17,6 +17,7 @@ import {
 import { useTranslations } from 'next-intl';
 
 import { LabReleasePolicyToggle } from '#components/client/laboratory/lab-release-policy-toggle';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { laboratorySettingsControllerUpdateLaboratorySettingsV1 } from '#lib/api/generated/laboratory-settings/laboratory-settings';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { parseApiSuccess } from '#lib/api/response';
@@ -83,9 +84,7 @@ export function LabReleasePolicyPanel() {
         {isPending ? (
           <Skeleton className="h-32 w-full" />
         ) : isError ? (
-          <p role="alert" className="text-sm text-red-600">
-            {t('loadError')}
-          </p>
+          <InlineNotice tone="error">{t('loadError')}</InlineNotice>
         ) : (
           <>
             <LabReleasePolicyToggle

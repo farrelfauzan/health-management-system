@@ -29,6 +29,7 @@ import { TemplateImportButton } from '#components/client/document-templates/temp
 import { TemplateImportWarnings } from '#components/client/document-templates/template-import-warnings';
 import { TemplateSettingsFields } from '#components/client/document-templates/template-settings-fields';
 import { TemplateVariablePalette } from '#components/client/document-templates/template-variable-palette';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { documentTemplateControllerUpdateTemplateV1 } from '#lib/api/generated/document-templates/document-templates';
 import { parseApiSuccess } from '#lib/api/response';
 import { resolveApiErrorMessage } from '#lib/api/resolve-api-error-message';
@@ -220,19 +221,11 @@ export function TemplateEditor({ template, canWrite, currentUserId, onBack }: Te
           {t('save')}
         </Button>
       </div>
-      {notice ? (
-        <p className="rounded-lg bg-emerald-50 px-4 py-3 text-sm text-emerald-900">{notice}</p>
-      ) : null}
-      {error ? (
-        <p role="alert" className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-900">
-          {error}
-        </p>
-      ) : null}
+      {notice ? <InlineNotice tone="success">{notice}</InlineNotice> : null}
+      {error ? <InlineNotice tone="error">{error}</InlineNotice> : null}
       <TemplateImportWarnings warnings={importWarnings} onDismiss={() => setImportWarnings([])} />
       {variablesQuery.isError ? (
-        <p role="alert" className="rounded-lg bg-amber-50 px-4 py-3 text-sm text-amber-900">
-          {t('editor.variablesError')}
-        </p>
+        <InlineNotice tone="warning">{t('editor.variablesError')}</InlineNotice>
       ) : null}
       <TemplateEditorActions
         template={template}

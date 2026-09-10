@@ -8,6 +8,7 @@ import { DocumentApprovalThread } from '#components/client/document-approvals/do
 import { ManagedDocumentBody } from '#components/client/managed-documents/managed-document-body';
 import { ManagedDocumentHeader } from '#components/client/managed-documents/managed-document-header';
 import { TemplateSubmissionReview } from '#components/client/document-templates/template-submission-review';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { PageHeader } from '#components/shared/page-header';
 import { useManagedDocument } from '#lib/managed-documents/use-managed-document';
 import { useManagedDocumentHistory } from '#lib/managed-documents/use-managed-document-history';
@@ -42,9 +43,7 @@ export function ManagedDocumentWorkspace({
     return (
       <Card className="rounded-xl border-slate-200 shadow-none">
         <CardContent className="p-6">
-          <p role="alert" className="text-sm text-slate-600">
-            {t('loadError')}
-          </p>
+          <InlineNotice tone="error">{t('loadError')}</InlineNotice>
         </CardContent>
       </Card>
     );

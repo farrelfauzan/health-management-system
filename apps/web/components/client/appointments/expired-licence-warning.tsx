@@ -1,8 +1,9 @@
 'use client';
 
 import type { ExpiredDoctorLicence } from '@hms/shared-types';
-import { Icon } from '@hms/ui';
 import { useTranslations } from 'next-intl';
+
+import { InlineNotice } from '#components/client/shared/inline-notice';
 
 type ExpiredLicenceWarningProps = {
   /**
@@ -37,13 +38,8 @@ export function ExpiredLicenceWarning({ expiredLicenses }: ExpiredLicenceWarning
   }
 
   return (
-    <div
-      role="alert"
-      className="flex gap-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2"
-    >
-      <Icon name="gpp_maybe" size={18} className="mt-0.5 shrink-0 text-amber-600" />
-      <div className="space-y-1 text-sm text-amber-900">
-        <p className="font-medium">{t('title')}</p>
+    <InlineNotice tone="warning" title={t('title')}>
+      <div className="space-y-1">
         <ul className="space-y-0.5">
           {expiredLicenses.map((licence) => (
             <li key={`${licence.type}|${licence.licenseNumber}`}>
@@ -55,8 +51,8 @@ export function ExpiredLicenceWarning({ expiredLicenses }: ExpiredLicenceWarning
             </li>
           ))}
         </ul>
-        <p className="text-amber-800">{t('bookingProceeds')}</p>
+        <p>{t('bookingProceeds')}</p>
       </div>
-    </div>
+    </InlineNotice>
   );
 }

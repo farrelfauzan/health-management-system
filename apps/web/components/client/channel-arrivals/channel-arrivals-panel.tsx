@@ -5,6 +5,7 @@ import { Card, CardContent } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
 import { ChannelArrivalsTable } from '#components/client/channel-arrivals/channel-arrivals-table';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { useChannelArrivals } from '#lib/channel-arrivals/use-channel-arrivals';
 
 /**
@@ -57,24 +58,18 @@ export function ChannelArrivalsPanel() {
           {draftCount === 0 ? t('allComplete') : t('draftCount', { count: draftCount })}
         </p>
       </div>
-      {notice ? (
-        <p className="rounded-lg bg-emerald-50 px-4 py-3 text-sm text-emerald-900">{notice}</p>
-      ) : null}
-      {error ? (
-        <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-900">{error}</p>
-      ) : null}
+      {notice ? <InlineNotice tone="success">{notice}</InlineNotice> : null}
+      {error ? <InlineNotice tone="error">{error}</InlineNotice> : null}
       <Card>
         <CardContent className="p-0">
           {arrivalsQuery.isLoading ? (
             <p className="p-6 text-sm text-slate-500">{t('states.loading')}</p>
           ) : arrivalsQuery.isError ? (
-            <p className="p-6 text-sm text-red-700">{t('states.error')}</p>
+            <InlineNotice tone="error" className="m-6">
+              {t('states.error')}
+            </InlineNotice>
           ) : (
-            <ChannelArrivalsTable
-              arrivals={rows}
-              onResult={handleResult}
-              onFailed={handleError}
-            />
+            <ChannelArrivalsTable arrivals={rows} onResult={handleResult} onFailed={handleError} />
           )}
         </CardContent>
       </Card>

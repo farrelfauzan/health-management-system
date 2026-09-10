@@ -39,6 +39,7 @@ import {
 import { PatientDoctorPicker } from '#components/client/patients/patient-doctor-picker';
 import { PrivacyNoticeCapture } from '#components/client/patients/privacy-notice-capture';
 import { FieldError } from '#components/client/shared/field-error';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import type { CreatePatientDto } from '#lib/api/generated/model/createPatientDto';
 import type { CreatePatientDtoPrivacyNotice } from '#lib/api/generated/model/createPatientDtoPrivacyNotice';
 import { prospectivePatientControllerConvertToNewPatientV1 } from '#lib/api/generated/customer-service/customer-service';
@@ -238,28 +239,19 @@ export function PatientFormDialog({
             void form.handleSubmit();
           }}
         >
-          {formError ? (
-            <p
-              role="alert"
-              className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700"
-            >
-              {formError}
-            </p>
-          ) : null}
+          {formError ? <InlineNotice tone="error">{formError}</InlineNotice> : null}
 
           {identifierWarnings.length > 0 ? (
-            <div
-              role="status"
-              className="space-y-1 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900"
-            >
-              <p className="font-medium">{t('patients.form.warnings')}</p>
-              <ul className="list-inside list-disc">
-                {identifierWarnings.map((warning) => (
-                  <li key={warning}>{warning}</li>
-                ))}
-              </ul>
-              <p className="text-xs">{t('patients.form.warningHelp')}</p>
-            </div>
+            <InlineNotice tone="warning" title={t('patients.form.warnings')}>
+              <div className="space-y-1">
+                <ul className="list-inside list-disc">
+                  {identifierWarnings.map((warning) => (
+                    <li key={warning}>{warning}</li>
+                  ))}
+                </ul>
+                <p className="text-xs">{t('patients.form.warningHelp')}</p>
+              </div>
+            </InlineNotice>
           ) : null}
 
           {/* No MRN field: the server allocates it on create and it can never be

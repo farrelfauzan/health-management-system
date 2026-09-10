@@ -6,6 +6,7 @@ import type { AddInvoiceItemInput, InvoiceDetail } from '@hms/shared-types';
 import { Button, Combobox, Input } from '@hms/ui';
 import { useFormatter, useTranslations } from 'next-intl';
 
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { invoiceControllerAddInvoiceItemV1 } from '#lib/api/generated/invoices/invoices';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { parseApiSuccess } from '#lib/api/response';
@@ -76,14 +77,7 @@ export function AddInvoiceItemForm({ invoice }: AddInvoiceItemFormProps) {
     >
       <p className="font-heading text-xs font-medium text-slate-600">{t('title')}</p>
       <p className="text-xs text-slate-500">{t('hint')}</p>
-      {actionError ? (
-        <p
-          role="alert"
-          className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700"
-        >
-          {actionError}
-        </p>
-      ) : null}
+      {actionError ? <InlineNotice tone="error">{actionError}</InlineNotice> : null}
       <div className="grid gap-2 sm:grid-cols-[1fr_5rem_auto]">
         <Combobox
           id="invoice-line-tariff"

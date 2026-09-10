@@ -1,7 +1,8 @@
 'use client';
 
-import { Icon } from '@hms/ui';
 import { useTranslations } from 'next-intl';
+
+import { InlineNotice } from '#components/client/shared/inline-notice';
 
 /**
  * The upload-time warning that a patient's file belongs in the patient's
@@ -20,10 +21,5 @@ import { useTranslations } from 'next-intl';
 export function VaultPatientDataNotice() {
   const t = useTranslations('vault.notices');
 
-  return (
-    <div className="flex gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3">
-      <Icon name="warning" size={18} className="mt-0.5 shrink-0 text-amber-600" />
-      <p className="text-sm text-amber-900">{t('noPatientData')}</p>
-    </div>
-  );
+  return <InlineNotice tone="warning">{t('noPatientData')}</InlineNotice>;
 }

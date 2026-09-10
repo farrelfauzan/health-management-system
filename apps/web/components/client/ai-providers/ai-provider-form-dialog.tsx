@@ -25,6 +25,7 @@ import {
 } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import {
   aiProviderControllerCreateConfigV1,
   aiProviderControllerUpdateConfigV1,
@@ -161,7 +162,7 @@ export function AiProviderFormDialog({
               {config ? t('apiKeyRotateHint') : t('apiKeyHint')}
             </p>
           </div>
-          {error ? <p className="text-sm text-red-600">{error}</p> : null}
+          {error ? <InlineNotice tone="error">{error}</InlineNotice> : null}
         </div>
         <DialogFooter>
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>

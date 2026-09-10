@@ -6,6 +6,7 @@ import { Button, Card, CardContent, CardHeader, CardTitle } from '@hms/ui';
 import { useFormatter, useTranslations } from 'next-intl';
 
 import { EncounterReferralForm } from '#components/client/encounters/encounter-referral-form';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { encounterClinicalDataControllerRemoveBpjsReferralV1 } from '#lib/api/generated/encounters/encounters';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { invalidateEncounterQueries } from '#lib/encounters/invalidate-encounter-queries';
@@ -49,14 +50,7 @@ export function EncounterReferralCard({ encounterId, isEditable }: EncounterRefe
         ) : null}
       </CardHeader>
       <CardContent className="space-y-3">
-        {actionError ? (
-          <p
-            role="alert"
-            className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700"
-          >
-            {actionError}
-          </p>
-        ) : null}
+        {actionError ? <InlineNotice tone="error">{actionError}</InlineNotice> : null}
         {isEditing ? (
           <EncounterReferralForm
             encounterId={encounterId}
