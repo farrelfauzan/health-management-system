@@ -21,6 +21,10 @@ vi.mock('#lib/api/generated/document-management/document-management', () => ({
   personalDocumentControllerReingestDocumentV1: vi.fn(),
   getPersonalDocumentControllerListDocumentsV1QueryKey: () => ['personal-documents'],
   personalDocumentControllerGetPreviewV1: vi.fn(),
+  getPersonalDocumentControllerGetDownloadUrlV1QueryKey: (id: string) => [
+    'personal-document-file',
+    id,
+  ],
   getPersonalDocumentControllerGetPreviewV1QueryKey: (id: string) => [
     'personal-document-preview',
     id,
@@ -109,21 +113,22 @@ describe('PersonalKnowledgeBasePanel', () => {
     expect(screen.queryByText('Unduh')).not.toBeInTheDocument();
   });
 
-  it('offers a preview on a Markdown document and not on a PDF', async () => {
+  it('offers a preview on Markdown and PDF documents, and not on an image', async () => {
     listDocumentsMock.mockResolvedValue({
       status: 200,
       data: {
         data: [
           buildDocument({ id: 'doc-md', title: 'Catatan dosis anak', mimeType: 'text/markdown' }),
           buildDocument(),
+          buildDocument({ id: 'doc-img', title: 'Foto ruam', mimeType: 'image/png' }),
         ],
       },
     });
 
     renderPanel();
 
-    await screen.findByText('Catatan dosis anak');
-    expect(screen.getAllByRole('button', { name: 'Pratinjau' })).toHaveLength(1);
+    await screen.findByText('Foto ruam');
+    expect(screen.getAllByRole('button', { name: 'Pratinjau' })).toHaveLength(2);
   });
 
   it('marks a READY document as answerable', async () => {

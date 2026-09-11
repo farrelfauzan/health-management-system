@@ -3,6 +3,8 @@
 import type { PersonalDocumentView } from '@hms/shared-types';
 
 import { DocumentPreviewDialog } from '#components/client/documents/document-preview-dialog';
+import { isPdfMimeType } from '#lib/documents/is-pdf-mime-type';
+import { usePersonalDocumentFileUrl } from '#lib/personal-documents/use-personal-document-file-url';
 import { usePersonalDocumentPreview } from '#lib/personal-documents/use-personal-document-preview';
 
 type PersonalDocumentPreviewDialogProps = {
@@ -14,9 +16,9 @@ type PersonalDocumentPreviewDialogProps = {
 };
 
 /**
- * A "My documents" row's preview: read through the caller's own endpoint,
- * which only ever answers for documents in their knowledge base, and only
- * while the dialog is open.
+ * A "My documents" row's preview, read only while open and only through the
+ * caller's own endpoints, which answer for nothing outside their knowledge
+ * base: a PDF through a fresh signed link, anything else as text.
  */
 export function PersonalDocumentPreviewDialog({
   open,
@@ -25,7 +27,10 @@ export function PersonalDocumentPreviewDialog({
   onDownload,
   isDownloadPending,
 }: PersonalDocumentPreviewDialogProps) {
-  const previewQuery = usePersonalDocumentPreview(document.id, open);
+  const isPdf = isPdfMimeType(document.mimeType);
+  const previewQuery = usePersonalDocumentPreview(document.id, open && !isPdf);
+  const fileQuery = usePersonalDocumentFileUrl(document.id, open && isPdf);
+  const activeQuery = isPdf ? fileQuery : previewQuery;
 
   return (
     <DocumentPreviewDialog
@@ -34,8 +39,9 @@ export function PersonalDocumentPreviewDialog({
       title={document.title}
       mimeType={document.mimeType}
       preview={previewQuery.preview}
-      isPending={previewQuery.isPending}
-      isError={previewQuery.isError}
+      fileUrl={fileQuery.fileUrl}
+      isPending={activeQuery.isPending}
+      isError={activeQuery.isError}
       onDownload={onDownload}
       isDownloadPending={isDownloadPending}
     />

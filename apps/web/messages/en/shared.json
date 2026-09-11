@@ -92,7 +92,11 @@
       "empty": "This document has no text.",
       "truncated": "Showing the first {shown} of {total} characters. Download the file to read all of it.",
       "download": "Download",
-      "close": "Close"
+      "close": "Close",
+      "pdfDescription": "Shown page by page. Links in the file are not active.",
+      "pageOf": "Page {page} of {total}",
+      "previousPage": "Previous page",
+      "nextPage": "Next page"
     }
   }
 }

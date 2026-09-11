@@ -1,12 +1,11 @@
-import { isManagedDocumentPreviewMimeType, type ClinicDocumentView } from '@hms/shared-types';
+import type { ClinicDocumentView } from '@hms/shared-types';
+
+import { canPreviewDocumentMimeType } from '#lib/documents/can-preview-document-mime-type';
 
 /**
- * Whether the corpus screen offers a preview for this row.
- *
- * Reads the same allowlist the API enforces, so the button never offers a
- * request the API would refuse with `CLINIC_DOCUMENT_NOT_PREVIEWABLE`. A PDF
- * gets no preview button and keeps its download.
+ * Whether the corpus screen offers a preview for this row: Markdown and
+ * plain text through the text preview, PDFs through the page viewer.
  */
 export function canPreviewClinicDocument(document: ClinicDocumentView): boolean {
-  return isManagedDocumentPreviewMimeType(document.mimeType);
+  return canPreviewDocumentMimeType(document.mimeType);
 }

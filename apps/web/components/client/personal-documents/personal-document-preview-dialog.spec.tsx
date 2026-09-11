@@ -5,12 +5,21 @@ import { NextIntlClientProvider } from 'next-intl';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { PersonalDocumentPreviewDialog } from './personal-document-preview-dialog';
-import { personalDocumentControllerGetPreviewV1 } from '#lib/api/generated/document-management/document-management';
+import {
+  personalDocumentControllerGetDownloadUrlV1,
+  personalDocumentControllerGetPreviewV1,
+} from '#lib/api/generated/document-management/document-management';
 import messages from '../../../messages/en/dashboard-ai.json';
 import sharedMessages from '../../../messages/en/shared.json';
 
 vi.mock('#lib/api/generated/document-management/document-management', () => ({
   personalDocumentControllerGetPreviewV1: vi.fn(),
+  personalDocumentControllerGetDownloadUrlV1: vi.fn(),
+  getPersonalDocumentControllerGetDownloadUrlV1QueryKey: (id: string) => [
+    '/api/v1/me/documents',
+    id,
+    'download',
+  ],
   getPersonalDocumentControllerGetPreviewV1QueryKey: (id: string) => [
     '/api/v1/me/documents',
     id,
@@ -18,7 +27,12 @@ vi.mock('#lib/api/generated/document-management/document-management', () => ({
   ],
 }));
 
+vi.mock('#components/client/documents/pdf-document-viewer', () => ({
+  PdfDocumentViewer: ({ url }: { url: string }) => <div>pdf viewer for {url}</div>,
+}));
+
 const previewMock = vi.mocked(personalDocumentControllerGetPreviewV1);
+const downloadUrlMock = vi.mocked(personalDocumentControllerGetDownloadUrlV1);
 
 const DOCUMENT_ID = '00000000-0000-4000-8000-000000000002';
 
@@ -102,6 +116,24 @@ describe('PersonalDocumentPreviewDialog', () => {
 
     expect(await screen.findByText('# bukan judul')).toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: 'bukan judul' })).not.toBeInTheDocument();
+  });
+
+  it('renders my PDF through the page viewer from a fresh signed link', async () => {
+    downloadUrlMock.mockResolvedValue({
+      status: 200,
+      headers: {},
+      data: {
+        data: { url: 'https://signed.example/mine.pdf', expiresAt: '2026-09-11T10:00:00.000Z' },
+      },
+    } as never);
+
+    renderDialog(buildDocument({ mimeType: 'application/pdf' }));
+
+    expect(
+      await screen.findByText('pdf viewer for https://signed.example/mine.pdf'),
+    ).toBeInTheDocument();
+    expect(downloadUrlMock).toHaveBeenCalledWith(DOCUMENT_ID, expect.anything());
+    expect(previewMock).not.toHaveBeenCalled();
   });
 
   it('fetches nothing while it is closed', () => {
