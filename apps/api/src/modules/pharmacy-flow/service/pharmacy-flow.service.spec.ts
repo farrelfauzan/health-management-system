@@ -57,6 +57,7 @@ describe('PharmacyFlowService', () => {
     findActiveDoctorById: jest.fn(),
     findActiveDoctorByOwnerUserId: jest.fn(),
     findActiveDoctorPatientAssignment: jest.fn(),
+    findEncounterForPrescription: jest.fn(),
     findPrescriptionDetailById: jest.fn(),
     createPrescription: jest.fn(),
     createDispense: jest.fn(),
@@ -191,6 +192,7 @@ describe('PharmacyFlowService', () => {
     findActiveDoctorById: jest.Mock;
     findActiveDoctorByOwnerUserId: jest.Mock;
     findActiveDoctorPatientAssignment: jest.Mock;
+    findEncounterForPrescription: jest.Mock;
     findPrescriptionDetailById: jest.Mock;
     createPrescription: jest.Mock;
     createDispense: jest.Mock;
@@ -249,6 +251,12 @@ describe('PharmacyFlowService', () => {
     });
     repositoryMock.findActiveDoctorPatientAssignment.mockResolvedValue({
       id: 'assignment-1',
+    });
+    repositoryMock.findEncounterForPrescription.mockResolvedValue({
+      id: 'encounter-1',
+      patientId,
+      doctorId,
+      status: 'IN_PROGRESS',
     });
     repositoryMock.findPrescriptionDetailById.mockResolvedValue(prescriptionRecord);
     repositoryMock.createPrescription.mockResolvedValue(prescriptionRecord);
@@ -531,12 +539,41 @@ describe('PharmacyFlowService', () => {
       );
     });
 
-    it('throws bad request for write:any scope when doctorId is missing', async () => {
+    it('throws bad request for write:any scope when neither doctorId nor encounterId is given', async () => {
       mockPermissions([{ action: 'write', resource: 'Prescription', scope: 'ANY' }]);
 
       await expect(
         service.createPrescription({ ...createPayload, doctorId: undefined }, currentUser),
       ).rejects.toBeInstanceOf(BadRequestException);
+    });
+
+    // An admin prescribing from the encounter workspace sends only the
+    // encounter; the prescription belongs to the doctor running that visit.
+    it('takes the doctor from the encounter for write:any scope when doctorId is omitted', async () => {
+      mockPermissions([{ action: 'write', resource: 'Prescription', scope: 'ANY' }]);
+
+      await service.createPrescription(
+        { ...createPayload, doctorId: undefined, encounterId: 'encounter-1' },
+        currentUser,
+      );
+
+      expect(repositoryMock.findActiveDoctorById).toHaveBeenCalledWith(doctorId);
+      expect(repositoryMock.createPrescription).toHaveBeenCalledWith(
+        expect.objectContaining({ doctorId, encounterId: 'encounter-1' }),
+      );
+    });
+
+    it('throws bad request for write:any scope when the encounter does not exist', async () => {
+      mockPermissions([{ action: 'write', resource: 'Prescription', scope: 'ANY' }]);
+      repositoryMock.findEncounterForPrescription.mockResolvedValue(null);
+
+      await expect(
+        service.createPrescription(
+          { ...createPayload, doctorId: undefined, encounterId: 'missing-encounter' },
+          currentUser,
+        ),
+      ).rejects.toBeInstanceOf(BadRequestException);
+      expect(repositoryMock.createPrescription).not.toHaveBeenCalled();
     });
 
     it('throws bad request when doctor is missing or inactive', async () => {

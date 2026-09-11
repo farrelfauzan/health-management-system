@@ -517,6 +517,7 @@ export class PharmacyFlowRepository {
       select: {
         id: true,
         patientId: true,
+        doctorId: true,
         status: true,
       },
     });
