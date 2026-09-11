@@ -959,8 +959,9 @@ model UserInvitation {
   updatedAt   DateTime  @updatedAt @map("updated_at")
 
   /// The doctor profile this invitation was raised for (P19-T15), set when it
-  /// came from the create-doctor form rather than the staff invitation screen.
-  /// Null for every ordinary staff invitation.
+  /// came from the create-doctor form — or, since P20-T01, from the doctor
+  /// directory's send-invitation action for a doctor with no account — rather
+  /// than the staff invitation screen. Null for every ordinary staff invitation.
   ///
   /// This column, not an `email` on `doctor_profiles`, is what lets an
   /// administrator enter a doctor's sign-in address at creation. No `User` row
@@ -1563,6 +1564,14 @@ model DoctorProfile {
   fullName      String    @map("full_name")
   specialtyId   String    @map("specialty_id") @db.Uuid
   phoneNumber   String?   @map("phone_number")
+  /// The account this doctor signs in with. An address is collected at
+  /// creation and owned by `User` — there is no `email` column here, by
+  /// design. Required on create since P20-T01: an existing account is attached
+  /// at once, a new address is invited (`UserInvitation.doctorProfileId`) and
+  /// this is filled when the invitation is accepted. Stays nullable because
+  /// a pending invitation has no user yet, and doctors created before P20-T01
+  /// may have no account at all; the directory shows those as `NO_ACCOUNT` and
+  /// offers to invite them.
   ownerUserId   String?   @unique @map("owner_user_id") @db.Uuid
   isActive      Boolean   @default(true) @map("is_active")
   createdAt     DateTime  @default(now()) @map("created_at")

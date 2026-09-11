@@ -248,7 +248,13 @@ export class DoctorManagementRepository {
       where: {
         id,
       },
-      select: DOCTOR_RECORD_SELECT,
+      // The specialty makes this a whole `DoctorRecord`, so a write that
+      // happens outside `updateDoctor` — the send-invitation action (P20-T01)
+      // — can re-read and answer with the same response shape.
+      select: {
+        ...DOCTOR_RECORD_SELECT,
+        specialty: SPECIALTY_SELECT,
+      },
     });
   }
 

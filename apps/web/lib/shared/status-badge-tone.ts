@@ -7,6 +7,8 @@ const TONE_BY_STATUS: Record<string, StatusTone> = {
   // A doctor who has accepted their invitation can sign in (P19-T15) — the
   // same "this is done" as the other success states, not a neutral fallback.
   accepted: 'success',
+  // ...and one with no account at all (P20-T01) needs somebody to act.
+  'no-account': 'warning',
   'out-patient': 'success',
   dispensed: 'success',
   scheduled: 'info',

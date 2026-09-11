@@ -6,7 +6,7 @@ import { useForm } from '@tanstack/react-form';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   createDoctorSchema,
-  doctorEmailFormSchema,
+  doctorEmailSchema,
   type CreateDoctorInput,
   type DoctorEducation,
   type DoctorLicense,
@@ -63,6 +63,7 @@ import { useSpecialtiesList } from '#lib/specialties/use-specialties-list';
 
 const PATIENT_PICKER_PAGE = { page: 1, limit: 100 };
 const LICENSE_DESCRIPTION_ID = 'licenseNumber-description';
+const EMAIL_DESCRIPTION_ID = 'email-description';
 
 type DoctorFormDialogProps = {
   open: boolean;
@@ -139,8 +140,8 @@ export function DoctorFormDialog({
       degrees: (doctor?.degreeValues ?? [])
         .map((value) => value.code)
         .filter((code): code is string => Boolean(code)),
-      // Create-only (P19-T15): on edit the address is shown read-only and the
-      // update payload never carries it.
+      // Create-only and required (P19-T15, P20-T01): on edit the address is
+      // shown read-only and the update payload never carries it.
       email: '',
       // Write-only, like the patient NIK: the profile carries only a mask, so
       // a blank leaves the stored value alone rather than clearing it.
@@ -152,7 +153,6 @@ export function DoctorFormDialog({
       setFormError(null);
       const trimmedTitle = value.title.trim();
       const trimmedNik = value.nik.trim();
-      const trimmedEmail = value.email.trim();
       const credentials = {
         licenses: buildLicensePayload(licenseRows),
         educations: buildEducationPayload(educationRows),
@@ -187,10 +187,7 @@ export function DoctorFormDialog({
             patientIds: value.patientIds.length > 0 ? value.patientIds : undefined,
             ...profileFields,
             ...credentials,
-            // Omitted when blank rather than sent empty: absent means "no
-            // account for this doctor", which is not the same request as an
-            // address the API would then reject as invalid.
-            ...(trimmedEmail.length > 0 ? { email: trimmedEmail } : {}),
+            email: value.email.trim(),
             nik: trimmedNik,
           });
           parseApiSuccess<DoctorProfile>(response, t('doctors.form.saveError'));
@@ -396,13 +393,28 @@ export function DoctorFormDialog({
               </form.Field>
             </div>
             <div className="grid grid-cols-2 gap-3">
-              {/* Optional on create, read-only on edit (P19-T15): entering it
-                  creates or attaches the account the doctor signs in with, in
-                  the same request. It is still not a field on the profile —
-                  changing it later is an Administration action on the account,
-                  which is what the edit-mode notice below points at. */}
+              {/* Required on create (P20-T01), read-only on edit (P19-T15):
+                  it creates or attaches the account the doctor signs in with,
+                  in the same request, and the invitation is mailed to it. It
+                  is still not a field on the profile — changing it later is an
+                  Administration action on the account, which is what the
+                  edit-mode notice below points at. The blank case gets its own
+                  message because "invalid email" does not say why a doctor
+                  cannot be saved without one. */}
               {!isEditMode ? (
-                <form.Field name="email" validators={{ onSubmit: doctorEmailFormSchema }}>
+                <form.Field
+                  name="email"
+                  validators={{
+                    onSubmit: ({ value }) => {
+                      if (value.trim().length === 0) {
+                        return t('doctors.form.emailRequired');
+                      }
+                      return doctorEmailSchema.safeParse(value).success
+                        ? undefined
+                        : t('doctors.form.emailInvalid');
+                    },
+                  }}
+                >
                   {(field) => (
                     <div className="space-y-1.5">
                       <FormLabel
@@ -418,10 +430,14 @@ export function DoctorFormDialog({
                         autoComplete="email"
                         value={field.state.value}
                         placeholder="budi.santoso@clinic.local"
+                        aria-describedby={EMAIL_DESCRIPTION_ID}
                         onChange={(event) => field.handleChange(event.target.value)}
                         onBlur={field.handleBlur}
                         aria-invalid={field.state.meta.errors.length > 0}
                       />
+                      <FieldDescription id={EMAIL_DESCRIPTION_ID}>
+                        {t('doctors.form.emailDescription')}
+                      </FieldDescription>
                       <FieldError errors={field.state.meta.errors} />
                     </div>
                   )}

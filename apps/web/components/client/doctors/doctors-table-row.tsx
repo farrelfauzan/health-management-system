@@ -24,6 +24,7 @@ type DoctorsTableRowProps = {
   onEdit: (doctor: DoctorListItem) => void;
   onManageSchedule: (doctor: DoctorListItem) => void;
   onAssignPatient: (doctor: DoctorListItem) => void;
+  onSendInvitation: (doctor: DoctorListItem) => void;
 };
 
 export function DoctorsTableRow({
@@ -33,6 +34,7 @@ export function DoctorsTableRow({
   onEdit,
   onManageSchedule,
   onAssignPatient,
+  onSendInvitation,
 }: DoctorsTableRowProps) {
   const ability = useAbility();
   const t = useTranslations('clinical');
@@ -49,6 +51,18 @@ export function DoctorsTableRow({
     { label: t('common.view'), icon: 'visibility', onSelect: () => onView(doctor.id) },
     ...(ability.can('update', 'Doctor')
       ? [{ label: t('common.edit'), icon: 'edit', onSelect: () => onEdit(doctor) }]
+      : []),
+    // P20-T01: the recovery for a doctor who predates the required email, or
+    // whose invitation lapsed. Only offered when there is nothing to resend —
+    // a pending invitation is resent from Administration.
+    ...(doctor.invitationStatus === 'NO_ACCOUNT' && ability.can('update', 'Doctor')
+      ? [
+          {
+            label: t('doctors.sendInvitation'),
+            icon: 'forward_to_inbox',
+            onSelect: () => onSendInvitation(doctor),
+          },
+        ]
       : []),
     ...(ability.can('write', 'DoctorSchedule')
       ? [
@@ -80,15 +94,13 @@ export function DoctorsTableRow({
             <p className="text-xs text-slate-500">{doctor.specialty}</p>
             {/* Under the name rather than in a column of its own (P19-T15):
                 the address only matters alongside whether the account it
-                belongs to works yet, and the two read as one fact. */}
-            {doctor.email ? (
-              <div className="mt-0.5 flex flex-wrap items-center gap-1.5">
-                <span className="text-xs text-slate-500">{doctor.email}</span>
-                {doctor.invitationStatus ? (
-                  <StatusBadge status={doctor.invitationStatus} />
-                ) : null}
-              </div>
-            ) : null}
+                belongs to works yet, and the two read as one fact. Always
+                shown since P20-T01 — a doctor with no account is badged as
+                such rather than left blank. */}
+            <div className="mt-0.5 flex flex-wrap items-center gap-1.5">
+              {doctor.email ? <span className="text-xs text-slate-500">{doctor.email}</span> : null}
+              <StatusBadge status={doctor.invitationStatus} />
+            </div>
             <DoctorSatusehatWarning nikMasked={doctor.nikMasked} />
             <DoctorExpiredLicenseWarning expiredAt={expiredLicenseAt} />
           </div>
