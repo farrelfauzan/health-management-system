@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { NextIntlClientProvider } from 'next-intl';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import type { NotificationView } from '@hms/shared-types';
 import { AbilityProvider, buildAppAbility, type AppRule } from '@hms/ui';
 
 import { NotificationsMenu } from './notifications-menu';
@@ -45,7 +46,7 @@ const FULL_RULES: AppRule[] = [
   { action: 'manage', subject: 'Notification' },
 ];
 
-const NOTIFICATION_ROW = {
+const NOTIFICATION_ROW: NotificationView = {
   id: 'notification-1',
   type: 'APPOINTMENT_APPROVED',
   titleKey: 'appointmentApproved.title',
@@ -56,14 +57,36 @@ const NOTIFICATION_ROW = {
   createdAt: '2026-08-26T09:55:00.000Z',
 };
 
-function mockResponses({ unreadCount }: { unreadCount: number }): void {
+const DOCUMENT_APPROVAL_ROW: NotificationView = {
+  id: 'notification-2',
+  type: 'DOCUMENT_APPROVAL_REQUESTED',
+  titleKey: 'documentApprovalRequested.title',
+  bodyKey: 'documentApprovalRequested.body',
+  params: {
+    documentTitle: 'SOP Sterilisasi Alat',
+    documentTypeName: 'SOP',
+    drafterEmail: 'drafter@klinik.test',
+    dueAt: '2026-08-30T09:00:00.000Z',
+  },
+  href: '/admin/documents/document-1',
+  readAt: null,
+  createdAt: '2026-08-26T09:58:00.000Z',
+};
+
+function mockResponses({
+  unreadCount,
+  rows = [NOTIFICATION_ROW],
+}: {
+  unreadCount: number;
+  rows?: readonly NotificationView[];
+}): void {
   unreadCountRequestMock.mockResolvedValue({
     status: 200,
     data: { data: { unreadCount } },
   } as never);
   listRequestMock.mockResolvedValue({
     status: 200,
-    data: { data: [NOTIFICATION_ROW], meta: { page: 1, limit: 10, total: 1 } },
+    data: { data: rows, meta: { page: 1, limit: 10, total: rows.length } },
   } as never);
   markAllReadRequestMock.mockResolvedValue({
     status: 200,
@@ -109,6 +132,20 @@ describe('NotificationsMenu', () => {
     expect(
       screen.getByText('Permintaan janji temu Anda dengan dr. Ratna Dewi, Sp.PD telah disetujui.'),
     ).toBeInTheDocument();
+  });
+
+  it('translates document approval rows instead of showing their raw keys', async () => {
+    const user = userEvent.setup();
+    mockResponses({ unreadCount: 1, rows: [DOCUMENT_APPROVAL_ROW] });
+    renderMenu(FULL_RULES);
+
+    await user.click(await screen.findByRole('button', { name: 'Buka notifikasi' }));
+
+    expect(await screen.findByText('Permintaan persetujuan dokumen')).toBeInTheDocument();
+    expect(
+      screen.getByText('drafter@klinik.test meminta persetujuan Anda atas “SOP Sterilisasi Alat”.'),
+    ).toBeInTheDocument();
+    expect(screen.queryByText('documentApprovalRequested.title')).not.toBeInTheDocument();
   });
 
   it('marks everything read when the menu opens with unread rows', async () => {

@@ -23,6 +23,12 @@ const NOTIFICATION_TYPE_ICONS: Record<string, string> = {
   // point of the row is that somebody has to act now.
   LAB_RESULT_CRITICAL: 'priority_high',
   LAB_RESULT_RELEASED: 'biotech',
+  DOCUMENT_APPROVAL_REQUESTED: 'approval',
+  DOCUMENT_APPROVAL_APPROVED: 'task_alt',
+  DOCUMENT_APPROVAL_REJECTED: 'cancel',
+  DOCUMENT_APPROVAL_SUPERSEDED: 'undo',
+  DOCUMENT_APPROVAL_DUE_SOON: 'schedule',
+  DOCUMENT_APPROVAL_OVERDUE: 'alarm',
 };
 
 /**
