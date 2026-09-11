@@ -1665,18 +1665,31 @@ SET
   "updated_at" = NOW(),
   "deleted_at" = NULL;
 
--- Synthetic development medication catalog. ON CONFLICT DO NOTHING preserves
--- clinic edits, national-code mappings, and prices on every later reseed.
+-- Synthetic development medication catalog. A reseed preserves clinic edits,
+-- national-code mappings, and prices; the one exception is below the insert.
+--
+-- KFA codes are real actual-product (93xxxxxx) codes from the KFA dictionary,
+-- one per row under the matching generic template. Not template (92xxxxxx)
+-- codes: the KFA product lookup cannot resolve a template code, and SATUSEHAT
+-- rejects a Medication whose code it cannot find (rule 10024).
 WITH seed_medications(code, kfa_code, name, form, strength, unit, category, reorder_level, unit_price) AS (
   VALUES
-    ('MED-PARA-500', '9900000000001', 'Paracetamol', 'Tablet', '500 mg', 'TABLET', 'OBAT_BEBAS', 50, 1000.00),
-    ('MED-AMOX-500', '9900000000002', 'Amoxicillin', 'Kapsul', '500 mg', 'KAPSUL', 'OBAT_KERAS', 40, 2500.00),
-    ('MED-CET-10', '9900000000003', 'Cetirizine', 'Tablet', '10 mg', 'TABLET', 'OBAT_BEBAS_TERBATAS', 30, 1500.00),
-    ('MED-ORS', '9900000000004', 'Oralit', 'Serbuk', NULL, 'SACHET', 'OBAT_BEBAS', 20, 2000.00),
-    ('MED-OMEP-20', '9900000000005', 'Omeprazole', 'Kapsul', '20 mg', 'KAPSUL', 'OBAT_KERAS', 25, 3000.00),
-    ('MED-SALB-2', '9900000000006', 'Salbutamol', 'Tablet', '2 mg', 'TABLET', 'OBAT_KERAS', 15, 1800.00),
-    ('MED-POVI-10', '9900000000007', 'Povidone Iodine', 'Larutan', '10%', 'BOTOL', 'OBAT_BEBAS', 10, 18000.00),
-    ('MED-VITC-500', '9900000000008', 'Vitamin C', 'Tablet', '500 mg', 'TABLET', 'SUPLEMEN', 25, 1200.00)
+    -- Paracetamol 500 mg Tablet (KIMIA FARMA)
+    ('MED-PARA-500', '93011120', 'Paracetamol', 'Tablet', '500 mg', 'TABLET', 'OBAT_BEBAS', 50, 1000.00),
+    -- Amoxicillin Trihydrate 500 mg Kapsul (LEOMOXYL 500)
+    ('MED-AMOX-500', '93007575', 'Amoxicillin', 'Kapsul', '500 mg', 'KAPSUL', 'OBAT_KERAS', 40, 2500.00),
+    -- Cetirizine Hydrochloride 10 mg Tablet (FIRST MEDIPHARMA)
+    ('MED-CET-10', '93013335', 'Cetirizine', 'Tablet', '10 mg', 'TABLET', 'OBAT_BEBAS_TERBATAS', 30, 1500.00),
+    -- NaCl 0,52 g / Na-citrate 0,58 g / Dextrose 2,70 g / KCl 0,30 g Serbuk Oral (KIMIA FARMA)
+    ('MED-ORS', '93011966', 'Oralit', 'Serbuk', NULL, 'SACHET', 'OBAT_BEBAS', 20, 2000.00),
+    -- Omeprazole 20 mg Kapsul Lepas Tunda (HEXPHARM) — accepted by the sandbox 2026-09-11
+    ('MED-OMEP-20', '93020847', 'Omeprazole', 'Kapsul', '20 mg', 'KAPSUL', 'OBAT_KERAS', 25, 3000.00),
+    -- Salbutamol Sulfate 2 mg Tablet (PHAPROS)
+    ('MED-SALB-2', '93020736', 'Salbutamol', 'Tablet', '2 mg', 'TABLET', 'OBAT_KERAS', 15, 1800.00),
+    -- Povidone Iodine 10% Cairan Obat Luar (30 mL, KIMIA FARMA)
+    ('MED-POVI-10', '93019196', 'Povidone Iodine', 'Larutan', '10%', 'BOTOL', 'OBAT_BEBAS', 10, 18000.00),
+    -- Ascorbic Acid 500 mg Tablet (PHAPROS)
+    ('MED-VITC-500', '93022558', 'Vitamin C', 'Tablet', '500 mg', 'TABLET', 'SUPLEMEN', 25, 1200.00)
 )
 INSERT INTO "medications" (
   "id",
@@ -1708,7 +1721,14 @@ SELECT
   NOW(),
   NULL
 FROM seed_medications
-ON CONFLICT ("code") DO NOTHING;
+-- Rows seeded before the real codes carry a 99000000000xx placeholder that
+-- SATUSEHAT rejects; a reseed swaps only those. A code a clinic set by hand
+-- never matches the pattern, so it is left alone like every other edit.
+ON CONFLICT ("code") DO UPDATE
+SET
+  "kfa_code" = EXCLUDED."kfa_code",
+  "updated_at" = NOW()
+WHERE "medications"."kfa_code" LIKE '99000000000%';
 
 -- Starter service tariffs so invoice generation works out of the box in
 -- development and demos: one consultation fee plus two common tindakan mapped
