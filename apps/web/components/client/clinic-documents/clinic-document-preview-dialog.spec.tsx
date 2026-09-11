@@ -8,6 +8,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ClinicDocumentPreviewDialog } from './clinic-document-preview-dialog';
 import { documentAdminControllerGetPreviewV1 } from '#lib/api/generated/document-management/document-management';
 import messages from '../../../messages/en/dashboard-ai.json';
+import sharedMessages from '../../../messages/en/shared.json';
 
 vi.mock('#lib/api/generated/document-management/document-management', () => ({
   documentAdminControllerGetPreviewV1: vi.fn(),
@@ -82,7 +83,11 @@ function renderDialog(
 ) {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
-    <NextIntlClientProvider locale="en" timeZone="Asia/Jakarta" messages={messages}>
+    <NextIntlClientProvider
+      locale="en"
+      timeZone="Asia/Jakarta"
+      messages={{ ...messages, ...sharedMessages }}
+    >
       <QueryClientProvider client={queryClient}>
         <ClinicDocumentPreviewDialog
           open={props.open ?? true}

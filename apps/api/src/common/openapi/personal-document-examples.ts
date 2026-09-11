@@ -63,6 +63,14 @@ export const PERSONAL_DOCUMENT_EXAMPLES = {
     url: 'https://example-bucket.s3.amazonaws.com/documents/doctor/4c1e8b90-72da-4f3a-8f21-6b90ad5e4412.pdf?X-Amz-Signature=...',
     expiresAt: '2026-08-05T09:12:00.000Z',
   },
+  preview: {
+    documentId: '4c1e8b90-72da-4f3a-8f21-6b90ad5e4412',
+    mimeType: 'text/markdown',
+    text: '# Catatan dosis anak\n\nAmoksisilin: **25–45 mg/kg/hari**, dibagi dua dosis.',
+    characterCount: 73,
+    totalCharacterCount: 73,
+    isTruncated: false,
+  },
   deletedDocument: {
     id: '7b3f2c19-5d84-4a6e-9c02-1f8ad7c35e60',
     deletedAt: '2026-08-05T10:22:03.000Z',

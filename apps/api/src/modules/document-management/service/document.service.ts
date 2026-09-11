@@ -35,14 +35,11 @@ import {
   isDocumentImageMimeType,
   CLINIC_DOCUMENT_NOT_PREVIEWABLE_ERROR_CODE,
   ClinicDocumentPreviewView,
-  MANAGED_DOCUMENT_PREVIEW_MAX_CHARACTERS,
   isManagedDocumentPreviewMimeType,
 } from '@hms/shared-types';
 
 import { CurrentUser } from '../../../common/auth/current-user.type';
-import { extractDocumentText } from '../../../common/documents/extract-document-text';
-import { sanitiseDocumentPreviewText } from '../../../common/documents/sanitise-document-preview-text';
-import { truncateDocumentPreviewText } from '../../../common/documents/truncate-document-preview-text';
+import { readDocumentPreviewText } from '../../../common/documents/read-document-preview-text';
 import { ObjectStorageService } from '../../../common/storage/object-storage.service';
 import { HeadObjectResult } from '../../../common/storage/storage.types';
 import { AuthRepository } from '../../auth/repository/auth.repository';
@@ -236,15 +233,11 @@ export class DocumentService {
       });
     }
     const storedObject = await this.objectStorageService.getObject({ key: record.storageKey });
-    const extracted = await extractDocumentText({
+    const preview = await readDocumentPreviewText({
       content: storedObject.body,
       mimeType: record.mimeType,
     });
-    const truncated = truncateDocumentPreviewText({
-      text: sanitiseDocumentPreviewText(extracted.text),
-      limit: MANAGED_DOCUMENT_PREVIEW_MAX_CHARACTERS,
-    });
-    return { documentId: record.id, mimeType: record.mimeType, ...truncated };
+    return { documentId: record.id, mimeType: record.mimeType, ...preview };
   }
 
   /**

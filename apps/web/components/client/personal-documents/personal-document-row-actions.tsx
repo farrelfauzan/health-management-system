@@ -7,6 +7,7 @@ import { TooltipProvider } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
 import { DocumentActionButton } from '#components/client/documents/document-action-button';
+import { PersonalDocumentPreviewDialog } from '#components/client/personal-documents/personal-document-preview-dialog';
 import { PersonalDocumentRenameDialog } from '#components/client/personal-documents/personal-document-rename-dialog';
 import { ConfirmDialog } from '#components/client/shared/confirm-dialog';
 import {
@@ -16,6 +17,7 @@ import {
 } from '#lib/api/generated/document-management/document-management';
 import { resolveApiErrorMessage } from '#lib/api/resolve-api-error-message';
 import { parseApiSuccess } from '#lib/api/response';
+import { canPreviewPersonalDocument } from '#lib/personal-documents/can-preview-personal-document';
 import { invalidatePersonalDocumentQueries } from '#lib/personal-documents/invalidate-personal-document-queries';
 
 type PersonalDocumentRowActionsProps = {
@@ -33,6 +35,7 @@ export function PersonalDocumentRowActions({
   const queryClient = useQueryClient();
   const [isRenameOpen, setIsRenameOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
   /**
    * Downloads are minted per request and never persisted. The URL is opened
@@ -84,10 +87,18 @@ export function PersonalDocumentRowActions({
 
   return (
     // One provider per row rather than one per button: Radix needs an ancestor
-    // provider, and four of them in a row would each carry their own delay
+    // provider, and one per button would each carry their own delay
     // timer for controls the user reads as a single group.
     <TooltipProvider>
       <div className="flex justify-end gap-1">
+        {/* Markdown and plain text only; a PDF keeps the download beside it. */}
+        {canPreviewPersonalDocument(document) ? (
+          <DocumentActionButton
+            icon="visibility"
+            label={t('preview')}
+            onClick={() => setIsPreviewOpen(true)}
+          />
+        ) : null}
         <DocumentActionButton
           icon="download"
           label={t('download')}
@@ -110,6 +121,13 @@ export function PersonalDocumentRowActions({
           label={t('delete')}
           disabled={deleteMutation.isPending}
           onClick={() => setIsDeleteOpen(true)}
+        />
+        <PersonalDocumentPreviewDialog
+          open={isPreviewOpen}
+          onOpenChange={setIsPreviewOpen}
+          document={document}
+          onDownload={() => downloadMutation.mutate()}
+          isDownloadPending={downloadMutation.isPending}
         />
         <PersonalDocumentRenameDialog
           open={isRenameOpen}

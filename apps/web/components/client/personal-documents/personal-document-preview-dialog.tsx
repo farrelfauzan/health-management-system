@@ -1,27 +1,31 @@
 'use client';
 
-import type { ClinicDocumentView } from '@hms/shared-types';
+import type { PersonalDocumentView } from '@hms/shared-types';
 
 import { DocumentPreviewDialog } from '#components/client/documents/document-preview-dialog';
-import { useClinicDocumentPreview } from '#lib/clinic-documents/use-clinic-document-preview';
+import { usePersonalDocumentPreview } from '#lib/personal-documents/use-personal-document-preview';
 
-type ClinicDocumentPreviewDialogProps = {
+type PersonalDocumentPreviewDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  document: ClinicDocumentView;
+  document: PersonalDocumentView;
   onDownload: () => void;
   isDownloadPending: boolean;
 };
 
-/** A corpus row's preview: read through the admin endpoint, and only while open. */
-export function ClinicDocumentPreviewDialog({
+/**
+ * A "My documents" row's preview: read through the caller's own endpoint,
+ * which only ever answers for documents in their knowledge base, and only
+ * while the dialog is open.
+ */
+export function PersonalDocumentPreviewDialog({
   open,
   onOpenChange,
   document,
   onDownload,
   isDownloadPending,
-}: ClinicDocumentPreviewDialogProps) {
-  const previewQuery = useClinicDocumentPreview(document.id, open);
+}: PersonalDocumentPreviewDialogProps) {
+  const previewQuery = usePersonalDocumentPreview(document.id, open);
 
   return (
     <DocumentPreviewDialog

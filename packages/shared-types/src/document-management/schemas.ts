@@ -817,3 +817,10 @@ export const CLINIC_DOCUMENT_SUBMISSION_FAILED_ERROR_CODE = 'CLINIC_DOCUMENT_SUB
  * a PDF keeps its signed download.
  */
 export const CLINIC_DOCUMENT_NOT_PREVIEWABLE_ERROR_CODE = 'CLINIC_DOCUMENT_NOT_PREVIEWABLE';
+
+/**
+ * A document in the caller's own knowledge base whose file type the preview
+ * does not show — the same allowlist as the corpus and approval previews; a
+ * PDF keeps its signed download.
+ */
+export const PERSONAL_DOCUMENT_NOT_PREVIEWABLE_ERROR_CODE = 'PERSONAL_DOCUMENT_NOT_PREVIEWABLE';

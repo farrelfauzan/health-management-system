@@ -61,6 +61,7 @@ import type {
   PersonalDocumentControllerDeleteDocumentV1200,
   PersonalDocumentControllerGetDocumentV1200,
   PersonalDocumentControllerGetDownloadUrlV1200,
+  PersonalDocumentControllerGetPreviewV1200,
   PersonalDocumentControllerListDocumentsV1200,
   PersonalDocumentControllerListDocumentsV1Params,
   PersonalDocumentControllerReingestDocumentV1202,
@@ -1878,6 +1879,98 @@ export function usePersonalDocumentControllerGetDownloadUrlV1<TData = Awaited<Re
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getPersonalDocumentControllerGetDownloadUrlV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Read one of your documents’ text, for previewing it in the app
+ */
+export const personalDocumentControllerGetPreviewV1 = (
+    id: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<PersonalDocumentControllerGetPreviewV1200>(
+      {url: `/api/v1/me/documents/${id}/preview`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getPersonalDocumentControllerGetPreviewV1QueryKey = (id: string,) => {
+    return [
+    `/api/v1/me/documents/${id}/preview`
+    ] as const;
+    }
+
+
+export const getPersonalDocumentControllerGetPreviewV1QueryOptions = <TData = Awaited<ReturnType<typeof personalDocumentControllerGetPreviewV1>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof personalDocumentControllerGetPreviewV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getPersonalDocumentControllerGetPreviewV1QueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof personalDocumentControllerGetPreviewV1>>> = ({ signal }) => personalDocumentControllerGetPreviewV1(id, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof personalDocumentControllerGetPreviewV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type PersonalDocumentControllerGetPreviewV1QueryResult = NonNullable<Awaited<ReturnType<typeof personalDocumentControllerGetPreviewV1>>>
+export type PersonalDocumentControllerGetPreviewV1QueryError = unknown
+
+
+export function usePersonalDocumentControllerGetPreviewV1<TData = Awaited<ReturnType<typeof personalDocumentControllerGetPreviewV1>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof personalDocumentControllerGetPreviewV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof personalDocumentControllerGetPreviewV1>>,
+          TError,
+          Awaited<ReturnType<typeof personalDocumentControllerGetPreviewV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePersonalDocumentControllerGetPreviewV1<TData = Awaited<ReturnType<typeof personalDocumentControllerGetPreviewV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof personalDocumentControllerGetPreviewV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof personalDocumentControllerGetPreviewV1>>,
+          TError,
+          Awaited<ReturnType<typeof personalDocumentControllerGetPreviewV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePersonalDocumentControllerGetPreviewV1<TData = Awaited<ReturnType<typeof personalDocumentControllerGetPreviewV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof personalDocumentControllerGetPreviewV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Read one of your documents’ text, for previewing it in the app
+ */
+
+export function usePersonalDocumentControllerGetPreviewV1<TData = Awaited<ReturnType<typeof personalDocumentControllerGetPreviewV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof personalDocumentControllerGetPreviewV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getPersonalDocumentControllerGetPreviewV1QueryOptions(id,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

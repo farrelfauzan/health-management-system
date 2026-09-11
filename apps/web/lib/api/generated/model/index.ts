@@ -1172,6 +1172,8 @@ export * from './personalDocumentControllerGetDocumentV1200';
 export * from './personalDocumentControllerGetDocumentV1200Data';
 export * from './personalDocumentControllerGetDownloadUrlV1200';
 export * from './personalDocumentControllerGetDownloadUrlV1200Data';
+export * from './personalDocumentControllerGetPreviewV1200';
+export * from './personalDocumentControllerGetPreviewV1200Data';
 export * from './personalDocumentControllerListDocumentsV1IngestStatus';
 export * from './personalDocumentControllerListDocumentsV1Language';
 export * from './personalDocumentControllerListDocumentsV1Params';

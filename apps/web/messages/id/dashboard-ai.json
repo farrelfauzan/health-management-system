@@ -396,6 +396,7 @@
       "error": "Tidak dapat mengubah nama dokumen ini."
     },
     "actions": {
+      "preview": "Pratinjau",
       "download": "Unduh",
       "rename": "Ubah nama",
       "reingest": "Proses ulang",
@@ -569,16 +570,6 @@
         "reingest": "Tidak dapat memasukkan dokumen ini ke antrean pemrosesan ulang.",
         "delete": "Tidak dapat memensiunkan dokumen ini."
       }
-    },
-    "preview": {
-      "markdownDescription": "Ditampilkan dari berkas Markdown. Tautan terbuka di tab baru; gambar tidak ditampilkan.",
-      "plainTextDescription": "Ditampilkan sebagai teks biasa, persis seperti yang disimpan.",
-      "loading": "Memuat dokumen…",
-      "loadError": "Dokumen ini tidak dapat dimuat. Coba lagi, atau unduh saja.",
-      "empty": "Dokumen ini tidak berisi teks.",
-      "truncated": "Menampilkan {shown} dari {total} karakter pertama. Unduh berkas untuk membaca seluruhnya.",
-      "download": "Unduh",
-      "close": "Tutup"
     },
     "approval": {
       "status": {

@@ -24,9 +24,13 @@ import {
   PersonalDocumentView,
   UpdatePersonalDocumentInput,
   isDocumentImageMimeType,
+  PERSONAL_DOCUMENT_NOT_PREVIEWABLE_ERROR_CODE,
+  PersonalDocumentPreviewView,
+  isManagedDocumentPreviewMimeType,
 } from '@hms/shared-types';
 
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { readDocumentPreviewText } from '../../../common/documents/read-document-preview-text';
 import { ObjectStorageService } from '../../../common/storage/object-storage.service';
 import { HeadObjectResult } from '../../../common/storage/storage.types';
 import { AuthRepository } from '../../auth/repository/auth.repository';
@@ -197,6 +201,29 @@ export class PersonalDocumentService {
       responseContentType: record.mimeType,
     });
     return { url: signedUrl.url, expiresAt: signedUrl.expiresAt };
+  }
+
+  /**
+   * One of the caller's own documents as text, for the in-app preview. The
+   * owner is a predicate of the lookup, exactly as for the download, so a
+   * document in somebody else's knowledge base is 404 here too. Markdown and
+   * plain text only; a PDF keeps its download.
+   */
+  async getPreview(id: string, actor: CurrentUser): Promise<PersonalDocumentPreviewView> {
+    const ownerType = await this.resolvePersonalOwnerType(actor, 'read');
+    const record = await this.requireOwnedDocument(id, ownerType, actor.sub);
+    if (!isManagedDocumentPreviewMimeType(record.mimeType)) {
+      throw new ConflictException({
+        message: 'This file type cannot be previewed in the app; download it to read it',
+        code: PERSONAL_DOCUMENT_NOT_PREVIEWABLE_ERROR_CODE,
+      });
+    }
+    const storedObject = await this.objectStorageService.getObject({ key: record.storageKey });
+    const preview = await readDocumentPreviewText({
+      content: storedObject.body,
+      mimeType: record.mimeType,
+    });
+    return { documentId: record.id, mimeType: record.mimeType, ...preview };
   }
 
   /**

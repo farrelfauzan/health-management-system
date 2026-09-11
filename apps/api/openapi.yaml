@@ -3669,6 +3669,94 @@ paths:
         - bearer: []
       summary: Mint a signed download URL for one of your documents
       tags: *a5
+  /api/v1/me/documents/{id}/preview:
+    get:
+      operationId: PersonalDocumentController_getPreview_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "The document’s text, extracted server-side, stripped of every tag
+            and capped at 20,000 characters, so you can read it without
+            downloading it. `isTruncated` says the document continues past what
+            came back, and the signed download stays the way to read all of it.
+            Markdown and plain text only: a PDF is 409
+            `PERSONAL_DOCUMENT_NOT_PREVIEWABLE` and keeps its download."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      documentId:
+                        type: string
+                      mimeType:
+                        type: string
+                      text:
+                        type: string
+                      characterCount:
+                        type: integer
+                      totalCharacterCount:
+                        type: integer
+                      isTruncated:
+                        type: boolean
+                    required:
+                      - documentId
+                      - mimeType
+                      - text
+                      - characterCount
+                      - totalCharacterCount
+                      - isTruncated
+                required:
+                  - data
+                example:
+                  data:
+                    documentId: 4c1e8b90-72da-4f3a-8f21-6b90ad5e4412
+                    mimeType: text/markdown
+                    text: |-
+                      # Catatan dosis anak
+
+                      Amoksisilin: **25–45 mg/kg/hari**, dibagi dua dosis.
+                    characterCount: 73
+                    totalCharacterCount: 73
+                    isTruncated: false
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Document not found in your knowledge base.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Document not found in your knowledge base.
+      security:
+        - bearer: []
+      summary: Read one of your documents’ text, for previewing it in the app
+      tags: *a5
   /api/v1/me/documents/{id}/ingest:
     post:
       operationId: PersonalDocumentController_reingestDocument_v1
