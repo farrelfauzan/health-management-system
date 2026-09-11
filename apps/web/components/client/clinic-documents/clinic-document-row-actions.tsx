@@ -3,14 +3,13 @@
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { ClinicDocumentView } from '@hms/shared-types';
-import { TooltipProvider } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
 import { ClinicDocumentEditDialog } from '#components/client/clinic-documents/clinic-document-edit-dialog';
 import { ClinicDocumentPreviewDialog } from '#components/client/clinic-documents/clinic-document-preview-dialog';
 import { SubmitCorpusDocumentsDialog } from '#components/client/clinic-documents/submit-corpus-documents-dialog';
-import { DocumentActionButton } from '#components/client/documents/document-action-button';
 import { ConfirmDialog } from '#components/client/shared/confirm-dialog';
+import { RowActionsMenu, type RowAction } from '#components/client/shared/row-actions-menu';
 import {
   documentAdminControllerDeleteDocumentV1,
   documentAdminControllerGetDownloadUrlV1,
@@ -29,6 +28,16 @@ type ClinicDocumentRowActionsProps = {
   onError: (message: string) => void;
 };
 
+/**
+ * A corpus row's actions, behind one "more" menu.
+ *
+ * Six icon buttons in a row — preview, download, edit, reprocess, send for
+ * review, retire — crowded the table and were hard to tell apart without
+ * hovering each one. The menu names every action in words, which is also
+ * what a screen reader reads; the trigger is named after the document so
+ * twenty rows are not twenty identical "Actions" buttons. Retire stays last
+ * and marked destructive, and still asks before it acts.
+ */
 export function ClinicDocumentRowActions({
   document,
   currentUserId,
@@ -91,86 +100,84 @@ export function ClinicDocumentRowActions({
     },
   });
 
+  const actions: RowAction[] = [
+    // Offered for the file types the preview can show.
+    ...(canPreviewClinicDocument(document)
+      ? [{ label: t('preview'), icon: 'visibility', onSelect: () => setIsPreviewOpen(true) }]
+      : []),
+    {
+      label: t('download'),
+      icon: 'download',
+      isDisabled: downloadMutation.isPending,
+      onSelect: () => downloadMutation.mutate(),
+    },
+    { label: t('edit'), icon: 'edit', onSelect: () => setIsEditOpen(true) },
+    {
+      label: t('reingest'),
+      icon: 'refresh',
+      isDisabled: reingestMutation.isPending,
+      onSelect: () => reingestMutation.mutate(),
+    },
+    // Offered while there is something to submit — no registry row, or a
+    // draft — and absent on the three states the API can only refuse.
+    ...(canSubmitClinicDocument(document.approval)
+      ? [
+          {
+            label: approval('sendForReview'),
+            icon: 'rate_review',
+            onSelect: () => setIsSubmitOpen(true),
+          },
+        ]
+      : []),
+    {
+      label: t('delete'),
+      icon: 'delete',
+      isDestructive: true,
+      isDisabled: deleteMutation.isPending,
+      onSelect: () => setIsDeleteOpen(true),
+    },
+  ];
+
   return (
-    // One provider per row rather than one per button: Radix needs an ancestor
-    // provider, and one per button would each carry their own delay
-    // timer for controls the user reads as a single group.
-    <TooltipProvider>
-      <div className="flex justify-end gap-1">
-        {/* Markdown and plain text only; a PDF keeps the download beside it. */}
-        {canPreviewClinicDocument(document) ? (
-          <DocumentActionButton
-            icon="visibility"
-            label={t('preview')}
-            onClick={() => setIsPreviewOpen(true)}
-          />
-        ) : null}
-        <DocumentActionButton
-          icon="download"
-          label={t('download')}
-          disabled={downloadMutation.isPending}
-          onClick={() => downloadMutation.mutate()}
-        />
-        <DocumentActionButton icon="edit" label={t('edit')} onClick={() => setIsEditOpen(true)} />
-        <DocumentActionButton
-          icon="refresh"
-          label={t('reingest')}
-          disabled={reingestMutation.isPending}
-          onClick={() => reingestMutation.mutate()}
-        />
-        <DocumentActionButton
-          icon="delete"
-          label={t('delete')}
-          disabled={deleteMutation.isPending}
-          onClick={() => setIsDeleteOpen(true)}
-        />
-        {/* Offered while there is something to submit — no registry row, or a
-            draft — and hidden on the three states the API can only refuse. */}
-        {canSubmitClinicDocument(document.approval) ? (
-          <DocumentActionButton
-            icon="rate_review"
-            label={approval('sendForReview')}
-            onClick={() => setIsSubmitOpen(true)}
-          />
-        ) : null}
-        <ClinicDocumentPreviewDialog
-          open={isPreviewOpen}
-          onOpenChange={setIsPreviewOpen}
-          document={document}
-          onDownload={() => downloadMutation.mutate()}
-          isDownloadPending={downloadMutation.isPending}
-        />
-        <SubmitCorpusDocumentsDialog
-          open={isSubmitOpen}
-          documentIds={[document.id]}
-          currentUserId={currentUserId}
-          onOpenChange={setIsSubmitOpen}
-          onSubmitted={onResult}
-          onFailed={onError}
-        />
-        <ClinicDocumentEditDialog
-          open={isEditOpen}
-          onOpenChange={setIsEditOpen}
-          document={document}
-          onSaved={onResult}
-          onFailed={onError}
-        />
-        {/* Retiring takes the chunks and their vectors with it, which is what
-            makes the document stop answering — on the in-app assistant and on
-            the public channel alike. Re-uploading the same file does not undo
-            it; the ingest has to run again, and the dialog says so. */}
-        <ConfirmDialog
-          open={isDeleteOpen}
-          onOpenChange={setIsDeleteOpen}
-          title={t('confirm.delete.title')}
-          description={t('confirm.delete.body', { title: document.title })}
-          confirmLabel={t('confirm.delete.confirm')}
-          cancelLabel={t('confirm.delete.cancel')}
-          isDestructive
-          isPending={deleteMutation.isPending}
-          onConfirm={() => deleteMutation.mutate()}
-        />
-      </div>
-    </TooltipProvider>
+    <div className="flex justify-end">
+      <RowActionsMenu actions={actions} triggerLabel={t('menuFor', { title: document.title })} />
+      <ClinicDocumentPreviewDialog
+        open={isPreviewOpen}
+        onOpenChange={setIsPreviewOpen}
+        document={document}
+        onDownload={() => downloadMutation.mutate()}
+        isDownloadPending={downloadMutation.isPending}
+      />
+      <SubmitCorpusDocumentsDialog
+        open={isSubmitOpen}
+        documentIds={[document.id]}
+        currentUserId={currentUserId}
+        onOpenChange={setIsSubmitOpen}
+        onSubmitted={onResult}
+        onFailed={onError}
+      />
+      <ClinicDocumentEditDialog
+        open={isEditOpen}
+        onOpenChange={setIsEditOpen}
+        document={document}
+        onSaved={onResult}
+        onFailed={onError}
+      />
+      {/* Retiring takes the chunks and their vectors with it, which is what
+          makes the document stop answering — on the in-app assistant and on
+          the public channel alike. Re-uploading the same file does not undo
+          it; the ingest has to run again, and the dialog says so. */}
+      <ConfirmDialog
+        open={isDeleteOpen}
+        onOpenChange={setIsDeleteOpen}
+        title={t('confirm.delete.title')}
+        description={t('confirm.delete.body', { title: document.title })}
+        confirmLabel={t('confirm.delete.confirm')}
+        cancelLabel={t('confirm.delete.cancel')}
+        isDestructive
+        isPending={deleteMutation.isPending}
+        onConfirm={() => deleteMutation.mutate()}
+      />
+    </div>
   );
 }

@@ -548,6 +548,7 @@
       "reapprovalWarning": "Dokumen ini sudah disetujui. Mengubah siapa yang boleh melihatnya mengembalikannya ke proses persetujuan, dan asisten berhenti dapat mengutipnya sampai disetujui kembali."
     },
     "actions": {
+      "menuFor": "Aksi untuk {title}",
       "preview": "Pratinjau",
       "download": "Unduh",
       "edit": "Ubah",
