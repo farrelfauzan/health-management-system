@@ -421,17 +421,34 @@ export class PharmacyFlowService {
       return ownDoctor.id;
     }
 
-    if (!payload.doctorId) {
-      throw new BadRequestException('doctorId is required');
+    const requestedDoctorId =
+      payload.doctorId ?? (await this.findEncounterDoctorId(payload.encounterId));
+
+    if (!requestedDoctorId) {
+      throw new BadRequestException('doctorId is required when no encounterId is given');
     }
 
-    const doctor = await this.pharmacyFlowRepository.findActiveDoctorById(payload.doctorId);
+    const doctor = await this.pharmacyFlowRepository.findActiveDoctorById(requestedDoctorId);
 
     if (!doctor) {
       throw new BadRequestException('Doctor not found or inactive');
     }
 
     return doctor.id;
+  }
+
+  /**
+   * A prescription written from inside an encounter belongs to that
+   * encounter's doctor, so an ANY-scope writer (admin, super admin) does not
+   * have to name the doctor again — the encounter already does.
+   */
+  private async findEncounterDoctorId(encounterId?: string): Promise<string | undefined> {
+    if (!encounterId) return undefined;
+    const encounter = await this.pharmacyFlowRepository.findEncounterForPrescription(encounterId);
+    if (!encounter) {
+      throw new BadRequestException('Encounter not found');
+    }
+    return encounter.doctorId;
   }
 
   /**
