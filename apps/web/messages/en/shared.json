@@ -79,6 +79,10 @@
       "required": "required",
       "requiredLegend": "Required",
       "moreAbout": "More about {field}"
+    },
+    "password": {
+      "show": "Show password",
+      "hide": "Hide password"
     }
   }
 }

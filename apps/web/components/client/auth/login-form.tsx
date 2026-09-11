@@ -15,6 +15,7 @@ import {
 import { Button, Input, Label } from '@hms/ui';
 
 import { InlineNotice } from '#components/client/shared/inline-notice';
+import { LocalizedPasswordInput } from '#components/client/shared/localized-password-input';
 import { authControllerLoginV1 } from '#lib/api/generated/auth/auth';
 import { parseApiSuccess } from '#lib/api/response';
 import { resolveLoginErrorMessage } from '#lib/auth/login-error';
@@ -171,10 +172,9 @@ export function LoginForm() {
             <Label htmlFor={field.name} className="text-xs text-slate-700">
               {t('passwordLabel')}
             </Label>
-            <Input
+            <LocalizedPasswordInput
               id={field.name}
               name={field.name}
-              type="password"
               autoComplete="current-password"
               placeholder={t('passwordPlaceholder')}
               value={field.state.value}

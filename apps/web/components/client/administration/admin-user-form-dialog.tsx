@@ -21,6 +21,7 @@ import { useTranslations } from 'next-intl';
 import { AdminUserRolePicker } from '#components/client/administration/admin-user-role-picker';
 import { FieldError } from '#components/client/shared/field-error';
 import { InlineNotice } from '#components/client/shared/inline-notice';
+import { LocalizedPasswordInput } from '#components/client/shared/localized-password-input';
 import { adminManagementControllerUpdateAdminUserV1 } from '#lib/api/generated/admin-management/admin-management';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { parseApiSuccess } from '#lib/api/response';
@@ -104,10 +105,7 @@ export function AdminUserFormDialog({ open, onOpenChange, user }: AdminUserFormD
           <form.Field name="email" validators={{ onSubmit: adminUserEmailSchema }}>
             {(field) => (
               <div className="space-y-1.5">
-                <Label
-                  htmlFor={field.name}
-                  className="font-heading text-xs text-slate-600"
-                >
+                <Label htmlFor={field.name} className="font-heading text-xs text-slate-600">
                   Email
                 </Label>
                 <Input
@@ -135,15 +133,11 @@ export function AdminUserFormDialog({ open, onOpenChange, user }: AdminUserFormD
           >
             {(field) => (
               <div className="space-y-1.5">
-                <Label
-                  htmlFor={field.name}
-                  className="font-heading text-xs text-slate-600"
-                >
+                <Label htmlFor={field.name} className="font-heading text-xs text-slate-600">
                   {t('administration.newPassword')}
                 </Label>
-                <Input
+                <LocalizedPasswordInput
                   id={field.name}
-                  type="password"
                   value={field.state.value}
                   placeholder={t('administration.passwordUnchangedPlaceholder')}
                   onChange={(event) => field.handleChange(event.target.value)}

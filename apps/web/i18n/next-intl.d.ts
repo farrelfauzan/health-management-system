@@ -16,6 +16,7 @@ type SharedMessages = {
     statuses: Record<string, string>;
     documentUpload: typeof idSharedMessages.shared.documentUpload;
     form: typeof idSharedMessages.shared.form;
+    password: typeof idSharedMessages.shared.password;
   };
 };
 

@@ -28,6 +28,7 @@ export { DateTimePicker } from '#components/date-time-picker';
 export { MonthPicker } from '#components/month-picker';
 export { TimePicker } from '#components/time-picker';
 export { Input } from '#components/input';
+export { PasswordInput } from '#components/password-input';
 export { PhoneInput } from '#components/phone-input';
 export {
   Select,
