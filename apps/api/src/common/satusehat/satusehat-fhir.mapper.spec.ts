@@ -716,6 +716,11 @@ describe('SatusehatFhirMapper', () => {
         buildCompositionInput([{ title: 'Anamnesis', narrative: 'Batuk 3 hari' }]),
       );
 
+      expect(actualComposition.identifier).toEqual({
+        system: expect.stringMatching(/\/composition\/10000004$/),
+        use: 'official',
+        value: 'e1d2c3b4-a596-4877-b8a9-c0d1e2f3a4b5',
+      });
       expect(actualComposition.title).toBe('Resume Medis Rawat Jalan');
       expect(actualComposition.type.coding[0]).toEqual({
         system: 'http://loinc.org',
@@ -860,7 +865,7 @@ describe('SatusehatFhirMapper', () => {
             valueCodeableConcept: {
               coding: [
                 {
-                  system: 'https://terminology.kemkes.go.id/CodeSystem/medication-type',
+                  system: 'http://terminology.kemkes.go.id/CodeSystem/medication-type',
                   code: 'NC',
                   display: 'Non-compound',
                 },
@@ -905,14 +910,19 @@ describe('SatusehatFhirMapper', () => {
       expect(actualRequest.dosageInstruction).toEqual([
         { sequence: 1, text: '500 mg, 3x sehari, Sesudah makan' },
       ]);
-      expect(actualRequest.dispenseRequest.quantity).toEqual({ value: 15, unit: 'TABLET' });
+      expect(actualRequest.dispenseRequest.quantity).toEqual({
+        value: 15,
+        unit: 'TAB',
+        system: 'http://terminology.hl7.org/CodeSystem/v3-orderableDrugForm',
+        code: 'TAB',
+      });
       expect(actualRequest.authoredOn).toBe('2026-07-28T02:00:00.000Z');
       expect(actualRequest.substitution).toEqual({ allowedBoolean: false });
     });
 
     it('maps a dispense item to a MedicationDispense performed by the Organization', () => {
       const actualDispense = mapper.mapDispenseItemToMedicationDispense({
-        dispenseRecordId: 'disp-1',
+        prescriptionId: 'presc-1',
         dispenseItemId: 'disp-item-1',
         medicationReference: 'urn:uuid:medication-entry',
         medicationDisplay: 'Paracetamol 500 mg Tablet',
@@ -926,9 +936,9 @@ describe('SatusehatFhirMapper', () => {
 
       expect(actualDispense.identifier).toEqual([
         {
-          system: 'http://sys-ids.kemkes.go.id/medicationdispense/10000004',
+          system: 'http://sys-ids.kemkes.go.id/prescription/10000004',
           use: 'official',
-          value: 'disp-1',
+          value: 'presc-1',
         },
         {
           system: 'http://sys-ids.kemkes.go.id/prescription-item/10000004',
@@ -961,7 +971,7 @@ describe('SatusehatFhirMapper', () => {
         quantity: 15,
       });
       const actualDispense = mapper.mapDispenseItemToMedicationDispense({
-        dispenseRecordId: 'disp-1',
+        prescriptionId: 'presc-1',
         dispenseItemId: 'disp-item-2',
         medicationReference: 'urn:uuid:medication-entry',
         medicationDisplay: 'Amoxicillin',
@@ -975,6 +985,41 @@ describe('SatusehatFhirMapper', () => {
       expect(actualRequest.dispenseRequest.quantity).toEqual({ value: 15 });
       expect(actualDispense.authorizingPrescription).toBeUndefined();
       expect(actualDispense.quantity).toEqual({ value: 15 });
+    });
+
+    it('codes a capsule quantity and drops a packaging unit that has no dose-form code', () => {
+      const actualRequest = mapper.mapPrescriptionItemToMedicationRequest({
+        prescriptionId: 'presc-1',
+        prescriptionItemId: 'presc-item-3',
+        medicationReference: 'urn:uuid:medication-entry',
+        medicationDisplay: 'Omeprazole',
+        patientIhsNumber: 'P02478375538',
+        practitionerIhsNumber: 'N10000001',
+        encounterReference: 'urn:uuid:encounter-entry',
+        dosage: '20 mg',
+        frequency: '1x sehari',
+        quantity: 20,
+        unit: 'KAPSUL',
+      });
+      const actualDispense = mapper.mapDispenseItemToMedicationDispense({
+        prescriptionId: 'presc-1',
+        dispenseItemId: 'disp-item-3',
+        medicationReference: 'urn:uuid:medication-entry',
+        medicationDisplay: 'Sirup Batuk',
+        patientIhsNumber: 'P02478375538',
+        encounterReference: 'urn:uuid:encounter-entry',
+        quantity: 1,
+        unit: 'BOTOL',
+        dispensedAt: endedAt,
+      });
+
+      expect(actualRequest.dispenseRequest.quantity).toEqual({
+        value: 20,
+        unit: 'CAP',
+        system: 'http://terminology.hl7.org/CodeSystem/v3-orderableDrugForm',
+        code: 'CAP',
+      });
+      expect(actualDispense.quantity).toEqual({ value: 1 });
     });
   });
 
@@ -1077,6 +1122,7 @@ describe('SatusehatFhirMapper', () => {
       expect(firstObservation?.encounter).toEqual({ reference: 'urn:uuid:encounter-entry' });
       expect(firstObservation?.performer).toEqual([{ reference: 'Practitioner/N10000001' }]);
       expect(firstObservation?.effectiveDateTime).toBe('2026-07-28T02:00:00.000Z');
+      expect(firstObservation?.issued).toBe('2026-07-28T02:00:00.000Z');
     });
 
     it('skips null measurements so a sparse row maps to fewer observations', () => {
@@ -1302,21 +1348,34 @@ describe('SatusehatFhirMapper', () => {
       expect(actualObservation.valueQuantity).toBeUndefined();
     });
 
-    it('sends a unitless count as the UCUM dimensionless unit rather than dropping it', () => {
+    it('sends a unitless count as its decimal text rather than dropping it', () => {
       const input = buildLabObservationInput({ valueNumeric: 5 });
       delete input.unit;
       delete input.refLow;
       delete input.refHigh;
+      delete input.refText;
 
       const actualObservation = mapper.mapLabResultToObservation(input);
 
-      expect(actualObservation.valueQuantity).toEqual({
-        value: 5,
-        unit: '1',
-        system: 'http://unitsofmeasure.org',
-        code: '1',
-      });
+      expect(actualObservation.valueString).toBe('5');
+      expect(actualObservation.valueQuantity).toBeUndefined();
       expect(actualObservation.referenceRange).toBeUndefined();
+    });
+
+    it('sends a UCUM-1 result and its range as text, since the gateway has no `1`', () => {
+      const input = buildLabObservationInput({
+        valueNumeric: 1.006,
+        unit: '1',
+        refLow: 1.005,
+        refHigh: 1.03,
+      });
+      delete input.refText;
+
+      const actualObservation = mapper.mapLabResultToObservation(input);
+
+      expect(actualObservation.valueString).toBe('1.006');
+      expect(actualObservation.valueQuantity).toBeUndefined();
+      expect(actualObservation.referenceRange?.[0]).toEqual({ text: '1.005 - 1.03' });
     });
   });
 
@@ -1331,7 +1390,7 @@ describe('SatusehatFhirMapper', () => {
       });
       expect(actualReport.identifier).toEqual([
         {
-          system: 'http://sys-ids.kemkes.go.id/diagnosticreport/10000004',
+          system: 'http://sys-ids.kemkes.go.id/diagnostic/10000004/lab',
           use: 'official',
           value: 'LAB/20260728/0042',
         },

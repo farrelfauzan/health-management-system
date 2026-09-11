@@ -4,12 +4,15 @@ import { ConfigService } from '@nestjs/config';
 import { mapSatusehatTransportError } from './map-satusehat-transport-error';
 import { SatusehatCircuitBreaker } from './satusehat-circuit-breaker';
 import { SatusehatTokenClient } from './satusehat-token.client';
+import { SatusehatOperationOutcome } from './satusehat-fhir.types';
 import { SatusehatError } from './satusehat.error';
 import { resolveSatusehatConfig } from './satusehat.config';
 import { SatusehatConfig, SatusehatHttpMethod, SatusehatRequest } from './satusehat.types';
 
 const IDEMPOTENT_METHODS: readonly SatusehatHttpMethod[] = ['GET', 'PUT', 'DELETE'];
 const RETRYABLE_ERROR_CODES: readonly string[] = ['SATUSEHAT_TIMEOUT', 'SATUSEHAT_UNAVAILABLE'];
+/** A NIK is sixteen digits; a lookup rejection can echo the one it was asked about. */
+const NIK_PATTERN = /\b\d{16}\b/g;
 
 /**
  * Authenticated HTTP client for the SATUSEHAT FHIR gateway. Owns the
@@ -158,9 +161,10 @@ export class SatusehatHttpClient {
       );
     }
     if (!response.ok) {
+      const rejectionIssues = await this.readRejectionIssues(response);
       throw new SatusehatError(
         'SATUSEHAT_REQUEST_REJECTED',
-        `SATUSEHAT rejected the request (HTTP ${response.status})`,
+        `SATUSEHAT rejected the request (HTTP ${response.status})${rejectionIssues ? `: ${rejectionIssues}` : ''}`,
         response.status,
       );
     }
@@ -176,5 +180,29 @@ export class SatusehatHttpClient {
         response.status,
       );
     }
+  }
+
+  /**
+   * The gateway's own account of a rejected payload — the OperationOutcome's
+   * issue texts, deduplicated because a bundle repeats one rule per resource —
+   * or an empty string when the body is not one. Without it an operator sees
+   * only "HTTP 400" and has nothing to act on (P18-T16).
+   *
+   * Both `details.text` and `diagnostics` are kept: which of the two carries
+   * the rule and element varies, and the other is often a generic summary.
+   */
+  private async readRejectionIssues(response: Response): Promise<string> {
+    const body: unknown = await response.json().catch(() => undefined);
+    const issues = this.isOperationOutcome(body) && Array.isArray(body.issue) ? body.issue : [];
+    const issueTexts = issues.flatMap((issue) =>
+      [issue.details?.text, issue.diagnostics].filter(
+        (text): text is string => typeof text === 'string' && text.trim() !== '',
+      ),
+    );
+    return [...new Set(issueTexts)].join('; ').replace(NIK_PATTERN, '[NIK]');
+  }
+
+  private isOperationOutcome(body: unknown): body is SatusehatOperationOutcome {
+    return typeof body === 'object' && body !== null;
   }
 }

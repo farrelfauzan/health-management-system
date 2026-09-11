@@ -23,6 +23,7 @@ import {
   SatusehatFhirCoding,
   SatusehatFhirCondition,
   SatusehatFhirDiagnosticReport,
+  SatusehatFhirCodedOrBareQuantity,
   SatusehatFhirImmunization,
   SatusehatFhirEncounter,
   SatusehatFhirMedication,
@@ -32,6 +33,7 @@ import {
   SatusehatFhirObservation,
   SatusehatFhirObservationReferenceRange,
   SatusehatFhirProcedure,
+  SatusehatFhirQuantity,
   SatusehatFhirReference,
   SatusehatFhirServiceRequest,
   SatusehatFhirSpecimen,
@@ -121,7 +123,9 @@ const LABORATORY_SERVICE_SNOMED_DISPLAY = 'Laboratory procedure';
 
 const SERVICE_REQUEST_IDENTIFIER_SYSTEM_PREFIX = 'http://sys-ids.kemkes.go.id/servicerequest';
 const SPECIMEN_IDENTIFIER_SYSTEM_PREFIX = 'http://sys-ids.kemkes.go.id/specimen';
-const DIAGNOSTIC_REPORT_IDENTIFIER_SYSTEM_PREFIX = 'http://sys-ids.kemkes.go.id/diagnosticreport';
+// Rule 10432: a lab report's identifier system is `diagnostic/{org}/lab`
+// (`/rad` for radiology) — not a `diagnosticreport` namespace.
+const DIAGNOSTIC_REPORT_IDENTIFIER_SYSTEM_PREFIX = 'http://sys-ids.kemkes.go.id/diagnostic';
 const OBSERVATION_INTERPRETATION_SYSTEM =
   'http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation';
 const DIAGNOSTIC_SERVICE_SECTION_SYSTEM =
@@ -171,6 +175,8 @@ const RESULT_FLAG_INTERPRETATION_CODES: Readonly<
 
 const LOINC_SYSTEM = 'http://loinc.org';
 const UCUM_SYSTEM = 'http://unitsofmeasure.org';
+/** UCUM's dimensionless unit — valid UCUM, but absent from the gateway's table. */
+const DIMENSIONLESS_UCUM_CODE = '1';
 const ACT_ENCOUNTER_CODE_SYSTEM = 'http://terminology.hl7.org/CodeSystem/v3-ActCode';
 const PARTICIPATION_TYPE_SYSTEM = 'http://terminology.hl7.org/CodeSystem/v3-ParticipationType';
 const CONDITION_CLINICAL_SYSTEM = 'http://terminology.hl7.org/CodeSystem/condition-clinical';
@@ -183,11 +189,25 @@ const KFA_SYSTEM = 'http://sys-ids.kemkes.go.id/kfa';
 const MEDICATION_IDENTIFIER_SYSTEM_PREFIX = 'http://sys-ids.kemkes.go.id/medication';
 const PRESCRIPTION_IDENTIFIER_SYSTEM_PREFIX = 'http://sys-ids.kemkes.go.id/prescription';
 const PRESCRIPTION_ITEM_IDENTIFIER_SYSTEM_PREFIX = 'http://sys-ids.kemkes.go.id/prescription-item';
-const MEDICATION_DISPENSE_IDENTIFIER_SYSTEM_PREFIX =
-  'http://sys-ids.kemkes.go.id/medicationdispense';
 const MEDICATION_TYPE_EXTENSION_URL =
   'https://fhir.kemkes.go.id/r4/StructureDefinition/MedicationType';
-const MEDICATION_TYPE_SYSTEM = 'https://terminology.kemkes.go.id/CodeSystem/medication-type';
+// `http`, not `https`: the published Medication page shows `https`, but the
+// gateway rejects it (rule 10031) — the validator's terminology is `http`.
+const MEDICATION_TYPE_SYSTEM = 'http://terminology.kemkes.go.id/CodeSystem/medication-type';
+const ORDERABLE_DRUG_FORM_SYSTEM = 'http://terminology.hl7.org/CodeSystem/v3-orderableDrugForm';
+/**
+ * Catalog units that are dose forms, as HL7 orderable drug form codes — the
+ * only coding SATUSEHAT accepts on a prescribed or dispensed quantity (rules
+ * 10348 and 10050). Packaging units (BOTOL, STRIP, BOX…) and mass or volume
+ * units have no dose-form code and are deliberately absent.
+ */
+const ORDERABLE_DRUG_FORM_CODES: Readonly<Record<string, string>> = {
+  TABLET: 'TAB',
+  KAPSUL: 'CAP',
+  KAPLET: 'CAPLET',
+  SUPOSITORIA: 'SUPP',
+  TETES: 'DROP',
+};
 
 type VitalSignDefinition = {
   field: SatusehatVitalSignField;
@@ -503,13 +523,14 @@ export class SatusehatFhirMapper {
     );
     return {
       resourceType: 'Composition',
-      identifier: [
-        {
-          system: `${COMPOSITION_IDENTIFIER_SYSTEM_PREFIX}/${organizationId}`,
-          use: 'official',
-          value: input.encounterId,
-        },
-      ],
+      // A single Identifier, not an array: Composition.identifier is 0..1 in
+      // R4, and the gateway's parser rejects the whole bundle as
+      // `unparseable_resource` when it receives a list.
+      identifier: {
+        system: `${COMPOSITION_IDENTIFIER_SYSTEM_PREFIX}/${organizationId}`,
+        use: 'official',
+        value: input.encounterId,
+      },
       status: 'final',
       type: {
         coding: [
@@ -838,9 +859,7 @@ export class SatusehatFhirMapper {
       ),
       ...(input.authoredOn ? { authoredOn: this.toFhirInstant(input.authoredOn) } : {}),
       dosageInstruction: [{ sequence: 1, text: this.buildDosageText(input) }],
-      dispenseRequest: {
-        quantity: { value: input.quantity, ...(input.unit ? { unit: input.unit } : {}) },
-      },
+      dispenseRequest: { quantity: this.buildDispenseQuantity(input.quantity, input.unit) },
       substitution: { allowedBoolean: false },
     };
   }
@@ -860,11 +879,14 @@ export class SatusehatFhirMapper {
     );
     return {
       resourceType: 'MedicationDispense',
+      // The prescription it fulfils, not a `medicationdispense` namespace: the
+      // published example uses one, but the gateway only accepts prescription,
+      // prescription-item, claim-number or coverage-type here (rule 10389).
       identifier: [
         {
-          system: `${MEDICATION_DISPENSE_IDENTIFIER_SYSTEM_PREFIX}/${organizationId}`,
+          system: `${PRESCRIPTION_IDENTIFIER_SYSTEM_PREFIX}/${organizationId}`,
           use: 'official',
-          value: input.dispenseRecordId,
+          value: input.prescriptionId,
         },
         {
           system: `${PRESCRIPTION_ITEM_IDENTIFIER_SYSTEM_PREFIX}/${organizationId}`,
@@ -880,7 +902,7 @@ export class SatusehatFhirMapper {
       ...(input.medicationRequestReference
         ? { authorizingPrescription: [{ reference: input.medicationRequestReference }] }
         : {}),
-      quantity: { value: input.quantity, ...(input.unit ? { unit: input.unit } : {}) },
+      quantity: this.buildDispenseQuantity(input.quantity, input.unit),
       whenHandedOver: this.toFhirInstant(input.dispensedAt),
       substitution: { wasSubstituted: false },
     };
@@ -1056,7 +1078,7 @@ export class SatusehatFhirMapper {
       resourceType: 'DiagnosticReport',
       identifier: [
         {
-          system: `${DIAGNOSTIC_REPORT_IDENTIFIER_SYSTEM_PREFIX}/${organizationId}`,
+          system: `${DIAGNOSTIC_REPORT_IDENTIFIER_SYSTEM_PREFIX}/${organizationId}/lab`,
           use: 'official',
           value: input.orderNumber,
         },
@@ -1154,18 +1176,19 @@ export class SatusehatFhirMapper {
   }
 
   /**
-   * The one value form the test produced. A numeric result without a unit is
-   * still sent as a quantity — UCUM's dimensionless unit `1` says "a count",
-   * which is true, where omitting the value entirely would lose the result.
+   * The one value form the test produced. A dimensionless number — no unit,
+   * or UCUM's `1`, as urine specific gravity is recorded — goes out as its
+   * decimal text. The gateway's UCUM table has no `1` (rules 10012, 10381,
+   * 10382) and it rejects a quantity without a UCUM code just the same, so
+   * text is the only form that carries the result unchanged.
    */
   private buildLabObservationValue(
     input: SatusehatLabObservationMapInput,
   ): Pick<SatusehatFhirObservation, 'valueQuantity' | 'valueString' | 'valueCodeableConcept'> {
     if (input.valueNumeric !== undefined) {
-      const unit = input.unit ?? '1';
-      return {
-        valueQuantity: { value: input.valueNumeric, unit, system: UCUM_SYSTEM, code: unit },
-      };
+      return this.isDimensionlessUnit(input.unit)
+        ? { valueString: String(input.valueNumeric) }
+        : { valueQuantity: this.buildLabQuantity(input.valueNumeric, input.unit) };
     }
     if (input.valueCoded !== undefined) {
       return { valueCodeableConcept: { text: input.valueCoded } };
@@ -1173,23 +1196,33 @@ export class SatusehatFhirMapper {
     return { valueString: input.valueString ?? '' };
   }
 
+  private buildLabQuantity(value: number, unit: string): SatusehatFhirQuantity {
+    return { value, unit, system: UCUM_SYSTEM, code: unit };
+  }
+
+  private isDimensionlessUnit(
+    unit: string | undefined,
+  ): unit is typeof DIMENSIONLESS_UCUM_CODE | undefined {
+    return unit === undefined || unit === DIMENSIONLESS_UCUM_CODE;
+  }
+
   /**
    * The band the value was judged against. A qualitative range is sent as text
    * alone — "negatif" has no bounds — and a result with no band at all sends
-   * none, rather than an empty one implying a range that did not apply.
+   * none, rather than an empty one implying a range that did not apply. A
+   * dimensionless band is text too, for the same reason its value is.
    */
   private buildLabReferenceRange(
     input: SatusehatLabObservationMapInput,
   ): SatusehatFhirObservationReferenceRange | null {
-    const unit = input.unit ?? '1';
+    if (this.isDimensionlessUnit(input.unit)) {
+      const text = input.refText ?? this.describeBounds(input.refLow, input.refHigh);
+      return text === undefined ? null : { text };
+    }
     const low =
-      input.refLow === undefined
-        ? undefined
-        : { value: input.refLow, unit, system: UCUM_SYSTEM, code: unit };
+      input.refLow === undefined ? undefined : this.buildLabQuantity(input.refLow, input.unit);
     const high =
-      input.refHigh === undefined
-        ? undefined
-        : { value: input.refHigh, unit, system: UCUM_SYSTEM, code: unit };
+      input.refHigh === undefined ? undefined : this.buildLabQuantity(input.refHigh, input.unit);
     if (low === undefined && high === undefined && input.refText === undefined) {
       return null;
     }
@@ -1200,11 +1233,40 @@ export class SatusehatFhirMapper {
     };
   }
 
+  /** A band as a report prints it — "1.005 - 1.03", or one side of it. */
+  private describeBounds(low?: number, high?: number): string | undefined {
+    if (low !== undefined && high !== undefined) {
+      return `${low} - ${high}`;
+    }
+    if (low !== undefined) {
+      return `>= ${low}`;
+    }
+    return high === undefined ? undefined : `<= ${high}`;
+  }
+
   private buildDosageText(input: SatusehatMedicationRequestMapInput): string {
     const parts = [input.dosage, input.frequency, input.instructions].filter(
       (part): part is string => part !== undefined && part !== null && part.trim() !== '',
     );
     return parts.join(', ');
+  }
+
+  /**
+   * A prescribed or dispensed quantity, coded as an orderable drug form when
+   * the catalog unit is a dose form. The gateway rejects an uncoded unit, so
+   * any other unit is dropped and the quantity goes out as a bare count.
+   */
+  private buildDispenseQuantity(quantity: number, unit?: string): SatusehatFhirCodedOrBareQuantity {
+    const drugFormCode: string | undefined = unit ? ORDERABLE_DRUG_FORM_CODES[unit] : undefined;
+    if (!drugFormCode) {
+      return { value: quantity };
+    }
+    return {
+      value: quantity,
+      unit: drugFormCode,
+      system: ORDERABLE_DRUG_FORM_SYSTEM,
+      code: drugFormCode,
+    };
   }
 
   private buildObservation(
@@ -1230,6 +1292,9 @@ export class SatusehatFhirMapper {
       subject: { reference: `Patient/${input.patientIhsNumber}` },
       encounter: { reference: input.encounterReference },
       effectiveDateTime: this.toFhirInstant(input.recordedAt),
+      // Required by SATUSEHAT (rule 10296). A vital sign is usable the moment
+      // it is taken, so release and measurement are the same instant.
+      issued: this.toFhirInstant(input.recordedAt),
       ...(input.practitionerIhsNumber
         ? { performer: [{ reference: `Practitioner/${input.practitionerIhsNumber}` }] }
         : {}),

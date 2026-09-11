@@ -63,7 +63,7 @@ const PERMANENT_ERROR_CODES: readonly string[] = [
   'SATUSEHAT_UNAUTHORIZED',
   'SATUSEHAT_REQUEST_REJECTED',
 ];
-const MAX_STORED_ERROR_LENGTH = 500;
+const MAX_STORED_ERROR_LENGTH = 2000;
 
 /** FHIR resource type names are upper camel case with no separators. */
 const FHIR_RESOURCE_TYPE_PATTERN = /^[A-Z][A-Za-z]+$/;
@@ -1147,7 +1147,7 @@ export class SatusehatSubmissionService {
       dispenseEntries.push({
         fullUrl: `urn:uuid:${randomUUID()}`,
         resource: this.fhirMapper.mapDispenseItemToMedicationDispense({
-          dispenseRecordId: dispenseItem.dispenseRecordId,
+          prescriptionId: dispenseItem.prescriptionId,
           dispenseItemId: dispenseItem.dispenseItemId,
           medicationReference: medicationFullUrl,
           medicationDisplay: dispenseItem.medication?.name ?? 'Racikan',
