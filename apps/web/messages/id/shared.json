@@ -65,7 +65,8 @@
       "sent": "Terkirim",
       "delivered": "Tersampaikan",
       "opened": "Dibuka",
-      "revoked": "Dicabut"
+      "revoked": "Dicabut",
+      "no_account": "BELUM ADA AKUN"
     },
     "documentUpload": {
       "errors": {

@@ -7,6 +7,7 @@ import request from 'supertest';
 import { AppModule } from '../../app.module';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { AuthRepository } from '../auth/repository/auth.repository';
+import { UserInvitationService } from '../user-invitation/service/user-invitation.service';
 import { DoctorCredentialOptionRepository } from './repository/doctor-credential-option.repository';
 import { DoctorManagementRepository } from './repository/doctor-management.repository';
 
@@ -47,6 +48,14 @@ describe('DoctorManagement integration', () => {
     findOptionByKindAndCode: jest.fn(),
     createOption: jest.fn(),
     updateOption: jest.fn(),
+  };
+
+  // The account side of every create, unconditional since P20-T01. Stubbed at
+  // the service seam because the Prisma stub has no user or invitation
+  // delegates; `doctor-invitation.integration.spec.ts` covers the real thing.
+  const userInvitationServiceMock = {
+    resolveDoctorOwnerPlan: jest.fn(),
+    inviteDoctorOwner: jest.fn(),
   };
 
   const prismaServiceMock = {
@@ -107,6 +116,8 @@ describe('DoctorManagement integration', () => {
       .useValue(doctorRepositoryMock)
       .overrideProvider(DoctorCredentialOptionRepository)
       .useValue(credentialOptionRepositoryMock)
+      .overrideProvider(UserInvitationService)
+      .useValue(userInvitationServiceMock)
       .overrideProvider(PrismaService)
       .useValue(prismaServiceMock)
       .compile();
@@ -149,6 +160,13 @@ describe('DoctorManagement integration', () => {
     doctorRepositoryMock.replaceDoctorSchedules.mockResolvedValue([]);
     doctorRepositoryMock.listEducationFieldOfStudyCodes.mockResolvedValue([]);
     credentialOptionRepositoryMock.listOptions.mockResolvedValue([]);
+    userInvitationServiceMock.resolveDoctorOwnerPlan.mockImplementation(async (email: string) => ({
+      kind: 'INVITE',
+      email,
+    }));
+    userInvitationServiceMock.inviteDoctorOwner.mockImplementation(
+      async ({ email }: { email: string }) => ({ email, expiresAt: '2099-01-01T00:00:00.000Z' }),
+    );
   });
 
   it('returns 401 when bearer token is missing', async () => {
@@ -193,6 +211,7 @@ describe('DoctorManagement integration', () => {
         fullName: 'Dr. First',
         specialtyId,
         phoneNumber: '0812345678',
+        email: 'dr.first@clinic.local',
         nik: '3173011503800002',
       });
 
@@ -221,6 +240,7 @@ describe('DoctorManagement integration', () => {
         fullName: 'Dr. First',
         specialtyId,
         phoneNumber: '0812345678',
+        email: 'dr.first@clinic.local',
         nik: '3173011503800002',
       });
 
@@ -239,10 +259,31 @@ describe('DoctorManagement integration', () => {
         fullName: 'Dr. Third',
         specialtyId,
         phoneNumber: '0812345678',
+        email: 'dr.third@clinic.local',
       });
 
     expect(response.status).toBe(400);
     expect(doctorRepositoryMock.createDoctor).not.toHaveBeenCalled();
+  });
+
+  it('rejects a doctor created without an email, since every doctor must be able to sign in', async () => {
+    const token = await buildToken('admin-user', 'admin@hms.local');
+    mockActorWithPermissions([{ action: 'create', resource: 'Doctor', scope: 'ANY' }]);
+
+    const response = await request(app.getHttpServer())
+      .post('/api/v1/v1/doctors')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        licenseNumber: 'LIC-0004',
+        fullName: 'Dr. Fourth',
+        specialtyId,
+        phoneNumber: '0812345678',
+        nik: '3173011503800002',
+      });
+
+    expect(response.status).toBe(400);
+    expect(doctorRepositoryMock.createDoctor).not.toHaveBeenCalled();
+    expect(userInvitationServiceMock.inviteDoctorOwner).not.toHaveBeenCalled();
   });
 
   it('passes the missing-NIK filter through to the repository', async () => {
@@ -309,7 +350,13 @@ describe('DoctorManagement integration', () => {
     expect(doctorRepositoryMock.replaceDoctorSchedules).toHaveBeenCalledWith({
       doctorId,
       entries: [
-        { dayOfWeek: 1, startTime: '08:00', endTime: '12:00', isAvailable: true, maxPatients: null },
+        {
+          dayOfWeek: 1,
+          startTime: '08:00',
+          endTime: '12:00',
+          isAvailable: true,
+          maxPatients: null,
+        },
       ],
     });
   });
@@ -327,9 +374,7 @@ describe('DoctorManagement integration', () => {
     });
 
     it('returns the decrypted practitioner NIK with doctor.read-identifier', async () => {
-      mockActorWithPermissions([
-        { action: 'read-identifier', resource: 'Doctor', scope: 'ANY' },
-      ]);
+      mockActorWithPermissions([{ action: 'read-identifier', resource: 'Doctor', scope: 'ANY' }]);
       doctorRepositoryMock.findDoctorIdentifiers.mockResolvedValue({
         nik: '3173011503800002',
       });

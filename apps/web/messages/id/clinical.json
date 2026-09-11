@@ -521,6 +521,14 @@
       "add": "Tambah Dokter Baru",
       "assignPatient": "Tetapkan Pasien",
       "manageSchedule": "Kelola Jadwal",
+      "sendInvitation": "Kirim Undangan",
+      "inviteAccount": {
+        "title": "Beri akses untuk dokter ini",
+        "description": "{name} belum memiliki akun, sehingga belum bisa masuk. Masukkan alamat email yang akan dipakai untuk masuk.",
+        "emailDescription": "Alamat baru akan menerima undangan untuk membuat kata sandi. Jika alamat tersebut sudah memiliki akun, akun itu langsung ditautkan ke dokter ini.",
+        "submitting": "Mengirim...",
+        "error": "Undangan gagal dikirim. Silakan coba lagi."
+      },
       "itemLabel": "dokter",
       "quickFilter": "Filter Cepat",
       "searchPlaceholder": "Nama, nomor STR, atau spesialisasi...",
@@ -650,6 +658,10 @@
         "initialPatients": "Pasien Awal (opsional)",
         "emailReadOnly": "Alamat untuk masuk melekat pada akun dokter.",
         "emailManageLink": "Kelola lewat menu Administrasi",
+        "emailDescription": "Dokter masuk dengan alamat ini, dan undangan untuk membuat kata sandi dikirim ke sini.",
+        "emailRequired": "Masukkan email dokter. Setiap dokter memerlukan akun untuk masuk, dan undangan dikirim ke alamat ini.",
+        "emailInvalid": "Masukkan alamat email yang valid, misalnya budi.santoso@clinic.local.",
+        "emailNoAccount": "Dokter ini belum memiliki akun sehingga belum bisa masuk. Gunakan Kirim Undangan di daftar dokter untuk memberi akses.",
         "createAction": "Buat Dokter"
       },
       "identity": "Identitas Tenaga Medis",

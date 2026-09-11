@@ -25,6 +25,8 @@ const EXPECTED_PATIENT_REQUIRED_FIELDS: ReadonlyArray<string> = [
 ];
 
 const EXPECTED_DOCTOR_REQUIRED_FIELDS: ReadonlyArray<string> = [
+  // Required since P20-T01: every doctor is created with a sign-in address.
+  'email',
   'fullName',
   'licenseNumber',
   'nik',

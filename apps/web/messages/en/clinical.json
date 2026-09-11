@@ -521,6 +521,14 @@
       "add": "Add New Doctor",
       "assignPatient": "Assign Patient",
       "manageSchedule": "Manage Schedule",
+      "sendInvitation": "Send Invitation",
+      "inviteAccount": {
+        "title": "Give this doctor access",
+        "description": "{name} has no account yet, so they cannot sign in. Enter the address they will sign in with.",
+        "emailDescription": "A new address receives an invitation to set a password. If the address already has an account, it is linked to this doctor instead.",
+        "submitting": "Sending...",
+        "error": "Unable to send the invitation. Please try again."
+      },
       "itemLabel": "doctors",
       "quickFilter": "Quick Filter",
       "searchPlaceholder": "Name, STR number, or specialty...",
@@ -650,6 +658,10 @@
         "initialPatients": "Initial Patients (optional)",
         "emailReadOnly": "The sign-in address belongs to the doctor's account.",
         "emailManageLink": "Manage it under Administration",
+        "emailDescription": "The doctor signs in with this address, and their invitation to set a password is sent to it.",
+        "emailRequired": "Enter the doctor's email. Every doctor needs an account to sign in, and the invitation is sent to this address.",
+        "emailInvalid": "Enter a valid email address, such as budi.santoso@clinic.local.",
+        "emailNoAccount": "This doctor has no account yet and cannot sign in. Use Send Invitation on the doctor list to give them access.",
         "createAction": "Create Doctor"
       },
       "identity": "Practitioner Identity",

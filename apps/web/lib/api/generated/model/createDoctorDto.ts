@@ -27,7 +27,7 @@ export interface CreateDoctorDto {
      */
   phoneNumber: string;
   /** @maxLength 255 */
-  email?: string;
+  email: string;
   /**
      * @minLength 1
      * @maxLength 64
@@ -51,7 +51,6 @@ export interface CreateDoctorDto {
   licenses?: CreateDoctorDtoLicensesItem[];
   /** @maxItems 20 */
   educations?: CreateDoctorDtoEducationsItem[];
-  ownerUserId?: string;
   isActive?: boolean;
   /**
      * @minItems 1

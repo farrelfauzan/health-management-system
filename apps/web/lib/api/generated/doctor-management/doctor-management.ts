@@ -26,10 +26,12 @@ import type {
   DoctorManagementControllerCreateDoctorV1201,
   DoctorManagementControllerGetDoctorByIdV1200,
   DoctorManagementControllerGetDoctorIdentifiersV1200,
+  DoctorManagementControllerInviteDoctorAccountV1201,
   DoctorManagementControllerListDoctorsV1200,
   DoctorManagementControllerListDoctorsV1Params,
   DoctorManagementControllerUpdateDoctorScheduleV1200,
   DoctorManagementControllerUpdateDoctorV1200,
+  InviteDoctorAccountDto,
   UpdateDoctorDto,
   UpdateDoctorScheduleDto
 } from '../model';
@@ -515,6 +517,107 @@ export function useDoctorManagementControllerGetDoctorIdentifiersV1<TData = Awai
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getDoctorManagementControllerGetDoctorIdentifiersV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Invite a doctor who has no account
+ */
+export const doctorManagementControllerInviteDoctorAccountV1 = (
+    id: string,
+    inviteDoctorAccountDto: InviteDoctorAccountDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<DoctorManagementControllerInviteDoctorAccountV1201>(
+      {url: `/api/v1/doctors/${id}/invitation`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: inviteDoctorAccountDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getDoctorManagementControllerInviteDoctorAccountV1QueryKey = (id: string,
+    inviteDoctorAccountDto?: InviteDoctorAccountDto,) => {
+    return [
+    'POST', `/api/v1/doctors/${id}/invitation`, inviteDoctorAccountDto
+    ] as const;
+    }
+
+
+export const getDoctorManagementControllerInviteDoctorAccountV1QueryOptions = <TData = Awaited<ReturnType<typeof doctorManagementControllerInviteDoctorAccountV1>>, TError = unknown>(id: string,
+    inviteDoctorAccountDto: InviteDoctorAccountDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof doctorManagementControllerInviteDoctorAccountV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getDoctorManagementControllerInviteDoctorAccountV1QueryKey(id,inviteDoctorAccountDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof doctorManagementControllerInviteDoctorAccountV1>>> = ({ signal }) => doctorManagementControllerInviteDoctorAccountV1(id,inviteDoctorAccountDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof doctorManagementControllerInviteDoctorAccountV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type DoctorManagementControllerInviteDoctorAccountV1QueryResult = NonNullable<Awaited<ReturnType<typeof doctorManagementControllerInviteDoctorAccountV1>>>
+export type DoctorManagementControllerInviteDoctorAccountV1QueryError = unknown
+
+
+export function useDoctorManagementControllerInviteDoctorAccountV1<TData = Awaited<ReturnType<typeof doctorManagementControllerInviteDoctorAccountV1>>, TError = unknown>(
+ id: string,
+    inviteDoctorAccountDto: InviteDoctorAccountDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof doctorManagementControllerInviteDoctorAccountV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof doctorManagementControllerInviteDoctorAccountV1>>,
+          TError,
+          Awaited<ReturnType<typeof doctorManagementControllerInviteDoctorAccountV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDoctorManagementControllerInviteDoctorAccountV1<TData = Awaited<ReturnType<typeof doctorManagementControllerInviteDoctorAccountV1>>, TError = unknown>(
+ id: string,
+    inviteDoctorAccountDto: InviteDoctorAccountDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof doctorManagementControllerInviteDoctorAccountV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof doctorManagementControllerInviteDoctorAccountV1>>,
+          TError,
+          Awaited<ReturnType<typeof doctorManagementControllerInviteDoctorAccountV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDoctorManagementControllerInviteDoctorAccountV1<TData = Awaited<ReturnType<typeof doctorManagementControllerInviteDoctorAccountV1>>, TError = unknown>(
+ id: string,
+    inviteDoctorAccountDto: InviteDoctorAccountDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof doctorManagementControllerInviteDoctorAccountV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Invite a doctor who has no account
+ */
+
+export function useDoctorManagementControllerInviteDoctorAccountV1<TData = Awaited<ReturnType<typeof doctorManagementControllerInviteDoctorAccountV1>>, TError = unknown>(
+ id: string,
+    inviteDoctorAccountDto: InviteDoctorAccountDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof doctorManagementControllerInviteDoctorAccountV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getDoctorManagementControllerInviteDoctorAccountV1QueryOptions(id,inviteDoctorAccountDto,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

@@ -24881,6 +24881,196 @@ paths:
         - bearer: []
       summary: Reveal a practitioner national identifier
       tags: *a33
+  /api/v1/doctors/{id}/invitation:
+    post:
+      operationId: DoctorManagementController_inviteDoctorAccount_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InviteDoctorAccountDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  email: budi.santoso@clinic.local
+      responses:
+        "201":
+          description: The doctor had no account and no live invitation (created before an
+            email was required, or the invitation lapsed). A new address is
+            invited and bound to this profile; an address that already has an
+            account is attached and granted DOCTOR. Refused with 409 when the
+            doctor already has an account or a pending invitation.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      licenseNumber:
+                        type: string
+                      fullName:
+                        type: string
+                      specialtyId:
+                        type: string
+                      specialty:
+                        type: string
+                      phoneNumber:
+                        type: string
+                      email:
+                        type: string
+                      title:
+                        type: string
+                      degrees:
+                        type: string
+                      titleValue:
+                        type: object
+                        properties:
+                          code:
+                            type: string
+                          label:
+                            type: string
+                          isLegacy:
+                            type: boolean
+                        required:
+                          - code
+                          - label
+                          - isLegacy
+                      degreeValues:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            code:
+                              type: string
+                            label:
+                              type: string
+                            isLegacy:
+                              type: boolean
+                          required:
+                            - code
+                            - label
+                            - isLegacy
+                      displayName:
+                        type: string
+                      invitationStatus:
+                        type: string
+                      nikMasked:
+                        type: string
+                      satusehatPractitionerId:
+                        type: string
+                      ownerUserId:
+                        type: string
+                      isActive:
+                        type: boolean
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - licenseNumber
+                      - fullName
+                      - specialtyId
+                      - specialty
+                      - phoneNumber
+                      - email
+                      - title
+                      - degrees
+                      - titleValue
+                      - degreeValues
+                      - displayName
+                      - invitationStatus
+                      - nikMasked
+                      - satusehatPractitionerId
+                      - ownerUserId
+                      - isActive
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 22222222-2222-4222-8222-222222222222
+                    licenseNumber: SIP-2026-0001
+                    fullName: Dr. Budi Santoso
+                    specialtyId: eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee
+                    specialty: Internal Medicine
+                    phoneNumber: "+628129876543"
+                    email: budi.santoso@clinic.local
+                    title: dr.
+                    degrees: Sp.PD
+                    titleValue:
+                      code: DR
+                      label: dr.
+                      isLegacy: false
+                    degreeValues:
+                      - code: SP_PD
+                        label: Sp.PD
+                        isLegacy: false
+                    displayName: dr. Budi Santoso, Sp.PD
+                    invitationStatus: ACCEPTED
+                    nikMasked: ••••••••0002
+                    satusehatPractitionerId: "10009880728"
+                    ownerUserId: 33333333-3333-4333-8333-333333333333
+                    isActive: true
+                    createdAt: 2026-07-20T08:00:00.000Z
+                    updatedAt: 2026-07-20T08:00:00.000Z
+                  message: Doctor invited
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Doctor not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Doctor not found.
+      security:
+        - bearer: []
+      summary: Invite a doctor who has no account
+      tags: *a33
   /api/v1/doctors/{id}/schedule:
     patch:
       operationId: DoctorManagementController_updateDoctorSchedule_v1
@@ -48039,9 +48229,6 @@ components:
             required:
               - institution
               - degree
-        ownerUserId:
-          type: string
-          format: uuid
         isActive:
           type: boolean
           default: true
@@ -48057,6 +48244,7 @@ components:
         - fullName
         - specialtyId
         - phoneNumber
+        - email
         - nik
     UpdateDoctorDto:
       type: object
@@ -48154,6 +48342,15 @@ components:
           nullable: true
         isActive:
           type: boolean
+    InviteDoctorAccountDto:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 255
+      required:
+        - email
     UpdateDoctorScheduleDto:
       type: object
       properties:

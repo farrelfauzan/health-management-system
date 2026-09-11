@@ -17,17 +17,18 @@ export type DoctorProfile = {
    * yet, so it is read from that invitation instead — either way there is
    * exactly one stored copy of the address, and it is the one they sign in
    * with. Absent only when the doctor has neither an account nor a live
-   * invitation.
+   * invitation — `invitationStatus` is then `NO_ACCOUNT`.
    */
   email?: string;
   /**
    * Whether the doctor can sign in yet (P19-T15). `ACCEPTED` means an account
    * is linked, whether it was created by accepting the invitation or already
    * existed and was attached. `PENDING` means an invitation is outstanding and
-   * still usable. Absent means neither — the doctor was created without an
-   * email, or the invitation lapsed or was withdrawn without being replaced.
+   * still usable. `NO_ACCOUNT` means neither — the doctor predates the rule
+   * that every create collects an address (P20-T01), or the invitation lapsed
+   * or was withdrawn without being replaced. Always present.
    */
-  invitationStatus?: DoctorInvitationStatusValue;
+  invitationStatus: DoctorInvitationStatusValue;
   /**
    * The title's *printed* form ("dr."), not the stored code — every reader
    * wanted the printed form before P19-T14 and still does. Absent when the

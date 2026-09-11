@@ -713,11 +713,15 @@ export const PHASE_THREE_EXAMPLES = {
           graduationYear: 2010,
         },
       ],
-      // No `ownerUserId` beside the email (P19-T15): the address is now how a
-      // doctor's account is created or attached, and naming both is refused
-      // unless they resolve to the same user. `ownerUserId` remains accepted
-      // on its own for callers that already hold a user id.
+      // The email is required (P20-T01) and is the only way to name the
+      // account: an unknown address is invited, a known one is attached.
+      // `ownerUserId` is no longer accepted on create.
       patientIds: [patientId],
+    },
+    // P20-T01. For a doctor with no account and no live invitation — the same
+    // invite-or-attach decision as `createRequest.email`, after the fact.
+    inviteAccountRequest: {
+      email: 'budi.santoso@clinic.local',
     },
     // No `email` here on purpose: `updateDoctorSchema` does not accept one, and
     // changing a sign-in address stays an Administration action on the account.
