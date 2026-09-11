@@ -3,8 +3,9 @@ import { readFileSync } from 'node:fs';
 import { deriveIcd10Chapter } from '@hms/shared-types';
 import { Pool } from 'pg';
 
+import { parseCsvRows } from './parse-csv-rows';
+
 const DEFAULT_DATABASE_URL = 'postgresql://postgres:postgres@localhost:5432/hms_dev?schema=public';
-const BYTE_ORDER_MARK = '﻿';
 
 type TerminologyCatalog = {
   readonly table: string;
@@ -28,68 +29,6 @@ type TerminologyImportRow = {
   displayIndonesian: string | null;
 };
 
-/**
- * Splits CSV content into rows of raw fields, honouring RFC 4180 quoting:
- * quoted fields may contain commas and newlines, and a doubled quote inside a
- * quoted field is a literal quote. Official terminology exports routinely carry
- * commas inside titles, so naive splitting silently corrupts them.
- */
-function parseCsvRows(content: string): string[][] {
-  const rows: string[][] = [];
-  let currentRow: string[] = [];
-  let field = '';
-  let isQuoted = false;
-  let index = 0;
-  while (index < content.length) {
-    const char = content[index];
-    if (isQuoted) {
-      if (char === '"' && content[index + 1] === '"') {
-        field += '"';
-        index += 2;
-        continue;
-      }
-      if (char === '"') {
-        isQuoted = false;
-        index += 1;
-        continue;
-      }
-      field += char;
-      index += 1;
-      continue;
-    }
-    if (char === '"') {
-      isQuoted = true;
-      index += 1;
-      continue;
-    }
-    if (char === ',') {
-      currentRow.push(field);
-      field = '';
-      index += 1;
-      continue;
-    }
-    if (char === '\r') {
-      index += 1;
-      continue;
-    }
-    if (char === '\n') {
-      currentRow.push(field);
-      rows.push(currentRow);
-      currentRow = [];
-      field = '';
-      index += 1;
-      continue;
-    }
-    field += char;
-    index += 1;
-  }
-  if (field.length > 0 || currentRow.length > 0) {
-    currentRow.push(field);
-    rows.push(currentRow);
-  }
-  return rows;
-}
-
 function normaliseHeader(header: string): string {
   return header.trim().toLowerCase().replace(/[^a-z]/g, '');
 }
@@ -103,8 +42,9 @@ function findColumnIndex(headers: string[], candidates: string[]): number {
  * code column and an English title column; the Indonesian title is optional.
  */
 function readTerminologyRows(filePath: string): TerminologyImportRow[] {
-  const content = readFileSync(filePath, 'utf8').replace(BYTE_ORDER_MARK, '');
-  const rows = parseCsvRows(content).filter((row) => row.some((field) => field.trim().length > 0));
+  const rows = parseCsvRows(readFileSync(filePath, 'utf8')).filter((row) =>
+    row.some((field) => field.trim().length > 0),
+  );
   if (rows.length < 2) {
     throw new Error('The file needs a header line and at least one code row.');
   }
