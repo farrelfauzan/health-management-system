@@ -37,9 +37,11 @@ export function SidebarNavItem({ item, label, isActive }: SidebarNavItemProps) {
       {badge === null ? null : (
         <SidebarMenuBadge
           aria-label={badge.label}
-          // The kit hides badges on the rail; a handoff count is the one thing
+          // The kit's top-1.5 offset assumes its own default h-8 button; this
+          // row is h-10, so center the badge on the row height instead. The
+          // kit hides badges on the rail; a handoff count is the one thing
           // worth keeping, so it shrinks into the icon's corner instead.
-          className="group-data-[collapsible=icon]:top-0 group-data-[collapsible=icon]:right-0 group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:h-4 group-data-[collapsible=icon]:min-w-4 group-data-[collapsible=icon]:px-0.5 group-data-[collapsible=icon]:text-[10px] group-data-[collapsible=icon]:bg-sidebar-primary group-data-[collapsible=icon]:text-sidebar-primary-foreground"
+          className="top-1/2 -translate-y-1/2 group-data-[collapsible=icon]:top-0 group-data-[collapsible=icon]:right-0 group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:h-4 group-data-[collapsible=icon]:min-w-4 group-data-[collapsible=icon]:translate-y-0 group-data-[collapsible=icon]:px-0.5 group-data-[collapsible=icon]:text-[10px] group-data-[collapsible=icon]:bg-sidebar-primary group-data-[collapsible=icon]:text-sidebar-primary-foreground"
         >
           <span aria-hidden="true">{badge.count}</span>
         </SidebarMenuBadge>
