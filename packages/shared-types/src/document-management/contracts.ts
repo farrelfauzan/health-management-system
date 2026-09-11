@@ -77,15 +77,15 @@ export type ClinicDocumentDownloadView = {
 };
 
 /**
- * A clinic corpus document's text, for reading it in the corpus screen
- * without a download.
+ * A stored document's text, for reading it in the app without a download —
+ * the clinic corpus and the personal knowledge base previews.
  *
  * The same shape and posture as `ManagedDocumentPreviewView`: extracted
  * server-side, stripped of every tag, capped, and honest about the cap. The
  * web renders Markdown from it with raw HTML disabled, so operator-uploaded
  * bytes never become markup in the app origin.
  */
-export type ClinicDocumentPreviewView = {
+export type DocumentPreviewView = {
   documentId: string;
   /** The stored content type the text was extracted from. */
   mimeType: string;
@@ -94,6 +94,12 @@ export type ClinicDocumentPreviewView = {
   totalCharacterCount: number;
   isTruncated: boolean;
 };
+
+/** {@link DocumentPreviewView} for a clinic corpus document. */
+export type ClinicDocumentPreviewView = DocumentPreviewView;
+
+/** {@link DocumentPreviewView} for a document in the caller's own knowledge base. */
+export type PersonalDocumentPreviewView = DocumentPreviewView;
 
 /**
  * The outcome of retiring a document. `chunksRemoved` is reported rather than

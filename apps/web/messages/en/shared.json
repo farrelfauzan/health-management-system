@@ -83,6 +83,16 @@
     "password": {
       "show": "Show password",
       "hide": "Hide password"
+    },
+    "documentPreview": {
+      "markdownDescription": "Rendered from the Markdown file. Links open in a new tab; images are not shown.",
+      "plainTextDescription": "Shown as plain text, exactly as stored.",
+      "loading": "Loading the document…",
+      "loadError": "Unable to load this document. Try again, or download it instead.",
+      "empty": "This document has no text.",
+      "truncated": "Showing the first {shown} of {total} characters. Download the file to read all of it.",
+      "download": "Download",
+      "close": "Close"
     }
   }
 }

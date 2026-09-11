@@ -19,7 +19,6 @@ import {
   MANAGED_DOCUMENT_EXPORT_MAX_ROWS,
   MANAGED_DOCUMENT_NOT_EDITABLE_ERROR_CODE,
   MANAGED_DOCUMENT_NOT_PREVIEWABLE_ERROR_CODE,
-  MANAGED_DOCUMENT_PREVIEW_MAX_CHARACTERS,
   MANAGED_DOCUMENT_TYPE_RULE_ERROR_CODE,
   ManagedDocumentAccessContext,
   ManagedDocumentDetailView,
@@ -40,9 +39,7 @@ import {
 
 import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
-import { extractDocumentText } from '../../../common/documents/extract-document-text';
-import { sanitiseDocumentPreviewText } from '../../../common/documents/sanitise-document-preview-text';
-import { truncateDocumentPreviewText } from '../../../common/documents/truncate-document-preview-text';
+import { readDocumentPreviewText } from '../../../common/documents/read-document-preview-text';
 import { sanitiseRichTextHtml } from '../../../common/html/sanitise-rich-text-html';
 import { ObjectStorageService } from '../../../common/storage/object-storage.service';
 import { AuditAction } from '../../../generated/prisma/client';
@@ -456,13 +453,9 @@ export class ManagedDocumentService {
     const record = await this.findVisibleOrThrow(id, access);
     const previewable = this.assertPreviewable(record);
     const storedObject = await this.objectStorageService.getObject({ key: previewable.storageKey });
-    const extracted = await extractDocumentText({
+    const truncated = await readDocumentPreviewText({
       content: storedObject.body,
       mimeType: previewable.mimeType,
-    });
-    const truncated = truncateDocumentPreviewText({
-      text: sanitiseDocumentPreviewText(extracted.text),
-      limit: MANAGED_DOCUMENT_PREVIEW_MAX_CHARACTERS,
     });
     return { documentId: record.id, mimeType: previewable.mimeType, ...truncated };
   }
@@ -577,7 +570,9 @@ export class ManagedDocumentService {
    */
   private async buildFilterParams(
     query: ExportManagedDocumentsQueryInput,
-  ): Promise<Omit<Parameters<ManagedDocumentRepository['listDocuments']>[0], 'access' | 'page' | 'limit'>> {
+  ): Promise<
+    Omit<Parameters<ManagedDocumentRepository['listDocuments']>[0], 'access' | 'page' | 'limit'>
+  > {
     return {
       typeId: query.typeId,
       status: query.status,

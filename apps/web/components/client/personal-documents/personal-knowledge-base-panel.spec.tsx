@@ -20,6 +20,11 @@ vi.mock('#lib/api/generated/document-management/document-management', () => ({
   personalDocumentControllerGetDownloadUrlV1: vi.fn(),
   personalDocumentControllerReingestDocumentV1: vi.fn(),
   getPersonalDocumentControllerListDocumentsV1QueryKey: () => ['personal-documents'],
+  personalDocumentControllerGetPreviewV1: vi.fn(),
+  getPersonalDocumentControllerGetPreviewV1QueryKey: (id: string) => [
+    'personal-document-preview',
+    id,
+  ],
 }));
 
 const { PersonalKnowledgeBasePanel } = await import('./personal-knowledge-base-panel');
@@ -102,6 +107,23 @@ describe('PersonalKnowledgeBasePanel', () => {
     }
     // No visible action text left to read, which is the point of the change.
     expect(screen.queryByText('Unduh')).not.toBeInTheDocument();
+  });
+
+  it('offers a preview on a Markdown document and not on a PDF', async () => {
+    listDocumentsMock.mockResolvedValue({
+      status: 200,
+      data: {
+        data: [
+          buildDocument({ id: 'doc-md', title: 'Catatan dosis anak', mimeType: 'text/markdown' }),
+          buildDocument(),
+        ],
+      },
+    });
+
+    renderPanel();
+
+    await screen.findByText('Catatan dosis anak');
+    expect(screen.getAllByRole('button', { name: 'Pratinjau' })).toHaveLength(1);
   });
 
   it('marks a READY document as answerable', async () => {
@@ -252,9 +274,7 @@ describe('PersonalKnowledgeBasePanel', () => {
     renderPanel();
     const dialog = await openDeleteDialog();
 
-    await userEvent.click(
-      within(dialog).getByRole('button', { name: deleteConfirm.cancel }),
-    );
+    await userEvent.click(within(dialog).getByRole('button', { name: deleteConfirm.cancel }));
 
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
     expect(deleteDocumentMock).not.toHaveBeenCalled();
@@ -274,14 +294,14 @@ describe('PersonalKnowledgeBasePanel', () => {
     renderPanel();
     const dialog = await openDeleteDialog();
 
-    await userEvent.click(
-      within(dialog).getByRole('button', { name: deleteConfirm.confirm }),
-    );
+    await userEvent.click(within(dialog).getByRole('button', { name: deleteConfirm.confirm }));
 
     await waitFor(() => expect(deleteDocumentMock).toHaveBeenCalledTimes(1));
     expect(deleteDocumentMock).toHaveBeenCalledWith('doc-1');
     expect(
-      await screen.findByText(getDashboardAiMessages('id').personalKnowledgeBase.actions.success.delete),
+      await screen.findByText(
+        getDashboardAiMessages('id').personalKnowledgeBase.actions.success.delete,
+      ),
     ).toBeInTheDocument();
   });
 
@@ -292,9 +312,7 @@ describe('PersonalKnowledgeBasePanel', () => {
     renderPanel();
     const dialog = await openDeleteDialog();
 
-    await userEvent.click(
-      within(dialog).getByRole('button', { name: deleteConfirm.confirm }),
-    );
+    await userEvent.click(within(dialog).getByRole('button', { name: deleteConfirm.confirm }));
 
     await waitFor(() =>
       expect(within(dialog).getByRole('button', { name: deleteConfirm.confirm })).toBeDisabled(),
