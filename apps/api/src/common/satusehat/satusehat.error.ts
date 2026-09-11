@@ -12,7 +12,9 @@ import { SatusehatErrorCode } from './satusehat.types';
  *   failures; retrying can resolve them.
  * - `SATUSEHAT_CIRCUIT_OPEN` — the breaker is shedding load.
  * - `SATUSEHAT_REQUEST_REJECTED` — the platform refused the payload; retrying
- *   the same payload cannot resolve it.
+ *   the same payload cannot resolve it. The message carries the platform's
+ *   OperationOutcome issue texts (rule numbers, element paths, rejected codes)
+ *   with any NIK masked, because they are the only actionable part.
  * - `SATUSEHAT_AMBIGUOUS_MATCH` — the master patient index returned more than
  *   one entry for one NIK (P10-T10). Permanent by nature: the platform masks
  *   NIK in its responses, so nothing in the code can pick the right record,

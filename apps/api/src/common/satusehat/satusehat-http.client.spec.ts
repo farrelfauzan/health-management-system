@@ -155,6 +155,30 @@ describe('SatusehatHttpClient', () => {
     expect(mockFetch).toHaveBeenCalledTimes(1);
   });
 
+  it('carries the OperationOutcome issues of a rejection, deduplicated and with NIKs masked', async () => {
+    const mockRejection = {
+      resourceType: 'OperationOutcome',
+      issue: [
+        { severity: 'error', details: { text: 'Element not found: Observation.issued (RuleNumber: 10296)' } },
+        { severity: 'error', details: { text: 'Element not found: Observation.issued (RuleNumber: 10296)' } },
+        {
+          severity: 'error',
+          details: { text: 'Validation failed' },
+          diagnostics: 'Patient 3171234567890123 not found',
+        },
+      ],
+    };
+    mockFetch.mockResolvedValue(buildJsonResponse(400, mockRejection));
+    const client = buildClient(buildTokenClient());
+
+    await expect(client.sendRequest({ method: 'POST', path: '', body: {} })).rejects.toMatchObject({
+      code: 'SATUSEHAT_REQUEST_REJECTED',
+      upstreamStatusCode: 400,
+      message:
+        'SATUSEHAT rejected the request (HTTP 400): Element not found: Observation.issued (RuleNumber: 10296); Validation failed; Patient [NIK] not found',
+    });
+  });
+
   it('retries an idempotent request on 5xx with backoff until attempts are exhausted', async () => {
     mockFetch.mockResolvedValue(buildJsonResponse(503));
     const client = buildClient(buildTokenClient(), { SATUSEHAT_MAX_RETRY_ATTEMPTS: '2' });

@@ -502,6 +502,16 @@ export type SatusehatFhirSimpleQuantity = {
   unit?: string;
 };
 
+/**
+ * A prescribed or dispensed amount: fully coded as an orderable drug form, or
+ * a bare number when the catalog unit has no dose-form code — never an
+ * uncoded unit. Unverified against the gateway: a bare lab quantity was
+ * rejected as "Invalid coding system", so the bare form may fail here too.
+ */
+export type SatusehatFhirCodedOrBareQuantity =
+  | SatusehatFhirQuantity
+  | { value: number; unit?: never; system?: never; code?: never };
+
 export type SatusehatFhirMedicationIngredient = {
   itemReference: SatusehatFhirReference;
   strength?: {
@@ -536,7 +546,7 @@ export type SatusehatFhirMedicationRequest = {
   requester: SatusehatFhirReference;
   authoredOn?: string;
   dosageInstruction: Array<{ sequence: number; text: string }>;
-  dispenseRequest: { quantity: SatusehatFhirSimpleQuantity };
+  dispenseRequest: { quantity: SatusehatFhirCodedOrBareQuantity };
   substitution: { allowedBoolean: boolean };
 };
 
@@ -549,7 +559,7 @@ export type SatusehatFhirMedicationDispense = {
   context: SatusehatFhirReference;
   performer: Array<{ actor: SatusehatFhirReference }>;
   authorizingPrescription?: SatusehatFhirReference[];
-  quantity: SatusehatFhirSimpleQuantity;
+  quantity: SatusehatFhirCodedOrBareQuantity;
   whenHandedOver: string;
   substitution: { wasSubstituted: boolean };
 };
@@ -568,7 +578,8 @@ export type SatusehatFhirCompositionSection = {
 
 export type SatusehatFhirComposition = {
   resourceType: 'Composition';
-  identifier: SatusehatFhirIdentifier[];
+  /** 0..1 in R4 — a single object; an array makes the bundle unparseable. */
+  identifier: SatusehatFhirIdentifier;
   status: 'final';
   type: SatusehatFhirCodeableConcept;
   category: SatusehatFhirCodeableConcept[];
@@ -680,6 +691,17 @@ export type SatusehatTransactionResponse = {
 };
 
 /**
+ * The part of a rejection body the HTTP client reads to explain it: the
+ * OperationOutcome's issue texts, each naming one broken rule and element.
+ */
+export type SatusehatOperationOutcome = {
+  readonly issue?: ReadonlyArray<{
+    readonly diagnostics?: unknown;
+    readonly details?: { readonly text?: unknown };
+  }>;
+};
+
+/**
  * One resource created by a transaction bundle, as parsed from the
  * corresponding response entry's `location`. Keyed back to the request entry's
  * `fullUrl` so callers can write the returned id onto the row that produced it
@@ -732,7 +754,7 @@ export type SatusehatMedicationRequestMapInput = {
 };
 
 export type SatusehatMedicationDispenseMapInput = {
-  dispenseRecordId: string;
+  prescriptionId: string;
   dispenseItemId: string;
   medicationReference: string;
   medicationDisplay: string;
