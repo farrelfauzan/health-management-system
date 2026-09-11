@@ -28,6 +28,8 @@ import type {
   MedicationControllerCreateMedicationV1201,
   MedicationControllerListMedicationsV1200,
   MedicationControllerListMedicationsV1Params,
+  MedicationControllerSearchKfaProductsV1200,
+  MedicationControllerSearchKfaProductsV1Params,
   MedicationControllerUpdateMedicationV1200,
   PrescriptionControllerCreatePrescriptionV1201,
   PrescriptionControllerListPrescriptionsV1200,
@@ -232,6 +234,99 @@ export function useMedicationControllerCreateMedicationV1<TData = Awaited<Return
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getMedicationControllerCreateMedicationV1QueryOptions(createMedicationDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Search the KFA product dictionary
+ */
+export const medicationControllerSearchKfaProductsV1 = (
+    params: MedicationControllerSearchKfaProductsV1Params,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<MedicationControllerSearchKfaProductsV1200>(
+      {url: `/api/v1/medications/kfa-products`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+
+
+
+
+export const getMedicationControllerSearchKfaProductsV1QueryKey = (params?: MedicationControllerSearchKfaProductsV1Params,) => {
+    return [
+    `/api/v1/medications/kfa-products`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getMedicationControllerSearchKfaProductsV1QueryOptions = <TData = Awaited<ReturnType<typeof medicationControllerSearchKfaProductsV1>>, TError = unknown>(params: MedicationControllerSearchKfaProductsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof medicationControllerSearchKfaProductsV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getMedicationControllerSearchKfaProductsV1QueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof medicationControllerSearchKfaProductsV1>>> = ({ signal }) => medicationControllerSearchKfaProductsV1(params, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof medicationControllerSearchKfaProductsV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type MedicationControllerSearchKfaProductsV1QueryResult = NonNullable<Awaited<ReturnType<typeof medicationControllerSearchKfaProductsV1>>>
+export type MedicationControllerSearchKfaProductsV1QueryError = unknown
+
+
+export function useMedicationControllerSearchKfaProductsV1<TData = Awaited<ReturnType<typeof medicationControllerSearchKfaProductsV1>>, TError = unknown>(
+ params: MedicationControllerSearchKfaProductsV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof medicationControllerSearchKfaProductsV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof medicationControllerSearchKfaProductsV1>>,
+          TError,
+          Awaited<ReturnType<typeof medicationControllerSearchKfaProductsV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useMedicationControllerSearchKfaProductsV1<TData = Awaited<ReturnType<typeof medicationControllerSearchKfaProductsV1>>, TError = unknown>(
+ params: MedicationControllerSearchKfaProductsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof medicationControllerSearchKfaProductsV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof medicationControllerSearchKfaProductsV1>>,
+          TError,
+          Awaited<ReturnType<typeof medicationControllerSearchKfaProductsV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useMedicationControllerSearchKfaProductsV1<TData = Awaited<ReturnType<typeof medicationControllerSearchKfaProductsV1>>, TError = unknown>(
+ params: MedicationControllerSearchKfaProductsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof medicationControllerSearchKfaProductsV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Search the KFA product dictionary
+ */
+
+export function useMedicationControllerSearchKfaProductsV1<TData = Awaited<ReturnType<typeof medicationControllerSearchKfaProductsV1>>, TError = unknown>(
+ params: MedicationControllerSearchKfaProductsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof medicationControllerSearchKfaProductsV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getMedicationControllerSearchKfaProductsV1QueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

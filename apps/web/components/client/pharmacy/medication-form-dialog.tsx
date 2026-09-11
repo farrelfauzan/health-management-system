@@ -27,6 +27,7 @@ import {
 } from '@hms/ui';
 import { useLocale, useTranslations } from 'next-intl';
 
+import { CodeSearchPicker } from '#components/client/encounters/code-search-picker';
 import { FieldDescription } from '#components/client/shared/field-description';
 import { FormLabel } from '#components/client/shared/form-label';
 import { InlineNotice } from '#components/client/shared/inline-notice';
@@ -40,7 +41,9 @@ import type { CreateMedicationDto } from '#lib/api/generated/model/createMedicat
 import type { UpdateMedicationDto } from '#lib/api/generated/model/updateMedicationDto';
 import { parseApiSuccess } from '#lib/api/response';
 import { resolveApiErrorMessage } from '#lib/api/resolve-api-error-message';
+import type { CodeSearchOption } from '#lib/encounters/code-search-option';
 import { invalidatePharmacyQueries } from '#lib/pharmacy/invalidate-pharmacy-queries';
+import { useKfaSearch } from '#lib/pharmacy/use-kfa-search';
 import { formatStatusLabel } from '#lib/shared/status-label';
 
 type MedicationFormDialogProps = {
@@ -61,6 +64,9 @@ export function MedicationFormDialog({
   const queryClient = useQueryClient();
   const [code, setCode] = useState(medication?.code ?? '');
   const [kfaCode, setKfaCode] = useState(medication?.kfaCode ?? '');
+  const [kfaSearch, setKfaSearch] = useState('');
+  const [selectedKfaProduct, setSelectedKfaProduct] = useState<CodeSearchOption | null>(null);
+  const kfaQuery = useKfaSearch(kfaSearch);
   const [name, setName] = useState(medication?.name ?? '');
   const [form, setForm] = useState(medication?.form ?? '');
   const [strength, setStrength] = useState(medication?.strength ?? '');
@@ -139,11 +145,38 @@ export function MedicationFormDialog({
                 {t('codeDescription')}
               </FieldDescription>
             </div>
-            <div className="space-y-1.5">
+            <div className="space-y-1.5 sm:col-span-2">
               <div className="flex items-center gap-1.5">
                 <FormLabel htmlFor="medication-kfa-code">{t('kfaCode')}</FormLabel>
                 <LabelInfoTooltip field={t('kfaCode')}>{t('kfaCodeTooltip')}</LabelInfoTooltip>
               </div>
+              <CodeSearchPicker
+                id="medication-kfa-search"
+                label={t('kfaSearchLabel')}
+                placeholder={t('kfaSearchPlaceholder')}
+                search={kfaSearch}
+                codes={kfaQuery.products}
+                isPending={kfaQuery.isPending}
+                isEnabled={kfaQuery.isEnabled}
+                selected={selectedKfaProduct}
+                onSearchChange={setKfaSearch}
+                onSelect={(option) => {
+                  setSelectedKfaProduct(option);
+                  if (option) {
+                    setKfaCode(option.code);
+                  }
+                }}
+              />
+              {/* The lookup is a live SATUSEHAT call, so it can be down while the
+                  rest of the form works. Saying so beats an empty result list,
+                  and the code stays typeable by hand underneath. */}
+              {kfaQuery.isError ? (
+                <p className="text-xs text-amber-700">{t('kfaSearchUnavailable')}</p>
+              ) : (
+                <FieldDescription id="medication-kfa-search-description">
+                  {t('kfaSearchHint')}
+                </FieldDescription>
+              )}
               <Input
                 id="medication-kfa-code"
                 inputMode="numeric"

@@ -2,6 +2,8 @@ export type SatusehatConfig = {
   readonly isConfigured: boolean;
   readonly fhirBaseUrl: string;
   readonly authBaseUrl: string;
+  /** KFA dictionary service — product lookups, not FHIR. */
+  readonly kfaBaseUrl: string;
   readonly organizationId?: string;
   readonly clientId?: string;
   readonly clientSecret?: string;
@@ -18,6 +20,37 @@ export type SatusehatConfig = {
   readonly submissionRetryBaseDelayMs: number;
   /** Lease held on a claimed outbox row, keeping other workers off it. */
   readonly submissionLeaseMs: number;
+};
+
+/**
+ * One KFA product, reduced to what a clinic chooses between. Infrastructure
+ * shape: the adapter maps it to the module contract before it leaves here.
+ */
+export type SatusehatKfaProduct = {
+  readonly kfaCode: string;
+  readonly name: string;
+  readonly dosageForm: string | null;
+  readonly manufacturer: string | null;
+  readonly packagingUnit: string | null;
+  readonly isActive: boolean;
+};
+
+/**
+ * The KFA search body, typed as loosely as the service actually answers:
+ * `items` arrives as a bare array on some deployments and as `{ data: [...] }`
+ * on others, and every field is checked before use.
+ */
+export type SatusehatKfaSearchResponse = {
+  readonly items?: SatusehatKfaResponseItem[] | { readonly data?: SatusehatKfaResponseItem[] };
+};
+
+export type SatusehatKfaResponseItem = {
+  readonly kfa_code?: unknown;
+  readonly name?: unknown;
+  readonly active?: unknown;
+  readonly manufacturer?: unknown;
+  readonly dosage_form?: { readonly name?: unknown };
+  readonly uom?: { readonly name?: unknown };
 };
 
 export type SatusehatErrorCode =

@@ -4,6 +4,7 @@ import { SatusehatConfig } from './satusehat.types';
 
 const DEFAULT_FHIR_BASE_URL = 'https://api-satusehat-stg.dto.kemkes.go.id/fhir-r4/v1';
 const DEFAULT_AUTH_BASE_URL = 'https://api-satusehat-stg.dto.kemkes.go.id/oauth2/v1';
+const DEFAULT_KFA_BASE_URL = 'https://api-satusehat-stg.dto.kemkes.go.id/kfa-v2';
 const DEFAULT_REQUEST_TIMEOUT_MS = 30_000;
 const DEFAULT_MAX_RETRY_ATTEMPTS = 2;
 const DEFAULT_RETRY_BASE_DELAY_MS = 250;
@@ -108,6 +109,7 @@ export function resolveSatusehatConfig(configService: ConfigService): SatusehatC
     isConfigured: credentials.clientId !== undefined,
     fhirBaseUrl: readBaseUrl(configService, 'SATUSEHAT_FHIR_BASE_URL', DEFAULT_FHIR_BASE_URL),
     authBaseUrl: readBaseUrl(configService, 'SATUSEHAT_AUTH_BASE_URL', DEFAULT_AUTH_BASE_URL),
+    kfaBaseUrl: readBaseUrl(configService, 'SATUSEHAT_KFA_BASE_URL', DEFAULT_KFA_BASE_URL),
     organizationId: credentials.organizationId,
     clientId: credentials.clientId,
     clientSecret: credentials.clientSecret,
