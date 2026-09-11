@@ -35,7 +35,10 @@ import { CurrentUser } from '../../../common/auth/current-user.type';
 import { AuditAction } from '../../../generated/prisma/client';
 import { DocumentApprovalRepository } from '../repository/document-approval.repository';
 import { ManagedDocumentRepository } from '../repository/managed-document.repository';
-import { DocumentApprovalNotificationService } from './document-approval-notification.service';
+import {
+  DocumentApprovalAnnouncement,
+  DocumentApprovalNotificationService,
+} from './document-approval-notification.service';
 import { DocumentIssueBehaviorService } from './document-issue-behavior.service';
 import { DocumentTypeService } from './document-type.service';
 import { ManagedDocumentAccessService } from './managed-document-access.service';
@@ -87,11 +90,16 @@ export class DocumentApprovalService {
   /**
    * Opens a round (FR-E5-09/10). The panel and the content are frozen here;
    * everything after this reads the snapshot, not the row.
+   *
+   * A caller submitting many documents in one action passes
+   * `deferredAnnouncements` and sends them itself with {@link announceBatch},
+   * so each approver gets one mail for the batch instead of one per document.
    */
   async submitForApproval(
     documentId: string,
     input: SubmitDocumentForApprovalInput,
     actor: CurrentUser,
+    options: { deferredAnnouncements?: DocumentApprovalAnnouncement[] } = {},
   ): Promise<ManagedDocumentDetailView> {
     const document = await this.findReadableOrThrow(documentId, actor);
     assertSubmittable(document);
@@ -109,12 +117,13 @@ export class DocumentApprovalService {
       status: 'PENDING_APPROVAL',
     });
     await this.recordSubmission(document, round, actor);
-    await this.notificationService.announceSubmitted({
+    const announcement = this.notificationService.buildSubmittedAnnouncement({
       round,
       documentTitle: document.title,
       documentTypeName: document.type.name,
       drafterEmail: document.draftedBy.email,
     });
+    await this.deliverAnnouncement(options.deferredAnnouncements, announcement);
     return this.buildDetail(documentId, actor);
   }
 
@@ -226,15 +235,20 @@ export class DocumentApprovalService {
    *
    * Sequential rather than parallel, and each failure is reported rather than
    * thrown. One ineligible round fails alone; the rest of the batch stands.
+   *
+   * Mail is held until the batch ends and sent once per person, so a drafter
+   * whose twenty-eight documents were approved gets one message saying so.
    */
   async bulkApprove(
     input: BulkApproveDocumentsInput,
     actor: CurrentUser,
   ): Promise<DocumentBulkApprovalView> {
     const items: DocumentBulkApprovalItemView[] = [];
+    const deferredAnnouncements: DocumentApprovalAnnouncement[] = [];
     for (const requestId of input.requestIds) {
-      items.push(await this.tryApprove(requestId, actor));
+      items.push(await this.tryApprove(requestId, actor, deferredAnnouncements));
     }
+    await this.announceBatch(deferredAnnouncements);
     return {
       approvedCount: items.filter((item) => item.isApproved).length,
       failedCount: items.filter((item) => !item.isApproved).length,
@@ -242,12 +256,28 @@ export class DocumentApprovalService {
     };
   }
 
+  /**
+   * Sends what a batch held back (see {@link submitForApproval}), one mail per
+   * person. Best-effort like every announcement: the rounds and decisions it
+   * describes have already committed.
+   */
+  async announceBatch(announcements: readonly DocumentApprovalAnnouncement[]): Promise<void> {
+    await this.notificationService.announceBatch(announcements);
+  }
+
   private async tryApprove(
     requestId: string,
     actor: CurrentUser,
+    deferredAnnouncements: DocumentApprovalAnnouncement[],
   ): Promise<DocumentBulkApprovalItemView> {
     try {
-      await this.approve(requestId, actor);
+      await this.decide({
+        requestId,
+        actor,
+        isApproved: true,
+        reason: null,
+        deferredAnnouncements,
+      });
       return { requestId, isApproved: true, error: null };
     } catch (err: unknown) {
       return { requestId, isApproved: false, error: toBulkApprovalError(err) };
@@ -270,11 +300,7 @@ export class DocumentApprovalService {
     });
     return {
       items: page.items.map((item) => ({
-        round: toDocumentApprovalRoundView(
-          item.round,
-          item.document.type.requiredApprovals,
-          now,
-        ),
+        round: toDocumentApprovalRoundView(item.round, item.document.type.requiredApprovals, now),
         document: {
           id: item.document.id,
           title: item.document.title,
@@ -352,6 +378,7 @@ export class DocumentApprovalService {
     actor: CurrentUser;
     isApproved: boolean;
     reason: string | null;
+    deferredAnnouncements?: DocumentApprovalAnnouncement[];
   }): Promise<ManagedDocumentDetailView> {
     const round = await this.findOpenRoundOrThrow(params.requestId);
     const document = await this.findReadableOrThrow(round.documentId, params.actor);
@@ -411,11 +438,12 @@ export class DocumentApprovalService {
     isApproved: boolean;
     isResolved: boolean;
     reason: string | null;
+    deferredAnnouncements?: DocumentApprovalAnnouncement[];
   }): Promise<void> {
     if (!params.isResolved) {
       return;
     }
-    await this.notificationService.announce({
+    await this.deliverAnnouncement(params.deferredAnnouncements, {
       kind: params.isApproved ? 'APPROVED' : 'REJECTED',
       documentId: params.document.id,
       documentTitle: params.document.title,
@@ -423,10 +451,20 @@ export class DocumentApprovalService {
       drafterEmail: params.document.draftedBy.email,
       dueAt: params.round.dueAt,
       reason: params.reason,
-      recipients: [
-        { userId: params.round.submittedBy.id, email: params.round.submittedBy.email },
-      ],
+      recipients: [{ userId: params.round.submittedBy.id, email: params.round.submittedBy.email }],
     });
+  }
+
+  /** Sends now, or holds for the caller's batch when it is collecting one. */
+  private async deliverAnnouncement(
+    deferredAnnouncements: DocumentApprovalAnnouncement[] | undefined,
+    announcement: DocumentApprovalAnnouncement,
+  ): Promise<void> {
+    if (deferredAnnouncements !== undefined) {
+      deferredAnnouncements.push(announcement);
+      return;
+    }
+    await this.notificationService.announce(announcement);
   }
 
   private async recordSubmission(
@@ -691,7 +729,6 @@ function toIssueContent(
     storageSizeBytes: payload.storageSizeBytes ?? document.storageSizeBytes,
   };
 }
-
 
 /**
  * The refusal, flattened for one line of a batch result.

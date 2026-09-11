@@ -23,6 +23,7 @@ describe('ClinicCorpusApprovalService', () => {
     findOpenRounds: jest.fn(),
     listRounds: jest.fn(),
     submitForApproval: jest.fn(),
+    announceBatch: jest.fn(),
   };
 
   const service = new ClinicCorpusApprovalService(
@@ -175,6 +176,17 @@ describe('ClinicCorpusApprovalService', () => {
     });
   });
 
+  describe('announceSubmissions', () => {
+    it("hands a bulk submit's held mail to the approval service in one call", async () => {
+      const inputBatch: Parameters<typeof service.announceSubmissions>[0] = [];
+
+      await service.announceSubmissions(inputBatch);
+
+      expect(approvalServiceMock.announceBatch).toHaveBeenCalledTimes(1);
+      expect(approvalServiceMock.announceBatch).toHaveBeenCalledWith(inputBatch);
+    });
+  });
+
   describe('send for review (R-19)', () => {
     it('registers a document even while the policy is off — the admin has already decided', async () => {
       documentTypeServiceMock.findTypeByCode.mockResolvedValue({
@@ -216,6 +228,7 @@ describe('ClinicCorpusApprovalService', () => {
         'managed-1',
         PANEL,
         ACTOR,
+        {},
       );
     });
 
@@ -231,6 +244,7 @@ describe('ClinicCorpusApprovalService', () => {
         'managed-1',
         PANEL,
         ACTOR,
+        {},
       );
     });
 
@@ -240,11 +254,7 @@ describe('ClinicCorpusApprovalService', () => {
 
       await service.submitForApproval(buildDocument(), input, ACTOR);
 
-      expect(approvalServiceMock.submitForApproval).toHaveBeenCalledWith(
-        'managed-1',
-        input,
-        ACTOR,
-      );
+      expect(approvalServiceMock.submitForApproval).toHaveBeenCalledWith('managed-1', input, ACTOR, {});
     });
 
     it.each(['PENDING_APPROVAL', 'ISSUED', 'ARCHIVED'] as const)(
@@ -268,9 +278,7 @@ describe('ClinicCorpusApprovalService', () => {
         buildGoverned('PENDING_APPROVAL'),
       );
 
-      await expect(
-        service.submitForApproval(buildDocument(), PANEL, ACTOR),
-      ).rejects.toMatchObject({
+      await expect(service.submitForApproval(buildDocument(), PANEL, ACTOR)).rejects.toMatchObject({
         response: {
           code: 'DOCUMENT_NOT_SUBMITTABLE',
           errors: { status: 'PENDING_APPROVAL' },

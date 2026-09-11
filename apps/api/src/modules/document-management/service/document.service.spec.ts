@@ -111,6 +111,7 @@ describe('DocumentService', () => {
       syncRegistryRow: jest.fn().mockResolvedValue(null),
       sendForReview: jest.fn(),
       submitForApproval: jest.fn(),
+      announceSubmissions: jest.fn(),
       resolveApprovalContext: jest.fn().mockResolvedValue({
         isApprovalRequired: false,
         allowSelfApproval: false,
@@ -617,7 +618,23 @@ describe('DocumentService', () => {
         expect.anything(),
         { approverIds: [APPROVER_ID] },
         ACTOR,
+        { deferredAnnouncements: expect.any(Array) },
       );
+    });
+
+    it('tells the approvers once for the whole selection, after every round is open', async () => {
+      await documentService.submitForApproval(
+        { documentIds: [DOCUMENT_A, DOCUMENT_B], approverIds: [APPROVER_ID] },
+        ACTOR,
+      );
+
+      expect(mockCorpusApprovalService.announceSubmissions).toHaveBeenCalledTimes(1);
+      const actualBatch = mockCorpusApprovalService.announceSubmissions.mock.calls[0]?.[0];
+      const actualHeldBatches = mockCorpusApprovalService.submitForApproval.mock.calls.map(
+        (call: unknown[]) => (call[3] as { deferredAnnouncements: unknown }).deferredAnnouncements,
+      );
+      expect(actualHeldBatches).toHaveLength(2);
+      expect(actualHeldBatches.every((held: unknown) => held === actualBatch)).toBe(true);
     });
 
     it('carries the deadline through without inventing one', async () => {
@@ -634,6 +651,7 @@ describe('DocumentService', () => {
         expect.anything(),
         { approverIds: [APPROVER_ID], dueAt: '2026-09-17T09:00:00.000Z' },
         ACTOR,
+        { deferredAnnouncements: expect.any(Array) },
       );
     });
 

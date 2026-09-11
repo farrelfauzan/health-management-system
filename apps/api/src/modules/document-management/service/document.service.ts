@@ -39,6 +39,7 @@ import { CurrentUser } from '../../../common/auth/current-user.type';
 import { ObjectStorageService } from '../../../common/storage/object-storage.service';
 import { HeadObjectResult } from '../../../common/storage/storage.types';
 import { AuthRepository } from '../../auth/repository/auth.repository';
+import { DocumentApprovalAnnouncement } from '../../managed-document/service/document-approval-notification.service';
 import { DocumentRepository } from '../repository/document.repository';
 import { buildDocumentDownloadDisposition } from './build-document-download-disposition';
 import { ClinicCorpusApprovalService } from './clinic-corpus-approval.service';
@@ -336,6 +337,9 @@ export class DocumentService {
    * selection that happens to include one already-issued document must not
    * cost the other twenty-seven their submission. Every item reports its own
    * refusal in the caller's language of error codes.
+   *
+   * The approvers are told once, after the loop: every round's mail is held
+   * and sent as one message per approver listing the whole selection.
    */
   async submitForApproval(
     input: SubmitClinicDocumentsForApprovalInput,
@@ -343,9 +347,11 @@ export class DocumentService {
   ): Promise<ClinicDocumentBulkSubmissionView> {
     await this.assertClinicCorpusScope(actor, 'write');
     const items: ClinicDocumentSubmissionItemView[] = [];
+    const deferredAnnouncements: DocumentApprovalAnnouncement[] = [];
     for (const documentId of input.documentIds) {
-      items.push(await this.trySubmitForApproval(documentId, input, actor));
+      items.push(await this.trySubmitForApproval(documentId, input, actor, deferredAnnouncements));
     }
+    await this.corpusApprovalService.announceSubmissions(deferredAnnouncements);
     return {
       submittedCount: items.filter((item) => item.isSubmitted).length,
       failedCount: items.filter((item) => !item.isSubmitted).length,
@@ -363,6 +369,7 @@ export class DocumentService {
     documentId: string,
     input: SubmitClinicDocumentsForApprovalInput,
     actor: CurrentUser,
+    deferredAnnouncements: DocumentApprovalAnnouncement[],
   ): Promise<ClinicDocumentSubmissionItemView> {
     try {
       const record = await this.requireClinicDocument(documentId);
@@ -378,6 +385,7 @@ export class DocumentService {
           ...(input.dueAt === undefined ? {} : { dueAt: input.dueAt }),
         },
         actor,
+        { deferredAnnouncements },
       );
       return { documentId, isSubmitted: true, error: null };
     } catch (err: unknown) {
@@ -509,7 +517,10 @@ export class DocumentService {
    * screen, and the safe one: a missing block must read as "no approval
    * workflow here", never as "approved".
    */
-  private toView(record: DocumentRecord, approval?: ClinicDocumentApprovalView): ClinicDocumentView {
+  private toView(
+    record: DocumentRecord,
+    approval?: ClinicDocumentApprovalView,
+  ): ClinicDocumentView {
     return {
       id: record.id,
       ownerType: record.ownerType,
@@ -555,7 +566,8 @@ function toSubmissionError(err: unknown): { code: string; message: string } {
   if (typeof response === 'object' && response !== null) {
     const body = response as { code?: unknown; message?: unknown };
     return {
-      code: typeof body.code === 'string' ? body.code : CLINIC_DOCUMENT_SUBMISSION_FAILED_ERROR_CODE,
+      code:
+        typeof body.code === 'string' ? body.code : CLINIC_DOCUMENT_SUBMISSION_FAILED_ERROR_CODE,
       message: typeof body.message === 'string' ? body.message : err.message,
     };
   }

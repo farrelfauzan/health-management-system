@@ -11,6 +11,7 @@ import {
 } from '@hms/shared-types';
 
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { DocumentApprovalAnnouncement } from '../../managed-document/service/document-approval-notification.service';
 import { DocumentApprovalService } from '../../managed-document/service/document-approval.service';
 import { DocumentTypeService } from '../../managed-document/service/document-type.service';
 import { ManagedDocumentService } from '../../managed-document/service/managed-document.service';
@@ -111,7 +112,10 @@ export class ClinicCorpusApprovalService {
    * candidate set from this moment until somebody approves it — that is what
    * a review means, and it is the safe direction.
    */
-  async sendForReview(document: DocumentRecord, actor: CurrentUser): Promise<ManagedDocumentRecord> {
+  async sendForReview(
+    document: DocumentRecord,
+    actor: CurrentUser,
+  ): Promise<ManagedDocumentRecord> {
     return this.registerGovernedDocument(document, actor);
   }
 
@@ -135,14 +139,24 @@ export class ClinicCorpusApprovalService {
     document: DocumentRecord,
     input: SubmitDocumentForApprovalInput,
     actor: CurrentUser,
+    options: { deferredAnnouncements?: DocumentApprovalAnnouncement[] } = {},
   ): Promise<ManagedDocumentRecord> {
     const existing = await this.findGoverned(document.id);
     if (existing !== null) {
       assertCorpusSubmittable(existing);
     }
     const governed = await this.registerGovernedDocument(document, actor);
-    await this.approvalService.submitForApproval(governed.id, input, actor);
+    await this.approvalService.submitForApproval(governed.id, input, actor, options);
     return governed;
+  }
+
+  /**
+   * Sends the mail a bulk submit held back: one message per approver for the
+   * whole selection, rather than one per document — twenty-eight FAQs are
+   * one request to read them, not twenty-eight.
+   */
+  async announceSubmissions(announcements: readonly DocumentApprovalAnnouncement[]): Promise<void> {
+    await this.approvalService.announceBatch(announcements);
   }
 
   /**
@@ -244,7 +258,11 @@ export class ClinicCorpusApprovalService {
       pendingRound:
         round === null
           ? null
-          : toManagedDocumentApprovalSummaryView(round, governed.type.requiredApprovals, new Date()),
+          : toManagedDocumentApprovalSummaryView(
+              round,
+              governed.type.requiredApprovals,
+              new Date(),
+            ),
     };
   }
 

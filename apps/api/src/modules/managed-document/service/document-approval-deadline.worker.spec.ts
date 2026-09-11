@@ -72,7 +72,7 @@ describe('DocumentApprovalDeadlineWorker', () => {
     resolveWithoutDecision: jest.fn(),
     supersedePendingForDocument: jest.fn(),
   };
-  const notificationServiceMock = { announce: jest.fn() };
+  const notificationServiceMock = { announceBatch: jest.fn() };
   const configServiceMock = { get: jest.fn().mockReturnValue(undefined) };
 
   function buildWorker(): DocumentApprovalDeadlineWorker {
@@ -97,7 +97,7 @@ describe('DocumentApprovalDeadlineWorker', () => {
 
     // One DUE_SOON and one OVERDUE, because both thresholds match this round.
     expect(actual).toBe(2);
-    expect(notificationServiceMock.announce).toHaveBeenCalledTimes(2);
+    expect(notificationServiceMock.announceBatch).toHaveBeenCalledTimes(2);
   });
 
   it('sends nothing on a second tick, because the claim already fired', async () => {
@@ -107,7 +107,7 @@ describe('DocumentApprovalDeadlineWorker', () => {
     const actual = await buildWorker().sweepOnce();
 
     expect(actual).toBe(0);
-    expect(notificationServiceMock.announce).not.toHaveBeenCalled();
+    expect(notificationServiceMock.announceBatch).not.toHaveBeenCalled();
   });
 
   it('never records a decision — a deadline escalates, it does not decide', async () => {
@@ -125,25 +125,34 @@ describe('DocumentApprovalDeadlineWorker', () => {
 
     await buildWorker().sweepOnce();
 
-    const actualRecipients = notificationServiceMock.announce.mock.calls[0][0].recipients;
-    expect(actualRecipients).toEqual([
-      { userId: APPROVER_ID, email: 'approver@klinik.example' },
-    ]);
+    const actualRecipients = notificationServiceMock.announceBatch.mock.calls[0][0][0].recipients;
+    expect(actualRecipients).toEqual([{ userId: APPROVER_ID, email: 'approver@klinik.example' }]);
   });
 
   it('excludes an approver who has lost the decide key since submission', async () => {
     approvalRepositoryMock.listDeadlineCandidates.mockResolvedValue([buildCandidate()]);
     approvalRepositoryMock.findRequestById.mockResolvedValue({
       ...buildRound(),
-      approvers: [
-        { approverId: APPROVER_ID, email: 'approver@klinik.example', isEligible: false },
-      ],
+      approvers: [{ approverId: APPROVER_ID, email: 'approver@klinik.example', isEligible: false }],
       decisions: [],
     });
 
     await buildWorker().sweepOnce();
 
-    expect(notificationServiceMock.announce.mock.calls[0][0].recipients).toEqual([]);
+    expect(notificationServiceMock.announceBatch.mock.calls[0][0][0].recipients).toEqual([]);
+  });
+
+  it('batches every round that crossed the line in one sweep into one call', async () => {
+    approvalRepositoryMock.listDeadlineCandidates.mockResolvedValue([
+      buildCandidate(),
+      { ...buildCandidate(), requestId: 'round-2', documentId: 'document-2' },
+    ]);
+
+    await buildWorker().sweepOnce();
+
+    // Once per kind, each carrying both rounds — one reminder per approver.
+    expect(notificationServiceMock.announceBatch).toHaveBeenCalledTimes(2);
+    expect(notificationServiceMock.announceBatch.mock.calls[0][0]).toHaveLength(2);
   });
 
   it('swallows a repository failure rather than killing the interval', async () => {
