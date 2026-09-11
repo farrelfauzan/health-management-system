@@ -548,6 +548,7 @@
       "reapprovalWarning": "This document has been approved. Changing who can be shown it sends it back for approval, and the assistant stops being able to cite it until it is approved again."
     },
     "actions": {
+      "menuFor": "Actions for {title}",
       "preview": "Preview",
       "download": "Download",
       "edit": "Edit",

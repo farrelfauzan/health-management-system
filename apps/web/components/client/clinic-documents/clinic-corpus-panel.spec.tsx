@@ -108,9 +108,18 @@ const corpusMessages = getDashboardAiMessages('id').clinicCorpus;
 const approvalMessages = corpusMessages.approval;
 const submitMessages = approvalMessages.submit;
 
+async function openRowMenu(title = 'Jam Buka Poliklinik'): Promise<void> {
+  await screen.findByText(title);
+  await userEvent.click(
+    screen.getByRole('button', { name: corpusMessages.actions.menuFor.replace('{title}', title) }),
+  );
+}
+
 async function openSubmitDialog(): Promise<HTMLElement> {
-  await screen.findByText('Jam Buka Poliklinik');
-  await userEvent.click(screen.getByRole('button', { name: approvalMessages.sendForReview }));
+  await openRowMenu();
+  await userEvent.click(
+    await screen.findByRole('menuitem', { name: approvalMessages.sendForReview }),
+  );
   return screen.findByRole('dialog');
 }
 
@@ -221,13 +230,11 @@ describe('ClinicCorpusPanel', () => {
     expect(await screen.findByText(/Tidak ada dokumen yang cocok/i)).toBeInTheDocument();
   });
 
-  // The row actions are icons now, so the glyph carries no text and the
-  // accessible name is the only thing naming the button. If these queries ever
-  // fail, the row has become five unlabelled buttons for a screen reader,
-  // which is exactly the failure icon-only controls invite.
-  it('names every row action even though the buttons are icon-only', async () => {
+  // Every action lives in the row menu now, named in words. If these queries
+  // fail, an action has gone missing from the menu or lost its name.
+  it('puts every row action, named in words, behind one menu per row', async () => {
     renderPanel();
-    await screen.findByText('Jam Buka Poliklinik');
+    await openRowMenu();
 
     for (const label of [
       'Pratinjau',
@@ -237,10 +244,20 @@ describe('ClinicCorpusPanel', () => {
       'Pensiunkan',
       approvalMessages.sendForReview,
     ]) {
-      expect(screen.getByRole('button', { name: label })).toBeInTheDocument();
-      // No visible action text left to read, which is the point of the change.
-      expect(screen.queryByText(label)).not.toBeInTheDocument();
+      expect(screen.getByRole('menuitem', { name: label })).toBeInTheDocument();
     }
+  });
+
+  it('leaves one menu button on the row, named after the document, instead of a row of icons', async () => {
+    renderPanel();
+    await screen.findByText('Jam Buka Poliklinik');
+
+    expect(screen.queryByRole('button', { name: 'Unduh' })).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('button', {
+        name: corpusMessages.actions.menuFor.replace('{title}', 'Jam Buka Poliklinik'),
+      }),
+    ).toBeInTheDocument();
   });
 
   it('offers the submit action on a draft, which is what an upload produces', async () => {
@@ -252,10 +269,10 @@ describe('ClinicCorpusPanel', () => {
       data: { data: [buildDraftDocument()] },
     });
     renderPanel();
-    await screen.findByText('Jam Buka Poliklinik');
+    await openRowMenu();
 
     expect(
-      screen.getByRole('button', { name: approvalMessages.sendForReview }),
+      screen.getByRole('menuitem', { name: approvalMessages.sendForReview }),
     ).toBeInTheDocument();
   });
 
@@ -278,10 +295,10 @@ describe('ClinicCorpusPanel', () => {
         },
       });
       renderPanel();
-      await screen.findByText('Jam Buka Poliklinik');
+      await openRowMenu();
 
       expect(
-        screen.queryByRole('button', { name: approvalMessages.sendForReview }),
+        screen.queryByRole('menuitem', { name: approvalMessages.sendForReview }),
       ).not.toBeInTheDocument();
     },
   );
