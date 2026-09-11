@@ -7,6 +7,21 @@ import type {
   PrescriptionStatusValue,
 } from '#pharmacy-flow/schemas';
 
+/**
+ * One product from the KFA dictionary, as the catalog form offers it. The
+ * `kfaCode` is what SATUSEHAT validates `Medication.code` against; the rest is
+ * what tells a pharmacist they picked the right product — KFA lists the same
+ * drug once per manufacturer and pack size.
+ */
+export type KfaProductResponse = {
+  kfaCode: string;
+  name: string;
+  dosageForm: string | null;
+  manufacturer: string | null;
+  packagingUnit: string | null;
+  isActive: boolean;
+};
+
 export type MedicationResponse = {
   id: string;
   code: string;

@@ -114,6 +114,20 @@ export const kfaCodeSchema = z
   .trim()
   .regex(/^[0-9]{4,20}$/, 'KFA code must be 4-20 digits');
 
+/**
+ * Query for the KFA product lookup behind the catalog form's code field. Two
+ * characters is the shortest term worth ranking against a national dictionary,
+ * and the limit is capped because every call is a live request to SATUSEHAT.
+ */
+export const searchKfaProductsQuerySchema = z
+  .object({
+    search: z.string().trim().min(2).max(100),
+    limit: z.coerce.number().int().min(1).max(50).default(20),
+  })
+  .strict();
+
+export type SearchKfaProductsQueryInput = z.infer<typeof searchKfaProductsQuerySchema>;
+
 export const medicationNameSchema = z.string().trim().min(2).max(200);
 export const medicationFormSchema = z.string().trim().min(1).max(100);
 export const medicationStrengthSchema = z.string().trim().min(1).max(100);

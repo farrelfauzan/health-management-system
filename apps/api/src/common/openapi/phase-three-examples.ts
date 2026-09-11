@@ -984,6 +984,14 @@ export const PHASE_THREE_EXAMPLES = {
     medication,
     medicationCreateRequest,
     medicationUpdateRequest,
+    kfaProduct: {
+      kfaCode,
+      name: 'Paracetamol 500 mg Tablet (KIMIA FARMA)',
+      dosageForm: 'Tablet',
+      manufacturer: 'KIMIA FARMA',
+      packagingUnit: 'Tablet',
+      isActive: true,
+    },
     stockReceiptRequest: {
       medicationId,
       batchNumber: 'LOT-PARA-2026-07',

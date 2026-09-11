@@ -28826,6 +28826,93 @@ paths:
         - bearer: []
       summary: Create a medication
       tags: *a40
+  /api/v1/medications/kfa-products:
+    get:
+      operationId: MedicationController_searchKfaProducts_v1
+      parameters:
+        - name: search
+          required: true
+          in: query
+          schema:
+            minLength: 2
+            maxLength: 100
+            type: string
+        - name: limit
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 50
+            exclusiveMaximum: false
+            exclusiveMinimum: false
+            default: 20
+            type: integer
+      responses:
+        "200":
+          description: Active KFA products matching the term, for filling a medication
+            catalog entry. Answered live by SATUSEHAT, which is also what
+            validates the code on submission.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        kfaCode:
+                          type: string
+                        name:
+                          type: string
+                        dosageForm:
+                          type: string
+                        manufacturer:
+                          type: string
+                        packagingUnit:
+                          type: string
+                        isActive:
+                          type: boolean
+                      required:
+                        - kfaCode
+                        - name
+                        - dosageForm
+                        - manufacturer
+                        - packagingUnit
+                        - isActive
+                required:
+                  - data
+                example:
+                  data:
+                    - kfaCode: "93000001"
+                      name: Paracetamol 500 mg Tablet (KIMIA FARMA)
+                      dosageForm: Tablet
+                      manufacturer: KIMIA FARMA
+                      packagingUnit: Tablet
+                      isActive: true
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Search the KFA product dictionary
+      tags: *a40
   /api/v1/medications/{id}:
     patch:
       operationId: MedicationController_updateMedication_v1

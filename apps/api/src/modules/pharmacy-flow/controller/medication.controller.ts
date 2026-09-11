@@ -19,7 +19,9 @@ import { ApiEndpoint } from '../../../common/openapi/api-endpoint.decorator';
 import { PHASE_THREE_EXAMPLES } from '../../../common/openapi/phase-three-examples';
 import { CreateMedicationDto } from '../dto/create-medication.dto';
 import { ListMedicationsQueryDto } from '../dto/list-medications-query.dto';
+import { SearchKfaProductsQueryDto } from '../dto/search-kfa-products-query.dto';
 import { UpdateMedicationDto } from '../dto/update-medication.dto';
+import { KfaLookupService } from '../service/kfa-lookup.service';
 import { PharmacyFlowService } from '../service/pharmacy-flow.service';
 
 @ApiTags('Pharmacy Flow')
@@ -28,7 +30,10 @@ import { PharmacyFlowService } from '../service/pharmacy-flow.service';
   path: 'medications',
 })
 export class MedicationController {
-  constructor(private readonly pharmacyFlowService: PharmacyFlowService) {}
+  constructor(
+    private readonly pharmacyFlowService: PharmacyFlowService,
+    private readonly kfaLookupService: KfaLookupService,
+  ) {}
 
   @Get()
   @Auth([{ action: 'read', subject: 'Medication' }])
@@ -53,6 +58,25 @@ export class MedicationController {
     return {
       data: result.items,
       meta: result.meta,
+    };
+  }
+
+  // Before `:id` routes would matter, and gated on `create` rather than
+  // `read`: this is a live call to SATUSEHAT made from the catalog form, so
+  // only the roles that maintain the catalog can spend it.
+  @Get('kfa-products')
+  @Auth([{ action: 'create', subject: 'Medication' }])
+  @ApiEndpoint({
+    summary: 'Search the KFA product dictionary',
+    responseDescription:
+      'Active KFA products matching the term, for filling a medication catalog entry. Answered live by SATUSEHAT, which is also what validates the code on submission.',
+    responseExample: { data: [PHASE_THREE_EXAMPLES.pharmacy.kfaProduct] },
+  })
+  async searchKfaProducts(@Query() query: SearchKfaProductsQueryDto) {
+    const products = await this.kfaLookupService.searchKfaProducts(query);
+
+    return {
+      data: products,
     };
   }
 

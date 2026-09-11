@@ -22,6 +22,7 @@ describe('resolveSatusehatConfig', () => {
       isConfigured: false,
       fhirBaseUrl: 'https://api-satusehat-stg.dto.kemkes.go.id/fhir-r4/v1',
       authBaseUrl: 'https://api-satusehat-stg.dto.kemkes.go.id/oauth2/v1',
+      kfaBaseUrl: 'https://api-satusehat-stg.dto.kemkes.go.id/kfa-v2',
       organizationId: undefined,
       clientId: undefined,
       clientSecret: undefined,
