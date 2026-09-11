@@ -1,4 +1,8 @@
-import { ConflictException, ForbiddenException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  ConflictException,
+  ForbiddenException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 
 import {
   DOCUMENT_APPROVER_INELIGIBLE_ERROR_CODE,
@@ -12,7 +16,10 @@ import { CurrentUser } from '../../../common/auth/current-user.type';
 import { AuditAction } from '../../../generated/prisma/client';
 import { DocumentApprovalRepository } from '../repository/document-approval.repository';
 import { ManagedDocumentRepository } from '../repository/managed-document.repository';
-import { DocumentApprovalNotificationService } from './document-approval-notification.service';
+import {
+  DocumentApprovalAnnouncement,
+  DocumentApprovalNotificationService,
+} from './document-approval-notification.service';
 import { DocumentApprovalService } from './document-approval.service';
 import { DocumentIssueBehaviorService } from './document-issue-behavior.service';
 import { DocumentTypeService } from './document-type.service';
@@ -119,18 +126,18 @@ describe('DocumentApprovalService', () => {
     // own transaction (`P16-T32`), so the double has to invoke the callback —
     // a mock that swallowed it would let a broken behaviour pass.
     issueDocument: jest.fn(
-      async (payload: {
-        id: string;
-        issuedAt: Date;
-        onIssued: (tx: unknown) => Promise<void>;
-      }) => {
+      async (payload: { id: string; issuedAt: Date; onIssued: (tx: unknown) => Promise<void> }) => {
         await payload.onIssued({});
       },
     ),
   };
   const accessServiceMock = { resolveContext: jest.fn() };
   const documentTypeServiceMock = { findTypeOrThrow: jest.fn() };
-  const notificationServiceMock = { announceSubmitted: jest.fn(), announce: jest.fn() };
+  const notificationServiceMock = {
+    buildSubmittedAnnouncement: jest.fn(() => ({ kind: 'REQUESTED', documentId: DOCUMENT_ID })),
+    announce: jest.fn(),
+    announceBatch: jest.fn(),
+  };
   const auditServiceMock = { record: jest.fn(), recordOrThrow: jest.fn() };
 
   const service = new DocumentApprovalService(
@@ -176,6 +183,23 @@ describe('DocumentApprovalService', () => {
       expect(actualActions).toContain(AuditAction.APPROVERS_ASSIGNED);
     });
 
+    it('tells the approvers straight away when a document is submitted on its own', async () => {
+      await service.submitForApproval(DOCUMENT_ID, { approverIds: [APPROVER_ID] }, DRAFTER);
+
+      expect(notificationServiceMock.announce).toHaveBeenCalledTimes(1);
+    });
+
+    it('holds the announcement for a caller collecting a batch', async () => {
+      const inputBatch: DocumentApprovalAnnouncement[] = [];
+
+      await service.submitForApproval(DOCUMENT_ID, { approverIds: [APPROVER_ID] }, DRAFTER, {
+        deferredAnnouncements: inputBatch,
+      });
+
+      expect(inputBatch).toHaveLength(1);
+      expect(notificationServiceMock.announce).not.toHaveBeenCalled();
+    });
+
     it('refuses a panel that names only the drafter when self-approval is off', async () => {
       approvalRepositoryMock.findApproverCandidates.mockResolvedValue([
         { id: DRAFTER_ID, email: 'drafter@klinik.example', isPatient: false, canDecide: true },
@@ -219,11 +243,7 @@ describe('DocumentApprovalService', () => {
       ]);
 
       await expect(
-        service.submitForApproval(
-          DOCUMENT_ID,
-          { approverIds: [APPROVER_ID, DRAFTER_ID] },
-          DRAFTER,
-        ),
+        service.submitForApproval(DOCUMENT_ID, { approverIds: [APPROVER_ID, DRAFTER_ID] }, DRAFTER),
       ).rejects.toMatchObject({
         response: {
           code: DOCUMENT_APPROVER_INELIGIBLE_ERROR_CODE,
@@ -388,6 +408,14 @@ describe('DocumentApprovalService', () => {
       expect(actual.approvedCount).toBe(2);
       expect(actual.failedCount).toBe(0);
       expect(approvalRepositoryMock.claimDecision).toHaveBeenCalledTimes(2);
+    });
+
+    it('tells the drafter once for the whole batch, not once per document', async () => {
+      await service.bulkApprove({ requestIds: ['round-1', 'round-2'] }, APPROVER);
+
+      expect(notificationServiceMock.announce).not.toHaveBeenCalled();
+      expect(notificationServiceMock.announceBatch).toHaveBeenCalledTimes(1);
+      expect(notificationServiceMock.announceBatch.mock.calls[0][0]).toHaveLength(2);
     });
 
     it('fails one ineligible item alone and leaves the rest standing', async () => {

@@ -9,7 +9,10 @@ import { ConfigService } from '@nestjs/config';
 import { buildSafeErrorLog } from '../../../common/observability/safe-logging';
 import { resolveDocumentApprovalConfig } from '../document-approval.config';
 import { DocumentApprovalRepository } from '../repository/document-approval.repository';
-import { DocumentApprovalNotificationService } from './document-approval-notification.service';
+import {
+  DocumentApprovalAnnouncement,
+  DocumentApprovalNotificationService,
+} from './document-approval-notification.service';
 
 const DEADLINE_KINDS: readonly DocumentApprovalDeadlineKind[] = ['DUE_SOON', 'OVERDUE'];
 
@@ -35,7 +38,9 @@ const DEADLINE_KINDS: readonly DocumentApprovalDeadlineKind[] = ['DUE_SOON', 'OV
  * observe.
  */
 @Injectable()
-export class DocumentApprovalDeadlineWorker implements OnApplicationBootstrap, OnApplicationShutdown {
+export class DocumentApprovalDeadlineWorker
+  implements OnApplicationBootstrap, OnApplicationShutdown
+{
   private readonly logger = new Logger(DocumentApprovalDeadlineWorker.name);
   private readonly config: DocumentApprovalConfig;
   private sweepTimer: NodeJS.Timeout | null = null;
@@ -94,13 +99,22 @@ export class DocumentApprovalDeadlineWorker implements OnApplicationBootstrap, O
       threshold: this.resolveThreshold(kind),
       limit: this.config.sweepBatchSize,
     });
+    const announcements: DocumentApprovalAnnouncement[] = [];
     let sentCount = 0;
     for (const candidate of candidates) {
       if (!(await this.approvalRepository.claimDeadlineNotice(candidate.requestId, kind))) {
         continue;
       }
-      await this.announce(kind, candidate);
+      const announcement = await this.buildAnnouncement(kind, candidate);
+      if (announcement !== null) {
+        announcements.push(announcement);
+      }
       sentCount += 1;
+    }
+    // One reminder per approver per sweep: a bulk submit's rounds share a
+    // deadline, cross it in the same sweep, and arrive as one mail.
+    if (announcements.length > 0) {
+      await this.notificationService.announceBatch(announcements);
     }
     return sentCount;
   }
@@ -120,16 +134,16 @@ export class DocumentApprovalDeadlineWorker implements OnApplicationBootstrap, O
    * The approvers who have not answered are who a reminder is for — the
    * drafter is not chased about a decision that is not theirs to make.
    */
-  private async announce(
+  private async buildAnnouncement(
     kind: DocumentApprovalDeadlineKind,
     candidate: DocumentApprovalDeadlineRecord,
-  ): Promise<void> {
+  ): Promise<DocumentApprovalAnnouncement | null> {
     const round = await this.approvalRepository.findRequestById(candidate.requestId);
     if (round === null) {
-      return;
+      return null;
     }
     const decidedIds = new Set(round.decisions.map((decision) => decision.approverId));
-    await this.notificationService.announce({
+    return {
       kind: kind === 'DUE_SOON' ? 'DUE_SOON' : 'OVERDUE',
       documentId: candidate.documentId,
       documentTitle: candidate.documentTitle,
@@ -140,6 +154,6 @@ export class DocumentApprovalDeadlineWorker implements OnApplicationBootstrap, O
       recipients: round.approvers
         .filter((approver) => approver.isEligible && !decidedIds.has(approver.approverId))
         .map((approver) => ({ userId: approver.approverId, email: approver.email })),
-    });
+    };
   }
 }

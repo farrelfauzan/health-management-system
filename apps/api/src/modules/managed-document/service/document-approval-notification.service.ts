@@ -12,6 +12,11 @@ import {
   DocumentApprovalMailKind,
   buildDocumentApprovalMail,
 } from './build-document-approval-copy';
+import { buildDocumentApprovalDigestMail } from './build-document-approval-digest-copy';
+import {
+  DocumentApprovalRecipientGroup,
+  groupAnnouncementsByRecipient,
+} from './group-announcements-by-recipient';
 
 /** Who and what one announcement is about, whichever event raised it. */
 export type DocumentApprovalAnnouncement = {
@@ -43,6 +48,10 @@ const MESSAGE_KEY_BY_KIND: Readonly<Record<DocumentApprovalMailKind, string>> = 
   OVERDUE: 'documentApprovalOverdue',
 };
 
+/** The kinds that ask the reader to decide — the ones whose digest links to the queue. */
+const APPROVER_FACING_KINDS: ReadonlySet<DocumentApprovalMailKind> =
+  new Set<DocumentApprovalMailKind>(['REQUESTED', 'DUE_SOON', 'OVERDUE']);
+
 /**
  * Both channels for every approval event (`P16-T30`, FR-E5-25/26) — the bell
  * feed **and** email, never one or the other. An approval nobody hears about
@@ -69,14 +78,17 @@ export class DocumentApprovalNotificationService {
     this.config = resolveDocumentApprovalConfig(configService);
   }
 
-  /** Every named approver, told a decision is wanted (FR-E5-25). */
-  async announceSubmitted(params: {
+  /**
+   * What every named approver is told when a round opens (FR-E5-25). Built
+   * here and sent by the caller, which may be holding it for a batch.
+   */
+  buildSubmittedAnnouncement(params: {
     round: DocumentApprovalRequestRecord;
     documentTitle: string;
     documentTypeName: string;
     drafterEmail: string;
-  }): Promise<void> {
-    await this.announce({
+  }): DocumentApprovalAnnouncement {
+    return {
       kind: 'REQUESTED',
       documentId: params.round.documentId,
       documentTitle: params.documentTitle,
@@ -88,24 +100,36 @@ export class DocumentApprovalNotificationService {
         userId: approver.approverId,
         email: approver.email,
       })),
-    });
+    };
+  }
+
+  /** One announcement, both channels, one recipient list: a batch of one. */
+  async announce(announcement: DocumentApprovalAnnouncement): Promise<void> {
+    await this.announceBatch([announcement]);
   }
 
   /**
-   * One announcement, both channels, one recipient list.
+   * Many announcements from one action — a bulk submit, a bulk approval, one
+   * deadline sweep — with one mail per person rather than one per document.
    *
-   * The in-app rows go out in one call; the mails go out one at a time
-   * because each carries a different address and a failure on one must not
-   * cost the rest theirs.
+   * The bell keeps a row per document, because each row is its own to-do
+   * with its own link. Mail is where the count hurts: someone named on
+   * twenty-eight documents gets one digest listing all of them, and someone
+   * named on one gets the ordinary single-document mail. Mails go out one at
+   * a time because each carries a different address and a failure on one
+   * must not cost the rest theirs.
    */
-  async announce(announcement: DocumentApprovalAnnouncement): Promise<void> {
-    if (announcement.recipients.length === 0) {
+  async announceBatch(announcements: readonly DocumentApprovalAnnouncement[]): Promise<void> {
+    const addressed = announcements.filter((announcement) => announcement.recipients.length > 0);
+    if (addressed.length === 0) {
       return;
     }
-    await this.createFeedRows(announcement);
+    for (const announcement of addressed) {
+      await this.createFeedRows(announcement);
+    }
     const clinicName = await this.resolveClinicName();
-    for (const recipient of announcement.recipients) {
-      await this.sendMail(announcement, recipient.email, clinicName);
+    for (const group of groupAnnouncementsByRecipient(addressed)) {
+      await this.sendGroupMail(group, clinicName);
     }
   }
 
@@ -155,6 +179,42 @@ export class DocumentApprovalNotificationService {
     }
   }
 
+  private async sendGroupMail(
+    group: DocumentApprovalRecipientGroup,
+    clinicName: string,
+  ): Promise<void> {
+    const [onlyAnnouncement] = group.announcements;
+    if (group.announcements.length === 1 && onlyAnnouncement !== undefined) {
+      await this.sendMail(onlyAnnouncement, group.email, clinicName);
+      return;
+    }
+    await this.sendDigestMail(group, clinicName);
+  }
+
+  private async sendDigestMail(
+    group: DocumentApprovalRecipientGroup,
+    clinicName: string,
+  ): Promise<void> {
+    try {
+      const mail = buildDocumentApprovalDigestMail({
+        kind: group.kind,
+        clinicName,
+        items: group.announcements.map((announcement) => ({
+          documentTitle: announcement.documentTitle,
+          documentTypeName: announcement.documentTypeName,
+          drafterEmail: announcement.drafterEmail,
+          dueAt: announcement.dueAt,
+          reason: announcement.reason,
+          actionUrl: this.buildDocumentUrl(announcement.documentId),
+        })),
+        overviewUrl: this.buildOverviewUrl(group.kind),
+      });
+      await this.mailService.sendMail({ to: group.email, ...mail });
+    } catch {
+      this.logger.error(buildSafeErrorLog('document_approval_mail_failed'));
+    }
+  }
+
   /** Falls back to the product label rather than sending from "" (FR-E5-30). */
   private async resolveClinicName(): Promise<string> {
     try {
@@ -170,5 +230,15 @@ export class DocumentApprovalNotificationService {
 
   private buildDocumentUrl(documentId: string): string {
     return `${this.config.webAppBaseUrl}${this.buildDocumentHref(documentId)}`;
+  }
+
+  /**
+   * Where a digest's reader works through the whole list: the approvals
+   * queue for anything asking them to decide, the registry for news about
+   * documents they sent.
+   */
+  private buildOverviewUrl(kind: DocumentApprovalMailKind): string {
+    const tab = APPROVER_FACING_KINDS.has(kind) ? 'approvals' : 'registry';
+    return `${this.config.webAppBaseUrl}/admin/documents?tab=${tab}`;
   }
 }
