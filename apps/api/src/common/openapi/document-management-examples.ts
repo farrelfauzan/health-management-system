@@ -108,6 +108,14 @@ export const DOCUMENT_MANAGEMENT_EXAMPLES = {
     url: 'https://example-bucket.s3.amazonaws.com/documents/clinic/9f1c7c2e-3a52-4f0b-9e33-1c9a5f0a77b1.pdf?X-Amz-Signature=...',
     expiresAt: '2026-08-03T09:05:00.000Z',
   },
+  preview: {
+    documentId: '9f1c7c2e-3a52-4f0b-9e33-1c9a5f0a77b1',
+    mimeType: 'text/markdown',
+    text: '# Jam layanan\n\nKlinik buka **Senin–Sabtu**.\n\n| Hari | Jam |\n| --- | --- |\n| Senin–Jumat | 08.00–20.00 |\n| Sabtu | 08.00–14.00 |',
+    characterCount: 128,
+    totalCharacterCount: 128,
+    isTruncated: false,
+  },
   deletedDocument: {
     id: '2f6d1a4c-8b9e-4c1d-9a2f-5e7b3c0d8a11',
     deletedAt: '2026-08-03T10:00:00.000Z',

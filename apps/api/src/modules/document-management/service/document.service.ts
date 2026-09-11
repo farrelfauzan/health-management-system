@@ -33,9 +33,16 @@ import {
   SubmitClinicDocumentsForApprovalInput,
   UpdateClinicDocumentInput,
   isDocumentImageMimeType,
+  CLINIC_DOCUMENT_NOT_PREVIEWABLE_ERROR_CODE,
+  ClinicDocumentPreviewView,
+  MANAGED_DOCUMENT_PREVIEW_MAX_CHARACTERS,
+  isManagedDocumentPreviewMimeType,
 } from '@hms/shared-types';
 
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { extractDocumentText } from '../../../common/documents/extract-document-text';
+import { sanitiseDocumentPreviewText } from '../../../common/documents/sanitise-document-preview-text';
+import { truncateDocumentPreviewText } from '../../../common/documents/truncate-document-preview-text';
 import { ObjectStorageService } from '../../../common/storage/object-storage.service';
 import { HeadObjectResult } from '../../../common/storage/storage.types';
 import { AuthRepository } from '../../auth/repository/auth.repository';
@@ -210,6 +217,34 @@ export class DocumentService {
       responseContentType: record.mimeType,
     });
     return { url: signedUrl.url, expiresAt: signedUrl.expiresAt };
+  }
+
+  /**
+   * The document's text, for reading it in the corpus screen without a
+   * download. Markdown and plain text only, under the approval preview's
+   * allowlist and cap, so "which files the app will show" is one rule. The
+   * text is stripped of every tag before it leaves the API; the web renders
+   * the Markdown with raw HTML disabled on top of that.
+   */
+  async getPreview(id: string, actor: CurrentUser): Promise<ClinicDocumentPreviewView> {
+    await this.assertClinicCorpusScope(actor, 'read');
+    const record = await this.requireClinicDocument(id);
+    if (!isManagedDocumentPreviewMimeType(record.mimeType)) {
+      throw new ConflictException({
+        message: 'This file type cannot be previewed in the app; download it to read it',
+        code: CLINIC_DOCUMENT_NOT_PREVIEWABLE_ERROR_CODE,
+      });
+    }
+    const storedObject = await this.objectStorageService.getObject({ key: record.storageKey });
+    const extracted = await extractDocumentText({
+      content: storedObject.body,
+      mimeType: record.mimeType,
+    });
+    const truncated = truncateDocumentPreviewText({
+      text: sanitiseDocumentPreviewText(extracted.text),
+      limit: MANAGED_DOCUMENT_PREVIEW_MAX_CHARACTERS,
+    });
+    return { documentId: record.id, mimeType: record.mimeType, ...truncated };
   }
 
   /**

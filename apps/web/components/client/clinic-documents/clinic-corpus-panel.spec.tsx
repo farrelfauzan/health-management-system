@@ -26,6 +26,8 @@ vi.mock('#lib/api/generated/document-management/document-management', () => ({
   documentAdminControllerSubmitDocumentsForApprovalV1: submitForApprovalMock,
   getDocumentAdminControllerListDocumentsV1QueryKey: () => ['clinic-documents'],
   getDocumentAdminControllerGetApprovalContextV1QueryKey: () => ['clinic-corpus-approval-context'],
+  documentAdminControllerGetPreviewV1: vi.fn(),
+  getDocumentAdminControllerGetPreviewV1QueryKey: (id: string) => ['clinic-document-preview', id],
 }));
 
 vi.mock('#lib/api/generated/documents/documents', () => ({
@@ -228,6 +230,7 @@ describe('ClinicCorpusPanel', () => {
     await screen.findByText('Jam Buka Poliklinik');
 
     for (const label of [
+      'Pratinjau',
       'Unduh',
       'Ubah',
       'Proses ulang',
@@ -341,10 +344,7 @@ describe('ClinicCorpusPanel', () => {
     listDocumentsMock.mockResolvedValue({
       status: 200,
       data: {
-        data: [
-          buildDraftDocument(),
-          buildDraftDocument({ id: 'doc-2', title: 'SOP Rujukan' }),
-        ],
+        data: [buildDraftDocument(), buildDraftDocument({ id: 'doc-2', title: 'SOP Rujukan' })],
       },
     });
     submitForApprovalMock.mockResolvedValue({
@@ -377,10 +377,7 @@ describe('ClinicCorpusPanel', () => {
     listDocumentsMock.mockResolvedValue({
       status: 200,
       data: {
-        data: [
-          buildDraftDocument(),
-          buildDraftDocument({ id: 'doc-2', title: 'SOP Rujukan' }),
-        ],
+        data: [buildDraftDocument(), buildDraftDocument({ id: 'doc-2', title: 'SOP Rujukan' })],
       },
     });
     submitForApprovalMock.mockResolvedValue({
@@ -419,9 +416,7 @@ describe('ClinicCorpusPanel', () => {
     expect(await screen.findByText(/1 dokumen terkirim/)).toBeInTheDocument();
     // The refusal's own sentence, because a count alone says nothing about
     // what to do next.
-    expect(
-      screen.getByText(/This document is already waiting for approval/),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/This document is already waiting for approval/)).toBeInTheDocument();
   });
 
   it('offers no checkbox on a document that cannot be submitted', async () => {

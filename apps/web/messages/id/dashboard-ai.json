@@ -547,6 +547,7 @@
       "reapprovalWarning": "Dokumen ini sudah disetujui. Mengubah siapa yang boleh melihatnya mengembalikannya ke proses persetujuan, dan asisten berhenti dapat mengutipnya sampai disetujui kembali."
     },
     "actions": {
+      "preview": "Pratinjau",
       "download": "Unduh",
       "edit": "Ubah",
       "reingest": "Proses ulang",
@@ -568,6 +569,16 @@
         "reingest": "Tidak dapat memasukkan dokumen ini ke antrean pemrosesan ulang.",
         "delete": "Tidak dapat memensiunkan dokumen ini."
       }
+    },
+    "preview": {
+      "markdownDescription": "Ditampilkan dari berkas Markdown. Tautan terbuka di tab baru; gambar tidak ditampilkan.",
+      "plainTextDescription": "Ditampilkan sebagai teks biasa, persis seperti yang disimpan.",
+      "loading": "Memuat dokumen…",
+      "loadError": "Dokumen ini tidak dapat dimuat. Coba lagi, atau unduh saja.",
+      "empty": "Dokumen ini tidak berisi teks.",
+      "truncated": "Menampilkan {shown} dari {total} karakter pertama. Unduh berkas untuk membaca seluruhnya.",
+      "download": "Unduh",
+      "close": "Tutup"
     },
     "approval": {
       "status": {

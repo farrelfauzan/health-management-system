@@ -157,6 +157,25 @@ export class DocumentAdminController {
     return { data: view };
   }
 
+  @Get(':id/preview')
+  @Auth([{ action: 'read', subject: 'Document' }])
+  @ApiEndpoint({
+    summary: 'Read a clinic document’s text, for previewing it in the app',
+    responseDescription:
+      'The document’s text, extracted server-side, stripped of every tag and capped at 20,000 characters, so an admin can read a corpus document without downloading it. `isTruncated` says the document continues past what came back, and the signed download stays the way to read all of it. Markdown and plain text only: a PDF is 409 `CLINIC_DOCUMENT_NOT_PREVIEWABLE` and keeps its download.',
+    responseExample: { data: DOCUMENT_MANAGEMENT_EXAMPLES.preview },
+    notFoundDescription: 'Document not found.',
+  })
+  async getPreview(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @AuthUser() currentUser?: CurrentUser,
+  ) {
+    const actor = this.assertAuthenticated(currentUser);
+    const view = await this.documentService.getPreview(id, actor);
+
+    return { data: view };
+  }
+
   @Patch(':id')
   @Auth([{ action: 'write', subject: 'Document' }])
   @ApiEndpoint({

@@ -7,6 +7,7 @@ import { TooltipProvider } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
 import { ClinicDocumentEditDialog } from '#components/client/clinic-documents/clinic-document-edit-dialog';
+import { ClinicDocumentPreviewDialog } from '#components/client/clinic-documents/clinic-document-preview-dialog';
 import { SubmitCorpusDocumentsDialog } from '#components/client/clinic-documents/submit-corpus-documents-dialog';
 import { DocumentActionButton } from '#components/client/documents/document-action-button';
 import { ConfirmDialog } from '#components/client/shared/confirm-dialog';
@@ -17,6 +18,7 @@ import {
 } from '#lib/api/generated/document-management/document-management';
 import { resolveApiErrorMessage } from '#lib/api/resolve-api-error-message';
 import { parseApiSuccess } from '#lib/api/response';
+import { canPreviewClinicDocument } from '#lib/clinic-documents/can-preview-clinic-document';
 import { canSubmitClinicDocument } from '#lib/clinic-documents/can-submit-clinic-document';
 import { invalidateClinicDocumentQueries } from '#lib/clinic-documents/invalidate-clinic-document-queries';
 
@@ -39,6 +41,7 @@ export function ClinicDocumentRowActions({
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isSubmitOpen, setIsSubmitOpen] = useState(false);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
   /**
    * Downloads are minted per request and never persisted. The URL is opened
@@ -90,10 +93,18 @@ export function ClinicDocumentRowActions({
 
   return (
     // One provider per row rather than one per button: Radix needs an ancestor
-    // provider, and five of them in a row would each carry their own delay
+    // provider, and one per button would each carry their own delay
     // timer for controls the user reads as a single group.
     <TooltipProvider>
       <div className="flex justify-end gap-1">
+        {/* Markdown and plain text only; a PDF keeps the download beside it. */}
+        {canPreviewClinicDocument(document) ? (
+          <DocumentActionButton
+            icon="visibility"
+            label={t('preview')}
+            onClick={() => setIsPreviewOpen(true)}
+          />
+        ) : null}
         <DocumentActionButton
           icon="download"
           label={t('download')}
@@ -122,6 +133,13 @@ export function ClinicDocumentRowActions({
             onClick={() => setIsSubmitOpen(true)}
           />
         ) : null}
+        <ClinicDocumentPreviewDialog
+          open={isPreviewOpen}
+          onOpenChange={setIsPreviewOpen}
+          document={document}
+          onDownload={() => downloadMutation.mutate()}
+          isDownloadPending={downloadMutation.isPending}
+        />
         <SubmitCorpusDocumentsDialog
           open={isSubmitOpen}
           documentIds={[document.id]}
