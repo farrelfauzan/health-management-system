@@ -75,8 +75,6 @@ describe('AppSidebar', () => {
       'Farmasi',
       'Asisten AI',
       'Percakapan',
-      'Integrasi',
-      'Administrasi',
     ];
     expectedLabels.forEach((label) => {
       expect(screen.getByRole('link', { name: label })).toBeInTheDocument();
@@ -91,10 +89,8 @@ describe('AppSidebar', () => {
     expect(screen.getByRole('link', { name: 'Pasien' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Dasbor' })).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Asisten AI' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('link', { name: 'Integrasi' })).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Dokter' })).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Farmasi' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('link', { name: 'Administrasi' })).not.toBeInTheDocument();
   });
 
   it('collapses to an icon rail on desktop, keeping every nav item reachable', () => {
@@ -113,8 +109,6 @@ describe('AppSidebar', () => {
       'Farmasi',
       'Asisten AI',
       'Percakapan',
-      'Integrasi',
-      'Administrasi',
     ];
     expectedLabels.forEach((label) => {
       expect(screen.getByRole('link', { name: label })).toBeInTheDocument();
@@ -126,12 +120,5 @@ describe('AppSidebar', () => {
     renderAppSidebar(ADMIN_PORTAL_ADMIN_RULES, false);
 
     expect(document.querySelector('[data-collapsible="offcanvas"]')).toBeNull();
-  });
-
-  it('shows Integrations when either provider monitor is granted', () => {
-    renderAppSidebar([{ action: 'read', subject: 'SatusehatSubmission' }]);
-
-    expect(screen.getByRole('link', { name: 'Integrasi' })).toBeInTheDocument();
-    expect(screen.queryByRole('link', { name: 'Administrasi' })).not.toBeInTheDocument();
   });
 });
