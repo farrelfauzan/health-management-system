@@ -1,9 +1,5 @@
 import { updateDoctorSchema } from '@hms/shared-types';
-import {
-  BadRequestException,
-  ConflictException,
-  ForbiddenException,
-} from '@nestjs/common';
+import { BadRequestException, ConflictException, ForbiddenException } from '@nestjs/common';
 
 import { AuditService } from '../../../common/audit/audit.service';
 import { AdminManagementService } from '../../admin-management/service/admin-management.service';
@@ -216,9 +212,7 @@ describe('DoctorManagementService', () => {
       buildActor([{ action: 'create', resource: 'Doctor', scope: 'ANY' }]),
     );
 
-    (doctorManagementRepositoryMock.findDoctorByLicenseNumber as jest.Mock).mockResolvedValue(
-      null,
-    );
+    (doctorManagementRepositoryMock.findDoctorByLicenseNumber as jest.Mock).mockResolvedValue(null);
     (doctorManagementRepositoryMock.findActiveUserById as jest.Mock).mockResolvedValue({
       id: '7ce8961c-f8ef-4cbf-b5fc-4f7e4e301704',
     });
@@ -247,9 +241,7 @@ describe('DoctorManagementService', () => {
       buildActor([{ action: 'create', resource: 'Doctor', scope: 'ANY' }]),
     );
 
-    (doctorManagementRepositoryMock.findDoctorByLicenseNumber as jest.Mock).mockResolvedValue(
-      null,
-    );
+    (doctorManagementRepositoryMock.findDoctorByLicenseNumber as jest.Mock).mockResolvedValue(null);
     (doctorManagementRepositoryMock.findActiveSpecialtyById as jest.Mock).mockResolvedValue({
       id: neurologySpecialtyId,
     });
@@ -282,9 +274,7 @@ describe('DoctorManagementService', () => {
       buildActor([{ action: 'create', resource: 'Doctor', scope: 'ANY' }]),
     );
 
-    (doctorManagementRepositoryMock.findDoctorByLicenseNumber as jest.Mock).mockResolvedValue(
-      null,
-    );
+    (doctorManagementRepositoryMock.findDoctorByLicenseNumber as jest.Mock).mockResolvedValue(null);
     (doctorManagementRepositoryMock.findActiveSpecialtyById as jest.Mock).mockResolvedValue({
       id: specialtyId,
     });
@@ -302,7 +292,10 @@ describe('DoctorManagementService', () => {
         phoneNumber: '0812345678',
         nik: inputDoctorNik,
         isActive: true,
-        patientIds: ['3a6d785d-f729-4af2-b415-30f96439dad0', '0b6ff86c-cb15-4d70-b7d3-f542e26a2af8'],
+        patientIds: [
+          '3a6d785d-f729-4af2-b415-30f96439dad0',
+          '0b6ff86c-cb15-4d70-b7d3-f542e26a2af8',
+        ],
       },
       currentUser,
     );
@@ -525,9 +518,7 @@ describe('DoctorManagementService', () => {
       await service.updateDoctor(
         doctorId,
         {
-          licenses: [
-            { type: 'SIP', licenseNumber: 'SIP-2026-0009', expiresAt: '2031-01-01' },
-          ],
+          licenses: [{ type: 'SIP', licenseNumber: 'SIP-2026-0009', expiresAt: '2031-01-01' }],
         },
         currentUser,
       );
@@ -909,7 +900,7 @@ describe('DoctorManagementService', () => {
     expect(result.specialty).toBe('Neurology');
   });
 
-  it('denies own-scope doctor update when attempting owner reassignment', async () => {
+  it('refuses an own-scope caller on the administrative route, even for their own profile', async () => {
     (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
       buildActor([{ action: 'update', resource: 'Doctor', scope: 'OWN' }]),
     );
@@ -919,12 +910,9 @@ describe('DoctorManagementService', () => {
     });
 
     await expect(
-      service.updateDoctor(
-        doctorId,
-        { ownerUserId: 'ec7602c6-e489-4d0f-a8a7-b0f91a5bfbe2' },
-        currentUser,
-      ),
+      service.updateDoctor(doctorId, { specialtyId: neurologySpecialtyId }, currentUser),
     ).rejects.toBeInstanceOf(ForbiddenException);
+    expect(doctorManagementRepositoryMock.updateDoctor).not.toHaveBeenCalled();
   });
 
   it('throws conflict when reassigning owner already linked to another doctor', async () => {

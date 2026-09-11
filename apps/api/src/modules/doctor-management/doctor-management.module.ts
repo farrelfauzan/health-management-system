@@ -7,6 +7,7 @@ import { UserInvitationModule } from '../user-invitation/user-invitation.module'
 import { DoctorCredentialOptionController } from './controller/doctor-credential-option.controller';
 import { DoctorLicenseExpiryController } from './controller/doctor-license-expiry.controller';
 import { DoctorManagementController } from './controller/doctor-management.controller';
+import { DoctorOwnProfileController } from './controller/doctor-own-profile.controller';
 import { DoctorCredentialOptionRepository } from './repository/doctor-credential-option.repository';
 import { DoctorLicenseExpiryRepository } from './repository/doctor-license-expiry.repository';
 import { DoctorManagementRepository } from './repository/doctor-management.repository';
@@ -14,6 +15,7 @@ import { DoctorCredentialOptionService } from './service/doctor-credential-optio
 import { DoctorLicenseExpiryService } from './service/doctor-license-expiry.service';
 import { DoctorLicenseExpiryWorker } from './service/doctor-license-expiry.worker';
 import { DoctorManagementService } from './service/doctor-management.service';
+import { DoctorOwnProfileService } from './service/doctor-own-profile.service';
 
 /**
  * Exports `DoctorLicenseExpiryService` because the scheduling warning
@@ -21,6 +23,10 @@ import { DoctorManagementService } from './service/doctor-management.service';
  * access goes through the service, never the repository, so the scheduler and
  * the dashboard resolve "expired" by the same rule — including the clinic
  * timezone the day boundary is counted in.
+ *
+ * Exports `DoctorOwnProfileService` for the same reason (P20-T03): "which
+ * doctor profile is the signed-in user's" is asked again by P21-T04, and it
+ * must be answered by one rule rather than a second `ownerUserId` lookup.
  */
 @Module({
   imports: [
@@ -39,18 +45,20 @@ import { DoctorManagementService } from './service/doctor-management.service';
   ],
   controllers: [
     DoctorManagementController,
+    DoctorOwnProfileController,
     DoctorLicenseExpiryController,
     DoctorCredentialOptionController,
   ],
   providers: [
     DoctorManagementRepository,
     DoctorManagementService,
+    DoctorOwnProfileService,
     DoctorLicenseExpiryRepository,
     DoctorLicenseExpiryService,
     DoctorLicenseExpiryWorker,
     DoctorCredentialOptionRepository,
     DoctorCredentialOptionService,
   ],
-  exports: [DoctorLicenseExpiryService],
+  exports: [DoctorLicenseExpiryService, DoctorOwnProfileService],
 })
 export class DoctorManagementModule {}

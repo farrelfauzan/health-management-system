@@ -30,8 +30,11 @@ import type {
   DoctorManagementControllerListDoctorsV1Params,
   DoctorManagementControllerUpdateDoctorScheduleV1200,
   DoctorManagementControllerUpdateDoctorV1200,
+  DoctorOwnProfileControllerGetOwnDoctorProfileV1200,
+  DoctorOwnProfileControllerUpdateOwnDoctorProfileV1200,
   UpdateDoctorDto,
-  UpdateDoctorScheduleDto
+  UpdateDoctorScheduleDto,
+  UpdateOwnDoctorProfileDto
 } from '../model';
 
 import { orvalAxiosMutator } from '../../http';
@@ -616,6 +619,192 @@ export function useDoctorManagementControllerUpdateDoctorScheduleV1<TData = Awai
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getDoctorManagementControllerUpdateDoctorScheduleV1QueryOptions(id,updateDoctorScheduleDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Get my doctor profile
+ */
+export const doctorOwnProfileControllerGetOwnDoctorProfileV1 = (
+
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<DoctorOwnProfileControllerGetOwnDoctorProfileV1200>(
+      {url: `/api/v1/me/doctor-profile`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getDoctorOwnProfileControllerGetOwnDoctorProfileV1QueryKey = () => {
+    return [
+    `/api/v1/me/doctor-profile`
+    ] as const;
+    }
+
+
+export const getDoctorOwnProfileControllerGetOwnDoctorProfileV1QueryOptions = <TData = Awaited<ReturnType<typeof doctorOwnProfileControllerGetOwnDoctorProfileV1>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof doctorOwnProfileControllerGetOwnDoctorProfileV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getDoctorOwnProfileControllerGetOwnDoctorProfileV1QueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof doctorOwnProfileControllerGetOwnDoctorProfileV1>>> = ({ signal }) => doctorOwnProfileControllerGetOwnDoctorProfileV1(signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof doctorOwnProfileControllerGetOwnDoctorProfileV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type DoctorOwnProfileControllerGetOwnDoctorProfileV1QueryResult = NonNullable<Awaited<ReturnType<typeof doctorOwnProfileControllerGetOwnDoctorProfileV1>>>
+export type DoctorOwnProfileControllerGetOwnDoctorProfileV1QueryError = unknown
+
+
+export function useDoctorOwnProfileControllerGetOwnDoctorProfileV1<TData = Awaited<ReturnType<typeof doctorOwnProfileControllerGetOwnDoctorProfileV1>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof doctorOwnProfileControllerGetOwnDoctorProfileV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof doctorOwnProfileControllerGetOwnDoctorProfileV1>>,
+          TError,
+          Awaited<ReturnType<typeof doctorOwnProfileControllerGetOwnDoctorProfileV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDoctorOwnProfileControllerGetOwnDoctorProfileV1<TData = Awaited<ReturnType<typeof doctorOwnProfileControllerGetOwnDoctorProfileV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof doctorOwnProfileControllerGetOwnDoctorProfileV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof doctorOwnProfileControllerGetOwnDoctorProfileV1>>,
+          TError,
+          Awaited<ReturnType<typeof doctorOwnProfileControllerGetOwnDoctorProfileV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDoctorOwnProfileControllerGetOwnDoctorProfileV1<TData = Awaited<ReturnType<typeof doctorOwnProfileControllerGetOwnDoctorProfileV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof doctorOwnProfileControllerGetOwnDoctorProfileV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get my doctor profile
+ */
+
+export function useDoctorOwnProfileControllerGetOwnDoctorProfileV1<TData = Awaited<ReturnType<typeof doctorOwnProfileControllerGetOwnDoctorProfileV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof doctorOwnProfileControllerGetOwnDoctorProfileV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getDoctorOwnProfileControllerGetOwnDoctorProfileV1QueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Update my doctor profile
+ */
+export const doctorOwnProfileControllerUpdateOwnDoctorProfileV1 = (
+    updateOwnDoctorProfileDto: UpdateOwnDoctorProfileDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<DoctorOwnProfileControllerUpdateOwnDoctorProfileV1200>(
+      {url: `/api/v1/me/doctor-profile`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: updateOwnDoctorProfileDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getDoctorOwnProfileControllerUpdateOwnDoctorProfileV1QueryKey = (updateOwnDoctorProfileDto?: UpdateOwnDoctorProfileDto,) => {
+    return [
+    'PATCH', `/api/v1/me/doctor-profile`, updateOwnDoctorProfileDto
+    ] as const;
+    }
+
+
+export const getDoctorOwnProfileControllerUpdateOwnDoctorProfileV1QueryOptions = <TData = Awaited<ReturnType<typeof doctorOwnProfileControllerUpdateOwnDoctorProfileV1>>, TError = unknown>(updateOwnDoctorProfileDto: UpdateOwnDoctorProfileDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof doctorOwnProfileControllerUpdateOwnDoctorProfileV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getDoctorOwnProfileControllerUpdateOwnDoctorProfileV1QueryKey(updateOwnDoctorProfileDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof doctorOwnProfileControllerUpdateOwnDoctorProfileV1>>> = ({ signal }) => doctorOwnProfileControllerUpdateOwnDoctorProfileV1(updateOwnDoctorProfileDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof doctorOwnProfileControllerUpdateOwnDoctorProfileV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type DoctorOwnProfileControllerUpdateOwnDoctorProfileV1QueryResult = NonNullable<Awaited<ReturnType<typeof doctorOwnProfileControllerUpdateOwnDoctorProfileV1>>>
+export type DoctorOwnProfileControllerUpdateOwnDoctorProfileV1QueryError = unknown
+
+
+export function useDoctorOwnProfileControllerUpdateOwnDoctorProfileV1<TData = Awaited<ReturnType<typeof doctorOwnProfileControllerUpdateOwnDoctorProfileV1>>, TError = unknown>(
+ updateOwnDoctorProfileDto: UpdateOwnDoctorProfileDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof doctorOwnProfileControllerUpdateOwnDoctorProfileV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof doctorOwnProfileControllerUpdateOwnDoctorProfileV1>>,
+          TError,
+          Awaited<ReturnType<typeof doctorOwnProfileControllerUpdateOwnDoctorProfileV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDoctorOwnProfileControllerUpdateOwnDoctorProfileV1<TData = Awaited<ReturnType<typeof doctorOwnProfileControllerUpdateOwnDoctorProfileV1>>, TError = unknown>(
+ updateOwnDoctorProfileDto: UpdateOwnDoctorProfileDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof doctorOwnProfileControllerUpdateOwnDoctorProfileV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof doctorOwnProfileControllerUpdateOwnDoctorProfileV1>>,
+          TError,
+          Awaited<ReturnType<typeof doctorOwnProfileControllerUpdateOwnDoctorProfileV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDoctorOwnProfileControllerUpdateOwnDoctorProfileV1<TData = Awaited<ReturnType<typeof doctorOwnProfileControllerUpdateOwnDoctorProfileV1>>, TError = unknown>(
+ updateOwnDoctorProfileDto: UpdateOwnDoctorProfileDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof doctorOwnProfileControllerUpdateOwnDoctorProfileV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Update my doctor profile
+ */
+
+export function useDoctorOwnProfileControllerUpdateOwnDoctorProfileV1<TData = Awaited<ReturnType<typeof doctorOwnProfileControllerUpdateOwnDoctorProfileV1>>, TError = unknown>(
+ updateOwnDoctorProfileDto: UpdateOwnDoctorProfileDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof doctorOwnProfileControllerUpdateOwnDoctorProfileV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getDoctorOwnProfileControllerUpdateOwnDoctorProfileV1QueryOptions(updateOwnDoctorProfileDto,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

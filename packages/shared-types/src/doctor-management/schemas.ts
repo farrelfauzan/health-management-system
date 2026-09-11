@@ -277,8 +277,39 @@ export const updateDoctorSchema = z
     message: 'At least one field is required',
   });
 
+/**
+ * What a doctor may change about themselves (P20-T03, see D-025).
+ *
+ * Only how they are addressed and reached: name, title, degrees, phone and
+ * education history. Everything else on the profile is something the clinic
+ * asserts about them, not a preference — specialty and licences are
+ * credentials, the NIK and the SATUSEHAT practitioner id are national
+ * identity (a NIK change follows the P21-T09 unlink rule, an IHS number
+ * changes only through the NIK link or the verified P21-T08 path), and
+ * `isActive` / `ownerUserId` are administration.
+ *
+ * Deliberately its own schema rather than a pick of `updateDoctorSchema`, and
+ * `strict`: an administrative field on this route is refused with a 400
+ * rather than silently dropped, so a doctor who tries to change their STR is
+ * told no instead of seeing a success that changed nothing.
+ */
+export const updateOwnDoctorProfileSchema = z
+  .object({
+    fullName: z.string().trim().min(2).max(120).optional(),
+    phoneNumber: indonesianPhoneNumberSchema.optional(),
+    title: doctorTitleSchema.nullable().optional(),
+    degrees: doctorDegreesSchema.nullable().optional(),
+    // Replaces the whole list, exactly as on the administrative route.
+    educations: doctorEducationsSchema.optional(),
+  })
+  .strict()
+  .refine((payload) => Object.values(payload).some((value) => value !== undefined), {
+    message: 'At least one field is required',
+  });
+
 export type DoctorScheduleEntryInput = z.infer<typeof doctorScheduleEntrySchema>;
 export type UpdateDoctorScheduleInput = z.infer<typeof updateDoctorScheduleSchema>;
 export type ListDoctorsQueryInput = z.infer<typeof listDoctorsQuerySchema>;
 export type CreateDoctorInput = z.infer<typeof createDoctorSchema>;
 export type UpdateDoctorInput = z.infer<typeof updateDoctorSchema>;
+export type UpdateOwnDoctorProfileInput = z.infer<typeof updateOwnDoctorProfileSchema>;

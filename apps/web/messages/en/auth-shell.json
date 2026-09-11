@@ -240,7 +240,8 @@
           "patient": "Patient",
           "staff": "Staff"
         },
-        "lockWorkstation": "Lock workstation"
+        "lockWorkstation": "Lock workstation",
+        "myProfile": "My profile"
       },
       "portal": {
         "name": "Patient Portal",
