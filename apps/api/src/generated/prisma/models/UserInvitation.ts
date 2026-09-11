@@ -895,8 +895,9 @@ export type $UserInvitationPayload<ExtArgs extends runtime.Types.Extensions.Inte
     updatedAt: Date
     /**
      * The doctor profile this invitation was raised for (P19-T15), set when it
-     * came from the create-doctor form rather than the staff invitation screen.
-     * Null for every ordinary staff invitation.
+     * came from the create-doctor form — or, since P20-T01, from the doctor
+     * directory's send-invitation action for a doctor with no account — rather
+     * than the staff invitation screen. Null for every ordinary staff invitation.
      * 
      * This column, not an `email` on `doctor_profiles`, is what lets an
      * administrator enter a doctor's sign-in address at creation. No `User` row

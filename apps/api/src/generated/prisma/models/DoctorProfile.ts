@@ -3609,6 +3609,16 @@ export type $DoctorProfilePayload<ExtArgs extends runtime.Types.Extensions.Inter
     fullName: string
     specialtyId: string
     phoneNumber: string | null
+    /**
+     * The account this doctor signs in with. An address is collected at
+     * creation and owned by `User` — there is no `email` column here, by
+     * design. Required on create since P20-T01: an existing account is attached
+     * at once, a new address is invited (`UserInvitation.doctorProfileId`) and
+     * this is filled when the invitation is accepted. Stays nullable because
+     * a pending invitation has no user yet, and doctors created before P20-T01
+     * may have no account at all; the directory shows those as `NO_ACCOUNT` and
+     * offers to invite them.
+     */
     ownerUserId: string | null
     isActive: boolean
     createdAt: Date
