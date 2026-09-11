@@ -92,7 +92,11 @@
       "empty": "Dokumen ini tidak berisi teks.",
       "truncated": "Menampilkan {shown} dari {total} karakter pertama. Unduh berkas untuk membaca seluruhnya.",
       "download": "Unduh",
-      "close": "Tutup"
+      "close": "Tutup",
+      "pdfDescription": "Ditampilkan per halaman. Tautan di dalam berkas tidak aktif.",
+      "pageOf": "Halaman {page} dari {total}",
+      "previousPage": "Halaman sebelumnya",
+      "nextPage": "Halaman berikutnya"
     }
   }
 }

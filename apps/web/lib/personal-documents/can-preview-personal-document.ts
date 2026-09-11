@@ -1,10 +1,11 @@
-import { isManagedDocumentPreviewMimeType, type PersonalDocumentView } from '@hms/shared-types';
+import type { PersonalDocumentView } from '@hms/shared-types';
+
+import { canPreviewDocumentMimeType } from '#lib/documents/can-preview-document-mime-type';
 
 /**
- * Whether a "My documents" row offers a preview. Reads the same allowlist
- * the API enforces, so the button never offers a request the API would
- * refuse with `PERSONAL_DOCUMENT_NOT_PREVIEWABLE`; a PDF keeps its download.
+ * Whether a "My documents" row offers a preview: Markdown and plain text
+ * through the text preview, PDFs through the page viewer.
  */
 export function canPreviewPersonalDocument(document: PersonalDocumentView): boolean {
-  return isManagedDocumentPreviewMimeType(document.mimeType);
+  return canPreviewDocumentMimeType(document.mimeType);
 }

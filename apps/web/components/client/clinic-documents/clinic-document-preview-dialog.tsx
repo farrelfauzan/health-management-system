@@ -3,7 +3,9 @@
 import type { ClinicDocumentView } from '@hms/shared-types';
 
 import { DocumentPreviewDialog } from '#components/client/documents/document-preview-dialog';
+import { useClinicDocumentFileUrl } from '#lib/clinic-documents/use-clinic-document-file-url';
 import { useClinicDocumentPreview } from '#lib/clinic-documents/use-clinic-document-preview';
+import { isPdfMimeType } from '#lib/documents/is-pdf-mime-type';
 
 type ClinicDocumentPreviewDialogProps = {
   open: boolean;
@@ -13,7 +15,10 @@ type ClinicDocumentPreviewDialogProps = {
   isDownloadPending: boolean;
 };
 
-/** A corpus row's preview: read through the admin endpoint, and only while open. */
+/**
+ * A corpus row's preview, read only while open: a PDF through a fresh signed
+ * link for the page viewer, anything else through the text preview endpoint.
+ */
 export function ClinicDocumentPreviewDialog({
   open,
   onOpenChange,
@@ -21,7 +26,10 @@ export function ClinicDocumentPreviewDialog({
   onDownload,
   isDownloadPending,
 }: ClinicDocumentPreviewDialogProps) {
-  const previewQuery = useClinicDocumentPreview(document.id, open);
+  const isPdf = isPdfMimeType(document.mimeType);
+  const previewQuery = useClinicDocumentPreview(document.id, open && !isPdf);
+  const fileQuery = useClinicDocumentFileUrl(document.id, open && isPdf);
+  const activeQuery = isPdf ? fileQuery : previewQuery;
 
   return (
     <DocumentPreviewDialog
@@ -30,8 +38,9 @@ export function ClinicDocumentPreviewDialog({
       title={document.title}
       mimeType={document.mimeType}
       preview={previewQuery.preview}
-      isPending={previewQuery.isPending}
-      isError={previewQuery.isError}
+      fileUrl={fileQuery.fileUrl}
+      isPending={activeQuery.isPending}
+      isError={activeQuery.isError}
       onDownload={onDownload}
       isDownloadPending={isDownloadPending}
     />

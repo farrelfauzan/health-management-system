@@ -28,6 +28,7 @@ vi.mock('#lib/api/generated/document-management/document-management', () => ({
   getDocumentAdminControllerGetApprovalContextV1QueryKey: () => ['clinic-corpus-approval-context'],
   documentAdminControllerGetPreviewV1: vi.fn(),
   getDocumentAdminControllerGetPreviewV1QueryKey: (id: string) => ['clinic-document-preview', id],
+  getDocumentAdminControllerGetDownloadUrlV1QueryKey: (id: string) => ['clinic-document-file', id],
 }));
 
 vi.mock('#lib/api/generated/documents/documents', () => ({

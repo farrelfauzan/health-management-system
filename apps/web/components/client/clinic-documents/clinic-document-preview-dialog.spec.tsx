@@ -6,12 +6,21 @@ import { NextIntlClientProvider } from 'next-intl';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { ClinicDocumentPreviewDialog } from './clinic-document-preview-dialog';
-import { documentAdminControllerGetPreviewV1 } from '#lib/api/generated/document-management/document-management';
+import {
+  documentAdminControllerGetDownloadUrlV1,
+  documentAdminControllerGetPreviewV1,
+} from '#lib/api/generated/document-management/document-management';
 import messages from '../../../messages/en/dashboard-ai.json';
 import sharedMessages from '../../../messages/en/shared.json';
 
 vi.mock('#lib/api/generated/document-management/document-management', () => ({
   documentAdminControllerGetPreviewV1: vi.fn(),
+  documentAdminControllerGetDownloadUrlV1: vi.fn(),
+  getDocumentAdminControllerGetDownloadUrlV1QueryKey: (id: string) => [
+    '/api/v1/admin/documents',
+    id,
+    'download',
+  ],
   getDocumentAdminControllerGetPreviewV1QueryKey: (id: string) => [
     '/api/v1/admin/documents',
     id,
@@ -19,7 +28,13 @@ vi.mock('#lib/api/generated/document-management/document-management', () => ({
   ],
 }));
 
+// pdf.js cannot run in jsdom; the viewer has its own spec with react-pdf mocked.
+vi.mock('#components/client/documents/pdf-document-viewer', () => ({
+  PdfDocumentViewer: ({ url }: { url: string }) => <div>pdf viewer for {url}</div>,
+}));
+
 const previewMock = vi.mocked(documentAdminControllerGetPreviewV1);
+const downloadUrlMock = vi.mocked(documentAdminControllerGetDownloadUrlV1);
 
 const DOCUMENT_ID = '00000000-0000-4000-8000-000000000001';
 
@@ -141,6 +156,24 @@ describe('ClinicDocumentPreviewDialog', () => {
     renderDialog(buildDocument());
 
     expect(await screen.findByText(/Unable to load this document/)).toBeInTheDocument();
+  });
+
+  it('renders a PDF through the page viewer from a fresh signed link, not the text preview', async () => {
+    downloadUrlMock.mockResolvedValue({
+      status: 200,
+      headers: {},
+      data: {
+        data: { url: 'https://signed.example/doc.pdf', expiresAt: '2026-09-11T10:00:00.000Z' },
+      },
+    } as never);
+
+    renderDialog(buildDocument({ mimeType: 'application/pdf' }));
+
+    expect(
+      await screen.findByText('pdf viewer for https://signed.example/doc.pdf'),
+    ).toBeInTheDocument();
+    expect(screen.getByText(/Shown page by page/)).toBeInTheDocument();
+    expect(previewMock).not.toHaveBeenCalled();
   });
 
   it('fetches nothing while it is closed', () => {
