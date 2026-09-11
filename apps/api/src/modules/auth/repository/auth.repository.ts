@@ -101,6 +101,11 @@ export class AuthRepository {
    *
    * SJ-9 adds a fifth outcome ahead of the others, `IDLE_TIMEOUT`, for a
    * family nobody has touched inside the threshold.
+   *
+   * A caller that reads the token as live but then loses the guarded update
+   * re-reads the row and lands in whichever of the last two verdicts the
+   * committed row deserves. That is the genuinely simultaneous two-tab case,
+   * and losing the write is not, by itself, evidence of theft.
    */
   async consumeRefreshToken(input: {
     tokenHash: string;
@@ -148,36 +153,40 @@ export class AuthRepository {
       if (existing.expiresAt <= now) {
         return { outcome: 'EXPIRED', userId: existing.userId, familyId: existing.familyId };
       }
+      const spentTokenPolicy = {
+        tx,
+        now,
+        graceWindowMs: input.graceWindowMs,
+        nextToken: input.nextToken,
+      };
       if (existing.consumedAt) {
-        const isWithinGrace = now.getTime() - existing.consumedAt.getTime() <= input.graceWindowMs;
-        if (!isWithinGrace) {
-          await revokeFamily(tx, existing.familyId, now);
-          return {
-            outcome: 'REUSE_DETECTED',
-            userId: existing.userId,
-            familyId: existing.familyId,
-          };
-        }
-        await tx.refreshToken.create({ data: input.nextToken });
-        return {
-          outcome: 'GRACE_REISSUED',
-          userId: existing.userId,
-          familyId: existing.familyId,
-        };
+        return settleSpentToken({ ...spentTokenPolicy, token: existing });
       }
       // `consumedAt: null` in the filter makes the write itself the race
-      // arbiter: the loser updates zero rows and falls through to the reuse
-      // path on its retry rather than silently minting a second successor.
+      // arbiter: exactly one caller consumes the token and mints the successor.
       const consumed = await tx.refreshToken.updateMany({
         where: { id: existing.id, consumedAt: null, revokedAt: null },
         data: { consumedAt: now },
       });
-      if (consumed.count !== 1) {
-        await revokeFamily(tx, existing.familyId, now);
-        return { outcome: 'REUSE_DETECTED', userId: existing.userId, familyId: existing.familyId };
+      if (consumed.count === 1) {
+        await tx.refreshToken.create({ data: input.nextToken });
+        return { outcome: 'ROTATED', userId: existing.userId, familyId: existing.familyId };
       }
-      await tx.refreshToken.create({ data: input.nextToken });
-      return { outcome: 'ROTATED', userId: existing.userId, familyId: existing.familyId };
+      // Losing that write is not theft on its own. Under READ COMMITTED the
+      // loser of a genuine two-tab race waits on the winner's row lock, then
+      // re-checks `consumed_at IS NULL` against the committed row and matches
+      // nothing; calling that reuse logged people out for having two tabs
+      // open. This read is a new statement, so it sees whatever the winner, or
+      // a concurrent revocation, committed, and the row is judged as if it had
+      // arrived that way.
+      const current = await tx.refreshToken.findUnique({
+        where: { id: existing.id },
+        select: { userId: true, familyId: true, consumedAt: true, revokedAt: true },
+      });
+      if (!current) {
+        return { outcome: 'INVALID' };
+      }
+      return settleSpentToken({ ...spentTokenPolicy, token: current });
     });
   }
 
@@ -302,8 +311,37 @@ export class AuthRepository {
 }
 
 type RefreshTokenTransaction = {
-  refreshToken: { updateMany(args: unknown): Promise<{ count: number }> };
+  refreshToken: {
+    updateMany(args: unknown): Promise<{ count: number }>;
+    create(args: unknown): Promise<unknown>;
+  };
 };
+
+/**
+ * The verdict on a token someone else has already spent. If it was consumed
+ * inside the grace window the caller gets a sibling successor and the family is
+ * left alone. Otherwise the whole family is revoked. A revoked row, or one that
+ * is somehow neither consumed nor revoked, fails closed as reuse.
+ */
+async function settleSpentToken(input: {
+  tx: RefreshTokenTransaction;
+  token: { userId: string; familyId: string; consumedAt: Date | null; revokedAt: Date | null };
+  now: Date;
+  graceWindowMs: number;
+  nextToken: RefreshTokenRecordPayload;
+}): Promise<ConsumeRefreshTokenResult> {
+  const { tx, token, now } = input;
+  const isWithinGrace =
+    !token.revokedAt &&
+    token.consumedAt !== null &&
+    now.getTime() - token.consumedAt.getTime() <= input.graceWindowMs;
+  if (!isWithinGrace) {
+    await revokeFamily(tx, token.familyId, now);
+    return { outcome: 'REUSE_DETECTED', userId: token.userId, familyId: token.familyId };
+  }
+  await tx.refreshToken.create({ data: input.nextToken });
+  return { outcome: 'GRACE_REISSUED', userId: token.userId, familyId: token.familyId };
+}
 
 async function revokeFamily(
   tx: RefreshTokenTransaction,
