@@ -202,6 +202,30 @@
         "labResultAmended": {
           "title": "Hasil laboratorium dikoreksi",
           "body": "Nilai yang sudah dikeluarkan pada {orderNumber} telah dikoreksi. Periksa kembali sebelum bertindak atas nilai sebelumnya."
+        },
+        "documentApprovalRequested": {
+          "title": "Permintaan persetujuan dokumen",
+          "body": "{drafterEmail} meminta persetujuan Anda atas “{documentTitle}”."
+        },
+        "documentApprovalApproved": {
+          "title": "Dokumen disetujui",
+          "body": "“{documentTitle}” telah disetujui dan diterbitkan."
+        },
+        "documentApprovalRejected": {
+          "title": "Dokumen ditolak",
+          "body": "“{documentTitle}” ditolak dan dikembalikan ke draf. Alasan: {reason}"
+        },
+        "documentApprovalSuperseded": {
+          "title": "Permintaan persetujuan dibatalkan",
+          "body": "Isi atau daftar penyetuju “{documentTitle}” berubah, sehingga permintaan persetujuan sebelumnya dibatalkan."
+        },
+        "documentApprovalDueSoon": {
+          "title": "Tenggat persetujuan sudah dekat",
+          "body": "“{documentTitle}” masih menunggu persetujuan Anda dan tenggatnya sudah dekat."
+        },
+        "documentApprovalOverdue": {
+          "title": "Persetujuan melewati tenggat",
+          "body": "“{documentTitle}” sudah melewati tenggat dan masih menunggu persetujuan Anda."
         }
       },
       "profile": {

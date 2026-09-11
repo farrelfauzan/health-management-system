@@ -202,6 +202,30 @@
         "labResultAmended": {
           "title": "Laboratory result amended",
           "body": "A released value on {orderNumber} has been corrected. Check it before acting on the earlier one."
+        },
+        "documentApprovalRequested": {
+          "title": "Approval requested",
+          "body": "{drafterEmail} asked for your approval on “{documentTitle}”."
+        },
+        "documentApprovalApproved": {
+          "title": "Document approved",
+          "body": "“{documentTitle}” has been approved and issued."
+        },
+        "documentApprovalRejected": {
+          "title": "Document rejected",
+          "body": "“{documentTitle}” was rejected and returned to draft. Reason: {reason}"
+        },
+        "documentApprovalSuperseded": {
+          "title": "Approval request voided",
+          "body": "The content or approver list of “{documentTitle}” changed, so the earlier approval request was voided."
+        },
+        "documentApprovalDueSoon": {
+          "title": "Approval deadline approaching",
+          "body": "“{documentTitle}” is still waiting for your approval and its deadline is close."
+        },
+        "documentApprovalOverdue": {
+          "title": "Approval overdue",
+          "body": "“{documentTitle}” is past its deadline and still waiting for your approval."
         }
       },
       "profile": {
