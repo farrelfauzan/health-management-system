@@ -235,25 +235,6 @@ export const ADMIN_NAV_SECTIONS: AdminNavSection[] = [
         badgeKey: 'conversationHandoff',
       },
       {
-        href: '/admin/ai-providers',
-        label: 'AI Providers',
-        labelKey: 'aiProviders',
-        icon: 'settings_input_component',
-        ability: { action: 'read', subject: 'AiProviderConfig' },
-      },
-      {
-        href: '/admin/integrations',
-        label: 'Integrations',
-        labelKey: 'integrations',
-        icon: 'hub',
-        ability: [
-          { action: 'read', subject: 'BpjsSubmission' },
-          { action: 'read', subject: 'SatusehatSubmission' },
-          { action: 'manage', subject: 'BpjsConfig' },
-          { action: 'manage', subject: 'BpjsMapping' },
-        ],
-      },
-      {
         // SJ-1. Gated on `read` alone, not `manage`: an account that may see
         // the chart but not redraw it still needs the way in, and the page
         // renders read-only for it.
@@ -262,13 +243,6 @@ export const ADMIN_NAV_SECTIONS: AdminNavSection[] = [
         labelKey: 'organization',
         icon: 'account_tree',
         ability: { action: 'read', subject: 'OrganizationUnit' },
-      },
-      {
-        href: '/admin/administration',
-        label: 'Administration',
-        labelKey: 'administration',
-        icon: 'settings',
-        ability: { action: 'read', subject: 'User' },
       },
       {
         // SJ-156. The hub of every configuration screen. Opens on any ability
