@@ -24,6 +24,9 @@ export {
   CommandShortcut,
 } from '#components/command';
 export { DatePicker } from '#components/date-picker';
+export { DateTimePicker } from '#components/date-time-picker';
+export { MonthPicker } from '#components/month-picker';
+export { TimePicker } from '#components/time-picker';
 export { Input } from '#components/input';
 export { PhoneInput } from '#components/phone-input';
 export {

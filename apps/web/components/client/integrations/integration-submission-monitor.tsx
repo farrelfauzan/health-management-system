@@ -17,7 +17,6 @@ import {
   CardHeader,
   CardTitle,
   Icon,
-  Input,
   Select,
   SelectContent,
   SelectItem,
@@ -46,6 +45,7 @@ import {
   getSatusehatSubmissionControllerListSubmissionsV1QueryKey,
   satusehatSubmissionControllerRetrySubmissionV1,
 } from '#lib/api/generated/satusehat/satusehat';
+import { LocalizedMonthPicker } from '#components/client/shared/localized-month-picker';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import {
   useBpjsMonthlyReport,
@@ -399,12 +399,11 @@ export function IntegrationSubmissionMonitor() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <Input
+            <LocalizedMonthPicker
               className="w-48"
-              type="month"
               aria-label={t('reconciliationMonth')}
               value={month}
-              onChange={(event) => setMonth(event.target.value)}
+              onValueChange={setMonth}
             />
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               {(reportQuery.data?.types ?? []).map((summary) => (

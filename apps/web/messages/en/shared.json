@@ -11,6 +11,15 @@
       "nextPage": "Next page",
       "page": "Page {page}"
     },
+    "pickers": {
+      "pickDate": "Pick a date",
+      "pickTime": "Pick a time",
+      "pickMonth": "Pick a month",
+      "hour": "Hour",
+      "minute": "Minute",
+      "previousYear": "Previous year",
+      "nextYear": "Next year"
+    },
     "statuses": {
       "active": "ACTIVE",
       "inactive": "INACTIVE",

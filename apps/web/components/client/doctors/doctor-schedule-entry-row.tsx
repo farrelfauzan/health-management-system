@@ -5,7 +5,6 @@ import {
   Button,
   Checkbox,
   Icon,
-  Input,
   Label,
   Select,
   SelectContent,
@@ -16,6 +15,7 @@ import {
 import { useTranslations } from 'next-intl';
 
 import { DoctorScheduleCapacityField } from '#components/client/doctors/doctor-schedule-capacity-field';
+import { LocalizedTimePicker } from '#components/client/shared/localized-time-picker';
 
 const DAYS_OF_WEEK = [0, 1, 2, 3, 4, 5, 6] as const;
 
@@ -62,20 +62,18 @@ export function DoctorScheduleEntryRow({
           ))}
         </SelectContent>
       </Select>
-      <Input
-        type="time"
+      <LocalizedTimePicker
         className="w-28"
         aria-label={t('doctors.scheduleFields.start', { index: index + 1 })}
         value={entry.startTime}
-        onChange={(event) => onChange(index, { ...entry, startTime: event.target.value })}
+        onValueChange={(value) => onChange(index, { ...entry, startTime: value })}
       />
       <span className="text-sm text-slate-400">–</span>
-      <Input
-        type="time"
+      <LocalizedTimePicker
         className="w-28"
         aria-label={t('doctors.scheduleFields.end', { index: index + 1 })}
         value={entry.endTime}
-        onChange={(event) => onChange(index, { ...entry, endTime: event.target.value })}
+        onValueChange={(value) => onChange(index, { ...entry, endTime: value })}
       />
       <DoctorScheduleCapacityField
         index={index}

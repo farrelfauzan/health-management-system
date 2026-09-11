@@ -1,9 +1,18 @@
 'use client';
 
 import { MANAGED_DOCUMENT_STATUSES, type ManagedDocumentStatusValue } from '@hms/shared-types';
-import { Input, Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@hms/ui';
+import {
+  Input,
+  Label,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { LocalizedDatePicker } from '#components/client/shared/localized-date-picker';
 import type { ManagedDocumentFilters } from '#lib/managed-documents/managed-document-filters';
 import { useDocumentTypes } from '#lib/document-types/use-document-types';
 
@@ -104,26 +113,20 @@ export function ManagedDocumentsFilterBar({ filters, onChange }: ManagedDocument
       </div>
       <div className="space-y-1">
         <Label htmlFor="managed-documents-from">{t('from')}</Label>
-        <Input
+        <LocalizedDatePicker
           id="managed-documents-from"
-          type="date"
           value={filters.from ?? ''}
           className="w-40"
-          onChange={(event) =>
-            onChange({ ...filters, from: event.target.value === '' ? null : event.target.value })
-          }
+          onValueChange={(value) => onChange({ ...filters, from: value === '' ? null : value })}
         />
       </div>
       <div className="space-y-1">
         <Label htmlFor="managed-documents-to">{t('to')}</Label>
-        <Input
+        <LocalizedDatePicker
           id="managed-documents-to"
-          type="date"
           value={filters.to ?? ''}
           className="w-40"
-          onChange={(event) =>
-            onChange({ ...filters, to: event.target.value === '' ? null : event.target.value })
-          }
+          onValueChange={(value) => onChange({ ...filters, to: value === '' ? null : value })}
         />
       </div>
     </div>

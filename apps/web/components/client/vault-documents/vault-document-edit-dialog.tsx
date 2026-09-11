@@ -17,6 +17,7 @@ import {
 import { useTranslations } from 'next-intl';
 
 import { InlineNotice } from '#components/client/shared/inline-notice';
+import { LocalizedDatePicker } from '#components/client/shared/localized-date-picker';
 import { VaultCategorySelect } from '#components/client/vault-documents/vault-category-select';
 import { vaultDocumentControllerUpdateDocumentV1 } from '#lib/api/generated/document-management/document-management';
 import { resolveApiErrorMessage } from '#lib/api/resolve-api-error-message';
@@ -135,20 +136,18 @@ export function VaultDocumentEditDialog({
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="vault-edit-issued">{t('fields.issuedAt')}</Label>
-              <Input
+              <LocalizedDatePicker
                 id="vault-edit-issued"
-                type="date"
                 value={issuedAt}
-                onChange={(event) => setIssuedAt(event.target.value)}
+                onValueChange={setIssuedAt}
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor="vault-edit-expires">{t('fields.expiresAt')}</Label>
-              <Input
+              <LocalizedDatePicker
                 id="vault-edit-expires"
-                type="date"
                 value={expiresAt}
-                onChange={(event) => setExpiresAt(event.target.value)}
+                onValueChange={setExpiresAt}
               />
             </div>
           </div>

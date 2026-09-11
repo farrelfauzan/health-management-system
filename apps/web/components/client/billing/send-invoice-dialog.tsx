@@ -16,7 +16,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  Input,
   Label,
   Select,
   SelectContent,
@@ -29,6 +28,7 @@ import { useTranslations } from 'next-intl';
 
 import { SendInvoiceChannelOption } from '#components/client/billing/send-invoice-channel-option';
 import { InlineNotice } from '#components/client/shared/inline-notice';
+import { LocalizedTimePicker } from '#components/client/shared/localized-time-picker';
 import { resolveApiErrorMessage } from '#lib/api/resolve-api-error-message';
 import { buildSendAt } from '#lib/document-delivery/build-send-at';
 import { resolveDeliveryRefusal } from '#lib/document-delivery/resolve-delivery-refusal';
@@ -200,12 +200,11 @@ export function SendInvoiceDialog({ invoice, open, onOpenChange }: SendInvoiceDi
                   <Label htmlFor="send-invoice-time" className="text-xs">
                     {t('scheduleTime')}
                   </Label>
-                  <Input
+                  <LocalizedTimePicker
                     id="send-invoice-time"
-                    type="time"
                     value={sendTime}
                     disabled={isBusy}
-                    onChange={(event) => setSendTime(event.target.value)}
+                    onValueChange={setSendTime}
                   />
                 </div>
                 <p className="col-span-2 text-xs text-slate-500">{t('scheduleHint')}</p>

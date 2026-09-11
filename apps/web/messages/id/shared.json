@@ -11,6 +11,15 @@
       "nextPage": "Halaman berikutnya",
       "page": "Halaman {page}"
     },
+    "pickers": {
+      "pickDate": "Pilih tanggal",
+      "pickTime": "Pilih waktu",
+      "pickMonth": "Pilih bulan",
+      "hour": "Jam",
+      "minute": "Menit",
+      "previousYear": "Tahun sebelumnya",
+      "nextYear": "Tahun berikutnya"
+    },
     "statuses": {
       "active": "AKTIF",
       "inactive": "TIDAK AKTIF",

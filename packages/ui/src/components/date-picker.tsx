@@ -24,6 +24,7 @@ type DatePickerProps = {
   onBlur?: () => void;
   'aria-label'?: string;
   'aria-invalid'?: boolean;
+  'aria-describedby'?: string;
 };
 
 function parseDatePickerValue(value: string): Date | undefined {
@@ -46,6 +47,7 @@ export function DatePicker({
   onBlur,
   'aria-label': ariaLabel,
   'aria-invalid': ariaInvalid,
+  'aria-describedby': ariaDescribedBy,
 }: DatePickerProps): React.JSX.Element {
   const [isOpen, setIsOpen] = React.useState(false);
   const selectedDate = parseDatePickerValue(value);
@@ -65,6 +67,7 @@ export function DatePicker({
           onBlur={onBlur}
           aria-label={ariaLabel}
           aria-invalid={ariaInvalid}
+          aria-describedby={ariaDescribedBy}
           data-empty={!selectedDate}
           className={cn(
             'w-full justify-start text-left font-normal data-[empty=true]:text-placeholder',
