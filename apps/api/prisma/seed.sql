@@ -1811,4 +1811,103 @@ SET
   "deleted_at" = NULL,
   "updated_at" = NOW();
 
+-- A published default invoice template, so a fresh clinic renders receipts
+-- from the template engine and the editor opens on a real layout instead of
+-- a blank page. Without it the only layout is the built-in fallback
+-- (`built-in-invoice-template.ts`), which works but which nobody can edit.
+--
+-- Written in the editor's own dialect — pixel column widths, no inline
+-- styling beyond `text-align` — because TipTap rewrites anything else the
+-- first time someone opens the template, and a layout that changes shape on
+-- open is one nobody can safely republish.
+--
+-- Seeded once, then the clinic's: inserted only while no default INVOICE
+-- template exists, and never updated. A clinic that edits it, archives it or
+-- makes another template the default keeps that choice across every re-seed.
+-- The version row is v1 with no publisher and no approval decision, which is
+-- what a system-authored layout is — INVOICE_TEMPLATE ships with approval off.
+WITH seeded_template AS (
+  INSERT INTO "document_templates" (
+    "id",
+    "kind",
+    "name",
+    "description",
+    "status",
+    "is_default",
+    "content_html",
+    "settings",
+    "created_by_id",
+    "created_at",
+    "updated_at"
+  )
+  SELECT
+    '759db7a0-2e58-4cff-96d8-a34a4a0fd5e9'::uuid,
+    'INVOICE'::"DocumentTemplateKind",
+    'Kuitansi Klinik (standar)',
+    'Kuitansi standar: kop klinik, identitas pasien, rincian tindakan, total, dan pembayaran.',
+    'PUBLISHED'::"DocumentTemplateStatus",
+    TRUE,
+    replace($tpl$
+<table style="width:680px"><colgroup><col style="width:500px"><col style="width:180px"></colgroup><tbody><tr>
+<td><h2><span data-hms-var="clinic.name"></span></h2>
+<p><span data-hms-var="clinic.address"></span></p>
+<p>Telp. <span data-hms-var="clinic.phone"></span> &#xb7; <span data-hms-var="clinic.email"></span></p>
+<p>Izin <span data-hms-var="clinic.licenseNumber"></span> &#xb7; NPWP <span data-hms-var="clinic.taxId"></span></p></td>
+<td><p style="text-align:right"><span data-hms-var="clinic.logo"></span></p></td>
+</tr></tbody></table>
+<hr>
+<h3 style="text-align:center">KUITANSI / INVOICE</h3>
+<table style="width:680px"><colgroup><col style="width:110px"><col style="width:230px"><col style="width:110px"><col style="width:230px"></colgroup><tbody>
+<tr><td><p>Nomor</p></td><td><p><strong><span data-hms-var="invoice.number"></span></strong></p></td><td><p>Tanggal</p></td><td><p><span data-hms-var="invoice.issuedAt"></span></p></td></tr>
+<tr><td><p>Pasien</p></td><td><p><span data-hms-var="patient.fullName"></span></p></td><td><p>No. RM</p></td><td><p><span data-hms-var="patient.mrn"></span></p></td></tr>
+<tr><td><p>Dokter</p></td><td><p><span data-hms-var="encounter.doctorName"></span></p></td><td><p>Poli</p></td><td><p><span data-hms-var="encounter.specialty"></span></p></td></tr>
+<tr><td><p>Kunjungan</p></td><td colspan="3"><p><span data-hms-var="encounter.date"></span></p></td></tr>
+</tbody></table>
+<div data-hms-var="items"></div>
+<table style="width:680px"><colgroup><col style="width:500px"><col style="width:180px"></colgroup><tbody>
+<tr><td><p style="text-align:right"><strong>TOTAL</strong></p></td><td><p style="text-align:right"><strong><span data-hms-var="invoice.total"></span></strong></p></td></tr>
+</tbody></table>
+<p><em>Terbilang: <span data-hms-var="invoice.totalInWords"></span></em></p>
+<table style="width:680px"><colgroup><col style="width:110px"><col style="width:570px"></colgroup><tbody>
+<tr><td><p>Pembayaran</p></td><td><p><span data-hms-var="payment.method"></span> &#xb7; <span data-hms-var="payment.paidAt"></span></p></td></tr>
+<tr><td><p>Referensi</p></td><td><p><span data-hms-var="payment.reference"></span></p></td></tr>
+<tr><td><p>Kasir</p></td><td><p><span data-hms-var="payment.cashierName"></span></p></td></tr>
+</tbody></table>
+<hr>
+<p style="text-align:center"><em>Terima kasih atas kepercayaan Anda. Simpan kuitansi ini sebagai bukti pembayaran yang sah.</em></p>
+$tpl$, E'\n', ''),
+    '{"paperSize":"A4","orientation":"PORTRAIT","marginMm":{"top":10,"right":10,"bottom":10,"left":10},"itemsColumns":["item.no","item.description","item.quantity","item.unitPrice","item.amount"]}'::jsonb,
+    NULL,
+    NOW(),
+    NOW()
+  WHERE NOT EXISTS (
+    SELECT 1
+    FROM "document_templates"
+    WHERE "kind" = 'INVOICE'
+      AND "is_default"
+      AND "deleted_at" IS NULL
+  )
+  ON CONFLICT ("id") DO NOTHING
+  RETURNING "id", "content_html", "settings"
+)
+INSERT INTO "document_template_versions" (
+  "id",
+  "template_id",
+  "version_number",
+  "content_html",
+  "settings",
+  "published_by_id",
+  "published_at"
+)
+SELECT
+  '887c8752-fea7-4817-a5a8-3c7eb0ec1c21'::uuid,
+  "id",
+  1,
+  "content_html",
+  "settings",
+  NULL,
+  NOW()
+FROM seeded_template
+ON CONFLICT DO NOTHING;
+
 COMMIT;
