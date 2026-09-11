@@ -358,9 +358,15 @@ export function IntegrationSubmissionMonitor() {
                         <TableCell className="whitespace-nowrap">
                           {formatDate(row.lastAttemptAt)}
                         </TableCell>
-                        <TableCell className="max-w-72">
+                        {/* TableCell is nowrap by default, so a long SATUSEHAT OperationOutcome
+                            spilled out of this cell across Action and ran the row thousands of
+                            pixels wide. Wrap it (breaking unspaced tokens too), clamp it to two
+                            lines, and keep the full text in the tooltip. */}
+                        <TableCell className="w-72 min-w-56 whitespace-normal">
                           <span
-                            className={row.lastError ? 'text-rose-700' : 'font-mono text-xs'}
+                            className={`line-clamp-2 wrap-anywhere ${
+                              row.lastError ? 'text-rose-700' : 'font-mono text-xs'
+                            }`}
                             title={row.lastError ?? row.externalReference ?? undefined}
                           >
                             {row.lastError ?? row.externalReference ?? '—'}
