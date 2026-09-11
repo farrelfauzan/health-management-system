@@ -65,7 +65,8 @@
       "sent": "Sent",
       "delivered": "Delivered",
       "opened": "Opened",
-      "revoked": "Revoked"
+      "revoked": "Revoked",
+      "no_account": "NO ACCOUNT"
     },
     "documentUpload": {
       "errors": {

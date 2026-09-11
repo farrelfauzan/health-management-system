@@ -34,6 +34,8 @@ describe('Doctor creation with a linked user account against Postgres', () => {
   const NEW_DOCTOR_EMAIL = `${TEST_MARKER}-new@example.test`;
   const EXISTING_USER_EMAIL = `${TEST_MARKER}-existing@example.test`;
   const TAKEN_DOCTOR_EMAIL = `${TEST_MARKER}-taken@example.test`;
+  const LEGACY_DOCTOR_EMAIL = `${TEST_MARKER}-legacy@example.test`;
+  const LEGACY_ATTACH_EMAIL = `${TEST_MARKER}-legacy-attach@example.test`;
   const INVITEE_PASSWORD = 'kunci-langit-biru-2026';
 
   type CatalogSeed = {
@@ -46,6 +48,8 @@ describe('Doctor creation with a linked user account against Postgres', () => {
   const ADMIN_PERMISSIONS: readonly CatalogSeed[] = [
     { permissionKey: 'doctor.create:any', resource: 'Doctor', action: 'create', scope: 'ANY' },
     { permissionKey: 'doctor.read:any', resource: 'Doctor', action: 'read', scope: 'ANY' },
+    // The send-invitation action for a doctor with no account (P20-T01).
+    { permissionKey: 'doctor.update:any', resource: 'Doctor', action: 'update', scope: 'ANY' },
   ];
 
   const sentMails: SendMailRequest[] = [];
@@ -365,7 +369,7 @@ describe('Doctor creation with a linked user account against Postgres', () => {
   });
 
   describe('no address at all', () => {
-    it('behaves exactly as it did before, with no account and no invitation', async () => {
+    it('is refused with a field-level error, and nothing is created (P20-T01)', async () => {
       const mailsBefore = sentMails.length;
 
       const response = await asAdmin('post', '/api/v1/doctors').send(
@@ -375,15 +379,128 @@ describe('Doctor creation with a linked user account against Postgres', () => {
         }),
       );
 
-      expect(response.status).toBe(201);
-      expect(response.body.data.email).toBeUndefined();
-      expect(response.body.data.invitationStatus).toBeUndefined();
-      expect(response.body.data.ownerUserId).toBeUndefined();
+      expect(response.status).toBe(400);
+      expect(JSON.stringify(response.body.error)).toContain('email');
       expect(sentMails).toHaveLength(mailsBefore);
-      const invitations = await prisma.userInvitation.count({
-        where: { doctorProfileId: response.body.data.id },
+      const created = await prisma.doctorProfile.count({
+        where: { licenseNumber: `${TEST_MARKER}-LIC-NONE` },
       });
-      expect(invitations).toBe(0);
+      expect(created).toBe(0);
+    });
+  });
+
+  /**
+   * P20-T01. A doctor who was created while the email was optional has no
+   * account and no invitation, and nothing can backfill one — the address was
+   * never collected. They must keep working, read back honestly, and be
+   * reachable by an invitation raised after the fact.
+   */
+  describe('a doctor who predates the required email', () => {
+    const LEGACY_NAME = `${TEST_MARKER} Legacy`;
+    let legacyDoctorId: string;
+    let emailedToken: string;
+
+    beforeAll(async () => {
+      const doctor = await prisma.doctorProfile.create({
+        data: { licenseNumber: `${TEST_MARKER}-LIC-LEGACY`, fullName: LEGACY_NAME, specialtyId },
+        select: { id: true },
+      });
+      legacyDoctorId = doctor.id;
+    });
+
+    it('still lists, badged as having no account rather than blank', async () => {
+      const response = await asAdmin(
+        'get',
+        `/api/v1/doctors?search=${encodeURIComponent(LEGACY_NAME)}`,
+      );
+
+      expect(response.status).toBe(200);
+      const listed = response.body.data.find(
+        (doctor: { id: string }) => doctor.id === legacyDoctorId,
+      );
+      expect(listed).toMatchObject({ invitationStatus: 'NO_ACCOUNT' });
+      expect(listed.email).toBeUndefined();
+    });
+
+    it('still opens', async () => {
+      const response = await asAdmin('get', `/api/v1/doctors/${legacyDoctorId}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.data.invitationStatus).toBe('NO_ACCOUNT');
+    });
+
+    it('gets exactly one invitation after the fact, bound to its profile', async () => {
+      const response = await asAdmin('post', `/api/v1/doctors/${legacyDoctorId}/invitation`).send({
+        email: LEGACY_DOCTOR_EMAIL,
+      });
+
+      expect(response.status).toBe(201);
+      expect(response.body.data.email).toBe(LEGACY_DOCTOR_EMAIL);
+      expect(response.body.data.invitationStatus).toBe('PENDING');
+      expect(mailsTo(LEGACY_DOCTOR_EMAIL)).toHaveLength(1);
+      const invitation = await prisma.userInvitation.findFirst({
+        where: { doctorProfileId: legacyDoctorId },
+        select: { email: true, roleCodes: true },
+      });
+      expect(invitation).toEqual({ email: LEGACY_DOCTOR_EMAIL, roleCodes: [DOCTOR_ROLE_CODE] });
+      emailedToken = lastEmailedToken();
+    });
+
+    it('refuses a second invitation while the first is live', async () => {
+      const response = await asAdmin('post', `/api/v1/doctors/${legacyDoctorId}/invitation`).send({
+        email: LEGACY_DOCTOR_EMAIL,
+      });
+
+      expect(response.status).toBe(409);
+      expect(response.body.error.code).toBe('DOCTOR_INVITATION_ALREADY_PENDING');
+      expect(mailsTo(LEGACY_DOCTOR_EMAIL)).toHaveLength(1);
+    });
+
+    it('links the account when that invitation is accepted', async () => {
+      const response = await request(app.getHttpServer())
+        .post(`/api/v1/invitations/${emailedToken}/accept`)
+        .send({ password: INVITEE_PASSWORD });
+
+      expect(response.status).toBe(201);
+      const doctor = await prisma.doctorProfile.findUnique({
+        where: { id: legacyDoctorId },
+        select: { ownerUser: { select: { email: true } } },
+      });
+      expect(doctor?.ownerUser?.email).toBe(LEGACY_DOCTOR_EMAIL);
+    });
+
+    it('refuses once the doctor can sign in', async () => {
+      const response = await asAdmin('post', `/api/v1/doctors/${legacyDoctorId}/invitation`).send({
+        email: `${TEST_MARKER}-another@example.test`,
+      });
+
+      expect(response.status).toBe(409);
+      expect(response.body.error.code).toBe('DOCTOR_ACCOUNT_ALREADY_LINKED');
+    });
+
+    it('attaches an address that already has an account, without inviting it', async () => {
+      const doctor = await prisma.doctorProfile.create({
+        data: {
+          licenseNumber: `${TEST_MARKER}-LIC-LEGACY-ATTACH`,
+          fullName: `${TEST_MARKER} Legacy Attach`,
+          specialtyId,
+        },
+        select: { id: true },
+      });
+      const user = await prisma.user.create({
+        data: { email: LEGACY_ATTACH_EMAIL, passwordHash: 'not-a-hash', isActive: true },
+        select: { id: true },
+      });
+      const mailsBefore = sentMails.length;
+
+      const response = await asAdmin('post', `/api/v1/doctors/${doctor.id}/invitation`).send({
+        email: LEGACY_ATTACH_EMAIL,
+      });
+
+      expect(response.status).toBe(201);
+      expect(response.body.data.invitationStatus).toBe('ACCEPTED');
+      expect(response.body.data.ownerUserId).toBe(user.id);
+      expect(sentMails).toHaveLength(mailsBefore);
     });
   });
 });

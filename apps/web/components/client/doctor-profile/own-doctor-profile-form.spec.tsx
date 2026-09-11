@@ -42,6 +42,8 @@ const DOCTOR: DoctorDetail = {
   specialtyId: '0f1cbb1f-8f4a-4bb0-9a5e-2d94f7a3c111',
   specialty: 'Penyakit Dalam',
   phoneNumber: '628129876543',
+  email: 'budi.santoso@clinic.local',
+  invitationStatus: 'ACCEPTED',
   titleValue: { code: 'DR', label: 'dr.', isLegacy: false },
   degreeValues: [{ code: 'SP_PD', label: 'Sp.PD', isLegacy: false }],
   displayName: 'dr. Budi Santoso, Sp.PD',

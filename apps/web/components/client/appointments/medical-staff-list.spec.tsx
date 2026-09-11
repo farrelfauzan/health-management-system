@@ -24,6 +24,7 @@ function buildDoctor(id: string, fullName: string, specialty: string): DoctorLis
     specialtyId: '0f1cbb1f-8f4a-4bb0-9a5e-2d94f7a3c111',
     specialty,
     phoneNumber: '+628129876543',
+    invitationStatus: 'ACCEPTED',
     degreeValues: [],
     displayName: fullName,
     isActive: true,

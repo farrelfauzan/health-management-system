@@ -8,6 +8,7 @@ import { useTranslations } from 'next-intl';
 
 import { AssignPatientDialog } from '#components/client/doctors/assign-patient-dialog';
 import { DoctorFormDialog } from '#components/client/doctors/doctor-form-dialog';
+import { DoctorInviteAccountDialog } from '#components/client/doctors/doctor-invite-account-dialog';
 import { DoctorScheduleDialog } from '#components/client/doctors/doctor-schedule-dialog';
 import {
   DoctorsFilterCard,
@@ -47,6 +48,7 @@ export function DoctorsDirectoryPanel({ initialQuery }: DoctorsDirectoryPanelPro
   const [editingDoctor, setEditingDoctor] = useState<DoctorListItem | null>(null);
   const [schedulingDoctor, setSchedulingDoctor] = useState<DoctorListItem | null>(null);
   const [assigningDoctor, setAssigningDoctor] = useState<DoctorListItem | null>(null);
+  const [invitingDoctor, setInvitingDoctor] = useState<DoctorListItem | null>(null);
 
   function navigateWithParams(next: DoctorsSearchParams): void {
     router.replace(`${pathname}?${buildDoctorsSearchParams(next).toString()}`);
@@ -132,6 +134,7 @@ export function DoctorsDirectoryPanel({ initialQuery }: DoctorsDirectoryPanelPro
             onEdit={handleOpenEditDialog}
             onManageSchedule={setSchedulingDoctor}
             onAssignPatient={setAssigningDoctor}
+            onSendInvitation={setInvitingDoctor}
           />
           <NumberedPagination
             className="border-t border-slate-100 px-4 py-3"
@@ -185,6 +188,20 @@ export function DoctorsDirectoryPanel({ initialQuery }: DoctorsDirectoryPanelPro
           }}
           doctorId={assigningDoctor.id}
           doctorName={assigningDoctor.fullName}
+        />
+      ) : null}
+
+      {invitingDoctor ? (
+        <DoctorInviteAccountDialog
+          key={invitingDoctor.id}
+          open={Boolean(invitingDoctor)}
+          onOpenChange={(open) => {
+            if (!open) {
+              setInvitingDoctor(null);
+            }
+          }}
+          doctorId={invitingDoctor.id}
+          doctorName={invitingDoctor.fullName}
         />
       ) : null}
     </div>

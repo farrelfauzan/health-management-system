@@ -76,9 +76,20 @@ describe('DoctorManagementService', () => {
       .mockResolvedValue((_kind: string, stored: string) => ({ label: stored, isLegacy: true })),
   } as unknown as DoctorCredentialOptionService;
 
+  // Every create names an account since P20-T01, so these default to the
+  // commonest outcome — a new address, invited — and tests that care about
+  // attach or refusal override them.
   const userInvitationServiceMock = {
-    resolveDoctorOwnerPlan: jest.fn(),
-    inviteDoctorOwner: jest.fn(),
+    resolveDoctorOwnerPlan: jest
+      .fn()
+      .mockImplementation(async (email: string) => ({ kind: 'INVITE', email })),
+    inviteDoctorOwner: jest
+      .fn()
+      // Far in the future: the service reads a past expiry as a lapsed link.
+      .mockImplementation(async ({ email }: { email: string }) => ({
+        email,
+        expiresAt: '2099-01-01T00:00:00.000Z',
+      })),
   } as unknown as UserInvitationService;
 
   const adminManagementServiceMock = {
@@ -124,6 +135,7 @@ describe('DoctorManagementService', () => {
 
   // Synthetic 16-digit NIK — digits 7-12 encode 15/03/80 for a male doctor.
   const inputDoctorNik = '3173011503800002';
+  const inputDoctorEmail = 'dr.first@clinic.local';
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -199,6 +211,7 @@ describe('DoctorManagementService', () => {
           fullName: 'Dr. First',
           specialtyId,
           phoneNumber: '0812345678',
+          email: inputDoctorEmail,
           nik: inputDoctorNik,
           isActive: true,
         },
@@ -207,14 +220,18 @@ describe('DoctorManagementService', () => {
     ).rejects.toBeInstanceOf(ConflictException);
   });
 
-  it('throws conflict when owner user already has a doctor profile', async () => {
+  it('throws conflict when the email already belongs to a doctor, before creating anything', async () => {
     (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
       buildActor([{ action: 'create', resource: 'Doctor', scope: 'ANY' }]),
     );
-
     (doctorManagementRepositoryMock.findDoctorByLicenseNumber as jest.Mock).mockResolvedValue(null);
-    (doctorManagementRepositoryMock.findActiveUserById as jest.Mock).mockResolvedValue({
-      id: '7ce8961c-f8ef-4cbf-b5fc-4f7e4e301704',
+    (doctorManagementRepositoryMock.findActiveSpecialtyById as jest.Mock).mockResolvedValue({
+      id: neurologySpecialtyId,
+    });
+    (userInvitationServiceMock.resolveDoctorOwnerPlan as jest.Mock).mockResolvedValueOnce({
+      kind: 'ATTACH',
+      userId: '7ce8961c-f8ef-4cbf-b5fc-4f7e4e301704',
+      email: 'dr.second@clinic.local',
     });
     (doctorManagementRepositoryMock.findDoctorByOwnerUserId as jest.Mock).mockResolvedValue({
       id: 'existing-doctor',
@@ -227,13 +244,91 @@ describe('DoctorManagementService', () => {
           fullName: 'Dr. Second',
           specialtyId: neurologySpecialtyId,
           phoneNumber: '0812345679',
+          email: 'dr.second@clinic.local',
           nik: inputDoctorNik,
-          ownerUserId: '7ce8961c-f8ef-4cbf-b5fc-4f7e4e301704',
           isActive: true,
         },
         currentUser,
       ),
     ).rejects.toBeInstanceOf(ConflictException);
+    expect(doctorManagementRepositoryMock.createDoctor).not.toHaveBeenCalled();
+  });
+
+  it('attaches an existing free account by its email instead of inviting it', async () => {
+    const existingUserId = '7ce8961c-f8ef-4cbf-b5fc-4f7e4e301704';
+    (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
+      buildActor([{ action: 'create', resource: 'Doctor', scope: 'ANY' }]),
+    );
+    (doctorManagementRepositoryMock.findDoctorByLicenseNumber as jest.Mock).mockResolvedValue(null);
+    (doctorManagementRepositoryMock.findActiveSpecialtyById as jest.Mock).mockResolvedValue({
+      id: specialtyId,
+    });
+    (userInvitationServiceMock.resolveDoctorOwnerPlan as jest.Mock).mockResolvedValueOnce({
+      kind: 'ATTACH',
+      userId: existingUserId,
+      email: inputDoctorEmail,
+    });
+    (doctorManagementRepositoryMock.findDoctorByOwnerUserId as jest.Mock).mockResolvedValue(null);
+    (doctorManagementRepositoryMock.createDoctor as jest.Mock).mockResolvedValue({
+      ...doctorRecord,
+      ownerUserId: existingUserId,
+    });
+
+    const result = await service.createDoctor(
+      {
+        licenseNumber: 'LIC-0001',
+        fullName: 'Dr. First',
+        specialtyId,
+        phoneNumber: '0812345678',
+        email: inputDoctorEmail,
+        nik: inputDoctorNik,
+        isActive: true,
+      },
+      currentUser,
+    );
+
+    expect(doctorManagementRepositoryMock.createDoctor).toHaveBeenCalledWith(
+      expect.objectContaining({ ownerUserId: existingUserId }),
+    );
+    expect(adminManagementServiceMock.grantRoleCodes).toHaveBeenCalledWith({
+      userId: existingUserId,
+      roleCodes: ['DOCTOR'],
+      assignedById: currentUser.sub,
+    });
+    expect(userInvitationServiceMock.inviteDoctorOwner).not.toHaveBeenCalled();
+    expect(result.invitationStatus).toBe('ACCEPTED');
+  });
+
+  it('invites a new address and reports the doctor as pending', async () => {
+    (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
+      buildActor([{ action: 'create', resource: 'Doctor', scope: 'ANY' }]),
+    );
+    (doctorManagementRepositoryMock.findDoctorByLicenseNumber as jest.Mock).mockResolvedValue(null);
+    (doctorManagementRepositoryMock.findActiveSpecialtyById as jest.Mock).mockResolvedValue({
+      id: specialtyId,
+    });
+    (doctorManagementRepositoryMock.createDoctor as jest.Mock).mockResolvedValue(doctorRecord);
+
+    const result = await service.createDoctor(
+      {
+        licenseNumber: 'LIC-0001',
+        fullName: 'Dr. First',
+        specialtyId,
+        phoneNumber: '0812345678',
+        email: inputDoctorEmail,
+        nik: inputDoctorNik,
+        isActive: true,
+      },
+      currentUser,
+    );
+
+    expect(userInvitationServiceMock.inviteDoctorOwner).toHaveBeenCalledWith({
+      email: inputDoctorEmail,
+      doctorProfileId: doctorId,
+      invitedById: currentUser.sub,
+    });
+    expect(result.email).toBe(inputDoctorEmail);
+    expect(result.invitationStatus).toBe('PENDING');
   });
 
   it('throws bad request when an initial patient is missing or inactive', async () => {
@@ -256,6 +351,7 @@ describe('DoctorManagementService', () => {
           fullName: 'Dr. Second',
           specialtyId: neurologySpecialtyId,
           phoneNumber: '0812345679',
+          email: 'dr.second@clinic.local',
           nik: inputDoctorNik,
           isActive: true,
           patientIds: [
@@ -290,6 +386,7 @@ describe('DoctorManagementService', () => {
         fullName: 'Dr. First',
         specialtyId,
         phoneNumber: '0812345678',
+        email: inputDoctorEmail,
         nik: inputDoctorNik,
         isActive: true,
         patientIds: [
@@ -331,6 +428,7 @@ describe('DoctorManagementService', () => {
             fullName: 'Dr. Second',
             specialtyId,
             phoneNumber: '0812345679',
+            email: 'dr.second@clinic.local',
             nik: inputDoctorNik,
             isActive: true,
           },
@@ -363,6 +461,7 @@ describe('DoctorManagementService', () => {
           fullName: 'Dr. First',
           specialtyId,
           phoneNumber: '0812345678',
+          email: inputDoctorEmail,
           nik: inputDoctorNik,
           satusehatPractitionerId: '10009880728',
           licenses: [
@@ -443,6 +542,7 @@ describe('DoctorManagementService', () => {
           fullName: 'Dr. First',
           specialtyId,
           phoneNumber: '0812345678',
+          email: inputDoctorEmail,
           nik: inputDoctorNik,
           isActive: true,
         },
@@ -475,6 +575,7 @@ describe('DoctorManagementService', () => {
             fullName: 'Dr. First',
             specialtyId,
             phoneNumber: '0812345678',
+            email: inputDoctorEmail,
             nik: inputDoctorNik,
             isActive: true,
           },
@@ -615,6 +716,7 @@ describe('DoctorManagementService', () => {
           fullName: 'Dr. First',
           specialtyId,
           phoneNumber: '0812345678',
+          email: inputDoctorEmail,
           nik: inputDoctorNik,
           title: 'DR',
           degrees: ['SP_JP', 'M_KES'],
@@ -936,6 +1038,124 @@ describe('DoctorManagementService', () => {
     ).rejects.toBeInstanceOf(ConflictException);
     expect(doctorManagementRepositoryMock.updateDoctor).not.toHaveBeenCalled();
   });
+  describe('inviting a doctor who has no account (P20-T01)', () => {
+    const existingUserId = 'ec7602c6-e489-4d0f-a8a7-b0f91a5bfbe2';
+    const inputInvitee = { email: 'dr.legacy@clinic.local' };
+
+    function mockAdministrator(): void {
+      (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
+        buildActor([{ action: 'update', resource: 'Doctor', scope: 'ANY' }]),
+      );
+    }
+
+    it('refuses a caller who can only update their own profile', async () => {
+      (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
+        buildActor([{ action: 'update', resource: 'Doctor', scope: 'OWN' }]),
+      );
+
+      await expect(
+        service.inviteDoctorAccount(doctorId, inputInvitee, currentUser),
+      ).rejects.toBeInstanceOf(ForbiddenException);
+      expect(userInvitationServiceMock.inviteDoctorOwner).not.toHaveBeenCalled();
+    });
+
+    it('refuses a doctor who already has an account', async () => {
+      mockAdministrator();
+      (doctorManagementRepositoryMock.findDoctorById as jest.Mock).mockResolvedValue({
+        ...doctorRecord,
+        ownerUserId: existingUserId,
+      });
+
+      await expect(
+        service.inviteDoctorAccount(doctorId, inputInvitee, currentUser),
+      ).rejects.toMatchObject({ response: { code: 'DOCTOR_ACCOUNT_ALREADY_LINKED' } });
+      expect(userInvitationServiceMock.resolveDoctorOwnerPlan).not.toHaveBeenCalled();
+    });
+
+    it('refuses a doctor whose invitation is still live, which is resent elsewhere', async () => {
+      mockAdministrator();
+      (doctorManagementRepositoryMock.findDoctorById as jest.Mock).mockResolvedValue({
+        ...doctorRecord,
+        ownerInvitations: [
+          { email: 'dr.legacy@clinic.local', expiresAt: new Date(Date.now() + 86_400_000) },
+        ],
+      });
+
+      await expect(
+        service.inviteDoctorAccount(doctorId, inputInvitee, currentUser),
+      ).rejects.toMatchObject({ response: { code: 'DOCTOR_INVITATION_ALREADY_PENDING' } });
+      expect(userInvitationServiceMock.inviteDoctorOwner).not.toHaveBeenCalled();
+    });
+
+    it('invites a new address bound to the existing profile', async () => {
+      mockAdministrator();
+      (doctorManagementRepositoryMock.findDoctorById as jest.Mock)
+        .mockResolvedValueOnce(doctorRecord)
+        .mockResolvedValueOnce({
+          ...doctorRecord,
+          ownerInvitations: [
+            { email: 'dr.legacy@clinic.local', expiresAt: new Date(Date.now() + 86_400_000) },
+          ],
+        });
+
+      const result = await service.inviteDoctorAccount(doctorId, inputInvitee, currentUser);
+
+      expect(userInvitationServiceMock.inviteDoctorOwner).toHaveBeenCalledWith({
+        email: 'dr.legacy@clinic.local',
+        doctorProfileId: doctorId,
+        invitedById: currentUser.sub,
+      });
+      expect(doctorManagementRepositoryMock.updateDoctor).not.toHaveBeenCalled();
+      expect(result.invitationStatus).toBe('PENDING');
+      expect(result.email).toBe('dr.legacy@clinic.local');
+    });
+
+    it('treats a lapsed invitation as no account and invites again', async () => {
+      mockAdministrator();
+      (doctorManagementRepositoryMock.findDoctorById as jest.Mock).mockResolvedValue({
+        ...doctorRecord,
+        ownerInvitations: [
+          { email: 'dr.legacy@clinic.local', expiresAt: new Date('2026-01-01T00:00:00.000Z') },
+        ],
+      });
+
+      await service.inviteDoctorAccount(doctorId, inputInvitee, currentUser);
+
+      expect(userInvitationServiceMock.inviteDoctorOwner).toHaveBeenCalledTimes(1);
+    });
+
+    it('attaches an address that already has an account, granting DOCTOR', async () => {
+      mockAdministrator();
+      (userInvitationServiceMock.resolveDoctorOwnerPlan as jest.Mock).mockResolvedValueOnce({
+        kind: 'ATTACH',
+        userId: existingUserId,
+        email: 'dr.legacy@clinic.local',
+      });
+      (doctorManagementRepositoryMock.findDoctorByOwnerUserId as jest.Mock).mockResolvedValue(null);
+      (doctorManagementRepositoryMock.findDoctorById as jest.Mock)
+        .mockResolvedValueOnce(doctorRecord)
+        .mockResolvedValueOnce({
+          ...doctorRecord,
+          ownerUserId: existingUserId,
+          ownerUser: { email: 'dr.legacy@clinic.local' },
+        });
+
+      const result = await service.inviteDoctorAccount(doctorId, inputInvitee, currentUser);
+
+      expect(doctorManagementRepositoryMock.updateDoctor).toHaveBeenCalledWith(doctorId, {
+        ownerUserId: existingUserId,
+      });
+      expect(adminManagementServiceMock.grantRoleCodes).toHaveBeenCalledWith({
+        userId: existingUserId,
+        roleCodes: ['DOCTOR'],
+        assignedById: currentUser.sub,
+      });
+      expect(userInvitationServiceMock.inviteDoctorOwner).not.toHaveBeenCalled();
+      expect(result.invitationStatus).toBe('ACCEPTED');
+      expect(result.ownerUserId).toBe(existingUserId);
+    });
+  });
+
   describe('identifier unmasking', () => {
     beforeEach(() => {
       (doctorManagementRepositoryMock.findDoctorById as jest.Mock).mockResolvedValue(doctorRecord);

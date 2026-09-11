@@ -32,6 +32,7 @@ import { AdminManagementService } from '../../admin-management/service/admin-man
 import { AuthRepository } from '../../auth/repository/auth.repository';
 import { UserInvitationService } from '../../user-invitation/service/user-invitation.service';
 import { CreateDoctorDto } from '../dto/create-doctor.dto';
+import { InviteDoctorAccountDto } from '../dto/invite-doctor-account.dto';
 import { ListDoctorsQueryDto } from '../dto/list-doctors-query.dto';
 import { UpdateDoctorDto } from '../dto/update-doctor.dto';
 import { UpdateDoctorScheduleDto } from '../dto/update-doctor-schedule.dto';
@@ -203,30 +204,12 @@ export class DoctorManagementService {
       await this.assertNikNotTaken(payload.nik);
     }
 
-    if (payload.ownerUserId) {
-      const ownerUser = await this.doctorManagementRepository.findActiveUserById(
-        payload.ownerUserId,
-      );
-
-      if (!ownerUser) {
-        throw new BadRequestException('Owner user not found');
-      }
-
-      const doctorWithSameOwner = await this.doctorManagementRepository.findDoctorByOwnerUserId(
-        payload.ownerUserId,
-      );
-
-      if (doctorWithSameOwner) {
-        throw new ConflictException('Owner user already has a doctor profile');
-      }
-    }
-
     await this.assertActiveSpecialtyId(payload.specialtyId);
     await this.assertAssignablePatientIds(payload.patientIds);
     await this.assertCredentialCodes({ title: payload.title, degrees: payload.degrees });
     await this.assertEducationFieldCodes(payload.educations);
 
-    const ownerPlan = await this.resolveOwnerPlan(payload.email, payload.ownerUserId);
+    const ownerPlan = await this.resolveOwnerPlan(payload.email);
 
     const created = await this.runWithIdentifierConflictMapping(() =>
       this.doctorManagementRepository.createDoctor({
@@ -240,7 +223,7 @@ export class DoctorManagementService {
         satusehatPractitionerId: payload.satusehatPractitionerId,
         licenses: payload.licenses?.map((license) => toLicenseWritePayload(license)),
         educations: payload.educations,
-        ownerUserId: ownerPlan?.kind === 'ATTACH' ? ownerPlan.userId : payload.ownerUserId,
+        ownerUserId: ownerPlan.kind === 'ATTACH' ? ownerPlan.userId : undefined,
         isActive: payload.isActive,
         patientIds: payload.patientIds,
         actorUserId: currentUser.sub,
@@ -254,6 +237,62 @@ export class DoctorManagementService {
   }
 
   /**
+   * Gives a doctor who cannot sign in an account after the fact (P20-T01).
+   *
+   * This is the answer for doctors created before an address was required, and
+   * for anyone whose invitation lapsed or was withdrawn: the same invite-or-
+   * attach decision the create form makes, applied to a profile that already
+   * exists. An administrative act, so it wants `update` on any doctor — a
+   * doctor's own scope cannot mint their own login.
+   */
+  async inviteDoctorAccount(id: string, payload: InviteDoctorAccountDto, currentUser: CurrentUser) {
+    const actor = await this.getActorOrThrow(currentUser);
+    if (!this.resolveScope(actor, 'Doctor', 'update').hasAny) {
+      throw new ForbiddenException('You are not allowed to invite doctors');
+    }
+    const doctor = await this.doctorManagementRepository.findDoctorById(id);
+    if (!doctor) {
+      throw new NotFoundException('Doctor not found');
+    }
+    this.assertDoctorHasNoLogin(doctor);
+    const ownerPlan = await this.resolveOwnerPlan(payload.email);
+    if (ownerPlan.kind === 'ATTACH') {
+      await this.doctorManagementRepository.updateDoctor(id, { ownerUserId: ownerPlan.userId });
+    }
+    await this.linkOwnerAccount(doctor, ownerPlan, currentUser.sub);
+    const refreshed = await this.doctorManagementRepository.findDoctorById(id);
+    if (!refreshed) {
+      throw new NotFoundException('Doctor not found');
+    }
+    return this.toDoctorResponse(
+      refreshed,
+      await this.doctorCredentialOptionService.buildResolver(),
+    );
+  }
+
+  /**
+   * Refuses to invite a doctor who can already sign in, or who is already
+   * waiting on a live link — a second invitation there is either a password
+   * reset in disguise or a race between two links to one profile. A pending
+   * invitation is resent from Administration, which revokes the old link.
+   */
+  private assertDoctorHasNoLogin(doctor: DoctorRecord): void {
+    const status = this.resolveInvitationStatus(doctor);
+    if (status === 'ACCEPTED') {
+      throw new ConflictException({
+        code: 'DOCTOR_ACCOUNT_ALREADY_LINKED',
+        message: 'This doctor already has an account',
+      });
+    }
+    if (status === 'PENDING') {
+      throw new ConflictException({
+        code: 'DOCTOR_INVITATION_ALREADY_PENDING',
+        message: 'This doctor already has a pending invitation; resend it from Administration',
+      });
+    }
+  }
+
+  /**
    * Decides what the supplied email means before anything is written
    * (P19-T15).
    *
@@ -262,24 +301,10 @@ export class DoctorManagementService {
    * neither an account nor an invitation, which is exactly the two-places
    * problem this ticket exists to remove.
    */
-  private async resolveOwnerPlan(
-    email: string | undefined,
-    ownerUserId: string | undefined,
-  ): Promise<DoctorOwnerPlan | null> {
-    if (!email) {
-      return null;
-    }
+  private async resolveOwnerPlan(email: string): Promise<DoctorOwnerPlan> {
     const plan = await this.userInvitationService.resolveDoctorOwnerPlan(email);
     if (plan.kind === 'INVITE') {
-      if (ownerUserId) {
-        throw new BadRequestException(
-          'Provide either an email to invite or an existing owner user, not both',
-        );
-      }
       return plan;
-    }
-    if (ownerUserId && ownerUserId !== plan.userId) {
-      throw new BadRequestException('The email and the owner user refer to different accounts');
     }
     const doctorWithSameOwner = await this.doctorManagementRepository.findDoctorByOwnerUserId(
       plan.userId,
@@ -305,16 +330,14 @@ export class DoctorManagementService {
    * from. What that costs is a window where the profile exists and the
    * invitation does not; every reason to refuse the address was spent in
    * {@link resolveOwnerPlan}, so what remains is an infrastructure failure, and
-   * the recovery is the Administration invitation screen.
+   * the recovery is the directory's send-invitation action
+   * ({@link inviteDoctorAccount}), which is also the only other caller.
    */
   private async linkOwnerAccount(
     created: DoctorRecord,
-    ownerPlan: DoctorOwnerPlan | null,
+    ownerPlan: DoctorOwnerPlan,
     actorUserId: string,
   ): Promise<DoctorRecord> {
-    if (!ownerPlan) {
-      return created;
-    }
     if (ownerPlan.kind === 'ATTACH') {
       // The account already exists, so there is nobody to invite — a second
       // invitation to somebody who can already log in is a password-reset
@@ -589,15 +612,16 @@ export class DoctorManagementService {
    * `consumedAt`, and that is the honest source: an account exists and is
    * linked, whether it was minted by accepting the invitation or already
    * existed and was attached — in both cases the doctor can log in, which is
-   * the question a directory row is asking. Absent, rather than a third state,
-   * when there is neither an account nor a live link: a doctor created without
-   * an email has no invitation to have a status.
+   * the question a directory row is asking. `NO_ACCOUNT` when there is neither
+   * an account nor a live link (P20-T01): a doctor created before the address
+   * was required, or one whose invitation lapsed — the state the directory's
+   * send-invitation action exists for.
    */
-  private resolveInvitationStatus(doctor: DoctorRecord): DoctorInvitationStatusValue | undefined {
+  private resolveInvitationStatus(doctor: DoctorRecord): DoctorInvitationStatusValue {
     if (doctor.ownerUserId ?? doctor.ownerUser) {
       return 'ACCEPTED';
     }
-    return this.resolveLiveInvitation(doctor) ? 'PENDING' : undefined;
+    return this.resolveLiveInvitation(doctor) ? 'PENDING' : 'NO_ACCOUNT';
   }
 
   /**

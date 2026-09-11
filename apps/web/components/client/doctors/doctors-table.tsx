@@ -26,6 +26,7 @@ type DoctorsTableProps = {
   onEdit: (doctor: DoctorListItem) => void;
   onManageSchedule: (doctor: DoctorListItem) => void;
   onAssignPatient: (doctor: DoctorListItem) => void;
+  onSendInvitation: (doctor: DoctorListItem) => void;
 };
 
 export function DoctorsTable({
@@ -37,6 +38,7 @@ export function DoctorsTable({
   onEdit,
   onManageSchedule,
   onAssignPatient,
+  onSendInvitation,
 }: DoctorsTableProps) {
   const t = useTranslations('clinical');
   const showEmptyState = !isPending && doctors.length === 0;
@@ -76,6 +78,7 @@ export function DoctorsTable({
               onEdit={onEdit}
               onManageSchedule={onManageSchedule}
               onAssignPatient={onAssignPatient}
+              onSendInvitation={onSendInvitation}
             />
           ))
         )}

@@ -167,33 +167,24 @@ export const updateDoctorScheduleSchema = z
   });
 
 /**
- * Whether a doctor can sign in yet (P19-T15).
+ * Whether a doctor can sign in yet (P19-T15, P20-T01).
  *
- * Deliberately two states rather than the four `UserInvitationStatusValue`
+ * Deliberately three states rather than the four `UserInvitationStatusValue`
  * carries. This answers one question a directory row has room for — "does this
  * doctor have a working login" — and both a withdrawn and a lapsed invitation
- * answer it the same way: no, and there is no live link either, which is the
- * absent case rather than a state of its own. The four-state view of an
- * individual invitation stays on the Administration invitations screen, which
- * is where the resend button lives.
+ * answer it the same way as never having been invited: no account and no live
+ * link, which is `NO_ACCOUNT`. That state used to be expressed by leaving the
+ * field out; since every new doctor is created with an address (P20-T01) it is
+ * the exception that needs action, so it is named rather than blank. The
+ * four-state view of an individual invitation stays on the Administration
+ * invitations screen, which is where the resend button lives.
  */
-export const DOCTOR_INVITATION_STATUSES = ['PENDING', 'ACCEPTED'] as const;
+export const DOCTOR_INVITATION_STATUSES = ['PENDING', 'ACCEPTED', 'NO_ACCOUNT'] as const;
 
 export type DoctorInvitationStatusValue = (typeof DOCTOR_INVITATION_STATUSES)[number];
 
 /** The address a doctor signs in with (P19-T15). See `createDoctorSchema`. */
 export const doctorEmailSchema = z.string().trim().toLowerCase().email().max(255);
-
-/**
- * The same address as a form field.
- *
- * A form has no way to type "absent" — an untouched box is an empty string,
- * and to the API that has to become an omitted key, because omitted means "no
- * account for this doctor" while `""` is just an invalid address. The form
- * drops the key when it is blank; this schema is what stops blank lighting up
- * as an error before it gets the chance.
- */
-export const doctorEmailFormSchema = z.union([z.literal(''), doctorEmailSchema]);
 
 export const listDoctorsQuerySchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
@@ -222,14 +213,19 @@ export const createDoctorSchema = z.object({
   // SATUSEHAT Practitioner requires at least one ContactPoint, and phone is
   // the one the profile owns — the email lives on the user account.
   phoneNumber: indonesianPhoneNumberSchema,
-  // The address the doctor signs in with (P19-T15). Optional, and still not a
-  // column on `DoctorProfile`: supplying it here creates or attaches the
-  // linked `User` in the same request instead of leaving the account to a
-  // second, forgettable trip through Administration. Absent behaves exactly as
-  // before — a profile with no login. There is no counterpart on
-  // `updateDoctorSchema`: changing a sign-in address stays an Administration
-  // action, so the edit form reads it back and never writes it.
-  email: doctorEmailSchema.optional(),
+  // The address the doctor signs in with. Required since P20-T01: a doctor is
+  // always somebody who can log in, so every create either invites a new
+  // address or attaches the account that already holds it (P19-T15). Still
+  // not a column on `DoctorProfile` — the address is collected here and owned
+  // by `User`. There is no counterpart on `updateDoctorSchema`: changing a
+  // sign-in address stays an Administration action, so the edit form reads it
+  // back and never writes it.
+  //
+  // There is no `ownerUserId` beside it any more. It used to be the way to
+  // attach a known account, but an address already does that — an existing
+  // account is found by its email and attached — so keeping both meant two
+  // ways to name one user and a refusal whenever they disagreed.
+  email: doctorEmailSchema,
   title: doctorTitleSchema.optional(),
   degrees: doctorDegreesSchema.optional(),
   // Required. The IHS practitioner number is resolved from the master
@@ -241,7 +237,6 @@ export const createDoctorSchema = z.object({
   satusehatPractitionerId: satusehatPractitionerIdSchema.optional(),
   licenses: doctorLicensesSchema.optional(),
   educations: doctorEducationsSchema.optional(),
-  ownerUserId: z.string().uuid().optional(),
   isActive: z.boolean().optional().default(true),
   patientIds: z
     .array(z.string().uuid())
@@ -249,6 +244,18 @@ export const createDoctorSchema = z.object({
     .max(MAX_INITIAL_PATIENT_ASSIGNMENTS)
     .refine((ids) => new Set(ids).size === ids.length, 'Patient IDs must be unique')
     .optional(),
+});
+
+/**
+ * Gives a doctor with no way to sign in an account after the fact (P20-T01).
+ *
+ * For doctors created before the address was required, and for those whose
+ * invitation lapsed or was withdrawn. The address means exactly what it means
+ * on create: a new one is invited, one that already has an account is
+ * attached.
+ */
+export const inviteDoctorAccountSchema = z.object({
+  email: doctorEmailSchema,
 });
 
 export const updateDoctorSchema = z
@@ -311,5 +318,6 @@ export type DoctorScheduleEntryInput = z.infer<typeof doctorScheduleEntrySchema>
 export type UpdateDoctorScheduleInput = z.infer<typeof updateDoctorScheduleSchema>;
 export type ListDoctorsQueryInput = z.infer<typeof listDoctorsQuerySchema>;
 export type CreateDoctorInput = z.infer<typeof createDoctorSchema>;
+export type InviteDoctorAccountInput = z.infer<typeof inviteDoctorAccountSchema>;
 export type UpdateDoctorInput = z.infer<typeof updateDoctorSchema>;
 export type UpdateOwnDoctorProfileInput = z.infer<typeof updateOwnDoctorProfileSchema>;
