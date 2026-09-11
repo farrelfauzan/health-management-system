@@ -29,6 +29,7 @@ export * from '#doctor-management/schemas';
 export * from '#doctor-management/contracts';
 export * from '#doctor-management/types';
 export * from '#doctor-management/build-doctor-display-name';
+export * from '#doctor-management/resolve-missing-doctor-profile-fields';
 export * from '#doctor-credential-option/schemas';
 export * from '#doctor-credential-option/contracts';
 export * from '#doctor-credential-option/types';

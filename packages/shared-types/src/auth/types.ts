@@ -116,6 +116,14 @@ export type IssuedSession = {
    * the API's guard branches on the database row on every request.
    */
   offboardingDeadline: Date | null;
+  /**
+   * The signed-in doctor still has required profile fields to fill in
+   * (P20-T02). Always false for every role but DOCTOR. Feeds the session-hint
+   * cookie so `proxy.ts` can pin them to the completion screen without a
+   * database read; like the fields above it is a rendering input, never
+   * authorisation.
+   */
+  isProfileIncomplete: boolean;
   sessionExpiresAt: Date;
 };
 

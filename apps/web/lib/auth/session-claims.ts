@@ -57,6 +57,9 @@ export function resolveSessionClaims({
       ...(hintClaims?.offboardedUntil === undefined
         ? {}
         : { offboardedUntil: hintClaims.offboardedUntil }),
+      // And the profile-completion flag (P20-T02), for the same reason: a
+      // fresh token would otherwise let an incomplete doctor past the gate.
+      ...(hintClaims?.isProfileIncomplete ? { isProfileIncomplete: true } : {}),
     };
   }
   return isAccessTokenExpired(hintClaims) ? null : hintClaims;

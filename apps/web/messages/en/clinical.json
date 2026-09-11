@@ -539,6 +539,15 @@
       "loadErrorTitle": "Unable to load your profile",
       "loadErrorDescription": "Something went wrong while loading your profile. Please try again."
     },
+    "profileCompletion": {
+      "title": "Complete your profile",
+      "intro": "Before you start, the clinic needs a few details about you. They appear on prescriptions and lab reports, and your encounters are reported to SATUSEHAT under them.",
+      "formDescription": "Your name, phone number, title and degrees are yours to keep up to date later from My profile.",
+      "credentialsOnce": "Your specialty, STR number and NIK are entered once. After that, only your clinic can change them.",
+      "submit": "Save and continue",
+      "saveError": "Unable to save your profile. Please try again.",
+      "signOut": "Sign out"
+    },
     "doctors": {
       "title": "Doctors",
       "subtitle": "Manage practitioner profiles, credentials, schedules, and patient assignments.",

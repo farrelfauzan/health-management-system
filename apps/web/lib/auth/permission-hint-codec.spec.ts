@@ -22,8 +22,8 @@ const HINT_COOKIE_NAME_BYTES = 'hms_session_hint='.length;
 function readSeededPermissionKeys(): string[] {
   const seedPath = join(process.cwd(), '../../apps/api/prisma/seed.sql');
   const seed = readFileSync(seedPath, 'utf8');
-  const keys = [...seed.matchAll(/\('([a-z0-9.-]+:(?:any|own))',\s*'[A-Za-z]/g)].flatMap(
-    (match) => (match[1] === undefined ? [] : [match[1]]),
+  const keys = [...seed.matchAll(/\('([a-z0-9.-]+:(?:any|own))',\s*'[A-Za-z]/g)].flatMap((match) =>
+    match[1] === undefined ? [] : [match[1]],
   );
   return [...new Set(keys)].sort();
 }
@@ -34,6 +34,9 @@ function measureHintCookieBytes(permissionKeys: readonly string[]): number {
     permissions: permissionKeys.filter((key) => key.startsWith('portal.')),
     packedPermissions: packPermissionHint(permissionKeys),
     disabledFeatures: [],
+    // P20-T02. Present on an incomplete doctor's hint; counted so the budget
+    // measures the largest hint the API can write, not the common one.
+    profileIncomplete: true,
     exp: 1787812476,
   });
   return Buffer.from(payload).toString('base64url').length + HINT_COOKIE_NAME_BYTES;

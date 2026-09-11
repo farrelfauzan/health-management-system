@@ -13,6 +13,7 @@ import {
   LogoutResult,
   MfaRequirement,
   OFFBOARDED_PERMISSION_KEYS,
+  resolveMissingDoctorProfileFields,
   resolveOffboardingDeadline,
 } from '@hms/shared-types';
 
@@ -38,9 +39,12 @@ const REFRESH_TOKEN_BYTES = 32;
 /** Offboarding deadlines are clinic calendar days (P16-T41). */
 const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 
+/** The only role the profile-completion gate applies to (P20-T02). */
+const DOCTOR_ROLE_CODE = 'DOCTOR';
+
 /**
  * The shape of a user row as the login and refresh paths see it, narrowed to
- * what the offboarding decisions need.
+ * what the offboarding and profile-completion decisions need.
  */
 type SessionUserRecord = {
   offboardedAt: Date | null;
@@ -178,6 +182,7 @@ export class AuthService {
         origin,
         AuditAction.USER_LOGIN,
         this.resolveOffboardingDeadline(user),
+        await this.isProfileIncomplete(user),
       ),
       enrolmentRequired: requirement.isPrivileged && this.mfaEnforcement.isEnforceable,
       enrolmentDeadline: requirement.graceUntil,
@@ -248,6 +253,7 @@ export class AuthService {
       origin,
       AuditAction.USER_LOGIN,
       this.resolveOffboardingDeadline(user),
+      await this.isProfileIncomplete(user),
     );
   }
 
@@ -256,6 +262,7 @@ export class AuthService {
     origin: RequestContext,
     auditAction: AuditAction,
     offboardingDeadline: Date | null,
+    isProfileIncomplete: boolean,
   ): Promise<IssuedSession> {
     const accessToken = await this.issueAccessToken(claims);
     const issuedRefreshToken = this.issueRefreshToken({
@@ -284,6 +291,7 @@ export class AuthService {
       roles: claims.roles,
       permissions: claims.permissions,
       offboardingDeadline,
+      isProfileIncomplete,
       sessionExpiresAt: issuedRefreshToken.record.expiresAt,
     };
   }
@@ -380,6 +388,11 @@ export class AuthService {
       roles: claims.roles,
       permissions: claims.permissions,
       offboardingDeadline: this.resolveOffboardingDeadline(user),
+      // Re-judged on every refresh, which is what lifts the gate: the
+      // completion screen saves, refreshes once, and the next hint is clean.
+      // Read only here, after the token is consumed, so it never widens the
+      // race `consumeRefreshToken` has to serialise.
+      isProfileIncomplete: await this.isProfileIncomplete(user),
       sessionExpiresAt: nextToken.record.expiresAt,
     };
   }
@@ -623,6 +636,30 @@ export class AuthService {
       return null;
     }
     return resolveOffboardingDeadline(user.offboardedAt, this.resolveClinicTimeZone());
+  }
+
+  /**
+   * Whether this session must complete a doctor profile before anything else
+   * (P20-T02).
+   *
+   * Doctors only, on purpose: what a profile even is for a pharmacist or an
+   * administrator is still undecided (P20-T04), so every other role reads as
+   * complete rather than being gated on a record that does not exist for
+   * them. Judged at issuance, never per request — it rides in the session hint
+   * so `proxy.ts` can act on it without a database read on every navigation.
+   * Non-doctors cost no query at all; for a doctor it is one sequential read,
+   * never a relation on the user lookups (see `findDoctorProfileCompleteness`).
+   */
+  private async isProfileIncomplete(user: {
+    id: string;
+    roles: SessionUserRecord['roles'];
+  }): Promise<boolean> {
+    if (!this.resolveActiveRoleCodes(user.roles).includes(DOCTOR_ROLE_CODE)) {
+      return false;
+    }
+    const stored = await this.authRepository.findDoctorProfileCompleteness(user.id);
+    const profile = stored && !stored.deletedAt ? stored : null;
+    return resolveMissingDoctorProfileFields({ profile }).length > 0;
   }
 
   private hasOffboardingWindowClosed(user: Pick<SessionUserRecord, 'offboardedAt'>): boolean {

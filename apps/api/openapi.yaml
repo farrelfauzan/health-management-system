@@ -25842,6 +25842,351 @@ paths:
         - bearer: []
       summary: Update my doctor profile
       tags: *a34
+  /api/v1/me/doctor-profile/completion:
+    post:
+      operationId: DoctorOwnProfileController_completeOwnDoctorProfile_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CompleteOwnDoctorProfileDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  fullName: Budi Santoso
+                  phoneNumber: "+628129876500"
+                  specialtyId: eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee
+                  licenseNumber: STR-33-2020-000123
+                  nik: "3173011503800002"
+                  title: DR
+                  degrees:
+                    - SP_PD
+      responses:
+        "200":
+          description: "The profile-completion screen (P20-T02, D-026). With no doctor
+            profile yet, creates one owned by the signed-in doctor — specialty,
+            STR number and NIK are then required. With a profile the clinic
+            started, fills only what is still empty; a specialty, STR number or
+            NIK already on file is refused with 409 rather than overwritten.
+            Doctors only. Refresh the session afterwards: the profile-completion
+            flag in the session hint is only rewritten at issuance."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      licenseNumber:
+                        type: string
+                      fullName:
+                        type: string
+                      specialtyId:
+                        type: string
+                      specialty:
+                        type: string
+                      phoneNumber:
+                        type: string
+                      email:
+                        type: string
+                      title:
+                        type: string
+                      degrees:
+                        type: string
+                      titleValue:
+                        type: object
+                        properties:
+                          code:
+                            type: string
+                          label:
+                            type: string
+                          isLegacy:
+                            type: boolean
+                        required:
+                          - code
+                          - label
+                          - isLegacy
+                      degreeValues:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            code:
+                              type: string
+                            label:
+                              type: string
+                            isLegacy:
+                              type: boolean
+                          required:
+                            - code
+                            - label
+                            - isLegacy
+                      displayName:
+                        type: string
+                      invitationStatus:
+                        type: string
+                      nikMasked:
+                        type: string
+                      satusehatPractitionerId:
+                        type: string
+                      ownerUserId:
+                        type: string
+                      isActive:
+                        type: boolean
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                      patientCount:
+                        type: integer
+                      schedules:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            dayOfWeek:
+                              type: integer
+                            startTime:
+                              type: string
+                            endTime:
+                              type: string
+                            isAvailable:
+                              type: boolean
+                          required:
+                            - id
+                            - dayOfWeek
+                            - startTime
+                            - endTime
+                            - isAvailable
+                      licenses:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            type:
+                              type: string
+                            licenseNumber:
+                              type: string
+                            issuedAt:
+                              type: string
+                            createdAt:
+                              type: string
+                            updatedAt:
+                              type: string
+                          required:
+                            - id
+                            - type
+                            - licenseNumber
+                            - issuedAt
+                            - createdAt
+                            - updatedAt
+                      educations:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            institution:
+                              type: string
+                            degree:
+                              type: string
+                            fieldOfStudy:
+                              type: string
+                            fieldOfStudyValue:
+                              type: object
+                              properties:
+                                code:
+                                  type: string
+                                label:
+                                  type: string
+                                isLegacy:
+                                  type: boolean
+                              required:
+                                - code
+                                - label
+                                - isLegacy
+                            graduationYear:
+                              type: integer
+                            createdAt:
+                              type: string
+                            updatedAt:
+                              type: string
+                          required:
+                            - id
+                            - institution
+                            - degree
+                            - fieldOfStudy
+                            - fieldOfStudyValue
+                            - graduationYear
+                            - createdAt
+                            - updatedAt
+                      patients:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            assignmentId:
+                              type: string
+                            mrn:
+                              type: string
+                            fullName:
+                              type: string
+                          required:
+                            - id
+                            - assignmentId
+                            - mrn
+                            - fullName
+                    required:
+                      - id
+                      - licenseNumber
+                      - fullName
+                      - specialtyId
+                      - specialty
+                      - phoneNumber
+                      - email
+                      - title
+                      - degrees
+                      - titleValue
+                      - degreeValues
+                      - displayName
+                      - invitationStatus
+                      - nikMasked
+                      - satusehatPractitionerId
+                      - ownerUserId
+                      - isActive
+                      - createdAt
+                      - updatedAt
+                      - patientCount
+                      - schedules
+                      - licenses
+                      - educations
+                      - patients
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 22222222-2222-4222-8222-222222222222
+                    licenseNumber: SIP-2026-0001
+                    fullName: Dr. Budi Santoso
+                    specialtyId: eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee
+                    specialty: Internal Medicine
+                    phoneNumber: "+628129876543"
+                    email: budi.santoso@clinic.local
+                    title: dr.
+                    degrees: Sp.PD
+                    titleValue:
+                      code: DR
+                      label: dr.
+                      isLegacy: false
+                    degreeValues:
+                      - code: SP_PD
+                        label: Sp.PD
+                        isLegacy: false
+                    displayName: dr. Budi Santoso, Sp.PD
+                    invitationStatus: ACCEPTED
+                    nikMasked: ••••••••0002
+                    satusehatPractitionerId: "10009880728"
+                    ownerUserId: 33333333-3333-4333-8333-333333333333
+                    isActive: true
+                    createdAt: 2026-07-20T08:00:00.000Z
+                    updatedAt: 2026-07-20T08:00:00.000Z
+                    patientCount: 1
+                    schedules:
+                      - id: 99999999-9999-4999-8999-999999999999
+                        dayOfWeek: 1
+                        startTime: 08:00
+                        endTime: 16:00
+                        isAvailable: true
+                    licenses:
+                      - id: cdcdcdcd-cdcd-4dcd-8dcd-cdcdcdcdcdcd
+                        type: STR
+                        licenseNumber: STR-33-2020-000123
+                        issuedAt: 2020-02-01
+                        createdAt: 2026-07-20T08:00:00.000Z
+                        updatedAt: 2026-07-20T08:00:00.000Z
+                      - id: dededede-dede-4ede-8ede-dededededede
+                        type: SIP
+                        licenseNumber: SIP-2026-0001
+                        issuedAt: 2026-01-15
+                        expiresAt: 2031-01-14
+                        createdAt: 2026-07-20T08:00:00.000Z
+                        updatedAt: 2026-07-20T08:00:00.000Z
+                    educations:
+                      - id: fafafafa-fafa-4afa-8afa-fafafafafafa
+                        institution: Universitas Indonesia
+                        degree: dr.
+                        fieldOfStudy: Pendidikan Dokter
+                        fieldOfStudyValue:
+                          code: PENDIDIKAN_DOKTER
+                          label: Pendidikan Dokter
+                          isLegacy: false
+                        graduationYear: 2004
+                        createdAt: 2026-07-20T08:00:00.000Z
+                        updatedAt: 2026-07-20T08:00:00.000Z
+                      - id: fbfbfbfb-fbfb-4bfb-8bfb-fbfbfbfbfbfb
+                        institution: Universitas Indonesia
+                        degree: Sp.PD
+                        fieldOfStudy: Ilmu Penyakit Dalam
+                        fieldOfStudyValue:
+                          code: ILMU_PENYAKIT_DALAM
+                          label: Ilmu Penyakit Dalam
+                          isLegacy: false
+                        graduationYear: 2010
+                        createdAt: 2026-07-20T08:00:00.000Z
+                        updatedAt: 2026-07-20T08:00:00.000Z
+                    patients:
+                      - id: 11111111-1111-4111-8111-111111111111
+                        assignmentId: 88888888-8888-4888-8888-888888888888
+                        mrn: "00000001"
+                        fullName: Aisha Rahman
+                  message: Profile completed
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Complete my doctor profile
+      tags: *a34
   /api/v1/doctor-licenses/expiry:
     get:
       operationId: DoctorLicenseExpiryController_listExpiryBuckets_v1
@@ -49107,6 +49452,44 @@ components:
             required:
               - institution
               - degree
+    CompleteOwnDoctorProfileDto:
+      type: object
+      properties:
+        fullName:
+          type: string
+          minLength: 2
+          maxLength: 120
+        phoneNumber:
+          description: Indonesian phone number. Accepts 0812…, +62 812-…, 62812… and
+            punctuated forms; stored as 62812….
+          type: string
+          minLength: 6
+          maxLength: 32
+        specialtyId:
+          type: string
+          format: uuid
+        licenseNumber:
+          type: string
+          minLength: 3
+          maxLength: 64
+        nik:
+          type: string
+        title:
+          type: string
+          minLength: 1
+          maxLength: 64
+          pattern: ^[A-Z][A-Z0-9_]*$
+        degrees:
+          type: array
+          maxItems: 8
+          items:
+            type: string
+            minLength: 1
+            maxLength: 64
+            pattern: ^[A-Z][A-Z0-9_]*$
+      required:
+        - fullName
+        - phoneNumber
     CreateDoctorCredentialOptionDto:
       type: object
       properties:

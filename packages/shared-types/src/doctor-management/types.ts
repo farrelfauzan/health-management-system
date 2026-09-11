@@ -175,3 +175,29 @@ export const DOCTOR_LICENSE_EXPIRY_THRESHOLD_DAYS = [60, 30, 0] as const;
  * the implicit fourth bucket below zero.
  */
 export const DOCTOR_LICENSE_EXPIRY_BUCKET_DAYS = [30, 60, 90] as const;
+
+/**
+ * A stored doctor profile as the completeness check reads it (P20-T02): keyed
+ * by column, so the check can look up whichever fields the create schema
+ * requires. `nikLast4` is how an encrypted NIK's presence is read.
+ */
+export type DoctorProfileCompletenessRecord = Readonly<Record<string, unknown>> & {
+  readonly nikLast4?: string | null;
+};
+
+/**
+ * The one method of a Zod field the completeness check needs. Structural, so
+ * the check does not depend on which Zod major the caller's schema was built
+ * with.
+ */
+type CompletenessFieldSchema = {
+  isOptional(): boolean;
+  isNullable(): boolean;
+};
+
+export type ResolveMissingDoctorProfileFieldsParams = {
+  /** Null when the account has no doctor profile at all. */
+  profile: DoctorProfileCompletenessRecord | null;
+  /** The schema whose required keys define "complete". Defaults to create-doctor. */
+  schema?: { shape: Readonly<Record<string, CompletenessFieldSchema>> };
+};

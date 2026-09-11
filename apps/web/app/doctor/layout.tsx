@@ -57,6 +57,19 @@ export default async function DoctorLayout({ children }: DoctorLayoutProps) {
   // P19-T01. Same cookie read as the admin shell, so the choice follows the
   // person across both portals.
   const isSidebarOpen = resolveSidebarDefaultOpen(cookieStore.get(SIDEBAR_COOKIE_NAME)?.value);
+  // P20-T02. While the profile is incomplete `proxy.ts` allows exactly one
+  // page, so a sidebar, search and assistant would all be doors that bounce.
+  // The completion screen gets the page to itself, with its own sign-out.
+  if (offboarding === null && claims?.isProfileIncomplete === true) {
+    return (
+      <AppAbilityProvider rules={rules}>
+        <main className="min-h-screen bg-background px-4 py-10 sm:px-8">
+          <div className="mx-auto w-full max-w-2xl">{children}</div>
+        </main>
+        <IdleSessionGuard {...idlePolicy} />
+      </AppAbilityProvider>
+    );
+  }
   return (
     <AppAbilityProvider rules={rules}>
       <AiAssistantProvider displayName={profile.displayName} assistantPath={DOCTOR_ASSISTANT_PATH}>

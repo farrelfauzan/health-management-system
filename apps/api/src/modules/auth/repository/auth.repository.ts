@@ -1,9 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import {
-  ConsumeRefreshTokenResult,
-  RefreshTokenRecordPayload,
-} from '@hms/shared-types';
+import { ConsumeRefreshTokenResult, RefreshTokenRecordPayload } from '@hms/shared-types';
 
 import { PrismaService } from '../../../common/prisma/prisma.service';
 
@@ -67,6 +64,33 @@ export class AuthRepository {
             },
           },
         },
+      },
+    });
+  }
+
+  /**
+   * The columns the profile-completion gate is judged on (P20-T02), for the
+   * doctor profile this account owns, or null when it owns none.
+   *
+   * Deliberately its own query rather than a relation on the user lookups
+   * above. Adding a sibling relation there made Prisma fetch in parallel on a
+   * second pooled connection, which let two concurrent refreshes of one token
+   * genuinely overlap inside `consumeRefreshToken` — and the loser then read
+   * as token reuse and revoked the whole family (see
+   * `refresh-token-rotation.integration.spec.ts`). A separate, sequential read
+   * keeps those lookups exactly as they were. `deletedAt` is selected so the
+   * caller can treat a retired profile as no profile.
+   */
+  async findDoctorProfileCompleteness(userId: string) {
+    return this.prisma.doctorProfile.findUnique({
+      where: { ownerUserId: userId },
+      select: {
+        fullName: true,
+        phoneNumber: true,
+        specialtyId: true,
+        licenseNumber: true,
+        nikLast4: true,
+        deletedAt: true,
       },
     });
   }
@@ -224,9 +248,7 @@ export class AuthRepository {
       },
       data: { lastUsedAt: now },
     });
-    return touched.count === 1
-      ? { userId: existing.userId, familyId: existing.familyId }
-      : null;
+    return touched.count === 1 ? { userId: existing.userId, familyId: existing.familyId } : null;
   }
 
   async createLoginAttempt(input: {
