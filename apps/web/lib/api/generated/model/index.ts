@@ -592,6 +592,8 @@ export * from './documentAdminControllerGetDocumentV1200Data';
 export * from './documentAdminControllerGetDocumentV1200DataApproval';
 export * from './documentAdminControllerGetDownloadUrlV1200';
 export * from './documentAdminControllerGetDownloadUrlV1200Data';
+export * from './documentAdminControllerGetPreviewV1200';
+export * from './documentAdminControllerGetPreviewV1200Data';
 export * from './documentAdminControllerListDocumentsV1IngestStatus';
 export * from './documentAdminControllerListDocumentsV1Language';
 export * from './documentAdminControllerListDocumentsV1Params';

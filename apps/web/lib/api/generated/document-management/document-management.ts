@@ -37,6 +37,7 @@ import type {
   DocumentAdminControllerGetApprovalContextV1200,
   DocumentAdminControllerGetDocumentV1200,
   DocumentAdminControllerGetDownloadUrlV1200,
+  DocumentAdminControllerGetPreviewV1200,
   DocumentAdminControllerListDocumentsV1200,
   DocumentAdminControllerListDocumentsV1Params,
   DocumentAdminControllerReingestDocumentV1202,
@@ -849,6 +850,98 @@ export function useDocumentAdminControllerGetDownloadUrlV1<TData = Awaited<Retur
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getDocumentAdminControllerGetDownloadUrlV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Read a clinic document’s text, for previewing it in the app
+ */
+export const documentAdminControllerGetPreviewV1 = (
+    id: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<DocumentAdminControllerGetPreviewV1200>(
+      {url: `/api/v1/admin/documents/${id}/preview`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getDocumentAdminControllerGetPreviewV1QueryKey = (id: string,) => {
+    return [
+    `/api/v1/admin/documents/${id}/preview`
+    ] as const;
+    }
+
+
+export const getDocumentAdminControllerGetPreviewV1QueryOptions = <TData = Awaited<ReturnType<typeof documentAdminControllerGetPreviewV1>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentAdminControllerGetPreviewV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getDocumentAdminControllerGetPreviewV1QueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof documentAdminControllerGetPreviewV1>>> = ({ signal }) => documentAdminControllerGetPreviewV1(id, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof documentAdminControllerGetPreviewV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type DocumentAdminControllerGetPreviewV1QueryResult = NonNullable<Awaited<ReturnType<typeof documentAdminControllerGetPreviewV1>>>
+export type DocumentAdminControllerGetPreviewV1QueryError = unknown
+
+
+export function useDocumentAdminControllerGetPreviewV1<TData = Awaited<ReturnType<typeof documentAdminControllerGetPreviewV1>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentAdminControllerGetPreviewV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof documentAdminControllerGetPreviewV1>>,
+          TError,
+          Awaited<ReturnType<typeof documentAdminControllerGetPreviewV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDocumentAdminControllerGetPreviewV1<TData = Awaited<ReturnType<typeof documentAdminControllerGetPreviewV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentAdminControllerGetPreviewV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof documentAdminControllerGetPreviewV1>>,
+          TError,
+          Awaited<ReturnType<typeof documentAdminControllerGetPreviewV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDocumentAdminControllerGetPreviewV1<TData = Awaited<ReturnType<typeof documentAdminControllerGetPreviewV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentAdminControllerGetPreviewV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Read a clinic document’s text, for previewing it in the app
+ */
+
+export function useDocumentAdminControllerGetPreviewV1<TData = Awaited<ReturnType<typeof documentAdminControllerGetPreviewV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof documentAdminControllerGetPreviewV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getDocumentAdminControllerGetPreviewV1QueryOptions(id,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

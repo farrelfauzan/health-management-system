@@ -97,6 +97,7 @@ describe('DocumentService', () => {
       getSignedUploadUrl: jest.fn(),
       getSignedUrl: jest.fn(),
       headObject: jest.fn(),
+      getObject: jest.fn(),
     } as unknown as jest.Mocked<ObjectStorageService>;
     mockAuthRepository = {
       findUserById: jest.fn().mockResolvedValue(buildActorWithPermissions(ANY_SCOPE_PERMISSIONS)),
@@ -399,6 +400,46 @@ describe('DocumentService', () => {
 
       expect(mockDocumentRepository.listDocuments).toHaveBeenCalledWith(
         expect.objectContaining({ ownerType: 'CLINIC', ownerId: null }),
+      );
+    });
+  });
+
+  describe('getPreview', () => {
+    const DOCUMENT_ID = '2f6d1a4c-8b9e-4c1d-9a2f-5e7b3c0d8a11';
+
+    it('returns a Markdown document’s text with every tag stripped', async () => {
+      mockDocumentRepository.findDocumentById.mockResolvedValue(
+        buildDocumentRecord({ mimeType: 'text/markdown' }),
+      );
+      mockObjectStorageService.getObject.mockResolvedValue({
+        key: CLINIC_KEY,
+        body: Buffer.from('# Jam layanan\n\n<script>alert(1)</script>Buka **Senin–Sabtu**.'),
+      });
+
+      const actualView = await documentService.getPreview(DOCUMENT_ID, ACTOR);
+
+      expect(mockObjectStorageService.getObject).toHaveBeenCalledWith({ key: CLINIC_KEY });
+      expect(actualView.text).toBe('# Jam layanan\n\nBuka **Senin–Sabtu**.');
+      expect(actualView.mimeType).toBe('text/markdown');
+      expect(actualView.isTruncated).toBe(false);
+    });
+
+    it('refuses a PDF without reading the file, which keeps its download', async () => {
+      mockDocumentRepository.findDocumentById.mockResolvedValue(
+        buildDocumentRecord({ mimeType: 'application/pdf' }),
+      );
+
+      await expect(documentService.getPreview(DOCUMENT_ID, ACTOR)).rejects.toMatchObject({
+        response: { code: 'CLINIC_DOCUMENT_NOT_PREVIEWABLE' },
+      });
+      expect(mockObjectStorageService.getObject).not.toHaveBeenCalled();
+    });
+
+    it('is 404 for a document outside the clinic corpus', async () => {
+      mockDocumentRepository.findDocumentById.mockResolvedValue(null);
+
+      await expect(documentService.getPreview(DOCUMENT_ID, ACTOR)).rejects.toThrow(
+        'Document not found',
       );
     });
   });

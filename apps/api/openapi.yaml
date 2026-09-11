@@ -2390,6 +2390,99 @@ paths:
         - bearer: []
       summary: Mint a signed download URL for a clinic document
       tags: *a4
+  /api/v1/admin/documents/{id}/preview:
+    get:
+      operationId: DocumentAdminController_getPreview_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "The document’s text, extracted server-side, stripped of every tag
+            and capped at 20,000 characters, so an admin can read a corpus
+            document without downloading it. `isTruncated` says the document
+            continues past what came back, and the signed download stays the way
+            to read all of it. Markdown and plain text only: a PDF is 409
+            `CLINIC_DOCUMENT_NOT_PREVIEWABLE` and keeps its download."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      documentId:
+                        type: string
+                      mimeType:
+                        type: string
+                      text:
+                        type: string
+                      characterCount:
+                        type: integer
+                      totalCharacterCount:
+                        type: integer
+                      isTruncated:
+                        type: boolean
+                    required:
+                      - documentId
+                      - mimeType
+                      - text
+                      - characterCount
+                      - totalCharacterCount
+                      - isTruncated
+                required:
+                  - data
+                example:
+                  data:
+                    documentId: 9f1c7c2e-3a52-4f0b-9e33-1c9a5f0a77b1
+                    mimeType: text/markdown
+                    text: |-
+                      # Jam layanan
+
+                      Klinik buka **Senin–Sabtu**.
+
+                      | Hari | Jam |
+                      | --- | --- |
+                      | Senin–Jumat | 08.00–20.00 |
+                      | Sabtu | 08.00–14.00 |
+                    characterCount: 128
+                    totalCharacterCount: 128
+                    isTruncated: false
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Document not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Document not found.
+      security:
+        - bearer: []
+      summary: Read a clinic document’s text, for previewing it in the app
+      tags: *a4
   /api/v1/admin/documents/{id}/ingest:
     post:
       operationId: DocumentAdminController_reingestDocument_v1

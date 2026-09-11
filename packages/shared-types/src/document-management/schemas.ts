@@ -809,3 +809,11 @@ export type SubmitClinicDocumentsForApprovalInput = z.infer<
  * item's `message` is what a person reads.
  */
 export const CLINIC_DOCUMENT_SUBMISSION_FAILED_ERROR_CODE = 'CLINIC_DOCUMENT_SUBMISSION_FAILED';
+
+/**
+ * A clinic document whose file type the corpus preview does not show. The
+ * allowlist is the approval preview's (`MANAGED_DOCUMENT_PREVIEW_MIME_TYPES`,
+ * Markdown and plain text), so one rule decides which files the app renders;
+ * a PDF keeps its signed download.
+ */
+export const CLINIC_DOCUMENT_NOT_PREVIEWABLE_ERROR_CODE = 'CLINIC_DOCUMENT_NOT_PREVIEWABLE';
