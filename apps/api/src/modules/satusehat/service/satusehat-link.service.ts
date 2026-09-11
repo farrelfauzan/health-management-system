@@ -136,7 +136,7 @@ export class SatusehatLinkService {
       if (caughtError instanceof SatusehatAmbiguousMatchError) {
         await this.recordAmbiguousMatch(profile, caughtError.matchCount);
       }
-      throw this.mapSatusehatFailure(caughtError);
+      throw this.mapSatusehatFailure(caughtError, profile);
     }
   }
 
@@ -158,13 +158,13 @@ export class SatusehatLinkService {
     });
   }
 
-  private mapSatusehatFailure(caughtError: unknown): unknown {
+  private mapSatusehatFailure(caughtError: unknown, profile: SatusehatLinkAuditTarget): unknown {
     if (!(caughtError instanceof SatusehatError)) {
       return caughtError;
     }
     if (caughtError.code === 'SATUSEHAT_AMBIGUOUS_MATCH') {
       return new ConflictException(
-        'SATUSEHAT returned more than one match for this NIK; verify the patient in the SATUSEHAT portal before linking',
+        `SATUSEHAT returned more than one match for this NIK; verify the ${this.describeLinkSubject(profile)} in the SATUSEHAT portal before linking`,
       );
     }
     if (caughtError.code === 'SATUSEHAT_NOT_CONFIGURED') {
@@ -176,5 +176,13 @@ export class SatusehatLinkService {
       return new BadGatewayException('SATUSEHAT rejected the clinic credentials');
     }
     return new BadGatewayException('SATUSEHAT is unreachable; try again later');
+  }
+
+  /**
+   * Who the operator must go and verify. The 409 used to say "patient" on the
+   * doctor route too, sending the front desk to the wrong record in the portal.
+   */
+  private describeLinkSubject(profile: SatusehatLinkAuditTarget): string {
+    return profile.resource === DOCTOR_AUDIT_RESOURCE ? 'practitioner' : 'patient';
   }
 }

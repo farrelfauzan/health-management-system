@@ -1,5 +1,6 @@
 import {
   BadGatewayException,
+  ConflictException,
   NotFoundException,
   ServiceUnavailableException,
   UnprocessableEntityException,
@@ -7,6 +8,7 @@ import {
 
 import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { SatusehatAmbiguousMatchError } from '../../../common/satusehat/satusehat-ambiguous-match.error';
 import { SatusehatMasterDataClient } from '../../../common/satusehat/satusehat-master-data.client';
 import { SatusehatError } from '../../../common/satusehat/satusehat.error';
 import { SatusehatLinkRepository } from '../repository/satusehat-link.repository';
@@ -154,6 +156,23 @@ describe('SatusehatLinkService', () => {
         BadGatewayException,
       );
     });
+
+    it('maps an ambiguous match to Conflict that names the patient', async () => {
+      repositoryMock.findPatientLinkTarget.mockResolvedValue({
+        id: patientId,
+        nik: syntheticNik,
+        hasSatusehatPatientId: false,
+      });
+      masterDataClientMock.findPatientIhsNumberByNik.mockRejectedValue(
+        new SatusehatAmbiguousMatchError(2),
+      );
+
+      const actualLink = service.linkPatient(patientId, currentUser);
+
+      await expect(actualLink).rejects.toBeInstanceOf(ConflictException);
+      await expect(actualLink).rejects.toThrow('verify the patient in the SATUSEHAT portal');
+      expect(repositoryMock.savePatientIhsNumber).not.toHaveBeenCalled();
+    });
   });
 
   describe('linkDoctor', () => {
@@ -233,6 +252,31 @@ describe('SatusehatLinkService', () => {
       await expect(service.linkDoctor(doctorId, currentUser)).rejects.toBeInstanceOf(
         NotFoundException,
       );
+      expect(repositoryMock.saveDoctorIhsNumber).not.toHaveBeenCalled();
+    });
+
+    it('maps an ambiguous match to Conflict that names the practitioner, not a patient', async () => {
+      repositoryMock.findDoctorLinkTarget.mockResolvedValue({
+        id: doctorId,
+        nik: syntheticNik,
+        satusehatPractitionerId: null,
+      });
+      masterDataClientMock.findPractitionerIhsNumberByNik.mockRejectedValue(
+        new SatusehatAmbiguousMatchError(27),
+      );
+
+      const actualLink = service.linkDoctor(doctorId, currentUser);
+
+      await expect(actualLink).rejects.toBeInstanceOf(ConflictException);
+      await expect(actualLink).rejects.toThrow('verify the practitioner in the SATUSEHAT portal');
+      await expect(actualLink).rejects.not.toThrow('patient');
+      expect(auditServiceMock.record).toHaveBeenCalledWith({
+        action: 'SATUSEHAT_LINK_AMBIGUOUS',
+        resource: 'DoctorProfile',
+        resourceId: doctorId,
+        actorUserId: 'actor-user',
+        metadata: { lookup: 'NIK', trigger: 'LINK_ENDPOINT', matchCount: 27 },
+      });
       expect(repositoryMock.saveDoctorIhsNumber).not.toHaveBeenCalled();
     });
   });
