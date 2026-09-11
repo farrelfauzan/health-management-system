@@ -1393,8 +1393,13 @@ SET
 -- deactivates anything absent from the file, so it converges this baseline onto
 -- the official catalog without orphaning historic diagnoses.
 --
--- The Indonesian titles below are working translations for search and display,
--- not official Kemenkes wording; the import overwrites them.
+-- These rows are the Indonesian-language half of the catalog, not the catalog
+-- itself: `pnpm db:seed` loads the full official list (ICD10_2010, 18,542
+-- codes) from the generated `prisma/icd10.sql` immediately after this file.
+-- That file writes English titles only and never touches `display_indonesian`,
+-- so the working translations below survive every re-run and every refresh of
+-- the official export. They are working translations for search and display,
+-- not official Kemenkes wording.
 --
 -- `category` is the three-character parent code and `chapter` is derived from
 -- it. The importer applies the identical mapping in TypeScript
@@ -1527,14 +1532,16 @@ SET
 
 -- ICD-9-CM procedure starter catalog.
 --
--- NOT the official list, and deliberately smaller than the ICD-10 starter set:
--- it covers only procedures routinely performed in an Indonesian FKTP, so that
--- the /icd9cm-codes lookup is usable in development and demos. Load the official
--- list with `pnpm --filter @hms/api icd9cm:import <file.csv>` before go-live —
--- BPJS prices a claim from these codes, so an approximate catalog is a billing
--- problem, not just a display one.
---
--- Indonesian titles are working translations, overwritten by the import.
+-- The Indonesian-language half of the catalog: the procedures routinely
+-- performed in an Indonesian FKTP, the ones a clerk searches for by name.
+-- `pnpm db:seed` loads the full official list (ICD9CM_2010, 4,626 codes) from
+-- the generated `prisma/icd9cm.sql` immediately after this file; that file
+-- writes English titles only and never touches `display_indonesian`, so these
+-- translations survive it. They are working translations, not official
+-- Kemenkes wording. A live catalog is refreshed with
+-- `pnpm --filter @hms/api icd9cm:import <file.csv>`, which also deactivates
+-- codes a newer export drops — BPJS prices a claim from these codes, so a
+-- stale catalog is a billing problem, not just a display one.
 -- `category` is the two-digit parent code. There is no chapter column: ICD-9-CM
 -- procedure chapters do not map to a clean lexicographic range the way ICD-10
 -- chapters do.

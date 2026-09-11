@@ -23,7 +23,9 @@ is generated and must never be edited by hand.
 ## How it is loaded
 
 `pnpm db:seed` runs `prisma db seed` (roles and permissions), then
-`lab-catalog.sql`, then `wilayah.sql`. The region file is one transaction of
+`lab-catalog.sql`, `wilayah.sql`, and finally the two terminology catalogs
+(`icd10.sql`, `icd9cm.sql`; see
+[terminology-master-data.md](terminology-master-data.md)). The region file is one transaction of
 multi-row `INSERT ... ON CONFLICT ("code") DO UPDATE` statements, at most
 5,000 rows each, inserted parents first so the foreign keys hold mid-load.
 The upsert only touches a row whose name or parent changed, so re-running
