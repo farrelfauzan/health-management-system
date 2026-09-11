@@ -67,7 +67,7 @@
         "assistant": "Asisten AI"
       },
       "title": "Asisten Klinis AI",
-      "subtitle": "Ajukan pertanyaan klinis berdasarkan konteks pasien Saling Jaga."
+      "subtitle": "Ajukan pertanyaan berdasarkan FAQ klinik, SOP, dan dokumen yang Anda unggah."
     },
     "sidebar": {
       "newConsultation": "Konsultasi Baru",
@@ -91,7 +91,7 @@
       "expandPanel": "Bentangkan panel konsultasi"
     },
     "composer": {
-      "placeholder": "Tanyakan tentang pasien, hasil lab, atau protokol rumah sakit...",
+      "placeholder": "Tanyakan tentang FAQ klinik, SOP, atau dokumen yang Anda unggah...",
       "messageLabel": "Kirim pesan ke Asisten Klinis AI",
       "attachmentsUnavailable": "Lampiran belum tersedia dalam pratinjau",
       "attachFile": "Lampirkan berkas",

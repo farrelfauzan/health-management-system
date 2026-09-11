@@ -67,7 +67,7 @@
         "assistant": "AI Assistant"
       },
       "title": "AI Clinical Assistant",
-      "subtitle": "Ask clinical questions grounded in Saling Jaga patient context."
+      "subtitle": "Ask questions grounded in clinic FAQs, SOPs, and your uploaded documents."
     },
     "sidebar": {
       "newConsultation": "New Consultation",
@@ -91,7 +91,7 @@
       "expandPanel": "Expand the consultation panel"
     },
     "composer": {
-      "placeholder": "Ask about patients, lab results, or hospital protocol...",
+      "placeholder": "Ask about clinic FAQs, SOPs, or your uploaded documents...",
       "messageLabel": "Message the AI Clinical Assistant",
       "attachmentsUnavailable": "Attachments are not available in the preview",
       "attachFile": "Attach file",
