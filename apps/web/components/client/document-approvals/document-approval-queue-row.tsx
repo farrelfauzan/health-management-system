@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import type { DocumentApprovalQueueItemView } from '@hms/shared-types';
 import { Badge, Checkbox, TableCell, TableRow } from '@hms/ui';
-import { useFormatter, useTranslations } from 'next-intl';
+import { useFormatter, useNow, useTranslations } from 'next-intl';
 
 type DocumentApprovalQueueRowProps = {
   item: DocumentApprovalQueueItemView;
@@ -31,6 +31,7 @@ export function DocumentApprovalQueueRow({
 }: DocumentApprovalQueueRowProps) {
   const t = useTranslations('operations.documents.approvals.queue');
   const format = useFormatter();
+  const now = useNow({ updateInterval: 60_000 });
 
   return (
     <TableRow className="transition-colors hover:bg-slate-50">
@@ -65,7 +66,7 @@ export function DocumentApprovalQueueRow({
         </div>
       </TableCell>
       <TableCell className="px-4 text-sm text-slate-600">
-        {format.relativeTime(new Date(item.round.submittedAt))}
+        {format.relativeTime(new Date(item.round.submittedAt), now)}
       </TableCell>
     </TableRow>
   );

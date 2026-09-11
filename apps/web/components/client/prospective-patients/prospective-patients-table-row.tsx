@@ -2,7 +2,7 @@
 
 import { formatPhoneNumber, type ProspectivePatientView } from '@hms/shared-types';
 import { Badge, TableCell, TableRow } from '@hms/ui';
-import { useFormatter, useTranslations } from 'next-intl';
+import { useFormatter, useNow, useTranslations } from 'next-intl';
 
 import { ProspectivePatientRowActions } from '#components/client/prospective-patients/prospective-patient-row-actions';
 import { StatusBadge } from '#components/shared/status-badge';
@@ -21,6 +21,7 @@ export function ProspectivePatientsTableRow({
 }: ProspectivePatientsTableRowProps) {
   const t = useTranslations('prospectivePatients');
   const format = useFormatter();
+  const now = useNow({ updateInterval: 60_000 });
   const upcoming = item.upcomingAppointment;
 
   return (
@@ -56,7 +57,7 @@ export function ProspectivePatientsTableRow({
         <StatusBadge status={item.status} label={t(`status.${item.status}`)} />
       </TableCell>
       <TableCell className="px-4 text-sm text-slate-700">
-        {format.relativeTime(new Date(item.expiresAt))}
+        {format.relativeTime(new Date(item.expiresAt), now)}
       </TableCell>
       <TableCell className="px-4 text-sm text-slate-700">
         {format.dateTime(new Date(item.createdAt), { dateStyle: 'medium', timeStyle: 'short' })}
