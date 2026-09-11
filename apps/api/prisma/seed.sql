@@ -646,6 +646,12 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('DOCTOR', 'patient.read:own'),
     ('DOCTOR', 'doctor.read:any'),
     ('DOCTOR', 'doctor.read-identifier:own'),
+    -- P20-T03. A doctor corrects their own name, title, degrees, phone and
+    -- education through `me/doctor-profile`, which is the only route this
+    -- key opens: the administrative `PATCH /doctors/:id` and the credential
+    -- catalog both demand the `:any` scope, so holding `:own` edits nothing
+    -- the clinic asserts (specialty, licences, NIK, SATUSEHAT id). See D-025.
+    ('DOCTOR', 'doctor.update:own'),
     ('DOCTOR', 'doctor.schedule.write:own'),
     -- Doctors consult their agenda; the front desk and patients own booking.
     -- No create grant: the schedule is read-and-manage-own only, and session

@@ -1,7 +1,13 @@
 import { buildDoctorDisplayName } from '@hms/shared-types';
-import { BadRequestException, ConflictException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  ForbiddenException,
+  NotFoundException,
+} from '@nestjs/common';
 
 import { AuditService } from '../../../common/audit/audit.service';
+import { AuthRepository } from '../../auth/repository/auth.repository';
 import { DoctorCredentialOptionRepository } from '../repository/doctor-credential-option.repository';
 import { DoctorCredentialOptionService } from './doctor-credential-option.service';
 
@@ -32,15 +38,65 @@ describe('DoctorCredentialOptionService', () => {
     record: jest.fn(),
   } as unknown as AuditService;
 
-  const service = new DoctorCredentialOptionService(repositoryMock, auditServiceMock);
+  const authRepositoryMock = {
+    findUserById: jest.fn(),
+  } as unknown as AuthRepository;
+
+  const service = new DoctorCredentialOptionService(
+    repositoryMock,
+    auditServiceMock,
+    authRepositoryMock,
+  );
 
   const currentUser = {
     sub: '4e8580c4-9e80-44ff-9f8f-8c8f9d8d90f8',
     email: 'admin@hms.local',
   };
 
+  function buildDoctorUpdateActor(scope: 'ANY' | 'OWN') {
+    return {
+      roles: [
+        {
+          role: { permissions: [{ permission: { resource: 'Doctor', action: 'update', scope } }] },
+        },
+      ],
+    };
+  }
+
   beforeEach(() => {
     jest.clearAllMocks();
+    // An administrator by default; the catalog-is-administrative block below
+    // swaps in a doctor who holds only the own scope.
+    (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(buildDoctorUpdateActor('ANY'));
+  });
+
+  describe('the catalog is administrative (P20-T03)', () => {
+    beforeEach(() => {
+      (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
+        buildDoctorUpdateActor('OWN'),
+      );
+    });
+
+    it('refuses to add an option for a doctor who may only edit their own profile', async () => {
+      await expect(
+        service.createOption(
+          { kind: 'DEGREE', code: 'SP_GK', label: 'Sp.GK', sortOrder: 270 },
+          currentUser,
+        ),
+      ).rejects.toBeInstanceOf(ForbiddenException);
+      expect(repositoryMock.createOption).not.toHaveBeenCalled();
+    });
+
+    it('refuses to edit an option for a doctor who may only edit their own profile', async () => {
+      await expect(
+        service.updateOption(
+          '2f6f4e6a-1a1a-4d1a-9a1a-1a1a1a1a1a1a',
+          { isActive: false },
+          currentUser,
+        ),
+      ).rejects.toBeInstanceOf(ForbiddenException);
+      expect(repositoryMock.updateOption).not.toHaveBeenCalled();
+    });
   });
 
   describe('listOptions', () => {
@@ -104,7 +160,11 @@ describe('DoctorCredentialOptionService', () => {
       (repositoryMock.findOptionById as jest.Mock).mockResolvedValue(null);
 
       await expect(
-        service.updateOption('2f6f4e6a-1a1a-4d1a-9a1a-1a1a1a1a1a1a', { isActive: false }, currentUser),
+        service.updateOption(
+          '2f6f4e6a-1a1a-4d1a-9a1a-1a1a1a1a1a1a',
+          { isActive: false },
+          currentUser,
+        ),
       ).rejects.toBeInstanceOf(NotFoundException);
     });
 

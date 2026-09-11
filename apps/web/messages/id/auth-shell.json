@@ -240,7 +240,8 @@
           "patient": "Pasien",
           "staff": "Staf"
         },
-        "lockWorkstation": "Kunci komputer"
+        "lockWorkstation": "Kunci komputer",
+        "myProfile": "Profil saya"
       },
       "portal": {
         "name": "Portal Pasien",

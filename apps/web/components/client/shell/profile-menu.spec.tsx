@@ -18,7 +18,7 @@ vi.mock('#lib/auth/session-channel', () => ({
 
 const endSessionMock = vi.mocked(endSession);
 
-function renderProfileMenu(): void {
+function renderProfileMenu(profileHref?: string): void {
   render(
     <QueryClientProvider client={new QueryClient()}>
       <NextIntlClientProvider locale="id" messages={messages}>
@@ -29,6 +29,7 @@ function renderProfileMenu(): void {
             roleKey: 'superAdmin',
             email: 'admin@salingjaga.com',
           }}
+          profileHref={profileHref}
         />
       </NextIntlClientProvider>
     </QueryClientProvider>,
@@ -70,5 +71,28 @@ describe('ProfileMenu', () => {
     await user.click(await screen.findByRole('menuitem', { name: 'Kunci komputer' }));
 
     expect(endSessionMock).toHaveBeenCalledWith('LOCK', expect.anything());
+  });
+
+  /** P20-T03 — only a shell with an own-profile page passes a link. */
+  it('links to the own profile when the shell has one', async () => {
+    const user = userEvent.setup();
+    renderProfileMenu('/doctor/profile');
+
+    await user.click(screen.getByRole('button', { name: 'Buka menu profil' }));
+
+    expect(await screen.findByRole('menuitem', { name: 'Profil saya' })).toHaveAttribute(
+      'href',
+      '/doctor/profile',
+    );
+  });
+
+  it('offers no profile link in a shell without an own-profile page', async () => {
+    const user = userEvent.setup();
+    renderProfileMenu();
+
+    await user.click(screen.getByRole('button', { name: 'Buka menu profil' }));
+
+    expect(await screen.findByRole('menuitem', { name: 'Keluar' })).toBeInTheDocument();
+    expect(screen.queryByRole('menuitem', { name: 'Profil saya' })).not.toBeInTheDocument();
   });
 });

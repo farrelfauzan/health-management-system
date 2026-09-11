@@ -515,6 +515,30 @@
         }
       }
     },
+    "ownProfile": {
+      "title": "Profil saya",
+      "subtitle": "Perbarui nama dan kontak Anda. Kredensial dan identitas Anda dikelola oleh klinik.",
+      "editableTitle": "Data Anda",
+      "editableDescription": "Nama, gelar, nomor telepon, dan riwayat pendidikan dapat Anda perbaiki sendiri.",
+      "clinicManagedTitle": "Dikelola oleh klinik",
+      "clinicManagedDescription": "Spesialisasi, izin praktik, NIK, dan tautan SATUSEHAT adalah kredensial yang diverifikasi klinik. Minta administrator untuk mengubahnya.",
+      "fields": {
+        "license": "Nomor STR",
+        "specialty": "Spesialisasi",
+        "email": "Email untuk masuk",
+        "nik": "NIK",
+        "satusehat": "ID tenaga kesehatan SATUSEHAT"
+      },
+      "phoneInvalid": "Masukkan nomor telepon Indonesia yang valid.",
+      "save": "Simpan perubahan",
+      "saving": "Menyimpan...",
+      "saved": "Profil Anda berhasil diperbarui.",
+      "saveError": "Profil gagal disimpan. Silakan coba lagi.",
+      "noProfileTitle": "Belum ada profil dokter",
+      "noProfileDescription": "Akun ini belum ditautkan ke profil dokter. Minta administrator untuk menautkannya.",
+      "loadErrorTitle": "Profil tidak dapat dimuat",
+      "loadErrorDescription": "Terjadi kesalahan saat memuat profil Anda. Silakan coba lagi."
+    },
     "doctors": {
       "title": "Dokter",
       "subtitle": "Kelola profil tenaga medis, kredensial, jadwal, dan penetapan pasien.",

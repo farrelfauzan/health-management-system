@@ -366,24 +366,22 @@ export class DoctorManagementService {
     const actor = await this.getActorOrThrow(currentUser);
     const updateScope = this.resolveScope(actor, 'Doctor', 'update');
 
-    if (!updateScope.hasAny && !updateScope.hasOwn) {
-      throw new ForbiddenException('You are not allowed to update doctors');
+    // Administrative only (P20-T03). This route writes specialty, licences,
+    // NIK, the SATUSEHAT id and `isActive` — the things the clinic asserts
+    // about a doctor — so an own-scope caller here would be a doctor rewriting
+    // their own credentials. A doctor edits themselves through
+    // `me/doctor-profile`, whose schema carries only the fields that are
+    // theirs. See D-025.
+    if (!updateScope.hasAny) {
+      throw new ForbiddenException(
+        'You are not allowed to update doctors; edit your own details from your profile',
+      );
     }
 
     const doctor = await this.doctorManagementRepository.findDoctorById(id);
 
     if (!doctor) {
       throw new NotFoundException('Doctor not found');
-    }
-
-    const isOwner = doctor.ownerUserId === currentUser.sub;
-
-    if (!updateScope.hasAny && !isOwner) {
-      throw new ForbiddenException('You are not allowed to update this doctor');
-    }
-
-    if (!updateScope.hasAny && payload.ownerUserId !== undefined) {
-      throw new ForbiddenException('You are not allowed to change doctor owner');
     }
 
     if (payload.ownerUserId) {

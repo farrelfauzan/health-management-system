@@ -8,10 +8,17 @@ import {
   UpdateDoctorCredentialOptionInput,
   resolveDoctorCredentialValue,
 } from '@hms/shared-types';
-import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 
 import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { AuthRepository } from '../../auth/repository/auth.repository';
 import { DoctorCredentialOptionRepository } from '../repository/doctor-credential-option.repository';
 
 const CREDENTIAL_OPTION_AUDIT_RESOURCE = 'DoctorCredentialOption';
@@ -34,6 +41,7 @@ export class DoctorCredentialOptionService {
   constructor(
     private readonly doctorCredentialOptionRepository: DoctorCredentialOptionRepository,
     private readonly auditService: AuditService,
+    private readonly authRepository: AuthRepository,
   ) {}
 
   async listOptions(params: ListDoctorCredentialOptionsParams): Promise<DoctorCredentialOption[]> {
@@ -46,13 +54,16 @@ export class DoctorCredentialOptionService {
     payload: CreateDoctorCredentialOptionInput,
     currentUser: CurrentUser,
   ): Promise<DoctorCredentialOption> {
+    await this.assertCanEditCatalog(currentUser);
     const existing = await this.doctorCredentialOptionRepository.findOptionByKindAndCode(
       payload.kind,
       payload.code,
     );
 
     if (existing) {
-      throw new ConflictException(`Credential option ${payload.kind}:${payload.code} already exists`);
+      throw new ConflictException(
+        `Credential option ${payload.kind}:${payload.code} already exists`,
+      );
     }
 
     const created = await this.doctorCredentialOptionRepository.createOption({
@@ -77,6 +88,7 @@ export class DoctorCredentialOptionService {
     payload: UpdateDoctorCredentialOptionInput,
     currentUser: CurrentUser,
   ): Promise<DoctorCredentialOption> {
+    await this.assertCanEditCatalog(currentUser);
     const existing = await this.doctorCredentialOptionRepository.findOptionById(id);
 
     if (!existing) {
@@ -99,6 +111,31 @@ export class DoctorCredentialOptionService {
     });
 
     return this.toOptionResponse(updated);
+  }
+
+  /**
+   * The catalog is administrative even though its route only asks for
+   * `update` on `Doctor` (P20-T03).
+   *
+   * `PermissionsGuard` lets any scope of that action through, and since
+   * P20-T03 every doctor holds `doctor.update:own` to edit their own profile.
+   * Without this check that grant would let each doctor invent the titles and
+   * degrees every other doctor is described by. The catalog has no owner, so
+   * only the `:any` scope counts.
+   */
+  private async assertCanEditCatalog(currentUser: CurrentUser): Promise<void> {
+    const actor = await this.authRepository.findUserById(currentUser.sub);
+    const canEditAnyDoctor = (actor?.roles ?? []).some((userRole) =>
+      userRole.role.permissions.some(
+        ({ permission }) =>
+          permission.resource === 'Doctor' &&
+          permission.action === 'update' &&
+          permission.scope === 'ANY',
+      ),
+    );
+    if (!canEditAnyDoctor) {
+      throw new ForbiddenException('Only an administrator can change the credential catalog');
+    }
   }
 
   /**
@@ -147,7 +184,9 @@ export class DoctorCredentialOptionService {
    * per doctor: a directory page renders up to a hundred profiles, and the
    * catalog is small enough to hold entirely.
    */
-  async buildResolver(): Promise<(kind: DoctorCredentialKindValue, stored: string) => DoctorCredentialValue> {
+  async buildResolver(): Promise<
+    (kind: DoctorCredentialKindValue, stored: string) => DoctorCredentialValue
+  > {
     const options = await this.doctorCredentialOptionRepository.listOptions({
       includeInactive: true,
     });

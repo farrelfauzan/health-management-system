@@ -515,6 +515,30 @@
         }
       }
     },
+    "ownProfile": {
+      "title": "My profile",
+      "subtitle": "Keep how you are named and reached up to date. Your credentials and identity are kept by your clinic.",
+      "editableTitle": "Your details",
+      "editableDescription": "Your name, title, degrees, phone number and education are yours to correct.",
+      "clinicManagedTitle": "Managed by your clinic",
+      "clinicManagedDescription": "Specialty, licences, NIK and your SATUSEHAT link are credentials the clinic verifies. Ask an administrator to change them.",
+      "fields": {
+        "license": "STR number",
+        "specialty": "Specialty",
+        "email": "Sign-in email",
+        "nik": "NIK",
+        "satusehat": "SATUSEHAT practitioner ID"
+      },
+      "phoneInvalid": "Enter a valid Indonesian phone number.",
+      "save": "Save changes",
+      "saving": "Saving...",
+      "saved": "Your profile was updated.",
+      "saveError": "Unable to save your profile. Please try again.",
+      "noProfileTitle": "No doctor profile linked",
+      "noProfileDescription": "This account is not linked to a doctor profile. Ask an administrator to link it.",
+      "loadErrorTitle": "Unable to load your profile",
+      "loadErrorDescription": "Something went wrong while loading your profile. Please try again."
+    },
     "doctors": {
       "title": "Doctors",
       "subtitle": "Manage practitioner profiles, credentials, schedules, and patient assignments.",

@@ -1,6 +1,7 @@
 'use client';
 
 import { useQueryClient } from '@tanstack/react-query';
+import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 
 import {
@@ -21,9 +22,16 @@ import type { ShellProfile } from '#lib/shell/shell-profile';
 
 type ProfileMenuProps = {
   profile: ShellProfile;
+  /**
+   * Where "My profile" goes (P20-T03). Only the doctor shell has a
+   * self-service profile today, so the admin shell passes nothing and the
+   * item is simply absent — a pharmacist or an administrator has no profile
+   * record to open until P20-T04 decides what one is.
+   */
+  profileHref?: string;
 };
 
-export function ProfileMenu({ profile }: ProfileMenuProps) {
+export function ProfileMenu({ profile, profileHref }: ProfileMenuProps) {
   const t = useTranslations('authShell.shell.profile');
   const queryClient = useQueryClient();
   const displayName = profile.isFallbackName ? t('fallbackName') : profile.displayName;
@@ -53,6 +61,14 @@ export function ProfileMenu({ profile }: ProfileMenuProps) {
           </span>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
+        {profileHref ? (
+          <DropdownMenuItem asChild>
+            <Link href={profileHref}>
+              <Icon name="account_circle" size={16} />
+              {t('myProfile')}
+            </Link>
+          </DropdownMenuItem>
+        ) : null}
         {/*
           Lock sits above logout: handing the workstation to a colleague is the
           twenty-times-a-day action, signing off for the night is not (SJ-9).

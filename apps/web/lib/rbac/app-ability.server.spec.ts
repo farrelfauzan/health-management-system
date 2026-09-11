@@ -295,6 +295,24 @@ describe('resolveAppAbilityRules for a seeded DOCTOR', () => {
     expect(ability.can('create', 'Patient')).toBe(false);
   });
 
+  /**
+   * P20-T03. The seed grants DOCTOR `doctor.update:own`; the "My profile" menu
+   * item and page are gated on `update Doctor`, so the key has to survive the
+   * rule mapper or neither ever renders. The scope is dropped on purpose —
+   * which profile, and which fields, is the API's call.
+   */
+  it('lets a doctor holding doctor.update:own reach their own profile', () => {
+    const withOwnUpdate = buildAppAbility(
+      resolveAppAbilityRules({ permissions: [...DOCTOR_PERMISSIONS, 'doctor.update:own'] }),
+    );
+    const withoutOwnUpdate = buildAppAbility(
+      resolveAppAbilityRules({ permissions: DOCTOR_PERMISSIONS }),
+    );
+
+    expect(withOwnUpdate.can('update', 'Doctor')).toBe(true);
+    expect(withoutOwnUpdate.can('update', 'Doctor')).toBe(false);
+  });
+
   it('maps the three-segment organization keys to their own subjects', () => {
     // SJ-1. `permissionToRule` splits on the last dot, so these resolve to
     // resource `organization.structure` / `organization.member`. If either ever

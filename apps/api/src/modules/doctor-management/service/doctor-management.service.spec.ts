@@ -1002,7 +1002,7 @@ describe('DoctorManagementService', () => {
     expect(result.specialty).toBe('Neurology');
   });
 
-  it('denies own-scope doctor update when attempting owner reassignment', async () => {
+  it('refuses an own-scope caller on the administrative route, even for their own profile', async () => {
     (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
       buildActor([{ action: 'update', resource: 'Doctor', scope: 'OWN' }]),
     );
@@ -1012,12 +1012,9 @@ describe('DoctorManagementService', () => {
     });
 
     await expect(
-      service.updateDoctor(
-        doctorId,
-        { ownerUserId: 'ec7602c6-e489-4d0f-a8a7-b0f91a5bfbe2' },
-        currentUser,
-      ),
+      service.updateDoctor(doctorId, { specialtyId: neurologySpecialtyId }, currentUser),
     ).rejects.toBeInstanceOf(ForbiddenException);
+    expect(doctorManagementRepositoryMock.updateDoctor).not.toHaveBeenCalled();
   });
 
   it('throws conflict when reassigning owner already linked to another doctor', async () => {

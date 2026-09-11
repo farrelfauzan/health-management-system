@@ -733,6 +733,14 @@ export const PHASE_THREE_EXAMPLES = {
       degrees: ['SP_PD'],
       isActive: true,
     },
+    // P20-T03. Only what a doctor owns — no specialty, licences, NIK,
+    // SATUSEHAT id or status; the route refuses those with a 400 (D-025).
+    updateOwnRequest: {
+      fullName: 'Budi Santoso',
+      phoneNumber: '+628129876500',
+      title: 'DR',
+      degrees: ['SP_PD'],
+    },
     scheduleRequest: {
       schedules: [
         {

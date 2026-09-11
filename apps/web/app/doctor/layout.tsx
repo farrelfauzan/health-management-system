@@ -15,6 +15,7 @@ import { resolveOffboardingSession } from '#lib/auth/offboarding-session';
 import { SESSION_HINT_COOKIE_NAME } from '#lib/auth/session-hint-cookie';
 import { resolveSessionClaims } from '#lib/auth/session-claims';
 import { DOCTOR_ASSISTANT_PATH } from '#lib/ai-assistant/assistant-path';
+import { DOCTOR_PROFILE_PATH } from '#lib/doctor-profile/doctor-profile-path';
 import { resolveAppAbilityRules } from '#lib/rbac/app-ability.server';
 import { DOCTOR_NAV_SECTIONS } from '#lib/shell/doctor-nav-items';
 import { filterNavSections } from '#lib/shell/filter-nav-sections';
@@ -44,11 +45,12 @@ export default async function DoctorLayout({ children }: DoctorLayoutProps) {
     ...(offboarding ? ['/doctor/dashboard'] : []),
     ...resolveDisabledNavHrefs(claims),
   ];
-  const sections = filterNavSections(
-    buildAppAbility(rules),
-    DOCTOR_NAV_SECTIONS,
-    excludedNavHrefs,
-  );
+  const ability = buildAppAbility(rules);
+  const sections = filterNavSections(ability, DOCTOR_NAV_SECTIONS, excludedNavHrefs);
+  // P20-T03. Offboarded people are pinned to their vault by `proxy.ts`, so a
+  // link they could never follow is left out rather than bounced.
+  const profileHref =
+    offboarding === null && ability.can('update', 'Doctor') ? DOCTOR_PROFILE_PATH : undefined;
   const isChatEnabled = offboarding === null && isFeatureEnabled(claims, 'ai-chatbot');
   const profile = resolveShellProfile(claims);
   const idlePolicy = resolveSessionIdlePolicy();
@@ -61,7 +63,11 @@ export default async function DoctorLayout({ children }: DoctorLayoutProps) {
         <SidebarProvider style={SIDEBAR_STYLE} defaultOpen={isSidebarOpen}>
           <AppSidebar sections={sections} homeHref="/doctor/dashboard" />
           <SidebarInset className="min-w-0">
-            <TopBar profile={profile} excludedNavHrefs={excludedNavHrefs} />
+            <TopBar
+              profile={profile}
+              excludedNavHrefs={excludedNavHrefs}
+              profileHref={profileHref}
+            />
             {offboarding ? (
               <OffboardingBanner
                 deadline={offboarding.deadline}

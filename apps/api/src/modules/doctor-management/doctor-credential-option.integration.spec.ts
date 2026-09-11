@@ -214,6 +214,22 @@ describe('DoctorCredentialOption integration', () => {
     expect(response.body.data).toEqual(expect.objectContaining({ code: 'SP_GK' }));
   });
 
+  it('refuses a doctor who holds only doctor.update:own (P20-T03)', async () => {
+    // The guard lets any scope of `update Doctor` through, and since P20-T03
+    // every doctor holds the own scope to edit their profile; the catalog has
+    // no owner, so the service insists on the any scope.
+    mockActorWithPermissions([{ action: 'update', resource: 'Doctor', scope: 'OWN' }]);
+    const token = await buildToken('actor-user', 'dr.first@clinic.local');
+
+    const response = await request(app.getHttpServer())
+      .post('/api/v1/v1/doctor-credential-options')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ kind: 'DEGREE', code: 'SP_GK', label: 'Sp.GK', sortOrder: 270 });
+
+    expect(response.status).toBe(403);
+    expect(credentialOptionRepositoryMock.createOption).not.toHaveBeenCalled();
+  });
+
   it('refuses a duplicate code within a kind', async () => {
     mockActorWithPermissions([{ action: 'update', resource: 'Doctor', scope: 'ANY' }]);
     credentialOptionRepositoryMock.findOptionByKindAndCode.mockResolvedValue(degreeOption);
