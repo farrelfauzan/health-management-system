@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Patch, UnauthorizedException } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Patch,
+  Post,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
 import { AuthUser } from '../../../common/auth/auth-user.decorator';
@@ -6,8 +14,10 @@ import { CurrentUser } from '../../../common/auth/current-user.type';
 import { Auth } from '../../../common/authorization/auth.decorator';
 import { ApiEndpoint } from '../../../common/openapi/api-endpoint.decorator';
 import { PHASE_THREE_EXAMPLES } from '../../../common/openapi/phase-three-examples';
+import { CompleteOwnDoctorProfileDto } from '../dto/complete-own-doctor-profile.dto';
 import { UpdateOwnDoctorProfileDto } from '../dto/update-own-doctor-profile.dto';
 import { DoctorOwnProfileService } from '../service/doctor-own-profile.service';
+import { DoctorProfileCompletionService } from '../service/doctor-profile-completion.service';
 
 /**
  * The signed-in doctor's own profile (P20-T03).
@@ -22,7 +32,10 @@ import { DoctorOwnProfileService } from '../service/doctor-own-profile.service';
   path: 'me/doctor-profile',
 })
 export class DoctorOwnProfileController {
-  constructor(private readonly doctorOwnProfileService: DoctorOwnProfileService) {}
+  constructor(
+    private readonly doctorOwnProfileService: DoctorOwnProfileService,
+    private readonly doctorProfileCompletionService: DoctorProfileCompletionService,
+  ) {}
 
   @Get()
   @Auth([{ action: 'read', subject: 'Doctor' }])
@@ -65,6 +78,33 @@ export class DoctorOwnProfileController {
         this.assertAuthenticated(currentUser),
       ),
       message: 'Profile updated',
+    };
+  }
+
+  @Post('completion')
+  @HttpCode(200)
+  @Auth([{ action: 'update', subject: 'Doctor' }])
+  @ApiEndpoint({
+    summary: 'Complete my doctor profile',
+    responseDescription:
+      'The profile-completion screen (P20-T02, D-026). With no doctor profile yet, creates one owned by the signed-in doctor — specialty, STR number and NIK are then required. With a profile the clinic started, fills only what is still empty; a specialty, STR number or NIK already on file is refused with 409 rather than overwritten. Doctors only. Refresh the session afterwards: the profile-completion flag in the session hint is only rewritten at issuance.',
+    responseExample: {
+      data: PHASE_THREE_EXAMPLES.doctor.detail,
+      message: 'Profile completed',
+    },
+    requestType: CompleteOwnDoctorProfileDto,
+    requestExample: PHASE_THREE_EXAMPLES.doctor.completeOwnRequest,
+  })
+  async completeOwnDoctorProfile(
+    @Body() payload: CompleteOwnDoctorProfileDto,
+    @AuthUser() currentUser?: CurrentUser,
+  ) {
+    return {
+      data: await this.doctorProfileCompletionService.completeOwnDoctorProfile(
+        payload,
+        this.assertAuthenticated(currentUser),
+      ),
+      message: 'Profile completed',
     };
   }
 

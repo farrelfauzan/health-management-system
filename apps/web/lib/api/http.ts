@@ -1,8 +1,4 @@
-import axios, {
-  AxiosError,
-  type AxiosRequestConfig,
-  type InternalAxiosRequestConfig,
-} from 'axios';
+import axios, { AxiosError, type AxiosRequestConfig, type InternalAxiosRequestConfig } from 'axios';
 import type { ApiSuccess, RefreshedAuthTokens } from '@hms/shared-types';
 
 import {
@@ -11,7 +7,6 @@ import {
   setAccessTokenCookie,
 } from '#lib/auth/access-token-cookie';
 import { mfaTicketStore } from '#lib/auth/mfa-ticket-store';
-
 
 /**
  * Where the API lives.
@@ -105,6 +100,18 @@ function getRefreshedAccessToken(): Promise<string> {
     refreshRequest = null;
   });
   return refreshRequest;
+}
+
+/**
+ * Re-issues the session on purpose, through the same single-flight refresh
+ * the 401 handler uses (P20-T02). For state the API only writes at issuance —
+ * the profile-completion flag in the session hint — so a screen that has just
+ * changed it can have the new hint before it navigates. Never a raw
+ * `POST /auth/refresh`: a second rotation of one token outside the grace
+ * window reads as theft and ends the session.
+ */
+export function refreshSession(): Promise<string> {
+  return getRefreshedAccessToken();
 }
 
 apiClient.interceptors.response.use(

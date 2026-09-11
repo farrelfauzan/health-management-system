@@ -314,6 +314,30 @@ export const updateOwnDoctorProfileSchema = z
     message: 'At least one field is required',
   });
 
+/**
+ * What the profile-completion screen submits (P20-T02, see D-026).
+ *
+ * Name and phone are always required — they are the doctor's own. Specialty,
+ * STR licence number and NIK are optional here because what is needed depends
+ * on what is already stored: an invited doctor with no profile must send all
+ * three to create one, while a doctor whose profile the clinic started may
+ * only fill the ones still empty. The service enforces both; a value the
+ * clinic already set is refused rather than overwritten, which is how "enter
+ * it once" stays compatible with D-025. `strict` for the same reason as the
+ * own-profile schema.
+ */
+export const completeOwnDoctorProfileSchema = z
+  .object({
+    fullName: z.string().trim().min(2).max(120),
+    phoneNumber: indonesianPhoneNumberSchema,
+    specialtyId: z.string().uuid().optional(),
+    licenseNumber: z.string().trim().min(3).max(64).optional(),
+    nik: nikSchema.optional(),
+    title: doctorTitleSchema.optional(),
+    degrees: doctorDegreesSchema.optional(),
+  })
+  .strict();
+
 export type DoctorScheduleEntryInput = z.infer<typeof doctorScheduleEntrySchema>;
 export type UpdateDoctorScheduleInput = z.infer<typeof updateDoctorScheduleSchema>;
 export type ListDoctorsQueryInput = z.infer<typeof listDoctorsQuerySchema>;
@@ -321,3 +345,4 @@ export type CreateDoctorInput = z.infer<typeof createDoctorSchema>;
 export type InviteDoctorAccountInput = z.infer<typeof inviteDoctorAccountSchema>;
 export type UpdateDoctorInput = z.infer<typeof updateDoctorSchema>;
 export type UpdateOwnDoctorProfileInput = z.infer<typeof updateOwnDoctorProfileSchema>;
+export type CompleteOwnDoctorProfileInput = z.infer<typeof completeOwnDoctorProfileSchema>;

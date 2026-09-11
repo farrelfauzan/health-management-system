@@ -105,6 +105,7 @@ export class AuthController {
       roles: session.roles,
       permissions: session.permissions,
       offboardingDeadline: session.offboardingDeadline,
+      isProfileIncomplete: session.isProfileIncomplete,
       disabledFeatures: await this.resolveDisabledFeatures(),
       expiresAt: session.sessionExpiresAt,
     });
@@ -151,6 +152,7 @@ export class AuthController {
       roles: session.roles,
       permissions: session.permissions,
       offboardingDeadline: session.offboardingDeadline,
+      isProfileIncomplete: session.isProfileIncomplete,
       disabledFeatures: await this.resolveDisabledFeatures(),
       expiresAt: session.sessionExpiresAt,
     });
@@ -340,6 +342,7 @@ export class AuthController {
       roles: session.roles,
       permissions: session.permissions,
       offboardingDeadline: session.offboardingDeadline,
+      isProfileIncomplete: session.isProfileIncomplete,
       disabledFeatures: await this.resolveDisabledFeatures(),
       expiresAt: session.sessionExpiresAt,
     });
@@ -379,6 +382,7 @@ export class AuthController {
       roles: session.roles,
       permissions: session.permissions,
       offboardingDeadline: session.offboardingDeadline,
+      isProfileIncomplete: session.isProfileIncomplete,
       disabledFeatures: await this.resolveDisabledFeatures(),
       expiresAt: session.sessionExpiresAt,
     });

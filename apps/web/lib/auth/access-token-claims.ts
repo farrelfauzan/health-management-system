@@ -22,6 +22,14 @@ export type AccessTokenClaims = {
    * branches on the database row on every request.
    */
   offboardedUntil?: string;
+  /**
+   * The signed-in doctor still has required profile fields to fill in
+   * (P20-T02). Carried by the session-hint cookie only, and only when true;
+   * absent means complete — which is what every hint written before this
+   * field existed must mean. `proxy.ts` pins such a doctor to the completion
+   * screen. Rendering input only.
+   */
+  isProfileIncomplete?: boolean;
 };
 
 export function decodeAccessTokenClaims(token: string): AccessTokenClaims | null {

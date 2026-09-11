@@ -31,6 +31,7 @@ describe('setSessionHintCookie', () => {
       permissions: ['portal.admin-access:any'],
       disabledFeatures: ['ai-chatbot', 'billing'],
       offboardingDeadline: null,
+      isProfileIncomplete: false,
       expiresAt,
     });
 
@@ -45,6 +46,7 @@ describe('setSessionHintCookie', () => {
       permissions: [],
       disabledFeatures: [],
       offboardingDeadline: null,
+      isProfileIncomplete: false,
       expiresAt,
     });
 
@@ -61,6 +63,7 @@ describe('setSessionHintCookie', () => {
       permissions: ['portal.admin-access:any', 'patient.read:any'],
       disabledFeatures: ['billing'],
       offboardingDeadline: null,
+      isProfileIncomplete: false,
       expiresAt,
     });
 
@@ -80,6 +83,7 @@ describe('setSessionHintCookie', () => {
       permissions: ['portal.admin-access:any', 'patient.read:any', 'role.create:any'],
       disabledFeatures: [],
       offboardingDeadline: null,
+      isProfileIncomplete: false,
       expiresAt,
     });
 
@@ -110,6 +114,7 @@ describe('setSessionHintCookie', () => {
       permissions: manyPermissions,
       disabledFeatures: [],
       offboardingDeadline: null,
+      isProfileIncomplete: false,
       expiresAt,
     });
 
@@ -128,6 +133,7 @@ describe('setSessionHintCookie', () => {
       permissions: ['portal.doctor-access:any', 'vault-document.read:own'],
       disabledFeatures: [],
       offboardingDeadline: new Date('2026-10-04T00:00:00.000Z'),
+      isProfileIncomplete: false,
       expiresAt,
     });
     setSessionHintCookie(response, {
@@ -135,10 +141,38 @@ describe('setSessionHintCookie', () => {
       permissions: ['portal.doctor-access:any'],
       disabledFeatures: [],
       offboardingDeadline: null,
+      isProfileIncomplete: false,
       expiresAt,
     });
 
     expect(decodePayload(captured[0]!.value).offboardedUntil).toBe('2026-10-04');
     expect(decodePayload(captured[1]!.value)).not.toHaveProperty('offboardedUntil');
+  });
+
+  it('flags an incomplete doctor profile, and writes nothing at all otherwise', () => {
+    // P20-T02. `proxy.ts` pins a flagged doctor to the completion screen. A
+    // complete doctor's hint must carry no field, so a hint from before this
+    // existed and a complete one read the same way: "complete".
+    const { response, captured } = buildResponse();
+
+    setSessionHintCookie(response, {
+      roles: ['DOCTOR'],
+      permissions: ['portal.doctor-access:any'],
+      disabledFeatures: [],
+      offboardingDeadline: null,
+      isProfileIncomplete: true,
+      expiresAt,
+    });
+    setSessionHintCookie(response, {
+      roles: ['DOCTOR'],
+      permissions: ['portal.doctor-access:any'],
+      disabledFeatures: [],
+      offboardingDeadline: null,
+      isProfileIncomplete: false,
+      expiresAt,
+    });
+
+    expect(decodePayload(captured[0]!.value).profileIncomplete).toBe(true);
+    expect(decodePayload(captured[1]!.value)).not.toHaveProperty('profileIncomplete');
   });
 });

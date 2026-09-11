@@ -21,6 +21,7 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  CompleteOwnDoctorProfileDto,
   CreateDoctorDto,
   DoctorLicenseExpiryControllerListExpiryBucketsV1200,
   DoctorManagementControllerCreateDoctorV1201,
@@ -31,6 +32,7 @@ import type {
   DoctorManagementControllerListDoctorsV1Params,
   DoctorManagementControllerUpdateDoctorScheduleV1200,
   DoctorManagementControllerUpdateDoctorV1200,
+  DoctorOwnProfileControllerCompleteOwnDoctorProfileV1200,
   DoctorOwnProfileControllerGetOwnDoctorProfileV1200,
   DoctorOwnProfileControllerUpdateOwnDoctorProfileV1200,
   InviteDoctorAccountDto,
@@ -908,6 +910,100 @@ export function useDoctorOwnProfileControllerUpdateOwnDoctorProfileV1<TData = Aw
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getDoctorOwnProfileControllerUpdateOwnDoctorProfileV1QueryOptions(updateOwnDoctorProfileDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Complete my doctor profile
+ */
+export const doctorOwnProfileControllerCompleteOwnDoctorProfileV1 = (
+    completeOwnDoctorProfileDto: CompleteOwnDoctorProfileDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<DoctorOwnProfileControllerCompleteOwnDoctorProfileV1200>(
+      {url: `/api/v1/me/doctor-profile/completion`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: completeOwnDoctorProfileDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getDoctorOwnProfileControllerCompleteOwnDoctorProfileV1QueryKey = (completeOwnDoctorProfileDto?: CompleteOwnDoctorProfileDto,) => {
+    return [
+    'POST', `/api/v1/me/doctor-profile/completion`, completeOwnDoctorProfileDto
+    ] as const;
+    }
+
+
+export const getDoctorOwnProfileControllerCompleteOwnDoctorProfileV1QueryOptions = <TData = Awaited<ReturnType<typeof doctorOwnProfileControllerCompleteOwnDoctorProfileV1>>, TError = unknown>(completeOwnDoctorProfileDto: CompleteOwnDoctorProfileDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof doctorOwnProfileControllerCompleteOwnDoctorProfileV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getDoctorOwnProfileControllerCompleteOwnDoctorProfileV1QueryKey(completeOwnDoctorProfileDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof doctorOwnProfileControllerCompleteOwnDoctorProfileV1>>> = ({ signal }) => doctorOwnProfileControllerCompleteOwnDoctorProfileV1(completeOwnDoctorProfileDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof doctorOwnProfileControllerCompleteOwnDoctorProfileV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type DoctorOwnProfileControllerCompleteOwnDoctorProfileV1QueryResult = NonNullable<Awaited<ReturnType<typeof doctorOwnProfileControllerCompleteOwnDoctorProfileV1>>>
+export type DoctorOwnProfileControllerCompleteOwnDoctorProfileV1QueryError = unknown
+
+
+export function useDoctorOwnProfileControllerCompleteOwnDoctorProfileV1<TData = Awaited<ReturnType<typeof doctorOwnProfileControllerCompleteOwnDoctorProfileV1>>, TError = unknown>(
+ completeOwnDoctorProfileDto: CompleteOwnDoctorProfileDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof doctorOwnProfileControllerCompleteOwnDoctorProfileV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof doctorOwnProfileControllerCompleteOwnDoctorProfileV1>>,
+          TError,
+          Awaited<ReturnType<typeof doctorOwnProfileControllerCompleteOwnDoctorProfileV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDoctorOwnProfileControllerCompleteOwnDoctorProfileV1<TData = Awaited<ReturnType<typeof doctorOwnProfileControllerCompleteOwnDoctorProfileV1>>, TError = unknown>(
+ completeOwnDoctorProfileDto: CompleteOwnDoctorProfileDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof doctorOwnProfileControllerCompleteOwnDoctorProfileV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof doctorOwnProfileControllerCompleteOwnDoctorProfileV1>>,
+          TError,
+          Awaited<ReturnType<typeof doctorOwnProfileControllerCompleteOwnDoctorProfileV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDoctorOwnProfileControllerCompleteOwnDoctorProfileV1<TData = Awaited<ReturnType<typeof doctorOwnProfileControllerCompleteOwnDoctorProfileV1>>, TError = unknown>(
+ completeOwnDoctorProfileDto: CompleteOwnDoctorProfileDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof doctorOwnProfileControllerCompleteOwnDoctorProfileV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Complete my doctor profile
+ */
+
+export function useDoctorOwnProfileControllerCompleteOwnDoctorProfileV1<TData = Awaited<ReturnType<typeof doctorOwnProfileControllerCompleteOwnDoctorProfileV1>>, TError = unknown>(
+ completeOwnDoctorProfileDto: CompleteOwnDoctorProfileDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof doctorOwnProfileControllerCompleteOwnDoctorProfileV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getDoctorOwnProfileControllerCompleteOwnDoctorProfileV1QueryOptions(completeOwnDoctorProfileDto,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

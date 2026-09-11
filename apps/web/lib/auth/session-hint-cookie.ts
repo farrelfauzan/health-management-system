@@ -10,6 +10,7 @@ type SessionHint = {
   packedPermissions?: string;
   disabledFeatures?: string[];
   offboardedUntil?: string;
+  profileIncomplete?: boolean;
   exp?: number;
 };
 
@@ -66,11 +67,16 @@ export function decodeSessionHint(hint: string | undefined): AccessTokenClaims |
       typeof parsed.offboardedUntil === 'string' && parsed.offboardedUntil !== ''
         ? parsed.offboardedUntil
         : undefined;
+    // P20-T02. Only a literal `true` gates. Absent — every complete doctor,
+    // every other role, every hint written by an older API — reads as
+    // complete, the same fail-open reading as the fields above.
+    const isProfileIncomplete = parsed.profileIncomplete === true;
     return {
       roles: parsed.roles,
       permissions,
       disabledFeatures,
       ...(offboardedUntil === undefined ? {} : { offboardedUntil }),
+      ...(isProfileIncomplete ? { isProfileIncomplete: true } : {}),
       exp: parsed.exp,
     };
   } catch {

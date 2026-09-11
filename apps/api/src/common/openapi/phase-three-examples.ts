@@ -741,6 +741,17 @@ export const PHASE_THREE_EXAMPLES = {
       title: 'DR',
       degrees: ['SP_PD'],
     },
+    // P20-T02. An invited doctor with no profile sends the three credentials
+    // once; a doctor whose profile the clinic started sends only what is empty.
+    completeOwnRequest: {
+      fullName: 'Budi Santoso',
+      phoneNumber: '+628129876500',
+      specialtyId,
+      licenseNumber: 'STR-33-2020-000123',
+      nik: syntheticDoctorNik,
+      title: 'DR',
+      degrees: ['SP_PD'],
+    },
     scheduleRequest: {
       schedules: [
         {

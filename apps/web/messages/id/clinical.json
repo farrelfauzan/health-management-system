@@ -539,6 +539,15 @@
       "loadErrorTitle": "Profil tidak dapat dimuat",
       "loadErrorDescription": "Terjadi kesalahan saat memuat profil Anda. Silakan coba lagi."
     },
+    "profileCompletion": {
+      "title": "Lengkapi profil Anda",
+      "intro": "Sebelum mulai, klinik memerlukan beberapa data tentang Anda. Data ini tercetak pada resep dan hasil laboratorium, dan kunjungan Anda dilaporkan ke SATUSEHAT atas nama Anda.",
+      "formDescription": "Nama, nomor telepon, gelar depan, dan gelar belakang dapat Anda perbarui nanti lewat Profil saya.",
+      "credentialsOnce": "Spesialisasi, nomor STR, dan NIK hanya diisi sekali. Setelah itu, hanya klinik yang dapat mengubahnya.",
+      "submit": "Simpan dan lanjutkan",
+      "saveError": "Profil gagal disimpan. Silakan coba lagi.",
+      "signOut": "Keluar"
+    },
     "doctors": {
       "title": "Dokter",
       "subtitle": "Kelola profil tenaga medis, kredensial, jadwal, dan penetapan pasien.",

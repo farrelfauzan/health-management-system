@@ -37,6 +37,8 @@ describe('AuthService', () => {
     findRefreshTokenFamilyByHash: jest.fn(),
     revokeRefreshTokenFamily: jest.fn(),
     revokeAllUserRefreshTokens: jest.fn(),
+    // P20-T02. No doctor profile by default, which is the invited-doctor case.
+    findDoctorProfileCompleteness: jest.fn().mockResolvedValue(null),
   } as unknown as AuthRepository;
   const jwtService = new JwtService();
   const configService = new ConfigService({
@@ -436,6 +438,89 @@ describe('AuthService', () => {
         'vault-document.read:own',
       ]);
       expect(actualSession.offboardingDeadline).not.toBeNull();
+    });
+  });
+
+  describe('profile completion (P20-T02)', () => {
+    const completeDoctorProfile = {
+      fullName: 'Dr. Budi Santoso',
+      phoneNumber: '628129876543',
+      specialtyId: '0f1cbb1f-8f4a-4bb0-9a5e-2d94f7a3c111',
+      licenseNumber: 'STR-33-2020-000123',
+      nikLast4: '0002',
+      deletedAt: null,
+    };
+
+    // The shared fixture still holds DOCTOR, so a login without a profile is
+    // exactly the case an administrator creates by inviting an account.
+    it('gates a doctor who has no doctor profile at all', async () => {
+      const actualSession = await loginForSession();
+
+      expect(actualSession.isProfileIncomplete).toBe(true);
+    });
+
+    it('never gates a doctor whose profile the administrator filled in', async () => {
+      (authRepositoryMock.findDoctorProfileCompleteness as jest.Mock).mockResolvedValueOnce(
+        completeDoctorProfile,
+      );
+
+      const actualSession = await loginForSession();
+
+      expect(actualSession.isProfileIncomplete).toBe(false);
+      expect(authRepositoryMock.findDoctorProfileCompleteness).toHaveBeenCalledWith(userId);
+    });
+
+    it('gates a doctor whose profile is missing a required field', async () => {
+      (authRepositoryMock.findDoctorProfileCompleteness as jest.Mock).mockResolvedValueOnce({
+        ...completeDoctorProfile,
+        phoneNumber: null,
+      });
+
+      const actualSession = await loginForSession();
+
+      expect(actualSession.isProfileIncomplete).toBe(true);
+    });
+
+    it('reads a retired profile as no profile', async () => {
+      (authRepositoryMock.findDoctorProfileCompleteness as jest.Mock).mockResolvedValueOnce({
+        ...completeDoctorProfile,
+        deletedAt: new Date('2026-09-01T00:00:00.000Z'),
+      });
+
+      const actualSession = await loginForSession();
+
+      expect(actualSession.isProfileIncomplete).toBe(true);
+    });
+
+    it('never gates a role other than DOCTOR, and never even looks for a profile', async () => {
+      // P20-T04 has not decided what a profile is for anyone else.
+      (authRepositoryMock.findUserByEmail as jest.Mock).mockResolvedValue({
+        ...user,
+        roles: [
+          {
+            unassignedAt: null,
+            role: {
+              code: 'PHARMACIST',
+              permissions: [{ permission: { permissionKey: 'dispense.write:any' } }],
+            },
+          },
+        ],
+      });
+
+      const actualSession = await loginForSession();
+
+      expect(actualSession.isProfileIncomplete).toBe(false);
+      expect(authRepositoryMock.findDoctorProfileCompleteness).not.toHaveBeenCalled();
+    });
+
+    it('lifts the gate at the next refresh once the profile is complete', async () => {
+      (authRepositoryMock.findDoctorProfileCompleteness as jest.Mock).mockResolvedValueOnce(
+        completeDoctorProfile,
+      );
+
+      const actualSession = await service.refresh('any-opaque-token', TEST_ORIGIN);
+
+      expect(actualSession.isProfileIncomplete).toBe(false);
     });
   });
 });

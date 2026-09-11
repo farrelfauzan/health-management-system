@@ -161,4 +161,24 @@ describe('resolveSessionClaims', () => {
 
     expect(claims).not.toHaveProperty('offboardedUntil');
   });
+
+  it('merges the profile-completion flag from the hint onto a live access token', () => {
+    // P20-T02. The token never carries it; without the merge a fresh token
+    // would walk an incomplete doctor straight past the gate.
+    const claims = resolveSessionClaims({
+      accessToken: buildToken({ roles: ['DOCTOR'], exp: futureExp }),
+      sessionHint: buildHint({ roles: ['DOCTOR'], profileIncomplete: true, exp: futureExp }),
+    });
+
+    expect(claims?.isProfileIncomplete).toBe(true);
+  });
+
+  it('reads a hint without the flag as complete', () => {
+    const claims = resolveSessionClaims({
+      accessToken: buildToken({ roles: ['DOCTOR'], exp: futureExp }),
+      sessionHint: buildHint({ roles: ['DOCTOR'], exp: futureExp }),
+    });
+
+    expect(claims).not.toHaveProperty('isProfileIncomplete');
+  });
 });

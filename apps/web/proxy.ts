@@ -5,6 +5,7 @@ import { hasAnyRole, hasPermission } from '#lib/auth/access-token-claims';
 import { OFFBOARDED_VAULT_PATHS } from '#lib/auth/offboarding-session';
 import { SESSION_HINT_COOKIE_NAME } from '#lib/auth/session-hint-cookie';
 import { resolveSessionClaims } from '#lib/auth/session-claims';
+import { DOCTOR_PROFILE_COMPLETION } from '#lib/doctor-profile/doctor-profile-completion';
 
 /**
  * Shell access is decided by the `portal.*` permission claims (IMP-3), so a
@@ -99,9 +100,33 @@ export function proxy(request: NextRequest) {
     return hasDoctorSession ? OFFBOARDED_VAULT_PATHS.doctor : null;
   }
 
+  // P20-T02. A doctor with required profile fields still empty has one page
+  // until they fill them in. Doctors only — an admin who also holds DOCTOR
+  // gets the admin shell and is never pinned here — and offboarding wins,
+  // because somebody leaving has nothing to complete. The flag comes from the
+  // session hint, so this costs no database read per navigation.
+  const isProfileCompletionPending =
+    hasDoctorSession && offboardedVaultPath === null && claims?.isProfileIncomplete === true;
+
+  function redirectToProfileCompletion(): NextResponse {
+    const target = new URL(DOCTOR_PROFILE_COMPLETION.path, request.url);
+    // Only a doctor-shell page is worth coming back to; `/login` and friends
+    // would be bounced home anyway, so they leave no trail.
+    if (pathname.startsWith(`${DOCTOR_PATH_PREFIX}/`)) {
+      target.searchParams.set(
+        DOCTOR_PROFILE_COMPLETION.nextParam,
+        `${pathname}${request.nextUrl.search}`,
+      );
+    }
+    return NextResponse.redirect(target);
+  }
+
   function redirectToHome(): NextResponse {
     if (offboardedVaultPath !== null) {
       return NextResponse.redirect(new URL(offboardedVaultPath, request.url));
+    }
+    if (isProfileCompletionPending) {
+      return redirectToProfileCompletion();
     }
     if (hasTechnicianOnlySession) {
       return NextResponse.redirect(new URL(LABORATORY_HOME_PATH, request.url));
@@ -137,6 +162,10 @@ export function proxy(request: NextRequest) {
 
   if (offboardedVaultPath !== null && pathname !== offboardedVaultPath) {
     return NextResponse.redirect(new URL(offboardedVaultPath, request.url));
+  }
+
+  if (isProfileCompletionPending && pathname !== DOCTOR_PROFILE_COMPLETION.path) {
+    return redirectToProfileCompletion();
   }
 
   if (pathname.startsWith(PORTAL_PATH_PREFIX)) {

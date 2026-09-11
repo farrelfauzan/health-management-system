@@ -21,6 +21,7 @@
     "#doctor-management/contracts": "./src/doctor-management/contracts.ts",
     "#doctor-management/types": "./src/doctor-management/types.ts",
     "#doctor-management/build-doctor-display-name": "./src/doctor-management/build-doctor-display-name.ts",
+    "#doctor-management/resolve-missing-doctor-profile-fields": "./src/doctor-management/resolve-missing-doctor-profile-fields.ts",
     "#doctor-credential-option/schemas": "./src/doctor-credential-option/schemas.ts",
     "#doctor-credential-option/contracts": "./src/doctor-credential-option/contracts.ts",
     "#doctor-credential-option/types": "./src/doctor-credential-option/types.ts",

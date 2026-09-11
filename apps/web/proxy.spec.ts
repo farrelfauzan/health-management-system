@@ -22,6 +22,7 @@ function buildSessionHint(claims: {
   roles: string[];
   permissions?: string[];
   offboardedUntil?: string;
+  profileIncomplete?: boolean;
 }): string {
   return encodeBase64Url(claims);
 }
@@ -118,9 +119,7 @@ describe('proxy', () => {
       '/admin/laboratory/c4d5e6f7-a8b9-4c0d-9e1f-2a3b4c5d6e7f',
       '/admin/settings/laboratory',
     ]) {
-      expect(proxy(buildRequest(path, technicianToken)).headers.get('x-middleware-next')).toBe(
-        '1',
-      );
+      expect(proxy(buildRequest(path, technicianToken)).headers.get('x-middleware-next')).toBe('1');
     }
   });
 
@@ -432,6 +431,90 @@ describe('proxy', () => {
           'x-middleware-next',
         ),
       ).toBe('1');
+    });
+  });
+
+  describe('profile completion (P20-T02)', () => {
+    const doctorToken = buildToken({ exp: futureUnix(), roles: ['DOCTOR'] });
+    const incompleteDoctorHint = buildSessionHint({
+      exp: futureUnix(),
+      roles: ['DOCTOR'],
+      permissions: ['portal.doctor-access:any'],
+      profileIncomplete: true,
+    });
+
+    it('sends an incomplete doctor to the completion screen, remembering where they were going', () => {
+      const response = proxy(
+        buildRequest('/doctor/encounters?tab=today', doctorToken, incompleteDoctorHint),
+      );
+
+      expect(response.status).toBe(307);
+      expect(response.headers.get('location')).toBe(
+        `${BASE_URL}/doctor/complete-profile?next=%2Fdoctor%2Fencounters%3Ftab%3Dtoday`,
+      );
+    });
+
+    it('lets them through to the completion screen itself', () => {
+      const response = proxy(
+        buildRequest('/doctor/complete-profile', doctorToken, incompleteDoctorHint),
+      );
+
+      expect(response.headers.get('x-middleware-next')).toBe('1');
+    });
+
+    it('lands a freshly signed-in incomplete doctor on the completion screen', () => {
+      const response = proxy(buildRequest('/login', doctorToken, incompleteDoctorHint));
+
+      expect(response.headers.get('location')).toBe(`${BASE_URL}/doctor/complete-profile`);
+    });
+
+    it('never shows the screen to a doctor whose profile is complete', () => {
+      const completeDoctorHint = buildSessionHint({
+        exp: futureUnix(),
+        roles: ['DOCTOR'],
+        permissions: ['portal.doctor-access:any'],
+      });
+
+      expect(
+        proxy(buildRequest('/doctor/dashboard', doctorToken, completeDoctorHint)).headers.get(
+          'x-middleware-next',
+        ),
+      ).toBe('1');
+      expect(
+        proxy(buildRequest('/login', doctorToken, completeDoctorHint)).headers.get('location'),
+      ).toBe(`${BASE_URL}/doctor/dashboard`);
+    });
+
+    it('does not gate an administrator, even one who also holds DOCTOR', () => {
+      const adminDoctorToken = buildToken({ exp: futureUnix(), roles: ['ADMIN', 'DOCTOR'] });
+      const adminDoctorHint = buildSessionHint({
+        exp: futureUnix(),
+        roles: ['ADMIN', 'DOCTOR'],
+        permissions: ['portal.admin-access:any', 'portal.doctor-access:any'],
+        profileIncomplete: true,
+      });
+
+      expect(
+        proxy(buildRequest('/admin/dashboard', adminDoctorToken, adminDoctorHint)).headers.get(
+          'x-middleware-next',
+        ),
+      ).toBe('1');
+    });
+
+    it('lets offboarding win over completion', () => {
+      const offboardedIncompleteHint = buildSessionHint({
+        exp: futureUnix(),
+        roles: ['DOCTOR'],
+        permissions: ['portal.doctor-access:any'],
+        offboardedUntil: '2026-10-04',
+        profileIncomplete: true,
+      });
+
+      expect(
+        proxy(
+          buildRequest('/doctor/complete-profile', doctorToken, offboardedIncompleteHint),
+        ).headers.get('location'),
+      ).toBe(`${BASE_URL}/doctor/vault`);
     });
   });
 });

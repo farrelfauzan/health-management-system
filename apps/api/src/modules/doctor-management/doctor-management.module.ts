@@ -16,6 +16,7 @@ import { DoctorLicenseExpiryService } from './service/doctor-license-expiry.serv
 import { DoctorLicenseExpiryWorker } from './service/doctor-license-expiry.worker';
 import { DoctorManagementService } from './service/doctor-management.service';
 import { DoctorOwnProfileService } from './service/doctor-own-profile.service';
+import { DoctorProfileCompletionService } from './service/doctor-profile-completion.service';
 
 /**
  * Exports `DoctorLicenseExpiryService` because the scheduling warning
@@ -53,6 +54,7 @@ import { DoctorOwnProfileService } from './service/doctor-own-profile.service';
     DoctorManagementRepository,
     DoctorManagementService,
     DoctorOwnProfileService,
+    DoctorProfileCompletionService,
     DoctorLicenseExpiryRepository,
     DoctorLicenseExpiryService,
     DoctorLicenseExpiryWorker,

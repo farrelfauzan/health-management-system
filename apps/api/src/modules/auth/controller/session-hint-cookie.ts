@@ -64,6 +64,14 @@ export function setSessionHintCookie(
      * of that is "not offboarded".
      */
     offboardingDeadline: Date | null;
+    /**
+     * Whether a doctor must complete their profile before anything else
+     * (P20-T02). Written as `profileIncomplete: true` only when it is, so a
+     * hint from an older API — and every complete doctor's — carries nothing,
+     * and the web reads absence as "complete". `proxy.ts` gates on it without
+     * a database read; the API refuses nothing on its account.
+     */
+    isProfileIncomplete: boolean;
     expiresAt: Date;
   },
 ): void {
@@ -84,6 +92,7 @@ export function setSessionHintCookie(
       ...(hint.offboardingDeadline === null
         ? {}
         : { offboardedUntil: hint.offboardingDeadline.toISOString().slice(0, 10) }),
+      ...(hint.isProfileIncomplete ? { profileIncomplete: true } : {}),
       exp: Math.floor(hint.expiresAt.getTime() / 1000),
     }),
   ).toString('base64url');
