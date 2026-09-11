@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
-import { useFormatter, useTranslations } from 'next-intl';
+import { useFormatter, useNow, useTranslations } from 'next-intl';
 import type { NotificationView } from '@hms/shared-types';
 import { DropdownMenuItem, Icon, cn } from '@hms/ui';
 
@@ -43,6 +43,7 @@ type NotificationsMenuItemProps = {
 export function NotificationsMenuItem({ notification }: NotificationsMenuItemProps) {
   const t = useTranslations('authShell.shell.notifications');
   const format = useFormatter();
+  const now = useNow({ updateInterval: 60_000 });
   const router = useRouter();
   const queryClient = useQueryClient();
   const isUnread = notification.readAt === null;
@@ -86,7 +87,7 @@ export function NotificationsMenuItem({ notification }: NotificationsMenuItemPro
           {resolveMessage(notification.bodyKey)}
         </span>
         <span className="text-[11px] text-muted-foreground/70">
-          {format.relativeTime(new Date(notification.createdAt))}
+          {format.relativeTime(new Date(notification.createdAt), now)}
         </span>
       </span>
     </DropdownMenuItem>
