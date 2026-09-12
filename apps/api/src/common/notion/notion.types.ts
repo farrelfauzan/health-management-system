@@ -51,8 +51,12 @@ export type NotionCircuitBreakerOptions = {
 
 export type NotionHttpMethod = 'GET' | 'POST';
 
+/** What a log line may say a failed call was. Never the path: it carries the board id. */
+export type NotionOperation = 'create_page' | 'query_data_source' | 'retrieve_data_source';
+
 /** One request to the Notion REST API, relative to its versioned base URL. */
 export type NotionRequest = {
+  readonly operation: NotionOperation;
   readonly method: NotionHttpMethod;
   readonly path: string;
   readonly body?: unknown;
