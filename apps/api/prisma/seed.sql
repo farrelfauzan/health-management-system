@@ -251,6 +251,12 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     ('satusehat.submission.read:any', 'SatusehatSubmission', 'read', 'ANY', 'Read SATUSEHAT submission outbox status'),
     ('satusehat.submission.retry:any', 'SatusehatSubmission', 'retry', 'ANY', 'Retry failed SATUSEHAT submissions'),
     ('bpjs.config.manage:any', 'BpjsConfig', 'manage', 'ANY', 'Manage BPJS bridging credentials and connection settings (PCare and Antrean Online)'),
+    -- P23-T04. Read-only in practice: the Notion connector is configured by
+    -- environment (P23-T02), so this grants the status view and the Bug Board
+    -- schema test, not the ability to change where bug reports go. Held by
+    -- SUPER_ADMIN through the catalog-wide grant and by nobody else — the
+    -- board belongs to Saling Jaga, not to the clinic.
+    ('notion-connector.manage:any', 'NotionConnector', 'manage', 'ANY', 'Read the Notion bug-report connector status and test the Bug Board connection'),
     ('bpjs.reference.sync:any', 'BpjsReference', 'sync', 'ANY', 'Sync BPJS PCare reference catalogs and run keyword search-and-cache lookups'),
     ('bpjs.reference.read:any', 'BpjsReference', 'read', 'ANY', 'Read the synced BPJS PCare reference catalogs and their sync status'),
     ('bpjs.mapping.manage:any', 'BpjsMapping', 'manage', 'ANY', 'Map doctors, specialties, and medications to BPJS PCare codes'),

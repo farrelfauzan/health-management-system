@@ -102,8 +102,18 @@ export type NotionQueryDataSourceResponse = {
   readonly next_cursor?: string | null;
 };
 
+/**
+ * One property in a data source's schema, as Notion reports it. Every field is
+ * optional because this is an upstream body: the field check reads it
+ * defensively and says what was missing rather than throwing.
+ */
+export type NotionDataSourceProperty = {
+  readonly type?: string;
+  readonly select?: { readonly options?: readonly { readonly name?: string }[] };
+};
+
 /** The Bug Board schema as Notion reports it, for the field check (P23-T04). */
 export type NotionDataSource = {
   readonly id: string;
-  readonly properties?: Readonly<Record<string, { readonly type?: string }>>;
+  readonly properties?: Readonly<Record<string, NotionDataSourceProperty>>;
 };

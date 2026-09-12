@@ -67,6 +67,8 @@ export * from '#bpjs-antrean/types';
 export * from '#bpjs-antrean-ws/schemas';
 export * from '#bpjs-antrean-ws/contracts';
 export * from '#bpjs-antrean-ws/types';
+export * from '#notion-connector/contracts';
+export * from '#notion-connector/types';
 export * from '#laboratory/schemas';
 export * from '#laboratory/contracts';
 export * from '#laboratory/types';

@@ -277,6 +277,12 @@ enum AuditAction {
   /// the queue only holds people somebody will see, and every deliberate
   /// exception has to name who made it and which hours were bypassed.
   REGISTRATION_CHECKIN_OVERRIDDEN
+  /// Someone tested the Notion bug-report connector (P23-T04). Its own verb
+  /// rather than a generic READ because the row answers a question no other
+  /// row does: who was looking at why bug reports stopped reaching the board,
+  /// and when — the audit trail for an integration a clinic cannot configure
+  /// and therefore cannot be asked to explain.
+  NOTION_CONNECTION_TESTED
 }
 
 enum BpjsSubmissionType {
