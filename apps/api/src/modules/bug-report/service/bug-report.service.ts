@@ -113,6 +113,18 @@ export class BugReportService {
   }
 
   /**
+   * When a bug report last reached the Bug Board, for the integrations card
+   * (P23-T10).
+   *
+   * Exposed here rather than letting the connector module read this table: cross-
+   * module access goes through a service, never another module's repository. The
+   * connector owns the card; this module owns what a bug report is.
+   */
+  async findLastPublishedAt(): Promise<Date | null> {
+    return this.bugReportRepository.findLastPublishedAt();
+  }
+
+  /**
    * Re-runs the P23-T07 rules with the MRN format the browser does not know,
    * and refuses the report naming the field and the category.
    *
