@@ -23,7 +23,12 @@ export type FeatureKey =
   | 'cs-channels'
   // P18-T01: the laboratory module, sold as its own product. Default off — a
   // clinic that sends specimens out has no use for a worklist.
-  | 'laboratory';
+  | 'laboratory'
+  // P23-T08: in-app bug reporting. Not a product a clinic buys — it is how the
+  // clinic tells us something is broken — so it has no nav entry of its own and
+  // is seeded on. The key exists so a deployment that must not send text to our
+  // triage vendor can switch the whole path off in one place.
+  | 'bug-reporting';
 
 /**
  * One optional product feature, as both the API and the web app know it.

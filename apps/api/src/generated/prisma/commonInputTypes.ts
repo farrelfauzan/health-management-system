@@ -2009,6 +2009,40 @@ export type EnumImmunizationSiteNullableWithAggregatesFilter<$PrismaModel = neve
   _max?: Prisma.NestedEnumImmunizationSiteNullableFilter<$PrismaModel>
 }
 
+export type EnumBugReportStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.BugReportStatus | Prisma.EnumBugReportStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.BugReportStatus[] | Prisma.ListEnumBugReportStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.BugReportStatus[] | Prisma.ListEnumBugReportStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumBugReportStatusFilter<$PrismaModel> | $Enums.BugReportStatus
+}
+
+export type EnumBugReportTriagedByNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.BugReportTriagedBy | Prisma.EnumBugReportTriagedByFieldRefInput<$PrismaModel> | null
+  in?: $Enums.BugReportTriagedBy[] | Prisma.ListEnumBugReportTriagedByFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.BugReportTriagedBy[] | Prisma.ListEnumBugReportTriagedByFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumBugReportTriagedByNullableFilter<$PrismaModel> | $Enums.BugReportTriagedBy | null
+}
+
+export type EnumBugReportStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.BugReportStatus | Prisma.EnumBugReportStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.BugReportStatus[] | Prisma.ListEnumBugReportStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.BugReportStatus[] | Prisma.ListEnumBugReportStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumBugReportStatusWithAggregatesFilter<$PrismaModel> | $Enums.BugReportStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumBugReportStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumBugReportStatusFilter<$PrismaModel>
+}
+
+export type EnumBugReportTriagedByNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.BugReportTriagedBy | Prisma.EnumBugReportTriagedByFieldRefInput<$PrismaModel> | null
+  in?: $Enums.BugReportTriagedBy[] | Prisma.ListEnumBugReportTriagedByFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.BugReportTriagedBy[] | Prisma.ListEnumBugReportTriagedByFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumBugReportTriagedByNullableWithAggregatesFilter<$PrismaModel> | $Enums.BugReportTriagedBy | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumBugReportTriagedByNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumBugReportTriagedByNullableFilter<$PrismaModel>
+}
+
 export type NestedUuidFilter<$PrismaModel = never> = {
   equals?: string | Prisma.StringFieldRefInput<$PrismaModel>
   in?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
@@ -3957,6 +3991,40 @@ export type NestedEnumImmunizationSiteNullableWithAggregatesFilter<$PrismaModel 
   _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
   _min?: Prisma.NestedEnumImmunizationSiteNullableFilter<$PrismaModel>
   _max?: Prisma.NestedEnumImmunizationSiteNullableFilter<$PrismaModel>
+}
+
+export type NestedEnumBugReportStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.BugReportStatus | Prisma.EnumBugReportStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.BugReportStatus[] | Prisma.ListEnumBugReportStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.BugReportStatus[] | Prisma.ListEnumBugReportStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumBugReportStatusFilter<$PrismaModel> | $Enums.BugReportStatus
+}
+
+export type NestedEnumBugReportTriagedByNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.BugReportTriagedBy | Prisma.EnumBugReportTriagedByFieldRefInput<$PrismaModel> | null
+  in?: $Enums.BugReportTriagedBy[] | Prisma.ListEnumBugReportTriagedByFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.BugReportTriagedBy[] | Prisma.ListEnumBugReportTriagedByFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumBugReportTriagedByNullableFilter<$PrismaModel> | $Enums.BugReportTriagedBy | null
+}
+
+export type NestedEnumBugReportStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.BugReportStatus | Prisma.EnumBugReportStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.BugReportStatus[] | Prisma.ListEnumBugReportStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.BugReportStatus[] | Prisma.ListEnumBugReportStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumBugReportStatusWithAggregatesFilter<$PrismaModel> | $Enums.BugReportStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumBugReportStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumBugReportStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumBugReportTriagedByNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.BugReportTriagedBy | Prisma.EnumBugReportTriagedByFieldRefInput<$PrismaModel> | null
+  in?: $Enums.BugReportTriagedBy[] | Prisma.ListEnumBugReportTriagedByFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.BugReportTriagedBy[] | Prisma.ListEnumBugReportTriagedByFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumBugReportTriagedByNullableWithAggregatesFilter<$PrismaModel> | $Enums.BugReportTriagedBy | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumBugReportTriagedByNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumBugReportTriagedByNullableFilter<$PrismaModel>
 }
 
 

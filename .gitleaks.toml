@@ -69,4 +69,17 @@ regexes = [
   # conformance test that derives its own input is no longer pinned to
   # anything outside the codebase.
   '''GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ''',
+
+  # P23-T07. The jwt.io specimen token, reproduced verbatim in that site's own
+  # documentation and in countless tutorials. Decoded it is
+  # `{"alg":"HS256"}` / `{"sub":"1234567890"}` — no issuer, no audience, no
+  # expiry, and a signature over the string `your-256-bit-secret`, so it
+  # authenticates nothing anywhere.
+  #
+  # `detect-sensitive-data.spec.ts` needs a real JWT literal: the rule it
+  # exercises is what stops a member of staff pasting their own session token
+  # into a bug report, and a fixture that merely looks JWT-ish would let the
+  # pattern rot without the test noticing. Allowlisted by value rather than by
+  # path, per the note above — that spec file stays scanned.
+  '''eyJhbGciOiJIUzI1NiJ9\.eyJzdWIiOiIxMjM0NTY3ODkwIn0\.dBjftJeZ4CVPmB92K27uhbUJU1p1r_wW1gFWFOEjXk''',
 ]

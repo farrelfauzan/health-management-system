@@ -21,6 +21,7 @@ import { AdminManagementModule } from './modules/admin-management/admin-manageme
 import { AdmissionFlowModule } from './modules/admission-flow/admission-flow.module';
 import { NotificationModule } from './modules/notification/notification.module';
 import { NotionConnectorModule } from './modules/notion-connector/notion-connector.module';
+import { BugReportModule } from './modules/bug-report/bug-report.module';
 import { AuditQueryModule } from './modules/audit/audit-query.module';
 import { AiChatbotModule } from './modules/ai-chatbot/ai-chatbot.module';
 import { AppointmentManagementModule } from './modules/appointment-management/appointment-management.module';
@@ -94,6 +95,7 @@ import { UserInvitationModule } from './modules/user-invitation/user-invitation.
     AdmissionFlowModule,
     NotificationModule,
     NotionConnectorModule,
+    BugReportModule,
     EmrModule,
     PharmacyFlowModule,
     BillingModule,

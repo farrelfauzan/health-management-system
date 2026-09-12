@@ -492,7 +492,9 @@ export const ModelName = {
   Province: 'Province',
   Regency: 'Regency',
   District: 'District',
-  Village: 'Village'
+  Village: 'Village',
+  BugReport: 'BugReport',
+  BugReportCounter: 'BugReportCounter'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -508,7 +510,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientDeliveryConsent" | "documentDelivery" | "documentDeliveryLink" | "patientAllergy" | "doctorCredentialOption" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorLicenseExpiryNotice" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "prescriptionItemComponent" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "vaultDocumentExpiryNotice" | "vaultDocumentShare" | "userOffboardingNotice" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit" | "documentType" | "documentTypeApprover" | "managedDocument" | "documentApprovalRequest" | "documentApprovalApprover" | "documentApprovalDecision" | "labTest" | "labReferenceRange" | "labPanel" | "labPanelMember" | "labOrderCounter" | "labOrder" | "labOrderItem" | "labSpecimenCounter" | "labSpecimen" | "labResult" | "laboratorySettings" | "labReport" | "immunization" | "province" | "regency" | "district" | "village"
+    modelProps: "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientDeliveryConsent" | "documentDelivery" | "documentDeliveryLink" | "patientAllergy" | "doctorCredentialOption" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorLicenseExpiryNotice" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "prescriptionItemComponent" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "vaultDocumentExpiryNotice" | "vaultDocumentShare" | "userOffboardingNotice" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit" | "documentType" | "documentTypeApprover" | "managedDocument" | "documentApprovalRequest" | "documentApprovalApprover" | "documentApprovalDecision" | "labTest" | "labReferenceRange" | "labPanel" | "labPanelMember" | "labOrderCounter" | "labOrder" | "labOrderItem" | "labSpecimenCounter" | "labSpecimen" | "labResult" | "laboratorySettings" | "labReport" | "immunization" | "province" | "regency" | "district" | "village" | "bugReport" | "bugReportCounter"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -8578,6 +8580,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    BugReport: {
+      payload: Prisma.$BugReportPayload<ExtArgs>
+      fields: Prisma.BugReportFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.BugReportFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BugReportPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.BugReportFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BugReportPayload>
+        }
+        findFirst: {
+          args: Prisma.BugReportFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BugReportPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.BugReportFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BugReportPayload>
+        }
+        findMany: {
+          args: Prisma.BugReportFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BugReportPayload>[]
+        }
+        create: {
+          args: Prisma.BugReportCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BugReportPayload>
+        }
+        createMany: {
+          args: Prisma.BugReportCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.BugReportCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BugReportPayload>[]
+        }
+        delete: {
+          args: Prisma.BugReportDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BugReportPayload>
+        }
+        update: {
+          args: Prisma.BugReportUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BugReportPayload>
+        }
+        deleteMany: {
+          args: Prisma.BugReportDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.BugReportUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.BugReportUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BugReportPayload>[]
+        }
+        upsert: {
+          args: Prisma.BugReportUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BugReportPayload>
+        }
+        aggregate: {
+          args: Prisma.BugReportAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateBugReport>
+        }
+        groupBy: {
+          args: Prisma.BugReportGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BugReportGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.BugReportCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BugReportCountAggregateOutputType> | number
+        }
+      }
+    }
+    BugReportCounter: {
+      payload: Prisma.$BugReportCounterPayload<ExtArgs>
+      fields: Prisma.BugReportCounterFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.BugReportCounterFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BugReportCounterPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.BugReportCounterFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BugReportCounterPayload>
+        }
+        findFirst: {
+          args: Prisma.BugReportCounterFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BugReportCounterPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.BugReportCounterFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BugReportCounterPayload>
+        }
+        findMany: {
+          args: Prisma.BugReportCounterFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BugReportCounterPayload>[]
+        }
+        create: {
+          args: Prisma.BugReportCounterCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BugReportCounterPayload>
+        }
+        createMany: {
+          args: Prisma.BugReportCounterCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.BugReportCounterCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BugReportCounterPayload>[]
+        }
+        delete: {
+          args: Prisma.BugReportCounterDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BugReportCounterPayload>
+        }
+        update: {
+          args: Prisma.BugReportCounterUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BugReportCounterPayload>
+        }
+        deleteMany: {
+          args: Prisma.BugReportCounterDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.BugReportCounterUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.BugReportCounterUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BugReportCounterPayload>[]
+        }
+        upsert: {
+          args: Prisma.BugReportCounterUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BugReportCounterPayload>
+        }
+        aggregate: {
+          args: Prisma.BugReportCounterAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateBugReportCounter>
+        }
+        groupBy: {
+          args: Prisma.BugReportCounterGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BugReportCounterGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.BugReportCounterCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BugReportCounterCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -10458,6 +10608,50 @@ export const VillageScalarFieldEnum = {
 export type VillageScalarFieldEnum = (typeof VillageScalarFieldEnum)[keyof typeof VillageScalarFieldEnum]
 
 
+export const BugReportScalarFieldEnum = {
+  id: 'id',
+  reference: 'reference',
+  reporterUserId: 'reporterUserId',
+  reporterRole: 'reporterRole',
+  title: 'title',
+  description: 'description',
+  stepsToReproduce: 'stepsToReproduce',
+  expected: 'expected',
+  actual: 'actual',
+  pagePath: 'pagePath',
+  requestIds: 'requestIds',
+  userAgent: 'userAgent',
+  appVersion: 'appVersion',
+  acknowledgedNoSensitiveDataAt: 'acknowledgedNoSensitiveDataAt',
+  status: 'status',
+  triage: 'triage',
+  triagedBy: 'triagedBy',
+  attemptCount: 'attemptCount',
+  nextAttemptAt: 'nextAttemptAt',
+  leasedUntil: 'leasedUntil',
+  leasedBy: 'leasedBy',
+  lastError: 'lastError',
+  notionPageId: 'notionPageId',
+  notionPageUrl: 'notionPageUrl',
+  publishedAt: 'publishedAt',
+  heldAt: 'heldAt',
+  contentPurgedAt: 'contentPurgedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BugReportScalarFieldEnum = (typeof BugReportScalarFieldEnum)[keyof typeof BugReportScalarFieldEnum]
+
+
+export const BugReportCounterScalarFieldEnum = {
+  id: 'id',
+  nextValue: 'nextValue',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BugReportCounterScalarFieldEnum = (typeof BugReportCounterScalarFieldEnum)[keyof typeof BugReportCounterScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -11822,6 +12016,34 @@ export type ListEnumImmunizationSiteFieldRefInput<$PrismaModel> = FieldRefInputT
 
 
 /**
+ * Reference to a field of type 'BugReportStatus'
+ */
+export type EnumBugReportStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BugReportStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'BugReportStatus[]'
+ */
+export type ListEnumBugReportStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BugReportStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'BugReportTriagedBy'
+ */
+export type EnumBugReportTriagedByFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BugReportTriagedBy'>
+    
+
+
+/**
+ * Reference to a field of type 'BugReportTriagedBy[]'
+ */
+export type ListEnumBugReportTriagedByFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BugReportTriagedBy[]'>
+    
+
+
+/**
  * Reference to a field of type 'Float'
  */
 export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -12053,6 +12275,8 @@ export type GlobalOmitConfig = {
   regency?: Prisma.RegencyOmit
   district?: Prisma.DistrictOmit
   village?: Prisma.VillageOmit
+  bugReport?: Prisma.BugReportOmit
+  bugReportCounter?: Prisma.BugReportCounterOmit
 }
 
 /* Types for Logging */

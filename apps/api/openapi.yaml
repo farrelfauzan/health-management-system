@@ -36293,6 +36293,101 @@ paths:
         - bearer: []
       summary: Test the Notion connection and check the Bug Board schema
       tags: *a50
+  /api/v1/bug-reports:
+    post:
+      operationId: BugReportController_submitReport_v1
+      parameters:
+        - name: user-agent
+          required: false
+          in: header
+          description: "Read from the request rather than the body, so it is the browser’s
+            own claim about itself and not a field a caller can set. Absent or
+            oversized is not an error: it is truncated, or stored as “unknown”."
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateBugReportDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  title: Tombol simpan tidak berfungsi di halaman pasien
+                  description: Saya mengisi formulir pasien baru lalu menekan Simpan, dan tidak
+                    terjadi apa-apa. Tidak ada pesan kesalahan.
+                  stepsToReproduce: Buka halaman pasien, tekan Tambah, isi formulir, tekan Simpan.
+                  expected: Pasien tersimpan dan saya kembali ke daftar.
+                  actual: Halaman diam, formulir tetap terisi.
+                  pagePath: /admin/patients
+                  requestIds:
+                    - 3f1a9c7e-2b4d-4f8a-9c1e-7d5b8a2f6e04
+                  appVersion: 1.42.0
+                  acknowledgedNoSensitiveData: true
+      responses:
+        "202":
+          description: "Accepts the report and answers at once with its BR- reference: the
+            AI triage and the Notion publish happen in a worker, so the reporter
+            never waits on a vendor. Refused with SENSITIVE_DATA_DETECTED,
+            naming the field and the category, when a free-text field looks like
+            it contains a NIK, BPJS number, phone, email, medical record number
+            or credential — the matched text is never echoed back. Eleven
+            reports from one person in a rolling day gives 429."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      reference:
+                        type: string
+                      status:
+                        type: string
+                    required:
+                      - reference
+                      - status
+                required:
+                  - data
+                example:
+                  data:
+                    reference: BR-000123
+                    status: RECEIVED
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: File a bug report
+      tags:
+        - Bug Reports
   /api/v1/encounters:
     get:
       operationId: EncounterController_listEncounters_v1
@@ -50471,6 +50566,47 @@ components:
         admittingDoctorId:
           type: string
           format: uuid
+    CreateBugReportDto:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 150
+        description:
+          type: string
+          minLength: 1
+          maxLength: 4000
+        stepsToReproduce:
+          type: string
+          maxLength: 2000
+        expected:
+          type: string
+          maxLength: 2000
+        actual:
+          type: string
+          maxLength: 2000
+        pagePath:
+          type: string
+          minLength: 1
+          maxLength: 512
+        requestIds:
+          type: array
+          maxItems: 5
+          items:
+            type: string
+            pattern: ^[A-Za-z0-9._-]{1,128}$
+          default: []
+        appVersion:
+          type: string
+          maxLength: 64
+        acknowledgedNoSensitiveData:
+          type: boolean
+      required:
+        - title
+        - description
+        - pagePath
+        - acknowledgedNoSensitiveData
     OpenEncounterDto:
       type: object
       properties:

@@ -159,7 +159,9 @@ export const ModelName = {
   Province: 'Province',
   Regency: 'Regency',
   District: 'District',
-  Village: 'Village'
+  Village: 'Village',
+  BugReport: 'BugReport',
+  BugReportCounter: 'BugReportCounter'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -2017,6 +2019,50 @@ export const VillageScalarFieldEnum = {
 } as const
 
 export type VillageScalarFieldEnum = (typeof VillageScalarFieldEnum)[keyof typeof VillageScalarFieldEnum]
+
+
+export const BugReportScalarFieldEnum = {
+  id: 'id',
+  reference: 'reference',
+  reporterUserId: 'reporterUserId',
+  reporterRole: 'reporterRole',
+  title: 'title',
+  description: 'description',
+  stepsToReproduce: 'stepsToReproduce',
+  expected: 'expected',
+  actual: 'actual',
+  pagePath: 'pagePath',
+  requestIds: 'requestIds',
+  userAgent: 'userAgent',
+  appVersion: 'appVersion',
+  acknowledgedNoSensitiveDataAt: 'acknowledgedNoSensitiveDataAt',
+  status: 'status',
+  triage: 'triage',
+  triagedBy: 'triagedBy',
+  attemptCount: 'attemptCount',
+  nextAttemptAt: 'nextAttemptAt',
+  leasedUntil: 'leasedUntil',
+  leasedBy: 'leasedBy',
+  lastError: 'lastError',
+  notionPageId: 'notionPageId',
+  notionPageUrl: 'notionPageUrl',
+  publishedAt: 'publishedAt',
+  heldAt: 'heldAt',
+  contentPurgedAt: 'contentPurgedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BugReportScalarFieldEnum = (typeof BugReportScalarFieldEnum)[keyof typeof BugReportScalarFieldEnum]
+
+
+export const BugReportCounterScalarFieldEnum = {
+  id: 'id',
+  nextValue: 'nextValue',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BugReportCounterScalarFieldEnum = (typeof BugReportCounterScalarFieldEnum)[keyof typeof BugReportCounterScalarFieldEnum]
 
 
 export const SortOrder = {

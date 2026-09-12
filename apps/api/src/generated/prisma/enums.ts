@@ -143,7 +143,9 @@ export const AuditAction = {
   LAB_RESULT_AMENDED: 'LAB_RESULT_AMENDED',
   LAB_REPORT_FILED: 'LAB_REPORT_FILED',
   REGISTRATION_CHECKIN_OVERRIDDEN: 'REGISTRATION_CHECKIN_OVERRIDDEN',
-  NOTION_CONNECTION_TESTED: 'NOTION_CONNECTION_TESTED'
+  NOTION_CONNECTION_TESTED: 'NOTION_CONNECTION_TESTED',
+  BUG_REPORT_SUBMITTED: 'BUG_REPORT_SUBMITTED',
+  BUG_REPORT_REJECTED_SENSITIVE: 'BUG_REPORT_REJECTED_SENSITIVE'
 } as const
 
 export type AuditAction = (typeof AuditAction)[keyof typeof AuditAction]
@@ -1008,3 +1010,22 @@ export const LabReportStatus = {
 } as const
 
 export type LabReportStatus = (typeof LabReportStatus)[keyof typeof LabReportStatus]
+
+
+export const BugReportStatus = {
+  RECEIVED: 'RECEIVED',
+  TRIAGED: 'TRIAGED',
+  HELD: 'HELD',
+  PUBLISHED: 'PUBLISHED',
+  FAILED: 'FAILED'
+} as const
+
+export type BugReportStatus = (typeof BugReportStatus)[keyof typeof BugReportStatus]
+
+
+export const BugReportTriagedBy = {
+  AI: 'AI',
+  FALLBACK: 'FALLBACK'
+} as const
+
+export type BugReportTriagedBy = (typeof BugReportTriagedBy)[keyof typeof BugReportTriagedBy]

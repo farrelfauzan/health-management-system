@@ -160,6 +160,10 @@ export const ADMIN_PORTAL_ADMIN_RULES: AppRule[] = [
   { action: 'read', subject: 'OrganizationUnit' },
   { action: 'manage', subject: 'OrganizationUnit' },
   { action: 'manage', subject: 'OrganizationUnitMember' },
+  // P23-T08. Without this the Report-a-bug item never renders for ADMIN: the
+  // portal preset is what an admin falls back to, and a subject missing from
+  // it resolves to no rule at all rather than to a denial anyone can see.
+  { action: 'create', subject: 'BugReport' },
 ];
 
 /**
