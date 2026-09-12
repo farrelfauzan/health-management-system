@@ -57,6 +57,8 @@
     "#bpjs-antrean-ws/types": "./src/bpjs-antrean-ws/types.ts",
     "#notion-connector/contracts": "./src/notion-connector/contracts.ts",
     "#notion-connector/types": "./src/notion-connector/types.ts",
+    "#bug-report/types": "./src/bug-report/types.ts",
+    "#bug-report/detect-sensitive-data": "./src/bug-report/detect-sensitive-data.ts",
     "#satusehat/schemas": "./src/satusehat/schemas.ts",
     "#satusehat/contracts": "./src/satusehat/contracts.ts",
     "#satusehat/types": "./src/satusehat/types.ts",
