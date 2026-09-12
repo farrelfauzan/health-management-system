@@ -642,6 +642,28 @@
         "lastAttempt": "Last attempt",
         "externalReference": "External reference / error",
         "action": "Action"
+      },
+      "notion": {
+        "title": "Notion bug board",
+        "configured": "Connected",
+        "notConfigured": "Not configured",
+        "configuredHint": "In-app bug reports are published to the Saling Jaga Bug Board.",
+        "notConfiguredHint": "Set NOTION_API_TOKEN and NOTION_BUG_BOARD_DATA_SOURCE_ID on the server. There is no form here: the board belongs to Saling Jaga, not to the clinic.",
+        "apiVersion": "API version",
+        "boardHint": "Board",
+        "breaker": "Circuit breaker",
+        "breakerState": {
+          "CLOSED": "Closed",
+          "OPEN": "Open",
+          "HALF_OPEN": "Half open"
+        },
+        "testConnection": "Test connection",
+        "testing": "Testing...",
+        "testPassed": "The Bug Board has every field a bug report needs.",
+        "testFailedWithProblems": "The Bug Board would reject a bug report ({count} problems).",
+        "testFailed": "Unable to test the Notion connection.",
+        "problem": "{field}: expected {expected}, found {actual}",
+        "checkedAt": "Checked at {time}"
       }
     },
     "administration": {

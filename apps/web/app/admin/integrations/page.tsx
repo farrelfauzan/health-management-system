@@ -26,7 +26,11 @@ export default async function AdminIntegrationsPage({ searchParams }: AdminInteg
     ability.can('read', 'BpjsSubmission') ||
     ability.can('read', 'SatusehatSubmission') ||
     ability.can('manage', 'BpjsConfig') ||
-    ability.can('manage', 'BpjsMapping');
+    ability.can('manage', 'BpjsMapping') ||
+    // P23-T05. A super admin whose only integrations grant is the Notion
+    // connector still belongs on this page — the card is the only place the
+    // Bug Board's health is visible.
+    ability.can('manage', 'NotionConnector');
 
   if (!canAccess) {
     redirect('/admin/dashboard');

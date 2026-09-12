@@ -147,6 +147,12 @@ export type AppSubject =
   | 'BpjsSubmission'
   | 'Satusehat'
   | 'SatusehatSubmission'
+  // P23-T04/T05. Saling Jaga's Notion bug-report connector. Its own subject
+  // rather than a mode of `BpjsConfig` or a generic integrations one, because
+  // the two grants answer to different owners: a clinic administrator
+  // configures BPJS, and nobody at the clinic configures this — the board
+  // belongs to us, and the card only ever reads and tests.
+  | 'NotionConnector'
   | 'Notification'
   // SJ-1. Two subjects rather than one, mirroring the API's catalogue: a role
   // that maintains the boxes on the org chart is not thereby a role that
