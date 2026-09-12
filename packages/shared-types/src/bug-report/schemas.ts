@@ -75,12 +75,24 @@ export function cleanBugReportPagePath(rawPagePath: string): string {
     .replace(/\/\d{4,}(?=\/|$)/g, '/:id');
 }
 
+/**
+ * An optional free-text box: absent, or text the reporter actually wrote.
+ *
+ * `.transform()` deliberately comes *before* `.optional()`. The other order
+ * reads more naturally and is wrong: `nestjs-zod` infers OpenAPI optionality
+ * from the outermost wrapper, so a transform applied last hides the `optional`
+ * and the field is published in `required` — which makes Orval generate
+ * `stepsToReproduce: string` and forces every caller to send all three boxes.
+ * The empty-string collapse is what makes this necessary at all: a form posts
+ * `''` for an untouched textarea, and storing that as a column value rather
+ * than as "not filled in" is a different fact.
+ */
 const optionalText = z
   .string()
   .trim()
   .max(MAX_OPTIONAL_TEXT_LENGTH)
-  .optional()
-  .transform((value) => (value === undefined || value.length === 0 ? undefined : value));
+  .transform((value) => (value.length === 0 ? undefined : value))
+  .optional();
 
 const bugReportFieldsSchema = z.object({
   title: z.string().trim().min(1).max(MAX_TITLE_LENGTH),

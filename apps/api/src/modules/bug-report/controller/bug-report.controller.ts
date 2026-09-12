@@ -1,5 +1,5 @@
 import { Body, Controller, Headers, HttpCode, Post, UnauthorizedException } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiHeader, ApiTags } from '@nestjs/swagger';
 
 import { AuthUser } from '../../../common/auth/auth-user.decorator';
 import { CurrentUser } from '../../../common/auth/current-user.type';
@@ -26,6 +26,12 @@ export class BugReportController {
   @Post()
   @HttpCode(ACCEPTED_STATUS)
   @Auth([{ action: 'create', subject: 'BugReport' }])
+  @ApiHeader({
+    name: 'user-agent',
+    required: false,
+    description:
+      'Read from the request rather than the body, so it is the browser’s own claim about itself and not a field a caller can set. Absent or oversized is not an error: it is truncated, or stored as “unknown”.',
+  })
   @ApiEndpoint({
     summary: 'File a bug report',
     successStatus: ACCEPTED_STATUS,
