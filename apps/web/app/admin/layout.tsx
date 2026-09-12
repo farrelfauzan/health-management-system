@@ -57,6 +57,8 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
   ];
   const sections = filterNavSections(buildAppAbility(rules), undefined, excludedNavHrefs);
   const isChatEnabled = offboarding === null && isFeatureEnabled(claims, 'ai-chatbot');
+  // P23-T11. Withheld during offboarding, like the dashboard above.
+  const isBugReportingEnabled = offboarding === null && isFeatureEnabled(claims, 'bug-reporting');
   const profile = resolveShellProfile(claims);
   const idlePolicy = resolveSessionIdlePolicy();
   // P19-T01. The kit writes this cookie on every toggle; reading it here means
@@ -91,7 +93,11 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
             and the table's own overflow-x container can never engage.
           */}
           <SidebarInset className="min-w-0">
-            <TopBar profile={profile} excludedNavHrefs={excludedNavHrefs} />
+            <TopBar
+              profile={profile}
+              excludedNavHrefs={excludedNavHrefs}
+              isBugReportingEnabled={isBugReportingEnabled}
+            />
             {offboarding ? (
               <OffboardingBanner
                 deadline={offboarding.deadline}

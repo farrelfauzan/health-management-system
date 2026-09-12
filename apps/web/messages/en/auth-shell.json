@@ -226,6 +226,14 @@
         "documentApprovalOverdue": {
           "title": "Approval overdue",
           "body": "“{documentTitle}” is past its deadline and still waiting for your approval."
+        },
+        "bugReportHeld": {
+          "title": "Your bug report needs an edit",
+          "body": "Report {reference} may mention a real person, so it was not filed. Please send it again without those details."
+        },
+        "bugReportPublishFailed": {
+          "title": "A bug report could not be published",
+          "body": "Report {reference} could not reach the Bug Board ({reason}). Check the Notion connector."
         }
       },
       "profile": {
@@ -299,6 +307,36 @@
       "tooManyAttempts": "Too many attempts. Please wait a minute and try again.",
       "invalidHelp": "Contact the clinic to have the document sent again.",
       "footerNote": "Nothing about you is shown on this page; the document itself is only served to whoever holds the link the clinic sent."
+    },
+    "bugReport": {
+      "menuItem": "Report a bug",
+      "title": "Report a bug",
+      "description": "Tell us what went wrong. An engineer at Saling Jaga reads every report.",
+      "warning": "Do not include patient data: name, NIK, BPJS number, MRN, phone, address, diagnosis, or any password.",
+      "fields": {
+        "title": "What is the problem, in one line?",
+        "description": "What happened?",
+        "stepsToReproduce": "Steps to reproduce (optional)",
+        "expected": "What did you expect instead? (optional)"
+      },
+      "findings": {
+        "entry": "This looks like it contains {category}. Click to select it, then remove it.",
+        "categories": {
+          "NIK": "a national ID number",
+          "BPJS_NUMBER": "a BPJS number",
+          "PHONE": "a phone number",
+          "EMAIL": "an email address",
+          "MRN": "a medical record number",
+          "SECRET": "a password or token"
+        }
+      },
+      "automaticDetails": "We’ll also send: the page you were on ({pagePath}), your browser, the app version, and {count, plural, =0 {no recent request IDs} one {1 recent request ID} other {# recent request IDs}}.",
+      "acknowledge": "This report contains no patient data or passwords",
+      "cancel": "Cancel",
+      "submit": "Send report",
+      "submitting": "Sending…",
+      "submitted": "Thank you. Your report is {reference}.",
+      "submitFailed": "Unable to send the bug report."
     }
   }
 }

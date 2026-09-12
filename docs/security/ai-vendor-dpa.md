@@ -86,7 +86,8 @@ and both are inventoried below rather than here because neither is an AI chat
 boundary: the **delivery processors** of §5b (WhatsApp, SMTP) and the **bug
 reporting** processors of §5c (a Saling Jaga-owned triage vendor, and Notion).
 §5c is the only one written *before* the code — deliberately, because §5b
-exists to record the opposite.
+exists to record the opposite. Its processors have since been built (P23-T09/T10)
+against the boundary it had already drawn.
 
 **❷ Embedding vendor.** Fixed in config, not admin-managed, and deliberately so:
 the vector width is a column type, so swapping the embedder is a migration and a
@@ -268,10 +269,17 @@ G6 is the one that gates a pilot. G7 and G8 are backlog.
 
 ## 5c. Bug reporting — the triage vendor and Notion (P23-T06, SJ-193)
 
-Phase 23 adds a **fourth** class of external recipient, and this section is
-written **before** either processor exists — which is the whole point. §5b
+Phase 23 adds a **fourth** class of external recipient. This section was
+written **before** either processor existed — which was the whole point. §5b
 exists because the ticket that created a processor was not the ticket that
-wrote the processor list. This time the list moves first.
+wrote the processor list. This time the list moved first.
+
+**Both processors now exist** (P23-T09/T10, SJ-196/197), and the claims below
+are enforced rather than intended: the ❺ payload is
+[`RedactedBugReport`](../../apps/api/src/modules/bug-report/service/bug-report-triage.payload.ts),
+whose complete key set is pinned by the §9 contract test — see G11, now closed.
+The list moving first is what made the code a matter of satisfying an existing
+contract rather than writing one afterwards.
 
 A bug report is free text typed by clinic staff, usually while something is
 going wrong on a screen with a patient on it. Assume it can contain patient
@@ -327,9 +335,16 @@ publication to Notion; it does not prevent transmission. Anyone reading this
 section as "four layers, therefore safe" has read it wrong — the layers reduce
 the volume of a failure, not its possibility.
 
-### Retention — proposed, for the owner to confirm
+### Retention — implemented as proposed, still for the owner to confirm
 
-Not decided here, because retention is a controller's decision:
+Not decided here, because retention is a controller's decision. P23-T10
+implements the proposal below as configurable defaults
+(`BUG_REPORT_PUBLISHED_TEXT_RETENTION_DAYS`,
+`BUG_REPORT_HELD_TEXT_RETENTION_DAYS`) and the publish worker's daily sweep
+overwrites expired text, stamping `content_purged_at` so a purge that never ran
+is visible rather than assumed. Shipping the proposal as the default is not the
+same as somebody having decided it: the numbers are a starting point a named
+owner can change with a variable, and until then nobody has set them:
 
 - Unredacted report text: purge **30 days** after the report reaches
   `PUBLISHED`. Long enough to re-triage a ticket that turned out to matter,
@@ -347,10 +362,17 @@ Not decided here, because retention is a controller's decision:
   request is transient.
 - **G10 — the compliance owner is still unnamed** (§6). This section proposes
   retention periods and cannot set them.
-- **G11 — the §9 contract test is a tripwire here, not a contract.** Neither
-  payload builder exists yet, so what CI pins today is only that neither has
-  appeared. When P23-T09 lands, that assertion must be replaced with the same
-  exhaustive key-set checks the chat vendor gets, in the same PR.
+- **G11 — CLOSED** (P23-T09, SJ-196). The tripwire fired as designed when the
+  triage payload builder appeared, and was replaced in the same PR with the same
+  exhaustive key-set assertions the chat vendor gets: the complete seven-key set
+  of `RedactedBugReport`, plus explicit assertions that the reporter's user id,
+  the `BR-` reference, the request ids and the app version do **not** cross. ❻ is
+  pinned differently and deliberately — the Bug Board payload is a set of columns
+  on a document people edit, not a fixed object, so the mapping is asserted in
+  `build-bug-board-properties.spec.ts` and the board's own schema by P23-T04's
+  field check. What §9 pins for ❻ is the claim no property list can express: the
+  model's entire vocabulary is `fileBugTicketSchema`, and nothing in it can name a
+  board, a token or a destination.
 
 ## 6. Legal mapping and gap list — OPEN
 
@@ -457,7 +479,9 @@ payload is added beside it. What it holds:
 | §3.1 row 7 — the title call carries only the two excerpts | exact argument equality |
 | §4 — the embedding body is exactly `model` and `input`, question verbatim | complete key-set equality |
 | §3.2 — the redaction denylist still strips every identifier class | one payload per forbidden fragment |
-| §5c — no bug-triage payload builder has appeared without §5c being re-read | a **tripwire**, not a contract: it asserts `src/modules/bug-report` does not exist yet. When P23-T09 lands this fails, and the fix is to replace it with exhaustive key-set assertions in the same PR — never to delete it (G11) |
+| §5c — the ❺ triage payload is exactly the seven fields named above | complete key-set equality, plus per-field absence assertions for the reporter id, reference, request ids and app version |
+| §5c — redaction runs before anything leaves | a NIK and a phone number in one description, asserted replaced by markers and absent verbatim |
+| §5c — the model cannot name a Notion destination | complete key-set equality on `fileBugTicketSchema` |
 
 The suite was mutation-checked: folding `contextPayload` onto the OpenAI wire
 body as a `metadata` field fails two of these tests. A test that cannot fail is
@@ -533,7 +557,7 @@ mechanism, and the §8 condition has never been acknowledged.
 | Gap list reviewed with compliance owner, owners + dates | **open** — G1–G5 named in §6, unowned | **SJ-31** |
 | Patient-facing disclosure text reviewed and routed | **open** — draft in §10, deliberately not routed | **SJ-31** |
 | Go/no-go acknowledged by the project owner | **open** — §8 proposed | **SJ-31** |
-| Bug-reporting boundary inventoried before it is built | **done** — §5c, tripwired in §9 | SJ-193 (P23-T06) |
+| Bug-reporting boundary inventoried before it is built | **done** — §5c, and the tripwire has since been replaced by real key-set assertions (G11 closed) | SJ-193 (P23-T06), SJ-196 (P23-T09) |
 | Bug-reporting retention periods confirmed | **open** — §5c proposes 30 / 7 days; nobody has set them | **unowned** |
 | Instrument with the triage vendor and with Notion | **open** — G9 | **unowned** |
 

@@ -80,7 +80,7 @@ export function NotionConnectorCard() {
             </Button>
           ) : null}
         </div>
-        <dl className="grid gap-3 rounded-lg bg-slate-50 px-4 py-3 sm:grid-cols-3">
+        <dl className="grid gap-3 rounded-lg bg-slate-50 px-4 py-3 sm:grid-cols-4">
           <div className="space-y-1">
             <dt className="text-xs uppercase tracking-wide text-slate-500">{t('apiVersion')}</dt>
             <dd className="font-mono text-xs text-slate-600">{status.apiVersion}</dd>
@@ -95,6 +95,24 @@ export function NotionConnectorCard() {
             <dt className="text-xs uppercase tracking-wide text-slate-500">{t('breaker')}</dt>
             <dd className="font-mono text-xs text-slate-600">
               {t(`breakerState.${status.circuitBreakerState}`)}
+            </dd>
+          </div>
+          {/*
+            The only cell that says the pipeline *works* rather than that it is
+            configured (P23-T10). Publishing is silent by design — the reporter is
+            answered at intake and never sees the board — so a green connector
+            whose last publish was three weeks ago is exactly the failure this
+            card exists to surface, and nothing else on it can tell that apart
+            from a quiet month.
+          */}
+          <div className="space-y-1">
+            <dt className="text-xs uppercase tracking-wide text-slate-500">
+              {t('lastPublished')}
+            </dt>
+            <dd className="font-mono text-xs text-slate-600">
+              {status.lastPublishedAt === null
+                ? t('neverPublished')
+                : format.dateTime(new Date(status.lastPublishedAt), { dateStyle: 'medium' })}
             </dd>
           </div>
         </dl>

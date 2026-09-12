@@ -226,6 +226,14 @@
         "documentApprovalOverdue": {
           "title": "Persetujuan melewati tenggat",
           "body": "“{documentTitle}” sudah melewati tenggat dan masih menunggu persetujuan Anda."
+        },
+        "bugReportHeld": {
+          "title": "Laporan bug Anda perlu diperbaiki",
+          "body": "Laporan {reference} kemungkinan menyebut orang sungguhan, jadi belum diteruskan. Silakan kirim ulang tanpa detail tersebut."
+        },
+        "bugReportPublishFailed": {
+          "title": "Sebuah laporan bug gagal dipublikasikan",
+          "body": "Laporan {reference} tidak sampai ke Bug Board ({reason}). Periksa konektor Notion."
         }
       },
       "profile": {
@@ -299,6 +307,36 @@
       "tooManyAttempts": "Terlalu banyak percobaan. Tunggu satu menit lalu coba lagi.",
       "invalidHelp": "Hubungi klinik agar dokumen dikirimkan kembali.",
       "footerNote": "Tidak ada data Anda yang ditampilkan di halaman ini; dokumen hanya diberikan kepada pemegang tautan yang dikirim klinik."
+    },
+    "bugReport": {
+      "menuItem": "Laporkan bug",
+      "title": "Laporkan bug",
+      "description": "Ceritakan apa yang salah. Setiap laporan dibaca oleh teknisi Saling Jaga.",
+      "warning": "Jangan sertakan data pasien: nama, NIK, nomor BPJS, nomor rekam medis, telepon, alamat, diagnosis, atau kata sandi apa pun.",
+      "fields": {
+        "title": "Apa masalahnya, dalam satu baris?",
+        "description": "Apa yang terjadi?",
+        "stepsToReproduce": "Langkah untuk mengulanginya (opsional)",
+        "expected": "Apa yang Anda harapkan? (opsional)"
+      },
+      "findings": {
+        "entry": "Ini tampak memuat {category}. Klik untuk menyorotnya, lalu hapus.",
+        "categories": {
+          "NIK": "NIK",
+          "BPJS_NUMBER": "nomor BPJS",
+          "PHONE": "nomor telepon",
+          "EMAIL": "alamat email",
+          "MRN": "nomor rekam medis",
+          "SECRET": "kata sandi atau token"
+        }
+      },
+      "automaticDetails": "Kami juga mengirim: halaman yang Anda buka ({pagePath}), browser Anda, versi aplikasi, dan {count, plural, =0 {tanpa ID permintaan terbaru} other {# ID permintaan terbaru}}.",
+      "acknowledge": "Laporan ini tidak memuat data pasien atau kata sandi",
+      "cancel": "Batal",
+      "submit": "Kirim laporan",
+      "submitting": "Mengirim…",
+      "submitted": "Terima kasih. Laporan Anda: {reference}.",
+      "submitFailed": "Tidak dapat mengirim laporan bug."
     }
   }
 }

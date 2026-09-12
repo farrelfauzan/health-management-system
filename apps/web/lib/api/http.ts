@@ -6,6 +6,7 @@ import {
   readAccessTokenFromBrowserCookie,
   setAccessTokenCookie,
 } from '#lib/auth/access-token-cookie';
+import { recordFailedRequest } from '#lib/api/failed-request-buffer';
 import { mfaTicketStore } from '#lib/auth/mfa-ticket-store';
 
 /**
@@ -32,6 +33,31 @@ let refreshRequest: Promise<string> | null = null;
 
 function isAuthRequestUrl(url: string | undefined): boolean {
   return url?.includes('/auth/') ?? false;
+}
+
+/**
+ * Notes a failed response for the bug-report dialog (P23-T11).
+ *
+ * Here rather than in a component because a bug report is filed *after* the
+ * thing broke, often on a different screen: by then the failure is gone unless
+ * something recorded it as it happened, and this interceptor is the one place
+ * every API failure passes through.
+ *
+ * The URL is deliberately not recorded — see `failed-request-buffer.ts`. The
+ * request id reaches the browser because the API exposes `X-Request-Id` through
+ * CORS; a response without one is skipped rather than stored as a blank.
+ */
+function recordFailedRequestFromError(error: AxiosError): void {
+  const response = error.response;
+  if (!response) {
+    return;
+  }
+  const requestId = response.headers?.['x-request-id'];
+  recordFailedRequest({
+    method: (error.config?.method ?? 'get').toUpperCase(),
+    status: response.status,
+    requestId: typeof requestId === 'string' ? requestId : '',
+  });
 }
 
 function redirectToLogin(): void {
@@ -117,6 +143,7 @@ export function refreshSession(): Promise<string> {
 apiClient.interceptors.response.use(
   (response) => response,
   async (error: AxiosError): Promise<unknown> => {
+    recordFailedRequestFromError(error);
     const requestConfig = error.config as RetriableRequestConfig | undefined;
     const canRefresh =
       error.response?.status === 401 &&

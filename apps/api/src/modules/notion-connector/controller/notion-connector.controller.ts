@@ -21,13 +21,13 @@ export class NotionConnectorController {
   @ApiEndpoint({
     summary: 'Read the Notion bug-report connector status',
     responseDescription:
-      'Whether this deployment has Notion credentials, the API version pinned in code, the last four characters of the Bug Board data source id, and this replica’s circuit-breaker state. Calls nothing upstream. The token is never returned in any form.',
+      'Whether this deployment has Notion credentials, the API version pinned in code, the last four characters of the Bug Board data source id, this replica’s circuit-breaker state, and when a bug report last reached the board. Calls nothing upstream. The token is never returned in any form.',
     responseExample: { data: NOTION_CONNECTOR_EXAMPLES.status },
   })
-  getStatus(@AuthUser() currentUser?: CurrentUser) {
+  async getStatus(@AuthUser() currentUser?: CurrentUser) {
     this.assertAuthenticated(currentUser);
 
-    return { data: this.notionConnectorService.getStatus() };
+    return { data: await this.notionConnectorService.getStatus() };
   }
 
   @Post('test-connection')

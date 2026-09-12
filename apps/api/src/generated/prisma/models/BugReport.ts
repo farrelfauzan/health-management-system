@@ -65,6 +65,7 @@ export type BugReportMinAggregateOutputType = {
   acknowledgedNoSensitiveDataAt: Date | null
   status: $Enums.BugReportStatus | null
   triagedBy: $Enums.BugReportTriagedBy | null
+  redactedText: string | null
   attemptCount: number | null
   nextAttemptAt: Date | null
   leasedUntil: Date | null
@@ -95,6 +96,7 @@ export type BugReportMaxAggregateOutputType = {
   acknowledgedNoSensitiveDataAt: Date | null
   status: $Enums.BugReportStatus | null
   triagedBy: $Enums.BugReportTriagedBy | null
+  redactedText: string | null
   attemptCount: number | null
   nextAttemptAt: Date | null
   leasedUntil: Date | null
@@ -127,6 +129,7 @@ export type BugReportCountAggregateOutputType = {
   status: number
   triage: number
   triagedBy: number
+  redactedText: number
   attemptCount: number
   nextAttemptAt: number
   leasedUntil: number
@@ -167,6 +170,7 @@ export type BugReportMinAggregateInputType = {
   acknowledgedNoSensitiveDataAt?: true
   status?: true
   triagedBy?: true
+  redactedText?: true
   attemptCount?: true
   nextAttemptAt?: true
   leasedUntil?: true
@@ -197,6 +201,7 @@ export type BugReportMaxAggregateInputType = {
   acknowledgedNoSensitiveDataAt?: true
   status?: true
   triagedBy?: true
+  redactedText?: true
   attemptCount?: true
   nextAttemptAt?: true
   leasedUntil?: true
@@ -229,6 +234,7 @@ export type BugReportCountAggregateInputType = {
   status?: true
   triage?: true
   triagedBy?: true
+  redactedText?: true
   attemptCount?: true
   nextAttemptAt?: true
   leasedUntil?: true
@@ -348,6 +354,7 @@ export type BugReportGroupByOutputType = {
   status: $Enums.BugReportStatus
   triage: runtime.JsonValue | null
   triagedBy: $Enums.BugReportTriagedBy | null
+  redactedText: string | null
   attemptCount: number
   nextAttemptAt: Date | null
   leasedUntil: Date | null
@@ -403,6 +410,7 @@ export type BugReportWhereInput = {
   status?: Prisma.EnumBugReportStatusFilter<"BugReport"> | $Enums.BugReportStatus
   triage?: Prisma.JsonNullableFilter<"BugReport">
   triagedBy?: Prisma.EnumBugReportTriagedByNullableFilter<"BugReport"> | $Enums.BugReportTriagedBy | null
+  redactedText?: Prisma.StringNullableFilter<"BugReport"> | string | null
   attemptCount?: Prisma.IntFilter<"BugReport"> | number
   nextAttemptAt?: Prisma.DateTimeNullableFilter<"BugReport"> | Date | string | null
   leasedUntil?: Prisma.DateTimeNullableFilter<"BugReport"> | Date | string | null
@@ -436,6 +444,7 @@ export type BugReportOrderByWithRelationInput = {
   status?: Prisma.SortOrder
   triage?: Prisma.SortOrderInput | Prisma.SortOrder
   triagedBy?: Prisma.SortOrderInput | Prisma.SortOrder
+  redactedText?: Prisma.SortOrderInput | Prisma.SortOrder
   attemptCount?: Prisma.SortOrder
   nextAttemptAt?: Prisma.SortOrderInput | Prisma.SortOrder
   leasedUntil?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -472,6 +481,7 @@ export type BugReportWhereUniqueInput = Prisma.AtLeast<{
   status?: Prisma.EnumBugReportStatusFilter<"BugReport"> | $Enums.BugReportStatus
   triage?: Prisma.JsonNullableFilter<"BugReport">
   triagedBy?: Prisma.EnumBugReportTriagedByNullableFilter<"BugReport"> | $Enums.BugReportTriagedBy | null
+  redactedText?: Prisma.StringNullableFilter<"BugReport"> | string | null
   attemptCount?: Prisma.IntFilter<"BugReport"> | number
   nextAttemptAt?: Prisma.DateTimeNullableFilter<"BugReport"> | Date | string | null
   leasedUntil?: Prisma.DateTimeNullableFilter<"BugReport"> | Date | string | null
@@ -505,6 +515,7 @@ export type BugReportOrderByWithAggregationInput = {
   status?: Prisma.SortOrder
   triage?: Prisma.SortOrderInput | Prisma.SortOrder
   triagedBy?: Prisma.SortOrderInput | Prisma.SortOrder
+  redactedText?: Prisma.SortOrderInput | Prisma.SortOrder
   attemptCount?: Prisma.SortOrder
   nextAttemptAt?: Prisma.SortOrderInput | Prisma.SortOrder
   leasedUntil?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -545,6 +556,7 @@ export type BugReportScalarWhereWithAggregatesInput = {
   status?: Prisma.EnumBugReportStatusWithAggregatesFilter<"BugReport"> | $Enums.BugReportStatus
   triage?: Prisma.JsonNullableWithAggregatesFilter<"BugReport">
   triagedBy?: Prisma.EnumBugReportTriagedByNullableWithAggregatesFilter<"BugReport"> | $Enums.BugReportTriagedBy | null
+  redactedText?: Prisma.StringNullableWithAggregatesFilter<"BugReport"> | string | null
   attemptCount?: Prisma.IntWithAggregatesFilter<"BugReport"> | number
   nextAttemptAt?: Prisma.DateTimeNullableWithAggregatesFilter<"BugReport"> | Date | string | null
   leasedUntil?: Prisma.DateTimeNullableWithAggregatesFilter<"BugReport"> | Date | string | null
@@ -576,6 +588,7 @@ export type BugReportCreateInput = {
   status?: $Enums.BugReportStatus
   triage?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   triagedBy?: $Enums.BugReportTriagedBy | null
+  redactedText?: string | null
   attemptCount?: number
   nextAttemptAt?: Date | string | null
   leasedUntil?: Date | string | null
@@ -609,6 +622,7 @@ export type BugReportUncheckedCreateInput = {
   status?: $Enums.BugReportStatus
   triage?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   triagedBy?: $Enums.BugReportTriagedBy | null
+  redactedText?: string | null
   attemptCount?: number
   nextAttemptAt?: Date | string | null
   leasedUntil?: Date | string | null
@@ -640,6 +654,7 @@ export type BugReportUpdateInput = {
   status?: Prisma.EnumBugReportStatusFieldUpdateOperationsInput | $Enums.BugReportStatus
   triage?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   triagedBy?: Prisma.NullableEnumBugReportTriagedByFieldUpdateOperationsInput | $Enums.BugReportTriagedBy | null
+  redactedText?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attemptCount?: Prisma.IntFieldUpdateOperationsInput | number
   nextAttemptAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   leasedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -673,6 +688,7 @@ export type BugReportUncheckedUpdateInput = {
   status?: Prisma.EnumBugReportStatusFieldUpdateOperationsInput | $Enums.BugReportStatus
   triage?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   triagedBy?: Prisma.NullableEnumBugReportTriagedByFieldUpdateOperationsInput | $Enums.BugReportTriagedBy | null
+  redactedText?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attemptCount?: Prisma.IntFieldUpdateOperationsInput | number
   nextAttemptAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   leasedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -705,6 +721,7 @@ export type BugReportCreateManyInput = {
   status?: $Enums.BugReportStatus
   triage?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   triagedBy?: $Enums.BugReportTriagedBy | null
+  redactedText?: string | null
   attemptCount?: number
   nextAttemptAt?: Date | string | null
   leasedUntil?: Date | string | null
@@ -736,6 +753,7 @@ export type BugReportUpdateManyMutationInput = {
   status?: Prisma.EnumBugReportStatusFieldUpdateOperationsInput | $Enums.BugReportStatus
   triage?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   triagedBy?: Prisma.NullableEnumBugReportTriagedByFieldUpdateOperationsInput | $Enums.BugReportTriagedBy | null
+  redactedText?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attemptCount?: Prisma.IntFieldUpdateOperationsInput | number
   nextAttemptAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   leasedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -768,6 +786,7 @@ export type BugReportUncheckedUpdateManyInput = {
   status?: Prisma.EnumBugReportStatusFieldUpdateOperationsInput | $Enums.BugReportStatus
   triage?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   triagedBy?: Prisma.NullableEnumBugReportTriagedByFieldUpdateOperationsInput | $Enums.BugReportTriagedBy | null
+  redactedText?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attemptCount?: Prisma.IntFieldUpdateOperationsInput | number
   nextAttemptAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   leasedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -810,6 +829,7 @@ export type BugReportCountOrderByAggregateInput = {
   status?: Prisma.SortOrder
   triage?: Prisma.SortOrder
   triagedBy?: Prisma.SortOrder
+  redactedText?: Prisma.SortOrder
   attemptCount?: Prisma.SortOrder
   nextAttemptAt?: Prisma.SortOrder
   leasedUntil?: Prisma.SortOrder
@@ -844,6 +864,7 @@ export type BugReportMaxOrderByAggregateInput = {
   acknowledgedNoSensitiveDataAt?: Prisma.SortOrder
   status?: Prisma.SortOrder
   triagedBy?: Prisma.SortOrder
+  redactedText?: Prisma.SortOrder
   attemptCount?: Prisma.SortOrder
   nextAttemptAt?: Prisma.SortOrder
   leasedUntil?: Prisma.SortOrder
@@ -874,6 +895,7 @@ export type BugReportMinOrderByAggregateInput = {
   acknowledgedNoSensitiveDataAt?: Prisma.SortOrder
   status?: Prisma.SortOrder
   triagedBy?: Prisma.SortOrder
+  redactedText?: Prisma.SortOrder
   attemptCount?: Prisma.SortOrder
   nextAttemptAt?: Prisma.SortOrder
   leasedUntil?: Prisma.SortOrder
@@ -968,6 +990,7 @@ export type BugReportCreateWithoutReporterInput = {
   status?: $Enums.BugReportStatus
   triage?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   triagedBy?: $Enums.BugReportTriagedBy | null
+  redactedText?: string | null
   attemptCount?: number
   nextAttemptAt?: Date | string | null
   leasedUntil?: Date | string | null
@@ -999,6 +1022,7 @@ export type BugReportUncheckedCreateWithoutReporterInput = {
   status?: $Enums.BugReportStatus
   triage?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   triagedBy?: $Enums.BugReportTriagedBy | null
+  redactedText?: string | null
   attemptCount?: number
   nextAttemptAt?: Date | string | null
   leasedUntil?: Date | string | null
@@ -1060,6 +1084,7 @@ export type BugReportScalarWhereInput = {
   status?: Prisma.EnumBugReportStatusFilter<"BugReport"> | $Enums.BugReportStatus
   triage?: Prisma.JsonNullableFilter<"BugReport">
   triagedBy?: Prisma.EnumBugReportTriagedByNullableFilter<"BugReport"> | $Enums.BugReportTriagedBy | null
+  redactedText?: Prisma.StringNullableFilter<"BugReport"> | string | null
   attemptCount?: Prisma.IntFilter<"BugReport"> | number
   nextAttemptAt?: Prisma.DateTimeNullableFilter<"BugReport"> | Date | string | null
   leasedUntil?: Prisma.DateTimeNullableFilter<"BugReport"> | Date | string | null
@@ -1091,6 +1116,7 @@ export type BugReportCreateManyReporterInput = {
   status?: $Enums.BugReportStatus
   triage?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   triagedBy?: $Enums.BugReportTriagedBy | null
+  redactedText?: string | null
   attemptCount?: number
   nextAttemptAt?: Date | string | null
   leasedUntil?: Date | string | null
@@ -1122,6 +1148,7 @@ export type BugReportUpdateWithoutReporterInput = {
   status?: Prisma.EnumBugReportStatusFieldUpdateOperationsInput | $Enums.BugReportStatus
   triage?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   triagedBy?: Prisma.NullableEnumBugReportTriagedByFieldUpdateOperationsInput | $Enums.BugReportTriagedBy | null
+  redactedText?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attemptCount?: Prisma.IntFieldUpdateOperationsInput | number
   nextAttemptAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   leasedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1153,6 +1180,7 @@ export type BugReportUncheckedUpdateWithoutReporterInput = {
   status?: Prisma.EnumBugReportStatusFieldUpdateOperationsInput | $Enums.BugReportStatus
   triage?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   triagedBy?: Prisma.NullableEnumBugReportTriagedByFieldUpdateOperationsInput | $Enums.BugReportTriagedBy | null
+  redactedText?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attemptCount?: Prisma.IntFieldUpdateOperationsInput | number
   nextAttemptAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   leasedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1184,6 +1212,7 @@ export type BugReportUncheckedUpdateManyWithoutReporterInput = {
   status?: Prisma.EnumBugReportStatusFieldUpdateOperationsInput | $Enums.BugReportStatus
   triage?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   triagedBy?: Prisma.NullableEnumBugReportTriagedByFieldUpdateOperationsInput | $Enums.BugReportTriagedBy | null
+  redactedText?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attemptCount?: Prisma.IntFieldUpdateOperationsInput | number
   nextAttemptAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   leasedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1218,6 +1247,7 @@ export type BugReportSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   status?: boolean
   triage?: boolean
   triagedBy?: boolean
+  redactedText?: boolean
   attemptCount?: boolean
   nextAttemptAt?: boolean
   leasedUntil?: boolean
@@ -1251,6 +1281,7 @@ export type BugReportSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   status?: boolean
   triage?: boolean
   triagedBy?: boolean
+  redactedText?: boolean
   attemptCount?: boolean
   nextAttemptAt?: boolean
   leasedUntil?: boolean
@@ -1284,6 +1315,7 @@ export type BugReportSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   status?: boolean
   triage?: boolean
   triagedBy?: boolean
+  redactedText?: boolean
   attemptCount?: boolean
   nextAttemptAt?: boolean
   leasedUntil?: boolean
@@ -1317,6 +1349,7 @@ export type BugReportSelectScalar = {
   status?: boolean
   triage?: boolean
   triagedBy?: boolean
+  redactedText?: boolean
   attemptCount?: boolean
   nextAttemptAt?: boolean
   leasedUntil?: boolean
@@ -1331,7 +1364,7 @@ export type BugReportSelectScalar = {
   updatedAt?: boolean
 }
 
-export type BugReportOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "reference" | "reporterUserId" | "reporterRole" | "title" | "description" | "stepsToReproduce" | "expected" | "actual" | "pagePath" | "requestIds" | "userAgent" | "appVersion" | "acknowledgedNoSensitiveDataAt" | "status" | "triage" | "triagedBy" | "attemptCount" | "nextAttemptAt" | "leasedUntil" | "leasedBy" | "lastError" | "notionPageId" | "notionPageUrl" | "publishedAt" | "heldAt" | "contentPurgedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["bugReport"]>
+export type BugReportOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "reference" | "reporterUserId" | "reporterRole" | "title" | "description" | "stepsToReproduce" | "expected" | "actual" | "pagePath" | "requestIds" | "userAgent" | "appVersion" | "acknowledgedNoSensitiveDataAt" | "status" | "triage" | "triagedBy" | "redactedText" | "attemptCount" | "nextAttemptAt" | "leasedUntil" | "leasedBy" | "lastError" | "notionPageId" | "notionPageUrl" | "publishedAt" | "heldAt" | "contentPurgedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["bugReport"]>
 export type BugReportInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   reporter?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
@@ -1390,6 +1423,16 @@ export type $BugReportPayload<ExtArgs extends runtime.Types.Extensions.InternalA
      */
     triage: runtime.JsonValue | null
     triagedBy: $Enums.BugReportTriagedBy | null
+    /**
+     * The reporter's own words with every detector finding replaced by a
+     * `[REDACTED:CATEGORY]` marker (`P23-T09`).
+     * 
+     * Written only for a `FALLBACK` row, where no model wrote a ticket and this
+     * *is* the ticket body. Deliberately not written next to AI content: a second
+     * redacted copy of a report the model already summarised would add a row to
+     * the retention problem with no reader.
+     */
+    redactedText: string | null
     attemptCount: number
     nextAttemptAt: Date | null
     leasedUntil: Date | null
@@ -1843,6 +1886,7 @@ export interface BugReportFieldRefs {
   readonly status: Prisma.FieldRef<"BugReport", 'BugReportStatus'>
   readonly triage: Prisma.FieldRef<"BugReport", 'Json'>
   readonly triagedBy: Prisma.FieldRef<"BugReport", 'BugReportTriagedBy'>
+  readonly redactedText: Prisma.FieldRef<"BugReport", 'String'>
   readonly attemptCount: Prisma.FieldRef<"BugReport", 'Int'>
   readonly nextAttemptAt: Prisma.FieldRef<"BugReport", 'DateTime'>
   readonly leasedUntil: Prisma.FieldRef<"BugReport", 'DateTime'>

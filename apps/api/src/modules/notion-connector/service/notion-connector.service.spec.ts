@@ -1,6 +1,7 @@
 import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
 import { NotionHttpClient } from '../../../common/notion/notion-http.client';
+import { BugReportService } from '../../bug-report/service/bug-report.service';
 import { NotionError } from '../../../common/notion/notion.error';
 import { NotionConfig, NotionDataSource } from '../../../common/notion/notion.types';
 import { BUG_BOARD_REQUIRED_FIELDS } from './bug-board-required-fields';
@@ -41,6 +42,7 @@ function buildConfig(overrides: Partial<NotionConfig> = {}): NotionConfig {
 describe('NotionConnectorService', () => {
   const retrieveDataSourceMock = jest.fn();
   const recordMock = jest.fn();
+  const findLastPublishedAtMock = jest.fn();
   const inputActor = { sub: 'user-1' } as CurrentUser;
 
   function buildService(config: NotionConfig = buildConfig()): NotionConnectorService {
@@ -49,35 +51,56 @@ describe('NotionConnectorService', () => {
       getApiVersion: () => '2025-09-03',
       getCircuitBreakerState: () => 'CLOSED' as const,
     } as unknown as NotionHttpClient;
-    return new NotionConnectorService(config, clientMock, {
-      record: recordMock,
-    } as unknown as AuditService);
+    return new NotionConnectorService(
+      config,
+      clientMock,
+      { record: recordMock } as unknown as AuditService,
+      { findLastPublishedAt: findLastPublishedAtMock } as unknown as BugReportService,
+    );
   }
 
   beforeEach(() => {
     retrieveDataSourceMock.mockReset();
     recordMock.mockReset();
     recordMock.mockResolvedValue(undefined);
+    findLastPublishedAtMock.mockReset();
+    findLastPublishedAtMock.mockResolvedValue(new Date('2026-09-12T02:41:00.000Z'));
   });
 
   describe('getStatus', () => {
-    it('reports the pinned version and only the last four characters of the board id', () => {
-      const actualStatus = buildService().getStatus();
+    it('reports the pinned version and only the last four characters of the board id', async () => {
+      const actualStatus = await buildService().getStatus();
       expect(actualStatus).toEqual({
         isConfigured: true,
         apiVersion: '2025-09-03',
         dataSourceIdLast4: '5f21',
         circuitBreakerState: 'CLOSED',
+        lastPublishedAt: '2026-09-12T02:41:00.000Z',
       });
       expect(JSON.stringify(actualStatus)).not.toContain(DATA_SOURCE_ID);
     });
 
-    it('has no board hint on an unconfigured deployment', () => {
-      const actualStatus = buildService(
+    it('has no board hint on an unconfigured deployment', async () => {
+      const actualStatus = await buildService(
         buildConfig({ isConfigured: false, apiToken: undefined, bugBoardDataSourceId: undefined }),
       ).getStatus();
       expect(actualStatus.isConfigured).toBe(false);
       expect(actualStatus.dataSourceIdLast4).toBeNull();
+    });
+
+    /**
+     * A configured connector that has never published is the state worth
+     * showing: it is the difference between "the credentials are set" and "a bug
+     * report has actually reached the board", and nothing else on the card can
+     * tell those apart.
+     */
+    it('reports no last publish when none has ever happened', async () => {
+      findLastPublishedAtMock.mockResolvedValue(null);
+
+      const actualStatus = await buildService().getStatus();
+
+      expect(actualStatus.lastPublishedAt).toBeNull();
+      expect(actualStatus.isConfigured).toBe(true);
     });
   });
 

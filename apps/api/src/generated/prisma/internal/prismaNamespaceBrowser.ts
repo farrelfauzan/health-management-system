@@ -2039,6 +2039,7 @@ export const BugReportScalarFieldEnum = {
   status: 'status',
   triage: 'triage',
   triagedBy: 'triagedBy',
+  redactedText: 'redactedText',
   attemptCount: 'attemptCount',
   nextAttemptAt: 'nextAttemptAt',
   leasedUntil: 'leasedUntil',

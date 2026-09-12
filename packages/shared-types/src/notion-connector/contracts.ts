@@ -13,6 +13,18 @@ export type NotionConnectorStatusView = {
   apiVersion: string;
   dataSourceIdLast4: string | null;
   circuitBreakerState: NotionCircuitBreakerStateValue;
+  /**
+   * When a bug report last reached the Bug Board (P23-T10), or `null` if none
+   * ever has.
+   *
+   * The one field on this card that reflects the pipeline actually working
+   * rather than merely being configured. A green connector and a
+   * `lastPublishedAt` from three weeks ago is the failure this exists to make
+   * visible: publishing is silent by construction — the reporter is answered at
+   * intake and never sees the board — so without a timestamp here a broken
+   * publisher looks exactly like a quiet month.
+   */
+  lastPublishedAt: string | null;
 };
 
 /**

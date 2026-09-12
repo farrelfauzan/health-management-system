@@ -27,6 +27,7 @@ function buildStatus(overrides: Partial<NotionConnectorStatusView> = {}): Notion
     apiVersion: '2025-09-03',
     dataSourceIdLast4: '5f21',
     circuitBreakerState: 'CLOSED',
+    lastPublishedAt: '2026-09-12T02:41:00.000Z',
     ...overrides,
   };
 }

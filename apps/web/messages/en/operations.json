@@ -663,7 +663,9 @@
         "testFailedWithProblems": "The Bug Board would reject a bug report ({count} problems).",
         "testFailed": "Unable to test the Notion connection.",
         "problem": "{field}: expected {expected}, found {actual}",
-        "checkedAt": "Checked at {time}"
+        "checkedAt": "Checked at {time}",
+        "lastPublished": "Last publish",
+        "neverPublished": "Never"
       }
     },
     "administration": {

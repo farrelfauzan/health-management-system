@@ -73,6 +73,8 @@ export * from '#bug-report/types';
 export * from '#bug-report/detect-sensitive-data';
 export * from '#bug-report/schemas';
 export * from '#bug-report/contracts';
+export * from '#bug-report/triage-schemas';
+export * from '#bug-report/triage-types';
 export * from '#laboratory/schemas';
 export * from '#laboratory/contracts';
 export * from '#laboratory/types';

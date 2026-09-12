@@ -663,7 +663,9 @@
         "testFailedWithProblems": "Bug Board akan menolak laporan bug ({count} masalah).",
         "testFailed": "Tidak dapat menguji koneksi Notion.",
         "problem": "{field}: seharusnya {expected}, ditemukan {actual}",
-        "checkedAt": "Diperiksa pukul {time}"
+        "checkedAt": "Diperiksa pukul {time}",
+        "lastPublished": "Publikasi terakhir",
+        "neverPublished": "Belum pernah"
       }
     },
     "administration": {

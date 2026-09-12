@@ -1,6 +1,14 @@
 import { ConfigService } from '@nestjs/config';
 
-import { ChatMessageRecord, ChatSessionRecord, checkMedicationStockToolArgsSchema } from '@hms/shared-types';
+import {
+  BugReportTriageRecord,
+  ChatMessageRecord,
+  ChatSessionRecord,
+  checkMedicationStockToolArgsSchema,
+  fileBugTicketSchema,
+} from '@hms/shared-types';
+
+import { buildRedactedBugReport } from '../bug-report/service/bug-report-triage.payload';
 
 import { AuditService } from '../../common/audit/audit.service';
 import { FeatureAvailabilityCacheService } from '../feature-entitlement/service/feature-availability-cache.service';
@@ -509,52 +517,130 @@ describe('external AI processor egress contract (SJ-17)', () => {
   });
 
   /**
-   * ❺/❻ — bug reporting (P23-T06, `docs/security/ai-vendor-dpa.md` §5c).
+   * ❺ — the bug-triage vendor payload (P23-T09, `docs/security/ai-vendor-dpa.md` §5c).
    *
-   * Bug-report text is written by clinic staff and can contain patient data.
-   * P23-T09 will send it to a triage AI vendor and P23-T10 to Notion: two more
-   * processors, both inventoried in §5c before either exists.
+   * The tripwire that stood here asserted only that `src/modules/bug-report`
+   * reached no egress surface, because when P23-T06 was written no payload
+   * builder existed. P23-T09 added one, so — per G11's own instruction — it is
+   * *replaced*, not deleted, with the exhaustive assertions the chat vendor gets
+   * above.
    *
-   * The tripwire that stood here fired when P23-T08 created the module, which
-   * is what it was for. It is replaced rather than deleted, per its own
-   * instruction — but the thing to pin has moved. P23-T08 is intake only: it
-   * stores a report and answers with a reference, and there is still no payload
-   * builder and no vendor call, so the key set §5c will eventually name does
-   * not exist to assert on yet.
-   *
-   * What is pinned instead is the property that makes that true — the module
-   * reaches no egress surface. When P23-T09 adds the triage call this will
-   * fail, and again the instruction is the same: **do not delete it.** Replace
-   * it with the exhaustive key-set assertions the chat vendor gets above,
-   * covering the redacted payload, and update §5c in the same PR.
+   * Exhaustive rather than illustrative, for the reason stated at the top of this
+   * file: a presence assertion passes unchanged when a payload grows, and the
+   * next field somebody folds into the triage call is exactly the field §5c does
+   * not cover. `toEqual` on the complete key set is what makes that a CI failure
+   * instead of a silent widening.
    */
-  it('stores bug reports without reaching any vendor, so §5c is still a plan', async () => {
-    const { readFileSync, readdirSync, statSync } = await import('node:fs');
-    const { join, resolve } = await import('node:path');
-    const egressSurfaces = [
-      'ai-provider-http.client',
-      'anthropic.adapter',
-      'openai-compatible.adapter',
-      'together-embedding.service',
-      'notion-http.client',
-    ];
-    function collectSourceFiles(directory: string): string[] {
-      return readdirSync(directory).flatMap((entry) => {
-        const entryPath = join(directory, entry);
-        if (statSync(entryPath).isDirectory()) {
-          return collectSourceFiles(entryPath);
-        }
-        return entryPath.endsWith('.ts') ? [entryPath] : [];
-      });
-    }
+  describe('❺ bug-triage vendor — the redacted report payload', () => {
+    /**
+     * Deliberately carries a value in every field of the stored record,
+     * including the several §5c claims never leave. A key-set assertion only
+     * means something if the keys that must be absent were populated at source.
+     */
+    const inputReport: BugReportTriageRecord = {
+      id: '11111111-1111-4111-8111-111111111111',
+      reference: 'BR-000123',
+      reporterUserId: '22222222-2222-4222-8222-222222222222',
+      reporterRole: 'DOCTOR',
+      title: 'Lab result tidak muncul',
+      description: 'Hasil lab tidak muncul di layar.',
+      stepsToReproduce: 'Buka daftar lab, klik pasien.',
+      expected: 'Hasil tampil.',
+      actual: 'Layar kosong.',
+      pagePath: '/admin/laboratory/:id',
+      requestIds: ['req-abc', 'req-def'],
+      appVersion: '1.4.2',
+      attemptCount: 0,
+      createdAt: new Date('2026-09-12T08:00:00.000Z'),
+    };
 
-    const bugReportSources = collectSourceFiles(resolve(process.cwd(), 'src/modules/bug-report'));
-    const actualEgressImports = bugReportSources.flatMap((file) => {
-      const contents = readFileSync(file, 'utf8');
-      return egressSurfaces.filter((surface) => contents.includes(surface));
+    it('sends exactly the seven fields §5c names, and nothing else', () => {
+      const actualPayload = buildRedactedBugReport(inputReport);
+
+      expect(Object.keys(actualPayload).sort()).toEqual([
+        'actual',
+        'description',
+        'expected',
+        'pagePath',
+        'reporterRole',
+        'stepsToReproduce',
+        'title',
+      ]);
     });
 
-    expect(bugReportSources.length).toBeGreaterThan(0);
-    expect(actualEgressImports).toEqual([]);
+    /**
+     * The reporter's identity is the claim §5c is most explicit about: the vendor
+     * learns that *a doctor at this clinic* filed the report, never which doctor.
+     * Asserted separately from the key set because this is the one a future
+     * refactor is most likely to break, by "helpfully" passing the whole record
+     * through.
+     */
+    it('carries the reporter role but never the reporter identity', () => {
+      const actualPayload = buildRedactedBugReport(inputReport);
+
+      expect(actualPayload.reporterRole).toBe('DOCTOR');
+      expect(JSON.stringify(actualPayload)).not.toContain(inputReport.reporterUserId);
+    });
+
+    /**
+     * The internal metadata §5c keeps on this side of the boundary: our own log
+     * correlation ids, the `BR-` reference and the app version are code's
+     * business (P23-T10), not the model's.
+     */
+    it('withholds the request ids, reference and app version from the vendor', () => {
+      const serialisedPayload = JSON.stringify(buildRedactedBugReport(inputReport));
+
+      expect(serialisedPayload).not.toContain('BR-000123');
+      expect(serialisedPayload).not.toContain('req-abc');
+      expect(serialisedPayload).not.toContain('1.4.2');
+    });
+
+    /**
+     * Layer 3 of §5c, at the boundary itself. Intake already refused reports
+     * carrying these shapes (P23-T08), so a finding here means either the MRN
+     * configuration moved since the row was stored or a detector rule was added
+     * after it — which is precisely why redaction re-runs rather than trusting
+     * that earlier decision.
+     */
+    it('replaces identifiers with category markers before anything leaves', () => {
+      const actualPayload = buildRedactedBugReport({
+        ...inputReport,
+        description: 'Pasien NIK 3174091234567890 telepon 0812 3456 7890 tidak muncul.',
+      });
+
+      expect(actualPayload.description).toContain('[REDACTED:NIK]');
+      expect(actualPayload.description).toContain('[REDACTED:PHONE]');
+      expect(actualPayload.description).not.toContain('3174091234567890');
+      expect(actualPayload.description).not.toContain('3456');
+    });
+  });
+
+  /**
+   * ❻ — Notion. Not a key-set assertion, because the Bug Board payload is not a
+   * fixed object: it is the board's columns, and the board is a document people
+   * edit. The mapping is pinned where a rename actually bites —
+   * `build-bug-board-properties.spec.ts`, and P23-T04's field check for the
+   * board's own schema.
+   *
+   * What belongs here is the claim §5c makes that no property list can express:
+   * the AI never holds the Notion credential. The model's entire vocabulary is
+   * `fileBugTicketSchema`, and nothing in it can name a board, a token or a
+   * destination — so a report engineered to make the assistant "publish
+   * something else" has nothing to publish with.
+   */
+  it('❻ gives the triage model no way to name a Notion destination', () => {
+    const actualToolFields = Object.keys(fileBugTicketSchema.shape).sort();
+
+    expect(actualToolFields).toEqual([
+      'actual',
+      'expected',
+      'mayContainPersonalData',
+      'module',
+      'severity',
+      'stepsToReproduce',
+      'summary',
+      'title',
+      'type',
+    ]);
   });
 });

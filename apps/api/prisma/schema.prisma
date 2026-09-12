@@ -293,6 +293,27 @@ enum AuditAction {
   /// constantly is a detector that needs tuning, and one that never fires is a
   /// detector nobody should trust. The category and field only.
   BUG_REPORT_REJECTED_SENSITIVE
+  /// A bug report was turned into ticket content (P23-T09). Carries which side
+  /// wrote it — `AI` or `FALLBACK` — and the *names and character counts* of the
+  /// fields that crossed to the triage vendor, never their text. The counts are
+  /// what makes the §5c boundary auditable after the fact: they show a payload
+  /// went out and roughly how big it was, without putting a second copy of the
+  /// report in a table with a different retention rule.
+  BUG_REPORT_TRIAGED
+  /// A bug report was held because the triage model judged its text might name a
+  /// real person (P23-T09). Its own verb rather than a flavour of TRIAGED
+  /// because it is the one outcome that ends the pipeline: nothing publishes a
+  /// held report, and the row is the evidence that the §5c layer-4 control fired
+  /// at all.
+  BUG_REPORT_HELD
+  /// A bug report reached the Notion Bug Board (P23-T10). Carries the reference
+  /// and the Notion page id — never the ticket's text, which is on the board.
+  BUG_REPORT_PUBLISHED
+  /// Publishing a bug report failed permanently (P23-T10): a revoked token, a
+  /// renamed column, a board nobody shared with the integration. Carries
+  /// Notion's own error code and nothing else, because that code is the
+  /// difference between the two failures an operator confuses.
+  BUG_REPORT_PUBLISH_FAILED
 }
 
 enum BpjsSubmissionType {
@@ -4386,6 +4407,21 @@ enum NotificationType {
   DOCUMENT_APPROVAL_SUPERSEDED
   DOCUMENT_APPROVAL_DUE_SOON
   DOCUMENT_APPROVAL_OVERDUE
+  /// A bug report was held because the triage model judged its text might name
+  /// a real person (P23-T09). Addressed to the reporter and to nobody else:
+  /// they wrote the text, so they are the only person who can file it again
+  /// without the detail, and showing a held report to anybody else would spread
+  /// exactly the content the hold exists to contain. Carries the `BR-`
+  /// reference and nothing about what was flagged — the bell feed is read on a
+  /// shared terminal.
+  BUG_REPORT_HELD
+  /// A bug report could not be published to the Bug Board and will not be
+  /// retried (P23-T10). Broadcast to holders of `notion-connector.manage` — the
+  /// only people who can act, since a revoked token or an unshared board is
+  /// fixed on the server or in Notion and never by the clinic. It exists because
+  /// the failure is otherwise silent: the reporter was answered at intake and
+  /// never sees the board.
+  BUG_REPORT_PUBLISH_FAILED
 
   @@map("notification_type")
 }
@@ -5595,6 +5631,14 @@ model BugReport {
   /// tool's schema (`P23-T09`).
   triage                        Json?
   triagedBy                     BugReportTriagedBy? @map("triaged_by")
+  /// The reporter's own words with every detector finding replaced by a
+  /// `[REDACTED:CATEGORY]` marker (`P23-T09`).
+  ///
+  /// Written only for a `FALLBACK` row, where no model wrote a ticket and this
+  /// *is* the ticket body. Deliberately not written next to AI content: a second
+  /// redacted copy of a report the model already summarised would add a row to
+  /// the retention problem with no reader.
+  redactedText                  String?             @map("redacted_text")
   attemptCount                  Int                 @default(0) @map("attempt_count")
   nextAttemptAt                 DateTime?           @map("next_attempt_at")
   leasedUntil                   DateTime?           @map("leased_until")

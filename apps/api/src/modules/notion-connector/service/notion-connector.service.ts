@@ -12,6 +12,7 @@ import { NOTION_CONFIG } from '../../../common/notion/notion-config.token';
 import { NotionHttpClient } from '../../../common/notion/notion-http.client';
 import { NotionError } from '../../../common/notion/notion.error';
 import { NotionConfig } from '../../../common/notion/notion.types';
+import { BugReportService } from '../../bug-report/service/bug-report.service';
 import { BUG_BOARD_REQUIRED_FIELDS } from './bug-board-required-fields';
 import { checkBugBoardFields } from './check-bug-board-fields';
 
@@ -32,19 +33,29 @@ export class NotionConnectorService {
     @Inject(NOTION_CONFIG) private readonly notionConfig: NotionConfig,
     private readonly notionHttpClient: NotionHttpClient,
     private readonly auditService: AuditService,
+    private readonly bugReportService: BugReportService,
   ) {}
 
   /**
    * What the card shows without touching Notion: whether this deployment is
    * configured at all, the API version pinned in code, four characters of the
-   * board id, and this process's breaker state.
+   * board id, this process's breaker state, and when a report last reached the
+   * board.
+   *
+   * The last of those is the only one that says the pipeline *works* rather than
+   * that it is configured, which is why it is worth one indexed query: a green
+   * connector whose last publish was three weeks ago is the failure this card
+   * exists to surface, and nothing else on it can tell that apart from a quiet
+   * month.
    */
-  getStatus(): NotionConnectorStatusView {
+  async getStatus(): Promise<NotionConnectorStatusView> {
+    const lastPublishedAt = await this.bugReportService.findLastPublishedAt();
     return {
       isConfigured: this.notionConfig.isConfigured,
       apiVersion: this.notionHttpClient.getApiVersion(),
       dataSourceIdLast4: this.resolveDataSourceIdHint(),
       circuitBreakerState: this.notionHttpClient.getCircuitBreakerState(),
+      lastPublishedAt: lastPublishedAt?.toISOString() ?? null,
     };
   }
 

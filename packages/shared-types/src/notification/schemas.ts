@@ -74,6 +74,29 @@ export const NOTIFICATION_TYPES = [
   'DOCUMENT_APPROVAL_SUPERSEDED',
   'DOCUMENT_APPROVAL_DUE_SOON',
   'DOCUMENT_APPROVAL_OVERDUE',
+  /**
+   * A bug report was held because the triage model judged its text might name a
+   * real person (P23-T09). Addressed to the reporter and to nobody else — they
+   * wrote the text, so they are the only person who can file it again without
+   * the detail, and showing a held report to anyone else would spread precisely
+   * the content the hold exists to contain.
+   *
+   * Carries the `BR-` reference and nothing about what was flagged: the bell
+   * feed is read on a shared terminal, and "your report mentioned a patient
+   * name" is a sentence nobody else in the room needs.
+   */
+  'BUG_REPORT_HELD',
+  /**
+   * A bug report could not be published to the Notion Bug Board and will not be
+   * retried (P23-T10). Broadcast to holders of `notion-connector.manage`, who
+   * are the only people who can act: a revoked token or an unshared board is
+   * fixed on the server or in Notion, never by the clinic.
+   *
+   * It exists because this failure is otherwise completely silent — the reporter
+   * was answered at intake and never sees the board, so without a row here the
+   * first symptom is somebody eventually wondering why the board went quiet.
+   */
+  'BUG_REPORT_PUBLISH_FAILED',
 ] as const;
 export const notificationTypeSchema = z.enum(NOTIFICATION_TYPES);
 export type NotificationTypeValue = z.infer<typeof notificationTypeSchema>;

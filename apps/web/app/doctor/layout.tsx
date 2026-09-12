@@ -52,6 +52,10 @@ export default async function DoctorLayout({ children }: DoctorLayoutProps) {
   const profileHref =
     offboarding === null && ability.can('update', 'Doctor') ? DOCTOR_PROFILE_PATH : undefined;
   const isChatEnabled = offboarding === null && isFeatureEnabled(claims, 'ai-chatbot');
+  // P23-T11. Withheld during offboarding for the same reason the dashboard is: a
+  // person working out their notice period has a reduced shell, and filing bugs
+  // is not part of what they are still there to do.
+  const isBugReportingEnabled = offboarding === null && isFeatureEnabled(claims, 'bug-reporting');
   const profile = resolveShellProfile(claims);
   const idlePolicy = resolveSessionIdlePolicy();
   // P19-T01. Same cookie read as the admin shell, so the choice follows the
@@ -80,6 +84,7 @@ export default async function DoctorLayout({ children }: DoctorLayoutProps) {
               profile={profile}
               excludedNavHrefs={excludedNavHrefs}
               profileHref={profileHref}
+              isBugReportingEnabled={isBugReportingEnabled}
             />
             {offboarding ? (
               <OffboardingBanner
