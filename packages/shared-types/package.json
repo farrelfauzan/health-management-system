@@ -61,6 +61,8 @@
     "#bug-report/detect-sensitive-data": "./src/bug-report/detect-sensitive-data.ts",
     "#bug-report/schemas": "./src/bug-report/schemas.ts",
     "#bug-report/contracts": "./src/bug-report/contracts.ts",
+    "#bug-report/triage-schemas": "./src/bug-report/triage-schemas.ts",
+    "#bug-report/triage-types": "./src/bug-report/triage-types.ts",
     "#satusehat/schemas": "./src/satusehat/schemas.ts",
     "#satusehat/contracts": "./src/satusehat/contracts.ts",
     "#satusehat/types": "./src/satusehat/types.ts",
