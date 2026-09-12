@@ -43,6 +43,17 @@ describe('Notion connector integration', () => {
   const TEST_ENV: Record<string, string> = {
     NOTION_API_TOKEN: 'ntn_integration_token',
     NOTION_BUG_BOARD_DATA_SOURCE_ID: DATA_SOURCE_ID,
+    // Required once a Notion token is set (P23-T10): the Bug Board is one board
+    // shared by every deployment, so a ticket that does not name its clinic is a
+    // ticket nobody can triage — and the config provider refuses to boot without
+    // it. This module now depends on `BugReportModule` for the card's "last
+    // successful publish", so that guard runs when this app is built.
+    BUG_REPORT_CLINIC_LABEL: 'Klinik Integrasi',
+    // Both bug-report workers off: this suite exercises HTTP surfaces against a
+    // stubbed `fetch`, and a sweep firing mid-test would claim rows from a
+    // stubbed Prisma and add noise no assertion is about.
+    BUG_TRIAGE_WORKER_ENABLED: 'false',
+    BUG_REPORT_PUBLISH_WORKER_ENABLED: 'false',
     SATUSEHAT_WORKER_ENABLED: 'false',
     BPJS_WORKER_ENABLED: 'false',
   };
@@ -62,6 +73,12 @@ describe('Notion connector integration', () => {
     // and this stub replaces Prisma wholesale — without the delegate every
     // route in the suite answers 500. No rows means nothing is disabled.
     featureEntitlement: { findMany: jest.fn(() => Promise.resolve([])) },
+    // P23-T10. The status card now reports when a bug report last reached the
+    // board, which is one read through this same stubbed client. `null` is the
+    // honest answer for a deployment that has never published, and it is the
+    // case worth having in the assertion below: a configured connector that has
+    // published nothing is exactly what the field exists to make visible.
+    bugReport: { findFirst: jest.fn(() => Promise.resolve(null)) },
     $connect: jest.fn(),
     $disconnect: jest.fn(),
   };
@@ -154,6 +171,7 @@ describe('Notion connector integration', () => {
       apiVersion: '2025-09-03',
       dataSourceIdLast4: '5f21',
       circuitBreakerState: 'CLOSED',
+      lastPublishedAt: null,
     });
     expect(fetchMock).not.toHaveBeenCalled();
   });
