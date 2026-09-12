@@ -1,6 +1,8 @@
 # Architectural Decision Record (Post-MVP)
 
-Continuation of [docs/MVP/decisions.md](../MVP/decisions.md) (which ends at D-021). Same format; numbering continues.
+Continuation of [docs/MVP/decisions.md](../MVP/decisions.md). Same format; this file started at D-022 when the MVP file ended at D-021.
+
+> **Numbering caution (noted P20-T04, 12 Sep 2026).** The MVP file did not stop at D-021 — it has since grown D-022 through D-027 — so **D-022 to D-026 each name two different decisions**, one here and one there. Always cite a decision with its file, not the number alone. New records here continue from this file's own highest number (D-032 at the time of writing, so D-033 next); new records in the MVP file continue from D-027. Renumbering the six duplicates is a pending docs chore.
 
 ## D-022: BPJS PCare Protocol Confirmation and Codec (P11-T01 Spike)
 
