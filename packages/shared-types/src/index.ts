@@ -71,6 +71,8 @@ export * from '#notion-connector/contracts';
 export * from '#notion-connector/types';
 export * from '#bug-report/types';
 export * from '#bug-report/detect-sensitive-data';
+export * from '#bug-report/schemas';
+export * from '#bug-report/contracts';
 export * from '#laboratory/schemas';
 export * from '#laboratory/contracts';
 export * from '#laboratory/types';
