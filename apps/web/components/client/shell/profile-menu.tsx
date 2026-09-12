@@ -16,6 +16,7 @@ import {
 } from '@hms/ui';
 
 import { AvatarInitials } from '#components/shared/avatar-initials';
+import { ReportABugItem } from '#components/client/bug-report/report-a-bug-item';
 import { LockWorkstationItem } from '#components/client/shell/lock-workstation-item';
 import { endSession } from '#lib/auth/end-session';
 import type { ShellProfile } from '#lib/shell/shell-profile';
@@ -29,9 +30,20 @@ type ProfileMenuProps = {
    * record to open until P20-T04 decides what one is.
    */
   profileHref?: string;
+  /**
+   * Whether "Report a bug" may appear (P23-T11). Passed rather than read here
+   * because the feature flags live in the session claims, which the server
+   * layouts already resolve. The patient portal leaves it unset and the item is
+   * simply absent — patients are not reporters.
+   */
+  isBugReportingEnabled?: boolean;
 };
 
-export function ProfileMenu({ profile, profileHref }: ProfileMenuProps) {
+export function ProfileMenu({
+  profile,
+  profileHref,
+  isBugReportingEnabled = false,
+}: ProfileMenuProps) {
   const t = useTranslations('authShell.shell.profile');
   const queryClient = useQueryClient();
   const displayName = profile.isFallbackName ? t('fallbackName') : profile.displayName;
@@ -74,6 +86,7 @@ export function ProfileMenu({ profile, profileHref }: ProfileMenuProps) {
           twenty-times-a-day action, signing off for the night is not (SJ-9).
         */}
         <LockWorkstationItem />
+        <ReportABugItem isEnabled={isBugReportingEnabled} />
         <DropdownMenuItem
           variant="destructive"
           onSelect={() => void endSession('LOGOUT', queryClient)}

@@ -14,9 +14,16 @@ type TopBarProps = {
   excludedNavHrefs?: readonly string[];
   /** Forwarded to the profile menu; absent in shells with no own-profile page. */
   profileHref?: string;
+  /** Forwarded to the profile menu's "Report a bug" item (P23-T11). */
+  isBugReportingEnabled?: boolean;
 };
 
-export async function TopBar({ profile, excludedNavHrefs = [], profileHref }: TopBarProps) {
+export async function TopBar({
+  profile,
+  excludedNavHrefs = [],
+  profileHref,
+  isBugReportingEnabled = false,
+}: TopBarProps) {
   const t = await getTranslations('authShell.shell.topBar');
   return (
     <header className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-6 border-b bg-card px-8 shadow-sm">
@@ -27,7 +34,11 @@ export async function TopBar({ profile, excludedNavHrefs = [], profileHref }: To
         <NotificationsMenu />
         <LanguageSwitcher />
         <Separator orientation="vertical" className="mx-2 h-6!" />
-        <ProfileMenu profile={profile} profileHref={profileHref} />
+        <ProfileMenu
+          profile={profile}
+          profileHref={profileHref}
+          isBugReportingEnabled={isBugReportingEnabled}
+        />
       </div>
     </header>
   );
