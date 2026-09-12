@@ -11,6 +11,7 @@ import { BpjsPcareModule } from './common/bpjs-pcare/bpjs-pcare.module';
 import { CryptoModule } from './common/crypto/crypto.module';
 import { MailModule } from './common/mail/mail.module';
 import { MrnModule } from './common/mrn/mrn.module';
+import { NotionModule } from './common/notion/notion.module';
 import { ObservabilityModule } from './common/observability/observability.module';
 import { PdfModule } from './common/pdf/pdf.module';
 import { SatusehatModule } from './common/satusehat/satusehat.module';
@@ -74,6 +75,7 @@ import { UserInvitationModule } from './modules/user-invitation/user-invitation.
     StorageModule,
     PdfModule,
     SatusehatModule,
+    NotionModule,
     BpjsPcareModule,
     AdminManagementModule,
     UserInvitationModule,

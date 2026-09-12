@@ -78,6 +78,15 @@ Feature-gated: absent, the integration is off and the rest of the API boots.
 | `S3_ACCESS_KEY_ID` / `S3_SECRET_ACCESS_KEY`          | object-store IAM         | [external API keys](#external-api-keys)      |
 | `AI_PLATFORM_API_KEY`                                | AI vendor console        | [external API keys](#external-api-keys)      |
 | `WA_GATEWAY_*` (basic auth, webhook secret, API key) | set by us on the gateway | change on both sides in one restart          |
+| `NOTION_API_TOKEN`                                   | Saling Jaga ops          | [Notion bug-intake token](#notion-bug-intake-token) |
+
+`NOTION_API_TOKEN` and `NOTION_BUG_BOARD_DATA_SOURCE_ID` are set together or
+not at all — the API refuses to start with one and not the other, and an empty
+string counts as unset. Owner: Saling Jaga ops, not the clinic: the Bug Board
+is ours, so neither value is editable through the admin UI. Each clinic
+deployment holds its **own** integration token, scoped to Read + Insert on
+that one board, so revoking one clinic touches no other. Neither value goes
+into git — this repository is public.
 
 ### Stored in the database, not in env
 
@@ -168,6 +177,21 @@ Issue-before-revoke, always:
 3. **Then** revoke the old key.
 
 Revoking first turns a rotation into an outage.
+
+### Notion bug-intake token
+
+Notion cannot issue a second token for one integration, so issue-before-revoke
+does not apply — the rotation is a brief gap in bug-report publishing, not in
+anything a patient touches. Reports queued during the gap publish afterwards.
+
+1. In Notion, open the clinic's `HMS Bug Intake — <clinic>` integration and
+   regenerate its internal secret.
+2. Update `NOTION_API_TOKEN` in that deployment's secret store, restart.
+3. Confirm with **Test connection** on `/admin/integrations`.
+
+To revoke a clinic, delete its integration — the board keeps every ticket it
+already filed. Full procedure, including adding a clinic:
+[`docs/ops/notion-bug-board-runbook.md`](../ops/notion-bug-board-runbook.md).
 
 ### Envelope encryption keys
 
