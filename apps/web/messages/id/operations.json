@@ -642,6 +642,28 @@
         "lastAttempt": "Percobaan terakhir",
         "externalReference": "Referensi eksternal / kesalahan",
         "action": "Tindakan"
+      },
+      "notion": {
+        "title": "Bug board Notion",
+        "configured": "Terhubung",
+        "notConfigured": "Belum dikonfigurasi",
+        "configuredHint": "Laporan bug dari aplikasi dikirim ke Bug Board Saling Jaga.",
+        "notConfiguredHint": "Atur NOTION_API_TOKEN dan NOTION_BUG_BOARD_DATA_SOURCE_ID di server. Tidak ada formulir di sini: board ini milik Saling Jaga, bukan milik klinik.",
+        "apiVersion": "Versi API",
+        "boardHint": "Board",
+        "breaker": "Circuit breaker",
+        "breakerState": {
+          "CLOSED": "Tertutup",
+          "OPEN": "Terbuka",
+          "HALF_OPEN": "Setengah terbuka"
+        },
+        "testConnection": "Uji koneksi",
+        "testing": "Menguji...",
+        "testPassed": "Bug Board punya semua kolom yang dibutuhkan laporan bug.",
+        "testFailedWithProblems": "Bug Board akan menolak laporan bug ({count} masalah).",
+        "testFailed": "Tidak dapat menguji koneksi Notion.",
+        "problem": "{field}: seharusnya {expected}, ditemukan {actual}",
+        "checkedAt": "Diperiksa pukul {time}"
       }
     },
     "administration": {

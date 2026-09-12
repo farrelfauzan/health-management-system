@@ -9,6 +9,7 @@ import { BpjsAntreanSettingsPanel } from '#components/client/integrations/bpjs-a
 import { BpjsMappingsPanel } from '#components/client/integrations/bpjs-mappings-panel';
 import { BpjsSettingsPanel } from '#components/client/integrations/bpjs-settings-panel';
 import { IntegrationSubmissionMonitor } from '#components/client/integrations/integration-submission-monitor';
+import { NotionConnectorCard } from '#components/client/integrations/notion-connector-card';
 import { PageHeader } from '#components/shared/page-header';
 import { INTEGRATIONS_TABS, type IntegrationsTab } from '#lib/integrations/integrations-tabs';
 import { useShellBreadcrumbRoot } from '#lib/navigation/use-shell-breadcrumb-root';
@@ -27,6 +28,7 @@ export function IntegrationsPanel({ initialTab }: IntegrationsPanelProps) {
     ability.can('read', 'BpjsSubmission') || ability.can('read', 'SatusehatSubmission');
   const canConfigure = ability.can('manage', 'BpjsConfig');
   const canMap = ability.can('manage', 'BpjsMapping');
+  const canSeeNotionConnector = ability.can('manage', 'NotionConnector');
   const readableTabs: Record<IntegrationsTab, boolean> = {
     monitor: canMonitor,
     settings: canConfigure,
@@ -54,6 +56,16 @@ export function IntegrationsPanel({ initialTab }: IntegrationsPanelProps) {
           for an admin without the config grant. */}
       {canConfigure ? <WhatsappSessionCard /> : null}
       {canConfigure ? <TelegramWebhookCard /> : null}
+      {/* Above the tabs for the same reason as the two above it: it reports a
+          fault that is otherwise silent — a renamed Bug Board column stops
+          every bug report with nothing anywhere saying so. Unlike them it is
+          not a clinic surface at all, which is why it hangs off its own grant
+          rather than the BPJS config one. */}
+      {canSeeNotionConnector ? <NotionConnectorCard /> : null}
+      {/* P23-T05. Somebody whose only grant here is the Notion connector has
+          no readable tab, and an empty tab strip reads as a broken page rather
+          than as "nothing for you in here". */}
+      {canMonitor || canConfigure || canMap ? (
       <Tabs
         value={tab}
         onValueChange={(value) => setTab(value as IntegrationsTab)}
@@ -86,6 +98,7 @@ export function IntegrationsPanel({ initialTab }: IntegrationsPanelProps) {
           </TabsContent>
         ) : null}
       </Tabs>
+      ) : null}
     </div>
   );
 }

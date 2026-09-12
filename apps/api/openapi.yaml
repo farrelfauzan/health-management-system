@@ -36151,6 +36151,148 @@ paths:
         - bearer: []
       summary: Cancel an admission opened in error
       tags: *a49
+  /api/v1/admin/integrations/notion/status:
+    get:
+      operationId: NotionConnectorController_getStatus_v1
+      parameters: []
+      responses:
+        "200":
+          description: Whether this deployment has Notion credentials, the API version
+            pinned in code, the last four characters of the Bug Board data
+            source id, and this replica’s circuit-breaker state. Calls nothing
+            upstream. The token is never returned in any form.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      isConfigured:
+                        type: boolean
+                      apiVersion:
+                        type: string
+                      dataSourceIdLast4:
+                        type: string
+                      circuitBreakerState:
+                        type: string
+                    required:
+                      - isConfigured
+                      - apiVersion
+                      - dataSourceIdLast4
+                      - circuitBreakerState
+                required:
+                  - data
+                example:
+                  data:
+                    isConfigured: true
+                    apiVersion: 2025-09-03
+                    dataSourceIdLast4: 5f21
+                    circuitBreakerState: CLOSED
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Read the Notion bug-report connector status
+      tags: &a50
+        - Notion Connector
+  /api/v1/admin/integrations/notion/test-connection:
+    post:
+      operationId: NotionConnectorController_testConnection_v1
+      parameters: []
+      responses:
+        "200":
+          description: Reads the Bug Board’s schema and reports every reason a bug report
+            would be rejected — a renamed or retyped property, a missing select
+            option, or a board that was never shared with this integration
+            (reported as the “connection” problem carrying Notion’s own error
+            code). A failed check is a 200 with isSuccessful=false, so the
+            settings card can name each problem. An unconfigured deployment
+            answers isConfigured=false without calling Notion.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      isConfigured:
+                        type: boolean
+                      isSuccessful:
+                        type: boolean
+                      checkedAt:
+                        type: string
+                      problems:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            field:
+                              type: string
+                            expected:
+                              type: string
+                            actual:
+                              type: string
+                          required:
+                            - field
+                            - expected
+                            - actual
+                    required:
+                      - isConfigured
+                      - isSuccessful
+                      - checkedAt
+                      - problems
+                required:
+                  - data
+                example:
+                  data:
+                    isConfigured: true
+                    isSuccessful: false
+                    checkedAt: 2026-09-12T03:15:00.000Z
+                    problems:
+                      - field: Severity
+                        expected: select
+                        actual: missing
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Test the Notion connection and check the Bug Board schema
+      tags: *a50
   /api/v1/encounters:
     get:
       operationId: EncounterController_listEncounters_v1
@@ -36373,7 +36515,7 @@ paths:
       security:
         - bearer: []
       summary: List clinical encounters
-      tags: &a50
+      tags: &a51
         - Encounters
     post:
       operationId: EncounterController_openEncounter_v1
@@ -36544,7 +36686,7 @@ paths:
       security:
         - bearer: []
       summary: Open a clinical encounter
-      tags: *a50
+      tags: *a51
   /api/v1/encounters/{id}:
     get:
       operationId: EncounterController_getEncounterById_v1
@@ -36949,7 +37091,7 @@ paths:
       security:
         - bearer: []
       summary: Get a clinical encounter
-      tags: *a50
+      tags: *a51
     patch:
       operationId: EncounterController_updateEncounterSoap_v1
       parameters:
@@ -37136,7 +37278,7 @@ paths:
       security:
         - bearer: []
       summary: Write the SOAP note
-      tags: *a50
+      tags: *a51
   /api/v1/encounters/{id}/close:
     post:
       operationId: EncounterController_closeEncounter_v1
@@ -37308,7 +37450,7 @@ paths:
       security:
         - bearer: []
       summary: Close a clinical encounter
-      tags: *a50
+      tags: *a51
   /api/v1/encounters/{id}/cancel:
     post:
       operationId: EncounterController_cancelEncounter_v1
@@ -37477,7 +37619,7 @@ paths:
       security:
         - bearer: []
       summary: Cancel a clinical encounter
-      tags: *a50
+      tags: *a51
   /api/v1/encounters/{encounterId}/vital-signs:
     post:
       operationId: EncounterClinicalDataController_recordVitalSigns_v1
@@ -37626,7 +37768,7 @@ paths:
       security:
         - bearer: []
       summary: Record a vital-signs measurement
-      tags: &a51
+      tags: &a52
         - Encounters
   /api/v1/encounters/{encounterId}/diagnoses:
     post:
@@ -37750,7 +37892,7 @@ paths:
       security:
         - bearer: []
       summary: Code a diagnosis
-      tags: *a51
+      tags: *a52
   /api/v1/encounters/{encounterId}/diagnoses/{diagnosisId}:
     delete:
       operationId: EncounterClinicalDataController_removeDiagnosis_v1
@@ -37810,7 +37952,7 @@ paths:
       security:
         - bearer: []
       summary: Retract a diagnosis
-      tags: *a51
+      tags: *a52
   /api/v1/encounters/{encounterId}/procedures:
     post:
       operationId: EncounterClinicalDataController_addProcedure_v1
@@ -37928,7 +38070,7 @@ paths:
       security:
         - bearer: []
       summary: Code a procedure
-      tags: *a51
+      tags: *a52
   /api/v1/encounters/{encounterId}/procedures/{procedureId}:
     delete:
       operationId: EncounterClinicalDataController_removeProcedure_v1
@@ -37987,7 +38129,7 @@ paths:
       security:
         - bearer: []
       summary: Retract a procedure
-      tags: *a51
+      tags: *a52
   /api/v1/encounters/{encounterId}/immunizations:
     post:
       operationId: EncounterClinicalDataController_addImmunization_v1
@@ -38138,7 +38280,7 @@ paths:
       security:
         - bearer: []
       summary: Record a vaccination
-      tags: *a51
+      tags: *a52
   /api/v1/encounters/{encounterId}/immunizations/{immunizationId}:
     delete:
       operationId: EncounterClinicalDataController_removeImmunization_v1
@@ -38197,7 +38339,7 @@ paths:
       security:
         - bearer: []
       summary: Retract a vaccination
-      tags: *a51
+      tags: *a52
   /api/v1/encounters/{encounterId}/bpjs-referral:
     put:
       operationId: EncounterClinicalDataController_saveBpjsReferral_v1
@@ -38321,7 +38463,7 @@ paths:
       security:
         - bearer: []
       summary: Record or replace the encounter’s BPJS rujukan
-      tags: *a51
+      tags: *a52
     get:
       operationId: EncounterClinicalDataController_getBpjsReferral_v1
       parameters:
@@ -38412,7 +38554,7 @@ paths:
       security:
         - bearer: []
       summary: Read the encounter’s recorded BPJS rujukan
-      tags: *a51
+      tags: *a52
     delete:
       operationId: EncounterClinicalDataController_removeBpjsReferral_v1
       parameters:
@@ -38466,7 +38608,7 @@ paths:
       security:
         - bearer: []
       summary: Retract the encounter’s BPJS rujukan
-      tags: *a51
+      tags: *a52
   /api/v1/patients/{patientId}/immunizations:
     get:
       operationId: PatientImmunizationController_listPatientImmunizations_v1
@@ -38730,7 +38872,7 @@ paths:
       security:
         - bearer: []
       summary: List laboratory tests
-      tags: &a52
+      tags: &a53
         - Laboratory Catalog
     post:
       operationId: LabTestController_createLabTest_v1
@@ -38897,7 +39039,7 @@ paths:
       security:
         - bearer: []
       summary: Create a laboratory test
-      tags: *a52
+      tags: *a53
   /api/v1/lab-tests/{id}:
     patch:
       operationId: LabTestController_updateLabTest_v1
@@ -39072,7 +39214,7 @@ paths:
       security:
         - bearer: []
       summary: Update a laboratory test
-      tags: *a52
+      tags: *a53
   /api/v1/lab-tests/{id}/reference-ranges:
     put:
       operationId: LabTestController_replaceReferenceRanges_v1
@@ -39257,7 +39399,7 @@ paths:
       security:
         - bearer: []
       summary: Replace a test’s reference ranges
-      tags: *a52
+      tags: *a53
   /api/v1/lab-panels:
     get:
       operationId: LabPanelController_listLabPanels_v1
@@ -39377,7 +39519,7 @@ paths:
       security:
         - bearer: []
       summary: List laboratory panels
-      tags: &a53
+      tags: &a54
         - Laboratory Catalog
     post:
       operationId: LabPanelController_createLabPanel_v1
@@ -39520,7 +39662,7 @@ paths:
       security:
         - bearer: []
       summary: Create a laboratory panel
-      tags: *a53
+      tags: *a54
   /api/v1/lab-panels/{id}:
     patch:
       operationId: LabPanelController_updateLabPanel_v1
@@ -39665,7 +39807,7 @@ paths:
       security:
         - bearer: []
       summary: Update a laboratory panel
-      tags: *a53
+      tags: *a54
   /api/v1/encounters/{encounterId}/lab-orders:
     post:
       operationId: EncounterLabOrderController_createLabOrder_v1
@@ -39861,7 +40003,7 @@ paths:
       security:
         - bearer: []
       summary: Order laboratory tests on an encounter
-      tags: &a54
+      tags: &a55
         - Laboratory Orders
     get:
       operationId: EncounterLabOrderController_listEncounterLabOrders_v1
@@ -40026,7 +40168,7 @@ paths:
       security:
         - bearer: []
       summary: List an encounter’s laboratory orders
-      tags: *a54
+      tags: *a55
   /api/v1/lab-orders/intake:
     post:
       operationId: LabOrderController_createWalkInLabOrder_v1
@@ -40189,7 +40331,7 @@ paths:
       security:
         - bearer: []
       summary: Register a walk-in or external lab request
-      tags: &a55
+      tags: &a56
         - Laboratory Orders
   /api/v1/lab-orders:
     get:
@@ -40373,7 +40515,7 @@ paths:
       security:
         - bearer: []
       summary: List laboratory orders
-      tags: *a55
+      tags: *a56
   /api/v1/lab-orders/{id}:
     get:
       operationId: LabOrderController_getLabOrderById_v1
@@ -40534,7 +40676,7 @@ paths:
       security:
         - bearer: []
       summary: Read one laboratory order
-      tags: *a55
+      tags: *a56
   /api/v1/lab-orders/{id}/cancel:
     post:
       operationId: LabOrderController_cancelLabOrder_v1
@@ -40734,7 +40876,7 @@ paths:
       security:
         - bearer: []
       summary: Cancel a laboratory order
-      tags: *a55
+      tags: *a56
   /api/v1/lab-orders/{id}/disposition:
     patch:
       operationId: LabOrderController_updateDisposition_v1
@@ -40931,7 +41073,7 @@ paths:
       security:
         - bearer: []
       summary: Change where a laboratory order is filled and who pays
-      tags: *a55
+      tags: *a56
   /api/v1/lab-orders/{id}/request-document:
     post:
       operationId: LabOrderController_printRequestLetter_v1
@@ -41014,7 +41156,7 @@ paths:
       security:
         - bearer: []
       summary: Print the surat pengantar for a laboratory order
-      tags: *a55
+      tags: *a56
   /api/v1/lab-orders/{id}/collect:
     post:
       operationId: LabSpecimenController_collectLabSpecimens_v1
@@ -41130,7 +41272,7 @@ paths:
       security:
         - bearer: []
       summary: Collect the specimens an order needs
-      tags: &a56
+      tags: &a57
         - Laboratory Specimens
   /api/v1/lab-specimens/{id}/receive:
     post:
@@ -41220,7 +41362,7 @@ paths:
       security:
         - bearer: []
       summary: Mark a specimen as arrived in the lab
-      tags: *a56
+      tags: *a57
   /api/v1/lab-specimens/{id}/reject:
     post:
       operationId: LabSpecimenController_rejectLabSpecimen_v1
@@ -41332,7 +41474,7 @@ paths:
       security:
         - bearer: []
       summary: Reject a specimen and ask for a fresh draw
-      tags: *a56
+      tags: *a57
   /api/v1/lab-specimens/{id}/label:
     get:
       operationId: LabSpecimenController_getSpecimenLabel_v1
@@ -41435,7 +41577,7 @@ paths:
       security:
         - bearer: []
       summary: Read a specimen label payload
-      tags: *a56
+      tags: *a57
   /api/v1/lab-worklist:
     get:
       operationId: LabWorklistController_listWorklist_v1
@@ -41787,7 +41929,7 @@ paths:
       security:
         - bearer: []
       summary: Read the values entered on a laboratory order
-      tags: &a57
+      tags: &a58
         - Laboratory Results
     put:
       operationId: LabResultController_enterLabResults_v1
@@ -42047,7 +42189,7 @@ paths:
       security:
         - bearer: []
       summary: Enter results for a laboratory order
-      tags: *a57
+      tags: *a58
   /api/v1/lab-orders/{id}/release:
     post:
       operationId: LabResultController_releaseLabOrder_v1
@@ -42316,7 +42458,7 @@ paths:
       security:
         - bearer: []
       summary: Release a laboratory order
-      tags: *a57
+      tags: *a58
   /api/v1/lab-results/{id}/amend:
     post:
       operationId: LabResultController_amendLabResult_v1
@@ -42474,7 +42616,7 @@ paths:
       security:
         - bearer: []
       summary: Amend a released laboratory result
-      tags: *a57
+      tags: *a58
   /api/v1/patients/{id}/lab-results:
     get:
       operationId: PatientLabResultController_listPatientLabResults_v1
@@ -42713,7 +42855,7 @@ paths:
       security:
         - bearer: []
       summary: Read the laboratory verification settings
-      tags: &a58
+      tags: &a59
         - Laboratory Settings
     patch:
       operationId: LaboratorySettingsController_updateLaboratorySettings_v1
@@ -42799,7 +42941,7 @@ paths:
       security:
         - bearer: []
       summary: Change the laboratory verification settings
-      tags: *a58
+      tags: *a59
   /api/v1/lab-orders/{id}/report:
     get:
       operationId: LabReportController_downloadReport_v1
@@ -42888,7 +43030,7 @@ paths:
       security:
         - bearer: []
       summary: Download the current laboratory report
-      tags: &a59
+      tags: &a60
         - Laboratory Orders
   /api/v1/lab-orders/{id}/reports:
     get:
@@ -43088,7 +43230,7 @@ paths:
       security:
         - bearer: []
       summary: List the versions of a laboratory report
-      tags: *a59
+      tags: *a60
   /api/v1/lab-orders/{id}/reports/{reportId}/retry:
     post:
       operationId: LabReportController_retryReport_v1
@@ -43297,7 +43439,7 @@ paths:
       security:
         - bearer: []
       summary: Render a laboratory report version again
-      tags: *a59
+      tags: *a60
   /api/v1/satusehat/patients/{patientId}/link:
     post:
       operationId: SatusehatLinkController_linkPatient_v1
@@ -43367,7 +43509,7 @@ paths:
       security:
         - bearer: []
       summary: Link a patient to their SATUSEHAT IHS number
-      tags: &a60
+      tags: &a61
         - SATUSEHAT
   /api/v1/satusehat/doctors/{doctorId}/link:
     post:
@@ -43438,7 +43580,7 @@ paths:
       security:
         - bearer: []
       summary: Link a doctor to their SATUSEHAT IHS practitioner number
-      tags: *a60
+      tags: *a61
   /api/v1/satusehat/submissions:
     get:
       operationId: SatusehatSubmissionController_listSubmissions_v1
@@ -43621,7 +43763,7 @@ paths:
       security:
         - bearer: []
       summary: List SATUSEHAT submission outbox entries
-      tags: &a61
+      tags: &a62
         - SATUSEHAT
   /api/v1/satusehat/submissions/{id}/retry:
     post:
@@ -43743,7 +43885,7 @@ paths:
       security:
         - bearer: []
       summary: Retry a failed SATUSEHAT submission
-      tags: *a61
+      tags: *a62
   /api/v1/bpjs/config:
     get:
       operationId: BpjsPcareConfigController_getConfig_v1
@@ -43857,7 +43999,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS PCare bridging configuration
-      tags: &a62
+      tags: &a63
         - BPJS PCare
     put:
       operationId: BpjsPcareConfigController_upsertConfig_v1
@@ -43995,7 +44137,7 @@ paths:
       security:
         - bearer: []
       summary: Create or replace the BPJS PCare bridging configuration
-      tags: *a62
+      tags: *a63
     delete:
       operationId: BpjsPcareConfigController_deleteConfig_v1
       parameters: []
@@ -44054,7 +44196,7 @@ paths:
       security:
         - bearer: []
       summary: Delete the BPJS PCare bridging configuration
-      tags: *a62
+      tags: *a63
   /api/v1/bpjs/config/test-connection:
     post:
       operationId: BpjsPcareConfigController_testConnection_v1
@@ -44120,7 +44262,7 @@ paths:
       security:
         - bearer: []
       summary: Test the stored BPJS PCare credentials
-      tags: *a62
+      tags: *a63
   /api/v1/bpjs/reference/sync:
     post:
       operationId: BpjsReferenceController_syncCatalogs_v1
@@ -44208,7 +44350,7 @@ paths:
       security:
         - bearer: []
       summary: Sync the enumerable BPJS PCare reference catalogs
-      tags: &a63
+      tags: &a64
         - BPJS PCare
   /api/v1/bpjs/reference/status:
     get:
@@ -44275,7 +44417,7 @@ paths:
       security:
         - bearer: []
       summary: Read per-catalog BPJS reference sync status
-      tags: *a63
+      tags: *a64
   /api/v1/bpjs/reference/{catalog}:
     get:
       operationId: BpjsReferenceController_searchCatalog_v1
@@ -44369,7 +44511,7 @@ paths:
       security:
         - bearer: []
       summary: Search a synced BPJS reference catalog locally
-      tags: *a63
+      tags: *a64
   /api/v1/bpjs/reference/{catalog}/search:
     post:
       operationId: BpjsReferenceController_searchCatalogRemote_v1
@@ -44475,7 +44617,7 @@ paths:
       security:
         - bearer: []
       summary: Search a keyword-only BPJS catalog live and cache the results
-      tags: *a63
+      tags: *a64
   /api/v1/bpjs/mappings:
     get:
       operationId: BpjsMappingController_getOverview_v1
@@ -44563,7 +44705,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS mapping overview
-      tags: &a64
+      tags: &a65
         - BPJS PCare
   /api/v1/bpjs/mappings/doctors/{doctorId}:
     put:
@@ -44657,7 +44799,7 @@ paths:
       security:
         - bearer: []
       summary: Set or clear a doctor’s BPJS kdDokter mapping
-      tags: *a64
+      tags: *a65
   /api/v1/bpjs/mappings/specialties/{specialtyId}:
     put:
       operationId: BpjsMappingController_setSpecialtyMapping_v1
@@ -44746,7 +44888,7 @@ paths:
       security:
         - bearer: []
       summary: Set or clear a specialty’s BPJS kdPoli mapping
-      tags: *a64
+      tags: *a65
   /api/v1/bpjs/mappings/medications/{medicationId}:
     put:
       operationId: BpjsMappingController_setMedicationMapping_v1
@@ -44840,7 +44982,7 @@ paths:
       security:
         - bearer: []
       summary: Link or unlink a medication’s DPHO code
-      tags: *a64
+      tags: *a65
   /api/v1/bpjs/eligibility/patients/{patientId}/check:
     post:
       operationId: BpjsEligibilityController_checkEligibility_v1
@@ -45140,7 +45282,7 @@ paths:
       security:
         - bearer: []
       summary: List BPJS PCare submission outbox entries
-      tags: &a65
+      tags: &a66
         - BPJS PCare
   /api/v1/bpjs/submissions/{id}/retry:
     post:
@@ -45249,7 +45391,7 @@ paths:
       security:
         - bearer: []
       summary: Retry a failed BPJS PCare submission
-      tags: *a65
+      tags: *a66
   /api/v1/bpjs/reports/monthly:
     get:
       operationId: BpjsReportController_getMonthlyReport_v1
@@ -45496,7 +45638,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS Antrean Online bridging configuration
-      tags: &a66
+      tags: &a67
         - BPJS Antrean
     put:
       operationId: BpjsAntreanConfigController_upsertConfig_v1
@@ -45637,7 +45779,7 @@ paths:
       security:
         - bearer: []
       summary: Create or replace the BPJS Antrean Online bridging configuration
-      tags: *a66
+      tags: *a67
     delete:
       operationId: BpjsAntreanConfigController_deleteConfig_v1
       parameters: []
@@ -45696,7 +45838,7 @@ paths:
       security:
         - bearer: []
       summary: Delete the BPJS Antrean Online bridging configuration
-      tags: *a66
+      tags: *a67
   /api/v1/bpjs/antrean/config/test-connection:
     post:
       operationId: BpjsAntreanConfigController_testConnection_v1
@@ -45762,7 +45904,7 @@ paths:
       security:
         - bearer: []
       summary: Test the stored BPJS Antrean credentials
-      tags: *a66
+      tags: *a67
   /api/v1/bpjs/antrean/inbound-readiness:
     get:
       operationId: BpjsAntreanConfigController_getInboundReadiness_v1
@@ -45832,7 +45974,7 @@ paths:
       security:
         - bearer: []
       summary: Report whether the inbound Antrean web services can serve BPJS
-      tags: *a66
+      tags: *a67
   /api/v1/bpjs/antrean/hfis-reconciliation:
     get:
       operationId: BpjsAntreanConfigController_getHfisReconciliation_v1
@@ -45934,7 +46076,7 @@ paths:
       security:
         - bearer: []
       summary: Compare HFIS against HMS and report the disagreements
-      tags: *a66
+      tags: *a67
   /api/v1/admin/features:
     get:
       operationId: FeatureAdminController_getEntitlements_v1
@@ -46013,7 +46155,7 @@ paths:
       security:
         - bearer: []
       summary: List every feature and whether this client has it
-      tags: &a67
+      tags: &a68
         - Feature Entitlements
   /api/v1/admin/features/{key}:
     put:
@@ -46130,7 +46272,7 @@ paths:
       security:
         - bearer: []
       summary: Switch a feature on or off for this client
-      tags: *a67
+      tags: *a68
   /api/v1/features/availability:
     get:
       operationId: FeatureAvailabilityController_getAvailability_v1
@@ -46253,7 +46395,7 @@ paths:
       security:
         - bearer: []
       summary: List active roles
-      tags: &a68
+      tags: &a69
         - RBAC
     post:
       operationId: RbacController_createRole_v1
@@ -46340,7 +46482,7 @@ paths:
       security:
         - bearer: []
       summary: Create a custom role
-      tags: *a68
+      tags: *a69
   /api/v1/rbac/permissions:
     get:
       operationId: RbacController_getPermissionCatalog_v1
@@ -46420,7 +46562,7 @@ paths:
       security:
         - bearer: []
       summary: List the permission catalog
-      tags: *a68
+      tags: *a69
   /api/v1/rbac/roles/{id}:
     get:
       operationId: RbacController_getRoleById_v1
@@ -46539,7 +46681,7 @@ paths:
       security:
         - bearer: []
       summary: Get a role with its permissions and member count
-      tags: *a68
+      tags: *a69
     patch:
       operationId: RbacController_updateRole_v1
       parameters:
@@ -46638,7 +46780,7 @@ paths:
       security:
         - bearer: []
       summary: Update a role name or description
-      tags: *a68
+      tags: *a69
     delete:
       operationId: RbacController_deleteRole_v1
       parameters:
@@ -46714,7 +46856,7 @@ paths:
       security:
         - bearer: []
       summary: Soft-delete a role
-      tags: *a68
+      tags: *a69
   /api/v1/rbac/roles/{id}/permissions:
     put:
       operationId: RbacController_setRolePermissions_v1
@@ -46860,7 +47002,7 @@ paths:
       security:
         - bearer: []
       summary: Replace the permission set attached to a role
-      tags: *a68
+      tags: *a69
   /api/v1/rbac/assign-role:
     post:
       operationId: RbacController_assignRole_v1
@@ -46952,7 +47094,7 @@ paths:
       security:
         - bearer: []
       summary: Assign a role to a user
-      tags: *a68
+      tags: *a69
   /api/v1/rbac/unassign-role:
     post:
       operationId: RbacController_unassignRole_v1
@@ -47044,7 +47186,7 @@ paths:
       security:
         - bearer: []
       summary: Unassign a role from a user
-      tags: *a68
+      tags: *a69
   /api/v1/health:
     get:
       operationId: HealthController_getHealth_v1

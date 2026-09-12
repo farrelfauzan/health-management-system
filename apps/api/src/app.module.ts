@@ -20,6 +20,7 @@ import { StorageModule } from './common/storage/storage.module';
 import { AdminManagementModule } from './modules/admin-management/admin-management.module';
 import { AdmissionFlowModule } from './modules/admission-flow/admission-flow.module';
 import { NotificationModule } from './modules/notification/notification.module';
+import { NotionConnectorModule } from './modules/notion-connector/notion-connector.module';
 import { AuditQueryModule } from './modules/audit/audit-query.module';
 import { AiChatbotModule } from './modules/ai-chatbot/ai-chatbot.module';
 import { AppointmentManagementModule } from './modules/appointment-management/appointment-management.module';
@@ -92,6 +93,7 @@ import { UserInvitationModule } from './modules/user-invitation/user-invitation.
     RoomManagementModule,
     AdmissionFlowModule,
     NotificationModule,
+    NotionConnectorModule,
     EmrModule,
     PharmacyFlowModule,
     BillingModule,

@@ -55,6 +55,8 @@
     "#bpjs-antrean-ws/schemas": "./src/bpjs-antrean-ws/schemas.ts",
     "#bpjs-antrean-ws/contracts": "./src/bpjs-antrean-ws/contracts.ts",
     "#bpjs-antrean-ws/types": "./src/bpjs-antrean-ws/types.ts",
+    "#notion-connector/contracts": "./src/notion-connector/contracts.ts",
+    "#notion-connector/types": "./src/notion-connector/types.ts",
     "#satusehat/schemas": "./src/satusehat/schemas.ts",
     "#satusehat/contracts": "./src/satusehat/contracts.ts",
     "#satusehat/types": "./src/satusehat/types.ts",

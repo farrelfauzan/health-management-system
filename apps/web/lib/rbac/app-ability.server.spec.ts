@@ -477,4 +477,29 @@ describe('resolveAppAbilityRules for a seeded DOCTOR', () => {
 
     expect(ability.can('checkin-override', 'Registration')).toBe(true);
   });
+
+  it('maps the Notion connector grant to its own subject', () => {
+    // P23-T05. The allowlist trap again, and this one is invisible without a
+    // test: a session hint carrying `notion-connector.manage:any` resolves to
+    // no rule at all unless `SUBJECT_BY_RESOURCE` knows the resource, and the
+    // Notion card then silently never renders. An administrator holding every
+    // BPJS grant must not pick it up — the board is Saling Jaga's, not the
+    // clinic's.
+    const superAdmin = buildAppAbility(
+      resolveAppAbilityRules({ permissions: ['notion-connector.manage:any'] }),
+    );
+    const clinicAdmin = buildAppAbility(
+      resolveAppAbilityRules({ permissions: ['bpjs.config.manage:any'] }),
+    );
+
+    expect(superAdmin.can('manage', 'NotionConnector')).toBe(true);
+    expect(clinicAdmin.can('manage', 'NotionConnector')).toBe(false);
+    expect(clinicAdmin.can('manage', 'BpjsConfig')).toBe(true);
+  });
+
+  it('gives the SUPER_ADMIN fallback preset the Notion connector grant', () => {
+    const ability = buildAppAbility(resolveAppAbilityRules({ roles: ['SUPER_ADMIN'] }));
+
+    expect(ability.can('manage', 'NotionConnector')).toBe(true);
+  });
 });
