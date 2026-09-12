@@ -1008,3 +1008,22 @@ export const LabReportStatus = {
 } as const
 
 export type LabReportStatus = (typeof LabReportStatus)[keyof typeof LabReportStatus]
+
+
+export const BugReportStatus = {
+  RECEIVED: 'RECEIVED',
+  TRIAGED: 'TRIAGED',
+  HELD: 'HELD',
+  PUBLISHED: 'PUBLISHED',
+  FAILED: 'FAILED'
+} as const
+
+export type BugReportStatus = (typeof BugReportStatus)[keyof typeof BugReportStatus]
+
+
+export const BugReportTriagedBy = {
+  AI: 'AI',
+  FALLBACK: 'FALLBACK'
+} as const
+
+export type BugReportTriagedBy = (typeof BugReportTriagedBy)[keyof typeof BugReportTriagedBy]

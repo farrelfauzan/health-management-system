@@ -1426,3 +1426,34 @@ export type District = Prisma.DistrictModel
  * index on `(district_code, name)`.
  */
 export type Village = Prisma.VillageModel
+/**
+ * Model BugReport
+ * One bug report filed from the portal (`P23-T08`), and the outbox row that
+ * carries it to the Bug Board.
+ * 
+ * The free text is the sensitive part of this table: staff write it, and
+ * `detectSensitiveData` blocks the shapes a machine can recognise but cannot
+ * promise prose contains no patient detail. So the text is written once, sent
+ * to the triage vendor redacted (`P23-T09`), and purged on the schedule in
+ * `docs/security/ai-vendor-dpa.md` §5c once the ticket exists — `contentPurgedAt`
+ * records that it has been, so a purge that failed is visible rather than
+ * assumed.
+ * 
+ * The reporter is stored as a user id because the intake limit is per person
+ * and a `HELD` report has to notify them. Notion never receives it: the board
+ * shows the role only, which is `reporterRole` frozen at submission time
+ * rather than read back from the account, so a doctor who later becomes an
+ * admin does not rewrite the history of their old reports.
+ */
+export type BugReport = Prisma.BugReportModel
+/**
+ * Model BugReportCounter
+ * The `BR-` sequence (`P23-T08`), one row for the whole deployment.
+ * 
+ * A counter table rather than `MAX(reference) + 1`, which races, and rather
+ * than a Postgres sequence, because the repo's other human-readable numbers
+ * (MRN, invoice, queue) are all allocated this way and one mechanism is
+ * easier to reason about than two. Committed numbers are never reissued, so a
+ * deleted report leaves a gap — exactly like a torn paper receipt.
+ */
+export type BugReportCounter = Prisma.BugReportCounterModel
