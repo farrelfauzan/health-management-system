@@ -81,6 +81,13 @@ frame the Art. 55–56 transfer question — **not** a verified answer to it. Tw
 these kinds (`OPENAI_COMPATIBLE`, `AZURE_OPENAI`) cannot be answered at all
 without knowing the deployment's configured URL.
 
+Two more classes of recipient were added after this section was first written,
+and both are inventoried below rather than here because neither is an AI chat
+boundary: the **delivery processors** of §5b (WhatsApp, SMTP) and the **bug
+reporting** processors of §5c (a Saling Jaga-owned triage vendor, and Notion).
+§5c is the only one written *before* the code — deliberately, because §5b
+exists to record the opposite.
+
 **❷ Embedding vendor.** Fixed in config, not admin-managed, and deliberately so:
 the vector width is a column type, so swapping the embedder is a migration and a
 re-ingest rather than a settings screen
@@ -259,6 +266,92 @@ prevent.
 
 G6 is the one that gates a pilot. G7 and G8 are backlog.
 
+## 5c. Bug reporting — the triage vendor and Notion (P23-T06, SJ-193)
+
+Phase 23 adds a **fourth** class of external recipient, and this section is
+written **before** either processor exists — which is the whole point. §5b
+exists because the ticket that created a processor was not the ticket that
+wrote the processor list. This time the list moves first.
+
+A bug report is free text typed by clinic staff, usually while something is
+going wrong on a screen with a patient on it. Assume it can contain patient
+data, because sooner or later it will.
+
+| | ❺ Bug-triage AI vendor | ❻ Notion |
+|---|---|---|
+| What it is | A **Saling Jaga-owned** key (`BUG_TRIAGE_AI_*`), never the clinic's `AiProviderConfig` row | Notion, US-hosted, reached with one internal integration per clinic deployment (P23-T01) |
+| Why not the clinic's key | That row is the clinic's chat provider: the clinic's bill, a DPA that covers chat only, and it may be switched off — a bug report must still reach us when it is | — |
+| What crosses | The **redacted** report text, the route it was filed from, the reporter's **role**, the app version, recent request ids | The AI-written title and body, plus the Bug Board fields of P23-T01 §2 |
+| Who it reaches | The vendor named in `BUG_TRIAGE_AI_*` for that deployment | Notion, and everyone with access to the Saling Jaga workspace |
+| Controller instrument | **Unknown — same gap shape as G1/G2** | **Unknown — same gap shape** |
+
+### What never leaves, at either boundary
+
+- **The unredacted text.** Redaction (P23-T09) runs before the AI call, and the
+  AI's output — not the original — is what reaches Notion.
+- **The reporter's identity.** Role only: no name, no email, no user id. Notion
+  shows *a doctor at this clinic* filed it, never *which* doctor.
+- **Patient context.** The dialog sends no patient id, no MRN, and no record
+  the reporter happened to be looking at. The route is sent with its query
+  string stripped and its record ids replaced by `:id`.
+- **Screenshots.** There are none in v1 (decision, 11 Sep 2026). They are the
+  likeliest carrier of patient data and would open a new upload surface under
+  [`file-uploads.md`](file-uploads.md) for a feature whose whole value is a
+  sentence of prose.
+- **The Notion token.** The AI writes ticket content through one forced tool
+  call; **code** calls Notion. The model never holds a credential, so a report
+  crafted to make it "publish something else" has nothing to publish with.
+
+### The layered controls
+
+1. **A warning and a required tick** in the dialog (P23-T11) — the reporter is
+   told, in words, that this text leaves the clinic and must not name a patient.
+2. **A pattern block in the browser and again in the API** (P23-T07/T08) —
+   shared `detectSensitiveData()` refusing NIK, BPJS numbers, phone numbers,
+   email addresses, MRNs and anything shaped like a secret. Twice, because a
+   browser check is a courtesy and the API check is the control.
+3. **Redaction before the AI call** (P23-T09).
+4. **HELD** (P23-T09) — when the model flags possible personal data the report
+   stops, and no Notion page is created.
+
+### The accepted risk, stated plainly
+
+**Patterns cannot catch a name, and they cannot catch free-text clinical
+detail.** "Pasien Bu Ani di kamar 3 hasil labnya tidak muncul" passes every
+check above. Layer 1 is the only control that addresses it, and layer 1 is a
+person reading a warning while something is going wrong.
+
+And HELD is a **late** control: by the time the model says "this looks like
+personal data", the text has already reached the AI vendor. HELD prevents
+publication to Notion; it does not prevent transmission. Anyone reading this
+section as "four layers, therefore safe" has read it wrong — the layers reduce
+the volume of a failure, not its possibility.
+
+### Retention — proposed, for the owner to confirm
+
+Not decided here, because retention is a controller's decision:
+
+- Unredacted report text: purge **30 days** after the report reaches
+  `PUBLISHED`. Long enough to re-triage a ticket that turned out to matter,
+  short enough that a year of reports is not a second clinical archive.
+- **HELD** text: purge after **7 days**. It is held precisely because it may
+  contain personal data; keeping it longer than it takes a person to look is
+  the opposite of the reason it was held.
+- Notion pages: **no automatic deletion.** They are our engineering record, and
+  by construction they carry no unredacted text.
+
+### Gaps this section adds
+
+- **G9 — no instrument with ❺ or ❻.** Same shape as G1/G2. ❻ is the sharper of
+  the two: a Notion page persists until somebody deletes it, where a completion
+  request is transient.
+- **G10 — the compliance owner is still unnamed** (§6). This section proposes
+  retention periods and cannot set them.
+- **G11 — the §9 contract test is a tripwire here, not a contract.** Neither
+  payload builder exists yet, so what CI pins today is only that neither has
+  appeared. When P23-T09 lands, that assertion must be replaced with the same
+  exhaustive key-set checks the chat vendor gets, in the same PR.
+
 ## 6. Legal mapping and gap list — OPEN
 
 Blocked on a named compliance owner (ticket Prerequisites: hospital DPO, which
@@ -364,6 +457,7 @@ payload is added beside it. What it holds:
 | §3.1 row 7 — the title call carries only the two excerpts | exact argument equality |
 | §4 — the embedding body is exactly `model` and `input`, question verbatim | complete key-set equality |
 | §3.2 — the redaction denylist still strips every identifier class | one payload per forbidden fragment |
+| §5c — no bug-triage payload builder has appeared without §5c being re-read | a **tripwire**, not a contract: it asserts `src/modules/bug-report` does not exist yet. When P23-T09 lands this fails, and the fix is to replace it with exhaustive key-set assertions in the same PR — never to delete it (G11) |
 
 The suite was mutation-checked: folding `contextPayload` onto the OpenAI wire
 body as a `metadata` field fails two of these tests. A test that cannot fail is
@@ -439,6 +533,14 @@ mechanism, and the §8 condition has never been acknowledged.
 | Gap list reviewed with compliance owner, owners + dates | **open** — G1–G5 named in §6, unowned | **SJ-31** |
 | Patient-facing disclosure text reviewed and routed | **open** — draft in §10, deliberately not routed | **SJ-31** |
 | Go/no-go acknowledged by the project owner | **open** — §8 proposed | **SJ-31** |
+| Bug-reporting boundary inventoried before it is built | **done** — §5c, tripwired in §9 | SJ-193 (P23-T06) |
+| Bug-reporting retention periods confirmed | **open** — §5c proposes 30 / 7 days; nobody has set them | **unowned** |
+| Instrument with the triage vendor and with Notion | **open** — G9 | **unowned** |
+
+The compliance owner is **still unnamed** (G10), and SJ-193 could not name one
+either: naming a DPO is the controller's act, not a ticket's. §5c therefore
+*proposes* retention and states its accepted risk in the open rather than
+recording a decision nobody made.
 
 SJ-31 is filed **Blocked**: all four of its criteria need a named compliance
 owner (a DPO, which UU PDP requires for a health-data controller) and access to

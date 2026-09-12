@@ -507,4 +507,26 @@ describe('external AI processor egress contract (SJ-17)', () => {
 
     expect(Object.keys(actualPayload)).toEqual(['displayName']);
   });
+
+  /**
+   * ❺/❻ — bug reporting (P23-T06, `docs/security/ai-vendor-dpa.md` §5c).
+   *
+   * Bug-report text is written by clinic staff and can contain patient data.
+   * P23-T09 will send it to a triage AI vendor and P23-T10 to Notion: two more
+   * processors, both inventoried in §5c before either exists.
+   *
+   * Neither payload builder is written yet, so there is no key set to pin.
+   * What can be pinned today is the moment one appears — which is exactly when
+   * the inventory has to be re-read — so this is a tripwire rather than a
+   * contract. **When it fails, do not delete it:** replace it with the same
+   * exhaustive key-set assertions the chat vendor gets above, and update §5c
+   * in the same PR.
+   */
+  it('has no bug-triage payload builder yet, so §5c is still a plan', async () => {
+    const { existsSync } = await import('node:fs');
+    const { resolve } = await import('node:path');
+    const bugReportModulePath = resolve(process.cwd(), 'src/modules/bug-report');
+
+    expect(existsSync(bugReportModulePath)).toBe(false);
+  });
 });
