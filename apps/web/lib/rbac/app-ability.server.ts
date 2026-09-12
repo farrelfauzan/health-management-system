@@ -161,6 +161,7 @@ const SUBJECT_BY_RESOURCE: Record<string, AppSubject> = {
   // `manage`. Without this row a super admin's grant resolves to no rule at
   // all and the Notion card never renders — a failure only a browser catches.
   'notion-connector': 'NotionConnector',
+  'bug-report': 'BugReport',
   // SJ-1. Dotted, and safely so: `permissionToRule` splits on the *last* dot,
   // so `organization.structure.manage:any` resolves to resource
   // `organization.structure` and action `manage` — the same two-segment shape

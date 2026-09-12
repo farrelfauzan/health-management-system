@@ -55,6 +55,7 @@ const GATED_CONTROLLERS: Readonly<Record<string, FeatureKey>> = {
   BpjsReferenceController: 'bpjs-pcare',
   BpjsReportController: 'bpjs-pcare',
   BpjsSubmissionController: 'bpjs-pcare',
+  BugReportController: 'bug-reporting',
   BpjsAntreanConfigController: 'bpjs-antrean',
   BpjsAntreanWsController: 'bpjs-antrean',
   SatusehatLinkController: 'satusehat',

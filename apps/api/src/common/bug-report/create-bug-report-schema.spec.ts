@@ -16,7 +16,6 @@ const VALID_PAYLOAD = {
   description: 'Saya menekan simpan di halaman pasien dan tidak terjadi apa-apa.',
   pagePath: '/admin/patients',
   requestIds: ['3f1a9c7e-2b4d-4f8a-9c1e-7d5b8a2f6e04'],
-  userAgent: 'Mozilla/5.0',
   acknowledgedNoSensitiveData: true as const,
 };
 

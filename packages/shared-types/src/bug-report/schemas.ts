@@ -10,7 +10,11 @@ const MAX_OPTIONAL_TEXT_LENGTH = 2000;
 
 const MAX_PAGE_PATH_LENGTH = 512;
 
-const MAX_USER_AGENT_LENGTH = 512;
+/**
+ * The longest `User-Agent` worth storing. Not a request field — the API reads
+ * the header — but the truncation length belongs next to the other limits.
+ */
+export const MAX_BUG_REPORT_USER_AGENT_LENGTH = 512;
 
 const MAX_APP_VERSION_LENGTH = 64;
 
@@ -94,7 +98,6 @@ const bugReportFieldsSchema = z.object({
     .array(z.string().trim().regex(REQUEST_ID_PATTERN))
     .max(MAX_BUG_REPORT_REQUEST_IDS)
     .default([]),
-  userAgent: z.string().trim().min(1).max(MAX_USER_AGENT_LENGTH),
   appVersion: z.string().trim().max(MAX_APP_VERSION_LENGTH).optional(),
   /**
    * The confirmation tick, typed as `true` rather than `boolean`: a report that
@@ -140,12 +143,26 @@ function refineNoSensitiveData(
 }
 
 /**
- * What the portal sends to file a bug report (P23-T08).
+ * The request's shape, with no sensitive-data rules attached.
  *
- * The sensitive-data rules run here rather than in the service so that the one
- * schema the API validates against and the one the dialog reuses are the same
- * object. The API additionally passes the deployment's MRN format, which the
- * browser does not know — see {@link createBugReportSchemaWith}.
+ * This is what the API's DTO wraps, and the split is deliberate. The global
+ * `ZodValidationPipe` reports every refinement failure as a generic
+ * `BAD_REQUEST` with the reason buried in `errors[].params`, so a sensitive-data
+ * block applied here would reach the reporter as "Validation failed" — and the
+ * dialog has to branch on `SENSITIVE_DATA_DETECTED` to put the message on the
+ * right field. The service therefore runs {@link createBugReportSchemaWith}
+ * itself and raises the coded error, and it is also the only place that knows
+ * this deployment's MRN format. Shape here, content there.
+ */
+export const bugReportShapeSchema = bugReportFieldsSchema;
+
+/**
+ * What the portal sends to file a bug report (P23-T08), sensitive-data rules
+ * included.
+ *
+ * Used by the dialog (P23-T11) for the live check as the reporter types, and by
+ * the service by way of {@link createBugReportSchemaWith}. Not used as the DTO —
+ * see {@link bugReportShapeSchema} for why.
  */
 export const createBugReportSchema = bugReportFieldsSchema.superRefine((payload, context) => {
   refineNoSensitiveData(payload, context, {});

@@ -515,18 +515,46 @@ describe('external AI processor egress contract (SJ-17)', () => {
    * P23-T09 will send it to a triage AI vendor and P23-T10 to Notion: two more
    * processors, both inventoried in §5c before either exists.
    *
-   * Neither payload builder is written yet, so there is no key set to pin.
-   * What can be pinned today is the moment one appears — which is exactly when
-   * the inventory has to be re-read — so this is a tripwire rather than a
-   * contract. **When it fails, do not delete it:** replace it with the same
-   * exhaustive key-set assertions the chat vendor gets above, and update §5c
-   * in the same PR.
+   * The tripwire that stood here fired when P23-T08 created the module, which
+   * is what it was for. It is replaced rather than deleted, per its own
+   * instruction — but the thing to pin has moved. P23-T08 is intake only: it
+   * stores a report and answers with a reference, and there is still no payload
+   * builder and no vendor call, so the key set §5c will eventually name does
+   * not exist to assert on yet.
+   *
+   * What is pinned instead is the property that makes that true — the module
+   * reaches no egress surface. When P23-T09 adds the triage call this will
+   * fail, and again the instruction is the same: **do not delete it.** Replace
+   * it with the exhaustive key-set assertions the chat vendor gets above,
+   * covering the redacted payload, and update §5c in the same PR.
    */
-  it('has no bug-triage payload builder yet, so §5c is still a plan', async () => {
-    const { existsSync } = await import('node:fs');
-    const { resolve } = await import('node:path');
-    const bugReportModulePath = resolve(process.cwd(), 'src/modules/bug-report');
+  it('stores bug reports without reaching any vendor, so §5c is still a plan', async () => {
+    const { readFileSync, readdirSync, statSync } = await import('node:fs');
+    const { join, resolve } = await import('node:path');
+    const egressSurfaces = [
+      'ai-provider-http.client',
+      'anthropic.adapter',
+      'openai-compatible.adapter',
+      'together-embedding.service',
+      'notion-http.client',
+    ];
+    function collectSourceFiles(directory: string): string[] {
+      return readdirSync(directory).flatMap((entry) => {
+        const entryPath = join(directory, entry);
+        if (statSync(entryPath).isDirectory()) {
+          return collectSourceFiles(entryPath);
+        }
+        return entryPath.endsWith('.ts') ? [entryPath] : [];
+      });
+    }
 
-    expect(existsSync(bugReportModulePath)).toBe(false);
+    const bugReportSources = collectSourceFiles(resolve(process.cwd(), 'src/modules/bug-report'));
+    const actualEgressImports = bugReportSources.flatMap((file) => {
+      const contents = readFileSync(file, 'utf8');
+      return egressSurfaces.filter((surface) => contents.includes(surface));
+    });
+
+    expect(bugReportSources.length).toBeGreaterThan(0);
+    expect(actualEgressImports).toEqual([]);
   });
 });

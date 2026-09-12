@@ -49,3 +49,45 @@ export type SensitiveDataMrnFormat = {
 export type DetectSensitiveDataOptions = {
   readonly mrnFormat?: SensitiveDataMrnFormat;
 };
+
+/**
+ * What the repository needs to insert one report (P23-T08).
+ *
+ * `reporterRole` is passed in rather than looked up, because the Bug Board
+ * shows the role and the row is the historical record of who filed it: reading
+ * it back from the account later would let a promotion rewrite old reports.
+ */
+export type CreateBugReportData = {
+  readonly reporterUserId: string;
+  readonly reporterRole: string;
+  readonly title: string;
+  readonly description: string;
+  readonly stepsToReproduce?: string;
+  readonly expected?: string;
+  readonly actual?: string;
+  readonly pagePath: string;
+  readonly requestIds: readonly string[];
+  readonly userAgent: string;
+  readonly appVersion?: string;
+  readonly acknowledgedNoSensitiveDataAt: Date;
+};
+
+/**
+ * A stored report, projected to what callers outside the repository may see.
+ *
+ * Free text is deliberately not in this projection: intake answers with the
+ * reference and the status, and the only consumer that needs the text is the
+ * triage worker, which reads it through its own projection (P23-T09).
+ */
+export type BugReportRecord = {
+  readonly id: string;
+  readonly reference: string;
+  readonly status: 'RECEIVED' | 'TRIAGED' | 'HELD' | 'PUBLISHED' | 'FAILED';
+  readonly createdAt: Date;
+};
+
+/** The rolling window a reporter's daily limit is counted over. */
+export type BugReportQuota = {
+  readonly since: Date;
+  readonly limit: number;
+};

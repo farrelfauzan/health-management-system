@@ -153,6 +153,7 @@ export type AppSubject =
   // configures BPJS, and nobody at the clinic configures this — the board
   // belongs to us, and the card only ever reads and tests.
   | 'NotionConnector'
+  | 'BugReport'
   | 'Notification'
   // SJ-1. Two subjects rather than one, mirroring the API's catalogue: a role
   // that maintains the boxes on the org chart is not thereby a role that

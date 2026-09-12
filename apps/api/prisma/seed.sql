@@ -257,6 +257,13 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     -- SUPER_ADMIN through the catalog-wide grant and by nobody else — the
     -- board belongs to Saling Jaga, not to the clinic.
     ('notion-connector.manage:any', 'NotionConnector', 'manage', 'ANY', 'Read the Notion bug-report connector status and test the Bug Board connection'),
+    -- P23-T08. Scope OWN because a reporter files their own reports and there
+    -- is no read side to this permission at all: nobody in the clinic lists
+    -- bug reports, because the tickets live on Saling Jaga's board rather than
+    -- in the clinic's portal. Granted to the staff roles below and deliberately
+    -- not to PATIENT — a patient with a problem talks to the clinic, and a
+    -- report goes to our engineers with its text attached.
+    ('bug-report.create:own', 'BugReport', 'create', 'OWN', 'File a bug report from the portal'),
     ('bpjs.reference.sync:any', 'BpjsReference', 'sync', 'ANY', 'Sync BPJS PCare reference catalogs and run keyword search-and-cache lookups'),
     ('bpjs.reference.read:any', 'BpjsReference', 'read', 'ANY', 'Read the synced BPJS PCare reference catalogs and their sync status'),
     ('bpjs.mapping.manage:any', 'BpjsMapping', 'manage', 'ANY', 'Map doctors, specialties, and medications to BPJS PCare codes'),
@@ -910,7 +917,15 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     -- read-only tree exists to serve.
     ('ADMIN', 'organization.structure.read:any'),
     ('ADMIN', 'organization.structure.manage:any'),
-    ('ADMIN', 'organization.member.manage:any')
+    ('ADMIN', 'organization.member.manage:any'),
+    -- P23-T08. Every human staff role that works in the portal, because the
+    -- person who finds the bug is whoever happened to be on that screen.
+    -- SUPER_ADMIN holds it through the catalog-wide grant above. PATIENT and the
+    -- two service accounts are excluded on purpose.
+    ('ADMIN', 'bug-report.create:own'),
+    ('DOCTOR', 'bug-report.create:own'),
+    ('PHARMACIST', 'bug-report.create:own'),
+    ('LAB_TECHNICIAN', 'bug-report.create:own')
 ),
 combined_role_permissions AS (
   SELECT 'SUPER_ADMIN'::text AS role_code, p."permission_key"
@@ -1155,7 +1170,12 @@ FROM (
     -- database hid it with no UI to switch it back on. A klinik that sends its
     -- specimens out still turns it off deliberately — the switch stays, only
     -- its default moves.
-    ('laboratory', TRUE)
+    ('laboratory', TRUE),
+    -- P23-T08. On by default, and not really a product: this is how a clinic
+    -- tells us something is broken. The switch exists so a deployment whose
+    -- controller has not agreed to our triage vendor can close the whole path
+    -- in one place rather than by revoking a permission per role.
+    ('bug-reporting', TRUE)
 ) AS seed_feature_entitlements(feature_key, is_enabled)
 ON CONFLICT ("feature_key") DO NOTHING;
 

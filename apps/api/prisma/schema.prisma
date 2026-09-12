@@ -283,6 +283,16 @@ enum AuditAction {
   /// and when — the audit trail for an integration a clinic cannot configure
   /// and therefore cannot be asked to explain.
   NOTION_CONNECTION_TESTED
+  /// A member of staff filed a bug report (P23-T08). Carries the reference, the
+  /// reporter's role and the character count of each field — never the text,
+  /// which would put a copy of the report in a table with a different retention
+  /// rule from the report itself.
+  BUG_REPORT_SUBMITTED
+  /// A bug report was refused for containing sensitive data (P23-T08). Recorded
+  /// so the block can be measured rather than assumed: a category that fires
+  /// constantly is a detector that needs tuning, and one that never fires is a
+  /// detector nobody should trust. The category and field only.
+  BUG_REPORT_REJECTED_SENSITIVE
 }
 
 enum BpjsSubmissionType {
