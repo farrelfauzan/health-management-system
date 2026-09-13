@@ -1,7 +1,4 @@
-import type {
-  LabResultFlagValue,
-  LabSpecimenTypeValue,
-} from '#laboratory/schemas';
+import type { LabResultFlagValue, LabSpecimenTypeValue } from '#laboratory/schemas';
 import type {
   SatusehatResourceOutcomeValue,
   SatusehatResourceSkipReasonValue,
@@ -425,6 +422,20 @@ export type SatusehatSubmissionPage = {
 export type SatusehatSandboxPractitioner = {
   readonly nik: string;
   readonly name: string;
+};
+
+/**
+ * One patient test identity for the SATUSEHAT staging sandbox (P21-T10). Like
+ * {@link SatusehatSandboxPractitioner} there is deliberately no IHS number:
+ * it is resolved from the NIK at link time, because published values have not
+ * survived contact with the live index. `name` and `sex` are local placeholders
+ * only — the bundle references the patient by IHS number, so neither is
+ * compared against what the platform holds.
+ */
+export type SatusehatSandboxPatient = {
+  readonly nik: string;
+  readonly name: string;
+  readonly sex: 'MALE' | 'FEMALE';
 };
 
 /**
