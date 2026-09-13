@@ -1391,6 +1391,8 @@ export * from './satusehatLinkControllerLinkDoctorV1200';
 export * from './satusehatLinkControllerLinkDoctorV1200Data';
 export * from './satusehatLinkControllerLinkPatientV1200';
 export * from './satusehatLinkControllerLinkPatientV1200Data';
+export * from './satusehatSubmissionControllerGetEnvironmentV1200';
+export * from './satusehatSubmissionControllerGetEnvironmentV1200Data';
 export * from './satusehatSubmissionControllerListSubmissionsV1Kind';
 export * from './satusehatSubmissionControllerListSubmissionsV1Params';
 export * from './satusehatSubmissionControllerListSubmissionsV1Status';

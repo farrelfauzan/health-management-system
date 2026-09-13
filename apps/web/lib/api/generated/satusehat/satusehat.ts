@@ -23,6 +23,7 @@ import type {
 import type {
   SatusehatLinkControllerLinkDoctorV1200,
   SatusehatLinkControllerLinkPatientV1200,
+  SatusehatSubmissionControllerGetEnvironmentV1200,
   SatusehatSubmissionControllerListSubmissionsV1200,
   SatusehatSubmissionControllerListSubmissionsV1Params,
   SatusehatSubmissionControllerRetrySubmissionV1200
@@ -221,6 +222,98 @@ export function useSatusehatLinkControllerLinkDoctorV1<TData = Awaited<ReturnTyp
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getSatusehatLinkControllerLinkDoctorV1QueryOptions(doctorId,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Which SATUSEHAT environment this deployment reports to
+ */
+export const satusehatSubmissionControllerGetEnvironmentV1 = (
+
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<SatusehatSubmissionControllerGetEnvironmentV1200>(
+      {url: `/api/v1/satusehat/environment`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getSatusehatSubmissionControllerGetEnvironmentV1QueryKey = () => {
+    return [
+    `/api/v1/satusehat/environment`
+    ] as const;
+    }
+
+
+export const getSatusehatSubmissionControllerGetEnvironmentV1QueryOptions = <TData = Awaited<ReturnType<typeof satusehatSubmissionControllerGetEnvironmentV1>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof satusehatSubmissionControllerGetEnvironmentV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getSatusehatSubmissionControllerGetEnvironmentV1QueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof satusehatSubmissionControllerGetEnvironmentV1>>> = ({ signal }) => satusehatSubmissionControllerGetEnvironmentV1(signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof satusehatSubmissionControllerGetEnvironmentV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type SatusehatSubmissionControllerGetEnvironmentV1QueryResult = NonNullable<Awaited<ReturnType<typeof satusehatSubmissionControllerGetEnvironmentV1>>>
+export type SatusehatSubmissionControllerGetEnvironmentV1QueryError = unknown
+
+
+export function useSatusehatSubmissionControllerGetEnvironmentV1<TData = Awaited<ReturnType<typeof satusehatSubmissionControllerGetEnvironmentV1>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof satusehatSubmissionControllerGetEnvironmentV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof satusehatSubmissionControllerGetEnvironmentV1>>,
+          TError,
+          Awaited<ReturnType<typeof satusehatSubmissionControllerGetEnvironmentV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSatusehatSubmissionControllerGetEnvironmentV1<TData = Awaited<ReturnType<typeof satusehatSubmissionControllerGetEnvironmentV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof satusehatSubmissionControllerGetEnvironmentV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof satusehatSubmissionControllerGetEnvironmentV1>>,
+          TError,
+          Awaited<ReturnType<typeof satusehatSubmissionControllerGetEnvironmentV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSatusehatSubmissionControllerGetEnvironmentV1<TData = Awaited<ReturnType<typeof satusehatSubmissionControllerGetEnvironmentV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof satusehatSubmissionControllerGetEnvironmentV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Which SATUSEHAT environment this deployment reports to
+ */
+
+export function useSatusehatSubmissionControllerGetEnvironmentV1<TData = Awaited<ReturnType<typeof satusehatSubmissionControllerGetEnvironmentV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof satusehatSubmissionControllerGetEnvironmentV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getSatusehatSubmissionControllerGetEnvironmentV1QueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

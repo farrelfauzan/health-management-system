@@ -6,10 +6,8 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type NotionConnectorControllerGetStatusV1200Data = {
+export type SatusehatSubmissionControllerGetEnvironmentV1200Data = {
+  environment: string;
   isConfigured: boolean;
-  apiVersion: string;
-  dataSourceIdLast4: string;
-  circuitBreakerState: string;
-  lastPublishedAt: string;
+  fhirHost: string;
 };

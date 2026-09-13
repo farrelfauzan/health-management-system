@@ -5,6 +5,16 @@
  * registry-style pseudonymous ids and appear in full.
  */
 export const SATUSEHAT_EXAMPLES = {
+  /**
+   * Deliberately the sandbox, because that is what an unconfigured checkout
+   * reports and what a reader should expect to see before the production
+   * switch runbook has been followed.
+   */
+  environmentStatus: {
+    environment: 'SANDBOX',
+    isConfigured: true,
+    fhirHost: 'api-satusehat-stg.dto.kemkes.go.id',
+  },
   patientLink: {
     patientId: 'f5e4d3c2-b1a0-4918-a7b6-c5d4e3f2a1b0',
     hasSatusehatPatientId: true,

@@ -666,6 +666,19 @@
         "checkedAt": "Diperiksa pukul {time}",
         "lastPublished": "Publikasi terakhir",
         "neverPublished": "Belum pernah"
+      },
+      "satusehatEnvironment": {
+        "label": {
+          "PRODUCTION": "SATUSEHAT: Produksi",
+          "SANDBOX": "SATUSEHAT: Sandbox (uji coba)",
+          "UNKNOWN": "SATUSEHAT: Lingkungan tidak dikenali"
+        },
+        "description": {
+          "PRODUCTION": "Data kunjungan terkirim ke rekam medis nasional dan dapat dibaca pasien di aplikasi SATUSEHAT Mobile.",
+          "SANDBOX": "Data kunjungan hanya terkirim ke platform uji coba bersama. Status “Terkirim” di bawah membuktikan integrasi berjalan, bukan bahwa pasien dapat melihat kunjungannya. Ikuti runbook peralihan produksi sebelum go-live.",
+          "UNKNOWN": "Alamat platform tidak dikenali, sehingga tidak dapat dipastikan apakah data menuju produksi atau uji coba. Periksa SATUSEHAT_FHIR_BASE_URL di server."
+        },
+        "notConfigured": "Kredensial SATUSEHAT belum diatur, sehingga tidak ada data yang dikirim. Atur SATUSEHAT_CLIENT_ID, SATUSEHAT_CLIENT_SECRET dan SATUSEHAT_ORGANIZATION_ID di server."
       }
     },
     "administration": {

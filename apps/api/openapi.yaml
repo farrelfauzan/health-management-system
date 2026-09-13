@@ -36159,8 +36159,9 @@ paths:
         "200":
           description: Whether this deployment has Notion credentials, the API version
             pinned in code, the last four characters of the Bug Board data
-            source id, and this replica’s circuit-breaker state. Calls nothing
-            upstream. The token is never returned in any form.
+            source id, this replica’s circuit-breaker state, and when a bug
+            report last reached the board. Calls nothing upstream. The token is
+            never returned in any form.
           content:
             application/json:
               schema:
@@ -36177,11 +36178,14 @@ paths:
                         type: string
                       circuitBreakerState:
                         type: string
+                      lastPublishedAt:
+                        type: string
                     required:
                       - isConfigured
                       - apiVersion
                       - dataSourceIdLast4
                       - circuitBreakerState
+                      - lastPublishedAt
                 required:
                   - data
                 example:
@@ -36190,6 +36194,7 @@ paths:
                     apiVersion: 2025-09-03
                     dataSourceIdLast4: 5f21
                     circuitBreakerState: CLOSED
+                    lastPublishedAt: 2026-09-12T02:41:00.000Z
         "401":
           description: Authentication is required.
           content:
@@ -43676,6 +43681,66 @@ paths:
         - bearer: []
       summary: Link a doctor to their SATUSEHAT IHS practitioner number
       tags: *a61
+  /api/v1/satusehat/environment:
+    get:
+      operationId: SatusehatSubmissionController_getEnvironment_v1
+      parameters: []
+      responses:
+        "200":
+          description: Whether submissions reach the production national record or the
+            shared staging sandbox, derived from the configured base URL so it
+            cannot disagree with where bundles actually go (P21-T06). A
+            SUBMITTED row against the sandbox proves the integration works and
+            proves nothing to the patient, whose SATUSEHAT Mobile reads
+            production only. Carries no credentials and no organization id.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      environment:
+                        type: string
+                      isConfigured:
+                        type: boolean
+                      fhirHost:
+                        type: string
+                    required:
+                      - environment
+                      - isConfigured
+                      - fhirHost
+                required:
+                  - data
+                example:
+                  data:
+                    environment: SANDBOX
+                    isConfigured: true
+                    fhirHost: api-satusehat-stg.dto.kemkes.go.id
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Which SATUSEHAT environment this deployment reports to
+      tags: &a62
+        - SATUSEHAT
   /api/v1/satusehat/submissions:
     get:
       operationId: SatusehatSubmissionController_listSubmissions_v1
@@ -43858,8 +43923,7 @@ paths:
       security:
         - bearer: []
       summary: List SATUSEHAT submission outbox entries
-      tags: &a62
-        - SATUSEHAT
+      tags: *a62
   /api/v1/satusehat/submissions/{id}/retry:
     post:
       operationId: SatusehatSubmissionController_retrySubmission_v1

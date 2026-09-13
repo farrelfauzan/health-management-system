@@ -1,4 +1,5 @@
 import type {
+  SatusehatEnvironmentValue,
   SatusehatSubmissionKindValue,
   SatusehatSubmissionStatusValue,
 } from '#satusehat/schemas';
@@ -63,4 +64,23 @@ export type SatusehatSubmissionsListMeta = {
 export type SatusehatSubmissionsListResult = {
   items: SatusehatSubmissionView[];
   meta: SatusehatSubmissionsListMeta;
+};
+
+/**
+ * What the integrations screen needs to say which SATUSEHAT platform is live
+ * (P21-T06).
+ *
+ * Derived from the configured base URL rather than a separate flag, so it cannot
+ * disagree with where the bundles actually go — a flag someone forgot to flip
+ * during the production switch is exactly the failure this is meant to catch.
+ *
+ * `isConfigured` is already visible through every SATUSEHAT route's behaviour;
+ * it is repeated here so one request answers "is this on, and is it real".
+ * Nothing identifying is exposed: no credentials, and no organization id.
+ */
+export type SatusehatEnvironmentStatus = {
+  environment: SatusehatEnvironmentValue;
+  isConfigured: boolean;
+  /** Host only, never the full URL with its path — enough to recognise a proxy. */
+  fhirHost: string;
 };
