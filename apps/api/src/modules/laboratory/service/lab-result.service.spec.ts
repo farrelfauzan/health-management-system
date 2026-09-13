@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 
 import { AuditService } from '../../../common/audit/audit.service';
 import { AuthRepository } from '../../auth/repository/auth.repository';
+import { NotificationHrefService } from '../../notification/service/notification-href.service';
 import { NotificationService } from '../../notification/service/notification.service';
 import { LabOrderRepository } from '../repository/lab-order.repository';
 import { LabResultRepository } from '../repository/lab-result.repository';
@@ -53,7 +54,12 @@ describe('LabResultService', () => {
 
   const authRepositoryMock = { findUserById: jest.fn() };
 
-  const notificationServiceMock = { createForUser: jest.fn() };
+  const notificationServiceMock = { createForUser: jest.fn(), createForUsersWithPermission: jest.fn() };
+
+  const notificationHrefServiceMock = {
+    buildLabOrderHrefForUser: jest.fn(),
+    buildAdminLabOrderHref: jest.fn((orderId: string) => `/admin/laboratory/${orderId}`),
+  };
 
   const auditServiceMock = { record: jest.fn() };
 
@@ -69,6 +75,7 @@ describe('LabResultService', () => {
     new LabOrderMapper(),
     authRepositoryMock as unknown as AuthRepository,
     notificationServiceMock as unknown as NotificationService,
+    notificationHrefServiceMock as unknown as NotificationHrefService,
     auditServiceMock as unknown as AuditService,
     labReportServiceMock as unknown as LabReportService,
     configServiceMock as unknown as ConfigService,
@@ -210,6 +217,10 @@ describe('LabResultService', () => {
     labResultRepositoryMock.enterLabResults.mockResolvedValue([buildResult()]);
     labResultRepositoryMock.findResultsByOrderId.mockResolvedValue([buildResult()]);
     labResultRepositoryMock.findOrderingDoctorUserId.mockResolvedValue(doctorUserId);
+    notificationHrefServiceMock.buildLabOrderHrefForUser.mockImplementation(
+      async ({ encounterId, orderId }: { encounterId: string | null; orderId: string }) =>
+        encounterId === null ? `/admin/laboratory/${orderId}` : `/doctor/encounters/${encounterId}`,
+    );
     laboratorySettingsServiceMock.getLaboratorySettings.mockResolvedValue({
       technicianMayVerify: false,
       singleOperator: false,
@@ -452,6 +463,42 @@ describe('LabResultService', () => {
       expect(notificationServiceMock.createForUser).toHaveBeenCalledWith(
         expect.objectContaining({ type: 'LAB_RESULT_RELEASED', userId: doctorUserId }),
       );
+    });
+
+    // The link is resolved from the recipient, not from the order: the
+    // ordering account may sit in the admin shell, where a `/doctor/...` path
+    // is not a 404 but a silent bounce to their own dashboard.
+    it('resolves the ordering doctor link against the recipient', async () => {
+      labOrderRepositoryMock.findLabOrderById.mockResolvedValue(buildResultedOrder());
+      labResultRepositoryMock.releaseLabOrder.mockResolvedValue([buildResult()]);
+      await service.releaseLabOrder(labOrderId, {}, doctorUser);
+      expect(notificationHrefServiceMock.buildLabOrderHrefForUser).toHaveBeenCalledWith(
+        expect.objectContaining({ userId: doctorUserId, orderId: labOrderId }),
+      );
+      expect(notificationServiceMock.createForUser).toHaveBeenCalledWith(
+        expect.objectContaining({ href: expect.stringContaining('/') }),
+      );
+    });
+
+    // The reported bug. An order raised for a walk-in still carries an
+    // encounter, but with no ordering doctor the row is broadcast to
+    // `lab-order.write:any` — ADMIN-only — so an encounter deep link would
+    // send every recipient to a shell none of them holds.
+    it('sends the deskwide release to the order page, never the encounter', async () => {
+      labOrderRepositoryMock.findLabOrderById.mockResolvedValue(buildResultedOrder());
+      labResultRepositoryMock.releaseLabOrder.mockResolvedValue([buildResult()]);
+      labResultRepositoryMock.findOrderingDoctorUserId.mockResolvedValue(null);
+      await service.releaseLabOrder(labOrderId, {}, doctorUser);
+      expect(notificationServiceMock.createForUsersWithPermission).toHaveBeenCalledWith(
+        'lab-order.write:any',
+        expect.objectContaining({
+          type: 'LAB_RESULT_RELEASED',
+          href: `/admin/laboratory/${labOrderId}`,
+        }),
+      );
+      const [, actualPayload] =
+        notificationServiceMock.createForUsersWithPermission.mock.calls[0];
+      expect(actualPayload.href).not.toContain('/doctor/');
     });
 
     // P18-T05: the sheet is queued by the signature and rendered later. The

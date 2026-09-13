@@ -8,6 +8,7 @@ import { AppModule } from '../../app.module';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { AuthRepository } from '../auth/repository/auth.repository';
 import { FeatureAvailabilityCacheService } from '../feature-entitlement/service/feature-availability-cache.service';
+import { NotificationHrefService } from '../notification/service/notification-href.service';
 import { NotificationService } from '../notification/service/notification.service';
 import { LabOrderRepository } from './repository/lab-order.repository';
 import { LabReportRepository } from './repository/lab-report.repository';
@@ -85,6 +86,13 @@ describe('Laboratory results integration', () => {
   };
 
   const disabledFeatureKeys: string[] = [];
+
+  const notificationHrefServiceMock = {
+    resolveShellForUser: jest.fn().mockResolvedValue('doctor'),
+    buildVaultHref: jest.fn().mockResolvedValue('/doctor/vault'),
+    buildLabOrderHrefForUser: jest.fn().mockResolvedValue('/doctor/encounters/encounter-1'),
+    buildAdminLabOrderHref: jest.fn((orderId: string) => `/admin/laboratory/${orderId}`),
+  };
 
   const prismaServiceMock = {
     featureEntitlement: {
@@ -277,6 +285,11 @@ describe('Laboratory results integration', () => {
       .useValue(labReportRepositoryMock)
       .overrideProvider(NotificationService)
       .useValue(notificationServiceMock)
+      // The real resolver reads the recipient's roles through Prisma, which is
+      // stubbed here; a rejected lookup would be swallowed by the producer's
+      // best-effort catch and silently drop the bell this test is about.
+      .overrideProvider(NotificationHrefService)
+      .useValue(notificationHrefServiceMock)
       .overrideProvider(PrismaService)
       .useValue(prismaServiceMock)
       .compile();

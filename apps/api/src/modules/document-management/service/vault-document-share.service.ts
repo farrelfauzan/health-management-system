@@ -17,13 +17,13 @@ import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
 import { ObjectStorageService } from '../../../common/storage/object-storage.service';
 import { AuditAction } from '../../../generated/prisma/client';
+import { NotificationHrefService } from '../../notification/service/notification-href.service';
 import { NotificationService } from '../../notification/service/notification.service';
 import { VaultDocumentShareRepository } from '../repository/vault-document-share.repository';
 import { VaultDocumentRepository } from '../repository/vault-document.repository';
 import { VAULT_DOCUMENT_AUDIT_RESOURCE } from './vault-document.service';
 import { VaultDocumentAccessService } from './vault-document-access.service';
 
-const SHARED_WITH_ME_HREF = '/vault/shared-with-me';
 
 /**
  * Handing one vault document to one named person, and taking it back
@@ -58,6 +58,7 @@ export class VaultDocumentShareService {
     private readonly vaultDocumentAccessService: VaultDocumentAccessService,
     private readonly objectStorageService: ObjectStorageService,
     private readonly notificationService: NotificationService,
+    private readonly notificationHrefService: NotificationHrefService,
     private readonly auditService: AuditService,
   ) {}
 
@@ -296,7 +297,10 @@ export class VaultDocumentShareService {
         titleKey: 'vaultDocumentShared.title',
         bodyKey: 'vaultDocumentShared.body',
         params: { documentTitle, sharedByEmail: share.grantedByEmail },
-        href: SHARED_WITH_ME_HREF,
+        // The recipient's own vault page, where "shared with me" is a panel —
+        // there is no `/vault/shared-with-me` route to land on, and no
+        // shell-less `/vault` either, so this is resolved per recipient.
+        href: await this.notificationHrefService.buildVaultHref(share.granteeId),
       });
     } catch (caughtError) {
       this.logger.warn(
@@ -318,7 +322,7 @@ export class VaultDocumentShareService {
         titleKey: 'vaultDocumentOpened.title',
         bodyKey: 'vaultDocumentOpened.body',
         params: { documentTitle, granteeEmail: share.granteeEmail },
-        href: '/vault',
+        href: await this.notificationHrefService.buildVaultHref(share.grantedById),
       });
     } catch (caughtError) {
       this.logger.warn(

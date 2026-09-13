@@ -4,6 +4,7 @@ import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
 import { ObjectStorageService } from '../../../common/storage/object-storage.service';
+import { NotificationHrefService } from '../../notification/service/notification-href.service';
 import { NotificationService } from '../../notification/service/notification.service';
 import { VaultDocumentShareRepository } from '../repository/vault-document-share.repository';
 import { VaultDocumentRepository } from '../repository/vault-document.repository';
@@ -58,6 +59,9 @@ describe('VaultDocumentShareService', () => {
   const accessServiceMock = { resolveVaultOwnerType: jest.fn() };
   const objectStorageServiceMock = { getSignedUrl: jest.fn() };
   const notificationServiceMock = { createForUser: jest.fn() };
+  const notificationHrefServiceMock = {
+    buildVaultHref: jest.fn().mockResolvedValue('/doctor/vault'),
+  };
   const auditServiceMock = { recordOrThrow: jest.fn() };
   let service: VaultDocumentShareService;
 
@@ -69,6 +73,7 @@ describe('VaultDocumentShareService', () => {
     shareRepositoryMock.upsertShare.mockResolvedValue(buildShare());
     auditServiceMock.recordOrThrow.mockResolvedValue(undefined);
     notificationServiceMock.createForUser.mockResolvedValue(undefined);
+    notificationHrefServiceMock.buildVaultHref.mockResolvedValue('/doctor/vault');
     objectStorageServiceMock.getSignedUrl.mockResolvedValue({
       url: 'https://example.test/signed',
       expiresAt: '2026-09-03T09:15:00.000Z',
@@ -79,6 +84,7 @@ describe('VaultDocumentShareService', () => {
       accessServiceMock as unknown as VaultDocumentAccessService,
       objectStorageServiceMock as unknown as ObjectStorageService,
       notificationServiceMock as unknown as NotificationService,
+      notificationHrefServiceMock as unknown as NotificationHrefService,
       auditServiceMock as unknown as AuditService,
     );
   });

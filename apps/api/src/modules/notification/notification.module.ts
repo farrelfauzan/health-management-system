@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 
 import { NotificationController } from './controller/notification.controller';
 import { NotificationRepository } from './repository/notification.repository';
+import { NotificationHrefService } from './service/notification-href.service';
 import { NotificationService } from './service/notification.service';
 
 /**
@@ -12,7 +13,7 @@ import { NotificationService } from './service/notification.service';
  */
 @Module({
   controllers: [NotificationController],
-  providers: [NotificationRepository, NotificationService],
-  exports: [NotificationService],
+  providers: [NotificationRepository, NotificationHrefService, NotificationService],
+  exports: [NotificationService, NotificationHrefService],
 })
 export class NotificationModule {}

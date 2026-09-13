@@ -4,13 +4,13 @@ import { ConfigService } from '@nestjs/config';
 
 import { buildSafeErrorLog } from '../../../common/observability/safe-logging';
 import { Document } from '../../../generated/prisma/client';
+import { NotificationHrefService } from '../../notification/service/notification-href.service';
 import { NotificationService } from '../../notification/service/notification.service';
 import { VaultDocumentRepository } from '../repository/vault-document.repository';
 
 const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 const DEFAULT_SWEEP_INTERVAL_MS = 6 * 60 * 60 * 1000;
 const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
-const VAULT_HREF = '/vault';
 
 /**
  * Owner-only expiry reminders for the document vault (`P16-T18`, FR-E3-08).
@@ -46,6 +46,7 @@ export class VaultDocumentExpiryWorker implements OnApplicationBootstrap, OnAppl
   constructor(
     private readonly vaultDocumentRepository: VaultDocumentRepository,
     private readonly notificationService: NotificationService,
+    private readonly notificationHrefService: NotificationHrefService,
     configService: ConfigService,
   ) {
     this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
@@ -121,7 +122,9 @@ export class VaultDocumentExpiryWorker implements OnApplicationBootstrap, OnAppl
    * `DOCTOR_VAULT` to a non-null `ownerId` — but the column is nullable for
    * the clinic corpus, so the guard below is a type narrowing rather than a
    * case anyone expects to hit. The `href` lands on the owner's own vault
-   * page; a notification never exposes anything to another user.
+   * page; a notification never exposes anything to another user. It is
+   * resolved per owner because there is no shell-less `/vault` route — an
+   * owner is an admin or a doctor, and the wrong prefix is a silent bounce.
    */
   private async notifyOwner(document: Document, today: Date): Promise<void> {
     if (document.ownerId === null || document.expiresAt === null) {
@@ -137,7 +140,7 @@ export class VaultDocumentExpiryWorker implements OnApplicationBootstrap, OnAppl
         documentTitle: document.title,
         expiresAt: document.expiresAt.toISOString().slice(0, 10),
       },
-      href: VAULT_HREF,
+      href: await this.notificationHrefService.buildVaultHref(document.ownerId),
     });
   }
 

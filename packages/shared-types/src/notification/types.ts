@@ -27,3 +27,12 @@ export type ListNotificationsParams = {
   page: number;
   limit: number;
 };
+
+/**
+ * Which web shell a notification recipient lands in. The `href` stored on a
+ * notification row is shell-relative (`/admin/...` vs `/doctor/...`), and
+ * `apps/web/proxy.ts` bounces any path whose shell the recipient does not
+ * hold — silently, to their own home — so a producer must resolve this from
+ * the *recipient* rather than from the record being announced.
+ */
+export type NotificationShell = 'admin' | 'doctor';
