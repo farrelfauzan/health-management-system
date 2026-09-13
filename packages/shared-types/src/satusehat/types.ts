@@ -23,6 +23,8 @@ export type PatientSatusehatLinkTarget = {
 
 export type DoctorSatusehatLinkTarget = {
   id: string;
+  /** Shown beside the SATUSEHAT name when an IHS number is typed by hand (P21-T08). */
+  fullName: string;
   nik: string | null;
   satusehatPractitionerId: string | null;
 };
@@ -482,4 +484,16 @@ export type SatusehatSubmissionResourceRecord = {
 export type SaveSubmissionResourcesPayload = {
   submissionId: string;
   resources: readonly SatusehatSubmissionResourcePayload[];
+};
+
+/**
+ * What `GET /Practitioner/:id` identifies a practitioner by, and nothing more
+ * (P21-T08). Probed live: the resource carries only `id`, `identifier`, `name`
+ * and `meta`. There is no gender and no birth date, and the NIK comes back
+ * masked to its last three digits (`*************ddd`).
+ */
+export type SatusehatPractitionerSummary = {
+  ihsNumber: string;
+  name: string | null;
+  maskedNik: string | null;
 };

@@ -24,6 +24,7 @@ describe('SatusehatLinkService', () => {
   const masterDataClientMock = {
     findPatientIhsNumberByNik: jest.fn(),
     findPractitionerIhsNumberByNik: jest.fn(),
+    findPractitionerById: jest.fn(),
   };
   const auditServiceMock = {
     record: jest.fn(),
@@ -278,6 +279,154 @@ describe('SatusehatLinkService', () => {
         metadata: { lookup: 'NIK', trigger: 'LINK_ENDPOINT', matchCount: 27 },
       });
       expect(repositoryMock.saveDoctorIhsNumber).not.toHaveBeenCalled();
+    });
+  });
+  describe('previewDoctorIhsLink', () => {
+    const inputIhsNumber = '10000000009';
+
+    function mockUnlinkedDoctor(): void {
+      repositoryMock.findDoctorLinkTarget.mockResolvedValue({
+        id: doctorId,
+        fullName: 'dr. Budi Santoso',
+        nik: syntheticNik,
+        satusehatPractitionerId: null,
+      });
+    }
+
+    it('shows the SATUSEHAT name beside ours and the NIK suffix check, saving nothing', async () => {
+      mockUnlinkedDoctor();
+      masterDataClientMock.findPractitionerById.mockResolvedValue({
+        ihsNumber: inputIhsNumber,
+        name: 'dr. Budi Santoso',
+        maskedNik: '*************002',
+      });
+
+      const actual = await service.previewDoctorIhsLink(doctorId, inputIhsNumber, currentUser);
+
+      expect(actual).toEqual({
+        doctorId,
+        ihsNumber: inputIhsNumber,
+        doctorName: 'dr. Budi Santoso',
+        satusehatName: 'dr. Budi Santoso',
+        nikSuffixCheck: 'MATCHES',
+        alreadyLinked: false,
+      });
+      expect(repositoryMock.saveDoctorIhsNumber).not.toHaveBeenCalled();
+      expect(auditServiceMock.record).not.toHaveBeenCalled();
+    });
+
+    it('refuses an IHS number SATUSEHAT does not hold', async () => {
+      mockUnlinkedDoctor();
+      masterDataClientMock.findPractitionerById.mockResolvedValue(null);
+
+      await expect(
+        service.previewDoctorIhsLink(doctorId, inputIhsNumber, currentUser),
+      ).rejects.toThrow(NotFoundException);
+    });
+
+    it('refuses a doctor already linked to a different IHS number, before asking SATUSEHAT', async () => {
+      repositoryMock.findDoctorLinkTarget.mockResolvedValue({
+        id: doctorId,
+        fullName: 'dr. Budi Santoso',
+        nik: syntheticNik,
+        satusehatPractitionerId: 'N10000001',
+      });
+
+      await expect(
+        service.previewDoctorIhsLink(doctorId, inputIhsNumber, currentUser),
+      ).rejects.toThrow(ConflictException);
+      expect(masterDataClientMock.findPractitionerById).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('linkDoctorByIhs', () => {
+    const inputIhsNumber = '10000000009';
+
+    function mockUnlinkedDoctor(): void {
+      repositoryMock.findDoctorLinkTarget.mockResolvedValue({
+        id: doctorId,
+        fullName: 'dr. Budi Santoso',
+        nik: syntheticNik,
+        satusehatPractitionerId: null,
+      });
+    }
+
+    it('reads the id back again, stores it, and audits a manual link', async () => {
+      mockUnlinkedDoctor();
+      masterDataClientMock.findPractitionerById.mockResolvedValue({
+        ihsNumber: inputIhsNumber,
+        name: 'dr. Budi Santoso',
+        maskedNik: '*************002',
+      });
+
+      const actual = await service.linkDoctorByIhs(doctorId, inputIhsNumber, currentUser);
+
+      expect(masterDataClientMock.findPractitionerById).toHaveBeenCalledWith(inputIhsNumber);
+      expect(repositoryMock.saveDoctorIhsNumber).toHaveBeenCalledWith({
+        doctorId,
+        ihsNumber: inputIhsNumber,
+      });
+      expect(auditServiceMock.record).toHaveBeenCalledWith({
+        action: 'SATUSEHAT_DOCTOR_LINKED',
+        resource: 'DoctorProfile',
+        resourceId: doctorId,
+        actorUserId: currentUser.sub,
+        metadata: { lookup: 'IHS_MANUAL' },
+      });
+      expect(actual).toEqual({
+        doctorId,
+        satusehatPractitionerId: inputIhsNumber,
+        alreadyLinked: false,
+      });
+    });
+
+    it('refuses and stores nothing when the visible NIK digits prove a different practitioner', async () => {
+      mockUnlinkedDoctor();
+      masterDataClientMock.findPractitionerById.mockResolvedValue({
+        ihsNumber: inputIhsNumber,
+        name: 'dr. Someone Else',
+        maskedNik: '*************999',
+      });
+
+      await expect(service.linkDoctorByIhs(doctorId, inputIhsNumber, currentUser)).rejects.toThrow(
+        ConflictException,
+      );
+      expect(repositoryMock.saveDoctorIhsNumber).not.toHaveBeenCalled();
+    });
+
+    it('refuses and stores nothing for an IHS number SATUSEHAT does not hold', async () => {
+      mockUnlinkedDoctor();
+      masterDataClientMock.findPractitionerById.mockResolvedValue(null);
+
+      await expect(service.linkDoctorByIhs(doctorId, inputIhsNumber, currentUser)).rejects.toThrow(
+        NotFoundException,
+      );
+      expect(repositoryMock.saveDoctorIhsNumber).not.toHaveBeenCalled();
+    });
+
+    it('returns the current state without an upstream call when already linked to that id', async () => {
+      repositoryMock.findDoctorLinkTarget.mockResolvedValue({
+        id: doctorId,
+        fullName: 'dr. Budi Santoso',
+        nik: syntheticNik,
+        satusehatPractitionerId: inputIhsNumber,
+      });
+
+      const actual = await service.linkDoctorByIhs(doctorId, inputIhsNumber, currentUser);
+
+      expect(actual.alreadyLinked).toBe(true);
+      expect(masterDataClientMock.findPractitionerById).not.toHaveBeenCalled();
+    });
+
+    it('maps SATUSEHAT_NOT_CONFIGURED to ServiceUnavailable', async () => {
+      mockUnlinkedDoctor();
+      masterDataClientMock.findPractitionerById.mockRejectedValue(
+        new SatusehatError('SATUSEHAT_NOT_CONFIGURED', 'not configured'),
+      );
+
+      await expect(service.linkDoctorByIhs(doctorId, inputIhsNumber, currentUser)).rejects.toThrow(
+        ServiceUnavailableException,
+      );
     });
   });
 });

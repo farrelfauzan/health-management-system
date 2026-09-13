@@ -421,7 +421,6 @@ export class DoctorManagementRepository {
             phoneNumber: payload.phoneNumber,
             title: payload.title ?? null,
             degrees: payload.degrees ?? null,
-            satusehatPractitionerId: payload.satusehatPractitionerId ?? null,
             ownerUserId: payload.ownerUserId ?? null,
             isActive: payload.isActive,
             ...this.buildNikColumns(payload.nik),
@@ -514,20 +513,13 @@ export class DoctorManagementRepository {
             ...(payload.phoneNumber !== undefined ? { phoneNumber: payload.phoneNumber } : {}),
             ...(payload.title !== undefined ? { title: payload.title } : {}),
             ...(payload.degrees !== undefined ? { degrees: payload.degrees } : {}),
-            ...(payload.satusehatPractitionerId !== undefined
-              ? { satusehatPractitionerId: payload.satusehatPractitionerId }
-              : {}),
             ...(payload.ownerUserId !== undefined ? { ownerUserId: payload.ownerUserId } : {}),
             ...(payload.isActive !== undefined ? { isActive: payload.isActive } : {}),
             ...nikColumns,
             // A changed NIK invalidates the IHS number derived from it, so the
-            // link goes in the same write (D-035). An explicit
-            // `satusehatPractitionerId` in the payload still wins: P21-T08's
-            // verified manual link sends both, and it means the operator has
-            // confirmed this pairing against the platform.
-            ...(clearsSatusehatLink && payload.satusehatPractitionerId === undefined
-              ? { satusehatPractitionerId: null }
-              : {}),
+            // link goes in the same write (D-035). Relinking is the NIK lookup
+            // or the verified manual link (P21-T08), never a raw id on update.
+            ...(clearsSatusehatLink ? { satusehatPractitionerId: null } : {}),
             ...(payload.licenses !== undefined
               ? { licenses: { create: payload.licenses.map(toLicenseCreateData) } }
               : {}),

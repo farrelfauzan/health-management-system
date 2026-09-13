@@ -65,6 +65,7 @@ export class SatusehatLinkRepository {
       where: { id: doctorId },
       select: {
         id: true,
+        fullName: true,
         nikCiphertext: true,
         satusehatPractitionerId: true,
       },
@@ -74,6 +75,7 @@ export class SatusehatLinkRepository {
     }
     return {
       id: row.id,
+      fullName: row.fullName,
       nik: this.decryptOptional(row.nikCiphertext),
       satusehatPractitionerId: row.satusehatPractitionerId,
     };

@@ -1,7 +1,10 @@
 import {
+  DoctorSatusehatLinkTarget,
+  SatusehatDoctorIhsPreview,
   SatusehatDoctorLinkResult,
   SatusehatLinkAuditTarget,
   SatusehatPatientLinkResult,
+  SatusehatPractitionerSummary,
 } from '@hms/shared-types';
 import {
   BadGatewayException,
@@ -18,6 +21,7 @@ import { SatusehatAmbiguousMatchError } from '../../../common/satusehat/satuseha
 import { SatusehatMasterDataClient } from '../../../common/satusehat/satusehat-master-data.client';
 import { SatusehatError } from '../../../common/satusehat/satusehat.error';
 import { SatusehatLinkRepository } from '../repository/satusehat-link.repository';
+import { checkMaskedNikSuffix } from './check-masked-nik-suffix';
 
 const PATIENT_AUDIT_RESOURCE = 'PatientProfile';
 const DOCTOR_AUDIT_RESOURCE = 'DoctorProfile';
@@ -86,6 +90,116 @@ export class SatusehatLinkService {
       metadata: { lookup: 'NIK' },
     });
     return { doctorId, satusehatPractitionerId: ihsNumber, alreadyLinked: false };
+  }
+
+  /**
+   * What SATUSEHAT holds under a hand-typed IHS number, for the operator to
+   * confirm before anything is saved (P21-T08). The platform returns a name and
+   * a NIK masked to its last three digits, with no gender and no birth date.
+   * So the preview is the SATUSEHAT name beside ours, and whether the visible
+   * digits agree.
+   */
+  async previewDoctorIhsLink(
+    doctorId: string,
+    ihsNumber: string,
+    currentUser: CurrentUser,
+  ): Promise<SatusehatDoctorIhsPreview> {
+    const target = await this.findDoctorTargetForIhsLink(doctorId, ihsNumber);
+    const practitioner = await this.readPractitionerOrThrow(
+      ihsNumber,
+      this.toDoctorAuditTarget(doctorId, currentUser),
+    );
+    return {
+      doctorId,
+      ihsNumber,
+      doctorName: target.fullName,
+      satusehatName: practitioner.name,
+      nikSuffixCheck: checkMaskedNikSuffix({
+        maskedNik: practitioner.maskedNik,
+        storedNik: target.nik,
+      }),
+      alreadyLinked: target.satusehatPractitionerId === ihsNumber,
+    };
+  }
+
+  /**
+   * Saves a hand-typed IHS number after reading it back again: the preview the
+   * operator saw is not trusted, because the id could have changed in between.
+   * Refused when SATUSEHAT does not hold the id, or when its visible NIK digits
+   * prove it is somebody else. Audited with `lookup: 'IHS_MANUAL'`, so the trail
+   * says the link was made by hand.
+   */
+  async linkDoctorByIhs(
+    doctorId: string,
+    ihsNumber: string,
+    currentUser: CurrentUser,
+  ): Promise<SatusehatDoctorLinkResult> {
+    const target = await this.findDoctorTargetForIhsLink(doctorId, ihsNumber);
+    if (target.satusehatPractitionerId === ihsNumber) {
+      return { doctorId, satusehatPractitionerId: ihsNumber, alreadyLinked: true };
+    }
+    const practitioner = await this.readPractitionerOrThrow(
+      ihsNumber,
+      this.toDoctorAuditTarget(doctorId, currentUser),
+    );
+    const nikSuffixCheck = checkMaskedNikSuffix({
+      maskedNik: practitioner.maskedNik,
+      storedNik: target.nik,
+    });
+    if (nikSuffixCheck === 'DIFFERS') {
+      throw new ConflictException(
+        "The NIK SATUSEHAT holds for this IHS number does not match the doctor's NIK; it belongs to a different practitioner",
+      );
+    }
+    await this.satusehatLinkRepository.saveDoctorIhsNumber({ doctorId, ihsNumber });
+    await this.auditService.record({
+      action: 'SATUSEHAT_DOCTOR_LINKED',
+      resource: DOCTOR_AUDIT_RESOURCE,
+      resourceId: doctorId,
+      actorUserId: currentUser.sub,
+      metadata: { lookup: 'IHS_MANUAL' },
+    });
+    return { doctorId, satusehatPractitionerId: ihsNumber, alreadyLinked: false };
+  }
+
+  /**
+   * A doctor already linked to a different IHS number is refused, not relinked.
+   * An IHS number is permanent, and silently replacing one would move the
+   * provenance of every earlier encounter. A link made from a wrong NIK is
+   * cleared by correcting the NIK (D-035), which routes the doctor back here.
+   */
+  private async findDoctorTargetForIhsLink(
+    doctorId: string,
+    ihsNumber: string,
+  ): Promise<DoctorSatusehatLinkTarget> {
+    const target = await this.satusehatLinkRepository.findDoctorLinkTarget(doctorId);
+    if (!target) {
+      throw new NotFoundException('Doctor not found');
+    }
+    if (target.satusehatPractitionerId !== null && target.satusehatPractitionerId !== ihsNumber) {
+      throw new ConflictException('Doctor is already linked to a different SATUSEHAT practitioner');
+    }
+    return target;
+  }
+
+  private async readPractitionerOrThrow(
+    ihsNumber: string,
+    profile: SatusehatLinkAuditTarget,
+  ): Promise<SatusehatPractitionerSummary> {
+    const practitioner = await this.resolveUpstream(
+      () => this.masterDataClient.findPractitionerById(ihsNumber),
+      profile,
+    );
+    if (practitioner === null) {
+      throw new NotFoundException(
+        'SATUSEHAT holds no practitioner with this IHS number; check the number in the SATUSEHAT portal',
+      );
+    }
+    return practitioner;
+  }
+
+  private toDoctorAuditTarget(doctorId: string, currentUser: CurrentUser): SatusehatLinkAuditTarget {
+    return { resource: DOCTOR_AUDIT_RESOURCE, resourceId: doctorId, actorUserId: currentUser.sub };
   }
 
   private async lookupPatientIhsNumber(

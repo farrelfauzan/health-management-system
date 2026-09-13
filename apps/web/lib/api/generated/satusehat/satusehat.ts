@@ -21,8 +21,11 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  LinkDoctorByIhsDto,
+  SatusehatLinkControllerLinkDoctorByIhsV1200,
   SatusehatLinkControllerLinkDoctorV1200,
   SatusehatLinkControllerLinkPatientV1200,
+  SatusehatLinkControllerPreviewDoctorIhsLinkV1200,
   SatusehatSubmissionControllerCheckSubmissionV1200,
   SatusehatSubmissionControllerGetEnvironmentV1200,
   SatusehatSubmissionControllerGetSubmissionDetailV1200,
@@ -224,6 +227,208 @@ export function useSatusehatLinkControllerLinkDoctorV1<TData = Awaited<ReturnTyp
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getSatusehatLinkControllerLinkDoctorV1QueryOptions(doctorId,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Preview linking a doctor to a hand-typed SATUSEHAT IHS number
+ */
+export const satusehatLinkControllerPreviewDoctorIhsLinkV1 = (
+    doctorId: string,
+    linkDoctorByIhsDto: LinkDoctorByIhsDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<SatusehatLinkControllerPreviewDoctorIhsLinkV1200>(
+      {url: `/api/v1/satusehat/doctors/${doctorId}/link-by-ihs/preview`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: linkDoctorByIhsDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getSatusehatLinkControllerPreviewDoctorIhsLinkV1QueryKey = (doctorId: string,
+    linkDoctorByIhsDto?: LinkDoctorByIhsDto,) => {
+    return [
+    'POST', `/api/v1/satusehat/doctors/${doctorId}/link-by-ihs/preview`, linkDoctorByIhsDto
+    ] as const;
+    }
+
+
+export const getSatusehatLinkControllerPreviewDoctorIhsLinkV1QueryOptions = <TData = Awaited<ReturnType<typeof satusehatLinkControllerPreviewDoctorIhsLinkV1>>, TError = unknown>(doctorId: string,
+    linkDoctorByIhsDto: LinkDoctorByIhsDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof satusehatLinkControllerPreviewDoctorIhsLinkV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getSatusehatLinkControllerPreviewDoctorIhsLinkV1QueryKey(doctorId,linkDoctorByIhsDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof satusehatLinkControllerPreviewDoctorIhsLinkV1>>> = ({ signal }) => satusehatLinkControllerPreviewDoctorIhsLinkV1(doctorId,linkDoctorByIhsDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: doctorId !== null && doctorId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof satusehatLinkControllerPreviewDoctorIhsLinkV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type SatusehatLinkControllerPreviewDoctorIhsLinkV1QueryResult = NonNullable<Awaited<ReturnType<typeof satusehatLinkControllerPreviewDoctorIhsLinkV1>>>
+export type SatusehatLinkControllerPreviewDoctorIhsLinkV1QueryError = unknown
+
+
+export function useSatusehatLinkControllerPreviewDoctorIhsLinkV1<TData = Awaited<ReturnType<typeof satusehatLinkControllerPreviewDoctorIhsLinkV1>>, TError = unknown>(
+ doctorId: string,
+    linkDoctorByIhsDto: LinkDoctorByIhsDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof satusehatLinkControllerPreviewDoctorIhsLinkV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof satusehatLinkControllerPreviewDoctorIhsLinkV1>>,
+          TError,
+          Awaited<ReturnType<typeof satusehatLinkControllerPreviewDoctorIhsLinkV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSatusehatLinkControllerPreviewDoctorIhsLinkV1<TData = Awaited<ReturnType<typeof satusehatLinkControllerPreviewDoctorIhsLinkV1>>, TError = unknown>(
+ doctorId: string,
+    linkDoctorByIhsDto: LinkDoctorByIhsDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof satusehatLinkControllerPreviewDoctorIhsLinkV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof satusehatLinkControllerPreviewDoctorIhsLinkV1>>,
+          TError,
+          Awaited<ReturnType<typeof satusehatLinkControllerPreviewDoctorIhsLinkV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSatusehatLinkControllerPreviewDoctorIhsLinkV1<TData = Awaited<ReturnType<typeof satusehatLinkControllerPreviewDoctorIhsLinkV1>>, TError = unknown>(
+ doctorId: string,
+    linkDoctorByIhsDto: LinkDoctorByIhsDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof satusehatLinkControllerPreviewDoctorIhsLinkV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Preview linking a doctor to a hand-typed SATUSEHAT IHS number
+ */
+
+export function useSatusehatLinkControllerPreviewDoctorIhsLinkV1<TData = Awaited<ReturnType<typeof satusehatLinkControllerPreviewDoctorIhsLinkV1>>, TError = unknown>(
+ doctorId: string,
+    linkDoctorByIhsDto: LinkDoctorByIhsDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof satusehatLinkControllerPreviewDoctorIhsLinkV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getSatusehatLinkControllerPreviewDoctorIhsLinkV1QueryOptions(doctorId,linkDoctorByIhsDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Link a doctor to a hand-typed SATUSEHAT IHS number after confirmation
+ */
+export const satusehatLinkControllerLinkDoctorByIhsV1 = (
+    doctorId: string,
+    linkDoctorByIhsDto: LinkDoctorByIhsDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<SatusehatLinkControllerLinkDoctorByIhsV1200>(
+      {url: `/api/v1/satusehat/doctors/${doctorId}/link-by-ihs`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: linkDoctorByIhsDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getSatusehatLinkControllerLinkDoctorByIhsV1QueryKey = (doctorId: string,
+    linkDoctorByIhsDto?: LinkDoctorByIhsDto,) => {
+    return [
+    'POST', `/api/v1/satusehat/doctors/${doctorId}/link-by-ihs`, linkDoctorByIhsDto
+    ] as const;
+    }
+
+
+export const getSatusehatLinkControllerLinkDoctorByIhsV1QueryOptions = <TData = Awaited<ReturnType<typeof satusehatLinkControllerLinkDoctorByIhsV1>>, TError = unknown>(doctorId: string,
+    linkDoctorByIhsDto: LinkDoctorByIhsDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof satusehatLinkControllerLinkDoctorByIhsV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getSatusehatLinkControllerLinkDoctorByIhsV1QueryKey(doctorId,linkDoctorByIhsDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof satusehatLinkControllerLinkDoctorByIhsV1>>> = ({ signal }) => satusehatLinkControllerLinkDoctorByIhsV1(doctorId,linkDoctorByIhsDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: doctorId !== null && doctorId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof satusehatLinkControllerLinkDoctorByIhsV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type SatusehatLinkControllerLinkDoctorByIhsV1QueryResult = NonNullable<Awaited<ReturnType<typeof satusehatLinkControllerLinkDoctorByIhsV1>>>
+export type SatusehatLinkControllerLinkDoctorByIhsV1QueryError = unknown
+
+
+export function useSatusehatLinkControllerLinkDoctorByIhsV1<TData = Awaited<ReturnType<typeof satusehatLinkControllerLinkDoctorByIhsV1>>, TError = unknown>(
+ doctorId: string,
+    linkDoctorByIhsDto: LinkDoctorByIhsDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof satusehatLinkControllerLinkDoctorByIhsV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof satusehatLinkControllerLinkDoctorByIhsV1>>,
+          TError,
+          Awaited<ReturnType<typeof satusehatLinkControllerLinkDoctorByIhsV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSatusehatLinkControllerLinkDoctorByIhsV1<TData = Awaited<ReturnType<typeof satusehatLinkControllerLinkDoctorByIhsV1>>, TError = unknown>(
+ doctorId: string,
+    linkDoctorByIhsDto: LinkDoctorByIhsDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof satusehatLinkControllerLinkDoctorByIhsV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof satusehatLinkControllerLinkDoctorByIhsV1>>,
+          TError,
+          Awaited<ReturnType<typeof satusehatLinkControllerLinkDoctorByIhsV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSatusehatLinkControllerLinkDoctorByIhsV1<TData = Awaited<ReturnType<typeof satusehatLinkControllerLinkDoctorByIhsV1>>, TError = unknown>(
+ doctorId: string,
+    linkDoctorByIhsDto: LinkDoctorByIhsDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof satusehatLinkControllerLinkDoctorByIhsV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Link a doctor to a hand-typed SATUSEHAT IHS number after confirmation
+ */
+
+export function useSatusehatLinkControllerLinkDoctorByIhsV1<TData = Awaited<ReturnType<typeof satusehatLinkControllerLinkDoctorByIhsV1>>, TError = unknown>(
+ doctorId: string,
+    linkDoctorByIhsDto: LinkDoctorByIhsDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof satusehatLinkControllerLinkDoctorByIhsV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getSatusehatLinkControllerLinkDoctorByIhsV1QueryOptions(doctorId,linkDoctorByIhsDto,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

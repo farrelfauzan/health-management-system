@@ -43681,6 +43681,209 @@ paths:
         - bearer: []
       summary: Link a doctor to their SATUSEHAT IHS practitioner number
       tags: *a61
+  /api/v1/satusehat/doctors/{doctorId}/link-by-ihs/preview:
+    post:
+      operationId: SatusehatLinkController_previewDoctorIhsLink_v1
+      parameters:
+        - name: doctorId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LinkDoctorByIhsDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  ihsNumber: "10000000009"
+      responses:
+        "200":
+          description: "Reads GET /Practitioner/:id and returns what SATUSEHAT holds
+            beside our record, saving nothing (P21-T08). This is for a doctor
+            whose NIK matches several SATUSEHAT records. The platform returns no
+            gender or birth date and masks the NIK to its last three digits, so
+            the preview is the SATUSEHAT name beside ours plus `nikSuffixCheck`:
+            MATCHES, DIFFERS (a different person) or UNAVAILABLE. A doctor
+            already linked to a different IHS number gets 409."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      doctorId:
+                        type: string
+                      ihsNumber:
+                        type: string
+                      doctorName:
+                        type: string
+                      satusehatName:
+                        type: string
+                      nikSuffixCheck:
+                        type: string
+                      alreadyLinked:
+                        type: boolean
+                    required:
+                      - doctorId
+                      - ihsNumber
+                      - doctorName
+                      - satusehatName
+                      - nikSuffixCheck
+                      - alreadyLinked
+                required:
+                  - data
+                example:
+                  data:
+                    doctorId: 1c2d3e4f-5a6b-4c7d-8e9f-0a1b2c3d4e5f
+                    ihsNumber: "10000000009"
+                    doctorName: dr. Budi Santoso
+                    satusehatName: dr. Budi Santoso
+                    nikSuffixCheck: MATCHES
+                    alreadyLinked: false
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Doctor not found, or SATUSEHAT holds no practitioner with this IHS
+            number.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Doctor not found, or SATUSEHAT holds no practitioner with this IHS
+                      number.
+      security:
+        - bearer: []
+      summary: Preview linking a doctor to a hand-typed SATUSEHAT IHS number
+      tags: *a61
+  /api/v1/satusehat/doctors/{doctorId}/link-by-ihs:
+    post:
+      operationId: SatusehatLinkController_linkDoctorByIhs_v1
+      parameters:
+        - name: doctorId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LinkDoctorByIhsDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  ihsNumber: "10000000009"
+      responses:
+        "200":
+          description: Reads the IHS number back from SATUSEHAT again rather than trusting
+            the preview, then stores it and audits SATUSEHAT_DOCTOR_LINKED with
+            lookup IHS_MANUAL (P21-T08). Refused with 404 when SATUSEHAT does
+            not hold the id, and 409 when the visible NIK digits prove a
+            different practitioner or the doctor is already linked to a
+            different id. Idempotent for the id the doctor already holds.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      doctorId:
+                        type: string
+                      satusehatPractitionerId:
+                        type: string
+                      alreadyLinked:
+                        type: boolean
+                    required:
+                      - doctorId
+                      - satusehatPractitionerId
+                      - alreadyLinked
+                required:
+                  - data
+                example:
+                  data:
+                    doctorId: 1c2d3e4f-5a6b-4c7d-8e9f-0a1b2c3d4e5f
+                    satusehatPractitionerId: "10000000009"
+                    alreadyLinked: false
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Doctor not found, or SATUSEHAT holds no practitioner with this IHS
+            number.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Doctor not found, or SATUSEHAT holds no practitioner with this IHS
+                      number.
+      security:
+        - bearer: []
+      summary: Link a doctor to a hand-typed SATUSEHAT IHS number after confirmation
+      tags: *a61
   /api/v1/satusehat/environment:
     get:
       operationId: SatusehatSubmissionController_getEnvironment_v1
@@ -49843,10 +50046,6 @@ components:
             pattern: ^[A-Z][A-Z0-9_]*$
         nik:
           type: string
-        satusehatPractitionerId:
-          type: string
-          minLength: 1
-          maxLength: 64
         licenses:
           type: array
           maxItems: 20
@@ -49949,11 +50148,6 @@ components:
           nullable: true
         nik:
           type: string
-        satusehatPractitionerId:
-          type: string
-          minLength: 1
-          maxLength: 64
-          nullable: true
         licenses:
           type: array
           maxItems: 20
@@ -51652,6 +51846,16 @@ components:
           type: boolean
         singleOperator:
           type: boolean
+    LinkDoctorByIhsDto:
+      type: object
+      properties:
+        ihsNumber:
+          type: string
+          minLength: 1
+          maxLength: 64
+          pattern: ^[0-9A-Za-z-]+$
+      required:
+        - ihsNumber
     UpsertBpjsPcareConfigDto:
       type: object
       properties:

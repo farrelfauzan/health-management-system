@@ -37,12 +37,6 @@ export interface UpdateDoctorDto {
      */
   degrees?: string[] | null;
   nik?: string;
-  /**
-     * @minLength 1
-     * @maxLength 64
-     * @nullable
-     */
-  satusehatPractitionerId?: string | null;
   /** @maxItems 20 */
   licenses?: UpdateDoctorDtoLicensesItem[];
   /** @maxItems 20 */

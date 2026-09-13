@@ -1,5 +1,6 @@
 import type {
   SatusehatEnvironmentValue,
+  SatusehatNikSuffixCheckValue,
   SatusehatResourceCheckOutcomeValue,
   SatusehatResourceSkipReasonValue,
   SatusehatSubmissionKindValue,
@@ -24,6 +25,21 @@ export type SatusehatPatientLinkResult = {
 export type SatusehatDoctorLinkResult = {
   doctorId: string;
   satusehatPractitionerId: string;
+  alreadyLinked: boolean;
+};
+
+/**
+ * What SATUSEHAT holds under a hand-typed practitioner IHS number (P21-T08),
+ * shown before anything is saved. The platform returns no gender and no birth
+ * date, so the check is the name beside ours plus `nikSuffixCheck`. The masked
+ * NIK itself is never returned.
+ */
+export type SatusehatDoctorIhsPreview = {
+  doctorId: string;
+  ihsNumber: string;
+  doctorName: string;
+  satusehatName: string | null;
+  nikSuffixCheck: SatusehatNikSuffixCheckValue;
   alreadyLinked: boolean;
 };
 

@@ -116,3 +116,33 @@ export const satusehatResourceCheckOutcomeSchema = z.enum(SATUSEHAT_RESOURCE_CHE
 export type SatusehatResourceCheckOutcomeValue = z.infer<
   typeof satusehatResourceCheckOutcomeSchema
 >;
+
+/**
+ * A practitioner IHS number typed in by hand (P21-T08), for the doctors whose
+ * NIK matches several SATUSEHAT records. The resource id on the platform — so
+ * letters, digits and hyphens only, which also keeps it safe to put in the
+ * `GET /Practitioner/:id` path.
+ */
+export const linkDoctorByIhsSchema = z.object({
+  ihsNumber: z
+    .string()
+    .trim()
+    .min(1)
+    .max(64)
+    .regex(/^[0-9A-Za-z-]+$/, 'An IHS number contains only letters, digits and hyphens'),
+});
+
+export type LinkDoctorByIhsInput = z.infer<typeof linkDoctorByIhsSchema>;
+
+/**
+ * How the NIK SATUSEHAT holds for a practitioner compares with ours (P21-T08).
+ * The platform masks it down to its last three digits, so this can prove two
+ * people are different (`DIFFERS`) but never that they are the same. It sits
+ * beside the name, not in place of it. `UNAVAILABLE` when either side has no
+ * NIK to compare.
+ */
+export const SATUSEHAT_NIK_SUFFIX_CHECKS = ['MATCHES', 'DIFFERS', 'UNAVAILABLE'] as const;
+
+export const satusehatNikSuffixCheckSchema = z.enum(SATUSEHAT_NIK_SUFFIX_CHECKS);
+
+export type SatusehatNikSuffixCheckValue = z.infer<typeof satusehatNikSuffixCheckSchema>;
