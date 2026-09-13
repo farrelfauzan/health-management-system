@@ -59,6 +59,7 @@ import {
 import { useTabSearchParam } from '#lib/navigation/use-tab-search-param';
 import { formatStatusLabel } from '#lib/shared/status-label';
 import { IntegrationProviderLogo } from '#components/client/integrations/integration-provider-logo';
+import { SatusehatSubmissionDetailDialog } from '#components/client/integrations/satusehat-submission-detail-dialog';
 
 type Provider = SubmissionMonitorProvider;
 type StatusFilter = 'ALL' | BpjsSubmissionStatusValue;
@@ -120,6 +121,7 @@ function statusClass(status: MonitorRow['status']): string {
 
 export function IntegrationSubmissionMonitor() {
   const t = useTranslations('operations.integrations');
+  const tDetail = useTranslations('operations.integrations.satusehatDetail');
   const format = useFormatter();
   const formatDate = (value: string | null) =>
     value ? format.dateTime(new Date(value), { dateStyle: 'medium', timeStyle: 'short' }) : '—';
@@ -141,6 +143,8 @@ export function IntegrationSubmissionMonitor() {
   const [status, setStatus] = useState<StatusFilter>('ALL');
   const [type, setType] = useState<'ALL' | BpjsSubmissionTypeValue>('ALL');
   const [satusehatKind, setSatusehatKind] = useState<'ALL' | SatusehatSubmissionKindValue>('ALL');
+  // P21-T03. Null closes the drawer; a row id opens it and drives the fetch.
+  const [detailSubmissionId, setDetailSubmissionId] = useState<string | null>(null);
   const [month, setMonth] = useState(currentMonth);
 
   const retryMutation = useMutation({
@@ -372,7 +376,16 @@ export function IntegrationSubmissionMonitor() {
                             {row.lastError ?? row.externalReference ?? '—'}
                           </span>
                         </TableCell>
-                        <TableCell className="text-right">
+                        <TableCell className="space-x-2 text-right">
+                          {provider === 'satusehat' ? (
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => setDetailSubmissionId(row.id)}
+                            >
+                              {tDetail('viewDetail')}
+                            </Button>
+                          ) : null}
                           {row.status === 'FAILED' && canRetry ? (
                             <Button
                               size="sm"
@@ -382,9 +395,10 @@ export function IntegrationSubmissionMonitor() {
                             >
                               Retry
                             </Button>
-                          ) : (
-                            '—'
-                          )}
+                          ) : null}
+                          {provider !== 'satusehat' && !(row.status === 'FAILED' && canRetry)
+                            ? '—'
+                            : null}
                         </TableCell>
                       </TableRow>
                     ))
@@ -432,6 +446,16 @@ export function IntegrationSubmissionMonitor() {
           </CardContent>
         </Card>
       ) : null}
+      {/* P21-T03. Rendered once outside the table rather than per row, so the
+          detail query keys off the chosen id and no row holds its own copy. */}
+      <SatusehatSubmissionDetailDialog
+        submissionId={detailSubmissionId}
+        onOpenChange={(open) => {
+          if (!open) {
+            setDetailSubmissionId(null);
+          }
+        }}
+      />
     </div>
   );
 }

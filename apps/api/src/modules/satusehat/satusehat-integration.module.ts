@@ -7,6 +7,7 @@ import { SatusehatLinkRepository } from './repository/satusehat-link.repository'
 import { SatusehatSubmissionRepository } from './repository/satusehat-submission.repository';
 import { SatusehatLinkService } from './service/satusehat-link.service';
 import { SatusehatSubmissionOpsService } from './service/satusehat-submission-ops.service';
+import { SatusehatSubmissionDetailService } from './service/satusehat-submission-detail.service';
 import { SatusehatSubmissionService } from './service/satusehat-submission.service';
 import { SatusehatSubmissionWorker } from './service/satusehat-submission.worker';
 
@@ -26,6 +27,7 @@ import { SatusehatSubmissionWorker } from './service/satusehat-submission.worker
     SatusehatLinkService,
     SatusehatSubmissionService,
     SatusehatSubmissionOpsService,
+    SatusehatSubmissionDetailService,
     SatusehatSubmissionWorker,
   ],
 })
