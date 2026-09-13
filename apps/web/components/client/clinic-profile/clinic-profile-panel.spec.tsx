@@ -201,7 +201,7 @@ describe('ClinicProfilePanel', () => {
     await user.click(screen.getByRole('button', { name: 'Save profile' }));
 
     await waitFor(() => expect(updateProfileMock).toHaveBeenCalled());
-    expect(updateProfileMock.mock.calls[0][0]).toMatchObject({
+    expect(updateProfileMock.mock.calls[0]?.[0]).toMatchObject({
       latitude: -6.9175,
       longitude: 107.6191,
     });
@@ -235,7 +235,7 @@ describe('ClinicProfilePanel', () => {
     await user.click(screen.getByRole('button', { name: 'Save profile' }));
 
     await waitFor(() => expect(updateProfileMock).toHaveBeenCalled());
-    expect(updateProfileMock.mock.calls[0][0]).toMatchObject({ latitude: null, longitude: null });
+    expect(updateProfileMock.mock.calls[0]?.[0]).toMatchObject({ latitude: null, longitude: null });
   });
 
   it('hides the save action from a reader who cannot write', async () => {

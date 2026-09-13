@@ -70,7 +70,7 @@ describe('RoomClassFormDialog SATUSEHAT service class (P24-T05)', () => {
     await user.click(screen.getByRole('button', { name: SAVE_LABEL }));
 
     await waitFor(() => expect(updateMock).toHaveBeenCalled());
-    expect(updateMock.mock.calls[0][1]).toMatchObject({ satusehatServiceClass: 'VIP' });
+    expect(updateMock.mock.calls[0]?.[1]).toMatchObject({ satusehatServiceClass: 'VIP' });
   });
 
   it('sends null for an unmapped class on an edit, which is how the mapping is cleared', async () => {
@@ -83,7 +83,7 @@ describe('RoomClassFormDialog SATUSEHAT service class (P24-T05)', () => {
     await user.click(screen.getByRole('button', { name: SAVE_LABEL }));
 
     await waitFor(() => expect(updateMock).toHaveBeenCalled());
-    expect(updateMock.mock.calls[0][1]).toMatchObject({ satusehatServiceClass: null });
+    expect(updateMock.mock.calls[0]?.[1]).toMatchObject({ satusehatServiceClass: null });
   });
 
   it('leaves the class out of a create that maps nothing', async () => {
@@ -95,6 +95,6 @@ describe('RoomClassFormDialog SATUSEHAT service class (P24-T05)', () => {
     await user.click(screen.getByRole('button', { name: SAVE_LABEL }));
 
     await waitFor(() => expect(createMock).toHaveBeenCalled());
-    expect(createMock.mock.calls[0][0]).not.toHaveProperty('satusehatServiceClass');
+    expect(createMock.mock.calls[0]?.[0]).not.toHaveProperty('satusehatServiceClass');
   });
 });
