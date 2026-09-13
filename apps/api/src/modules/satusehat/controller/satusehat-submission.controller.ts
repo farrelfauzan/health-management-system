@@ -28,6 +28,20 @@ import { SatusehatSubmissionOpsService } from '../service/satusehat-submission-o
 export class SatusehatSubmissionController {
   constructor(private readonly submissionOpsService: SatusehatSubmissionOpsService) {}
 
+  @Get('environment')
+  @Auth([{ action: 'read', subject: 'SatusehatSubmission' }])
+  @ApiEndpoint({
+    summary: 'Which SATUSEHAT environment this deployment reports to',
+    responseDescription:
+      'Whether submissions reach the production national record or the shared staging sandbox, derived from the configured base URL so it cannot disagree with where bundles actually go (P21-T06). A SUBMITTED row against the sandbox proves the integration works and proves nothing to the patient, whose SATUSEHAT Mobile reads production only. Carries no credentials and no organization id.',
+    responseExample: { data: SATUSEHAT_EXAMPLES.environmentStatus },
+  })
+  getEnvironment(@AuthUser() currentUser?: CurrentUser) {
+    this.assertAuthenticated(currentUser);
+
+    return { data: this.submissionOpsService.getEnvironmentStatus() };
+  }
+
   @Get('submissions')
   @Auth([{ action: 'read', subject: 'SatusehatSubmission' }])
   @ApiEndpoint({
