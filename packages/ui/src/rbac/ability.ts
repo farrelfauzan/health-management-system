@@ -147,6 +147,10 @@ export type AppSubject =
   | 'BpjsSubmission'
   | 'Satusehat'
   | 'SatusehatSubmission'
+  // P21-T04. The doctor's comparison of the local record with SATUSEHAT —
+  // clinical content, so a subject of its own rather than a mode of
+  // `SatusehatSubmission`, which the front desk holds.
+  | 'SatusehatRecord'
   // P23-T04/T05. Saling Jaga's Notion bug-report connector. Its own subject
   // rather than a mode of `BpjsConfig` or a generic integrations one, because
   // the two grants answer to different owners: a clinic administrator

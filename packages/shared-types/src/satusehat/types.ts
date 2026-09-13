@@ -414,6 +414,55 @@ export type SatusehatSubmissionPage = {
 };
 
 /**
+ * A resource read back from SATUSEHAT, reduced to the fields the doctor's
+ * comparison reads (P21-T04). Every field is `unknown` because it comes off the
+ * wire: the comparison narrows each one rather than trusting the platform's
+ * shape, which P21-T01 showed differs from the docs.
+ */
+export type SatusehatHeldResource = {
+  readonly resourceType?: unknown;
+  readonly code?: unknown;
+  readonly valueQuantity?: unknown;
+  readonly valueString?: unknown;
+  readonly valueCodeableConcept?: unknown;
+};
+
+/**
+ * One code SATUSEHAT holds, as the comparison reads it off a returned resource
+ * (P21-T04). `value`/`unit` come from `valueQuantity`; `valueText` from
+ * `valueString` or `valueCodeableConcept`, which is how a non-numeric lab
+ * result is sent.
+ */
+export type SatusehatHeldCode = {
+  display: string;
+  value: number | null;
+  unit: string | null;
+  valueText: string | null;
+};
+
+/**
+ * What a read-back of one submission found (P21-T04): the resources SATUSEHAT
+ * returned, and how many sent resources could not be read — a failed read, or
+ * a resource whose id was never paired. Those are reported rather than dropped,
+ * so an unanswered question never renders as "missing on SATUSEHAT".
+ */
+export type SatusehatHeldReadBack = {
+  held: SatusehatHeldResource[];
+  unreadableResourceCount: number;
+};
+
+/** Everything the doctor's comparison needs, with no I/O left to do (P21-T04). */
+export type SatusehatRecordComparisonInput = {
+  diagnoses: readonly SatusehatSubmissionDiagnosis[];
+  latestVitalSigns: SatusehatSubmissionVitalSigns | null;
+  procedures: readonly SatusehatSubmissionProcedure[];
+  medications: readonly SatusehatSubmissionMedication[];
+  /** Every item of every non-cancelled lab order raised in the visit. */
+  labItems: readonly SatusehatLabReportItem[];
+  held: readonly SatusehatHeldResource[];
+};
+
+/**
  * One practitioner test identity for the SATUSEHAT staging sandbox. There is
  * deliberately no IHS number: the published values do not match what the live
  * index returns, so the IHS number is only ever resolved from the NIK at link

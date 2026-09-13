@@ -250,6 +250,7 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     ('satusehat.link:any', 'Satusehat', 'link', 'ANY', 'Link patients and practitioners to SATUSEHAT IHS records'),
     ('satusehat.submission.read:any', 'SatusehatSubmission', 'read', 'ANY', 'Read SATUSEHAT submission outbox status'),
     ('satusehat.submission.retry:any', 'SatusehatSubmission', 'retry', 'ANY', 'Retry failed SATUSEHAT submissions'),
+    ('satusehat.record.read:own', 'SatusehatRecord', 'read', 'OWN', 'Compare what SATUSEHAT holds for an encounter with the local record, as its treating clinician'),
     ('bpjs.config.manage:any', 'BpjsConfig', 'manage', 'ANY', 'Manage BPJS bridging credentials and connection settings (PCare and Antrean Online)'),
     -- P23-T04. Read-only in practice: the Notion connector is configured by
     -- environment (P23-T02), so this grants the status view and the Bug Board
@@ -680,6 +681,11 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     -- relationship exists.
     ('DOCTOR', 'encounter.read:own'),
     ('DOCTOR', 'encounter.write:own'),
+    -- P21-T04. What SATUSEHAT holds for a visit is clinical content, so the
+    -- comparison is its own OWN-scoped key rather than a mode of
+    -- `encounter.read`: ADMIN holds `encounter.read:any`, and reusing it would
+    -- hand this view to the front desk. The treating clinician only (D-033).
+    ('DOCTOR', 'satusehat.record.read:own'),
     -- The doctor codes the diagnosis and the procedures, so both lookups are
     -- clinical tools, not admin ones. Pharmacists and patients get no grant.
     ('DOCTOR', 'icd10-code.read:any'),
