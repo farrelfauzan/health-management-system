@@ -460,6 +460,20 @@ export type SatusehatSubmissionResourcePayload = {
 };
 
 /**
+ * One recorded line of what a submission sent or skipped, as read back for the
+ * monitor (P21-T03). Same shape the writer persists, plus nothing: the table
+ * holds no clinical values, so neither does this.
+ */
+export type SatusehatSubmissionResourceRecord = {
+  resourceType: string;
+  outcome: SatusehatResourceOutcomeValue;
+  skipReason: SatusehatResourceSkipReasonValue | null;
+  satusehatId: string | null;
+  localRecordId: string | null;
+  isBackfilled: boolean;
+};
+
+/**
  * Replaces a submission's resource list wholesale. A retry that succeeds
  * describes the bundle that actually landed, so the previous attempt's list is
  * deleted rather than added to — two attempts' rows side by side would double

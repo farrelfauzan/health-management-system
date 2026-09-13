@@ -16,6 +16,7 @@ import {
   SatusehatSubmissionKindValue,
   SatusehatSubmissionRecord,
   SatusehatSubmissionStatusValue,
+  SatusehatSubmissionResourceRecord,
   SaveAllergyIhsIdPayload,
   SaveImmunizationIhsIdPayload,
   SaveLabReportIhsIdsPayload,
@@ -261,6 +262,35 @@ export class SatusehatSubmissionRepository {
       include: SUBMISSION_ORDER_NUMBER_INCLUDE,
     });
     return row === null ? null : toSubmissionRecordFromRow(row);
+  }
+
+  /**
+   * What one submission recorded that it sent and skipped (P21-T02, read by
+   * P21-T03). Ordered so the monitor renders a stable list without sorting.
+   */
+  async findSubmissionResources(
+    submissionId: string,
+  ): Promise<SatusehatSubmissionResourceRecord[]> {
+    const rows = await this.prisma.satusehatSubmissionResource.findMany({
+      where: { submissionId },
+      orderBy: [{ resourceType: 'asc' }, { createdAt: 'asc' }],
+      select: {
+        resourceType: true,
+        outcome: true,
+        skipReason: true,
+        satusehatId: true,
+        localRecordId: true,
+        isBackfilled: true,
+      },
+    });
+    return rows.map((row) => ({
+      resourceType: row.resourceType,
+      outcome: row.outcome,
+      skipReason: row.skipReason,
+      satusehatId: row.satusehatId,
+      localRecordId: row.localRecordId,
+      isBackfilled: row.isBackfilled,
+    }));
   }
 
   /**
