@@ -210,6 +210,7 @@ const doctor = {
   fullName: 'Dr. Budi Santoso',
   specialtyId,
   specialty: specialty.name,
+  profession: 'DOCTOR',
   phoneNumber: '+628129876543',
   email: 'budi.santoso@clinic.local',
   // Printed forms resolved from the credential catalog (P19-T14); the columns

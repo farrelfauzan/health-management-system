@@ -18,6 +18,7 @@ export type DoctorManagementControllerGetDoctorByIdV1200Data = {
   fullName: string;
   specialtyId: string;
   specialty: string;
+  profession: string;
   phoneNumber: string;
   email: string;
   title: string;

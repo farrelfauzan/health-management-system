@@ -343,6 +343,14 @@ export const DoctorLicenseType = {
 export type DoctorLicenseType = (typeof DoctorLicenseType)[keyof typeof DoctorLicenseType]
 
 
+export const ClinicianProfession = {
+  DOCTOR: 'DOCTOR',
+  MIDWIFE: 'MIDWIFE'
+} as const
+
+export type ClinicianProfession = (typeof ClinicianProfession)[keyof typeof ClinicianProfession]
+
+
 export const AppointmentStatus = {
   REQUESTED: 'REQUESTED',
   SCHEDULED: 'SCHEDULED',

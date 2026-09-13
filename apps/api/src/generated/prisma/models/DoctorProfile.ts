@@ -39,6 +39,7 @@ export type DoctorProfileMinAggregateOutputType = {
   licenseNumber: string | null
   fullName: string | null
   specialtyId: string | null
+  profession: $Enums.ClinicianProfession | null
   phoneNumber: string | null
   ownerUserId: string | null
   isActive: boolean | null
@@ -60,6 +61,7 @@ export type DoctorProfileMaxAggregateOutputType = {
   licenseNumber: string | null
   fullName: string | null
   specialtyId: string | null
+  profession: $Enums.ClinicianProfession | null
   phoneNumber: string | null
   ownerUserId: string | null
   isActive: boolean | null
@@ -81,6 +83,7 @@ export type DoctorProfileCountAggregateOutputType = {
   licenseNumber: number
   fullName: number
   specialtyId: number
+  profession: number
   phoneNumber: number
   ownerUserId: number
   isActive: number
@@ -112,6 +115,7 @@ export type DoctorProfileMinAggregateInputType = {
   licenseNumber?: true
   fullName?: true
   specialtyId?: true
+  profession?: true
   phoneNumber?: true
   ownerUserId?: true
   isActive?: true
@@ -133,6 +137,7 @@ export type DoctorProfileMaxAggregateInputType = {
   licenseNumber?: true
   fullName?: true
   specialtyId?: true
+  profession?: true
   phoneNumber?: true
   ownerUserId?: true
   isActive?: true
@@ -154,6 +159,7 @@ export type DoctorProfileCountAggregateInputType = {
   licenseNumber?: true
   fullName?: true
   specialtyId?: true
+  profession?: true
   phoneNumber?: true
   ownerUserId?: true
   isActive?: true
@@ -262,6 +268,7 @@ export type DoctorProfileGroupByOutputType = {
   licenseNumber: string
   fullName: string
   specialtyId: string
+  profession: $Enums.ClinicianProfession
   phoneNumber: string | null
   ownerUserId: string | null
   isActive: boolean
@@ -306,6 +313,7 @@ export type DoctorProfileWhereInput = {
   licenseNumber?: Prisma.StringFilter<"DoctorProfile"> | string
   fullName?: Prisma.StringFilter<"DoctorProfile"> | string
   specialtyId?: Prisma.UuidFilter<"DoctorProfile"> | string
+  profession?: Prisma.EnumClinicianProfessionFilter<"DoctorProfile"> | $Enums.ClinicianProfession
   phoneNumber?: Prisma.StringNullableFilter<"DoctorProfile"> | string | null
   ownerUserId?: Prisma.UuidNullableFilter<"DoctorProfile"> | string | null
   isActive?: Prisma.BoolFilter<"DoctorProfile"> | boolean
@@ -342,6 +350,7 @@ export type DoctorProfileOrderByWithRelationInput = {
   licenseNumber?: Prisma.SortOrder
   fullName?: Prisma.SortOrder
   specialtyId?: Prisma.SortOrder
+  profession?: Prisma.SortOrder
   phoneNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   ownerUserId?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
@@ -383,6 +392,7 @@ export type DoctorProfileWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.DoctorProfileWhereInput | Prisma.DoctorProfileWhereInput[]
   fullName?: Prisma.StringFilter<"DoctorProfile"> | string
   specialtyId?: Prisma.UuidFilter<"DoctorProfile"> | string
+  profession?: Prisma.EnumClinicianProfessionFilter<"DoctorProfile"> | $Enums.ClinicianProfession
   phoneNumber?: Prisma.StringNullableFilter<"DoctorProfile"> | string | null
   isActive?: Prisma.BoolFilter<"DoctorProfile"> | boolean
   createdAt?: Prisma.DateTimeFilter<"DoctorProfile"> | Date | string
@@ -417,6 +427,7 @@ export type DoctorProfileOrderByWithAggregationInput = {
   licenseNumber?: Prisma.SortOrder
   fullName?: Prisma.SortOrder
   specialtyId?: Prisma.SortOrder
+  profession?: Prisma.SortOrder
   phoneNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   ownerUserId?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
@@ -446,6 +457,7 @@ export type DoctorProfileScalarWhereWithAggregatesInput = {
   licenseNumber?: Prisma.StringWithAggregatesFilter<"DoctorProfile"> | string
   fullName?: Prisma.StringWithAggregatesFilter<"DoctorProfile"> | string
   specialtyId?: Prisma.UuidWithAggregatesFilter<"DoctorProfile"> | string
+  profession?: Prisma.EnumClinicianProfessionWithAggregatesFilter<"DoctorProfile"> | $Enums.ClinicianProfession
   phoneNumber?: Prisma.StringNullableWithAggregatesFilter<"DoctorProfile"> | string | null
   ownerUserId?: Prisma.UuidNullableWithAggregatesFilter<"DoctorProfile"> | string | null
   isActive?: Prisma.BoolWithAggregatesFilter<"DoctorProfile"> | boolean
@@ -466,6 +478,7 @@ export type DoctorProfileCreateInput = {
   id?: string
   licenseNumber: string
   fullName: string
+  profession?: $Enums.ClinicianProfession
   phoneNumber?: string | null
   isActive?: boolean
   createdAt?: Date | string
@@ -501,6 +514,7 @@ export type DoctorProfileUncheckedCreateInput = {
   licenseNumber: string
   fullName: string
   specialtyId: string
+  profession?: $Enums.ClinicianProfession
   phoneNumber?: string | null
   ownerUserId?: string | null
   isActive?: boolean
@@ -534,6 +548,7 @@ export type DoctorProfileUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   licenseNumber?: Prisma.StringFieldUpdateOperationsInput | string
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  profession?: Prisma.EnumClinicianProfessionFieldUpdateOperationsInput | $Enums.ClinicianProfession
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -569,6 +584,7 @@ export type DoctorProfileUncheckedUpdateInput = {
   licenseNumber?: Prisma.StringFieldUpdateOperationsInput | string
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
   specialtyId?: Prisma.StringFieldUpdateOperationsInput | string
+  profession?: Prisma.EnumClinicianProfessionFieldUpdateOperationsInput | $Enums.ClinicianProfession
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -603,6 +619,7 @@ export type DoctorProfileCreateManyInput = {
   licenseNumber: string
   fullName: string
   specialtyId: string
+  profession?: $Enums.ClinicianProfession
   phoneNumber?: string | null
   ownerUserId?: string | null
   isActive?: boolean
@@ -623,6 +640,7 @@ export type DoctorProfileUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   licenseNumber?: Prisma.StringFieldUpdateOperationsInput | string
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  profession?: Prisma.EnumClinicianProfessionFieldUpdateOperationsInput | $Enums.ClinicianProfession
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -643,6 +661,7 @@ export type DoctorProfileUncheckedUpdateManyInput = {
   licenseNumber?: Prisma.StringFieldUpdateOperationsInput | string
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
   specialtyId?: Prisma.StringFieldUpdateOperationsInput | string
+  profession?: Prisma.EnumClinicianProfessionFieldUpdateOperationsInput | $Enums.ClinicianProfession
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -679,6 +698,7 @@ export type DoctorProfileCountOrderByAggregateInput = {
   licenseNumber?: Prisma.SortOrder
   fullName?: Prisma.SortOrder
   specialtyId?: Prisma.SortOrder
+  profession?: Prisma.SortOrder
   phoneNumber?: Prisma.SortOrder
   ownerUserId?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
@@ -704,6 +724,7 @@ export type DoctorProfileMaxOrderByAggregateInput = {
   licenseNumber?: Prisma.SortOrder
   fullName?: Prisma.SortOrder
   specialtyId?: Prisma.SortOrder
+  profession?: Prisma.SortOrder
   phoneNumber?: Prisma.SortOrder
   ownerUserId?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
@@ -725,6 +746,7 @@ export type DoctorProfileMinOrderByAggregateInput = {
   licenseNumber?: Prisma.SortOrder
   fullName?: Prisma.SortOrder
   specialtyId?: Prisma.SortOrder
+  profession?: Prisma.SortOrder
   phoneNumber?: Prisma.SortOrder
   ownerUserId?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
@@ -838,6 +860,10 @@ export type DoctorProfileUncheckedUpdateManyWithoutSpecialtyNestedInput = {
   update?: Prisma.DoctorProfileUpdateWithWhereUniqueWithoutSpecialtyInput | Prisma.DoctorProfileUpdateWithWhereUniqueWithoutSpecialtyInput[]
   updateMany?: Prisma.DoctorProfileUpdateManyWithWhereWithoutSpecialtyInput | Prisma.DoctorProfileUpdateManyWithWhereWithoutSpecialtyInput[]
   deleteMany?: Prisma.DoctorProfileScalarWhereInput | Prisma.DoctorProfileScalarWhereInput[]
+}
+
+export type EnumClinicianProfessionFieldUpdateOperationsInput = {
+  set?: $Enums.ClinicianProfession
 }
 
 export type DoctorProfileCreateNestedOneWithoutEducationsInput = {
@@ -1018,6 +1044,7 @@ export type DoctorProfileCreateWithoutOwnerUserInput = {
   id?: string
   licenseNumber: string
   fullName: string
+  profession?: $Enums.ClinicianProfession
   phoneNumber?: string | null
   isActive?: boolean
   createdAt?: Date | string
@@ -1052,6 +1079,7 @@ export type DoctorProfileUncheckedCreateWithoutOwnerUserInput = {
   licenseNumber: string
   fullName: string
   specialtyId: string
+  profession?: $Enums.ClinicianProfession
   phoneNumber?: string | null
   isActive?: boolean
   createdAt?: Date | string
@@ -1100,6 +1128,7 @@ export type DoctorProfileUpdateWithoutOwnerUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   licenseNumber?: Prisma.StringFieldUpdateOperationsInput | string
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  profession?: Prisma.EnumClinicianProfessionFieldUpdateOperationsInput | $Enums.ClinicianProfession
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1134,6 +1163,7 @@ export type DoctorProfileUncheckedUpdateWithoutOwnerUserInput = {
   licenseNumber?: Prisma.StringFieldUpdateOperationsInput | string
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
   specialtyId?: Prisma.StringFieldUpdateOperationsInput | string
+  profession?: Prisma.EnumClinicianProfessionFieldUpdateOperationsInput | $Enums.ClinicianProfession
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1166,6 +1196,7 @@ export type DoctorProfileCreateWithoutOwnerInvitationsInput = {
   id?: string
   licenseNumber: string
   fullName: string
+  profession?: $Enums.ClinicianProfession
   phoneNumber?: string | null
   isActive?: boolean
   createdAt?: Date | string
@@ -1200,6 +1231,7 @@ export type DoctorProfileUncheckedCreateWithoutOwnerInvitationsInput = {
   licenseNumber: string
   fullName: string
   specialtyId: string
+  profession?: $Enums.ClinicianProfession
   phoneNumber?: string | null
   ownerUserId?: string | null
   isActive?: boolean
@@ -1248,6 +1280,7 @@ export type DoctorProfileUpdateWithoutOwnerInvitationsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   licenseNumber?: Prisma.StringFieldUpdateOperationsInput | string
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  profession?: Prisma.EnumClinicianProfessionFieldUpdateOperationsInput | $Enums.ClinicianProfession
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1282,6 +1315,7 @@ export type DoctorProfileUncheckedUpdateWithoutOwnerInvitationsInput = {
   licenseNumber?: Prisma.StringFieldUpdateOperationsInput | string
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
   specialtyId?: Prisma.StringFieldUpdateOperationsInput | string
+  profession?: Prisma.EnumClinicianProfessionFieldUpdateOperationsInput | $Enums.ClinicianProfession
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1314,6 +1348,7 @@ export type DoctorProfileCreateWithoutSpecialtyInput = {
   id?: string
   licenseNumber: string
   fullName: string
+  profession?: $Enums.ClinicianProfession
   phoneNumber?: string | null
   isActive?: boolean
   createdAt?: Date | string
@@ -1347,6 +1382,7 @@ export type DoctorProfileUncheckedCreateWithoutSpecialtyInput = {
   id?: string
   licenseNumber: string
   fullName: string
+  profession?: $Enums.ClinicianProfession
   phoneNumber?: string | null
   ownerUserId?: string | null
   isActive?: boolean
@@ -1410,6 +1446,7 @@ export type DoctorProfileScalarWhereInput = {
   licenseNumber?: Prisma.StringFilter<"DoctorProfile"> | string
   fullName?: Prisma.StringFilter<"DoctorProfile"> | string
   specialtyId?: Prisma.UuidFilter<"DoctorProfile"> | string
+  profession?: Prisma.EnumClinicianProfessionFilter<"DoctorProfile"> | $Enums.ClinicianProfession
   phoneNumber?: Prisma.StringNullableFilter<"DoctorProfile"> | string | null
   ownerUserId?: Prisma.UuidNullableFilter<"DoctorProfile"> | string | null
   isActive?: Prisma.BoolFilter<"DoctorProfile"> | boolean
@@ -1430,6 +1467,7 @@ export type DoctorProfileCreateWithoutEducationsInput = {
   id?: string
   licenseNumber: string
   fullName: string
+  profession?: $Enums.ClinicianProfession
   phoneNumber?: string | null
   isActive?: boolean
   createdAt?: Date | string
@@ -1464,6 +1502,7 @@ export type DoctorProfileUncheckedCreateWithoutEducationsInput = {
   licenseNumber: string
   fullName: string
   specialtyId: string
+  profession?: $Enums.ClinicianProfession
   phoneNumber?: string | null
   ownerUserId?: string | null
   isActive?: boolean
@@ -1512,6 +1551,7 @@ export type DoctorProfileUpdateWithoutEducationsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   licenseNumber?: Prisma.StringFieldUpdateOperationsInput | string
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  profession?: Prisma.EnumClinicianProfessionFieldUpdateOperationsInput | $Enums.ClinicianProfession
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1546,6 +1586,7 @@ export type DoctorProfileUncheckedUpdateWithoutEducationsInput = {
   licenseNumber?: Prisma.StringFieldUpdateOperationsInput | string
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
   specialtyId?: Prisma.StringFieldUpdateOperationsInput | string
+  profession?: Prisma.EnumClinicianProfessionFieldUpdateOperationsInput | $Enums.ClinicianProfession
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1578,6 +1619,7 @@ export type DoctorProfileCreateWithoutLicensesInput = {
   id?: string
   licenseNumber: string
   fullName: string
+  profession?: $Enums.ClinicianProfession
   phoneNumber?: string | null
   isActive?: boolean
   createdAt?: Date | string
@@ -1612,6 +1654,7 @@ export type DoctorProfileUncheckedCreateWithoutLicensesInput = {
   licenseNumber: string
   fullName: string
   specialtyId: string
+  profession?: $Enums.ClinicianProfession
   phoneNumber?: string | null
   ownerUserId?: string | null
   isActive?: boolean
@@ -1660,6 +1703,7 @@ export type DoctorProfileUpdateWithoutLicensesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   licenseNumber?: Prisma.StringFieldUpdateOperationsInput | string
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  profession?: Prisma.EnumClinicianProfessionFieldUpdateOperationsInput | $Enums.ClinicianProfession
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1694,6 +1738,7 @@ export type DoctorProfileUncheckedUpdateWithoutLicensesInput = {
   licenseNumber?: Prisma.StringFieldUpdateOperationsInput | string
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
   specialtyId?: Prisma.StringFieldUpdateOperationsInput | string
+  profession?: Prisma.EnumClinicianProfessionFieldUpdateOperationsInput | $Enums.ClinicianProfession
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1726,6 +1771,7 @@ export type DoctorProfileCreateWithoutSchedulesInput = {
   id?: string
   licenseNumber: string
   fullName: string
+  profession?: $Enums.ClinicianProfession
   phoneNumber?: string | null
   isActive?: boolean
   createdAt?: Date | string
@@ -1760,6 +1806,7 @@ export type DoctorProfileUncheckedCreateWithoutSchedulesInput = {
   licenseNumber: string
   fullName: string
   specialtyId: string
+  profession?: $Enums.ClinicianProfession
   phoneNumber?: string | null
   ownerUserId?: string | null
   isActive?: boolean
@@ -1808,6 +1855,7 @@ export type DoctorProfileUpdateWithoutSchedulesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   licenseNumber?: Prisma.StringFieldUpdateOperationsInput | string
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  profession?: Prisma.EnumClinicianProfessionFieldUpdateOperationsInput | $Enums.ClinicianProfession
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1842,6 +1890,7 @@ export type DoctorProfileUncheckedUpdateWithoutSchedulesInput = {
   licenseNumber?: Prisma.StringFieldUpdateOperationsInput | string
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
   specialtyId?: Prisma.StringFieldUpdateOperationsInput | string
+  profession?: Prisma.EnumClinicianProfessionFieldUpdateOperationsInput | $Enums.ClinicianProfession
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1874,6 +1923,7 @@ export type DoctorProfileCreateWithoutAppointmentSessionsInput = {
   id?: string
   licenseNumber: string
   fullName: string
+  profession?: $Enums.ClinicianProfession
   phoneNumber?: string | null
   isActive?: boolean
   createdAt?: Date | string
@@ -1908,6 +1958,7 @@ export type DoctorProfileUncheckedCreateWithoutAppointmentSessionsInput = {
   licenseNumber: string
   fullName: string
   specialtyId: string
+  profession?: $Enums.ClinicianProfession
   phoneNumber?: string | null
   ownerUserId?: string | null
   isActive?: boolean
@@ -1956,6 +2007,7 @@ export type DoctorProfileUpdateWithoutAppointmentSessionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   licenseNumber?: Prisma.StringFieldUpdateOperationsInput | string
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  profession?: Prisma.EnumClinicianProfessionFieldUpdateOperationsInput | $Enums.ClinicianProfession
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1990,6 +2042,7 @@ export type DoctorProfileUncheckedUpdateWithoutAppointmentSessionsInput = {
   licenseNumber?: Prisma.StringFieldUpdateOperationsInput | string
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
   specialtyId?: Prisma.StringFieldUpdateOperationsInput | string
+  profession?: Prisma.EnumClinicianProfessionFieldUpdateOperationsInput | $Enums.ClinicianProfession
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2022,6 +2075,7 @@ export type DoctorProfileCreateWithoutPatientsInput = {
   id?: string
   licenseNumber: string
   fullName: string
+  profession?: $Enums.ClinicianProfession
   phoneNumber?: string | null
   isActive?: boolean
   createdAt?: Date | string
@@ -2056,6 +2110,7 @@ export type DoctorProfileUncheckedCreateWithoutPatientsInput = {
   licenseNumber: string
   fullName: string
   specialtyId: string
+  profession?: $Enums.ClinicianProfession
   phoneNumber?: string | null
   ownerUserId?: string | null
   isActive?: boolean
@@ -2104,6 +2159,7 @@ export type DoctorProfileUpdateWithoutPatientsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   licenseNumber?: Prisma.StringFieldUpdateOperationsInput | string
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  profession?: Prisma.EnumClinicianProfessionFieldUpdateOperationsInput | $Enums.ClinicianProfession
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2138,6 +2194,7 @@ export type DoctorProfileUncheckedUpdateWithoutPatientsInput = {
   licenseNumber?: Prisma.StringFieldUpdateOperationsInput | string
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
   specialtyId?: Prisma.StringFieldUpdateOperationsInput | string
+  profession?: Prisma.EnumClinicianProfessionFieldUpdateOperationsInput | $Enums.ClinicianProfession
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2170,6 +2227,7 @@ export type DoctorProfileCreateWithoutAppointmentsInput = {
   id?: string
   licenseNumber: string
   fullName: string
+  profession?: $Enums.ClinicianProfession
   phoneNumber?: string | null
   isActive?: boolean
   createdAt?: Date | string
@@ -2204,6 +2262,7 @@ export type DoctorProfileUncheckedCreateWithoutAppointmentsInput = {
   licenseNumber: string
   fullName: string
   specialtyId: string
+  profession?: $Enums.ClinicianProfession
   phoneNumber?: string | null
   ownerUserId?: string | null
   isActive?: boolean
@@ -2252,6 +2311,7 @@ export type DoctorProfileUpdateWithoutAppointmentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   licenseNumber?: Prisma.StringFieldUpdateOperationsInput | string
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  profession?: Prisma.EnumClinicianProfessionFieldUpdateOperationsInput | $Enums.ClinicianProfession
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2286,6 +2346,7 @@ export type DoctorProfileUncheckedUpdateWithoutAppointmentsInput = {
   licenseNumber?: Prisma.StringFieldUpdateOperationsInput | string
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
   specialtyId?: Prisma.StringFieldUpdateOperationsInput | string
+  profession?: Prisma.EnumClinicianProfessionFieldUpdateOperationsInput | $Enums.ClinicianProfession
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2318,6 +2379,7 @@ export type DoctorProfileCreateWithoutEncountersInput = {
   id?: string
   licenseNumber: string
   fullName: string
+  profession?: $Enums.ClinicianProfession
   phoneNumber?: string | null
   isActive?: boolean
   createdAt?: Date | string
@@ -2352,6 +2414,7 @@ export type DoctorProfileUncheckedCreateWithoutEncountersInput = {
   licenseNumber: string
   fullName: string
   specialtyId: string
+  profession?: $Enums.ClinicianProfession
   phoneNumber?: string | null
   ownerUserId?: string | null
   isActive?: boolean
@@ -2400,6 +2463,7 @@ export type DoctorProfileUpdateWithoutEncountersInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   licenseNumber?: Prisma.StringFieldUpdateOperationsInput | string
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  profession?: Prisma.EnumClinicianProfessionFieldUpdateOperationsInput | $Enums.ClinicianProfession
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2434,6 +2498,7 @@ export type DoctorProfileUncheckedUpdateWithoutEncountersInput = {
   licenseNumber?: Prisma.StringFieldUpdateOperationsInput | string
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
   specialtyId?: Prisma.StringFieldUpdateOperationsInput | string
+  profession?: Prisma.EnumClinicianProfessionFieldUpdateOperationsInput | $Enums.ClinicianProfession
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2466,6 +2531,7 @@ export type DoctorProfileCreateWithoutPrescriptionsInput = {
   id?: string
   licenseNumber: string
   fullName: string
+  profession?: $Enums.ClinicianProfession
   phoneNumber?: string | null
   isActive?: boolean
   createdAt?: Date | string
@@ -2500,6 +2566,7 @@ export type DoctorProfileUncheckedCreateWithoutPrescriptionsInput = {
   licenseNumber: string
   fullName: string
   specialtyId: string
+  profession?: $Enums.ClinicianProfession
   phoneNumber?: string | null
   ownerUserId?: string | null
   isActive?: boolean
@@ -2548,6 +2615,7 @@ export type DoctorProfileUpdateWithoutPrescriptionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   licenseNumber?: Prisma.StringFieldUpdateOperationsInput | string
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  profession?: Prisma.EnumClinicianProfessionFieldUpdateOperationsInput | $Enums.ClinicianProfession
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2582,6 +2650,7 @@ export type DoctorProfileUncheckedUpdateWithoutPrescriptionsInput = {
   licenseNumber?: Prisma.StringFieldUpdateOperationsInput | string
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
   specialtyId?: Prisma.StringFieldUpdateOperationsInput | string
+  profession?: Prisma.EnumClinicianProfessionFieldUpdateOperationsInput | $Enums.ClinicianProfession
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2614,6 +2683,7 @@ export type DoctorProfileCreateWithoutAdmissionsInput = {
   id?: string
   licenseNumber: string
   fullName: string
+  profession?: $Enums.ClinicianProfession
   phoneNumber?: string | null
   isActive?: boolean
   createdAt?: Date | string
@@ -2648,6 +2718,7 @@ export type DoctorProfileUncheckedCreateWithoutAdmissionsInput = {
   licenseNumber: string
   fullName: string
   specialtyId: string
+  profession?: $Enums.ClinicianProfession
   phoneNumber?: string | null
   ownerUserId?: string | null
   isActive?: boolean
@@ -2696,6 +2767,7 @@ export type DoctorProfileUpdateWithoutAdmissionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   licenseNumber?: Prisma.StringFieldUpdateOperationsInput | string
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  profession?: Prisma.EnumClinicianProfessionFieldUpdateOperationsInput | $Enums.ClinicianProfession
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2730,6 +2802,7 @@ export type DoctorProfileUncheckedUpdateWithoutAdmissionsInput = {
   licenseNumber?: Prisma.StringFieldUpdateOperationsInput | string
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
   specialtyId?: Prisma.StringFieldUpdateOperationsInput | string
+  profession?: Prisma.EnumClinicianProfessionFieldUpdateOperationsInput | $Enums.ClinicianProfession
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2762,6 +2835,7 @@ export type DoctorProfileCreateWithoutManagedDocumentsInput = {
   id?: string
   licenseNumber: string
   fullName: string
+  profession?: $Enums.ClinicianProfession
   phoneNumber?: string | null
   isActive?: boolean
   createdAt?: Date | string
@@ -2796,6 +2870,7 @@ export type DoctorProfileUncheckedCreateWithoutManagedDocumentsInput = {
   licenseNumber: string
   fullName: string
   specialtyId: string
+  profession?: $Enums.ClinicianProfession
   phoneNumber?: string | null
   ownerUserId?: string | null
   isActive?: boolean
@@ -2844,6 +2919,7 @@ export type DoctorProfileUpdateWithoutManagedDocumentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   licenseNumber?: Prisma.StringFieldUpdateOperationsInput | string
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  profession?: Prisma.EnumClinicianProfessionFieldUpdateOperationsInput | $Enums.ClinicianProfession
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2878,6 +2954,7 @@ export type DoctorProfileUncheckedUpdateWithoutManagedDocumentsInput = {
   licenseNumber?: Prisma.StringFieldUpdateOperationsInput | string
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
   specialtyId?: Prisma.StringFieldUpdateOperationsInput | string
+  profession?: Prisma.EnumClinicianProfessionFieldUpdateOperationsInput | $Enums.ClinicianProfession
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -2910,6 +2987,7 @@ export type DoctorProfileCreateWithoutLabOrdersInput = {
   id?: string
   licenseNumber: string
   fullName: string
+  profession?: $Enums.ClinicianProfession
   phoneNumber?: string | null
   isActive?: boolean
   createdAt?: Date | string
@@ -2944,6 +3022,7 @@ export type DoctorProfileUncheckedCreateWithoutLabOrdersInput = {
   licenseNumber: string
   fullName: string
   specialtyId: string
+  profession?: $Enums.ClinicianProfession
   phoneNumber?: string | null
   ownerUserId?: string | null
   isActive?: boolean
@@ -2992,6 +3071,7 @@ export type DoctorProfileUpdateWithoutLabOrdersInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   licenseNumber?: Prisma.StringFieldUpdateOperationsInput | string
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  profession?: Prisma.EnumClinicianProfessionFieldUpdateOperationsInput | $Enums.ClinicianProfession
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3026,6 +3106,7 @@ export type DoctorProfileUncheckedUpdateWithoutLabOrdersInput = {
   licenseNumber?: Prisma.StringFieldUpdateOperationsInput | string
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
   specialtyId?: Prisma.StringFieldUpdateOperationsInput | string
+  profession?: Prisma.EnumClinicianProfessionFieldUpdateOperationsInput | $Enums.ClinicianProfession
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -3058,6 +3139,7 @@ export type DoctorProfileCreateWithoutImmunizationsInput = {
   id?: string
   licenseNumber: string
   fullName: string
+  profession?: $Enums.ClinicianProfession
   phoneNumber?: string | null
   isActive?: boolean
   createdAt?: Date | string
@@ -3092,6 +3174,7 @@ export type DoctorProfileUncheckedCreateWithoutImmunizationsInput = {
   licenseNumber: string
   fullName: string
   specialtyId: string
+  profession?: $Enums.ClinicianProfession
   phoneNumber?: string | null
   ownerUserId?: string | null
   isActive?: boolean
@@ -3140,6 +3223,7 @@ export type DoctorProfileUpdateWithoutImmunizationsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   licenseNumber?: Prisma.StringFieldUpdateOperationsInput | string
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  profession?: Prisma.EnumClinicianProfessionFieldUpdateOperationsInput | $Enums.ClinicianProfession
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3174,6 +3258,7 @@ export type DoctorProfileUncheckedUpdateWithoutImmunizationsInput = {
   licenseNumber?: Prisma.StringFieldUpdateOperationsInput | string
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
   specialtyId?: Prisma.StringFieldUpdateOperationsInput | string
+  profession?: Prisma.EnumClinicianProfessionFieldUpdateOperationsInput | $Enums.ClinicianProfession
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -3206,6 +3291,7 @@ export type DoctorProfileCreateManySpecialtyInput = {
   id?: string
   licenseNumber: string
   fullName: string
+  profession?: $Enums.ClinicianProfession
   phoneNumber?: string | null
   ownerUserId?: string | null
   isActive?: boolean
@@ -3226,6 +3312,7 @@ export type DoctorProfileUpdateWithoutSpecialtyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   licenseNumber?: Prisma.StringFieldUpdateOperationsInput | string
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  profession?: Prisma.EnumClinicianProfessionFieldUpdateOperationsInput | $Enums.ClinicianProfession
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -3259,6 +3346,7 @@ export type DoctorProfileUncheckedUpdateWithoutSpecialtyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   licenseNumber?: Prisma.StringFieldUpdateOperationsInput | string
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  profession?: Prisma.EnumClinicianProfessionFieldUpdateOperationsInput | $Enums.ClinicianProfession
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -3292,6 +3380,7 @@ export type DoctorProfileUncheckedUpdateManyWithoutSpecialtyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   licenseNumber?: Prisma.StringFieldUpdateOperationsInput | string
   fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  profession?: Prisma.EnumClinicianProfessionFieldUpdateOperationsInput | $Enums.ClinicianProfession
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ownerUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -3452,6 +3541,7 @@ export type DoctorProfileSelect<ExtArgs extends runtime.Types.Extensions.Interna
   licenseNumber?: boolean
   fullName?: boolean
   specialtyId?: boolean
+  profession?: boolean
   phoneNumber?: boolean
   ownerUserId?: boolean
   isActive?: boolean
@@ -3489,6 +3579,7 @@ export type DoctorProfileSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   licenseNumber?: boolean
   fullName?: boolean
   specialtyId?: boolean
+  profession?: boolean
   phoneNumber?: boolean
   ownerUserId?: boolean
   isActive?: boolean
@@ -3512,6 +3603,7 @@ export type DoctorProfileSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   licenseNumber?: boolean
   fullName?: boolean
   specialtyId?: boolean
+  profession?: boolean
   phoneNumber?: boolean
   ownerUserId?: boolean
   isActive?: boolean
@@ -3535,6 +3627,7 @@ export type DoctorProfileSelectScalar = {
   licenseNumber?: boolean
   fullName?: boolean
   specialtyId?: boolean
+  profession?: boolean
   phoneNumber?: boolean
   ownerUserId?: boolean
   isActive?: boolean
@@ -3551,7 +3644,7 @@ export type DoctorProfileSelectScalar = {
   degrees?: boolean
 }
 
-export type DoctorProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "licenseNumber" | "fullName" | "specialtyId" | "phoneNumber" | "ownerUserId" | "isActive" | "createdAt" | "updatedAt" | "deletedAt" | "nikCiphertext" | "nikIndex" | "nikLast4" | "nikKeyVersion" | "satusehatPractitionerId" | "bpjsDoctorCode" | "title" | "degrees", ExtArgs["result"]["doctorProfile"]>
+export type DoctorProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "licenseNumber" | "fullName" | "specialtyId" | "profession" | "phoneNumber" | "ownerUserId" | "isActive" | "createdAt" | "updatedAt" | "deletedAt" | "nikCiphertext" | "nikIndex" | "nikLast4" | "nikKeyVersion" | "satusehatPractitionerId" | "bpjsDoctorCode" | "title" | "degrees", ExtArgs["result"]["doctorProfile"]>
 export type DoctorProfileInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   specialty?: boolean | Prisma.SpecialtyDefaultArgs<ExtArgs>
   ownerUser?: boolean | Prisma.DoctorProfile$ownerUserArgs<ExtArgs>
@@ -3608,6 +3701,10 @@ export type $DoctorProfilePayload<ExtArgs extends runtime.Types.Extensions.Inter
     licenseNumber: string
     fullName: string
     specialtyId: string
+    /**
+     * Doctor or midwife (D-034). Every profile created before P24-T02 is a doctor.
+     */
+    profession: $Enums.ClinicianProfession
     phoneNumber: string | null
     /**
      * The account this doctor signs in with. An address is collected at
@@ -4074,6 +4171,7 @@ export interface DoctorProfileFieldRefs {
   readonly licenseNumber: Prisma.FieldRef<"DoctorProfile", 'String'>
   readonly fullName: Prisma.FieldRef<"DoctorProfile", 'String'>
   readonly specialtyId: Prisma.FieldRef<"DoctorProfile", 'String'>
+  readonly profession: Prisma.FieldRef<"DoctorProfile", 'ClinicianProfession'>
   readonly phoneNumber: Prisma.FieldRef<"DoctorProfile", 'String'>
   readonly ownerUserId: Prisma.FieldRef<"DoctorProfile", 'String'>
   readonly isActive: Prisma.FieldRef<"DoctorProfile", 'Boolean'>

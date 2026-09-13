@@ -207,6 +207,17 @@ export type DoctorInvitationStatusValue = (typeof DOCTOR_INVITATION_STATUSES)[nu
 /** The address a doctor signs in with (P19-T15). See `createDoctorSchema`. */
 export const doctorEmailSchema = z.string().trim().toLowerCase().email().max(255);
 
+/**
+ * What kind of clinician a profile belongs to (D-034, P24-T02). A midwife is a
+ * profession on the clinician profile, not a second aggregate, so every
+ * foreign key and access check that keys on the profile works for both.
+ */
+export const CLINICIAN_PROFESSIONS = ['DOCTOR', 'MIDWIFE'] as const;
+
+export const clinicianProfessionSchema = z.enum(CLINICIAN_PROFESSIONS);
+
+export type ClinicianProfessionValue = z.infer<typeof clinicianProfessionSchema>;
+
 export const listDoctorsQuerySchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(10),
@@ -225,6 +236,8 @@ export const listDoctorsQuerySchema = z.object({
     .enum(['true', 'false'])
     .transform((value) => value === 'true')
     .optional(),
+  /** Narrows the directory to doctors or to midwives (D-034). */
+  profession: clinicianProfessionSchema.optional(),
 });
 
 export const createDoctorSchema = z.object({

@@ -57,7 +57,8 @@ describe('ListMyPatientsTool', () => {
       scope: 'OWN',
     });
     expect(actualTool.channels).toEqual(['DOCTOR']);
-    expect(actualTool.allowedRoleCodes).toEqual(['DOCTOR']);
+    // Every clinician role (D-034): a midwife lists her own patients too.
+    expect(actualTool.allowedRoleCodes).toEqual(['DOCTOR', 'MIDWIFE']);
   });
 
   it('calls the domain service as the asking user, capped at the list page limit', async () => {

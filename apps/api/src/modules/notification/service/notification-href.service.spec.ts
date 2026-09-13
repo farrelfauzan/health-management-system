@@ -44,6 +44,17 @@ describe('NotificationHrefService', () => {
       expect(actualShell).toBe('doctor');
     });
 
+    // D-034. A midwife is a clinician on the same portal, so her notifications
+    // point at the doctor shell even before the portal permission is seeded.
+    it('resolves a midwife to the doctor shell from her role code', async () => {
+      mockRepository.findShellClaimsByUserId.mockResolvedValue({
+        roleCodes: ['MIDWIFE'],
+        permissionKeys: [],
+      });
+      const actualShell = await service.resolveShellForUser(inputUserId);
+      expect(actualShell).toBe('doctor');
+    });
+
     // Mirrors `apps/web/proxy.ts`: the admin shell is a superset, so somebody
     // holding both must not be sent to a doctor path the proxy would bounce.
     it('prefers the admin shell when an account holds both', async () => {

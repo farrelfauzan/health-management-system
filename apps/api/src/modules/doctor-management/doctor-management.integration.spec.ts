@@ -71,6 +71,7 @@ describe('DoctorManagement integration', () => {
     fullName: 'Dr. First',
     specialtyId,
     specialty: { id: specialtyId, name: 'Cardiology' },
+    profession: 'DOCTOR',
     phoneNumber: '0812345678',
     ownerUserId: null,
     isActive: true,
@@ -298,6 +299,32 @@ describe('DoctorManagement integration', () => {
     expect(doctorRepositoryMock.listDoctors).toHaveBeenCalledWith(
       expect.objectContaining({ missingNik: true }),
     );
+  });
+
+  // D-034. The "Tenaga klinis" directory narrows to midwives or doctors.
+  it('passes the profession filter through to the repository', async () => {
+    const token = await buildToken('admin-user', 'admin@hms.local');
+    mockActorWithPermissions([{ action: 'read', resource: 'Doctor', scope: 'ANY' }]);
+
+    const response = await request(app.getHttpServer())
+      .get('/api/v1/v1/doctors?profession=MIDWIFE')
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(response.status).toBe(200);
+    expect(doctorRepositoryMock.listDoctors).toHaveBeenCalledWith(
+      expect.objectContaining({ profession: 'MIDWIFE' }),
+    );
+  });
+
+  it('rejects an unknown profession with 400', async () => {
+    const token = await buildToken('admin-user', 'admin@hms.local');
+    mockActorWithPermissions([{ action: 'read', resource: 'Doctor', scope: 'ANY' }]);
+
+    const response = await request(app.getHttpServer())
+      .get('/api/v1/v1/doctors?profession=NURSE')
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(response.status).toBe(400);
   });
 
   it('returns 403 when own-scope user writes another doctor schedule', async () => {

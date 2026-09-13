@@ -9142,6 +9142,7 @@ export const DoctorProfileScalarFieldEnum = {
   licenseNumber: 'licenseNumber',
   fullName: 'fullName',
   specialtyId: 'specialtyId',
+  profession: 'profession',
   phoneNumber: 'phoneNumber',
   ownerUserId: 'ownerUserId',
   isActive: 'isActive',
@@ -11081,6 +11082,20 @@ export type EnumDoctorCredentialKindFieldRefInput<$PrismaModel> = FieldRefInputT
  * Reference to a field of type 'DoctorCredentialKind[]'
  */
 export type ListEnumDoctorCredentialKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DoctorCredentialKind[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ClinicianProfession'
+ */
+export type EnumClinicianProfessionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ClinicianProfession'>
+    
+
+
+/**
+ * Reference to a field of type 'ClinicianProfession[]'
+ */
+export type ListEnumClinicianProfessionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ClinicianProfession[]'>
     
 
 

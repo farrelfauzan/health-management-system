@@ -1,3 +1,4 @@
+import { CLINICIAN_ROLE_CODES } from '@hms/shared-types';
 import { cookies } from 'next/headers';
 import type { CSSProperties, ReactNode } from 'react';
 import { buildAppAbility, SIDEBAR_COOKIE_NAME, SidebarInset, SidebarProvider } from '@hms/ui';
@@ -41,7 +42,7 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
   // one: the dashboard's stat cards call endpoints it cannot read.
   const isTechnicianOnly =
     !isAdmin &&
-    !hasAnyRole(claims, ['DOCTOR', 'PHARMACIST']) &&
+    !hasAnyRole(claims, [...CLINICIAN_ROLE_CODES, 'PHARMACIST']) &&
     hasAnyRole(claims, ['LAB_TECHNICIAN']);
   // Two independent reasons to drop a nav entry, combined in one list: a
   // pharmacist-only user has no dashboard, and a feature this client did not

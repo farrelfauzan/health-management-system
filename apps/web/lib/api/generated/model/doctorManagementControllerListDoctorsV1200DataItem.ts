@@ -15,6 +15,7 @@ export type DoctorManagementControllerListDoctorsV1200DataItem = {
   fullName: string;
   specialtyId: string;
   specialty: string;
+  profession: string;
   phoneNumber: string;
   email: string;
   title: string;
