@@ -59,6 +59,9 @@ const GATED_CONTROLLERS: Readonly<Record<string, FeatureKey>> = {
   BpjsAntreanConfigController: 'bpjs-antrean',
   BpjsAntreanWsController: 'bpjs-antrean',
   SatusehatLinkController: 'satusehat',
+  // P21-T04. The treating doctor's comparison reads the national record live,
+  // so a clinic without SATUSEHAT has nothing for it to read.
+  SatusehatRecordController: 'satusehat',
   SatusehatSubmissionController: 'satusehat',
   ChannelGatewayAdminController: 'cs-channels',
   TelegramWebhookController: 'cs-channels',

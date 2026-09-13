@@ -1,5 +1,6 @@
 import {
   SatusehatHeldResource,
+  SatusehatLabReportItem,
   SatusehatRecordComparisonInput,
   SatusehatSubmissionVitalSigns,
 } from '@hms/shared-types';
@@ -52,6 +53,7 @@ describe('compareSatusehatRecord', () => {
       latestVitalSigns: null,
       procedures: [],
       medications: [],
+      labItems: [],
       held: [],
       ...overrides,
     };
@@ -97,14 +99,23 @@ describe('compareSatusehatRecord', () => {
         }),
       );
 
-      expect(actual[0]).toMatchObject({ code: 'J06.9', outcome: 'MISSING_ON_SATUSEHAT', satusehat: null });
+      expect(actual[0]).toMatchObject({
+        code: 'J06.9',
+        outcome: 'MISSING_ON_SATUSEHAT',
+        satusehat: null,
+      });
     });
 
     it('reports a diagnosis SATUSEHAT holds but the local record no longer has as differing', () => {
       const actual = compareSatusehatRecord(buildInput({ held: [RECORDED_CONDITION] }));
 
       expect(actual).toEqual([
-        expect.objectContaining({ category: 'DIAGNOSIS', code: 'A90', ours: null, outcome: 'DIFFERS' }),
+        expect.objectContaining({
+          category: 'DIAGNOSIS',
+          code: 'A90',
+          ours: null,
+          outcome: 'DIFFERS',
+        }),
       ]);
     });
   });
@@ -139,7 +150,11 @@ describe('compareSatusehatRecord', () => {
         }),
       );
 
-      expect(actual[0]).toMatchObject({ ours: '120 mmHg', satusehat: '130 mmHg', outcome: 'DIFFERS' });
+      expect(actual[0]).toMatchObject({
+        ours: '120 mmHg',
+        satusehat: '130 mmHg',
+        outcome: 'DIFFERS',
+      });
     });
 
     it('reports a reading SATUSEHAT does not hold as missing', () => {
@@ -148,7 +163,11 @@ describe('compareSatusehatRecord', () => {
       );
 
       expect(actual).toEqual([
-        expect.objectContaining({ code: '8310-5', ours: '37.5 C', outcome: 'MISSING_ON_SATUSEHAT' }),
+        expect.objectContaining({
+          code: '8310-5',
+          ours: '37.5 C',
+          outcome: 'MISSING_ON_SATUSEHAT',
+        }),
       ]);
     });
 
@@ -225,7 +244,13 @@ describe('compareSatusehatRecord', () => {
       const actual = compareSatusehatRecord(
         buildInput({
           medications: [
-            { medicationId: 'medication-1', code: 'OMZ20', kfaCode: '93020847', name: 'Omeprazole', unit: null },
+            {
+              medicationId: 'medication-1',
+              code: 'OMZ20',
+              kfaCode: '93020847',
+              name: 'Omeprazole',
+              unit: null,
+            },
           ],
           held: [RECORDED_MEDICATION],
         }),
@@ -240,7 +265,13 @@ describe('compareSatusehatRecord', () => {
       const actual = compareSatusehatRecord(
         buildInput({
           medications: [
-            { medicationId: 'medication-2', code: 'PARA500', kfaCode: null, name: 'Paracetamol 500 mg', unit: null },
+            {
+              medicationId: 'medication-2',
+              code: 'PARA500',
+              kfaCode: null,
+              name: 'Paracetamol 500 mg',
+              unit: null,
+            },
           ],
         }),
       );
@@ -265,6 +296,146 @@ describe('compareSatusehatRecord', () => {
       );
 
       expect(actual).toHaveLength(1);
+    });
+  });
+
+  describe('lab results', () => {
+    function buildLabItem(
+      overrides: Partial<SatusehatLabReportItem> = {},
+      resultOverrides: Partial<NonNullable<SatusehatLabReportItem['result']>> = {},
+    ): SatusehatLabReportItem {
+      return {
+        labOrderItemId: 'item-1',
+        itemSeq: 1,
+        testName: 'Hemoglobin',
+        loincCode: '718-7',
+        loincDisplay: 'Hemoglobin',
+        specimenId: 'specimen-1',
+        result: {
+          labResultId: 'result-1',
+          valueNumeric: 13.2,
+          valueText: null,
+          valueCoded: null,
+          unit: 'g/dL',
+          refLow: null,
+          refHigh: null,
+          refText: null,
+          flag: null,
+          isAmendment: false,
+          enteredAt: new Date(),
+          ...resultOverrides,
+        },
+        ...overrides,
+      };
+    }
+
+    function buildHeldLab(value: Partial<SatusehatHeldResource>): SatusehatHeldResource {
+      return {
+        resourceType: 'Observation',
+        code: { coding: [{ system: 'http://loinc.org', code: '718-7', display: 'Hemoglobin' }] },
+        ...value,
+      };
+    }
+
+    it('matches a numeric result SATUSEHAT holds with the same value', () => {
+      const actual = compareSatusehatRecord(
+        buildInput({
+          labItems: [buildLabItem()],
+          held: [buildHeldLab({ valueQuantity: { value: 13.2, unit: 'g/dL' } })],
+        }),
+      );
+
+      expect(actual).toEqual([
+        {
+          category: 'LAB_RESULT',
+          code: '718-7',
+          display: 'Hemoglobin',
+          ours: '13.2 g/dL',
+          satusehat: '13.2 g/dL',
+          outcome: 'MATCHES',
+          notSentReason: null,
+        },
+      ]);
+    });
+
+    /** The mapper sends a numeric result as `valueString` when its unit is not UCUM. */
+    it('matches a numeric result SATUSEHAT holds as a string', () => {
+      const actual = compareSatusehatRecord(
+        buildInput({
+          labItems: [buildLabItem({}, { unit: null })],
+          held: [buildHeldLab({ valueString: '13.20' } as Partial<SatusehatHeldResource>)],
+        }),
+      );
+
+      expect(actual[0]).toMatchObject({ outcome: 'MATCHES', ours: '13.2', satusehat: '13.20' });
+    });
+
+    it('reports a different value as differing, showing both', () => {
+      const actual = compareSatusehatRecord(
+        buildInput({
+          labItems: [buildLabItem()],
+          held: [buildHeldLab({ valueQuantity: { value: 11.8, unit: 'g/dL' } })],
+        }),
+      );
+
+      expect(actual[0]).toMatchObject({
+        ours: '13.2 g/dL',
+        satusehat: '11.8 g/dL',
+        outcome: 'DIFFERS',
+      });
+    });
+
+    it('compares a coded result by its text, ignoring case', () => {
+      const actual = compareSatusehatRecord(
+        buildInput({
+          labItems: [
+            buildLabItem(
+              { testName: 'HBsAg', loincCode: '5196-1' },
+              { valueNumeric: null, valueCoded: 'Negatif', unit: null },
+            ),
+          ],
+          held: [
+            {
+              resourceType: 'Observation',
+              code: { coding: [{ system: 'http://loinc.org', code: '5196-1' }] },
+              valueCodeableConcept: { text: 'negatif' },
+            } as SatusehatHeldResource,
+          ],
+        }),
+      );
+
+      expect(actual[0]).toMatchObject({ code: '5196-1', outcome: 'MATCHES' });
+    });
+
+    it('names a test with no LOINC code as not sent', () => {
+      const actual = compareSatusehatRecord(
+        buildInput({ labItems: [buildLabItem({ loincCode: null })] }),
+      );
+
+      expect(actual[0]).toMatchObject({
+        code: null,
+        ours: '13.2 g/dL',
+        outcome: 'NOT_SENT',
+        notSentReason: 'NO_LOINC_CODE',
+      });
+    });
+
+    it('names a test with no released result as not sent', () => {
+      const actual = compareSatusehatRecord(
+        buildInput({ labItems: [buildLabItem({ result: null })] }),
+      );
+
+      expect(actual[0]).toMatchObject({
+        ours: null,
+        outcome: 'NOT_SENT',
+        notSentReason: 'NO_VERIFIED_RESULT',
+      });
+    });
+
+    it('does not report a vital sign Observation as a lab result', () => {
+      const actual = compareSatusehatRecord(buildInput({ held: [buildHeldVital('8480-6', 120)] }));
+
+      expect(actual.every((line) => line.category !== 'LAB_RESULT')).toBe(true);
     });
   });
 

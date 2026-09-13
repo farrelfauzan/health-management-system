@@ -1107,6 +1107,42 @@
           "CRITICAL_HIGH": "Critically high",
           "ABNORMAL": "Abnormal"
         }
+      },
+      "satusehatRecord": {
+        "title": "SATUSEHAT record",
+        "subtitle": "Compare what you recorded with what SATUSEHAT holds for this visit. Visible only to you as the treating doctor.",
+        "check": "Check with SATUSEHAT",
+        "checking": "Checking…",
+        "recheck": "Check again",
+        "loadFailed": "The comparison with SATUSEHAT failed.",
+        "idle": "Nothing is read from SATUSEHAT until you ask, because every check reads the national record live.",
+        "notSubmitted": "This visit has not been sent to SATUSEHAT yet, so everything below is shown as missing.",
+        "noResourceList": "This visit was sent before the resource list was kept, so what SATUSEHAT holds cannot be read back yet. Ask an administrator to run the backfill.",
+        "unreadable": "{count, plural, one {# item could not be read from SATUSEHAT} other {# items could not be read from SATUSEHAT}}, so a line marked missing may not really be missing.",
+        "empty": "This visit has no diagnoses, vital signs, procedures, medications or lab results to compare.",
+        "checkedAt": "Checked {time}",
+        "ours": "Ours",
+        "satusehat": "SATUSEHAT",
+        "category": {
+          "DIAGNOSIS": "Diagnosis",
+          "VITAL_SIGN": "Vital sign",
+          "PROCEDURE": "Procedure",
+          "MEDICATION": "Medication",
+          "LAB_RESULT": "Lab result"
+        },
+        "outcome": {
+          "MATCHES": "Matches",
+          "DIFFERS": "Differs",
+          "MISSING_ON_SATUSEHAT": "Missing on SATUSEHAT",
+          "NOT_SENT": "Not sent"
+        },
+        "notSentReason": {
+          "NO_KFA_CODE": "no KFA code",
+          "NO_ICD9CM_CODE": "no ICD-9-CM code",
+          "NO_LOINC_CODE": "no LOINC code",
+          "NO_VERIFIED_RESULT": "no verified result",
+          "UNCODED_COMPOUND_COMPONENT": "uncoded compound component"
+        }
       }
     }
   }

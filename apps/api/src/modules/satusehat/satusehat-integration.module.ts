@@ -1,11 +1,14 @@
 import { Module } from '@nestjs/common';
 
 import { SatusehatModule } from '../../common/satusehat/satusehat.module';
+import { DoctorManagementModule } from '../doctor-management/doctor-management.module';
 import { SatusehatLinkController } from './controller/satusehat-link.controller';
+import { SatusehatRecordController } from './controller/satusehat-record.controller';
 import { SatusehatSubmissionController } from './controller/satusehat-submission.controller';
 import { SatusehatLinkRepository } from './repository/satusehat-link.repository';
 import { SatusehatSubmissionRepository } from './repository/satusehat-submission.repository';
 import { SatusehatLinkService } from './service/satusehat-link.service';
+import { SatusehatRecordComparisonService } from './service/satusehat-record-comparison.service';
 import { SatusehatSubmissionOpsService } from './service/satusehat-submission-ops.service';
 import { SatusehatSubmissionDetailService } from './service/satusehat-submission-detail.service';
 import { SatusehatSubmissionService } from './service/satusehat-submission.service';
@@ -13,14 +16,18 @@ import { SatusehatSubmissionWorker } from './service/satusehat-submission.worker
 
 /**
  * Feature module for SATUSEHAT master-data linkage (P10-T02), the submission
- * pipeline (P10-T04), and the admin ops surface over the outbox (P10-T06).
+ * pipeline (P10-T04), the admin ops surface over the outbox (P10-T06), and the
+ * treating doctor's comparison with what SATUSEHAT holds (P21-T04).
  * Named distinctly from the common {@link SatusehatModule} adapter it builds
  * on. Outbox rows are created by the EMR close transaction — this module only
  * ever consumes them.
  */
 @Module({
-  imports: [SatusehatModule],
-  controllers: [SatusehatLinkController, SatusehatSubmissionController],
+  // DoctorManagementModule for `resolveOwnDoctorProfileId`: the record
+  // comparison (P21-T04) uses the same "which profile is mine" rule as the
+  // doctor's own profile page. Nothing there imports this module back.
+  imports: [SatusehatModule, DoctorManagementModule],
+  controllers: [SatusehatLinkController, SatusehatSubmissionController, SatusehatRecordController],
   providers: [
     SatusehatLinkRepository,
     SatusehatSubmissionRepository,
@@ -28,6 +35,7 @@ import { SatusehatSubmissionWorker } from './service/satusehat-submission.worker
     SatusehatSubmissionService,
     SatusehatSubmissionOpsService,
     SatusehatSubmissionDetailService,
+    SatusehatRecordComparisonService,
     SatusehatSubmissionWorker,
   ],
 })

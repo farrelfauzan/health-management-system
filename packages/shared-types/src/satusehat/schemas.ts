@@ -83,6 +83,7 @@ export const SATUSEHAT_RECORD_LINE_CATEGORIES = [
   'VITAL_SIGN',
   'PROCEDURE',
   'MEDICATION',
+  'LAB_RESULT',
 ] as const;
 
 export const satusehatRecordLineCategorySchema = z.enum(SATUSEHAT_RECORD_LINE_CATEGORIES);

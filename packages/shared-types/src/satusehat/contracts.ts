@@ -99,6 +99,12 @@ export type SatusehatRecordComparisonView = {
   /** Null when the visit was never queued for SATUSEHAT. */
   submissionId: string | null;
   isSubmitted: boolean;
+  /**
+   * False for a submission that predates the resource list (P21-T02) and was
+   * never backfilled: there are no ids to read back, so every line would read
+   * as missing when the truth is unknown.
+   */
+  hasResourceList: boolean;
   checkedAt: string;
   lines: SatusehatRecordLine[];
   /**

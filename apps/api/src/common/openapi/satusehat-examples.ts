@@ -92,6 +92,65 @@ export const SATUSEHAT_EXAMPLES = {
       },
     ],
   },
+  /**
+   * The one example here that carries clinical content, because the route is
+   * the treating doctor's (P21-T04, D-033) — never the admin monitor's.
+   */
+  recordComparison: {
+    encounterId: '2b3c4d5e-6f7a-4b8c-9d0e-1f2a3b4c5d6e',
+    submissionId: '7a8b9c0d-1e2f-4a3b-8c4d-5e6f7a8b9c0d',
+    isSubmitted: true,
+    hasResourceList: true,
+    checkedAt: '2026-07-29T04:10:00.000Z',
+    lines: [
+      {
+        category: 'DIAGNOSIS',
+        code: 'J06.9',
+        display: 'Acute upper respiratory infection, unspecified',
+        ours: 'Acute upper respiratory infection, unspecified',
+        satusehat: 'Acute upper respiratory infection, unspecified',
+        outcome: 'MATCHES',
+        notSentReason: null,
+      },
+      {
+        category: 'VITAL_SIGN',
+        code: '8480-6',
+        display: 'Systolic blood pressure',
+        ours: '120 mmHg',
+        satusehat: '130 mmHg',
+        outcome: 'DIFFERS',
+        notSentReason: null,
+      },
+      {
+        category: 'PROCEDURE',
+        code: null,
+        display: 'Perawatan luka ringan',
+        ours: 'Perawatan luka ringan',
+        satusehat: null,
+        outcome: 'NOT_SENT',
+        notSentReason: 'NO_ICD9CM_CODE',
+      },
+      {
+        category: 'MEDICATION',
+        code: '93001019',
+        display: 'Paracetamol 500 mg Tablet',
+        ours: 'Paracetamol 500 mg Tablet',
+        satusehat: null,
+        outcome: 'MISSING_ON_SATUSEHAT',
+        notSentReason: null,
+      },
+      {
+        category: 'LAB_RESULT',
+        code: '718-7',
+        display: 'Hemoglobin',
+        ours: '13.2 g/dL',
+        satusehat: '13.2 g/dL',
+        outcome: 'MATCHES',
+        notSentReason: null,
+      },
+    ],
+    unreadableResourceCount: 0,
+  },
   patientLink: {
     patientId: 'f5e4d3c2-b1a0-4918-a7b6-c5d4e3f2a1b0',
     hasSatusehatPatientId: true,
