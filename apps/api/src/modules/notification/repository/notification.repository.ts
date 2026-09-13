@@ -86,6 +86,45 @@ export class NotificationRepository {
     return rows.map((row) => row.id);
   }
 
+  /**
+   * The role codes and permission keys of one live account, for deciding
+   * which web shell a notification's `href` must point into. Reuses the same
+   * active-account predicates as `findUserIdsWithPermissionKey` above, so a
+   * deactivated or system account is treated identically by both.
+   */
+  async findShellClaimsByUserId(
+    userId: string,
+  ): Promise<{ roleCodes: string[]; permissionKeys: string[] } | null> {
+    const row = await this.prisma.user.findFirst({
+      where: { id: userId, isActive: true, isSystem: false, deletedAt: null },
+      select: {
+        roles: {
+          where: { deletedAt: null, unassignedAt: null },
+          select: {
+            role: {
+              select: {
+                code: true,
+                permissions: { select: { permission: { select: { permissionKey: true } } } },
+              },
+            },
+          },
+        },
+      },
+    });
+    if (!row) {
+      return null;
+    }
+    const roleCodes = new Set<string>();
+    const permissionKeys = new Set<string>();
+    for (const assignment of row.roles) {
+      roleCodes.add(assignment.role.code);
+      for (const grant of assignment.role.permissions) {
+        permissionKeys.add(grant.permission.permissionKey);
+      }
+    }
+    return { roleCodes: [...roleCodes], permissionKeys: [...permissionKeys] };
+  }
+
   async listByUser(params: ListNotificationsParams): Promise<PagedRecords<NotificationRecord>> {
     const { userId, page, limit } = params;
     const skip = (page - 1) * limit;

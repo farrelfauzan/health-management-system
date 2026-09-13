@@ -1,6 +1,7 @@
 import { ConfigService } from '@nestjs/config';
 
 import { Document } from '../../../generated/prisma/client';
+import { NotificationHrefService } from '../../notification/service/notification-href.service';
 import { NotificationService } from '../../notification/service/notification.service';
 import { VaultDocumentRepository } from '../repository/vault-document.repository';
 import { VaultDocumentExpiryWorker } from './vault-document-expiry.worker';
@@ -27,6 +28,9 @@ describe('VaultDocumentExpiryWorker', () => {
     createForUsers: jest.fn(),
     createForUsersWithPermission: jest.fn(),
   };
+  const notificationHrefServiceMock = {
+    buildVaultHref: jest.fn().mockResolvedValue('/doctor/vault'),
+  };
   const configServiceMock = { get: jest.fn() };
   let worker: VaultDocumentExpiryWorker;
 
@@ -38,9 +42,11 @@ describe('VaultDocumentExpiryWorker', () => {
     );
     vaultDocumentRepositoryMock.listExpiringVaultDocuments.mockResolvedValue([]);
     notificationServiceMock.createForUser.mockResolvedValue(undefined);
+    notificationHrefServiceMock.buildVaultHref.mockResolvedValue('/doctor/vault');
     worker = new VaultDocumentExpiryWorker(
       vaultDocumentRepositoryMock as unknown as VaultDocumentRepository,
       notificationServiceMock as unknown as NotificationService,
+      notificationHrefServiceMock as unknown as NotificationHrefService,
       configServiceMock as unknown as ConfigService,
     );
   });
@@ -112,8 +118,23 @@ describe('VaultDocumentExpiryWorker', () => {
 
     await worker.sweepOnce();
 
+    expect(notificationHrefServiceMock.buildVaultHref).toHaveBeenCalledWith('owner-1');
     const [payload] = notificationServiceMock.createForUser.mock.calls[0] ?? [];
-    expect(payload.href).toBe('/vault');
+    expect(payload.href).toBe('/doctor/vault');
+  });
+
+  // There is no shell-less `/vault` route: `apps/web/proxy.ts` does not match
+  // it, so the root page bounces the reader home by role. The owner may be an
+  // admin or a doctor, so the prefix has to come from the recipient.
+  it('resolves the owner’s shell rather than hardcoding a vault prefix', async () => {
+    vaultDocumentRepositoryMock.listExpiringVaultDocuments.mockResolvedValue([buildDocument()]);
+    vaultDocumentRepositoryMock.claimExpiryNotice.mockResolvedValue(true);
+    notificationHrefServiceMock.buildVaultHref.mockResolvedValue('/admin/vault');
+
+    await worker.sweepOnce();
+
+    const [payload] = notificationServiceMock.createForUser.mock.calls[0] ?? [];
+    expect(payload.href).toBe('/admin/vault');
   });
 
   it('skips a document with no owner rather than sending a reminder to nobody', async () => {

@@ -29,10 +29,12 @@ const NOTIFICATION_TYPE_ICONS: Record<string, string> = {
   DOCUMENT_APPROVAL_SUPERSEDED: 'undo',
   DOCUMENT_APPROVAL_DUE_SOON: 'schedule',
   DOCUMENT_APPROVAL_OVERDUE: 'alarm',
+  BUG_REPORT_HELD: 'pause_circle',
+  BUG_REPORT_PUBLISH_FAILED: 'sync_problem',
 };
 
 /**
- * P18-T07. These two deep-link into an encounter the doctor may already have
+ * P18-T07. These deep-link into an encounter the doctor may already have
  * open, where a cached query would show the visit exactly as it was before the
  * value arrived — which is the one moment this feature exists to prevent.
  */

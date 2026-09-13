@@ -31,6 +31,7 @@ import { ConfigService } from '@nestjs/config';
 import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
 import { AuthRepository } from '../../auth/repository/auth.repository';
+import { NotificationHrefService } from '../../notification/service/notification-href.service';
 import { NotificationService } from '../../notification/service/notification.service';
 import { LabOrderRepository } from '../repository/lab-order.repository';
 import { LabResultEntryItemRow } from '../repository/lab-result-row.types';
@@ -61,9 +62,6 @@ const LAB_TECHNICIAN_ROLE_CODE = 'LAB_TECHNICIAN';
 /** Values may be typed once a tube exists and until the order is signed out. */
 const ENTRY_STATUSES = ['COLLECTED', 'IN_PROGRESS', 'RESULTED'] as const;
 
-const DOCTOR_ENCOUNTER_PATH_PREFIX = '/doctor/encounters/';
-/** Where a released order with no ordering doctor is read instead (P18-T10). */
-const ADMIN_LAB_ORDER_PATH_PREFIX = '/admin/laboratory/';
 /**
  * ADMIN-only by P18-T02's grant table, which is what makes it the right
  * audience for a result nobody at this clinic asked for: `lab-order.read:any`
@@ -103,6 +101,7 @@ export class LabResultService {
     private readonly labOrderMapper: LabOrderMapper,
     private readonly authRepository: AuthRepository,
     private readonly notificationService: NotificationService,
+    private readonly notificationHrefService: NotificationHrefService,
     private readonly auditService: AuditService,
     private readonly labReportService: LabReportService,
     configService: ConfigService,
@@ -684,15 +683,16 @@ export class LabResultService {
   ): Promise<void> {
     try {
       const doctorUserId = await this.labResultRepository.findOrderingDoctorUserId(order.id);
-      const href =
-        order.encounterId === null
-          ? `${ADMIN_LAB_ORDER_PATH_PREFIX}${order.id}`
-          : `${DOCTOR_ENCOUNTER_PATH_PREFIX}${order.encounterId}`;
       // A walk-in or an outside referral has no ordering doctor to tell
       // (P18-T10), so the result goes to the desk that raised it instead of
       // going nowhere. Still a notification, because somebody has to hand the
       // sheet to the patient — and for a critical value, act on it today.
       if (doctorUserId === null) {
+        // The admin order page unconditionally: this broadcast is addressed by
+        // `lab-order.write:any`, which is ADMIN-only, so an encounter deep link
+        // would point every recipient into a shell none of them holds — and
+        // `proxy.ts` answers that with a silent bounce to their dashboard
+        // rather than a 404.
         await this.notificationService.createForUsersWithPermission(
           LAB_ORDER_WRITE_ANY_PERMISSION,
           {
@@ -700,7 +700,7 @@ export class LabResultService {
             titleKey: message.titleKey,
             bodyKey: message.bodyKey,
             params: message.params,
-            href,
+            href: this.notificationHrefService.buildAdminLabOrderHref(order.id),
           },
         );
         return;
@@ -714,7 +714,13 @@ export class LabResultService {
         titleKey: message.titleKey,
         bodyKey: message.bodyKey,
         params: message.params,
-        href,
+        // Resolved from the recipient, not the order: the ordering account may
+        // sit in the admin shell, where `/doctor/encounters/...` is a bounce.
+        href: await this.notificationHrefService.buildLabOrderHrefForUser({
+          userId: doctorUserId,
+          orderId: order.id,
+          encounterId: order.encounterId,
+        }),
       });
     } catch (caughtError) {
       // The class only (P18-T16): a notification failure is a write to the
