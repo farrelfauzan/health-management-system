@@ -666,6 +666,35 @@
         "checkedAt": "Checked at {time}",
         "lastPublished": "Last publish",
         "neverPublished": "Never"
+      },
+      "satusehatDetail": {
+        "title": "SATUSEHAT submission detail",
+        "subtitle": "What this visit sent. Presence only — no diagnoses, medicines or result values.",
+        "loading": "Loading detail…",
+        "loadFailed": "The submission detail could not be loaded.",
+        "noList": "This submission ran before the resource list was recorded, so its detail is unavailable. Run the backfill (P21-T05) to fill it in.",
+        "backfilled": "This list was reconstructed from SATUSEHAT, so skipped items cannot be known.",
+        "sentHeading": "Resources sent",
+        "sentCount": "{count} sent",
+        "unpairedCount": "{count} without an id",
+        "skippedCount": "{count} skipped",
+        "check": "Check with SATUSEHAT",
+        "checking": "Checking…",
+        "checkFailed": "The check with SATUSEHAT failed.",
+        "viewDetail": "Detail",
+        "skipReason": {
+          "NO_KFA_CODE": "no KFA code",
+          "NO_ICD9CM_CODE": "no ICD-9-CM code",
+          "NO_LOINC_CODE": "no LOINC code",
+          "NO_VERIFIED_RESULT": "no verified result",
+          "UNCODED_COMPOUND_COMPONENT": "uncoded compound component"
+        },
+        "outcome": {
+          "FOUND": "Held by SATUSEHAT",
+          "NOT_FOUND": "Not found on SATUSEHAT",
+          "UNPAIRED": "Sent, id not recorded",
+          "ERROR": "Could not check"
+        }
       }
     },
     "administration": {

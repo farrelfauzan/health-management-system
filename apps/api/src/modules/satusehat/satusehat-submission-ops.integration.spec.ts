@@ -1,7 +1,4 @@
-import {
-  SatusehatSubmissionBundleData,
-  SatusehatSubmissionRecord,
-} from '@hms/shared-types';
+import { SatusehatSubmissionBundleData, SatusehatSubmissionRecord } from '@hms/shared-types';
 import { INestApplication, VersioningType } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Test } from '@nestjs/testing';
@@ -13,6 +10,10 @@ import { AuditService } from '../../common/audit/audit.service';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { AuthRepository } from '../auth/repository/auth.repository';
 import { SATUSEHAT_SANDBOX_FIXTURES } from './fixtures/satusehat-sandbox-fixtures';
+import {
+  SATUSEHAT_READ_BACK_FIXTURES,
+  SATUSEHAT_READ_BACK_NOT_FOUND_FIXTURE,
+} from './fixtures/satusehat-read-back-fixtures';
 import { SatusehatSubmissionRepository } from './repository/satusehat-submission.repository';
 
 /**
@@ -49,6 +50,7 @@ describe('SATUSEHAT submission ops integration', () => {
     requeueLabReportsForEncounter: jest.fn().mockResolvedValue(0),
     findBundleData: jest.fn(),
     findLabReportBundleData: jest.fn(),
+    findSubmissionResources: jest.fn().mockResolvedValue([]),
     saveAllergyIhsIds: jest.fn(),
     saveImmunizationIhsIds: jest.fn(),
     saveLabReportIhsIds: jest.fn(),
@@ -461,9 +463,7 @@ describe('SATUSEHAT submission ops integration', () => {
     expect(response.status).toBe(200);
     expect(response.body.data.status).toBe('SUBMITTED');
     expect(response.body.data.attempts).toBe(1);
-    expect(response.body.data.satusehatEncounterId).toBe(
-      SATUSEHAT_SANDBOX_FIXTURES.encounterIhsId,
-    );
+    expect(response.body.data.satusehatEncounterId).toBe(SATUSEHAT_SANDBOX_FIXTURES.encounterIhsId);
     expect(submissionRepositoryMock.markSubmitted).toHaveBeenCalledWith(
       submissionId,
       SATUSEHAT_SANDBOX_FIXTURES.encounterIhsId,
@@ -501,9 +501,9 @@ describe('SATUSEHAT submission ops integration', () => {
         'MedicationDispense',
       ]),
     );
-    expect(
-      (bundleRequestInit.headers as Record<string, string>).Authorization,
-    ).toBe('Bearer recorded-sandbox-access-token');
+    expect((bundleRequestInit.headers as Record<string, string>).Authorization).toBe(
+      'Bearer recorded-sandbox-access-token',
+    );
   });
 
   it('settles the row FAILED again when the sandbox rejects the bundle', async () => {
@@ -547,5 +547,167 @@ describe('SATUSEHAT submission ops integration', () => {
     expect(submissionRepositoryMock.scheduleRetry).toHaveBeenCalledWith(
       expect.objectContaining({ id: submissionId, attempts: 1 }),
     );
+  });
+  describe('submission detail and the SATUSEHAT check (P21-T03)', () => {
+    /** One SENT Condition plus one SKIPPED medication, the ticket's example. */
+    function mockResourceList(): void {
+      submissionRepositoryMock.findSubmissionResources.mockResolvedValue([
+        {
+          resourceType: 'Condition',
+          outcome: 'SENT',
+          skipReason: null,
+          satusehatId: 'ihs-cond-1',
+          localRecordId: null,
+          isBackfilled: false,
+        },
+        {
+          resourceType: 'Medication',
+          outcome: 'SKIPPED',
+          skipReason: 'NO_KFA_CODE',
+          satusehatId: null,
+          localRecordId: null,
+          isBackfilled: false,
+        },
+      ]);
+    }
+
+    it('returns the grouped resource list for a submission', async () => {
+      mockOpsPermissions();
+      submissionRepositoryMock.findSubmissionById.mockResolvedValue(buildFailedRow());
+      mockResourceList();
+      const token = await buildToken('actor-user', 'admin@hms.local');
+
+      const response = await request(app.getHttpServer())
+        .get(`/api/v1/v1/satusehat/submissions/${submissionId}`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.data.hasResourceList).toBe(true);
+      expect(response.body.data.resources).toEqual([
+        {
+          resourceType: 'Condition',
+          sentCount: 1,
+          satusehatIds: ['ihs-cond-1'],
+          unpairedCount: 0,
+          skipped: [],
+        },
+        {
+          resourceType: 'Medication',
+          sentCount: 0,
+          satusehatIds: [],
+          unpairedCount: 0,
+          skipped: [{ reason: 'NO_KFA_CODE', count: 1 }],
+        },
+      ]);
+    });
+
+    it('says a submission predating the list has none, rather than showing an empty success', async () => {
+      mockOpsPermissions();
+      submissionRepositoryMock.findSubmissionById.mockResolvedValue(buildFailedRow());
+      submissionRepositoryMock.findSubmissionResources.mockResolvedValue([]);
+      const token = await buildToken('actor-user', 'admin@hms.local');
+
+      const response = await request(app.getHttpServer())
+        .get(`/api/v1/v1/satusehat/submissions/${submissionId}`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.data.hasResourceList).toBe(false);
+    });
+
+    it('404s for a submission that does not exist', async () => {
+      mockOpsPermissions();
+      submissionRepositoryMock.findSubmissionById.mockResolvedValue(null);
+      const token = await buildToken('actor-user', 'admin@hms.local');
+
+      const response = await request(app.getHttpServer())
+        .get(`/api/v1/v1/satusehat/submissions/${submissionId}`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.status).toBe(404);
+    });
+
+    it('403s without the submission read grant', async () => {
+      mockActorWithPermissions([{ action: 'read', resource: 'BpjsSubmission', scope: 'ANY' }]);
+      const token = await buildToken('actor-user', 'admin@hms.local');
+
+      const response = await request(app.getHttpServer())
+        .get(`/api/v1/v1/satusehat/submissions/${submissionId}`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.status).toBe(403);
+    });
+
+    it('reads each recorded id back and returns presence only, never content', async () => {
+      mockOpsPermissions();
+      submissionRepositoryMock.findSubmissionById.mockResolvedValue(buildFailedRow());
+      mockResourceList();
+      // A full Condition as the platform really returns it, patient name and all.
+      fetchMock.mockImplementation(async (input: unknown) => {
+        const url = String(input);
+        if (url.includes('/oauth2/')) {
+          return new Response(
+            JSON.stringify({ access_token: 'recorded-token', expires_in: 3600 }),
+            { status: 200, headers: { 'content-type': 'application/json' } },
+          );
+        }
+        return new Response(JSON.stringify(SATUSEHAT_READ_BACK_FIXTURES.Condition), {
+          status: 200,
+          headers: { 'content-type': 'application/json' },
+        });
+      });
+      const token = await buildToken('actor-user', 'admin@hms.local');
+
+      const response = await request(app.getHttpServer())
+        .post(`/api/v1/v1/satusehat/submissions/${submissionId}/check`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.data.results).toEqual([
+        {
+          resourceType: 'Condition',
+          satusehatId: 'ihs-cond-1',
+          outcome: 'FOUND',
+          versionId: SATUSEHAT_READ_BACK_FIXTURES.Condition.meta.versionId,
+          lastUpdated: SATUSEHAT_READ_BACK_FIXTURES.Condition.meta.lastUpdated,
+          // Condition carries clinicalStatus, not status (P21-T01).
+          status: null,
+          errorCode: null,
+        },
+      ]);
+      const body = JSON.stringify(response.body);
+      expect(body).not.toContain(SATUSEHAT_READ_BACK_FIXTURES.Condition.subject.display);
+      expect(body).not.toContain('J06.9');
+    });
+
+    it('reports a resource the platform no longer holds as not found, not a 500', async () => {
+      mockOpsPermissions();
+      submissionRepositoryMock.findSubmissionById.mockResolvedValue(buildFailedRow());
+      mockResourceList();
+      fetchMock.mockImplementation(async (input: unknown) => {
+        const url = String(input);
+        if (url.includes('/oauth2/')) {
+          return new Response(
+            JSON.stringify({ access_token: 'recorded-token', expires_in: 3600 }),
+            { status: 200, headers: { 'content-type': 'application/json' } },
+          );
+        }
+        return new Response(JSON.stringify(SATUSEHAT_READ_BACK_NOT_FOUND_FIXTURE), {
+          status: 404,
+          headers: { 'content-type': 'application/json' },
+        });
+      });
+      const token = await buildToken('actor-user', 'admin@hms.local');
+
+      const response = await request(app.getHttpServer())
+        .post(`/api/v1/v1/satusehat/submissions/${submissionId}/check`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.data.results[0]).toMatchObject({
+        outcome: 'NOT_FOUND',
+        errorCode: null,
+      });
+    });
   });
 });

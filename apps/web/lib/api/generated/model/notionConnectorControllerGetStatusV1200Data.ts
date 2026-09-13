@@ -11,4 +11,5 @@ export type NotionConnectorControllerGetStatusV1200Data = {
   apiVersion: string;
   dataSourceIdLast4: string;
   circuitBreakerState: string;
+  lastPublishedAt: string;
 };

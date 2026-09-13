@@ -36159,8 +36159,9 @@ paths:
         "200":
           description: Whether this deployment has Notion credentials, the API version
             pinned in code, the last four characters of the Bug Board data
-            source id, and this replica’s circuit-breaker state. Calls nothing
-            upstream. The token is never returned in any form.
+            source id, this replica’s circuit-breaker state, and when a bug
+            report last reached the board. Calls nothing upstream. The token is
+            never returned in any form.
           content:
             application/json:
               schema:
@@ -36177,11 +36178,14 @@ paths:
                         type: string
                       circuitBreakerState:
                         type: string
+                      lastPublishedAt:
+                        type: string
                     required:
                       - isConfigured
                       - apiVersion
                       - dataSourceIdLast4
                       - circuitBreakerState
+                      - lastPublishedAt
                 required:
                   - data
                 example:
@@ -36190,6 +36194,7 @@ paths:
                     apiVersion: 2025-09-03
                     dataSourceIdLast4: 5f21
                     circuitBreakerState: CLOSED
+                    lastPublishedAt: 2026-09-12T02:41:00.000Z
         "401":
           description: Authentication is required.
           content:
@@ -43860,6 +43865,278 @@ paths:
       summary: List SATUSEHAT submission outbox entries
       tags: &a62
         - SATUSEHAT
+  /api/v1/satusehat/submissions/{id}:
+    get:
+      operationId: SatusehatSubmissionController_getSubmissionDetail_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "The outbox row plus its resource list (P21-T02) grouped by type:
+            how many of each were sent, the ids SATUSEHAT assigned, and how many
+            items were skipped per reason category. Presence only — no codes,
+            names, values or patient identifiers, because this route is gated by
+            the admin read grant. `hasResourceList` is false for a submission
+            processed before the list shipped; those need the P21-T05 backfill."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      submission:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          kind:
+                            type: string
+                          encounterId:
+                            type: string
+                          labOrderId:
+                            nullable: true
+                          labOrderNumber:
+                            nullable: true
+                          status:
+                            type: string
+                          attempts:
+                            type: integer
+                          lastError:
+                            nullable: true
+                          nextAttemptAt:
+                            type: string
+                          lastAttemptAt:
+                            type: string
+                          submittedAt:
+                            type: string
+                          satusehatEncounterId:
+                            type: string
+                          createdAt:
+                            type: string
+                          updatedAt:
+                            type: string
+                        required:
+                          - id
+                          - kind
+                          - encounterId
+                          - labOrderId
+                          - labOrderNumber
+                          - status
+                          - attempts
+                          - lastError
+                          - nextAttemptAt
+                          - lastAttemptAt
+                          - submittedAt
+                          - satusehatEncounterId
+                          - createdAt
+                          - updatedAt
+                      hasResourceList:
+                        type: boolean
+                      isBackfilled:
+                        type: boolean
+                      resources:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            resourceType:
+                              type: string
+                            sentCount:
+                              type: integer
+                            satusehatIds:
+                              type: array
+                              items:
+                                type: string
+                            unpairedCount:
+                              type: integer
+                            skipped:
+                              type: array
+                              items: {}
+                          required:
+                            - resourceType
+                            - sentCount
+                            - satusehatIds
+                            - unpairedCount
+                            - skipped
+                    required:
+                      - submission
+                      - hasResourceList
+                      - isBackfilled
+                      - resources
+                required:
+                  - data
+                example:
+                  data:
+                    submission:
+                      id: 7a8b9c0d-1e2f-4a3b-8c4d-5e6f7a8b9c0d
+                      kind: ENCOUNTER
+                      encounterId: 2b3c4d5e-6f7a-4b8c-9d0e-1f2a3b4c5d6e
+                      labOrderId: null
+                      labOrderNumber: null
+                      status: SUBMITTED
+                      attempts: 1
+                      lastError: null
+                      nextAttemptAt: 2026-07-28T02:25:00.000Z
+                      lastAttemptAt: 2026-07-28T02:25:04.000Z
+                      submittedAt: 2026-07-28T02:25:04.000Z
+                      satusehatEncounterId: 0a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d
+                      createdAt: 2026-07-28T02:20:00.000Z
+                      updatedAt: 2026-07-28T02:25:04.000Z
+                    hasResourceList: true
+                    isBackfilled: false
+                    resources:
+                      - resourceType: Encounter
+                        sentCount: 1
+                        satusehatIds:
+                          - 0a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d
+                        unpairedCount: 0
+                        skipped: []
+                      - resourceType: Condition
+                        sentCount: 2
+                        satusehatIds:
+                          - 1b2c3d4e-5f6a-4b7c-8d9e-0f1a2b3c4d5e
+                          - 2c3d4e5f-6a7b-4c8d-9e0f-1a2b3c4d5e6f
+                        unpairedCount: 0
+                        skipped: []
+                      - resourceType: Medication
+                        sentCount: 0
+                        satusehatIds: []
+                        unpairedCount: 0
+                        skipped:
+                          - reason: NO_KFA_CODE
+                            count: 1
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: One SATUSEHAT submission and what it sent
+      tags: *a62
+  /api/v1/satusehat/submissions/{id}/check:
+    post:
+      operationId: SatusehatSubmissionController_checkSubmission_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Reads each recorded id back from the platform and reports, per
+            resource, only whether SATUSEHAT holds it and its version — found,
+            not found, unpaired (sent but its id was never resolved) or error.
+            The projection is server-side and whitelisted: codes, values,
+            narrative and names never leave the API. Reads are capped in
+            concurrency and go through the shared client, so timeouts and the
+            circuit breaker apply, and one failed read does not fail the check."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      submissionId:
+                        type: string
+                      checkedAt:
+                        type: string
+                      results:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            resourceType:
+                              type: string
+                            satusehatId:
+                              type: string
+                            outcome:
+                              type: string
+                            versionId:
+                              type: string
+                            lastUpdated:
+                              type: string
+                            status:
+                              type: string
+                            errorCode:
+                              nullable: true
+                          required:
+                            - resourceType
+                            - satusehatId
+                            - outcome
+                            - versionId
+                            - lastUpdated
+                            - status
+                            - errorCode
+                    required:
+                      - submissionId
+                      - checkedAt
+                      - results
+                required:
+                  - data
+                example:
+                  data:
+                    submissionId: 7a8b9c0d-1e2f-4a3b-8c4d-5e6f7a8b9c0d
+                    checkedAt: 2026-07-29T04:10:00.000Z
+                    results:
+                      - resourceType: Encounter
+                        satusehatId: 0a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d
+                        outcome: FOUND
+                        versionId: MTc4OTE0MTU5NTg4MjIyOTAwMA
+                        lastUpdated: 2026-07-28T02:25:04.000Z
+                        status: finished
+                        errorCode: null
+                      - resourceType: Condition
+                        satusehatId: 1b2c3d4e-5f6a-4b7c-8d9e-0f1a2b3c4d5e
+                        outcome: FOUND
+                        versionId: MTc4OTE0MTU5NTg4MjIyOTAwMA
+                        lastUpdated: 2026-07-28T02:25:04.000Z
+                        status: null
+                        errorCode: null
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Check with SATUSEHAT whether it still holds what we sent
+      tags: *a62
   /api/v1/satusehat/submissions/{id}/retry:
     post:
       operationId: SatusehatSubmissionController_retrySubmission_v1
