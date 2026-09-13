@@ -232,6 +232,11 @@ export type ClinicProfileView = {
   taxId: string | null;
   hasLogo: boolean;
   logoUrl?: string;
+  /** Decimal degrees for SATUSEHAT Locations (P24-T05); null until set. */
+  latitude: number | null;
+  longitude: number | null;
+  /** The registered root site Location (P24-T06); null until registered. */
+  satusehatLocationId: string | null;
   updatedAt: string;
 };
 

@@ -37,6 +37,7 @@ export type WardMinAggregateOutputType = {
   code: string | null
   name: string | null
   description: string | null
+  satusehatLocationId: string | null
   isActive: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -48,6 +49,7 @@ export type WardMaxAggregateOutputType = {
   code: string | null
   name: string | null
   description: string | null
+  satusehatLocationId: string | null
   isActive: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -59,6 +61,7 @@ export type WardCountAggregateOutputType = {
   code: number
   name: number
   description: number
+  satusehatLocationId: number
   isActive: number
   createdAt: number
   updatedAt: number
@@ -72,6 +75,7 @@ export type WardMinAggregateInputType = {
   code?: true
   name?: true
   description?: true
+  satusehatLocationId?: true
   isActive?: true
   createdAt?: true
   updatedAt?: true
@@ -83,6 +87,7 @@ export type WardMaxAggregateInputType = {
   code?: true
   name?: true
   description?: true
+  satusehatLocationId?: true
   isActive?: true
   createdAt?: true
   updatedAt?: true
@@ -94,6 +99,7 @@ export type WardCountAggregateInputType = {
   code?: true
   name?: true
   description?: true
+  satusehatLocationId?: true
   isActive?: true
   createdAt?: true
   updatedAt?: true
@@ -178,6 +184,7 @@ export type WardGroupByOutputType = {
   code: string
   name: string
   description: string | null
+  satusehatLocationId: string | null
   isActive: boolean
   createdAt: Date
   updatedAt: Date
@@ -210,6 +217,7 @@ export type WardWhereInput = {
   code?: Prisma.StringFilter<"Ward"> | string
   name?: Prisma.StringFilter<"Ward"> | string
   description?: Prisma.StringNullableFilter<"Ward"> | string | null
+  satusehatLocationId?: Prisma.StringNullableFilter<"Ward"> | string | null
   isActive?: Prisma.BoolFilter<"Ward"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Ward"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Ward"> | Date | string
@@ -222,6 +230,7 @@ export type WardOrderByWithRelationInput = {
   code?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
+  satusehatLocationId?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -237,6 +246,7 @@ export type WardWhereUniqueInput = Prisma.AtLeast<{
   code?: Prisma.StringFilter<"Ward"> | string
   name?: Prisma.StringFilter<"Ward"> | string
   description?: Prisma.StringNullableFilter<"Ward"> | string | null
+  satusehatLocationId?: Prisma.StringNullableFilter<"Ward"> | string | null
   isActive?: Prisma.BoolFilter<"Ward"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Ward"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Ward"> | Date | string
@@ -249,6 +259,7 @@ export type WardOrderByWithAggregationInput = {
   code?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
+  satusehatLocationId?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -266,6 +277,7 @@ export type WardScalarWhereWithAggregatesInput = {
   code?: Prisma.StringWithAggregatesFilter<"Ward"> | string
   name?: Prisma.StringWithAggregatesFilter<"Ward"> | string
   description?: Prisma.StringNullableWithAggregatesFilter<"Ward"> | string | null
+  satusehatLocationId?: Prisma.StringNullableWithAggregatesFilter<"Ward"> | string | null
   isActive?: Prisma.BoolWithAggregatesFilter<"Ward"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Ward"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Ward"> | Date | string
@@ -277,6 +289,7 @@ export type WardCreateInput = {
   code: string
   name: string
   description?: string | null
+  satusehatLocationId?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -289,6 +302,7 @@ export type WardUncheckedCreateInput = {
   code: string
   name: string
   description?: string | null
+  satusehatLocationId?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -301,6 +315,7 @@ export type WardUpdateInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  satusehatLocationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -313,6 +328,7 @@ export type WardUncheckedUpdateInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  satusehatLocationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -325,6 +341,7 @@ export type WardCreateManyInput = {
   code: string
   name: string
   description?: string | null
+  satusehatLocationId?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -336,6 +353,7 @@ export type WardUpdateManyMutationInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  satusehatLocationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -347,6 +365,7 @@ export type WardUncheckedUpdateManyInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  satusehatLocationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -358,6 +377,7 @@ export type WardCountOrderByAggregateInput = {
   code?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  satusehatLocationId?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -369,6 +389,7 @@ export type WardMaxOrderByAggregateInput = {
   code?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  satusehatLocationId?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -380,6 +401,7 @@ export type WardMinOrderByAggregateInput = {
   code?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  satusehatLocationId?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -410,6 +432,7 @@ export type WardCreateWithoutRoomsInput = {
   code: string
   name: string
   description?: string | null
+  satusehatLocationId?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -421,6 +444,7 @@ export type WardUncheckedCreateWithoutRoomsInput = {
   code: string
   name: string
   description?: string | null
+  satusehatLocationId?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -448,6 +472,7 @@ export type WardUpdateWithoutRoomsInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  satusehatLocationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -459,6 +484,7 @@ export type WardUncheckedUpdateWithoutRoomsInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  satusehatLocationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -501,6 +527,7 @@ export type WardSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   code?: boolean
   name?: boolean
   description?: boolean
+  satusehatLocationId?: boolean
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -514,6 +541,7 @@ export type WardSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   code?: boolean
   name?: boolean
   description?: boolean
+  satusehatLocationId?: boolean
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -525,6 +553,7 @@ export type WardSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   code?: boolean
   name?: boolean
   description?: boolean
+  satusehatLocationId?: boolean
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -536,13 +565,14 @@ export type WardSelectScalar = {
   code?: boolean
   name?: boolean
   description?: boolean
+  satusehatLocationId?: boolean
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
 }
 
-export type WardOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "name" | "description" | "isActive" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["ward"]>
+export type WardOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "name" | "description" | "satusehatLocationId" | "isActive" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["ward"]>
 export type WardInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   rooms?: boolean | Prisma.Ward$roomsArgs<ExtArgs>
   _count?: boolean | Prisma.WardCountOutputTypeDefaultArgs<ExtArgs>
@@ -560,6 +590,10 @@ export type $WardPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     code: string
     name: string
     description: string | null
+    /**
+     * The ward's SATUSEHAT Location (`wa`) once registered (P24-T05/T06).
+     */
+    satusehatLocationId: string | null
     isActive: boolean
     createdAt: Date
     updatedAt: Date
@@ -992,6 +1026,7 @@ export interface WardFieldRefs {
   readonly code: Prisma.FieldRef<"Ward", 'String'>
   readonly name: Prisma.FieldRef<"Ward", 'String'>
   readonly description: Prisma.FieldRef<"Ward", 'String'>
+  readonly satusehatLocationId: Prisma.FieldRef<"Ward", 'String'>
   readonly isActive: Prisma.FieldRef<"Ward", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"Ward", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Ward", 'DateTime'>

@@ -44,6 +44,14 @@ export function ClinicProfileForm({ profile, canWrite }: ClinicProfileFormProps)
   const [email, setEmail] = useState(profile?.email ?? '');
   const [licenseNumber, setLicenseNumber] = useState(profile?.licenseNumber ?? '');
   const [taxId, setTaxId] = useState(profile?.taxId ?? '');
+  const [latitude, setLatitude] = useState(
+    profile?.latitude === null || profile?.latitude === undefined ? '' : String(profile.latitude),
+  );
+  const [longitude, setLongitude] = useState(
+    profile?.longitude === null || profile?.longitude === undefined
+      ? ''
+      : String(profile.longitude),
+  );
   const [logo, setLogo] = useState<LogoSelection>({ kind: 'unchanged' });
   const [notice, setNotice] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -82,6 +90,34 @@ export function ClinicProfileForm({ profile, canWrite }: ClinicProfileFormProps)
     return {};
   }
 
+  /**
+   * The position for SATUSEHAT Locations (P24-T05) is saved as a pair: both
+   * filled sends two numbers, both empty clears them, and anything else is
+   * refused here before the API refuses it. The API also checks Indonesia's
+   * bounding box, which is what catches latitude and longitude typed swapped.
+   */
+  function buildCoordinateFields(): Pick<
+    UpdateClinicProfileInput,
+    'latitude' | 'longitude'
+  > | null {
+    const trimmedLatitude = latitude.trim();
+    const trimmedLongitude = longitude.trim();
+    if (trimmedLatitude === '' && trimmedLongitude === '') {
+      return { latitude: null, longitude: null };
+    }
+    const parsedLatitude = Number(trimmedLatitude.replace(',', '.'));
+    const parsedLongitude = Number(trimmedLongitude.replace(',', '.'));
+    if (
+      trimmedLatitude === '' ||
+      trimmedLongitude === '' ||
+      !Number.isFinite(parsedLatitude) ||
+      !Number.isFinite(parsedLongitude)
+    ) {
+      return null;
+    }
+    return { latitude: parsedLatitude, longitude: parsedLongitude };
+  }
+
   function buildPayload(): UpdateClinicProfileInput {
     return {
       name: name.trim(),
@@ -92,6 +128,7 @@ export function ClinicProfileForm({ profile, canWrite }: ClinicProfileFormProps)
       licenseNumber: toOptionalField(licenseNumber),
       taxId: toOptionalField(taxId),
       ...buildLogoField(),
+      ...buildCoordinateFields(),
     };
   }
 
@@ -103,6 +140,15 @@ export function ClinicProfileForm({ profile, canWrite }: ClinicProfileFormProps)
   function handleLogoRemoved(): void {
     setError(null);
     setLogo({ kind: 'removed' });
+  }
+
+  function handleSave(): void {
+    if (buildCoordinateFields() === null) {
+      setNotice(null);
+      setError(t('errors.coordinatesPair'));
+      return;
+    }
+    saveMutation.mutate();
   }
 
   const isSaveDisabled = !canWrite || saveMutation.isPending || name.trim() === '';
@@ -165,7 +211,22 @@ export function ClinicProfileForm({ profile, canWrite }: ClinicProfileFormProps)
             disabled={!canWrite}
             onChange={setTaxId}
           />
+          <ClinicProfileTextField
+            id="clinic-profile-latitude"
+            label={t('fields.latitude')}
+            value={latitude}
+            disabled={!canWrite}
+            onChange={setLatitude}
+          />
+          <ClinicProfileTextField
+            id="clinic-profile-longitude"
+            label={t('fields.longitude')}
+            value={longitude}
+            disabled={!canWrite}
+            onChange={setLongitude}
+          />
         </div>
+        <p className="text-xs text-slate-500">{t('coordinatesHint')}</p>
         <ClinicProfileLogoField
           storedLogoUrl={logo.kind === 'removed' ? null : (profile?.logoUrl ?? null)}
           previewUrl={logo.kind === 'staged' ? logo.previewUrl : null}
@@ -176,7 +237,7 @@ export function ClinicProfileForm({ profile, canWrite }: ClinicProfileFormProps)
         />
         {canWrite ? (
           <div className="flex justify-end">
-            <Button type="button" disabled={isSaveDisabled} onClick={() => saveMutation.mutate()}>
+            <Button type="button" disabled={isSaveDisabled} onClick={handleSave}>
               {saveMutation.isPending ? t('saving') : t('save')}
             </Button>
           </div>

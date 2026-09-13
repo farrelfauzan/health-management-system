@@ -1,4 +1,5 @@
 import type { BedStatusValue } from '#room-management/schemas';
+import type { SatusehatServiceClassValue } from '#satusehat/schemas';
 
 /**
  * A room class as the master-data screen edits it (IMP-13).
@@ -15,6 +16,8 @@ export type RoomClassResponse = {
   description?: string;
   /** Planned bed count for the whole clinic. Absent means uncapped. */
   quota?: number;
+  /** The SATUSEHAT service class its rooms report as (P24-T05). Absent means unmapped. */
+  satusehatServiceClass?: SatusehatServiceClassValue;
   allocatedBeds: number;
   isActive: boolean;
   createdAt: string;

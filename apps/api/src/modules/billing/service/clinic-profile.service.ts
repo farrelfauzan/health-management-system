@@ -302,6 +302,13 @@ export class ClinicProfileService {
     if (input.taxId !== undefined) {
       fields.taxId = input.taxId;
     }
+    // The schema only lets the coordinates through as a pair (P24-T05).
+    if (input.latitude !== undefined) {
+      fields.latitude = input.latitude;
+    }
+    if (input.longitude !== undefined) {
+      fields.longitude = input.longitude;
+    }
     return fields;
   }
 

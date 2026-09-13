@@ -5,6 +5,7 @@
  * Health Management System API
  * OpenAPI spec version: 1.0.0
  */
+import type { CreateRoomClassDtoSatusehatServiceClass } from './createRoomClassDtoSatusehatServiceClass';
 
 export interface CreateRoomClassDto {
   /**
@@ -25,5 +26,6 @@ export interface CreateRoomClassDto {
      * @maximum 9999
      */
   quota?: number;
+  satusehatServiceClass?: CreateRoomClassDtoSatusehatServiceClass;
   isActive?: boolean;
 }

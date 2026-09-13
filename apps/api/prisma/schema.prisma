@@ -494,6 +494,20 @@ enum DoctorLicenseType {
   SIP
 }
 
+/// The SATUSEHAT inpatient service class a room class reports under (P24-T05,
+/// FR-LOC-05), sent as `1`, `2`, `3`, `vip`, `vvip` in the
+/// `locationServiceClass-Inpatient` code system. A clinic class above VVIP is
+/// mapped to VVIP by the admin, per the Location page.
+enum SatusehatServiceClass {
+  CLASS_1
+  CLASS_2
+  CLASS_3
+  VIP
+  VVIP
+
+  @@map("satusehat_service_class")
+}
+
 enum AppointmentStatus {
   REQUESTED
   SCHEDULED
@@ -1617,6 +1631,8 @@ model Specialty {
   /// an unmapped specialty fails a BPJS submission fast with a readable
   /// message.
   bpjsPoliCode String?   @map("bpjs_poli_code")
+  /// The poli's SATUSEHAT Location (`ro`) once registered (P24-T05/T06).
+  satusehatLocationId String? @map("satusehat_location_id")
   isActive     Boolean   @default(true) @map("is_active")
   createdAt    DateTime  @default(now()) @map("created_at")
   updatedAt    DateTime  @updatedAt @map("updated_at")
@@ -2586,6 +2602,14 @@ model ClinicProfile {
   /// `ResponseContentType` to a validated value rather than to a constant
   /// that a future re-encode target would silently make wrong.
   logoMimeType   String?  @map("logo_mime_type")
+  /// Decimal degrees, required before any SATUSEHAT Location is registered
+  /// (P24-T05, FR-LOC-01). Validated to Indonesia's bounding box because the
+  /// official Location example swaps latitude and longitude.
+  latitude       Decimal? @db.Decimal(9, 6)
+  longitude      Decimal? @db.Decimal(9, 6)
+  /// The root site Location once registered (FR-LOC-02). While null, bundles
+  /// keep using `SATUSEHAT_LOCATION_ID`, exactly as before this column existed.
+  satusehatLocationId String? @map("satusehat_location_id")
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @updatedAt @map("updated_at")
 
@@ -4247,6 +4271,9 @@ model RoomClass {
   /// zero would mean "no beds allowed" rather than "no limit". When it is set,
   /// bed creation refuses to exceed it — a quota nothing checks is decoration.
   quota       Int?
+  /// Which SATUSEHAT service class this class reports as (FR-LOC-05). Null
+  /// means unmapped, and rooms of an unmapped class cannot be registered.
+  satusehatServiceClass SatusehatServiceClass? @map("satusehat_service_class")
   isActive    Boolean   @default(true) @map("is_active")
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime  @updatedAt @map("updated_at")
@@ -4274,6 +4301,8 @@ model Ward {
   code        String
   name        String
   description String?
+  /// The ward's SATUSEHAT Location (`wa`) once registered (P24-T05/T06).
+  satusehatLocationId String? @map("satusehat_location_id")
   isActive    Boolean   @default(true) @map("is_active")
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime  @updatedAt @map("updated_at")
@@ -4299,6 +4328,8 @@ model Room {
   code        String
   name        String
   description String?
+  /// The room's SATUSEHAT Location (`ro`) once registered (P24-T05/T06).
+  satusehatLocationId String? @map("satusehat_location_id")
   isActive    Boolean   @default(true) @map("is_active")
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime  @updatedAt @map("updated_at")
@@ -4330,6 +4361,8 @@ model Bed {
   roomId    String    @map("room_id") @db.Uuid
   code      String
   status    BedStatus @default(AVAILABLE)
+  /// The bed's SATUSEHAT Location (`bd`) once registered (P24-T05/T06).
+  satusehatLocationId String? @map("satusehat_location_id")
   notes     String?
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")

@@ -191,6 +191,53 @@ describe('ClinicProfilePanel', () => {
     expect(createLogoUploadUrlMock).not.toHaveBeenCalled();
   });
 
+  // P24-T05. The position SATUSEHAT Locations are registered with.
+  it('sends latitude and longitude as numbers, accepting a decimal comma', async () => {
+    const user = userEvent.setup();
+    renderPanel();
+
+    await user.type(await screen.findByLabelText('Latitude'), '-6,9175');
+    await user.type(screen.getByLabelText('Longitude'), '107.6191');
+    await user.click(screen.getByRole('button', { name: 'Save profile' }));
+
+    await waitFor(() => expect(updateProfileMock).toHaveBeenCalled());
+    expect(updateProfileMock.mock.calls[0][0]).toMatchObject({
+      latitude: -6.9175,
+      longitude: 107.6191,
+    });
+  });
+
+  it('refuses half a position without contacting the API', async () => {
+    const user = userEvent.setup();
+    renderPanel();
+
+    await user.type(await screen.findByLabelText('Latitude'), '-6.9175');
+    await user.click(screen.getByRole('button', { name: 'Save profile' }));
+
+    expect(
+      await screen.findByText('Enter both latitude and longitude as numbers, or leave both empty.'),
+    ).toBeInTheDocument();
+    expect(updateProfileMock).not.toHaveBeenCalled();
+  });
+
+  it('shows stored coordinates and clears both together when emptied', async () => {
+    getProfileMock.mockResolvedValue({
+      status: 200,
+      data: { data: buildProfile({ latitude: -6.9175, longitude: 107.6191 }) },
+    });
+    const user = userEvent.setup();
+    renderPanel();
+
+    const latitudeInput = await screen.findByLabelText('Latitude');
+    await waitFor(() => expect(latitudeInput).toHaveValue('-6.9175'));
+    await user.clear(latitudeInput);
+    await user.clear(screen.getByLabelText('Longitude'));
+    await user.click(screen.getByRole('button', { name: 'Save profile' }));
+
+    await waitFor(() => expect(updateProfileMock).toHaveBeenCalled());
+    expect(updateProfileMock.mock.calls[0][0]).toMatchObject({ latitude: null, longitude: null });
+  });
+
   it('hides the save action from a reader who cannot write', async () => {
     renderPanel(READ_ONLY_RULES);
 

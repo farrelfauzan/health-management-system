@@ -180,3 +180,26 @@ export const SATUSEHAT_NIK_SUFFIX_CHECKS = ['MATCHES', 'DIFFERS', 'UNAVAILABLE']
 export const satusehatNikSuffixCheckSchema = z.enum(SATUSEHAT_NIK_SUFFIX_CHECKS);
 
 export type SatusehatNikSuffixCheckValue = z.infer<typeof satusehatNikSuffixCheckSchema>;
+
+/**
+ * The SATUSEHAT inpatient service class a room class reports under (P24-T05,
+ * FR-LOC-05). Sent as the codes in {@link resolveSatusehatServiceClassCode}.
+ */
+export const SATUSEHAT_SERVICE_CLASSES = ['CLASS_1', 'CLASS_2', 'CLASS_3', 'VIP', 'VVIP'] as const;
+
+export const satusehatServiceClassSchema = z.enum(SATUSEHAT_SERVICE_CLASSES);
+
+export type SatusehatServiceClassValue = z.infer<typeof satusehatServiceClassSchema>;
+
+/**
+ * Why a row cannot be registered as a SATUSEHAT Location yet (P24-T05). P24-T06
+ * shows these as `BLOCKED` reasons; an unregistered parent is its own case there.
+ */
+export const SATUSEHAT_LOCATION_BLOCK_REASONS = [
+  'MISSING_COORDINATES',
+  'UNMAPPED_SERVICE_CLASS',
+] as const;
+
+export const satusehatLocationBlockReasonSchema = z.enum(SATUSEHAT_LOCATION_BLOCK_REASONS);
+
+export type SatusehatLocationBlockReasonValue = z.infer<typeof satusehatLocationBlockReasonSchema>;

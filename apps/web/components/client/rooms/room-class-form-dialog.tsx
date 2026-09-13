@@ -2,10 +2,12 @@
 
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import type {
-  CreateRoomClassInput,
-  RoomClassResponse,
-  UpdateRoomClassInput,
+import {
+  SATUSEHAT_SERVICE_CLASSES,
+  type CreateRoomClassInput,
+  type RoomClassResponse,
+  type SatusehatServiceClassValue,
+  type UpdateRoomClassInput,
 } from '@hms/shared-types';
 import {
   Button,
@@ -17,6 +19,11 @@ import {
   DialogHeader,
   DialogTitle,
   Input,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
@@ -29,6 +36,9 @@ import { RequiredLegend } from '#components/client/shared/required-legend';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { parseApiSuccess } from '#lib/api/response';
 import { invalidateRoomQueries } from '#lib/rooms/invalidate-room-queries';
+
+/** The select's stand-in for "not mapped": a Radix item cannot hold an empty value. */
+const UNMAPPED_SERVICE_CLASS = 'UNMAPPED';
 
 type RoomClassFormDialogProps = {
   open: boolean;
@@ -49,6 +59,9 @@ export function RoomClassFormDialog({
   const [description, setDescription] = useState<string>(roomClass?.description ?? '');
   const [quota, setQuota] = useState<string>(
     roomClass?.quota === undefined ? '' : String(roomClass.quota),
+  );
+  const [serviceClass, setServiceClass] = useState<string>(
+    roomClass?.satusehatServiceClass ?? UNMAPPED_SERVICE_CLASS,
   );
   const [isActive, setIsActive] = useState<boolean>(roomClass?.isActive ?? true);
   const [actionError, setActionError] = useState<string | null>(null);
@@ -82,11 +95,16 @@ export function RoomClassFormDialog({
     // it would re-point a price at nothing. An empty quota field sends `null`
     // on an update — that is how a clinic says "uncapped again" — and is simply
     // omitted on create, where there is nothing to clear.
+    // The SATUSEHAT service class (P24-T05): unmapping on an update sends
+    // `null`, and on create an unmapped class is simply left out.
+    const mappedServiceClass =
+      serviceClass === UNMAPPED_SERVICE_CLASS ? null : (serviceClass as SatusehatServiceClassValue);
     const payload = isEditing
       ? {
           name: trimmedName,
           description: description.trim() || null,
           quota: parsedQuota,
+          satusehatServiceClass: mappedServiceClass,
           isActive,
         }
       : {
@@ -94,6 +112,7 @@ export function RoomClassFormDialog({
           name: trimmedName,
           ...(description.trim() ? { description: description.trim() } : {}),
           ...(parsedQuota === null ? {} : { quota: parsedQuota }),
+          ...(mappedServiceClass === null ? {} : { satusehatServiceClass: mappedServiceClass }),
           isActive,
         };
 
@@ -158,6 +177,23 @@ export function RoomClassFormDialog({
               value={description}
               onChange={(event) => setDescription(event.target.value)}
             />
+          </div>
+          <div className="space-y-2">
+            <FormLabel htmlFor="room-class-service-class">{t('rooms.satusehatServiceClass')}</FormLabel>
+            <Select value={serviceClass} onValueChange={setServiceClass}>
+              <SelectTrigger id="room-class-service-class" className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={UNMAPPED_SERVICE_CLASS}>{t('rooms.serviceClassUnmapped')}</SelectItem>
+                {SATUSEHAT_SERVICE_CLASSES.map((value) => (
+                  <SelectItem key={value} value={value}>
+                    {t(`rooms.serviceClasses.${value}`)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-slate-400">{t('rooms.serviceClassHint')}</p>
           </div>
           <div className="flex items-center gap-2">
             <Checkbox

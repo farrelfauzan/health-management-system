@@ -54,6 +54,7 @@ export type RoomClassMinAggregateOutputType = {
   name: string | null
   description: string | null
   quota: number | null
+  satusehatServiceClass: $Enums.SatusehatServiceClass | null
   isActive: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -66,6 +67,7 @@ export type RoomClassMaxAggregateOutputType = {
   name: string | null
   description: string | null
   quota: number | null
+  satusehatServiceClass: $Enums.SatusehatServiceClass | null
   isActive: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -78,6 +80,7 @@ export type RoomClassCountAggregateOutputType = {
   name: number
   description: number
   quota: number
+  satusehatServiceClass: number
   isActive: number
   createdAt: number
   updatedAt: number
@@ -100,6 +103,7 @@ export type RoomClassMinAggregateInputType = {
   name?: true
   description?: true
   quota?: true
+  satusehatServiceClass?: true
   isActive?: true
   createdAt?: true
   updatedAt?: true
@@ -112,6 +116,7 @@ export type RoomClassMaxAggregateInputType = {
   name?: true
   description?: true
   quota?: true
+  satusehatServiceClass?: true
   isActive?: true
   createdAt?: true
   updatedAt?: true
@@ -124,6 +129,7 @@ export type RoomClassCountAggregateInputType = {
   name?: true
   description?: true
   quota?: true
+  satusehatServiceClass?: true
   isActive?: true
   createdAt?: true
   updatedAt?: true
@@ -223,6 +229,7 @@ export type RoomClassGroupByOutputType = {
   name: string
   description: string | null
   quota: number | null
+  satusehatServiceClass: $Enums.SatusehatServiceClass | null
   isActive: boolean
   createdAt: Date
   updatedAt: Date
@@ -258,6 +265,7 @@ export type RoomClassWhereInput = {
   name?: Prisma.StringFilter<"RoomClass"> | string
   description?: Prisma.StringNullableFilter<"RoomClass"> | string | null
   quota?: Prisma.IntNullableFilter<"RoomClass"> | number | null
+  satusehatServiceClass?: Prisma.EnumSatusehatServiceClassNullableFilter<"RoomClass"> | $Enums.SatusehatServiceClass | null
   isActive?: Prisma.BoolFilter<"RoomClass"> | boolean
   createdAt?: Prisma.DateTimeFilter<"RoomClass"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"RoomClass"> | Date | string
@@ -272,6 +280,7 @@ export type RoomClassOrderByWithRelationInput = {
   name?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   quota?: Prisma.SortOrderInput | Prisma.SortOrder
+  satusehatServiceClass?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -289,6 +298,7 @@ export type RoomClassWhereUniqueInput = Prisma.AtLeast<{
   name?: Prisma.StringFilter<"RoomClass"> | string
   description?: Prisma.StringNullableFilter<"RoomClass"> | string | null
   quota?: Prisma.IntNullableFilter<"RoomClass"> | number | null
+  satusehatServiceClass?: Prisma.EnumSatusehatServiceClassNullableFilter<"RoomClass"> | $Enums.SatusehatServiceClass | null
   isActive?: Prisma.BoolFilter<"RoomClass"> | boolean
   createdAt?: Prisma.DateTimeFilter<"RoomClass"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"RoomClass"> | Date | string
@@ -303,6 +313,7 @@ export type RoomClassOrderByWithAggregationInput = {
   name?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   quota?: Prisma.SortOrderInput | Prisma.SortOrder
+  satusehatServiceClass?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -323,6 +334,7 @@ export type RoomClassScalarWhereWithAggregatesInput = {
   name?: Prisma.StringWithAggregatesFilter<"RoomClass"> | string
   description?: Prisma.StringNullableWithAggregatesFilter<"RoomClass"> | string | null
   quota?: Prisma.IntNullableWithAggregatesFilter<"RoomClass"> | number | null
+  satusehatServiceClass?: Prisma.EnumSatusehatServiceClassNullableWithAggregatesFilter<"RoomClass"> | $Enums.SatusehatServiceClass | null
   isActive?: Prisma.BoolWithAggregatesFilter<"RoomClass"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"RoomClass"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"RoomClass"> | Date | string
@@ -335,6 +347,7 @@ export type RoomClassCreateInput = {
   name: string
   description?: string | null
   quota?: number | null
+  satusehatServiceClass?: $Enums.SatusehatServiceClass | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -349,6 +362,7 @@ export type RoomClassUncheckedCreateInput = {
   name: string
   description?: string | null
   quota?: number | null
+  satusehatServiceClass?: $Enums.SatusehatServiceClass | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -363,6 +377,7 @@ export type RoomClassUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quota?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatServiceClass?: Prisma.NullableEnumSatusehatServiceClassFieldUpdateOperationsInput | $Enums.SatusehatServiceClass | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -377,6 +392,7 @@ export type RoomClassUncheckedUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quota?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatServiceClass?: Prisma.NullableEnumSatusehatServiceClassFieldUpdateOperationsInput | $Enums.SatusehatServiceClass | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -391,6 +407,7 @@ export type RoomClassCreateManyInput = {
   name: string
   description?: string | null
   quota?: number | null
+  satusehatServiceClass?: $Enums.SatusehatServiceClass | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -403,6 +420,7 @@ export type RoomClassUpdateManyMutationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quota?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatServiceClass?: Prisma.NullableEnumSatusehatServiceClassFieldUpdateOperationsInput | $Enums.SatusehatServiceClass | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -415,6 +433,7 @@ export type RoomClassUncheckedUpdateManyInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quota?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatServiceClass?: Prisma.NullableEnumSatusehatServiceClassFieldUpdateOperationsInput | $Enums.SatusehatServiceClass | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -432,6 +451,7 @@ export type RoomClassCountOrderByAggregateInput = {
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
   quota?: Prisma.SortOrder
+  satusehatServiceClass?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -448,6 +468,7 @@ export type RoomClassMaxOrderByAggregateInput = {
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
   quota?: Prisma.SortOrder
+  satusehatServiceClass?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -460,6 +481,7 @@ export type RoomClassMinOrderByAggregateInput = {
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
   quota?: Prisma.SortOrder
+  satusehatServiceClass?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -491,6 +513,10 @@ export type RoomClassUpdateOneWithoutServiceTariffsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.RoomClassUpdateToOneWithWhereWithoutServiceTariffsInput, Prisma.RoomClassUpdateWithoutServiceTariffsInput>, Prisma.RoomClassUncheckedUpdateWithoutServiceTariffsInput>
 }
 
+export type NullableEnumSatusehatServiceClassFieldUpdateOperationsInput = {
+  set?: $Enums.SatusehatServiceClass | null
+}
+
 export type RoomClassCreateNestedOneWithoutRoomsInput = {
   create?: Prisma.XOR<Prisma.RoomClassCreateWithoutRoomsInput, Prisma.RoomClassUncheckedCreateWithoutRoomsInput>
   connectOrCreate?: Prisma.RoomClassCreateOrConnectWithoutRoomsInput
@@ -511,6 +537,7 @@ export type RoomClassCreateWithoutServiceTariffsInput = {
   name: string
   description?: string | null
   quota?: number | null
+  satusehatServiceClass?: $Enums.SatusehatServiceClass | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -524,6 +551,7 @@ export type RoomClassUncheckedCreateWithoutServiceTariffsInput = {
   name: string
   description?: string | null
   quota?: number | null
+  satusehatServiceClass?: $Enums.SatusehatServiceClass | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -553,6 +581,7 @@ export type RoomClassUpdateWithoutServiceTariffsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quota?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatServiceClass?: Prisma.NullableEnumSatusehatServiceClassFieldUpdateOperationsInput | $Enums.SatusehatServiceClass | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -566,6 +595,7 @@ export type RoomClassUncheckedUpdateWithoutServiceTariffsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quota?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatServiceClass?: Prisma.NullableEnumSatusehatServiceClassFieldUpdateOperationsInput | $Enums.SatusehatServiceClass | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -579,6 +609,7 @@ export type RoomClassCreateWithoutRoomsInput = {
   name: string
   description?: string | null
   quota?: number | null
+  satusehatServiceClass?: $Enums.SatusehatServiceClass | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -592,6 +623,7 @@ export type RoomClassUncheckedCreateWithoutRoomsInput = {
   name: string
   description?: string | null
   quota?: number | null
+  satusehatServiceClass?: $Enums.SatusehatServiceClass | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -621,6 +653,7 @@ export type RoomClassUpdateWithoutRoomsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quota?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatServiceClass?: Prisma.NullableEnumSatusehatServiceClassFieldUpdateOperationsInput | $Enums.SatusehatServiceClass | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -634,6 +667,7 @@ export type RoomClassUncheckedUpdateWithoutRoomsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quota?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatServiceClass?: Prisma.NullableEnumSatusehatServiceClassFieldUpdateOperationsInput | $Enums.SatusehatServiceClass | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -687,6 +721,7 @@ export type RoomClassSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   name?: boolean
   description?: boolean
   quota?: boolean
+  satusehatServiceClass?: boolean
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -702,6 +737,7 @@ export type RoomClassSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   name?: boolean
   description?: boolean
   quota?: boolean
+  satusehatServiceClass?: boolean
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -714,6 +750,7 @@ export type RoomClassSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   name?: boolean
   description?: boolean
   quota?: boolean
+  satusehatServiceClass?: boolean
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -726,13 +763,14 @@ export type RoomClassSelectScalar = {
   name?: boolean
   description?: boolean
   quota?: boolean
+  satusehatServiceClass?: boolean
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
 }
 
-export type RoomClassOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "name" | "description" | "quota" | "isActive" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["roomClass"]>
+export type RoomClassOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "name" | "description" | "quota" | "satusehatServiceClass" | "isActive" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["roomClass"]>
 export type RoomClassInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   rooms?: boolean | Prisma.RoomClass$roomsArgs<ExtArgs>
   serviceTariffs?: boolean | Prisma.RoomClass$serviceTariffsArgs<ExtArgs>
@@ -760,6 +798,11 @@ export type $RoomClassPayload<ExtArgs extends runtime.Types.Extensions.InternalA
      * bed creation refuses to exceed it — a quota nothing checks is decoration.
      */
     quota: number | null
+    /**
+     * Which SATUSEHAT service class this class reports as (FR-LOC-05). Null
+     * means unmapped, and rooms of an unmapped class cannot be registered.
+     */
+    satusehatServiceClass: $Enums.SatusehatServiceClass | null
     isActive: boolean
     createdAt: Date
     updatedAt: Date
@@ -1194,6 +1237,7 @@ export interface RoomClassFieldRefs {
   readonly name: Prisma.FieldRef<"RoomClass", 'String'>
   readonly description: Prisma.FieldRef<"RoomClass", 'String'>
   readonly quota: Prisma.FieldRef<"RoomClass", 'Int'>
+  readonly satusehatServiceClass: Prisma.FieldRef<"RoomClass", 'SatusehatServiceClass'>
   readonly isActive: Prisma.FieldRef<"RoomClass", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"RoomClass", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"RoomClass", 'DateTime'>

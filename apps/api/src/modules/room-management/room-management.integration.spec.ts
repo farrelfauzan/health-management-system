@@ -215,10 +215,11 @@ describe('Room management against Postgres', () => {
       code: 'IMP13-KELAS-1',
       name: 'Kelas 1',
       description: 'Spec fixture',
+      satusehatServiceClass: 'CLASS_1',
     });
     expect(roomClass.status).toBe(201);
     // A brand-new class holds nothing, and no quota means uncapped.
-    expect(roomClass.body.data).toMatchObject({ allocatedBeds: 0 });
+    expect(roomClass.body.data).toMatchObject({ allocatedBeds: 0, satusehatServiceClass: 'CLASS_1' });
     expect(roomClass.body.data.quota).toBeUndefined();
     roomClassId = roomClass.body.data.id;
 
@@ -296,6 +297,28 @@ describe('Room management against Postgres', () => {
     const listed = await asManager('get', `/api/v1/room-classes?search=IMP13`);
     expect(listed.status).toBe(200);
     expect(listed.body.data[0]).toMatchObject({ code: 'IMP13-KELAS-1', allocatedBeds: 1 });
+  });
+
+  // P24-T05. Unmapping a class is how a clinic says its rooms cannot be reported yet.
+  it('unmaps a SATUSEHAT service class and maps it again', async () => {
+    const unmapped = await asManager('patch', `/api/v1/room-classes/${roomClassId}`).send({
+      satusehatServiceClass: null,
+    });
+    expect(unmapped.status).toBe(200);
+    expect(unmapped.body.data.satusehatServiceClass).toBeUndefined();
+
+    const remapped = await asManager('patch', `/api/v1/room-classes/${roomClassId}`).send({
+      satusehatServiceClass: 'VIP',
+    });
+    expect(remapped.status).toBe(200);
+    expect(remapped.body.data.satusehatServiceClass).toBe('VIP');
+  });
+
+  it('refuses a service class SATUSEHAT does not define', async () => {
+    const response = await asManager('patch', `/api/v1/room-classes/${roomClassId}`).send({
+      satusehatServiceClass: 'SUITE',
+    });
+    expect(response.status).toBe(400);
   });
 
   it('refuses a quota below the beds already allocated', async () => {

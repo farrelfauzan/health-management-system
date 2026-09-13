@@ -28,6 +28,9 @@ export function toClinicProfileView(
     taxId: record.taxId,
     hasLogo: record.logoStorageKey !== null,
     ...(logoUrl === undefined ? {} : { logoUrl }),
+    latitude: record.latitude,
+    longitude: record.longitude,
+    satusehatLocationId: record.satusehatLocationId,
     updatedAt: record.updatedAt.toISOString(),
   };
 }

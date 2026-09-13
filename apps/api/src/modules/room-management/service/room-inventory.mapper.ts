@@ -29,6 +29,7 @@ export class RoomInventoryMapper {
       name: roomClass.name,
       description: roomClass.description ?? undefined,
       quota: roomClass.quota ?? undefined,
+      satusehatServiceClass: roomClass.satusehatServiceClass ?? undefined,
       allocatedBeds,
       isActive: roomClass.isActive,
       createdAt: roomClass.createdAt.toISOString(),

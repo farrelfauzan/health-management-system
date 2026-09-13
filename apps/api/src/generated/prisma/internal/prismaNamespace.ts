@@ -9128,6 +9128,7 @@ export const SpecialtyScalarFieldEnum = {
   name: 'name',
   description: 'description',
   bpjsPoliCode: 'bpjsPoliCode',
+  satusehatLocationId: 'satusehatLocationId',
   isActive: 'isActive',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
@@ -9574,6 +9575,9 @@ export const ClinicProfileScalarFieldEnum = {
   taxId: 'taxId',
   logoStorageKey: 'logoStorageKey',
   logoMimeType: 'logoMimeType',
+  latitude: 'latitude',
+  longitude: 'longitude',
+  satusehatLocationId: 'satusehatLocationId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -10197,6 +10201,7 @@ export const RoomClassScalarFieldEnum = {
   name: 'name',
   description: 'description',
   quota: 'quota',
+  satusehatServiceClass: 'satusehatServiceClass',
   isActive: 'isActive',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
@@ -10211,6 +10216,7 @@ export const WardScalarFieldEnum = {
   code: 'code',
   name: 'name',
   description: 'description',
+  satusehatLocationId: 'satusehatLocationId',
   isActive: 'isActive',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
@@ -10227,6 +10233,7 @@ export const RoomScalarFieldEnum = {
   code: 'code',
   name: 'name',
   description: 'description',
+  satusehatLocationId: 'satusehatLocationId',
   isActive: 'isActive',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
@@ -10241,6 +10248,7 @@ export const BedScalarFieldEnum = {
   roomId: 'roomId',
   code: 'code',
   status: 'status',
+  satusehatLocationId: 'satusehatLocationId',
   notes: 'notes',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
@@ -11851,6 +11859,20 @@ export type EnumChannelVerificationMethodFieldRefInput<$PrismaModel> = FieldRefI
  * Reference to a field of type 'ChannelVerificationMethod[]'
  */
 export type ListEnumChannelVerificationMethodFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ChannelVerificationMethod[]'>
+    
+
+
+/**
+ * Reference to a field of type 'SatusehatServiceClass'
+ */
+export type EnumSatusehatServiceClassFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SatusehatServiceClass'>
+    
+
+
+/**
+ * Reference to a field of type 'SatusehatServiceClass[]'
+ */
+export type ListEnumSatusehatServiceClassFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SatusehatServiceClass[]'>
     
 
 

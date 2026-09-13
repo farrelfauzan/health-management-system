@@ -66,6 +66,7 @@
     "#satusehat/schemas": "./src/satusehat/schemas.ts",
     "#satusehat/contracts": "./src/satusehat/contracts.ts",
     "#satusehat/types": "./src/satusehat/types.ts",
+    "#satusehat/resolve-satusehat-service-class-code": "./src/satusehat/resolve-satusehat-service-class-code.ts",
     "#pharmacy-flow/schemas": "./src/pharmacy-flow/schemas.ts",
     "#pharmacy-flow/contracts": "./src/pharmacy-flow/contracts.ts",
     "#pharmacy-flow/types": "./src/pharmacy-flow/types.ts",

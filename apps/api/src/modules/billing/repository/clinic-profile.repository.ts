@@ -58,6 +58,10 @@ export class ClinicProfileRepository {
       taxId: row.taxId,
       logoStorageKey: row.logoStorageKey,
       logoMimeType: row.logoMimeType,
+      // Decimal columns come back as Prisma `Decimal`; the API speaks numbers.
+      latitude: row.latitude === null ? null : row.latitude.toNumber(),
+      longitude: row.longitude === null ? null : row.longitude.toNumber(),
+      satusehatLocationId: row.satusehatLocationId,
       createdAt: row.createdAt,
       updatedAt: row.updatedAt,
     };

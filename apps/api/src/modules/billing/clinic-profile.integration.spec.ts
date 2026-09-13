@@ -60,6 +60,9 @@ describe('Clinic profile integration', () => {
     taxId: '01.234.567.8-901.000',
     logoStorageKey: null,
     logoMimeType: null,
+    latitude: null,
+    longitude: null,
+    satusehatLocationId: null,
     createdAt: updatedAt,
     updatedAt,
   };
@@ -244,6 +247,68 @@ describe('Clinic profile integration', () => {
         metadata: { changedFields: ['address'], wasCreated: false },
       }),
     );
+  });
+
+  // P24-T05. The position every SATUSEHAT Location carries, saved as a pair.
+  it("saves the clinic's coordinates and returns them", async () => {
+    const token = await buildToken('admin-user', 'admin@hms.local');
+    mockActorWithPermissions('ADMIN', [
+      { action: 'write', resource: 'ClinicProfile', scope: 'ANY' },
+    ]);
+    clinicProfileRepositoryMock.findProfile.mockResolvedValue(profileRecord);
+    clinicProfileRepositoryMock.updateProfile.mockResolvedValue({
+      ...profileRecord,
+      latitude: -6.9175,
+      longitude: 107.6191,
+    });
+
+    const response = await request(app.getHttpServer())
+      .patch(CLINIC_PROFILE_PATH)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ latitude: -6.9175, longitude: 107.6191 });
+
+    expect(response.status).toBe(200);
+    expect(clinicProfileRepositoryMock.updateProfile).toHaveBeenCalledWith(profileRecord.id, {
+      latitude: -6.9175,
+      longitude: 107.6191,
+    });
+    expect(response.body.data).toMatchObject({
+      latitude: -6.9175,
+      longitude: 107.6191,
+      satusehatLocationId: null,
+    });
+  });
+
+  // The official Location example swaps the two, so this is the mistake to catch.
+  it('refuses latitude and longitude typed swapped, writing nothing', async () => {
+    const token = await buildToken('admin-user', 'admin@hms.local');
+    mockActorWithPermissions('ADMIN', [
+      { action: 'write', resource: 'ClinicProfile', scope: 'ANY' },
+    ]);
+    clinicProfileRepositoryMock.findProfile.mockResolvedValue(profileRecord);
+
+    const response = await request(app.getHttpServer())
+      .patch(CLINIC_PROFILE_PATH)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ latitude: 107.6191, longitude: -6.9175 });
+
+    expect(response.status).toBe(400);
+    expect(clinicProfileRepositoryMock.updateProfile).not.toHaveBeenCalled();
+  });
+
+  it('refuses half a position', async () => {
+    const token = await buildToken('admin-user', 'admin@hms.local');
+    mockActorWithPermissions('ADMIN', [
+      { action: 'write', resource: 'ClinicProfile', scope: 'ANY' },
+    ]);
+
+    const response = await request(app.getHttpServer())
+      .patch(CLINIC_PROFILE_PATH)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ latitude: -6.9175 });
+
+    expect(response.status).toBe(400);
+    expect(clinicProfileRepositoryMock.updateProfile).not.toHaveBeenCalled();
   });
 
   it('rejects a claimed upload whose bytes are not the image it declared, leaving nothing behind', async () => {

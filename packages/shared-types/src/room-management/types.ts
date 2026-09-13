@@ -1,4 +1,5 @@
 import type { BedStatusValue } from '#room-management/schemas';
+import type { SatusehatServiceClassValue } from '#satusehat/schemas';
 
 /**
  * Room class (kelas perawatan) as the clinic keeps it. Master data rather than
@@ -11,6 +12,7 @@ export type RoomClassRecord = {
   description: string | null;
   /** Planned bed count for the whole clinic; null means uncapped. */
   quota: number | null;
+  satusehatServiceClass: SatusehatServiceClassValue | null;
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -107,6 +109,7 @@ export type CreateRoomClassRecordPayload = {
   name: string;
   description?: string;
   quota?: number;
+  satusehatServiceClass?: SatusehatServiceClassValue;
   isActive?: boolean;
 };
 
@@ -115,6 +118,7 @@ export type UpdateRoomClassRecordPayload = {
   name?: string;
   description?: string | null;
   quota?: number | null;
+  satusehatServiceClass?: SatusehatServiceClassValue | null;
   isActive?: boolean;
 };
 

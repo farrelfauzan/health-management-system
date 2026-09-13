@@ -5,6 +5,7 @@
  * Health Management System API
  * OpenAPI spec version: 1.0.0
  */
+import type { UpdateRoomClassDtoSatusehatServiceClass } from './updateRoomClassDtoSatusehatServiceClass';
 
 export interface UpdateRoomClassDto {
   /**
@@ -23,5 +24,7 @@ export interface UpdateRoomClassDto {
      * @nullable
      */
   quota?: number | null;
+  /** @nullable */
+  satusehatServiceClass?: UpdateRoomClassDtoSatusehatServiceClass;
   isActive?: boolean;
 }

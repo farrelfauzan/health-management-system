@@ -50,4 +50,16 @@ export interface UpdateClinicProfileDto {
      * @nullable
      */
   logoStorageKey?: string | null;
+  /**
+     * @minimum -11
+     * @maximum 6
+     * @nullable
+     */
+  latitude?: number | null;
+  /**
+     * @minimum 95
+     * @maximum 141
+     * @nullable
+     */
+  longitude?: number | null;
 }
