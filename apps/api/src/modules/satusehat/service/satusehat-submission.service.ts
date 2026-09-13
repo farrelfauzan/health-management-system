@@ -12,6 +12,7 @@ import {
   SatusehatLabReportBundleData,
   SatusehatLabReportItem,
   SaveAllergyIhsIdPayload,
+  SaveImmunizationIhsIdPayload,
 } from '@hms/shared-types';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -35,6 +36,7 @@ import { resolveSatusehatConfig } from '../../../common/satusehat/satusehat.conf
 import { SatusehatConfig } from '../../../common/satusehat/satusehat.types';
 import { SatusehatLinkRepository } from '../repository/satusehat-link.repository';
 import { SatusehatSubmissionRepository } from '../repository/satusehat-submission.repository';
+import { SatusehatResourceListBuilder } from './satusehat-resource-list.builder';
 import { SatusehatSubmissionDataError } from './satusehat-submission-data.error';
 
 /** What {@link SatusehatSubmissionService.buildLabReportTransactionBundle} needs. */
@@ -58,6 +60,18 @@ type LabReportWriteBackInput = {
   observationFullUrls: ReadonlyMap<string, string>;
 };
 
+/**
+ * What one posted bundle leaves behind: the entries as sent, the ids the
+ * platform paired back to them, and the resource list gathered while building
+ * it (P21-T02). Returned rather than written here so the caller records the
+ * list against the outbox row it owns.
+ */
+type SubmittedBundle = {
+  bundle: SatusehatFhirTransactionBundle;
+  createdResources: ReadonlyMap<string, SatusehatCreatedResourceLocation>;
+  resourceList: SatusehatResourceListBuilder;
+};
+
 const PERMANENT_ERROR_CODES: readonly string[] = [
   'SATUSEHAT_NOT_CONFIGURED',
   'SATUSEHAT_UNAUTHORIZED',
@@ -68,6 +82,18 @@ const MAX_STORED_ERROR_LENGTH = 2000;
 /** FHIR resource type names are upper camel case with no separators. */
 const FHIR_RESOURCE_TYPE_PATTERN = /^[A-Z][A-Za-z]+$/;
 const HISTORY_SEGMENT = '_history';
+
+/**
+ * Stands in for the bundle a lab report would have sent when every one of its
+ * tests turned out to be unreportable. Nothing is posted, so there is no
+ * response and no created resource — only the skips, which is exactly what the
+ * monitor needs to show instead of an empty success.
+ */
+const EMPTY_TRANSACTION_BUNDLE: SatusehatFhirTransactionBundle = {
+  resourceType: 'Bundle',
+  type: 'transaction',
+  entry: [],
+};
 
 /**
  * Processes one outbox row end to end: rebuilds the encounter bundle from the
@@ -104,11 +130,42 @@ export class SatusehatSubmissionService {
       if (submission.encounterId === null) {
         throw new SatusehatSubmissionDataError('Encounter submission carries no encounter');
       }
-      const satusehatEncounterId = await this.submitEncounterBundle(submission.encounterId);
+      const submitted = await this.submitEncounterBundle(submission.encounterId);
+      const encounterEntry = submitted.bundle.entry.find(
+        (entry) => entry.request.url === 'Encounter',
+      );
+      const satusehatEncounterId = encounterEntry
+        ? (submitted.createdResources.get(encounterEntry.fullUrl)?.id ?? null)
+        : null;
       await this.submissionRepository.markSubmitted(submission.id, satusehatEncounterId);
+      await this.saveSubmissionResources(submission.id, submitted);
       this.logger.log('SATUSEHAT encounter submission succeeded');
     } catch (caughtError) {
       await this.recordFailure(submission, attemptNumber, caughtError);
+    }
+  }
+
+  /**
+   * Records what the submission sent, after the row is already SUBMITTED.
+   *
+   * The list is provenance, not part of the report: the bundle has reached the
+   * platform by this point and nothing can un-send it, so a failure to write
+   * the list must not turn a successful submission into a retry that would
+   * duplicate every resource. It is logged and the submission stands.
+   */
+  private async saveSubmissionResources(
+    submissionId: string,
+    submitted: SubmittedBundle,
+  ): Promise<void> {
+    try {
+      await this.submissionRepository.saveSubmissionResources({
+        submissionId,
+        resources: submitted.resourceList.build(submitted.bundle, submitted.createdResources),
+      });
+    } catch (caughtError) {
+      this.logger.error(
+        `SATUSEHAT submission ${submissionId} was reported but its resource list could not be recorded: ${this.describeError(caughtError)}`,
+      );
     }
   }
 
@@ -122,16 +179,17 @@ export class SatusehatSubmissionService {
     if (submission.labOrderId === null) {
       throw new SatusehatSubmissionDataError('Lab report submission carries no order');
     }
-    const reported = await this.submitLabReportBundle(submission.labOrderId);
+    const submitted = await this.submitLabReportBundle(submission.labOrderId);
     await this.submissionRepository.markSubmitted(submission.id, null);
+    await this.saveSubmissionResources(submission.id, submitted);
     this.logger.log(
-      reported
+      submitted.bundle.entry.length > 0
         ? 'SATUSEHAT lab report submission succeeded'
         : 'SATUSEHAT lab report had nothing reportable; settled without sending',
     );
   }
 
-  private async submitEncounterBundle(encounterId: string): Promise<string | null> {
+  private async submitEncounterBundle(encounterId: string): Promise<SubmittedBundle> {
     const bundleData = await this.submissionRepository.findBundleData(encounterId);
     if (!bundleData) {
       throw new SatusehatSubmissionDataError('Encounter no longer exists');
@@ -144,12 +202,16 @@ export class SatusehatSubmissionService {
     const patientIhsNumber = await this.resolvePatientIhsNumber(bundleData);
     const practitionerIhsNumber = await this.resolvePractitionerIhsNumber(bundleData);
     const allergyFullUrls = new Map<string, string>();
+    const immunizationFullUrls = new Map<string, string>();
+    const resourceList = new SatusehatResourceListBuilder();
     const bundle = this.buildTransactionBundle(
       bundleData,
       bundleData.endedAt,
       patientIhsNumber,
       practitionerIhsNumber,
       allergyFullUrls,
+      immunizationFullUrls,
+      resourceList,
     );
     const response = await this.httpClient.sendRequest<SatusehatTransactionResponse>({
       method: 'POST',
@@ -158,16 +220,22 @@ export class SatusehatSubmissionService {
     });
     const createdResources = this.extractCreatedResources(bundle, response);
     await this.saveAllergyIhsIds(allergyFullUrls, createdResources);
-    const encounterEntry = bundle.entry.find((entry) => entry.request.url === 'Encounter');
-    return encounterEntry ? (createdResources.get(encounterEntry.fullUrl)?.id ?? null) : null;
+    await this.saveImmunizationIhsIds(immunizationFullUrls, createdResources);
+    return { bundle, createdResources, resourceList };
   }
 
   /**
-   * Builds and posts the laboratory chain for one released order, then writes
-   * back the ids the platform assigned. Returns false when the order had
-   * nothing reportable.
+   * Assembles the chain as one transaction bundle, wired together with
+   * `urn:uuid:` bundle-local references so the platform resolves the links
+   * itself: a Specimen names the requests it serves, an Observation names the
+   * request it answers and the tube it came from, and the DiagnosticReport
+   * names all three. Nothing here is posted twice — one round trip settles the
+   * whole order.
+   *
+   * Returns an empty bundle when the order had nothing reportable, so the
+   * caller records a list of skips alone rather than an unqualified success.
    */
-  private async submitLabReportBundle(labOrderId: string): Promise<boolean> {
+  private async submitLabReportBundle(labOrderId: string): Promise<SubmittedBundle> {
     const bundleData = await this.submissionRepository.findLabReportBundleData(labOrderId);
     if (bundleData === null) {
       throw new SatusehatSubmissionDataError('Lab order no longer exists');
@@ -189,9 +257,14 @@ export class SatusehatSubmissionService {
     const reportableItems = bundleData.items.filter(
       (item) => item.loincCode !== null && item.result !== null,
     );
-    this.logLabReportGaps(bundleData, reportableItems);
+    const resourceList = new SatusehatResourceListBuilder();
+    this.logLabReportGaps(bundleData, reportableItems, resourceList);
     if (reportableItems.length === 0) {
-      return false;
+      // Nothing to send, and the row still settles SUBMITTED (P18-T09). The
+      // list is what stops that reading as a clean success: it holds the skips
+      // and no sent resource at all, so the monitor can say the report carried
+      // nothing rather than showing an empty green row.
+      return { bundle: EMPTY_TRANSACTION_BUNDLE, createdResources: new Map(), resourceList };
     }
     const patientIhsNumber = await this.resolvePatientIhsNumber(bundleData);
     const practitionerIhsNumber = await this.resolveLabRequesterIhsNumber(bundleData);
@@ -203,6 +276,11 @@ export class SatusehatSubmissionService {
       reportableItems,
       patientIhsNumber,
       practitionerIhsNumber,
+      serviceRequestFullUrls,
+      specimenFullUrls,
+      observationFullUrls,
+    });
+    this.trackLabReportLocalRecords(resourceList, {
       serviceRequestFullUrls,
       specimenFullUrls,
       observationFullUrls,
@@ -221,18 +299,43 @@ export class SatusehatSubmissionService {
       specimenFullUrls,
       observationFullUrls,
     });
-    return true;
+    return { bundle, createdResources, resourceList };
+  }
+
+  /**
+   * Points each lab entry back at the row it came from. The three maps are
+   * already built for the id write-back, so the resource list reuses them
+   * rather than tracking the same association twice.
+   */
+  private trackLabReportLocalRecords(
+    resourceList: SatusehatResourceListBuilder,
+    fullUrls: {
+      serviceRequestFullUrls: ReadonlyMap<string, string>;
+      specimenFullUrls: ReadonlyMap<string, string>;
+      observationFullUrls: ReadonlyMap<string, string>;
+    },
+  ): void {
+    const allFullUrls = [
+      ...fullUrls.serviceRequestFullUrls,
+      ...fullUrls.specimenFullUrls,
+      ...fullUrls.observationFullUrls,
+    ];
+    for (const [fullUrl, localRecordId] of allFullUrls) {
+      resourceList.trackLocalRecord(fullUrl, localRecordId);
+    }
   }
 
   /**
    * Names what the chain left out, and why. An uncoded test is a catalog gap
    * the clinic can close; an item with no released value is one the bench has
    * not signed off. Both are silent omissions from the national record unless
-   * they are said out loud here.
+   * they are said out loud here — in the log for an operator reading it live,
+   * and on the submission's resource list for anyone asking afterwards.
    */
   private logLabReportGaps(
     bundleData: SatusehatLabReportBundleData,
     reportableItems: readonly SatusehatLabReportItem[],
+    resourceList: SatusehatResourceListBuilder,
   ): void {
     const reportableIds = new Set(reportableItems.map((item) => item.labOrderItemId));
     const uncodedCount = bundleData.items.filter(
@@ -242,6 +345,8 @@ export class SatusehatSubmissionService {
       (item) =>
         !reportableIds.has(item.labOrderItemId) && item.loincCode !== null && item.result === null,
     ).length;
+    resourceList.recordSkipped('ServiceRequest', 'NO_LOINC_CODE', uncodedCount);
+    resourceList.recordSkipped('Observation', 'NO_VERIFIED_RESULT', unreleasedCount);
     if (uncodedCount > 0) {
       this.logger.warn(
         `SATUSEHAT lab report skipped ${uncodedCount} test(s) with no LOINC code in the catalog`,
@@ -548,8 +653,15 @@ export class SatusehatSubmissionService {
     patientIhsNumber: string,
     practitionerIhsNumber: string,
     allergyFullUrls: Map<string, string>,
+    immunizationFullUrls: Map<string, string>,
+    resourceList: SatusehatResourceListBuilder,
   ): SatusehatFhirTransactionBundle {
     const encounterFullUrl = `urn:uuid:${randomUUID()}`;
+    resourceList.trackLocalRecord(encounterFullUrl, bundleData.encounterId);
+    // A diagnosis and a vital sign carry no local id in the bundle data, and the
+    // platform stamps no org-scoped identifier on Condition or Observation
+    // either (P21-T01), so those rows keep a null localRecordId on both this
+    // path and the backfill.
     const conditionEntries: SatusehatFhirBundleEntry[] = this.sortDiagnoses(bundleData).map(
       (diagnosis) => ({
         fullUrl: `urn:uuid:${randomUUID()}`,
@@ -570,6 +682,7 @@ export class SatusehatSubmissionService {
       encounterFullUrl,
       patientIhsNumber,
       practitionerIhsNumber,
+      resourceList,
     );
     const allergyEntries = this.buildAllergyEntries(
       bundleData,
@@ -583,6 +696,8 @@ export class SatusehatSubmissionService {
       encounterFullUrl,
       patientIhsNumber,
       practitionerIhsNumber,
+      immunizationFullUrls,
+      resourceList,
     );
     const observationEntries: SatusehatFhirBundleEntry[] = bundleData.latestVitalSigns
       ? this.fhirMapper
@@ -603,6 +718,7 @@ export class SatusehatSubmissionService {
       encounterFullUrl,
       patientIhsNumber,
       practitionerIhsNumber,
+      resourceList,
     );
     const encounterResource = this.fhirMapper.mapEncounter({
       encounterId: bundleData.encounterId,
@@ -808,29 +924,35 @@ export class SatusehatSubmissionService {
     encounterFullUrl: string,
     patientIhsNumber: string,
     practitionerIhsNumber: string,
+    resourceList: SatusehatResourceListBuilder,
   ): SatusehatFhirBundleEntry[] {
     const skippedProcedures = bundleData.procedures.filter((procedure) => !procedure.isCoded);
     this.reportProcedureGaps(skippedProcedures);
+    resourceList.recordSkipped('Procedure', 'NO_ICD9CM_CODE', skippedProcedures.length);
     return bundleData.procedures
       .filter((procedure) => procedure.isCoded)
-      .map((procedure) => ({
-        fullUrl: `urn:uuid:${randomUUID()}`,
-        resource: this.fhirMapper.mapProcedure({
-          procedureId: procedure.procedureId,
-          icd9cmCode: procedure.code,
-          icd9cmDisplay: procedure.display,
-          patientIhsNumber,
-          patientName: bundleData.patientName,
-          practitionerIhsNumber,
-          practitionerName: bundleData.doctorName,
-          encounterReference: encounterFullUrl,
-          performedAt: procedure.performedAt,
-          encounterStartedAt: bundleData.startedAt,
-          encounterEndedAt: endedAt,
-          notes: procedure.notes ?? undefined,
-        }),
-        request: { method: 'POST', url: 'Procedure' },
-      }));
+      .map((procedure) => {
+        const fullUrl = `urn:uuid:${randomUUID()}`;
+        resourceList.trackLocalRecord(fullUrl, procedure.procedureId);
+        return {
+          fullUrl,
+          resource: this.fhirMapper.mapProcedure({
+            procedureId: procedure.procedureId,
+            icd9cmCode: procedure.code,
+            icd9cmDisplay: procedure.display,
+            patientIhsNumber,
+            patientName: bundleData.patientName,
+            practitionerIhsNumber,
+            practitionerName: bundleData.doctorName,
+            encounterReference: encounterFullUrl,
+            performedAt: procedure.performedAt,
+            encounterStartedAt: bundleData.startedAt,
+            encounterEndedAt: endedAt,
+            notes: procedure.notes ?? undefined,
+          }),
+          request: { method: 'POST', url: 'Procedure' },
+        };
+      });
   }
 
   private reportProcedureGaps(
@@ -944,6 +1066,30 @@ export class SatusehatSubmissionService {
   }
 
   /**
+   * Writes back the ids the platform assigned to this visit's immunizations
+   * (P21-T02). `Immunization.satusehatImmunizationId` shipped with the schema
+   * and nothing ever wrote it, so every reported vaccination read as
+   * unreported — and unlike an allergy, an immunization is not re-offered on the
+   * next visit, so the empty column was invisible.
+   *
+   * An entry the response could not be paired against keeps its null id, the
+   * same rule the allergy write-back follows.
+   */
+  private async saveImmunizationIhsIds(
+    immunizationFullUrls: ReadonlyMap<string, string>,
+    createdResources: ReadonlyMap<string, SatusehatCreatedResourceLocation>,
+  ): Promise<void> {
+    const payloads: SaveImmunizationIhsIdPayload[] = [];
+    for (const [fullUrl, immunizationId] of immunizationFullUrls) {
+      const created = createdResources.get(fullUrl);
+      if (created !== undefined) {
+        payloads.push({ immunizationId, satusehatImmunizationId: created.id });
+      }
+    }
+    await this.submissionRepository.saveImmunizationIhsIds(payloads);
+  }
+
+  /**
    * Builds one Immunization entry per KFA-coded vaccination on the visit.
    *
    * A vaccine whose catalog row has no KFA code is skipped and named in the
@@ -956,37 +1102,45 @@ export class SatusehatSubmissionService {
     encounterFullUrl: string,
     patientIhsNumber: string,
     practitionerIhsNumber: string,
+    immunizationFullUrls: Map<string, string>,
+    resourceList: SatusehatResourceListBuilder,
   ): SatusehatFhirBundleEntry[] {
     const skipped = bundleData.immunizations.filter(
       (immunization) => immunization.kfaCode === null,
     );
     this.reportImmunizationGaps(skipped);
+    resourceList.recordSkipped('Immunization', 'NO_KFA_CODE', skipped.length);
     return bundleData.immunizations
       .filter(
         (immunization): immunization is SatusehatSubmissionImmunization & { kfaCode: string } =>
           immunization.kfaCode !== null,
       )
-      .map((immunization) => ({
-        fullUrl: `urn:uuid:${randomUUID()}`,
-        resource: this.fhirMapper.mapImmunization({
-          immunizationId: immunization.immunizationId,
-          kfaCode: immunization.kfaCode,
-          vaccineName: immunization.vaccineName,
-          patientIhsNumber,
-          patientName: bundleData.patientName,
-          encounterReference: encounterFullUrl,
-          occurredAt: immunization.occurredAt,
-          lotNumber: immunization.lotNumber ?? undefined,
-          expirationDate: immunization.expirationDate ?? undefined,
-          doseNumber: immunization.doseNumber ?? undefined,
-          route: immunization.route ?? undefined,
-          site: immunization.site ?? undefined,
-          performerIhsNumber: practitionerIhsNumber,
-          performerName: bundleData.doctorName,
-          notes: immunization.notes ?? undefined,
-        }),
-        request: { method: 'POST', url: 'Immunization' },
-      }));
+      .map((immunization) => {
+        const fullUrl = `urn:uuid:${randomUUID()}`;
+        immunizationFullUrls.set(fullUrl, immunization.immunizationId);
+        resourceList.trackLocalRecord(fullUrl, immunization.immunizationId);
+        return {
+          fullUrl,
+          resource: this.fhirMapper.mapImmunization({
+            immunizationId: immunization.immunizationId,
+            kfaCode: immunization.kfaCode,
+            vaccineName: immunization.vaccineName,
+            patientIhsNumber,
+            patientName: bundleData.patientName,
+            encounterReference: encounterFullUrl,
+            occurredAt: immunization.occurredAt,
+            lotNumber: immunization.lotNumber ?? undefined,
+            expirationDate: immunization.expirationDate ?? undefined,
+            doseNumber: immunization.doseNumber ?? undefined,
+            route: immunization.route ?? undefined,
+            site: immunization.site ?? undefined,
+            performerIhsNumber: practitionerIhsNumber,
+            performerName: bundleData.doctorName,
+            notes: immunization.notes ?? undefined,
+          }),
+          request: { method: 'POST', url: 'Immunization' },
+        };
+      });
   }
 
   private reportImmunizationGaps(
@@ -1012,6 +1166,7 @@ export class SatusehatSubmissionService {
     encounterFullUrl: string,
     patientIhsNumber: string,
     practitionerIhsNumber: string,
+    resourceList: SatusehatResourceListBuilder,
   ): SatusehatFhirBundleEntry[] {
     const medicationFullUrls = new Map<string, string>();
     const medicationEntries: SatusehatFhirBundleEntry[] = [];
@@ -1166,6 +1321,12 @@ export class SatusehatSubmissionService {
     }
     this.reportCompoundGaps(skippedCompounds);
     this.reportMedicationGaps(skippedMedications);
+    resourceList.recordSkipped('Medication', 'NO_KFA_CODE', skippedMedications.size);
+    resourceList.recordSkipped(
+      'Medication',
+      'UNCODED_COMPOUND_COMPONENT',
+      skippedCompounds.length,
+    );
     return [...medicationEntries, ...requestEntries, ...dispenseEntries];
   }
 

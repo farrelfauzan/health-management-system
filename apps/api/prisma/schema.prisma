@@ -615,6 +615,38 @@ enum SatusehatSubmissionStatus {
   FAILED
 }
 
+/// Whether one item of a submission reached the national record (P21-T02).
+/// SKIPPED is not a failure of the submission: the bundle went, this item was
+/// deliberately left out of it, and `SatusehatResourceSkipReason` says why.
+enum SatusehatResourceOutcome {
+  SENT
+  SKIPPED
+
+  @@map("satusehat_resource_outcome")
+}
+
+/// Why an item was left out of a bundle. Every value is a *category*, never the
+/// item itself: this table is readable by an administrator, who under D-033 may
+/// learn that two medications were skipped for want of a code but not which
+/// medications those were.
+///
+/// Every value is a catalog gap the clinic can close by coding a row, except
+/// `NO_VERIFIED_RESULT`, which is bench work nobody has signed off yet.
+///
+/// A resource whose id could not be paired out of the transaction response is
+/// deliberately **not** here: it was sent, so it is SENT with a null
+/// `satusehatId`. Calling it a skip would claim the national record lacks
+/// something it holds.
+enum SatusehatResourceSkipReason {
+  NO_KFA_CODE
+  NO_ICD9CM_CODE
+  NO_LOINC_CODE
+  NO_VERIFIED_RESULT
+  UNCODED_COMPOUND_COMPONENT
+
+  @@map("satusehat_resource_skip_reason")
+}
+
 /// Role of a diagnosis within one encounter. Exactly one PRIMARY is expected —
 /// it is the diagnosis that justifies the visit, and both BPJS claims and
 /// SATUSEHAT `Condition` submissions single it out.
@@ -2994,10 +3026,57 @@ model SatusehatSubmission {
 
   encounter Encounter? @relation(fields: [encounterId], references: [id], onDelete: Restrict)
   labOrder  LabOrder?  @relation(fields: [labOrderId], references: [id], onDelete: Restrict)
+  resources SatusehatSubmissionResource[]
 
   @@index([status, nextAttemptAt])
   @@index([labOrderId])
   @@map("satusehat_submissions")
+}
+
+/// What one submission actually sent, and what it left out (P21-T02).
+///
+/// The outbox row proves a bundle reached SATUSEHAT; it cannot say *which*
+/// resources went, because the ids the platform assigns were resolved and then
+/// discarded. Without this table nothing can be read back later, and an
+/// administrator cannot see that a medication was silently omitted — which
+/// since SATUSEHAT RME (1 Sep 2026) is a gap the patient sees in their own
+/// Resume Medis.
+///
+/// **This table deliberately holds no clinical values** — no codes, names,
+/// displays or results. `localRecordId` is the only link back to what the item
+/// was, and resolving it is P21-T04's job under a doctor's permission. That
+/// keeps the P10-T06 promise that the outbox carries no clinical payload, so
+/// the ADMIN-gated monitor can render this table directly.
+model SatusehatSubmissionResource {
+  id           String                   @id @default(uuid()) @db.Uuid
+  submissionId String                   @map("submission_id") @db.Uuid
+  /// FHIR resource type as sent (`Encounter`, `Condition`, `Observation`, …).
+  /// A plain string rather than an enum: the set is the platform's, not ours,
+  /// and a new bundle entry type must not need a migration to be recorded.
+  resourceType String                   @map("resource_type")
+  outcome      SatusehatResourceOutcome
+  /// Set on SKIPPED rows, null on SENT ones.
+  skipReason   SatusehatResourceSkipReason? @map("skip_reason")
+  /// The id SATUSEHAT assigned. Null on every SKIPPED row, and also on a SENT
+  /// row whose id could not be paired out of the transaction response — the
+  /// resource went, but which one it became is unknown, so it cannot be read
+  /// back.
+  satusehatId  String?                  @map("satusehat_id")
+  /// The local row this item came from, when there is one. Null for resources
+  /// that exist only in the bundle (the Composition, a lab-only Encounter) and
+  /// for backfilled rows whose local record could not be identified.
+  localRecordId String?                 @map("local_record_id") @db.Uuid
+  /// True when the row was reconstructed from the platform by the P21-T05
+  /// backfill rather than recorded at submission time. Skipped items cannot be
+  /// reconstructed, so a backfilled list says nothing about what was left out.
+  isBackfilled Boolean                  @default(false) @map("is_backfilled")
+  createdAt    DateTime                 @default(now()) @map("created_at")
+
+  submission SatusehatSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+
+  @@index([submissionId])
+  @@index([satusehatId])
+  @@map("satusehat_submission_resources")
 }
 
 /// Append-only record of who touched patient-identifiable data (SJ-4). Rows
