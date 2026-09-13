@@ -56,6 +56,40 @@ export const satusehatResourceSkipReasonSchema = z.enum(SATUSEHAT_RESOURCE_SKIP_
 
 export type SatusehatResourceSkipReasonValue = z.infer<typeof satusehatResourceSkipReasonSchema>;
 
+/**
+ * How one line of the local record compares with what SATUSEHAT holds for the
+ * visit (P21-T04).
+ *
+ * `MISSING_ON_SATUSEHAT` and `NOT_SENT` are kept apart because they call for
+ * different fixes: a missing line was sent and is not there, while a not-sent
+ * line never left the clinic, usually for want of a catalog code.
+ * `DIFFERS` covers both a vital sign whose value SATUSEHAT holds differently
+ * and a coded item SATUSEHAT holds that the local record no longer has.
+ */
+export const SATUSEHAT_RECORD_LINE_OUTCOMES = [
+  'MATCHES',
+  'DIFFERS',
+  'MISSING_ON_SATUSEHAT',
+  'NOT_SENT',
+] as const;
+
+export const satusehatRecordLineOutcomeSchema = z.enum(SATUSEHAT_RECORD_LINE_OUTCOMES);
+
+export type SatusehatRecordLineOutcomeValue = z.infer<typeof satusehatRecordLineOutcomeSchema>;
+
+/** The parts of a visit the doctor's comparison covers (P21-T04). */
+export const SATUSEHAT_RECORD_LINE_CATEGORIES = [
+  'DIAGNOSIS',
+  'VITAL_SIGN',
+  'PROCEDURE',
+  'MEDICATION',
+  'LAB_RESULT',
+] as const;
+
+export const satusehatRecordLineCategorySchema = z.enum(SATUSEHAT_RECORD_LINE_CATEGORIES);
+
+export type SatusehatRecordLineCategoryValue = z.infer<typeof satusehatRecordLineCategorySchema>;
+
 export const listSatusehatSubmissionsQuerySchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(10),

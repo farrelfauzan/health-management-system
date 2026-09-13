@@ -1135,6 +1135,42 @@
           "CRITICAL_HIGH": "Kritis tinggi",
           "ABNORMAL": "Abnormal"
         }
+      },
+      "satusehatRecord": {
+        "title": "Rekam SATUSEHAT",
+        "subtitle": "Bandingkan catatan Anda dengan data yang disimpan SATUSEHAT untuk kunjungan ini. Hanya terlihat oleh Anda sebagai dokter pemeriksa.",
+        "check": "Periksa dengan SATUSEHAT",
+        "checking": "Memeriksa…",
+        "recheck": "Periksa lagi",
+        "loadFailed": "Perbandingan dengan SATUSEHAT gagal.",
+        "idle": "Tidak ada data yang dibaca dari SATUSEHAT sampai Anda memintanya, karena setiap pemeriksaan membaca rekam nasional secara langsung.",
+        "notSubmitted": "Kunjungan ini belum dikirim ke SATUSEHAT, jadi semua data di bawah ditandai belum ada.",
+        "noResourceList": "Kunjungan ini dikirim sebelum daftar sumber daya dicatat, jadi data di SATUSEHAT belum bisa dibaca kembali. Minta administrator menjalankan backfill.",
+        "unreadable": "{count, plural, other {# data tidak dapat dibaca dari SATUSEHAT}}, jadi baris yang ditandai belum ada mungkin sebenarnya ada.",
+        "empty": "Kunjungan ini tidak memiliki diagnosis, tanda vital, tindakan, obat, atau hasil lab untuk dibandingkan.",
+        "checkedAt": "Diperiksa {time}",
+        "ours": "Klinik",
+        "satusehat": "SATUSEHAT",
+        "category": {
+          "DIAGNOSIS": "Diagnosis",
+          "VITAL_SIGN": "Tanda vital",
+          "PROCEDURE": "Tindakan",
+          "MEDICATION": "Obat",
+          "LAB_RESULT": "Hasil lab"
+        },
+        "outcome": {
+          "MATCHES": "Sesuai",
+          "DIFFERS": "Berbeda",
+          "MISSING_ON_SATUSEHAT": "Belum ada di SATUSEHAT",
+          "NOT_SENT": "Tidak dikirim"
+        },
+        "notSentReason": {
+          "NO_KFA_CODE": "tanpa kode KFA",
+          "NO_ICD9CM_CODE": "tanpa kode ICD-9-CM",
+          "NO_LOINC_CODE": "tanpa kode LOINC",
+          "NO_VERIFIED_RESULT": "belum ada hasil terverifikasi",
+          "UNCODED_COMPOUND_COMPONENT": "komponen racikan tanpa kode"
+        }
       }
     }
   }

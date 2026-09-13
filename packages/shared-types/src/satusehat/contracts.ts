@@ -1,6 +1,8 @@
 import type {
   SatusehatEnvironmentValue,
   SatusehatNikSuffixCheckValue,
+  SatusehatRecordLineCategoryValue,
+  SatusehatRecordLineOutcomeValue,
   SatusehatResourceCheckOutcomeValue,
   SatusehatResourceSkipReasonValue,
   SatusehatSubmissionKindValue,
@@ -82,6 +84,51 @@ export type SatusehatSubmissionsListMeta = {
 export type SatusehatSubmissionsListResult = {
   items: SatusehatSubmissionView[];
   meta: SatusehatSubmissionsListMeta;
+};
+
+/**
+ * One line of the treating doctor's comparison between the local record and
+ * what SATUSEHAT holds for the visit (P21-T04).
+ *
+ * Unlike the integrations monitor (P21-T03), this carries clinical content —
+ * codes, displays, values — because it is gated by `satusehat.record.read:own`
+ * and served only to the clinician who examined the patient (D-033). A
+ * `NOT_SENT` line names the item and its reason, since the fix is usually a
+ * catalog code only the clinic can add.
+ */
+export type SatusehatRecordLine = {
+  category: SatusehatRecordLineCategoryValue;
+  /** ICD-10 for diagnoses, LOINC for vital signs, ICD-9-CM for procedures, KFA for medications. */
+  code: string | null;
+  display: string;
+  /** The local value as text, or null when only SATUSEHAT holds the item. */
+  ours: string | null;
+  /** What SATUSEHAT holds as text, or null when it holds nothing for the item. */
+  satusehat: string | null;
+  outcome: SatusehatRecordLineOutcomeValue;
+  /** Set only on `NOT_SENT` lines. */
+  notSentReason: SatusehatResourceSkipReasonValue | null;
+};
+
+export type SatusehatRecordComparisonView = {
+  encounterId: string;
+  /** Null when the visit was never queued for SATUSEHAT. */
+  submissionId: string | null;
+  isSubmitted: boolean;
+  /**
+   * False for a submission that predates the resource list (P21-T02) and was
+   * never backfilled: there are no ids to read back, so every line would read
+   * as missing when the truth is unknown.
+   */
+  hasResourceList: boolean;
+  checkedAt: string;
+  lines: SatusehatRecordLine[];
+  /**
+   * Reads that failed for a reason other than "not found". While this is above
+   * zero a `MISSING_ON_SATUSEHAT` line may only mean the platform could not be
+   * asked, so the screen says so rather than presenting it as a finding.
+   */
+  unreadableResourceCount: number;
 };
 
 /**

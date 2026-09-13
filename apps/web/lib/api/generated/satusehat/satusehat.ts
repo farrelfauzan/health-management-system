@@ -26,6 +26,7 @@ import type {
   SatusehatLinkControllerLinkDoctorV1200,
   SatusehatLinkControllerLinkPatientV1200,
   SatusehatLinkControllerPreviewDoctorIhsLinkV1200,
+  SatusehatRecordControllerCompareEncounterRecordV1200,
   SatusehatSubmissionControllerCheckSubmissionV1200,
   SatusehatSubmissionControllerGetEnvironmentV1200,
   SatusehatSubmissionControllerGetSubmissionDetailV1200,
@@ -890,6 +891,98 @@ export function useSatusehatSubmissionControllerRetrySubmissionV1<TData = Awaite
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getSatusehatSubmissionControllerRetrySubmissionV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Compare this visit with what SATUSEHAT holds
+ */
+export const satusehatRecordControllerCompareEncounterRecordV1 = (
+    encounterId: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<SatusehatRecordControllerCompareEncounterRecordV1200>(
+      {url: `/api/v1/satusehat/encounters/${encounterId}/record-comparison`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getSatusehatRecordControllerCompareEncounterRecordV1QueryKey = (encounterId: string,) => {
+    return [
+    `/api/v1/satusehat/encounters/${encounterId}/record-comparison`
+    ] as const;
+    }
+
+
+export const getSatusehatRecordControllerCompareEncounterRecordV1QueryOptions = <TData = Awaited<ReturnType<typeof satusehatRecordControllerCompareEncounterRecordV1>>, TError = unknown>(encounterId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof satusehatRecordControllerCompareEncounterRecordV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getSatusehatRecordControllerCompareEncounterRecordV1QueryKey(encounterId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof satusehatRecordControllerCompareEncounterRecordV1>>> = ({ signal }) => satusehatRecordControllerCompareEncounterRecordV1(encounterId, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: encounterId !== null && encounterId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof satusehatRecordControllerCompareEncounterRecordV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type SatusehatRecordControllerCompareEncounterRecordV1QueryResult = NonNullable<Awaited<ReturnType<typeof satusehatRecordControllerCompareEncounterRecordV1>>>
+export type SatusehatRecordControllerCompareEncounterRecordV1QueryError = unknown
+
+
+export function useSatusehatRecordControllerCompareEncounterRecordV1<TData = Awaited<ReturnType<typeof satusehatRecordControllerCompareEncounterRecordV1>>, TError = unknown>(
+ encounterId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof satusehatRecordControllerCompareEncounterRecordV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof satusehatRecordControllerCompareEncounterRecordV1>>,
+          TError,
+          Awaited<ReturnType<typeof satusehatRecordControllerCompareEncounterRecordV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSatusehatRecordControllerCompareEncounterRecordV1<TData = Awaited<ReturnType<typeof satusehatRecordControllerCompareEncounterRecordV1>>, TError = unknown>(
+ encounterId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof satusehatRecordControllerCompareEncounterRecordV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof satusehatRecordControllerCompareEncounterRecordV1>>,
+          TError,
+          Awaited<ReturnType<typeof satusehatRecordControllerCompareEncounterRecordV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSatusehatRecordControllerCompareEncounterRecordV1<TData = Awaited<ReturnType<typeof satusehatRecordControllerCompareEncounterRecordV1>>, TError = unknown>(
+ encounterId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof satusehatRecordControllerCompareEncounterRecordV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Compare this visit with what SATUSEHAT holds
+ */
+
+export function useSatusehatRecordControllerCompareEncounterRecordV1<TData = Awaited<ReturnType<typeof satusehatRecordControllerCompareEncounterRecordV1>>, TError = unknown>(
+ encounterId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof satusehatRecordControllerCompareEncounterRecordV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getSatusehatRecordControllerCompareEncounterRecordV1QueryOptions(encounterId,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

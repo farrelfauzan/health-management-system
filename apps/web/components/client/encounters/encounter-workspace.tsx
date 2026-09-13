@@ -12,6 +12,7 @@ import { EncounterLabCard } from '#components/client/encounters/encounter-lab-ca
 import { EncounterLabResultsCard } from '#components/client/encounters/encounter-lab-results-card';
 import { EncounterProceduresCard } from '#components/client/encounters/encounter-procedures-card';
 import { EncounterReferralCard } from '#components/client/encounters/encounter-referral-card';
+import { EncounterSatusehatRecordCard } from '#components/client/encounters/encounter-satusehat-record-card';
 import { EncounterDocumentsPanel } from '#components/client/patient-documents/encounter-documents-panel';
 import { EncounterSoapCard } from '#components/client/encounters/encounter-soap-card';
 import { EncounterSummaryCard } from '#components/client/encounters/encounter-summary-card';
@@ -36,6 +37,14 @@ type EncounterWorkspaceProps = {
    */
   isLaboratoryEnabled?: boolean;
   /**
+   * Whether this page offers the treating doctor's SATUSEHAT comparison
+   * (P21-T04). Only the doctor shell passes it, resolved from the clinic's
+   * `satusehat` entitlement; the admin shell renders the same workspace and must
+   * not grow a clinical-content card. Visibility only — the API admits nobody
+   * but the treating doctor.
+   */
+  isSatusehatRecordCheckEnabled?: boolean;
+  /**
    * The encounter list this record was opened from, for the trail's parent
    * link, and the patient-link shell. A doctor session has no patient
    * directory to reach, so that link is omitted rather than pointing at a
@@ -50,6 +59,7 @@ export function EncounterWorkspace({
   encountersHref = '/admin/encounters',
   patientHrefPrefix = '/admin/patients',
   isLaboratoryEnabled = false,
+  isSatusehatRecordCheckEnabled = false,
 }: EncounterWorkspaceProps) {
   const encounterQuery = useEncounterDetail(encounterId);
   const t = useTranslations('clinical');
@@ -195,6 +205,14 @@ export function EncounterWorkspace({
           />
         </div>
       </div>
+
+      {/* Only a finished visit is ever sent, so only a finished visit has
+          anything on SATUSEHAT to compare against. */}
+      {isSatusehatRecordCheckEnabled && encounter.status === 'FINISHED' ? (
+        <Can action="read" subject="SatusehatRecord">
+          <EncounterSatusehatRecordCard encounterId={encounter.id} />
+        </Can>
+      ) : null}
 
       {isGeneratingInvoice ? (
         <GenerateInvoiceDialog

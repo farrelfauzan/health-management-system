@@ -11,10 +11,11 @@ type DoctorEncounterDetailPageProps = {
 };
 
 /**
- * The laboratory entitlement is resolved here rather than in the workspace: it
- * lives on the session claims, which a client component cannot read (P18-T07).
- * Visibility only — `FeatureGuard` refuses every laboratory endpoint for a
- * clinic without it whatever the page decided.
+ * The laboratory and SATUSEHAT entitlements are resolved here rather than in
+ * the workspace: they live on the session claims, which a client component
+ * cannot read (P18-T07). Visibility only — `FeatureGuard` refuses every
+ * laboratory and SATUSEHAT endpoint for a clinic without them whatever the page
+ * decided.
  */
 export default async function DoctorEncounterDetailPage({
   params,
@@ -33,6 +34,7 @@ export default async function DoctorEncounterDetailPage({
       encountersHref="/doctor/encounters"
       patientHrefPrefix=""
       isLaboratoryEnabled={isFeatureEnabled(claims, 'laboratory')}
+      isSatusehatRecordCheckEnabled={isFeatureEnabled(claims, 'satusehat')}
     />
   );
 }

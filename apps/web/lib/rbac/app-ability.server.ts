@@ -156,6 +156,9 @@ const SUBJECT_BY_RESOURCE: Record<string, AppSubject> = {
   'bpjs.submission': 'BpjsSubmission',
   satusehat: 'Satusehat',
   'satusehat.submission': 'SatusehatSubmission',
+  // P21-T04. Without this row `satusehat.record.read:own` resolves to no rule
+  // and the doctor's Check with SATUSEHAT section never renders.
+  'satusehat.record': 'SatusehatRecord',
   // P23-T05. Hyphenated single segment, like `service-tariff`:
   // `notion-connector.manage:any` → resource `notion-connector`, action
   // `manage`. Without this row a super admin's grant resolves to no rule at

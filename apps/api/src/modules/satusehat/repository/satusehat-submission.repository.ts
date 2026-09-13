@@ -265,6 +265,49 @@ export class SatusehatSubmissionRepository {
   }
 
   /**
+   * The ENCOUNTER-kind row for one visit, if the visit was ever enqueued. At
+   * most one exists (`satusehat_submissions_encounter_kind_key`), so this is a
+   * lookup rather than a pick of the latest (P21-T04).
+   */
+  async findEncounterSubmission(encounterId: string): Promise<SatusehatSubmissionRecord | null> {
+    const row = await this.prisma.satusehatSubmission.findFirst({
+      where: { encounterId, kind: 'ENCOUNTER' },
+      include: SUBMISSION_ORDER_NUMBER_INCLUDE,
+    });
+    return row === null ? null : toSubmissionRecordFromRow(row);
+  }
+
+  /**
+   * The laboratory orders raised in one visit, cancelled ones aside — the
+   * lab half of the treating doctor's comparison (P21-T04). Each order's items
+   * are read through {@link findLabReportBundleData}, the same read the chain
+   * is submitted from, so both sides of the comparison describe one value.
+   */
+  async findEncounterLabOrderIds(encounterId: string): Promise<string[]> {
+    const rows = await this.prisma.labOrder.findMany({
+      where: { encounterId, status: { not: 'CANCELLED' } },
+      orderBy: { orderedAt: 'asc' },
+      select: { id: true },
+    });
+    return rows.map((row) => row.id);
+  }
+
+  /**
+   * Every LAB_REPORT row of one visit that reached the platform, newest first:
+   * an amendment enqueues beside the report it corrects, and the comparison
+   * keeps the first value it reads for a code, so the correction has to come
+   * first (P21-T04).
+   */
+  async findSubmittedLabReportSubmissionIds(encounterId: string): Promise<string[]> {
+    const rows = await this.prisma.satusehatSubmission.findMany({
+      where: { kind: 'LAB_REPORT', status: 'SUBMITTED', labOrder: { encounterId } },
+      orderBy: { submittedAt: 'desc' },
+      select: { id: true },
+    });
+    return rows.map((row) => row.id);
+  }
+
+  /**
    * What one submission recorded that it sent and skipped (P21-T02, read by
    * P21-T03). Ordered so the monitor renders a stable list without sorting.
    */
