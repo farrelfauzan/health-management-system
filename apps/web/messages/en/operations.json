@@ -666,6 +666,19 @@
         "checkedAt": "Checked at {time}",
         "lastPublished": "Last publish",
         "neverPublished": "Never"
+      },
+      "satusehatEnvironment": {
+        "label": {
+          "PRODUCTION": "SATUSEHAT: Production",
+          "SANDBOX": "SATUSEHAT: Sandbox (staging)",
+          "UNKNOWN": "SATUSEHAT: Unrecognised environment"
+        },
+        "description": {
+          "PRODUCTION": "Visits reach the national medical record and patients can read them in SATUSEHAT Mobile.",
+          "SANDBOX": "Visits reach the shared staging platform only. A “Submitted” row below proves the integration works, not that the patient can see their visit. Follow the production switch runbook before go-live.",
+          "UNKNOWN": "The platform host is not recognised, so it cannot be confirmed whether data goes to production or staging. Check SATUSEHAT_FHIR_BASE_URL on the server."
+        },
+        "notConfigured": "SATUSEHAT credentials are not set, so nothing is being sent. Set SATUSEHAT_CLIENT_ID, SATUSEHAT_CLIENT_SECRET and SATUSEHAT_ORGANIZATION_ID on the server."
       }
     },
     "administration": {

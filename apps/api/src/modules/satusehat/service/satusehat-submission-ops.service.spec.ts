@@ -1,5 +1,6 @@
 import { SatusehatSubmissionRecord } from '@hms/shared-types';
 import { ConflictException, NotFoundException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
@@ -41,13 +42,58 @@ describe('SatusehatSubmissionOpsService', () => {
 
   let service: SatusehatSubmissionOpsService;
 
-  beforeEach(() => {
-    jest.clearAllMocks();
-    service = new SatusehatSubmissionOpsService(
+  /** Builds the service with a configuration stub returning `env` values. */
+  function buildService(env: Record<string, string> = {}): SatusehatSubmissionOpsService {
+    const configServiceStub = {
+      get: (key: string): string | undefined => env[key],
+    } as unknown as ConfigService;
+    return new SatusehatSubmissionOpsService(
+      configServiceStub,
       submissionRepositoryMock as unknown as SatusehatSubmissionRepository,
       submissionServiceMock as unknown as SatusehatSubmissionService,
       auditServiceMock as unknown as AuditService,
     );
+  }
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    service = buildService();
+  });
+
+  describe('getEnvironmentStatus', () => {
+    it('reports the staging sandbox when nothing overrides the defaults', () => {
+      expect(buildService().getEnvironmentStatus()).toEqual({
+        environment: 'SANDBOX',
+        isConfigured: false,
+        fhirHost: 'api-satusehat-stg.dto.kemkes.go.id',
+      });
+    });
+
+    it('reports production once the base URL points at the real platform', () => {
+      const actual = buildService({
+        SATUSEHAT_FHIR_BASE_URL: 'https://api-satusehat.dto.kemkes.go.id/fhir-r4/v1',
+        SATUSEHAT_ORGANIZATION_ID: 'org-1',
+        SATUSEHAT_CLIENT_ID: 'client-1',
+        SATUSEHAT_CLIENT_SECRET: 'secret-1',
+      }).getEnvironmentStatus();
+
+      expect(actual).toEqual({
+        environment: 'PRODUCTION',
+        isConfigured: true,
+        fhirHost: 'api-satusehat.dto.kemkes.go.id',
+      });
+    });
+
+    it('never exposes credentials or the organization id', () => {
+      const actual = buildService({
+        SATUSEHAT_ORGANIZATION_ID: 'org-secret',
+        SATUSEHAT_CLIENT_ID: 'client-secret',
+        SATUSEHAT_CLIENT_SECRET: 'very-secret',
+      }).getEnvironmentStatus();
+
+      expect(Object.keys(actual).sort()).toEqual(['environment', 'fhirHost', 'isConfigured']);
+      expect(JSON.stringify(actual)).not.toContain('secret');
+    });
   });
 
   describe('listSubmissions', () => {

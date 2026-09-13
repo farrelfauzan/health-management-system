@@ -1,13 +1,19 @@
 import {
   ListSatusehatSubmissionsQueryInput,
+  SatusehatEnvironmentStatus,
   SatusehatSubmissionRecord,
   SatusehatSubmissionView,
   SatusehatSubmissionsListResult,
 } from '@hms/shared-types';
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { resolveSatusehatConfig } from '../../../common/satusehat/satusehat.config';
+import { resolveSatusehatEnvironment } from '../../../common/satusehat/resolve-satusehat-environment';
+import { resolveSatusehatHost } from '../../../common/satusehat/resolve-satusehat-host';
+import { SatusehatConfig } from '../../../common/satusehat/satusehat.types';
 import { SatusehatSubmissionRepository } from '../repository/satusehat-submission.repository';
 import { SatusehatSubmissionService } from './satusehat-submission.service';
 
@@ -24,11 +30,32 @@ const SUBMISSION_AUDIT_RESOURCE = 'SatusehatSubmission';
  */
 @Injectable()
 export class SatusehatSubmissionOpsService {
+  private readonly satusehatConfig: SatusehatConfig;
+
   constructor(
+    configService: ConfigService,
     private readonly submissionRepository: SatusehatSubmissionRepository,
     private readonly submissionService: SatusehatSubmissionService,
     private readonly auditService: AuditService,
-  ) {}
+  ) {
+    this.satusehatConfig = resolveSatusehatConfig(configService);
+  }
+
+  /**
+   * Which SATUSEHAT platform this deployment actually talks to (P21-T06).
+   *
+   * Read from the configured base URL on every call rather than cached at boot
+   * as a separate flag, because the whole value of showing it is that it cannot
+   * disagree with where the bundles go. Carries no credentials and no
+   * organization id — only the platform and its host.
+   */
+  getEnvironmentStatus(): SatusehatEnvironmentStatus {
+    return {
+      environment: resolveSatusehatEnvironment(this.satusehatConfig.fhirBaseUrl),
+      isConfigured: this.satusehatConfig.isConfigured,
+      fhirHost: resolveSatusehatHost(this.satusehatConfig.fhirBaseUrl),
+    };
+  }
 
   async listSubmissions(
     query: ListSatusehatSubmissionsQueryInput,

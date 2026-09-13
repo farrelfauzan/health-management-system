@@ -10,6 +10,7 @@ import { BpjsMappingsPanel } from '#components/client/integrations/bpjs-mappings
 import { BpjsSettingsPanel } from '#components/client/integrations/bpjs-settings-panel';
 import { IntegrationSubmissionMonitor } from '#components/client/integrations/integration-submission-monitor';
 import { NotionConnectorCard } from '#components/client/integrations/notion-connector-card';
+import { SatusehatEnvironmentCard } from '#components/client/integrations/satusehat-environment-card';
 import { PageHeader } from '#components/shared/page-header';
 import { INTEGRATIONS_TABS, type IntegrationsTab } from '#lib/integrations/integrations-tabs';
 import { useShellBreadcrumbRoot } from '#lib/navigation/use-shell-breadcrumb-root';
@@ -62,6 +63,12 @@ export function IntegrationsPanel({ initialTab }: IntegrationsPanelProps) {
           not a clinic surface at all, which is why it hangs off its own grant
           rather than the BPJS config one. */}
       {canSeeNotionConnector ? <NotionConnectorCard /> : null}
+      {/* P21-T06. Above the tabs because it changes what the rows below it
+          mean: a green SUBMITTED against the shared sandbox proves the
+          integration works and proves nothing to the patient, whose SATUSEHAT
+          Mobile reads production only. Gated on the same grant as the monitor,
+          since it is only meaningful next to those rows. */}
+      {ability.can('read', 'SatusehatSubmission') ? <SatusehatEnvironmentCard /> : null}
       {/* P23-T05. Somebody whose only grant here is the Notion connector has
           no readable tab, and an empty tab strip reads as a broken page rather
           than as "nothing for you in here". */}
