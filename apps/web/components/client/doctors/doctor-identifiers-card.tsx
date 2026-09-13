@@ -29,7 +29,10 @@ export function DoctorIdentifiersCard({ doctor, isSatusehatEnabled }: DoctorIden
           <DoctorSatusehatLinkButton
             doctorId={doctor.id}
             hasNik={Boolean(doctor.nikMasked)}
-            isLinked={doctor.satusehatPractitionerId !== undefined}
+            // Truthiness, not `!== undefined`: a doctor whose NIK changed has
+            // the link cleared to null (D-035), and `null !== undefined` would
+            // hide the Link button on exactly the record that needs relinking.
+            isLinked={Boolean(doctor.satusehatPractitionerId)}
             isSatusehatEnabled={isSatusehatEnabled}
           />
           {canReveal && !isRevealed ? (

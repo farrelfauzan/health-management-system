@@ -11,6 +11,7 @@ import { Injectable } from '@nestjs/common';
 
 import { NationalIdentifierCryptoService } from '../../../common/crypto/national-identifier-crypto.service';
 import { PrismaService } from '../../../common/prisma/prisma.service';
+import { PrismaTransactionClient } from '../../../common/prisma/prisma.types';
 import { Prisma } from '../../../generated/prisma/client';
 import { DoctorIdentifierConflictError } from './doctor-identifier-conflict.error';
 
@@ -501,7 +502,9 @@ export class DoctorManagementRepository {
             },
           });
         }
-        return tx.doctorProfile.update({
+        const nikColumns = this.buildNikColumns(payload.nik);
+        const clearsSatusehatLink = await this.hasNikChanged(tx, id, nikColumns);
+        const updated = await tx.doctorProfile.update({
           where: {
             id,
           },
@@ -516,7 +519,15 @@ export class DoctorManagementRepository {
               : {}),
             ...(payload.ownerUserId !== undefined ? { ownerUserId: payload.ownerUserId } : {}),
             ...(payload.isActive !== undefined ? { isActive: payload.isActive } : {}),
-            ...this.buildNikColumns(payload.nik),
+            ...nikColumns,
+            // A changed NIK invalidates the IHS number derived from it, so the
+            // link goes in the same write (D-035). An explicit
+            // `satusehatPractitionerId` in the payload still wins: P21-T08's
+            // verified manual link sends both, and it means the operator has
+            // confirmed this pairing against the platform.
+            ...(clearsSatusehatLink && payload.satusehatPractitionerId === undefined
+              ? { satusehatPractitionerId: null }
+              : {}),
             ...(payload.licenses !== undefined
               ? { licenses: { create: payload.licenses.map(toLicenseCreateData) } }
               : {}),
@@ -529,8 +540,41 @@ export class DoctorManagementRepository {
             specialty: SPECIALTY_SELECT,
           },
         });
+        return { doctor: updated, clearedSatusehatLink: clearsSatusehatLink };
       })
       .catch(rethrowIdentifierConflict);
+  }
+
+  /**
+   * Whether this update actually changes the doctor's NIK, and therefore
+   * invalidates the SATUSEHAT link derived from it (D-035).
+   *
+   * Compared by **blind index**, never by ciphertext: identifiers are
+   * re-encrypted on every write, so ciphertext differs even when the value does
+   * not, and comparing it would unlink a doctor on an unrelated profile edit.
+   * The index is deterministic for a key version, which is exactly what makes
+   * "the same NIK saved again" distinguishable from a real change.
+   *
+   * Returns false when the payload carries no NIK, and when the doctor holds no
+   * link to clear.
+   */
+  private async hasNikChanged(
+    tx: PrismaTransactionClient,
+    id: string,
+    nikColumns: Record<string, string | number>,
+  ): Promise<boolean> {
+    const nextIndex = nikColumns['nikIndex'];
+    if (typeof nextIndex !== 'string') {
+      return false;
+    }
+    const existing = await tx.doctorProfile.findUnique({
+      where: { id },
+      select: { nikIndex: true, satusehatPractitionerId: true },
+    });
+    if (existing === null || existing.satusehatPractitionerId === null) {
+      return false;
+    }
+    return existing.nikIndex !== nextIndex;
   }
 
   /**
