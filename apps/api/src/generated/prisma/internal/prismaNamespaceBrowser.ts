@@ -108,6 +108,7 @@ export const ModelName = {
   RolePermission: 'RolePermission',
   UserRole: 'UserRole',
   SatusehatSubmission: 'SatusehatSubmission',
+  SatusehatSubmissionResource: 'SatusehatSubmissionResource',
   AuditLog: 'AuditLog',
   BpjsPcareConfig: 'BpjsPcareConfig',
   BpjsAntreanConfig: 'BpjsAntreanConfig',
@@ -1127,6 +1128,21 @@ export const SatusehatSubmissionScalarFieldEnum = {
 } as const
 
 export type SatusehatSubmissionScalarFieldEnum = (typeof SatusehatSubmissionScalarFieldEnum)[keyof typeof SatusehatSubmissionScalarFieldEnum]
+
+
+export const SatusehatSubmissionResourceScalarFieldEnum = {
+  id: 'id',
+  submissionId: 'submissionId',
+  resourceType: 'resourceType',
+  outcome: 'outcome',
+  skipReason: 'skipReason',
+  satusehatId: 'satusehatId',
+  localRecordId: 'localRecordId',
+  isBackfilled: 'isBackfilled',
+  createdAt: 'createdAt'
+} as const
+
+export type SatusehatSubmissionResourceScalarFieldEnum = (typeof SatusehatSubmissionResourceScalarFieldEnum)[keyof typeof SatusehatSubmissionResourceScalarFieldEnum]
 
 
 export const AuditLogScalarFieldEnum = {

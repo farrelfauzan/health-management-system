@@ -3,6 +3,8 @@ import type {
   LabSpecimenTypeValue,
 } from '#laboratory/schemas';
 import type {
+  SatusehatResourceOutcomeValue,
+  SatusehatResourceSkipReasonValue,
   SatusehatSubmissionKindValue,
   SatusehatSubmissionStatusValue,
 } from '#satusehat/schemas';
@@ -377,6 +379,16 @@ export type SaveAllergyIhsIdPayload = {
   satusehatAllergyId: string;
 };
 
+/**
+ * One immunization row and the IHS id the platform assigned it (P21-T02). The
+ * column shipped with the schema and nothing ever wrote it, so every reported
+ * vaccination read as unreported.
+ */
+export type SaveImmunizationIhsIdPayload = {
+  immunizationId: string;
+  satusehatImmunizationId: string;
+};
+
 export type MarkSubmissionRetryPayload = {
   id: string;
   attempts: number;
@@ -423,4 +435,37 @@ export type SatusehatSandboxPractitioner = {
 export type ClaimDueSubmissionsPayload = {
   limit: number;
   leaseMs: number;
+};
+
+/**
+ * One line of "what this submission sent, and what it left out" (P21-T02).
+ *
+ * Deliberately carries **no clinical values** — no codes, names, displays or
+ * results. `localRecordId` is the only link back to what the item was, and
+ * resolving it needs a doctor's permission (P21-T04). That is what allows the
+ * ADMIN-gated integrations monitor to render these rows directly without
+ * breaking the P10-T06 promise that the outbox holds no clinical payload.
+ *
+ * `satusehatId` is null on every SKIPPED row and also on a SENT row the
+ * transaction response could not be paired against — the resource went, but
+ * which one it became is unknown, so it can never be read back.
+ */
+export type SatusehatSubmissionResourcePayload = {
+  resourceType: string;
+  outcome: SatusehatResourceOutcomeValue;
+  skipReason: SatusehatResourceSkipReasonValue | null;
+  satusehatId: string | null;
+  localRecordId: string | null;
+  isBackfilled: boolean;
+};
+
+/**
+ * Replaces a submission's resource list wholesale. A retry that succeeds
+ * describes the bundle that actually landed, so the previous attempt's list is
+ * deleted rather than added to — two attempts' rows side by side would double
+ * every count the monitor shows.
+ */
+export type SaveSubmissionResourcesPayload = {
+  submissionId: string;
+  resources: readonly SatusehatSubmissionResourcePayload[];
 };

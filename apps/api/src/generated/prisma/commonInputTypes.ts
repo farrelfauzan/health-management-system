@@ -1163,6 +1163,40 @@ export type EnumSatusehatSubmissionStatusWithAggregatesFilter<$PrismaModel = nev
   _max?: Prisma.NestedEnumSatusehatSubmissionStatusFilter<$PrismaModel>
 }
 
+export type EnumSatusehatResourceOutcomeFilter<$PrismaModel = never> = {
+  equals?: $Enums.SatusehatResourceOutcome | Prisma.EnumSatusehatResourceOutcomeFieldRefInput<$PrismaModel>
+  in?: $Enums.SatusehatResourceOutcome[] | Prisma.ListEnumSatusehatResourceOutcomeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SatusehatResourceOutcome[] | Prisma.ListEnumSatusehatResourceOutcomeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSatusehatResourceOutcomeFilter<$PrismaModel> | $Enums.SatusehatResourceOutcome
+}
+
+export type EnumSatusehatResourceSkipReasonNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.SatusehatResourceSkipReason | Prisma.EnumSatusehatResourceSkipReasonFieldRefInput<$PrismaModel> | null
+  in?: $Enums.SatusehatResourceSkipReason[] | Prisma.ListEnumSatusehatResourceSkipReasonFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.SatusehatResourceSkipReason[] | Prisma.ListEnumSatusehatResourceSkipReasonFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumSatusehatResourceSkipReasonNullableFilter<$PrismaModel> | $Enums.SatusehatResourceSkipReason | null
+}
+
+export type EnumSatusehatResourceOutcomeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.SatusehatResourceOutcome | Prisma.EnumSatusehatResourceOutcomeFieldRefInput<$PrismaModel>
+  in?: $Enums.SatusehatResourceOutcome[] | Prisma.ListEnumSatusehatResourceOutcomeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SatusehatResourceOutcome[] | Prisma.ListEnumSatusehatResourceOutcomeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSatusehatResourceOutcomeWithAggregatesFilter<$PrismaModel> | $Enums.SatusehatResourceOutcome
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumSatusehatResourceOutcomeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumSatusehatResourceOutcomeFilter<$PrismaModel>
+}
+
+export type EnumSatusehatResourceSkipReasonNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.SatusehatResourceSkipReason | Prisma.EnumSatusehatResourceSkipReasonFieldRefInput<$PrismaModel> | null
+  in?: $Enums.SatusehatResourceSkipReason[] | Prisma.ListEnumSatusehatResourceSkipReasonFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.SatusehatResourceSkipReason[] | Prisma.ListEnumSatusehatResourceSkipReasonFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumSatusehatResourceSkipReasonNullableWithAggregatesFilter<$PrismaModel> | $Enums.SatusehatResourceSkipReason | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumSatusehatResourceSkipReasonNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumSatusehatResourceSkipReasonNullableFilter<$PrismaModel>
+}
+
 export type EnumAuditActionFilter<$PrismaModel = never> = {
   equals?: $Enums.AuditAction | Prisma.EnumAuditActionFieldRefInput<$PrismaModel>
   in?: $Enums.AuditAction[] | Prisma.ListEnumAuditActionFieldRefInput<$PrismaModel>
@@ -3172,6 +3206,40 @@ export type NestedEnumSatusehatSubmissionStatusWithAggregatesFilter<$PrismaModel
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumSatusehatSubmissionStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumSatusehatSubmissionStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumSatusehatResourceOutcomeFilter<$PrismaModel = never> = {
+  equals?: $Enums.SatusehatResourceOutcome | Prisma.EnumSatusehatResourceOutcomeFieldRefInput<$PrismaModel>
+  in?: $Enums.SatusehatResourceOutcome[] | Prisma.ListEnumSatusehatResourceOutcomeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SatusehatResourceOutcome[] | Prisma.ListEnumSatusehatResourceOutcomeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSatusehatResourceOutcomeFilter<$PrismaModel> | $Enums.SatusehatResourceOutcome
+}
+
+export type NestedEnumSatusehatResourceSkipReasonNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.SatusehatResourceSkipReason | Prisma.EnumSatusehatResourceSkipReasonFieldRefInput<$PrismaModel> | null
+  in?: $Enums.SatusehatResourceSkipReason[] | Prisma.ListEnumSatusehatResourceSkipReasonFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.SatusehatResourceSkipReason[] | Prisma.ListEnumSatusehatResourceSkipReasonFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumSatusehatResourceSkipReasonNullableFilter<$PrismaModel> | $Enums.SatusehatResourceSkipReason | null
+}
+
+export type NestedEnumSatusehatResourceOutcomeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.SatusehatResourceOutcome | Prisma.EnumSatusehatResourceOutcomeFieldRefInput<$PrismaModel>
+  in?: $Enums.SatusehatResourceOutcome[] | Prisma.ListEnumSatusehatResourceOutcomeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.SatusehatResourceOutcome[] | Prisma.ListEnumSatusehatResourceOutcomeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumSatusehatResourceOutcomeWithAggregatesFilter<$PrismaModel> | $Enums.SatusehatResourceOutcome
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumSatusehatResourceOutcomeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumSatusehatResourceOutcomeFilter<$PrismaModel>
+}
+
+export type NestedEnumSatusehatResourceSkipReasonNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.SatusehatResourceSkipReason | Prisma.EnumSatusehatResourceSkipReasonFieldRefInput<$PrismaModel> | null
+  in?: $Enums.SatusehatResourceSkipReason[] | Prisma.ListEnumSatusehatResourceSkipReasonFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.SatusehatResourceSkipReason[] | Prisma.ListEnumSatusehatResourceSkipReasonFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumSatusehatResourceSkipReasonNullableWithAggregatesFilter<$PrismaModel> | $Enums.SatusehatResourceSkipReason | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumSatusehatResourceSkipReasonNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumSatusehatResourceSkipReasonNullableFilter<$PrismaModel>
 }
 
 export type NestedEnumAuditActionFilter<$PrismaModel = never> = {

@@ -311,7 +311,9 @@ describe('SatusehatSubmissionService', () => {
     findBundleData: jest.fn(),
     findLabReportBundleData: jest.fn(),
     saveAllergyIhsIds: jest.fn(),
+    saveImmunizationIhsIds: jest.fn(),
     saveLabReportIhsIds: jest.fn(),
+    saveSubmissionResources: jest.fn(),
     markSubmitted: jest.fn(),
     scheduleRetry: jest.fn(),
     markFailed: jest.fn(),
@@ -434,6 +436,253 @@ describe('SatusehatSubmissionService', () => {
     await service.processSubmission(buildSubmission());
 
     expect(submissionRepositoryMock.markSubmitted).toHaveBeenCalledWith(buildSubmission().id, null);
+  });
+
+  it('records what the submission sent, with the id SATUSEHAT gave each resource', async () => {
+    submissionRepositoryMock.findBundleData.mockResolvedValue(
+      buildBundleData({ latestVitalSigns: null }),
+    );
+    httpClientMock.sendRequest.mockResolvedValue({
+      entry: [
+        { response: { status: '201 Created', location: 'Encounter/ihs-enc-1/_history/1' } },
+        { response: { status: '201 Created', location: 'Condition/ihs-cond-1/_history/1' } },
+        { response: { status: '201 Created', location: 'Condition/ihs-cond-2/_history/1' } },
+        { response: { status: '201 Created', location: 'ClinicalImpression/ihs-ci-1/_history/1' } },
+        { response: { status: '201 Created', location: 'Composition/ihs-comp-1/_history/1' } },
+      ],
+    });
+    const service = buildService();
+
+    await service.processSubmission(buildSubmission());
+
+    const saved = submissionRepositoryMock.saveSubmissionResources.mock.calls[0]?.[0] as {
+      submissionId: string;
+      resources: readonly {
+        resourceType: string;
+        outcome: string;
+        skipReason: string | null;
+        satusehatId: string | null;
+        localRecordId: string | null;
+      }[];
+    };
+    expect(saved.submissionId).toBe(buildSubmission().id);
+    expect(saved.resources).toEqual([
+      {
+        resourceType: 'Encounter',
+        outcome: 'SENT',
+        skipReason: null,
+        satusehatId: 'ihs-enc-1',
+        localRecordId: encounterId,
+        isBackfilled: false,
+      },
+      {
+        resourceType: 'Condition',
+        outcome: 'SENT',
+        skipReason: null,
+        satusehatId: 'ihs-cond-1',
+        localRecordId: null,
+        isBackfilled: false,
+      },
+      {
+        resourceType: 'Condition',
+        outcome: 'SENT',
+        skipReason: null,
+        satusehatId: 'ihs-cond-2',
+        localRecordId: null,
+        isBackfilled: false,
+      },
+      {
+        resourceType: 'ClinicalImpression',
+        outcome: 'SENT',
+        skipReason: null,
+        satusehatId: 'ihs-ci-1',
+        localRecordId: null,
+        isBackfilled: false,
+      },
+      {
+        resourceType: 'Composition',
+        outcome: 'SENT',
+        skipReason: null,
+        satusehatId: 'ihs-comp-1',
+        localRecordId: null,
+        isBackfilled: false,
+      },
+    ]);
+  });
+
+  it("records the ticket's example: two coded diagnoses sent and one medication skipped for no KFA code", async () => {
+    submissionRepositoryMock.findBundleData.mockResolvedValue(
+      buildBundleData({
+        latestVitalSigns: null,
+        prescriptions: [
+          {
+            prescriptionId: 'presc-1',
+            prescribedAt: new Date('2026-07-28T02:15:00.000Z'),
+            items: [
+              {
+                prescriptionItemId: 'presc-item-1',
+                medication: {
+                  medicationId: 'med-uncoded',
+                  code: 'PARA500',
+                  kfaCode: null,
+                  name: 'Paracetamol 500 mg',
+                  unit: 'tablet',
+                },
+                compound: null,
+                dosageText: '3x1',
+                quantity: 10,
+              },
+            ],
+          },
+        ],
+      }),
+    );
+    httpClientMock.sendRequest.mockResolvedValue({ entry: [] });
+    const service = buildService();
+
+    await service.processSubmission(buildSubmission());
+
+    const saved = submissionRepositoryMock.saveSubmissionResources.mock.calls[0]?.[0] as {
+      resources: readonly { resourceType: string; outcome: string; skipReason: string | null }[];
+    };
+    expect(saved.resources.filter((row) => row.resourceType === 'Condition')).toHaveLength(2);
+    expect(saved.resources.filter((row) => row.outcome === 'SKIPPED')).toEqual([
+      {
+        resourceType: 'Medication',
+        outcome: 'SKIPPED',
+        skipReason: 'NO_KFA_CODE',
+        satusehatId: null,
+        localRecordId: null,
+        isBackfilled: false,
+      },
+    ]);
+  });
+
+  it('records a skipped procedure without an ICD-9-CM code, and no clinical text with it', async () => {
+    submissionRepositoryMock.findBundleData.mockResolvedValue(
+      buildBundleData({
+        latestVitalSigns: null,
+        procedures: [
+          {
+            procedureId: 'proc-uncoded',
+            code: 'FREE_TEXT',
+            display: 'Perawatan luka ringan',
+            isCoded: false,
+            performedAt: new Date('2026-07-28T02:12:00.000Z'),
+            notes: null,
+          },
+        ],
+      }),
+    );
+    httpClientMock.sendRequest.mockResolvedValue({ entry: [] });
+    const service = buildService();
+
+    await service.processSubmission(buildSubmission());
+
+    const saved = submissionRepositoryMock.saveSubmissionResources.mock.calls[0]?.[0] as {
+      resources: readonly Record<string, unknown>[];
+    };
+    const skipped = saved.resources.filter((row) => row.outcome === 'SKIPPED');
+    expect(skipped).toEqual([
+      {
+        resourceType: 'Procedure',
+        outcome: 'SKIPPED',
+        skipReason: 'NO_ICD9CM_CODE',
+        satusehatId: null,
+        localRecordId: null,
+        isBackfilled: false,
+      },
+    ]);
+    expect(JSON.stringify(saved.resources)).not.toContain('Perawatan luka ringan');
+    expect(JSON.stringify(saved.resources)).not.toContain('FREE_TEXT');
+  });
+
+  it('keeps a null id on a sent resource whose type came back with a mismatched count', async () => {
+    submissionRepositoryMock.findBundleData.mockResolvedValue(
+      buildBundleData({ latestVitalSigns: null }),
+    );
+    // Two Conditions were requested; the platform answers with one, so neither
+    // id can be attributed and both rows keep a null id.
+    httpClientMock.sendRequest.mockResolvedValue({
+      entry: [
+        { response: { status: '201 Created', location: 'Encounter/ihs-enc-1/_history/1' } },
+        { response: { status: '201 Created', location: 'Condition/ihs-cond-only/_history/1' } },
+      ],
+    });
+    const service = buildService();
+
+    await service.processSubmission(buildSubmission());
+
+    const saved = submissionRepositoryMock.saveSubmissionResources.mock.calls[0]?.[0] as {
+      resources: readonly { resourceType: string; outcome: string; satusehatId: string | null }[];
+    };
+    const conditions = saved.resources.filter((row) => row.resourceType === 'Condition');
+    expect(conditions).toHaveLength(2);
+    expect(conditions.every((row) => row.outcome === 'SENT' && row.satusehatId === null)).toBe(true);
+  });
+
+  it('writes back the id SATUSEHAT assigned to an immunization', async () => {
+    submissionRepositoryMock.findBundleData.mockResolvedValue(
+      buildBundleData({
+        latestVitalSigns: null,
+        diagnoses: [],
+        immunizations: [
+          {
+            immunizationId: 'imm-1',
+            kfaCode: '93000001',
+            vaccineName: 'BCG',
+            occurredAt: new Date('2026-07-28T02:05:00.000Z'),
+            lotNumber: null,
+            expirationDate: null,
+            doseNumber: 1,
+            route: 'IM' as const,
+            site: 'LEFT_ARM' as const,
+            notes: null,
+          },
+        ],
+      }),
+    );
+    httpClientMock.sendRequest.mockResolvedValue({
+      entry: [
+        { response: { status: '201 Created', location: 'Encounter/ihs-enc-1/_history/1' } },
+        { response: { status: '201 Created', location: 'Immunization/ihs-imm-1/_history/1' } },
+        { response: { status: '201 Created', location: 'ClinicalImpression/ihs-ci-1/_history/1' } },
+        { response: { status: '201 Created', location: 'Composition/ihs-comp-1/_history/1' } },
+      ],
+    });
+    const service = buildService();
+
+    await service.processSubmission(buildSubmission());
+
+    expect(submissionRepositoryMock.saveImmunizationIhsIds).toHaveBeenCalledWith([
+      { immunizationId: 'imm-1', satusehatImmunizationId: 'ihs-imm-1' },
+    ]);
+  });
+
+  it('leaves a submission reported when its resource list cannot be recorded', async () => {
+    submissionRepositoryMock.findBundleData.mockResolvedValue(
+      buildBundleData({ latestVitalSigns: null }),
+    );
+    httpClientMock.sendRequest.mockResolvedValue({
+      entry: [{ response: { status: '201 Created', location: 'Encounter/ihs-enc-1/_history/1' } }],
+    });
+    // `jest.clearAllMocks()` clears calls but keeps implementations, so this is
+    // scoped to one call rather than leaking a rejection into later tests.
+    submissionRepositoryMock.saveSubmissionResources.mockRejectedValueOnce(
+      new Error('write failed'),
+    );
+    const service = buildService();
+
+    await service.processSubmission(buildSubmission());
+
+    // The bundle reached the platform and nothing can un-send it, so provenance
+    // failing must not schedule a retry that would duplicate every resource.
+    expect(submissionRepositoryMock.markSubmitted).toHaveBeenCalledWith(
+      buildSubmission().id,
+      'ihs-enc-1',
+    );
+    expect(submissionRepositoryMock.scheduleRetry).not.toHaveBeenCalled();
+    expect(submissionRepositoryMock.markFailed).not.toHaveBeenCalled();
   });
 
   it('wires every Condition and Observation to the Encounter entry fullUrl and ranks the primary first', async () => {
