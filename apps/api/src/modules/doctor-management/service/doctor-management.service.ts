@@ -436,8 +436,35 @@ export class DoctorManagementService {
         isActive: payload.isActive,
       }),
     );
+    if (updated.clearedSatusehatLink) {
+      await this.recordSatusehatLinkCleared(id, currentUser);
+    }
 
-    return this.toDoctorResponse(updated, await this.doctorCredentialOptionService.buildResolver());
+    return this.toDoctorResponse(
+      updated.doctor,
+      await this.doctorCredentialOptionService.buildResolver(),
+    );
+  }
+
+  /**
+   * Records that a NIK change dropped the doctor's SATUSEHAT link (D-035).
+   *
+   * The NIK itself never reaches the audit row — only the fact that it changed,
+   * which is the whole reason the link is gone. The worker relinks by lookup on
+   * the next submission, so this row is usually the only trace that the old IHS
+   * number was ever attached to this doctor.
+   */
+  private async recordSatusehatLinkCleared(
+    doctorId: string,
+    currentUser: CurrentUser,
+  ): Promise<void> {
+    await this.auditService.record({
+      action: 'SATUSEHAT_LINK_CLEARED',
+      resource: 'DoctorProfile',
+      resourceId: doctorId,
+      actorUserId: currentUser.sub,
+      metadata: { reason: 'NIK_CHANGED' },
+    });
   }
 
   async updateDoctorSchedule(

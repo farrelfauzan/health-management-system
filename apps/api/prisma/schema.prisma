@@ -87,6 +87,9 @@ enum AuditAction {
   SATUSEHAT_DOCTOR_LINKED
   SATUSEHAT_SUBMISSION_RETRIED
   SATUSEHAT_LINK_AMBIGUOUS
+  /// A NIK changed, so the SATUSEHAT link derived from it was cleared without
+  /// anyone asking (D-035). Never carries the NIK — only that it changed.
+  SATUSEHAT_LINK_CLEARED
   IMMUNIZATION_RECORDED
   IMMUNIZATION_REMOVED
   BPJS_CONFIG_CREATED
