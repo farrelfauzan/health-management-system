@@ -397,6 +397,7 @@ DTO/schema contract rule:
 - Seed minimum permission set per module.
 - `SUPER_ADMIN` gets full management permissions.
 - Other roles get least privilege by default.
+- Clinical record content is granted only to clinician roles (`DOCTOR`, and `MIDWIFE` once P24-T02 lands), scoped to the treating clinician and active assignments. Non-clinician roles may hold only task access scoped to one order (pharmacist, lab technician) or billing lines, and `SUPER_ADMIN`'s all-permissions union stops at clinical keys. Enforcement is P22-T02; the rule and its legal basis (Permenkes 24/2022 Pasal 30, 32–34) are D-033 in `docs/post-mvp/decisions.md`.
 - Include RBAC management permissions such as `role.read:any`, `role.assign:any`, and `role.unassign:any` for admin-level workflows.
 - Seed doctor-patient assignment, unassignment, and activity-read permissions for `SUPER_ADMIN` and `ADMIN`; grant doctors `patient.read:own` only for actively assigned patients.
 - Seed `appointment.approve:any` and `appointment.session.update:any` for `ADMIN` only; seed `appointment.session.read:any` for `ADMIN` and `PATIENT` (session listings drive patient self-service booking) and `appointment.session.read:own` for `DOCTOR` (a doctor consults their own calendar only). `DOCTOR` holds no `appointment.create` grant — booking belongs to the front desk and the patient portal.

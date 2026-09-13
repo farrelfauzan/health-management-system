@@ -116,6 +116,7 @@ Guidelines:
 - Permissions should be action-based (example: `appointment.read:any`, `appointment.read:own`, `prescription.write:any`).
 - Support resource ownership checks (`:own`) for patient/doctor data.
 - Deny by default.
+- Patient clinical record content (notes, diagnoses, procedures, vitals, allergies, immunizations, prescriptions and dispensing, lab orders and results, clinical documents, health chat content) is for the clinicians who examine the patient. Any other access must be task access scoped to one order or a billing line, and must say which. See D-033 in `docs/post-mvp/decisions.md` before adding a permission or screen that touches it.
 
 Frontend requirement:
 
