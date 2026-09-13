@@ -71,7 +71,28 @@ export const doctorLicensesSchema = z
 
 export type DoctorLicenseInput = z.infer<typeof doctorLicenseInputSchema>;
 
-export const satusehatPractitionerIdSchema = z.string().trim().min(1).max(64);
+/**
+ * Refuses a practitioner IHS number sent with a doctor create or update
+ * (P21-T08). It used to be stored exactly as sent, and a mistyped id files every
+ * later encounter under somebody else's national record. The only ways in are
+ * the NIK link and the verified manual link under `/satusehat/doctors`.
+ *
+ * Checked on the raw input, before the object strips unknown keys, so the field
+ * is refused rather than silently dropped. It is kept out of the object shape
+ * on purpose: declaring it as `z.never()` renders a property with no valid type
+ * into the OpenAPI contract, and Orval refuses to generate from it.
+ */
+function refuseUnverifiedPractitionerId(input: unknown, ctx: z.RefinementCtx): unknown {
+  if (typeof input === 'object' && input !== null && 'satusehatPractitionerId' in input) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ['satusehatPractitionerId'],
+      message:
+        'satusehatPractitionerId cannot be set directly; link the doctor through SATUSEHAT instead',
+    });
+  }
+  return input;
+}
 
 /**
  * Titles, degrees and fields of study are picked from the
@@ -234,7 +255,6 @@ export const createDoctorSchema = z.object({
   // permanent, not retryable (SJ-75). Legacy rows predating this rule may still
   // hold null; `listDoctorsQuerySchema.missingNik` is how they are found.
   nik: nikSchema,
-  satusehatPractitionerId: satusehatPractitionerIdSchema.optional(),
   licenses: doctorLicensesSchema.optional(),
   educations: doctorEducationsSchema.optional(),
   isActive: z.boolean().optional().default(true),
@@ -268,7 +288,6 @@ export const updateDoctorSchema = z
     // Settable but not clearable: a doctor who has a NIK must keep one, or
     // their next encounter silently becomes unreportable (SJ-75).
     nik: nikSchema.optional(),
-    satusehatPractitionerId: satusehatPractitionerIdSchema.nullable().optional(),
     // Replaces the whole list: the client always submits the complete set of
     // active licenses, and removed entries are soft-deleted rather than
     // dropped, so the credential history survives licensing audits.
@@ -344,5 +363,21 @@ export type ListDoctorsQueryInput = z.infer<typeof listDoctorsQuerySchema>;
 export type CreateDoctorInput = z.infer<typeof createDoctorSchema>;
 export type InviteDoctorAccountInput = z.infer<typeof inviteDoctorAccountSchema>;
 export type UpdateDoctorInput = z.infer<typeof updateDoctorSchema>;
+
+/**
+ * The bodies the doctor create and update routes validate (P21-T08): the same
+ * schemas plus the refusal of a raw practitioner IHS number. Kept apart from
+ * `createDoctorSchema`, whose `.shape` the web forms read field by field, which
+ * a preprocess wrapper would hide.
+ */
+export const createDoctorRequestSchema = z.preprocess(
+  refuseUnverifiedPractitionerId,
+  createDoctorSchema,
+);
+
+export const updateDoctorRequestSchema = z.preprocess(
+  refuseUnverifiedPractitionerId,
+  updateDoctorSchema,
+);
 export type UpdateOwnDoctorProfileInput = z.infer<typeof updateOwnDoctorProfileSchema>;
 export type CompleteOwnDoctorProfileInput = z.infer<typeof completeOwnDoctorProfileSchema>;

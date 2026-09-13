@@ -32,6 +32,7 @@ describe('SATUSEHAT link integration', () => {
   const masterDataClientMock = {
     findPatientIhsNumberByNik: jest.fn(),
     findPractitionerIhsNumberByNik: jest.fn(),
+    findPractitionerById: jest.fn(),
   };
 
   const auditServiceMock = {
@@ -325,5 +326,135 @@ describe('SATUSEHAT link integration', () => {
 
     expect(response.status).toBe(400);
     expect(satusehatLinkRepositoryMock.findPatientLinkTarget).not.toHaveBeenCalled();
+  });
+  describe('manual IHS link (P21-T08)', () => {
+    const inputIhsNumber = '10000000009';
+    const LINK_PERMISSIONS = [{ action: 'link', resource: 'Satusehat', scope: 'ANY' as const }];
+
+    function mockUnlinkedDoctor(): void {
+      satusehatLinkRepositoryMock.findDoctorLinkTarget.mockResolvedValue({
+        id: doctorId,
+        fullName: 'dr. Budi Santoso',
+        nik: syntheticNik,
+        satusehatPractitionerId: null,
+      });
+    }
+
+    it('previews what SATUSEHAT holds without saving', async () => {
+      const token = await buildToken('actor-user', 'admin@hms.local');
+      mockActorWithPermissions(LINK_PERMISSIONS);
+      mockUnlinkedDoctor();
+      masterDataClientMock.findPractitionerById.mockResolvedValue({
+        ihsNumber: inputIhsNumber,
+        name: 'dr. Budi Santoso',
+        maskedNik: '*************002',
+      });
+
+      const response = await request(app.getHttpServer())
+        .post(`/api/v1/v1/satusehat/doctors/${doctorId}/link-by-ihs/preview`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ ihsNumber: inputIhsNumber });
+
+      expect(response.status).toBe(200);
+      expect(response.body.data).toEqual({
+        doctorId,
+        ihsNumber: inputIhsNumber,
+        doctorName: 'dr. Budi Santoso',
+        satusehatName: 'dr. Budi Santoso',
+        nikSuffixCheck: 'MATCHES',
+        alreadyLinked: false,
+      });
+      expect(JSON.stringify(response.body)).not.toContain('*************');
+      expect(satusehatLinkRepositoryMock.saveDoctorIhsNumber).not.toHaveBeenCalled();
+    });
+
+    it('returns 404 and saves nothing for an IHS number SATUSEHAT does not hold', async () => {
+      const token = await buildToken('actor-user', 'admin@hms.local');
+      mockActorWithPermissions(LINK_PERMISSIONS);
+      mockUnlinkedDoctor();
+      masterDataClientMock.findPractitionerById.mockResolvedValue(null);
+
+      const response = await request(app.getHttpServer())
+        .post(`/api/v1/v1/satusehat/doctors/${doctorId}/link-by-ihs`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ ihsNumber: inputIhsNumber });
+
+      expect(response.status).toBe(404);
+      expect(satusehatLinkRepositoryMock.saveDoctorIhsNumber).not.toHaveBeenCalled();
+    });
+
+    it('links on confirmation and audits the manual lookup', async () => {
+      const token = await buildToken('actor-user', 'admin@hms.local');
+      mockActorWithPermissions(LINK_PERMISSIONS);
+      mockUnlinkedDoctor();
+      masterDataClientMock.findPractitionerById.mockResolvedValue({
+        ihsNumber: inputIhsNumber,
+        name: 'dr. Budi Santoso',
+        maskedNik: '*************002',
+      });
+
+      const response = await request(app.getHttpServer())
+        .post(`/api/v1/v1/satusehat/doctors/${doctorId}/link-by-ihs`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ ihsNumber: inputIhsNumber });
+
+      expect(response.status).toBe(200);
+      expect(response.body.data).toEqual({
+        doctorId,
+        satusehatPractitionerId: inputIhsNumber,
+        alreadyLinked: false,
+      });
+      expect(auditServiceMock.record).toHaveBeenCalledWith(
+        expect.objectContaining({
+          action: 'SATUSEHAT_DOCTOR_LINKED',
+          resourceId: doctorId,
+          metadata: { lookup: 'IHS_MANUAL' },
+        }),
+      );
+    });
+
+    it('returns 409 when the visible NIK digits prove a different practitioner', async () => {
+      const token = await buildToken('actor-user', 'admin@hms.local');
+      mockActorWithPermissions(LINK_PERMISSIONS);
+      mockUnlinkedDoctor();
+      masterDataClientMock.findPractitionerById.mockResolvedValue({
+        ihsNumber: inputIhsNumber,
+        name: 'dr. Someone Else',
+        maskedNik: '*************999',
+      });
+
+      const response = await request(app.getHttpServer())
+        .post(`/api/v1/v1/satusehat/doctors/${doctorId}/link-by-ihs`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ ihsNumber: inputIhsNumber });
+
+      expect(response.status).toBe(409);
+      expect(satusehatLinkRepositoryMock.saveDoctorIhsNumber).not.toHaveBeenCalled();
+    });
+
+    it('rejects an IHS number that could not be a resource id with 400', async () => {
+      const token = await buildToken('actor-user', 'admin@hms.local');
+      mockActorWithPermissions(LINK_PERMISSIONS);
+
+      const response = await request(app.getHttpServer())
+        .post(`/api/v1/v1/satusehat/doctors/${doctorId}/link-by-ihs/preview`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ ihsNumber: '../Patient/1' });
+
+      expect(response.status).toBe(400);
+      expect(masterDataClientMock.findPractitionerById).not.toHaveBeenCalled();
+    });
+
+    it('returns 403 without the link permission', async () => {
+      const token = await buildToken('actor-user', 'admin@hms.local');
+      mockActorWithPermissions([{ action: 'read', resource: 'Doctor', scope: 'ANY' }]);
+
+      const response = await request(app.getHttpServer())
+        .post(`/api/v1/v1/satusehat/doctors/${doctorId}/link-by-ihs/preview`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ ihsNumber: inputIhsNumber });
+
+      expect(response.status).toBe(403);
+    });
   });
 });

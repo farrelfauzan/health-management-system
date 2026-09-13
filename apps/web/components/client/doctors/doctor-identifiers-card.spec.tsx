@@ -9,6 +9,8 @@ import messages from '../../../messages/id/clinical.json';
 
 vi.mock('#lib/api/generated/satusehat/satusehat', () => ({
   satusehatLinkControllerLinkDoctorV1: vi.fn(),
+  satusehatLinkControllerPreviewDoctorIhsLinkV1: vi.fn(),
+  satusehatLinkControllerLinkDoctorByIhsV1: vi.fn(),
 }));
 
 vi.mock('#lib/doctors/use-doctor-identifiers', () => ({

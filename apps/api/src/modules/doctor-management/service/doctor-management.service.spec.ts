@@ -463,7 +463,6 @@ describe('DoctorManagementService', () => {
           phoneNumber: '0812345678',
           email: inputDoctorEmail,
           nik: inputDoctorNik,
-          satusehatPractitionerId: '10009880728',
           licenses: [
             { type: 'STR', licenseNumber: 'STR-31-2019-000101', issuedAt: '2019-03-01' },
             {
@@ -481,7 +480,6 @@ describe('DoctorManagementService', () => {
       expect(doctorManagementRepositoryMock.createDoctor).toHaveBeenCalledWith(
         expect.objectContaining({
           nik: inputDoctorNik,
-          satusehatPractitionerId: '10009880728',
           licenses: [
             {
               type: 'STR',

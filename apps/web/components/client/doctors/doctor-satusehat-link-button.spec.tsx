@@ -16,6 +16,8 @@ const { linkDoctorMock, toastErrorMock, toastSuccessMock } = vi.hoisted(() => ({
 
 vi.mock('#lib/api/generated/satusehat/satusehat', () => ({
   satusehatLinkControllerLinkDoctorV1: (doctorId: string) => linkDoctorMock(doctorId),
+  satusehatLinkControllerPreviewDoctorIhsLinkV1: vi.fn(),
+  satusehatLinkControllerLinkDoctorByIhsV1: vi.fn(),
 }));
 
 vi.mock('@hms/ui', async () => {
@@ -122,5 +124,24 @@ describe('DoctorSatusehatLinkButton', () => {
 
     await waitFor(() => expect(toastSuccessMock).toHaveBeenCalledWith('Dokter tertaut ke SATUSEHAT.'));
     expect(linkDoctorMock).toHaveBeenCalledWith('doctor-1');
+  });
+  it('offers entering the IHS number by hand after SATUSEHAT reports several matches', async () => {
+    linkDoctorMock.mockRejectedValue(buildAxiosErrorWithStatus(409));
+    renderButton({});
+
+    expect(screen.queryByRole('button', { name: /Masukkan nomor IHS/ })).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: /Tautkan ke SATUSEHAT/ }));
+
+    expect(await screen.findByRole('button', { name: /Masukkan nomor IHS/ })).toBeInTheDocument();
+  });
+
+  it('does not offer the manual path when SATUSEHAT is merely unreachable', async () => {
+    linkDoctorMock.mockRejectedValue(buildAxiosErrorWithStatus(502));
+    renderButton({});
+
+    await userEvent.click(screen.getByRole('button', { name: /Tautkan ke SATUSEHAT/ }));
+
+    await waitFor(() => expect(toastErrorMock).toHaveBeenCalled());
+    expect(screen.queryByRole('button', { name: /Masukkan nomor IHS/ })).not.toBeInTheDocument();
   });
 });

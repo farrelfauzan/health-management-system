@@ -155,23 +155,6 @@ describe('SATUSEHAT link clearing on NIK change against Postgres', () => {
       expect(stored?.fullName).toBe('dr. Renamed');
     });
 
-    it('lets a verified manual link survive the NIK change that accompanies it', async () => {
-      const doctorId = await createLinkedDoctor(buildNik());
-
-      // P21-T08 sends both: the operator confirmed this pairing against the
-      // platform, so it must not be undone by the NIK arriving with it.
-      const result = await doctorRepository.updateDoctor(doctorId, {
-        nik: buildNik(),
-        satusehatPractitionerId: 'ihs-practitioner-verified',
-      });
-
-      expect(result.clearedSatusehatLink).toBe(true);
-      const stored = await prisma.doctorProfile.findUnique({
-        where: { id: doctorId },
-        select: { satusehatPractitionerId: true },
-      });
-      expect(stored?.satusehatPractitionerId).toBe('ihs-practitioner-verified');
-    });
   });
 
   describe('patients', () => {

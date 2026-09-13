@@ -42,11 +42,6 @@ export interface CreateDoctorDto {
      */
   degrees?: string[];
   nik: string;
-  /**
-     * @minLength 1
-     * @maxLength 64
-     */
-  satusehatPractitionerId?: string;
   /** @maxItems 20 */
   licenses?: CreateDoctorDtoLicensesItem[];
   /** @maxItems 20 */

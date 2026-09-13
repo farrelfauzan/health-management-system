@@ -31,7 +31,6 @@ export type CreateDoctorRecordPayload = {
   title?: string;
   degrees?: string;
   nik: string;
-  satusehatPractitionerId?: string;
   licenses?: DoctorLicenseWritePayload[];
   educations?: DoctorEducationInput[];
   ownerUserId?: string;
@@ -47,7 +46,6 @@ export type UpdateDoctorRecordPayload = {
   title?: string | null;
   degrees?: string | null;
   nik?: string;
-  satusehatPractitionerId?: string | null;
   /** When present, replaces the whole active license list. */
   licenses?: DoctorLicenseWritePayload[];
   /** When present, replaces the whole active education list. */

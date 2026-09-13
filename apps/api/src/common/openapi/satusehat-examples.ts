@@ -161,6 +161,22 @@ export const SATUSEHAT_EXAMPLES = {
     satusehatPractitionerId: 'N10000001',
     alreadyLinked: false,
   },
+  doctorIhsLinkRequest: {
+    ihsNumber: '10000000009',
+  },
+  doctorIhsPreview: {
+    doctorId: '1c2d3e4f-5a6b-4c7d-8e9f-0a1b2c3d4e5f',
+    ihsNumber: '10000000009',
+    doctorName: 'dr. Budi Santoso',
+    satusehatName: 'dr. Budi Santoso',
+    nikSuffixCheck: 'MATCHES',
+    alreadyLinked: false,
+  },
+  doctorIhsLink: {
+    doctorId: '1c2d3e4f-5a6b-4c7d-8e9f-0a1b2c3d4e5f',
+    satusehatPractitionerId: '10000000009',
+    alreadyLinked: false,
+  },
   submission: {
     id: '7a8b9c0d-1e2f-4a3b-8c4d-5e6f7a8b9c0d',
     kind: 'ENCOUNTER',

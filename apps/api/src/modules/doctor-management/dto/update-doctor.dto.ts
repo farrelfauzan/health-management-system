@@ -1,4 +1,4 @@
-import { updateDoctorSchema } from '@hms/shared-types';
+import { updateDoctorRequestSchema } from '@hms/shared-types';
 import { createZodDto } from 'nestjs-zod';
 
-export class UpdateDoctorDto extends createZodDto(updateDoctorSchema) {}
+export class UpdateDoctorDto extends createZodDto(updateDoctorRequestSchema) {}

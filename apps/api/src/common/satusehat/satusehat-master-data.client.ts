@@ -1,11 +1,15 @@
+import { SatusehatPractitionerSummary } from '@hms/shared-types';
 import { Injectable } from '@nestjs/common';
 
+import { readPractitionerSummary } from './read-practitioner-summary';
 import { SatusehatAmbiguousMatchError } from './satusehat-ambiguous-match.error';
 import { SatusehatHttpClient } from './satusehat-http.client';
 import { SatusehatError } from './satusehat.error';
 import { SatusehatSearchBundle } from './satusehat.types';
 
 const NIK_IDENTIFIER_SYSTEM = 'https://fhir.kemkes.go.id/id/nik';
+/** HTTP status the platform answers for an id it does not hold (P21-T01). */
+const NOT_FOUND_STATUS = 404;
 
 /**
  * Master-data lookups against the SATUSEHAT master patient / practitioner
@@ -26,6 +30,30 @@ export class SatusehatMasterDataClient {
   /** Resolves a practitioner IHS number by NIK; null when the index has no match. */
   async findPractitionerIhsNumberByNik(nik: string): Promise<string | null> {
     return this.findIhsNumberByNik('/Practitioner', nik);
+  }
+
+  /**
+   * Reads one practitioner by IHS number — the resource id — so an operator can
+   * confirm a hand-typed link before it is saved (P21-T08). Null when the
+   * platform does not hold it. Keyed on the 404 status, because the body says
+   * `no-store` / `storage_error` and never "not found" (P21-T01).
+   */
+  async findPractitionerById(ihsNumber: string): Promise<SatusehatPractitionerSummary | null> {
+    try {
+      const resource = await this.httpClient.sendRequest<unknown>({
+        method: 'GET',
+        path: `/Practitioner/${encodeURIComponent(ihsNumber)}`,
+      });
+      return readPractitionerSummary(resource, ihsNumber);
+    } catch (caughtError) {
+      if (
+        caughtError instanceof SatusehatError &&
+        caughtError.upstreamStatusCode === NOT_FOUND_STATUS
+      ) {
+        return null;
+      }
+      throw caughtError;
+    }
   }
 
   /**

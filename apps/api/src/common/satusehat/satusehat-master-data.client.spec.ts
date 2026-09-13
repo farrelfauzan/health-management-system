@@ -133,4 +133,44 @@ describe('SatusehatMasterDataClient', () => {
       code: 'SATUSEHAT_TIMEOUT',
     });
   });
+  describe('findPractitionerById (P21-T08)', () => {
+    it('reads the practitioner by IHS number and keeps only the name and the masked NIK', async () => {
+      mockSendRequest.mockResolvedValue({
+        resourceType: 'Practitioner',
+        id: '10000000009',
+        identifier: [
+          { system: 'https://fhir.kemkes.go.id/id/nik', value: '*************009' },
+          { system: 'http://sys-ids.kemkes.go.id/practitioner', value: '10000000009' },
+        ],
+        name: [{ text: 'dr. Placeholder Practitioner' }],
+      });
+
+      const actual = await client.findPractitionerById('10000000009');
+
+      expect(mockSendRequest).toHaveBeenCalledWith({
+        method: 'GET',
+        path: '/Practitioner/10000000009',
+      });
+      expect(actual).toEqual({
+        ihsNumber: '10000000009',
+        name: 'dr. Placeholder Practitioner',
+        maskedNik: '*************009',
+      });
+    });
+
+    /** The 404 body says `no-store` / `storage_error`, never "not found" (P21-T01). */
+    it('returns null when the platform answers 404', async () => {
+      mockSendRequest.mockRejectedValue(
+        new SatusehatError('SATUSEHAT_REQUEST_REJECTED', 'rejected', 404),
+      );
+
+      await expect(client.findPractitionerById('99999999999')).resolves.toBeNull();
+    });
+
+    it('propagates any other failure so it is not mistaken for an unknown id', async () => {
+      mockSendRequest.mockRejectedValue(new SatusehatError('SATUSEHAT_UNAVAILABLE', 'down', 503));
+
+      await expect(client.findPractitionerById('10000000009')).rejects.toThrow(SatusehatError);
+    });
+  });
 });

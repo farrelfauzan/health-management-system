@@ -737,6 +737,34 @@
         "ambiguous": "Lebih dari satu kecocokan — verifikasi tenaga medis di portal SATUSEHAT dulu.",
         "notConfigured": "Integrasi SATUSEHAT belum dikonfigurasi.",
         "unreachable": "SATUSEHAT tidak dapat dihubungi. Coba lagi."
+      },
+      "manualLink": {
+        "open": "Masukkan nomor IHS",
+        "title": "Tautkan dengan nomor IHS",
+        "description": "Gunakan nomor IHS tenaga kesehatan dari portal SATUSEHAT bila NIK-nya cocok dengan lebih dari satu data. Tidak ada yang disimpan sampai Anda mengonfirmasi namanya.",
+        "ihsLabel": "Nomor IHS SATUSEHAT",
+        "check": "Periksa",
+        "checking": "Memeriksa…",
+        "ourRecord": "Data klinik",
+        "satusehatRecord": "Data di SATUSEHAT",
+        "noName": "Tidak ada nama di SATUSEHAT",
+        "nikSuffix": {
+          "MATCHES": "Digit akhir NIK di SATUSEHAT sama dengan data klinik. Hanya tiga digit yang terlihat, jadi pastikan namanya juga sesuai.",
+          "DIFFERS": "Digit akhir NIK di SATUSEHAT berbeda dengan data klinik. Nomor IHS ini milik orang lain.",
+          "UNAVAILABLE": "NIK tidak dapat dibandingkan. Konfirmasi berdasarkan nama."
+        },
+        "alreadyLinked": "Dokter ini sudah tertaut ke nomor IHS ini.",
+        "confirm": "Konfirmasi dan tautkan",
+        "linking": "Menautkan…",
+        "cancel": "Batal",
+        "success": "Dokter tertaut ke SATUSEHAT dengan nomor IHS.",
+        "errors": {
+          "invalid": "Nomor IHS hanya berisi huruf, angka, dan tanda hubung.",
+          "notFound": "SATUSEHAT tidak memiliki tenaga kesehatan dengan nomor IHS ini. Periksa di portal.",
+          "conflict": "Dokter ini sudah tertaut ke nomor IHS lain, atau nomor ini milik orang lain.",
+          "notConfigured": "Integrasi SATUSEHAT belum dikonfigurasi.",
+          "unreachable": "SATUSEHAT tidak dapat dihubungi. Coba lagi."
+        }
       }
     },
     "portal": {

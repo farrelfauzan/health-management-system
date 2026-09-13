@@ -737,6 +737,34 @@
         "ambiguous": "More than one SATUSEHAT match — verify the practitioner in the portal first.",
         "notConfigured": "The SATUSEHAT integration is not configured yet.",
         "unreachable": "SATUSEHAT could not be reached. Try again."
+      },
+      "manualLink": {
+        "open": "Enter IHS number",
+        "title": "Link by IHS number",
+        "description": "Use the practitioner's IHS number from the SATUSEHAT portal when their NIK matches more than one record. Nothing is saved until you confirm the name.",
+        "ihsLabel": "SATUSEHAT IHS number",
+        "check": "Check",
+        "checking": "Checking…",
+        "ourRecord": "Our record",
+        "satusehatRecord": "SATUSEHAT holds",
+        "noName": "No name on SATUSEHAT",
+        "nikSuffix": {
+          "MATCHES": "The last digits of the NIK on SATUSEHAT match ours. Only three digits are visible, so confirm the name as well.",
+          "DIFFERS": "The last digits of the NIK on SATUSEHAT do not match ours. This IHS number belongs to a different person.",
+          "UNAVAILABLE": "The NIK could not be compared. Confirm by name."
+        },
+        "alreadyLinked": "This doctor is already linked to this IHS number.",
+        "confirm": "Confirm and link",
+        "linking": "Linking…",
+        "cancel": "Cancel",
+        "success": "Doctor linked to SATUSEHAT by IHS number.",
+        "errors": {
+          "invalid": "An IHS number contains only letters, digits and hyphens.",
+          "notFound": "SATUSEHAT has no practitioner with this IHS number. Check it in the portal.",
+          "conflict": "This doctor is already linked to a different IHS number, or the number belongs to someone else.",
+          "notConfigured": "The SATUSEHAT integration is not configured yet.",
+          "unreachable": "SATUSEHAT could not be reached. Try again."
+        }
       }
     },
     "portal": {
