@@ -1,0 +1,14 @@
+-- The audit verb for an automatic unlink (P21-T09), in its own migration ahead
+-- of any code that writes it: Postgres will not let an enum value be added and
+-- then referenced in the same transaction as some deployments run it.
+--
+-- Distinct from the three SATUSEHAT_*_LINKED verbs because it answers a
+-- different question. Those say somebody connected a record to the national
+-- index; this says the connection was dropped without anyone asking, because
+-- the NIK it was derived from changed. After a misattributed submission that
+-- distinction is the difference between "who linked this" and "when did we stop
+-- trusting the link".
+--
+-- Stamped 20261026 rather than 20261025 so it sorts after the P21-T02 resource
+-- list migrations, which are on their own branch and not yet merged.
+ALTER TYPE "AuditAction" ADD VALUE 'SATUSEHAT_LINK_CLEARED';

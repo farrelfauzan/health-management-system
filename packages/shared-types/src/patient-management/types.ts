@@ -151,6 +151,17 @@ export type CreatePatientFromProspectiveResult = {
   movedAppointments: number;
 };
 
+/**
+ * The updated patient, plus whether the write dropped its SATUSEHAT link
+ * because the NIK changed (D-035). The flag exists so the service can audit the
+ * unlink: the repository is the only layer that can tell a real NIK change from
+ * the same value re-encrypted, and the audit row belongs to the service.
+ */
+export type UpdatedPatient = {
+  patient: PatientRecord;
+  clearedSatusehatLink: boolean;
+};
+
 export type UpdatePatientRecordPayload = {
   fullName?: string;
   dateOfBirth?: Date;

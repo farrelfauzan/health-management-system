@@ -529,9 +529,10 @@ describe('PatientManagementService', () => {
       (patientManagementRepositoryMock.createPatient as jest.Mock).mockResolvedValue(
         mockCreatedPatient,
       );
-      (patientManagementRepositoryMock.updatePatient as jest.Mock).mockResolvedValue(
-        mockCreatedPatient,
-      );
+      (patientManagementRepositoryMock.updatePatient as jest.Mock).mockResolvedValue({
+        patient: mockCreatedPatient,
+        clearedSatusehatLink: false,
+      });
       (patientManagementRepositoryMock.findPatientById as jest.Mock).mockResolvedValue(
         mockCreatedPatient,
       );
@@ -699,9 +700,10 @@ describe('PatientManagementService', () => {
       (patientManagementRepositoryMock.createPatient as jest.Mock).mockResolvedValue(
         mockPatientRecord,
       );
-      (patientManagementRepositoryMock.updatePatient as jest.Mock).mockResolvedValue(
-        mockPatientRecord,
-      );
+      (patientManagementRepositoryMock.updatePatient as jest.Mock).mockResolvedValue({
+        patient: mockPatientRecord,
+        clearedSatusehatLink: false,
+      });
       (patientManagementRepositoryMock.findPatientById as jest.Mock).mockResolvedValue(
         mockPatientRecord,
       );

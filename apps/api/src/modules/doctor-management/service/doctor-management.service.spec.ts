@@ -511,8 +511,8 @@ describe('DoctorManagementService', () => {
         id: doctorId,
       });
       (doctorManagementRepositoryMock.updateDoctor as jest.Mock).mockResolvedValue({
-        ...doctorRecord,
-        nikLast4: '0002',
+        doctor: { ...doctorRecord, nikLast4: '0002' },
+        clearedSatusehatLink: false,
       });
 
       const result = await service.updateDoctor(doctorId, { nik: inputDoctorNik }, currentUser);
@@ -591,8 +591,8 @@ describe('DoctorManagementService', () => {
       (doctorManagementRepositoryMock.findDoctorById as jest.Mock).mockResolvedValue(doctorRecord);
       (doctorManagementRepositoryMock.findDoctorByNik as jest.Mock).mockResolvedValue(null);
       (doctorManagementRepositoryMock.updateDoctor as jest.Mock).mockResolvedValue({
-        ...doctorRecord,
-        nikLast4: '0002',
+        doctor: { ...doctorRecord, nikLast4: '0002' },
+        clearedSatusehatLink: false,
       });
 
       await service.updateDoctor(doctorId, { nik: inputDoctorNik }, currentUser);
@@ -614,7 +614,10 @@ describe('DoctorManagementService', () => {
         buildActor([{ action: 'update', resource: 'Doctor', scope: 'ANY' }]),
       );
       (doctorManagementRepositoryMock.findDoctorById as jest.Mock).mockResolvedValue(doctorRecord);
-      (doctorManagementRepositoryMock.updateDoctor as jest.Mock).mockResolvedValue(doctorRecord);
+      (doctorManagementRepositoryMock.updateDoctor as jest.Mock).mockResolvedValue({
+        doctor: doctorRecord,
+        clearedSatusehatLink: false,
+      });
 
       await service.updateDoctor(
         doctorId,
@@ -744,7 +747,10 @@ describe('DoctorManagementService', () => {
         buildActor([{ action: 'update', resource: 'Doctor', scope: 'ANY' }]),
       );
       (doctorManagementRepositoryMock.findDoctorById as jest.Mock).mockResolvedValue(doctorRecord);
-      (doctorManagementRepositoryMock.updateDoctor as jest.Mock).mockResolvedValue(doctorRecord);
+      (doctorManagementRepositoryMock.updateDoctor as jest.Mock).mockResolvedValue({
+        doctor: doctorRecord,
+        clearedSatusehatLink: false,
+      });
       const inputEducations = [
         {
           institution: 'Universitas Gadjah Mada',
@@ -984,9 +990,12 @@ describe('DoctorManagementService', () => {
       id: neurologySpecialtyId,
     });
     (doctorManagementRepositoryMock.updateDoctor as jest.Mock).mockResolvedValue({
-      ...doctorRecord,
-      specialtyId: neurologySpecialtyId,
-      specialty: { id: neurologySpecialtyId, name: 'Neurology' },
+      doctor: {
+        ...doctorRecord,
+        specialtyId: neurologySpecialtyId,
+        specialty: { id: neurologySpecialtyId, name: 'Neurology' },
+      },
+      clearedSatusehatLink: false,
     });
 
     const result = await service.updateDoctor(

@@ -10,6 +10,7 @@ import {
   PatientPhoneMatch,
   PatientRecord,
   PatientScopeActor,
+  UpdatedPatient,
   UpdatePatientRecordPayload,
 } from '@hms/shared-types';
 import { Injectable } from '@nestjs/common';
@@ -729,7 +730,8 @@ export class PatientManagementRepository {
     return created;
   }
 
-  async updatePatient(id: string, payload: UpdatePatientRecordPayload): Promise<PatientRecord> {
+  async updatePatient(id: string, payload: UpdatePatientRecordPayload): Promise<UpdatedPatient> {
+    let clearedSatusehatLink = false;
     const patient = await this.prisma
       .executeTransaction(async (tx) => {
         if (payload.allergies !== undefined) {
@@ -745,6 +747,11 @@ export class PatientManagementRepository {
             },
           });
         }
+        const identifierColumns = this.buildIdentifierColumns({
+          nik: payload.nik,
+          bpjsNumber: payload.bpjsNumber,
+        });
+        clearedSatusehatLink = await this.hasNikChanged(tx, id, identifierColumns);
 
         return tx.patientProfile.update({
           where: {
@@ -760,10 +767,17 @@ export class PatientManagementRepository {
             ...(payload.address !== undefined ? { address: payload.address } : {}),
             ...(payload.ownerUserId !== undefined ? { ownerUserId: payload.ownerUserId } : {}),
             ...(payload.isActive !== undefined ? { isActive: payload.isActive } : {}),
-            ...this.buildIdentifierColumns({
-              nik: payload.nik,
-              bpjsNumber: payload.bpjsNumber,
-            }),
+            ...identifierColumns,
+            // A changed NIK invalidates the IHS number resolved from it, so the
+            // link goes in the same write (D-035). Clearing the NIK to null
+            // counts: the identifier the link was derived from is gone.
+            ...(clearedSatusehatLink
+              ? {
+                  satusehatPatientIdCiphertext: null,
+                  satusehatPatientIdKeyVersion: null,
+                  satusehatPatientIdLast4: null,
+                }
+              : {}),
             ...buildDemographicColumns(payload),
             ...buildAddressColumns(payload),
             ...(payload.allergies !== undefined
@@ -775,7 +789,40 @@ export class PatientManagementRepository {
       })
       .catch(rethrowIdentifierConflict);
 
-    return toPatientRecord(patient);
+    return { patient: toPatientRecord(patient), clearedSatusehatLink };
+  }
+
+  /**
+   * Whether this update actually changes the patient's NIK, and therefore
+   * invalidates the IHS number resolved from it (D-035).
+   *
+   * Compared by **blind index**, never by ciphertext: identifiers are
+   * re-encrypted on every write, so ciphertext differs even when the value does
+   * not, and comparing it would unlink a patient on an unrelated demographic
+   * edit. Clearing the NIK to null is a change — the identifier the link came
+   * from is gone — which is why this reads the key out of the built columns
+   * rather than testing the payload for a truthy value.
+   *
+   * Returns false when the payload carries no NIK key at all, and when the
+   * patient holds no link to clear.
+   */
+  private async hasNikChanged(
+    tx: PrismaTransactionClient,
+    id: string,
+    identifierColumns: Record<string, string | number | null>,
+  ): Promise<boolean> {
+    if (!('nikIndex' in identifierColumns)) {
+      return false;
+    }
+    const nextIndex = identifierColumns['nikIndex'];
+    const existing = await tx.patientProfile.findUnique({
+      where: { id },
+      select: { nikIndex: true, satusehatPatientIdCiphertext: true },
+    });
+    if (existing === null || existing.satusehatPatientIdCiphertext === null) {
+      return false;
+    }
+    return existing.nikIndex !== nextIndex;
   }
 
   /**
