@@ -463,6 +463,25 @@ export const SatusehatSubmissionStatus = {
 export type SatusehatSubmissionStatus = (typeof SatusehatSubmissionStatus)[keyof typeof SatusehatSubmissionStatus]
 
 
+export const SatusehatResourceOutcome = {
+  SENT: 'SENT',
+  SKIPPED: 'SKIPPED'
+} as const
+
+export type SatusehatResourceOutcome = (typeof SatusehatResourceOutcome)[keyof typeof SatusehatResourceOutcome]
+
+
+export const SatusehatResourceSkipReason = {
+  NO_KFA_CODE: 'NO_KFA_CODE',
+  NO_ICD9CM_CODE: 'NO_ICD9CM_CODE',
+  NO_LOINC_CODE: 'NO_LOINC_CODE',
+  NO_VERIFIED_RESULT: 'NO_VERIFIED_RESULT',
+  UNCODED_COMPOUND_COMPONENT: 'UNCODED_COMPOUND_COMPONENT'
+} as const
+
+export type SatusehatResourceSkipReason = (typeof SatusehatResourceSkipReason)[keyof typeof SatusehatResourceSkipReason]
+
+
 export const DiagnosisType = {
   PRIMARY: 'PRIMARY',
   SECONDARY: 'SECONDARY'

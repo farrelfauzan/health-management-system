@@ -17,7 +17,9 @@ import {
   SatusehatSubmissionRecord,
   SatusehatSubmissionStatusValue,
   SaveAllergyIhsIdPayload,
+  SaveImmunizationIhsIdPayload,
   SaveLabReportIhsIdsPayload,
+  SaveSubmissionResourcesPayload,
 } from '@hms/shared-types';
 import { Injectable } from '@nestjs/common';
 
@@ -817,6 +819,59 @@ export class SatusehatSubmissionRepository {
           data: { satusehatAllergyId: payload.satusehatAllergyId },
         });
       }
+    });
+  }
+
+  /**
+   * Writes back the ids the platform assigned to the visit's immunizations, the
+   * way allergy ids are written back (P21-T02). The column existed from the
+   * start and nothing ever filled it, so every reported vaccination looked
+   * unreported.
+   */
+  async saveImmunizationIhsIds(payloads: readonly SaveImmunizationIhsIdPayload[]): Promise<void> {
+    if (payloads.length === 0) {
+      return;
+    }
+    await this.prisma.executeTransaction(async (tx) => {
+      for (const payload of payloads) {
+        await tx.immunization.update({
+          where: { id: payload.immunizationId },
+          data: { satusehatImmunizationId: payload.satusehatImmunizationId },
+        });
+      }
+    });
+  }
+
+  /**
+   * Records what one submission sent and what it left out, replacing whatever
+   * the previous attempt recorded (P21-T02).
+   *
+   * The delete-then-write is why this is a transaction: a retry describes the
+   * bundle that actually landed, and two attempts' rows side by side would
+   * double every count the monitor renders. Written in the same transaction as
+   * nothing else — the list is provenance, so failing to record it must not
+   * fail a submission that already reached the platform; callers log and
+   * continue.
+   */
+  async saveSubmissionResources(payload: SaveSubmissionResourcesPayload): Promise<void> {
+    await this.prisma.executeTransaction(async (tx) => {
+      await tx.satusehatSubmissionResource.deleteMany({
+        where: { submissionId: payload.submissionId },
+      });
+      if (payload.resources.length === 0) {
+        return;
+      }
+      await tx.satusehatSubmissionResource.createMany({
+        data: payload.resources.map((resource) => ({
+          submissionId: payload.submissionId,
+          resourceType: resource.resourceType,
+          outcome: resource.outcome,
+          skipReason: resource.skipReason,
+          satusehatId: resource.satusehatId,
+          localRecordId: resource.localRecordId,
+          isBackfilled: resource.isBackfilled,
+        })),
+      });
     });
   }
 

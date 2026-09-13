@@ -664,6 +664,24 @@ export type UserRole = Prisma.UserRoleModel
  */
 export type SatusehatSubmission = Prisma.SatusehatSubmissionModel
 /**
+ * Model SatusehatSubmissionResource
+ * What one submission actually sent, and what it left out (P21-T02).
+ * 
+ * The outbox row proves a bundle reached SATUSEHAT; it cannot say *which*
+ * resources went, because the ids the platform assigns were resolved and then
+ * discarded. Without this table nothing can be read back later, and an
+ * administrator cannot see that a medication was silently omitted — which
+ * since SATUSEHAT RME (1 Sep 2026) is a gap the patient sees in their own
+ * Resume Medis.
+ * 
+ * **This table deliberately holds no clinical values** — no codes, names,
+ * displays or results. `localRecordId` is the only link back to what the item
+ * was, and resolving it is P21-T04's job under a doctor's permission. That
+ * keeps the P10-T06 promise that the outbox carries no clinical payload, so
+ * the ADMIN-gated monitor can render this table directly.
+ */
+export type SatusehatSubmissionResource = Prisma.SatusehatSubmissionResourceModel
+/**
  * Model AuditLog
  * Append-only record of who touched patient-identifiable data (SJ-4). Rows
  * carry no `updatedAt` and no `deletedAt` because they are never modified: a

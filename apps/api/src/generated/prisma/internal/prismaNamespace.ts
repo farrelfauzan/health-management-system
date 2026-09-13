@@ -441,6 +441,7 @@ export const ModelName = {
   RolePermission: 'RolePermission',
   UserRole: 'UserRole',
   SatusehatSubmission: 'SatusehatSubmission',
+  SatusehatSubmissionResource: 'SatusehatSubmissionResource',
   AuditLog: 'AuditLog',
   BpjsPcareConfig: 'BpjsPcareConfig',
   BpjsAntreanConfig: 'BpjsAntreanConfig',
@@ -510,7 +511,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientDeliveryConsent" | "documentDelivery" | "documentDeliveryLink" | "patientAllergy" | "doctorCredentialOption" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorLicenseExpiryNotice" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "prescriptionItemComponent" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "vaultDocumentExpiryNotice" | "vaultDocumentShare" | "userOffboardingNotice" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit" | "documentType" | "documentTypeApprover" | "managedDocument" | "documentApprovalRequest" | "documentApprovalApprover" | "documentApprovalDecision" | "labTest" | "labReferenceRange" | "labPanel" | "labPanelMember" | "labOrderCounter" | "labOrder" | "labOrderItem" | "labSpecimenCounter" | "labSpecimen" | "labResult" | "laboratorySettings" | "labReport" | "immunization" | "province" | "regency" | "district" | "village" | "bugReport" | "bugReportCounter"
+    modelProps: "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientDeliveryConsent" | "documentDelivery" | "documentDeliveryLink" | "patientAllergy" | "doctorCredentialOption" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorLicenseExpiryNotice" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "prescriptionItemComponent" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "satusehatSubmissionResource" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "vaultDocumentExpiryNotice" | "vaultDocumentShare" | "userOffboardingNotice" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit" | "documentType" | "documentTypeApprover" | "managedDocument" | "documentApprovalRequest" | "documentApprovalApprover" | "documentApprovalDecision" | "labTest" | "labReferenceRange" | "labPanel" | "labPanelMember" | "labOrderCounter" | "labOrder" | "labOrderItem" | "labSpecimenCounter" | "labSpecimen" | "labResult" | "laboratorySettings" | "labReport" | "immunization" | "province" | "regency" | "district" | "village" | "bugReport" | "bugReportCounter"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -4729,6 +4730,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.SatusehatSubmissionCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.SatusehatSubmissionCountAggregateOutputType> | number
+        }
+      }
+    }
+    SatusehatSubmissionResource: {
+      payload: Prisma.$SatusehatSubmissionResourcePayload<ExtArgs>
+      fields: Prisma.SatusehatSubmissionResourceFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SatusehatSubmissionResourceFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SatusehatSubmissionResourcePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SatusehatSubmissionResourceFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SatusehatSubmissionResourcePayload>
+        }
+        findFirst: {
+          args: Prisma.SatusehatSubmissionResourceFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SatusehatSubmissionResourcePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SatusehatSubmissionResourceFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SatusehatSubmissionResourcePayload>
+        }
+        findMany: {
+          args: Prisma.SatusehatSubmissionResourceFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SatusehatSubmissionResourcePayload>[]
+        }
+        create: {
+          args: Prisma.SatusehatSubmissionResourceCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SatusehatSubmissionResourcePayload>
+        }
+        createMany: {
+          args: Prisma.SatusehatSubmissionResourceCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SatusehatSubmissionResourceCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SatusehatSubmissionResourcePayload>[]
+        }
+        delete: {
+          args: Prisma.SatusehatSubmissionResourceDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SatusehatSubmissionResourcePayload>
+        }
+        update: {
+          args: Prisma.SatusehatSubmissionResourceUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SatusehatSubmissionResourcePayload>
+        }
+        deleteMany: {
+          args: Prisma.SatusehatSubmissionResourceDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SatusehatSubmissionResourceUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SatusehatSubmissionResourceUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SatusehatSubmissionResourcePayload>[]
+        }
+        upsert: {
+          args: Prisma.SatusehatSubmissionResourceUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SatusehatSubmissionResourcePayload>
+        }
+        aggregate: {
+          args: Prisma.SatusehatSubmissionResourceAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSatusehatSubmissionResource>
+        }
+        groupBy: {
+          args: Prisma.SatusehatSubmissionResourceGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SatusehatSubmissionResourceGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SatusehatSubmissionResourceCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SatusehatSubmissionResourceCountAggregateOutputType> | number
         }
       }
     }
@@ -9716,6 +9791,21 @@ export const SatusehatSubmissionScalarFieldEnum = {
 export type SatusehatSubmissionScalarFieldEnum = (typeof SatusehatSubmissionScalarFieldEnum)[keyof typeof SatusehatSubmissionScalarFieldEnum]
 
 
+export const SatusehatSubmissionResourceScalarFieldEnum = {
+  id: 'id',
+  submissionId: 'submissionId',
+  resourceType: 'resourceType',
+  outcome: 'outcome',
+  skipReason: 'skipReason',
+  satusehatId: 'satusehatId',
+  localRecordId: 'localRecordId',
+  isBackfilled: 'isBackfilled',
+  createdAt: 'createdAt'
+} as const
+
+export type SatusehatSubmissionResourceScalarFieldEnum = (typeof SatusehatSubmissionResourceScalarFieldEnum)[keyof typeof SatusehatSubmissionResourceScalarFieldEnum]
+
+
 export const AuditLogScalarFieldEnum = {
   id: 'id',
   actorUserId: 'actorUserId',
@@ -11415,6 +11505,34 @@ export type ListEnumSatusehatSubmissionStatusFieldRefInput<$PrismaModel> = Field
 
 
 /**
+ * Reference to a field of type 'SatusehatResourceOutcome'
+ */
+export type EnumSatusehatResourceOutcomeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SatusehatResourceOutcome'>
+    
+
+
+/**
+ * Reference to a field of type 'SatusehatResourceOutcome[]'
+ */
+export type ListEnumSatusehatResourceOutcomeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SatusehatResourceOutcome[]'>
+    
+
+
+/**
+ * Reference to a field of type 'SatusehatResourceSkipReason'
+ */
+export type EnumSatusehatResourceSkipReasonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SatusehatResourceSkipReason'>
+    
+
+
+/**
+ * Reference to a field of type 'SatusehatResourceSkipReason[]'
+ */
+export type ListEnumSatusehatResourceSkipReasonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SatusehatResourceSkipReason[]'>
+    
+
+
+/**
  * Reference to a field of type 'AuditAction'
  */
 export type EnumAuditActionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AuditAction'>
@@ -12224,6 +12342,7 @@ export type GlobalOmitConfig = {
   rolePermission?: Prisma.RolePermissionOmit
   userRole?: Prisma.UserRoleOmit
   satusehatSubmission?: Prisma.SatusehatSubmissionOmit
+  satusehatSubmissionResource?: Prisma.SatusehatSubmissionResourceOmit
   auditLog?: Prisma.AuditLogOmit
   bpjsPcareConfig?: Prisma.BpjsPcareConfigOmit
   bpjsAntreanConfig?: Prisma.BpjsAntreanConfigOmit
