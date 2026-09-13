@@ -5,6 +5,83 @@
  * registry-style pseudonymous ids and appear in full.
  */
 export const SATUSEHAT_EXAMPLES = {
+  /**
+   * P21-T03. Presence only: counts, the ids the platform assigned, and skips by
+   * category. A skipped medication's name would tell an administrator what the
+   * patient was prescribed, so no example here carries one.
+   */
+  submissionDetail: {
+    submission: {
+      id: '7a8b9c0d-1e2f-4a3b-8c4d-5e6f7a8b9c0d',
+      kind: 'ENCOUNTER',
+      encounterId: '2b3c4d5e-6f7a-4b8c-9d0e-1f2a3b4c5d6e',
+      labOrderId: null,
+      labOrderNumber: null,
+      status: 'SUBMITTED',
+      attempts: 1,
+      lastError: null,
+      nextAttemptAt: '2026-07-28T02:25:00.000Z',
+      lastAttemptAt: '2026-07-28T02:25:04.000Z',
+      submittedAt: '2026-07-28T02:25:04.000Z',
+      satusehatEncounterId: '0a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d',
+      createdAt: '2026-07-28T02:20:00.000Z',
+      updatedAt: '2026-07-28T02:25:04.000Z',
+    },
+    hasResourceList: true,
+    isBackfilled: false,
+    resources: [
+      {
+        resourceType: 'Encounter',
+        sentCount: 1,
+        satusehatIds: ['0a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d'],
+        unpairedCount: 0,
+        skipped: [],
+      },
+      {
+        resourceType: 'Condition',
+        sentCount: 2,
+        satusehatIds: [
+          '1b2c3d4e-5f6a-4b7c-8d9e-0f1a2b3c4d5e',
+          '2c3d4e5f-6a7b-4c8d-9e0f-1a2b3c4d5e6f',
+        ],
+        unpairedCount: 0,
+        skipped: [],
+      },
+      {
+        resourceType: 'Medication',
+        sentCount: 0,
+        satusehatIds: [],
+        unpairedCount: 0,
+        skipped: [{ reason: 'NO_KFA_CODE', count: 1 }],
+      },
+    ],
+  },
+  submissionCheck: {
+    submissionId: '7a8b9c0d-1e2f-4a3b-8c4d-5e6f7a8b9c0d',
+    checkedAt: '2026-07-29T04:10:00.000Z',
+    results: [
+      {
+        resourceType: 'Encounter',
+        satusehatId: '0a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d',
+        outcome: 'FOUND',
+        versionId: 'MTc4OTE0MTU5NTg4MjIyOTAwMA',
+        lastUpdated: '2026-07-28T02:25:04.000Z',
+        status: 'finished',
+        errorCode: null,
+      },
+      {
+        // A Condition carries `clinicalStatus`, not `status` (P21-T01), and the
+        // coding is a clinical value an administrator may not see.
+        resourceType: 'Condition',
+        satusehatId: '1b2c3d4e-5f6a-4b7c-8d9e-0f1a2b3c4d5e',
+        outcome: 'FOUND',
+        versionId: 'MTc4OTE0MTU5NTg4MjIyOTAwMA',
+        lastUpdated: '2026-07-28T02:25:04.000Z',
+        status: null,
+        errorCode: null,
+      },
+    ],
+  },
   patientLink: {
     patientId: 'f5e4d3c2-b1a0-4918-a7b6-c5d4e3f2a1b0',
     hasSatusehatPatientId: true,

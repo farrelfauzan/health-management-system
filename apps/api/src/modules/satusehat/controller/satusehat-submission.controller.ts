@@ -17,6 +17,7 @@ import { RequireFeature } from '../../../common/authorization/require-feature.de
 import { ApiEndpoint } from '../../../common/openapi/api-endpoint.decorator';
 import { SATUSEHAT_EXAMPLES } from '../../../common/openapi/satusehat-examples';
 import { ListSatusehatSubmissionsQueryDto } from '../dto/list-satusehat-submissions-query.dto';
+import { SatusehatSubmissionDetailService } from '../service/satusehat-submission-detail.service';
 import { SatusehatSubmissionOpsService } from '../service/satusehat-submission-ops.service';
 
 @ApiTags('SATUSEHAT')
@@ -26,7 +27,10 @@ import { SatusehatSubmissionOpsService } from '../service/satusehat-submission-o
   path: 'satusehat',
 })
 export class SatusehatSubmissionController {
-  constructor(private readonly submissionOpsService: SatusehatSubmissionOpsService) {}
+  constructor(
+    private readonly submissionOpsService: SatusehatSubmissionOpsService,
+    private readonly submissionDetailService: SatusehatSubmissionDetailService,
+  ) {}
 
   @Get('submissions')
   @Auth([{ action: 'read', subject: 'SatusehatSubmission' }])
@@ -50,6 +54,41 @@ export class SatusehatSubmissionController {
       data: result.items,
       meta: result.meta,
     };
+  }
+
+  @Get('submissions/:id')
+  @Auth([{ action: 'read', subject: 'SatusehatSubmission' }])
+  @ApiEndpoint({
+    summary: 'One SATUSEHAT submission and what it sent',
+    responseDescription:
+      'The outbox row plus its resource list (P21-T02) grouped by type: how many of each were sent, the ids SATUSEHAT assigned, and how many items were skipped per reason category. Presence only — no codes, names, values or patient identifiers, because this route is gated by the admin read grant. `hasResourceList` is false for a submission processed before the list shipped; those need the P21-T05 backfill.',
+    responseExample: { data: SATUSEHAT_EXAMPLES.submissionDetail },
+  })
+  async getSubmissionDetail(
+    @Param('id', ParseUUIDPipe) id: string,
+    @AuthUser() currentUser?: CurrentUser,
+  ) {
+    this.assertAuthenticated(currentUser);
+
+    return { data: await this.submissionDetailService.getSubmissionDetail(id) };
+  }
+
+  @Post('submissions/:id/check')
+  @HttpCode(200)
+  @Auth([{ action: 'read', subject: 'SatusehatSubmission' }])
+  @ApiEndpoint({
+    summary: 'Check with SATUSEHAT whether it still holds what we sent',
+    responseDescription:
+      'Reads each recorded id back from the platform and reports, per resource, only whether SATUSEHAT holds it and its version — found, not found, unpaired (sent but its id was never resolved) or error. The projection is server-side and whitelisted: codes, values, narrative and names never leave the API. Reads are capped in concurrency and go through the shared client, so timeouts and the circuit breaker apply, and one failed read does not fail the check.',
+    responseExample: { data: SATUSEHAT_EXAMPLES.submissionCheck },
+  })
+  async checkSubmission(
+    @Param('id', ParseUUIDPipe) id: string,
+    @AuthUser() currentUser?: CurrentUser,
+  ) {
+    this.assertAuthenticated(currentUser);
+
+    return { data: await this.submissionDetailService.checkSubmission(id) };
   }
 
   @Post('submissions/:id/retry')

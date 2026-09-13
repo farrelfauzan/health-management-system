@@ -68,3 +68,31 @@ export const listSatusehatSubmissionsQuerySchema = z.object({
 export type ListSatusehatSubmissionsQueryInput = z.infer<
   typeof listSatusehatSubmissionsQuerySchema
 >;
+
+/**
+ * What a read-back of one resource found on SATUSEHAT (P21-T03).
+ *
+ * `NOT_FOUND` is keyed on the platform's **HTTP 404**, never on its body: the
+ * `OperationOutcome` returned there says `code: "no-store"` and
+ * `details.text: "storage_error"`, and neither string says "not found"
+ * (P21-T01). `ERROR` is anything else — a timeout, an open circuit, an
+ * unauthorised call — and is deliberately distinct from `NOT_FOUND`, because
+ * "SATUSEHAT does not hold this" and "we could not ask" mean opposite things to
+ * an operator deciding whether to resend.
+ *
+ * `UNPAIRED` is for a resource that was sent but whose id we never resolved, so
+ * there is nothing to read back. It is not an error: the resource is on the
+ * platform, we simply cannot name it.
+ */
+export const SATUSEHAT_RESOURCE_CHECK_OUTCOMES = [
+  'FOUND',
+  'NOT_FOUND',
+  'UNPAIRED',
+  'ERROR',
+] as const;
+
+export const satusehatResourceCheckOutcomeSchema = z.enum(SATUSEHAT_RESOURCE_CHECK_OUTCOMES);
+
+export type SatusehatResourceCheckOutcomeValue = z.infer<
+  typeof satusehatResourceCheckOutcomeSchema
+>;

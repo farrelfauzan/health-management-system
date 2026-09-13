@@ -666,6 +666,35 @@
         "checkedAt": "Diperiksa pukul {time}",
         "lastPublished": "Publikasi terakhir",
         "neverPublished": "Belum pernah"
+      },
+      "satusehatDetail": {
+        "title": "Rincian pengiriman SATUSEHAT",
+        "subtitle": "Apa yang dikirim untuk kunjungan ini. Hanya keberadaan data — tanpa diagnosis, obat, atau nilai pemeriksaan.",
+        "loading": "Memuat rincian…",
+        "loadFailed": "Rincian pengiriman tidak dapat dimuat.",
+        "noList": "Pengiriman ini terjadi sebelum daftar sumber daya dicatat, sehingga rinciannya tidak tersedia. Jalankan backfill (P21-T05) untuk melengkapinya.",
+        "backfilled": "Daftar ini direkonstruksi dari SATUSEHAT, sehingga item yang dilewati tidak dapat diketahui.",
+        "sentHeading": "Sumber daya terkirim",
+        "sentCount": "{count} terkirim",
+        "unpairedCount": "{count} tanpa id",
+        "skippedCount": "{count} dilewati",
+        "check": "Periksa ke SATUSEHAT",
+        "checking": "Memeriksa…",
+        "checkFailed": "Pemeriksaan ke SATUSEHAT gagal.",
+        "viewDetail": "Rincian",
+        "skipReason": {
+          "NO_KFA_CODE": "tanpa kode KFA",
+          "NO_ICD9CM_CODE": "tanpa kode ICD-9-CM",
+          "NO_LOINC_CODE": "tanpa kode LOINC",
+          "NO_VERIFIED_RESULT": "hasil belum diverifikasi",
+          "UNCODED_COMPOUND_COMPONENT": "komponen racikan tanpa kode"
+        },
+        "outcome": {
+          "FOUND": "Ada di SATUSEHAT",
+          "NOT_FOUND": "Tidak ditemukan di SATUSEHAT",
+          "UNPAIRED": "Terkirim, id tidak tercatat",
+          "ERROR": "Tidak dapat diperiksa"
+        }
       }
     },
     "administration": {
