@@ -1024,10 +1024,13 @@ describe('PatientManagement integration', () => {
     it('replaces the chain whole on update once the master data confirms it', async () => {
       const token = await signTokenWith([{ action: 'update', resource: 'Patient', scope: 'ANY' }]);
       patientRepositoryMock.updatePatient.mockResolvedValue({
-        ...(await patientRepositoryMock.findPatientById()),
-        ...SPEC_ADDRESS,
-        rtRw: null,
-        postalCode: null,
+        patient: {
+          ...(await patientRepositoryMock.findPatientById()),
+          ...SPEC_ADDRESS,
+          rtRw: null,
+          postalCode: null,
+        },
+        clearedSatusehatLink: false,
       });
 
       const response = await request(app.getHttpServer())

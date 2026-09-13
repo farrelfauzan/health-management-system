@@ -6,6 +6,16 @@
  */
 export const SATUSEHAT_EXAMPLES = {
   /**
+   * Deliberately the sandbox, because that is what an unconfigured checkout
+   * reports and what a reader should expect to see before the production
+   * switch runbook has been followed.
+   */
+  environmentStatus: {
+    environment: 'SANDBOX',
+    isConfigured: true,
+    fhirHost: 'api-satusehat-stg.dto.kemkes.go.id',
+  },
+  /**
    * P21-T03. Presence only: counts, the ids the platform assigned, and skips by
    * category. A skipped medication's name would tell an administrator what the
    * patient was prescribed, so no example here carries one.

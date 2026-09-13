@@ -22,6 +22,7 @@ import {
   PatientScopeActor,
   PatientSexValue,
   REMOTE_REGISTRATION_PROVENANCES,
+  UpdatedPatient,
 } from '@hms/shared-types';
 
 import { AuditService } from '../../../common/audit/audit.service';
@@ -438,9 +439,21 @@ export class PatientManagementService {
     await this.regionsService.assertOptionalAddressChain(payload);
 
     const updated = await this.updatePatientRecord(id, payload);
+    if (updated.clearedSatusehatLink) {
+      // A corrected NIK dropped the IHS number resolved from the old one
+      // (D-035). Audited without the NIK: the row says the link is gone and
+      // why, never what the identifier was or became.
+      await this.auditService.record({
+        action: 'SATUSEHAT_LINK_CLEARED',
+        resource: 'PatientProfile',
+        resourceId: id,
+        actorUserId: currentUser.sub,
+        metadata: { reason: 'NIK_CHANGED' },
+      });
+    }
 
     return {
-      patient: this.toPatientResponse(updated),
+      patient: this.toPatientResponse(updated.patient),
       identifierWarnings: this.collectIdentifierWarnings({
         nik: payload.nik,
         dateOfBirth:
@@ -609,7 +622,7 @@ export class PatientManagementService {
   private async updatePatientRecord(
     id: string,
     payload: UpdatePatientDto,
-  ): Promise<PatientRecord> {
+  ): Promise<UpdatedPatient> {
     try {
       return await this.patientManagementRepository.updatePatient(id, {
         fullName: payload.fullName,
