@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { escapeXhtml } from './escape-xhtml';
 import { SatusehatError } from './satusehat.error';
 import { resolveSatusehatConfig } from './satusehat.config';
+import { SATUSEHAT_VITAL_SIGN_DEFINITIONS } from './satusehat-vital-sign-definitions';
 import {
   SatusehatAllergyMapInput,
   SatusehatClinicalImpressionMapInput,
@@ -48,7 +49,7 @@ import {
   SatusehatProcedureMapInput,
   SatusehatServiceRequestMapInput,
   SatusehatSpecimenMapInput,
-  SatusehatVitalSignField,
+  SatusehatVitalSignDefinition,
   SatusehatVitalSignsMapInput,
 } from './satusehat-fhir.types';
 import { SatusehatConfig } from './satusehat.types';
@@ -208,30 +209,6 @@ const ORDERABLE_DRUG_FORM_CODES: Readonly<Record<string, string>> = {
   SUPOSITORIA: 'SUPP',
   TETES: 'DROP',
 };
-
-type VitalSignDefinition = {
-  field: SatusehatVitalSignField;
-  loincCode: string;
-  loincDisplay: string;
-  unit: string;
-  ucumCode: string;
-};
-
-/**
- * LOINC and UCUM codings for the fixed-unit vital-sign columns. This table is
- * the only place the codes exist — the database deliberately stores none
- * (`P8-T02`), so a coding correction is an adapter change, not a migration.
- */
-const VITAL_SIGN_DEFINITIONS: readonly VitalSignDefinition[] = [
-  { field: 'heightCm', loincCode: '8302-2', loincDisplay: 'Body height', unit: 'cm', ucumCode: 'cm' },
-  { field: 'weightKg', loincCode: '29463-7', loincDisplay: 'Body weight', unit: 'kg', ucumCode: 'kg' },
-  { field: 'systolicBloodPressure', loincCode: '8480-6', loincDisplay: 'Systolic blood pressure', unit: 'mmHg', ucumCode: 'mm[Hg]' },
-  { field: 'diastolicBloodPressure', loincCode: '8462-4', loincDisplay: 'Diastolic blood pressure', unit: 'mmHg', ucumCode: 'mm[Hg]' },
-  { field: 'pulseRate', loincCode: '8867-4', loincDisplay: 'Heart rate', unit: 'beats/minute', ucumCode: '/min' },
-  { field: 'respiratoryRate', loincCode: '9279-1', loincDisplay: 'Respiratory rate', unit: 'breaths/minute', ucumCode: '/min' },
-  { field: 'temperatureCelsius', loincCode: '8310-5', loincDisplay: 'Body temperature', unit: 'C', ucumCode: 'Cel' },
-  { field: 'oxygenSaturation', loincCode: '2708-6', loincDisplay: 'Oxygen saturation in Arterial blood', unit: '%', ucumCode: '%' },
-];
 
 /**
  * Maps closed HMS clinical records to the FHIR R4 resources SATUSEHAT
@@ -727,7 +704,7 @@ export class SatusehatFhirMapper {
    * blood pressure submits exactly three observations.
    */
   mapVitalSignsToObservations(input: SatusehatVitalSignsMapInput): SatusehatFhirObservation[] {
-    return VITAL_SIGN_DEFINITIONS.flatMap((definition) => {
+    return SATUSEHAT_VITAL_SIGN_DEFINITIONS.flatMap((definition) => {
       const measuredValue = input[definition.field];
       if (measuredValue === null) {
         return [];
@@ -1271,7 +1248,7 @@ export class SatusehatFhirMapper {
 
   private buildObservation(
     input: SatusehatVitalSignsMapInput,
-    definition: VitalSignDefinition,
+    definition: SatusehatVitalSignDefinition,
     measuredValue: number,
   ): SatusehatFhirObservation {
     return {

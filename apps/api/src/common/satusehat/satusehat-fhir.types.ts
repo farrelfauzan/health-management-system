@@ -778,3 +778,12 @@ export type SatusehatVitalSignField = keyof Pick<
   | 'temperatureCelsius'
   | 'oxygenSaturation'
 >;
+
+/** One fixed-unit vital-sign column and the LOINC/UCUM coding it is sent under. */
+export type SatusehatVitalSignDefinition = {
+  field: SatusehatVitalSignField;
+  loincCode: string;
+  loincDisplay: string;
+  unit: string;
+  ucumCode: string;
+};
