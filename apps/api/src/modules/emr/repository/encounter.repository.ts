@@ -85,6 +85,7 @@ const ENCOUNTER_DOCTOR_SELECT = {
   id: true,
   licenseNumber: true,
   fullName: true,
+  profession: true,
   ownerUserId: true,
   // Stands in for "this doctor has a NIK", which is what decides whether the
   // encounter can ever be reported to SATUSEHAT (SJ-75). The masked last four

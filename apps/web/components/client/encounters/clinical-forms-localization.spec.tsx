@@ -25,6 +25,7 @@ const ENCOUNTER = {
     licenseNumber: 'SIP-001',
     fullName: 'dr. Budi',
     satusehatReportable: true,
+    profession: 'DOCTOR',
   },
   vitalSigns: [],
   diagnoses: [],

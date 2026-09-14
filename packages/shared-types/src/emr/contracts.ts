@@ -1,3 +1,4 @@
+import type { ClinicianProfessionValue } from '#doctor-management/schemas';
 import type {
   DiagnosisTypeValue,
   EncounterPrognosisValue,
@@ -123,6 +124,11 @@ export type EncounterRelatedDoctor = {
    * it, on the doctor record.
    */
   satusehatReportable: boolean;
+  /**
+   * Doctor or midwife (D-034). The prescription picker narrows to what a
+   * midwife may prescribe when the encounter is hers (P24-T04).
+   */
+  profession: ClinicianProfessionValue;
 };
 
 export type EncounterListRelatedPatient = Pick<EncounterRelatedPatient, 'id' | 'fullName'>;

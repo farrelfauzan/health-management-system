@@ -36,6 +36,7 @@ export type MedicationResponse = {
   reorderLevel: number;
   needsReorder: boolean;
   isVaccine: boolean;
+  isMidwifePrescribable: boolean;
   createdAt: string;
   updatedAt: string;
 };

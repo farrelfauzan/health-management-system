@@ -49,6 +49,7 @@ export type MedicationMinAggregateOutputType = {
   reorderLevel: number | null
   unitPrice: runtime.Decimal | null
   isVaccine: boolean | null
+  isMidwifePrescribable: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
   deletedAt: Date | null
@@ -67,6 +68,7 @@ export type MedicationMaxAggregateOutputType = {
   reorderLevel: number | null
   unitPrice: runtime.Decimal | null
   isVaccine: boolean | null
+  isMidwifePrescribable: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
   deletedAt: Date | null
@@ -85,6 +87,7 @@ export type MedicationCountAggregateOutputType = {
   reorderLevel: number
   unitPrice: number
   isVaccine: number
+  isMidwifePrescribable: number
   createdAt: number
   updatedAt: number
   deletedAt: number
@@ -115,6 +118,7 @@ export type MedicationMinAggregateInputType = {
   reorderLevel?: true
   unitPrice?: true
   isVaccine?: true
+  isMidwifePrescribable?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -133,6 +137,7 @@ export type MedicationMaxAggregateInputType = {
   reorderLevel?: true
   unitPrice?: true
   isVaccine?: true
+  isMidwifePrescribable?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -151,6 +156,7 @@ export type MedicationCountAggregateInputType = {
   reorderLevel?: true
   unitPrice?: true
   isVaccine?: true
+  isMidwifePrescribable?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -256,6 +262,7 @@ export type MedicationGroupByOutputType = {
   reorderLevel: number
   unitPrice: runtime.Decimal | null
   isVaccine: boolean
+  isMidwifePrescribable: boolean
   createdAt: Date
   updatedAt: Date
   deletedAt: Date | null
@@ -297,6 +304,7 @@ export type MedicationWhereInput = {
   reorderLevel?: Prisma.IntFilter<"Medication"> | number
   unitPrice?: Prisma.DecimalNullableFilter<"Medication"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isVaccine?: Prisma.BoolFilter<"Medication"> | boolean
+  isMidwifePrescribable?: Prisma.BoolFilter<"Medication"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Medication"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Medication"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"Medication"> | Date | string | null
@@ -321,6 +329,7 @@ export type MedicationOrderByWithRelationInput = {
   reorderLevel?: Prisma.SortOrder
   unitPrice?: Prisma.SortOrderInput | Prisma.SortOrder
   isVaccine?: Prisma.SortOrder
+  isMidwifePrescribable?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -348,6 +357,7 @@ export type MedicationWhereUniqueInput = Prisma.AtLeast<{
   reorderLevel?: Prisma.IntFilter<"Medication"> | number
   unitPrice?: Prisma.DecimalNullableFilter<"Medication"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isVaccine?: Prisma.BoolFilter<"Medication"> | boolean
+  isMidwifePrescribable?: Prisma.BoolFilter<"Medication"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Medication"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Medication"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"Medication"> | Date | string | null
@@ -372,6 +382,7 @@ export type MedicationOrderByWithAggregationInput = {
   reorderLevel?: Prisma.SortOrder
   unitPrice?: Prisma.SortOrderInput | Prisma.SortOrder
   isVaccine?: Prisma.SortOrder
+  isMidwifePrescribable?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -398,6 +409,7 @@ export type MedicationScalarWhereWithAggregatesInput = {
   reorderLevel?: Prisma.IntWithAggregatesFilter<"Medication"> | number
   unitPrice?: Prisma.DecimalNullableWithAggregatesFilter<"Medication"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isVaccine?: Prisma.BoolWithAggregatesFilter<"Medication"> | boolean
+  isMidwifePrescribable?: Prisma.BoolWithAggregatesFilter<"Medication"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Medication"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Medication"> | Date | string
   deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Medication"> | Date | string | null
@@ -416,6 +428,7 @@ export type MedicationCreateInput = {
   reorderLevel?: number
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isVaccine?: boolean
+  isMidwifePrescribable?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -440,6 +453,7 @@ export type MedicationUncheckedCreateInput = {
   reorderLevel?: number
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isVaccine?: boolean
+  isMidwifePrescribable?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -464,6 +478,7 @@ export type MedicationUpdateInput = {
   reorderLevel?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isVaccine?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -488,6 +503,7 @@ export type MedicationUncheckedUpdateInput = {
   reorderLevel?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isVaccine?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -512,6 +528,7 @@ export type MedicationCreateManyInput = {
   reorderLevel?: number
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isVaccine?: boolean
+  isMidwifePrescribable?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -530,6 +547,7 @@ export type MedicationUpdateManyMutationInput = {
   reorderLevel?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isVaccine?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -548,6 +566,7 @@ export type MedicationUncheckedUpdateManyInput = {
   reorderLevel?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isVaccine?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -566,6 +585,7 @@ export type MedicationCountOrderByAggregateInput = {
   reorderLevel?: Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
   isVaccine?: Prisma.SortOrder
+  isMidwifePrescribable?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -589,6 +609,7 @@ export type MedicationMaxOrderByAggregateInput = {
   reorderLevel?: Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
   isVaccine?: Prisma.SortOrder
+  isMidwifePrescribable?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -607,6 +628,7 @@ export type MedicationMinOrderByAggregateInput = {
   reorderLevel?: Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
   isVaccine?: Prisma.SortOrder
+  isMidwifePrescribable?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -738,6 +760,7 @@ export type MedicationCreateWithoutPrescriptionItemsInput = {
   reorderLevel?: number
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isVaccine?: boolean
+  isMidwifePrescribable?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -761,6 +784,7 @@ export type MedicationUncheckedCreateWithoutPrescriptionItemsInput = {
   reorderLevel?: number
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isVaccine?: boolean
+  isMidwifePrescribable?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -800,6 +824,7 @@ export type MedicationUpdateWithoutPrescriptionItemsInput = {
   reorderLevel?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isVaccine?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -823,6 +848,7 @@ export type MedicationUncheckedUpdateWithoutPrescriptionItemsInput = {
   reorderLevel?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isVaccine?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -846,6 +872,7 @@ export type MedicationCreateWithoutCompoundComponentsInput = {
   reorderLevel?: number
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isVaccine?: boolean
+  isMidwifePrescribable?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -869,6 +896,7 @@ export type MedicationUncheckedCreateWithoutCompoundComponentsInput = {
   reorderLevel?: number
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isVaccine?: boolean
+  isMidwifePrescribable?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -908,6 +936,7 @@ export type MedicationUpdateWithoutCompoundComponentsInput = {
   reorderLevel?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isVaccine?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -931,6 +960,7 @@ export type MedicationUncheckedUpdateWithoutCompoundComponentsInput = {
   reorderLevel?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isVaccine?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -954,6 +984,7 @@ export type MedicationCreateWithoutDispenseItemsInput = {
   reorderLevel?: number
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isVaccine?: boolean
+  isMidwifePrescribable?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -977,6 +1008,7 @@ export type MedicationUncheckedCreateWithoutDispenseItemsInput = {
   reorderLevel?: number
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isVaccine?: boolean
+  isMidwifePrescribable?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1016,6 +1048,7 @@ export type MedicationUpdateWithoutDispenseItemsInput = {
   reorderLevel?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isVaccine?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1039,6 +1072,7 @@ export type MedicationUncheckedUpdateWithoutDispenseItemsInput = {
   reorderLevel?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isVaccine?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1062,6 +1096,7 @@ export type MedicationCreateWithoutStockReceiptsInput = {
   reorderLevel?: number
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isVaccine?: boolean
+  isMidwifePrescribable?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1085,6 +1120,7 @@ export type MedicationUncheckedCreateWithoutStockReceiptsInput = {
   reorderLevel?: number
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isVaccine?: boolean
+  isMidwifePrescribable?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1124,6 +1160,7 @@ export type MedicationUpdateWithoutStockReceiptsInput = {
   reorderLevel?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isVaccine?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1147,6 +1184,7 @@ export type MedicationUncheckedUpdateWithoutStockReceiptsInput = {
   reorderLevel?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isVaccine?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1170,6 +1208,7 @@ export type MedicationCreateWithoutInvoiceItemsInput = {
   reorderLevel?: number
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isVaccine?: boolean
+  isMidwifePrescribable?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1193,6 +1232,7 @@ export type MedicationUncheckedCreateWithoutInvoiceItemsInput = {
   reorderLevel?: number
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isVaccine?: boolean
+  isMidwifePrescribable?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1232,6 +1272,7 @@ export type MedicationUpdateWithoutInvoiceItemsInput = {
   reorderLevel?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isVaccine?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1255,6 +1296,7 @@ export type MedicationUncheckedUpdateWithoutInvoiceItemsInput = {
   reorderLevel?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isVaccine?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1278,6 +1320,7 @@ export type MedicationCreateWithoutImmunizationsInput = {
   reorderLevel?: number
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isVaccine?: boolean
+  isMidwifePrescribable?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1301,6 +1344,7 @@ export type MedicationUncheckedCreateWithoutImmunizationsInput = {
   reorderLevel?: number
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isVaccine?: boolean
+  isMidwifePrescribable?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1340,6 +1384,7 @@ export type MedicationUpdateWithoutImmunizationsInput = {
   reorderLevel?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isVaccine?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1363,6 +1408,7 @@ export type MedicationUncheckedUpdateWithoutImmunizationsInput = {
   reorderLevel?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isVaccine?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1462,6 +1508,7 @@ export type MedicationSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   reorderLevel?: boolean
   unitPrice?: boolean
   isVaccine?: boolean
+  isMidwifePrescribable?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
@@ -1487,6 +1534,7 @@ export type MedicationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   reorderLevel?: boolean
   unitPrice?: boolean
   isVaccine?: boolean
+  isMidwifePrescribable?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
@@ -1505,6 +1553,7 @@ export type MedicationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   reorderLevel?: boolean
   unitPrice?: boolean
   isVaccine?: boolean
+  isMidwifePrescribable?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
@@ -1523,12 +1572,13 @@ export type MedicationSelectScalar = {
   reorderLevel?: boolean
   unitPrice?: boolean
   isVaccine?: boolean
+  isMidwifePrescribable?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
 }
 
-export type MedicationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "kfaCode" | "dphoCode" | "name" | "form" | "strength" | "unit" | "category" | "reorderLevel" | "unitPrice" | "isVaccine" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["medication"]>
+export type MedicationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "kfaCode" | "dphoCode" | "name" | "form" | "strength" | "unit" | "category" | "reorderLevel" | "unitPrice" | "isVaccine" | "isMidwifePrescribable" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["medication"]>
 export type MedicationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   prescriptionItems?: boolean | Prisma.Medication$prescriptionItemsArgs<ExtArgs>
   compoundComponents?: boolean | Prisma.Medication$compoundComponentsArgs<ExtArgs>
@@ -1580,6 +1630,12 @@ export type $MedicationPayload<ExtArgs extends runtime.Types.Extensions.Internal
      * the flag is what filters the immunisation picker down to them.
      */
     isVaccine: boolean
+    /**
+     * Whether a midwife may prescribe this item (P24-T04, FR-MW-06). False by
+     * default and never seeded: Permenkes 28/2017 limits a bidan to her own
+     * authorities, and which catalog items fall inside them is the clinic's call.
+     */
+    isMidwifePrescribable: boolean
     createdAt: Date
     updatedAt: Date
     deletedAt: Date | null
@@ -2024,6 +2080,7 @@ export interface MedicationFieldRefs {
   readonly reorderLevel: Prisma.FieldRef<"Medication", 'Int'>
   readonly unitPrice: Prisma.FieldRef<"Medication", 'Decimal'>
   readonly isVaccine: Prisma.FieldRef<"Medication", 'Boolean'>
+  readonly isMidwifePrescribable: Prisma.FieldRef<"Medication", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"Medication", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Medication", 'DateTime'>
   readonly deletedAt: Prisma.FieldRef<"Medication", 'DateTime'>

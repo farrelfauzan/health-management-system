@@ -7,8 +7,10 @@ import {
   DispenseRecordDetailRecord,
   DispenseRecordResponse,
   isPrescriptionDispensable,
+  MEDICATION_NOT_MIDWIFE_PRESCRIBABLE_ERROR_CODE,
   MedicationRecord,
   MedicationResponse,
+  PrescribingClinicianRecord,
   StockReceiptResponse,
   PrescriptionDetailRecord,
   PrescriptionResponse,
@@ -21,6 +23,7 @@ import {
   Injectable,
   NotFoundException,
   UnauthorizedException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
@@ -69,6 +72,7 @@ export class PharmacyFlowService {
       search: query.search,
       category: query.category,
       reorderOnly: query.reorderOnly,
+      midwifePrescribableOnly: query.midwifePrescribableOnly,
       inventoryDate: this.getClinicDate(new Date()),
     });
 
@@ -109,6 +113,8 @@ export class PharmacyFlowService {
         unit: payload.unit,
         category: payload.category,
         reorderLevel: payload.reorderLevel,
+        isVaccine: payload.isVaccine,
+        isMidwifePrescribable: payload.isMidwifePrescribable,
       }),
     );
 
@@ -190,7 +196,8 @@ export class PharmacyFlowService {
       throw new ForbiddenException('You are not allowed to write prescriptions');
     }
 
-    const doctorId = await this.resolvePrescribingDoctorId(payload, writeScope, currentUser);
+    const clinician = await this.resolvePrescribingClinician(payload, writeScope, currentUser);
+    const doctorId = clinician.id;
     const patient = await this.pharmacyFlowRepository.findActivePatientById(payload.patientId);
 
     if (!patient) {
@@ -204,14 +211,18 @@ export class PharmacyFlowService {
     // Both shapes are checked: a product line's medication, and every
     // ingredient of every compound line. A compound naming a medication that
     // does not exist is a compound nobody can dispense.
-    await this.assertMedicationsExist([
+    const prescribedMedicationIds = [
       ...payload.items
         .map((item) => item.medicationId)
         .filter((medicationId): medicationId is string => medicationId !== undefined),
       ...payload.items.flatMap((item) =>
         (item.components ?? []).map((component) => component.medicationId),
       ),
-    ]);
+    ];
+    await this.assertMedicationsExist(prescribedMedicationIds);
+    if (clinician.profession === 'MIDWIFE') {
+      await this.assertMidwifePrescribable(prescribedMedicationIds);
+    }
 
     if (payload.encounterId) {
       await this.assertEncounterAcceptsPrescription(payload.encounterId, payload.patientId);
@@ -400,11 +411,11 @@ export class PharmacyFlowService {
     };
   }
 
-  private async resolvePrescribingDoctorId(
+  private async resolvePrescribingClinician(
     payload: CreatePrescriptionDto,
     writeScope: ActorScopeResolution,
     currentUser: CurrentUser,
-  ): Promise<string> {
+  ): Promise<PrescribingClinicianRecord> {
     if (!writeScope.hasAny) {
       const ownDoctor = await this.pharmacyFlowRepository.findActiveDoctorByOwnerUserId(
         currentUser.sub,
@@ -418,7 +429,7 @@ export class PharmacyFlowService {
         throw new ForbiddenException('You can only write prescriptions as yourself');
       }
 
-      return ownDoctor.id;
+      return ownDoctor;
     }
 
     const requestedDoctorId =
@@ -434,7 +445,7 @@ export class PharmacyFlowService {
       throw new BadRequestException('Doctor not found or inactive');
     }
 
-    return doctor.id;
+    return doctor;
   }
 
   /**
@@ -500,6 +511,27 @@ export class PharmacyFlowService {
     if (missingIds.length > 0) {
       throw new BadRequestException(`Medications not found: ${missingIds.join(', ')}`);
     }
+  }
+
+  /**
+   * P24-T04 (FR-MW-06). A bidan may prescribe only what the clinic flagged for
+   * her: every product line and every compound ingredient. Checked before the
+   * prescription is written, so a refusal never leaves a partial one behind.
+   */
+  private async assertMidwifePrescribable(medicationIds: string[]): Promise<void> {
+    const medications = await this.pharmacyFlowRepository.findActiveMedicationsByIds(
+      medicationIds,
+      this.getClinicDate(new Date()),
+    );
+    const refused = medications.filter((medication) => !medication.isMidwifePrescribable);
+    if (refused.length === 0) {
+      return;
+    }
+    throw new UnprocessableEntityException({
+      message: `A midwife may not prescribe ${refused.map((medication) => medication.name).join(', ')}`,
+      code: MEDICATION_NOT_MIDWIFE_PRESCRIBABLE_ERROR_CODE,
+      errors: { medicationIds: refused.map((medication) => medication.id) },
+    });
   }
 
   private assertPrescriptionDispensable(prescription: PrescriptionDetailRecord): void {
@@ -670,6 +702,7 @@ export class PharmacyFlowService {
       reorderLevel: medication.reorderLevel,
       needsReorder: medication.stockQty <= medication.reorderLevel,
       isVaccine: medication.isVaccine,
+      isMidwifePrescribable: medication.isMidwifePrescribable,
       createdAt: medication.createdAt.toISOString(),
       updatedAt: medication.updatedAt.toISOString(),
     };

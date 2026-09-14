@@ -28631,6 +28631,14 @@ paths:
             enum:
               - "true"
               - "false"
+        - name: midwifePrescribableOnly
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - "true"
+              - "false"
       responses:
         "200":
           description: A searchable, paginated medication inventory list.
@@ -50755,6 +50763,8 @@ components:
           default: 0
         isVaccine:
           type: boolean
+        isMidwifePrescribable:
+          type: boolean
       required:
         - code
         - name
@@ -50825,6 +50835,8 @@ components:
           maximum: 1000000
           exclusiveMaximum: false
         isVaccine:
+          type: boolean
+        isMidwifePrescribable:
           type: boolean
     CreatePrescriptionDto:
       type: object

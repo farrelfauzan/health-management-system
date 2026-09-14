@@ -6,6 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { MedicationControllerListMedicationsV1Category } from './medicationControllerListMedicationsV1Category';
+import type { MedicationControllerListMedicationsV1MidwifePrescribableOnly } from './medicationControllerListMedicationsV1MidwifePrescribableOnly';
 import type { MedicationControllerListMedicationsV1ReorderOnly } from './medicationControllerListMedicationsV1ReorderOnly';
 
 export type MedicationControllerListMedicationsV1Params = {
@@ -25,4 +26,5 @@ limit?: number;
 search?: string;
 category?: MedicationControllerListMedicationsV1Category;
 reorderOnly?: MedicationControllerListMedicationsV1ReorderOnly;
+midwifePrescribableOnly?: MedicationControllerListMedicationsV1MidwifePrescribableOnly;
 };

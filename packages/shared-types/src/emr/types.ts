@@ -1,3 +1,4 @@
+import type { ClinicianProfessionValue } from '#doctor-management/schemas';
 import type {
   DiagnosisTypeValue,
   EncounterPrognosisValue,
@@ -188,6 +189,7 @@ export type EncounterRelatedDoctorRecord = {
    * doctor repository.
    */
   nikLast4: string | null;
+  profession: ClinicianProfessionValue;
 };
 
 export type EncounterChildCounts = {

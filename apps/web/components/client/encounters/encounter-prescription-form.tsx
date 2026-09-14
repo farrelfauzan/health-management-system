@@ -20,11 +20,13 @@ import { useMedicationSearch } from '#lib/encounters/use-medication-search';
 type EncounterPrescriptionFormProps = {
   encounterId: string;
   patientId: string;
+  isMidwifePrescriber: boolean;
 };
 
 export function EncounterPrescriptionForm({
   encounterId,
   patientId,
+  isMidwifePrescriber,
 }: EncounterPrescriptionFormProps) {
   const queryClient = useQueryClient();
   const t = useTranslations('clinical');
@@ -38,7 +40,7 @@ export function EncounterPrescriptionForm({
   const [notes, setNotes] = useState<string>('');
   const [items, setItems] = useState<PrescriptionDraftItem[]>([]);
   const [actionError, setActionError] = useState<string | null>(null);
-  const medicationQuery = useMedicationSearch(search);
+  const medicationQuery = useMedicationSearch(search, isMidwifePrescriber);
   const createMutation = useMutation({
     mutationFn: (payload: CreatePrescriptionInput) =>
       prescriptionControllerCreatePrescriptionV1(payload),
@@ -136,6 +138,11 @@ export function EncounterPrescriptionForm({
         onSearchChange={setSearch}
         onSelect={setSelected}
       />
+      {isMidwifePrescriber ? (
+        <p className="text-xs text-slate-500">
+          {t('encounters.prescriptionForm.midwifeScopeHint')}
+        </p>
+      ) : null}
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <div>
           <Label

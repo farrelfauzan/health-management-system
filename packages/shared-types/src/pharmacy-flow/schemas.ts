@@ -86,12 +86,26 @@ function hasUniqueMedicationIds(items: Array<{ medicationId?: string }>): boolea
   return new Set(medicationIds).size === medicationIds.length;
 }
 
+/**
+ * P24-T04 (FR-MW-06). The 422 code for a prescription line a midwife may not
+ * write, because the medication is not flagged `isMidwifePrescribable`.
+ */
+export const MEDICATION_NOT_MIDWIFE_PRESCRIBABLE_ERROR_CODE = 'MEDICATION_NOT_MIDWIFE_PRESCRIBABLE';
+
 export const listMedicationsQuerySchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(10),
   search: z.string().trim().min(1).max(100).optional(),
   category: medicationCategorySchema.optional(),
   reorderOnly: z
+    .enum(['true', 'false'])
+    .transform((value) => value === 'true')
+    .optional(),
+  /**
+   * P24-T04. `true` narrows the list to what a midwife may prescribe; the
+   * prescription picker sends it when the encounter's clinician is a bidan.
+   */
+  midwifePrescribableOnly: z
     .enum(['true', 'false'])
     .transform((value) => value === 'true')
     .optional(),
@@ -144,6 +158,8 @@ export const createMedicationSchema = z.object({
   reorderLevel: medicationReorderLevelSchema.optional().default(0),
   /** P10-T16. Whether this row is a vaccine, which is what filters the immunisation picker. */
   isVaccine: z.boolean().optional(),
+  /** P24-T04. Whether a midwife may prescribe this item. */
+  isMidwifePrescribable: z.boolean().optional(),
 }).strict();
 
 export const updateMedicationSchema = z
@@ -157,6 +173,7 @@ export const updateMedicationSchema = z
     category: medicationCategorySchema.nullable().optional(),
     reorderLevel: medicationReorderLevelSchema.optional(),
     isVaccine: z.boolean().optional(),
+    isMidwifePrescribable: z.boolean().optional(),
   })
   .strict()
   .refine((payload) => Object.values(payload).some((value) => value !== undefined), {

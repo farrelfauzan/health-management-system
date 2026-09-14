@@ -76,6 +76,9 @@ export function MedicationFormDialog({
   );
   const [reorderLevel, setReorderLevel] = useState(String(medication?.reorderLevel ?? 0));
   const [isVaccine, setIsVaccine] = useState<boolean>(medication?.isVaccine ?? false);
+  const [isMidwifePrescribable, setIsMidwifePrescribable] = useState<boolean>(
+    medication?.isMidwifePrescribable ?? false,
+  );
   const [error, setError] = useState<string | null>(null);
   const saveMutation = useMutation({
     mutationFn: (payload: CreateMedicationDto | UpdateMedicationDto) =>
@@ -103,6 +106,7 @@ export function MedicationFormDialog({
       category,
       reorderLevel: level,
       isVaccine,
+      isMidwifePrescribable,
     } satisfies CreateMedicationDto | UpdateMedicationDto;
 
     try {
@@ -275,6 +279,24 @@ export function MedicationFormDialog({
               </FormLabel>
               <FieldDescription id="medication-is-vaccine-description" className="pl-6">
                 {t('isVaccineDescription')}
+              </FieldDescription>
+            </div>
+            {/* P24-T04. A bidan's prescription picker lists only the rows
+                marked here, and the API refuses any other line she writes. */}
+            <div className="space-y-1.5 sm:col-span-2">
+              <FormLabel className="flex items-center gap-2 text-sm font-normal">
+                <Checkbox
+                  aria-describedby="medication-is-midwife-prescribable-description"
+                  checked={isMidwifePrescribable}
+                  onCheckedChange={(value) => setIsMidwifePrescribable(value === true)}
+                />
+                {t('isMidwifePrescribable')}
+              </FormLabel>
+              <FieldDescription
+                id="medication-is-midwife-prescribable-description"
+                className="pl-6"
+              >
+                {t('isMidwifePrescribableDescription')}
               </FieldDescription>
             </div>
           </div>

@@ -32,6 +32,7 @@ describe('pharmacy inventory dialogs', () => {
           reorderLevel: 50,
           needsReorder: false,
           isVaccine: false,
+  isMidwifePrescribable: false,
           createdAt: '2026-07-01T00:00:00.000Z',
           updatedAt: '2026-07-01T00:00:00.000Z',
         }}
