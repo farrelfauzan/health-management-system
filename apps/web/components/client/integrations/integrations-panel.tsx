@@ -11,6 +11,7 @@ import { BpjsSettingsPanel } from '#components/client/integrations/bpjs-settings
 import { IntegrationSubmissionMonitor } from '#components/client/integrations/integration-submission-monitor';
 import { NotionConnectorCard } from '#components/client/integrations/notion-connector-card';
 import { SatusehatEnvironmentCard } from '#components/client/integrations/satusehat-environment-card';
+import { SatusehatLocationsPanel } from '#components/client/integrations/satusehat-locations-panel';
 import { PageHeader } from '#components/shared/page-header';
 import { INTEGRATIONS_TABS, type IntegrationsTab } from '#lib/integrations/integrations-tabs';
 import { useShellBreadcrumbRoot } from '#lib/navigation/use-shell-breadcrumb-root';
@@ -29,16 +30,24 @@ export function IntegrationsPanel({ initialTab }: IntegrationsPanelProps) {
     ability.can('read', 'BpjsSubmission') || ability.can('read', 'SatusehatSubmission');
   const canConfigure = ability.can('manage', 'BpjsConfig');
   const canMap = ability.can('manage', 'BpjsMapping');
+  const canReadLocations = ability.can('read', 'SatusehatLocation');
   const canSeeNotionConnector = ability.can('manage', 'NotionConnector');
   const readableTabs: Record<IntegrationsTab, boolean> = {
     monitor: canMonitor,
     settings: canConfigure,
     antrean: canConfigure,
     mappings: canMap,
+    locations: canReadLocations,
   };
   const { tab, setTab } = useTabSearchParam<IntegrationsTab>({
     allowed: INTEGRATIONS_TABS.filter((candidate) => readableTabs[candidate]),
-    fallback: canMonitor ? 'monitor' : canConfigure ? 'settings' : 'mappings',
+    fallback: canMonitor
+      ? 'monitor'
+      : canConfigure
+        ? 'settings'
+        : canMap
+          ? 'mappings'
+          : 'locations',
     initialTab,
   });
 
@@ -72,7 +81,7 @@ export function IntegrationsPanel({ initialTab }: IntegrationsPanelProps) {
       {/* P23-T05. Somebody whose only grant here is the Notion connector has
           no readable tab, and an empty tab strip reads as a broken page rather
           than as "nothing for you in here". */}
-      {canMonitor || canConfigure || canMap ? (
+      {canMonitor || canConfigure || canMap || canReadLocations ? (
       <Tabs
         value={tab}
         onValueChange={(value) => setTab(value as IntegrationsTab)}
@@ -83,6 +92,9 @@ export function IntegrationsPanel({ initialTab }: IntegrationsPanelProps) {
           {canConfigure ? <TabsTrigger value="settings">{t('settings')}</TabsTrigger> : null}
           {canConfigure ? <TabsTrigger value="antrean">{t('antrean.tab')}</TabsTrigger> : null}
           {canMap ? <TabsTrigger value="mappings">{t('mappings')}</TabsTrigger> : null}
+          {canReadLocations ? (
+            <TabsTrigger value="locations">{t('satusehatLocations.tab')}</TabsTrigger>
+          ) : null}
         </TabsList>
         {canMonitor ? (
           <TabsContent value="monitor">
@@ -102,6 +114,13 @@ export function IntegrationsPanel({ initialTab }: IntegrationsPanelProps) {
         {canMap ? (
           <TabsContent value="mappings">
             <BpjsMappingsPanel />
+          </TabsContent>
+        ) : null}
+        {/* P24-T06. Next to the BPJS mappings: both say how the clinic's own
+            records map onto a national system before anything is sent. */}
+        {canReadLocations ? (
+          <TabsContent value="locations">
+            <SatusehatLocationsPanel />
           </TabsContent>
         ) : null}
       </Tabs>

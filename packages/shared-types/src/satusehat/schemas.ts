@@ -198,8 +198,82 @@ export type SatusehatServiceClassValue = z.infer<typeof satusehatServiceClassSch
 export const SATUSEHAT_LOCATION_BLOCK_REASONS = [
   'MISSING_COORDINATES',
   'UNMAPPED_SERVICE_CLASS',
+  // P24-T06. Depends on the tree rather than on the row: a child waits for its
+  // parent, because `partOf` must name a Location SATUSEHAT already holds.
+  'UNREGISTERED_PARENT',
 ] as const;
 
 export const satusehatLocationBlockReasonSchema = z.enum(SATUSEHAT_LOCATION_BLOCK_REASONS);
 
 export type SatusehatLocationBlockReasonValue = z.infer<typeof satusehatLocationBlockReasonSchema>;
+
+/**
+ * The rows that register as SATUSEHAT Locations (P24-T06, FR-LOC-03/04): the
+ * clinic's root site, each poli (`Specialty`), and the ward → room → bed tree.
+ */
+export const SATUSEHAT_LOCATION_KINDS = ['SITE', 'SPECIALTY', 'WARD', 'ROOM', 'BED'] as const;
+
+export const satusehatLocationKindSchema = z.enum(SATUSEHAT_LOCATION_KINDS);
+
+export type SatusehatLocationKindValue = z.infer<typeof satusehatLocationKindSchema>;
+
+/** Where one row stands on the Location panel (P24-T06). */
+export const SATUSEHAT_LOCATION_NODE_STATUSES = ['REGISTERED', 'UNREGISTERED', 'BLOCKED'] as const;
+
+export const satusehatLocationNodeStatusSchema = z.enum(SATUSEHAT_LOCATION_NODE_STATUSES);
+
+export type SatusehatLocationNodeStatusValue = z.infer<typeof satusehatLocationNodeStatusSchema>;
+
+/**
+ * What a registration attempt did with one row (P24-T06). `ADOPTED` means the
+ * identifier search found a Location SATUSEHAT already held, so nothing was
+ * created twice (FR-LOC-07). `SKIPPED` rows were never reached because the
+ * batch stopped (NFR-05).
+ */
+export const SATUSEHAT_LOCATION_REGISTRATION_OUTCOMES = [
+  'CREATED',
+  'ADOPTED',
+  'UPDATED',
+  'BLOCKED',
+  'FAILED',
+  'SKIPPED',
+] as const;
+
+export const satusehatLocationRegistrationOutcomeSchema = z.enum(
+  SATUSEHAT_LOCATION_REGISTRATION_OUTCOMES,
+);
+
+export type SatusehatLocationRegistrationOutcomeValue = z.infer<
+  typeof satusehatLocationRegistrationOutcomeSchema
+>;
+
+/** The most rows one registration request may name. */
+export const MAX_SATUSEHAT_LOCATION_TARGETS = 500;
+
+/**
+ * `POST /satusehat/locations/register` (P24-T06). Either `all: true`, which
+ * registers every row not yet registered, or named targets — a registered
+ * target is pushed again, so a rename or a deactivation reaches SATUSEHAT
+ * (FR-LOC-08).
+ */
+export const registerSatusehatLocationsSchema = z
+  .object({
+    all: z.boolean().optional(),
+    targets: z
+      .array(
+        z
+          .object({
+            kind: satusehatLocationKindSchema,
+            id: z.string().uuid(),
+          })
+          .strict(),
+      )
+      .max(MAX_SATUSEHAT_LOCATION_TARGETS)
+      .optional(),
+  })
+  .strict()
+  .refine((payload) => payload.all === true || (payload.targets?.length ?? 0) > 0, {
+    message: 'Name at least one target, or send all: true',
+  });
+
+export type RegisterSatusehatLocationsInput = z.infer<typeof registerSatusehatLocationsSchema>;

@@ -27,6 +27,8 @@ export default async function AdminIntegrationsPage({ searchParams }: AdminInteg
     ability.can('read', 'SatusehatSubmission') ||
     ability.can('manage', 'BpjsConfig') ||
     ability.can('manage', 'BpjsMapping') ||
+    // P24-T06. The "Lokasi SATUSEHAT" tab.
+    ability.can('read', 'SatusehatLocation') ||
     // P23-T05. A super admin whose only integrations grant is the Notion
     // connector still belongs on this page — the card is the only place the
     // Bug Board's health is visible.

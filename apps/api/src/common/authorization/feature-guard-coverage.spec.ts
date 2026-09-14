@@ -63,6 +63,8 @@ const GATED_CONTROLLERS: Readonly<Record<string, FeatureKey>> = {
   // so a clinic without SATUSEHAT has nothing for it to read.
   SatusehatRecordController: 'satusehat',
   SatusehatSubmissionController: 'satusehat',
+  // P24-T06. Registering the clinic's Locations writes to SATUSEHAT.
+  SatusehatLocationController: 'satusehat',
   ChannelGatewayAdminController: 'cs-channels',
   TelegramWebhookController: 'cs-channels',
   WhatsappWebhookController: 'cs-channels',

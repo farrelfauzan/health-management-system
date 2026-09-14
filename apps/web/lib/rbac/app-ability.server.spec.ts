@@ -81,10 +81,14 @@ describe('resolveAppAbilityRules integration permissions', () => {
           'satusehat.link:any',
           'satusehat.submission.read:any',
           'satusehat.submission.retry:any',
+          'satusehat.location.read:any',
+          'satusehat.location.write:any',
         ],
       }),
     );
 
+    expect(ability.can('read', 'SatusehatLocation')).toBe(true);
+    expect(ability.can('write', 'SatusehatLocation')).toBe(true);
     expect(ability.can('link', 'Satusehat')).toBe(true);
     expect(ability.can('read', 'SatusehatSubmission')).toBe(true);
     expect(ability.can('retry', 'SatusehatSubmission')).toBe(true);

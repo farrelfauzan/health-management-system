@@ -90,6 +90,11 @@ enum AuditAction {
   /// A NIK changed, so the SATUSEHAT link derived from it was cleared without
   /// anyone asking (D-035). Never carries the NIK — only that it changed.
   SATUSEHAT_LINK_CLEARED
+  /// A row was registered as a SATUSEHAT Location, by POST or by adopting the
+  /// one an identifier search found (P24-T06). Carries the kind and the id.
+  SATUSEHAT_LOCATION_REGISTERED
+  /// A registered row's name or status was pushed to SATUSEHAT (FR-LOC-08).
+  SATUSEHAT_LOCATION_UPDATED
   IMMUNIZATION_RECORDED
   IMMUNIZATION_REMOVED
   BPJS_CONFIG_CREATED

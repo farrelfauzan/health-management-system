@@ -1,5 +1,9 @@
 import type {
   SatusehatEnvironmentValue,
+  SatusehatLocationBlockReasonValue,
+  SatusehatLocationKindValue,
+  SatusehatLocationNodeStatusValue,
+  SatusehatLocationRegistrationOutcomeValue,
   SatusehatNikSuffixCheckValue,
   SatusehatRecordLineCategoryValue,
   SatusehatRecordLineOutcomeValue,
@@ -226,4 +230,50 @@ export type SatusehatSubmissionCheckView = {
   submissionId: string;
   checkedAt: string;
   results: SatusehatResourceCheckResult[];
+};
+
+/**
+ * One row of the SATUSEHAT Location tree (P24-T06). The tree is returned flat
+ * and ordered parents first — site, polis, then each ward followed by its rooms
+ * and their beds — with `depth` for indentation, so the order a client renders
+ * is the order registration runs in.
+ */
+export type SatusehatLocationNode = {
+  kind: SatusehatLocationKindValue;
+  id: string;
+  parentId: string | null;
+  depth: number;
+  name: string;
+  code: string | null;
+  isActive: boolean;
+  satusehatLocationId: string | null;
+  status: SatusehatLocationNodeStatusValue;
+  blockReason: SatusehatLocationBlockReasonValue | null;
+  blockMessage: string | null;
+};
+
+export type SatusehatLocationTreeView = {
+  nodes: SatusehatLocationNode[];
+};
+
+/** What happened to one row in a registration request (P24-T06). */
+export type SatusehatLocationRegistrationOutcomeView = {
+  kind: SatusehatLocationKindValue;
+  id: string;
+  name: string;
+  outcome: SatusehatLocationRegistrationOutcomeValue;
+  satusehatLocationId: string | null;
+  /** The reason for BLOCKED/FAILED/SKIPPED, with SATUSEHAT's own words on a 4xx. */
+  message: string | null;
+};
+
+/**
+ * The per-row outcomes of one request. `stoppedEarly` is true when the circuit
+ * breaker opened or the deployment cannot reach SATUSEHAT at all, in which case
+ * the rows after `processedCount` are `SKIPPED` (NFR-05).
+ */
+export type SatusehatLocationRegistrationResultView = {
+  outcomes: SatusehatLocationRegistrationOutcomeView[];
+  processedCount: number;
+  stoppedEarly: boolean;
 };

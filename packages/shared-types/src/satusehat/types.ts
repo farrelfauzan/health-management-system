@@ -1,6 +1,8 @@
 import type { LabResultFlagValue, LabSpecimenTypeValue } from '#laboratory/schemas';
+import type { SatusehatLocationRegistrationOutcomeView } from '#satusehat/contracts';
 import type {
   SatusehatLocationBlockReasonValue,
+  SatusehatLocationKindValue,
   SatusehatResourceOutcomeValue,
   SatusehatResourceSkipReasonValue,
   SatusehatServiceClassValue,
@@ -581,4 +583,117 @@ export type SatusehatLocationRegistrationBlocker = {
 export type SatusehatRootLocationSources = {
   registeredRootLocationId: string | null;
   configuredLocationId: string | undefined;
+};
+
+/**
+ * Everything the Location tree is built from, as the repository reads it
+ * (P24-T06). Inactive and soft-deleted rows are present only when they were
+ * registered, so a deactivation can still be pushed as `status: inactive`
+ * (FR-LOC-08); an unregistered inactive row has nothing to tell SATUSEHAT.
+ */
+export type SatusehatLocationSourceRecords = {
+  clinic: {
+    id: string;
+    name: string;
+    latitude: number | null;
+    longitude: number | null;
+    satusehatLocationId: string | null;
+  } | null;
+  specialties: {
+    id: string;
+    name: string;
+    isActive: boolean;
+    isDeleted: boolean;
+    satusehatLocationId: string | null;
+  }[];
+  wards: {
+    id: string;
+    code: string;
+    name: string;
+    isActive: boolean;
+    isDeleted: boolean;
+    satusehatLocationId: string | null;
+  }[];
+  rooms: {
+    id: string;
+    wardId: string;
+    code: string;
+    name: string;
+    isActive: boolean;
+    isDeleted: boolean;
+    satusehatLocationId: string | null;
+    roomClass: { name: string; satusehatServiceClass: SatusehatServiceClassValue | null };
+  }[];
+  beds: {
+    id: string;
+    roomId: string;
+    code: string;
+    isDeleted: boolean;
+    satusehatLocationId: string | null;
+  }[];
+};
+
+/**
+ * One tree row plus what a Location resource for it needs: the clinic's
+ * position and, for rooms and beds, the room class (P24-T06).
+ */
+export type SatusehatLocationTreeEntry = {
+  kind: SatusehatLocationKindValue;
+  id: string;
+  parentId: string | null;
+  depth: number;
+  name: string;
+  code: string | null;
+  isActive: boolean;
+  satusehatLocationId: string | null;
+  /** The room class, for rooms and beds only; its name is what a blocker message names. */
+  roomClass: { name: string; satusehatServiceClass: SatusehatServiceClassValue | null } | null;
+};
+
+/**
+ * What deciding one row's blocker needs besides the row: the clinic's position
+ * and the parent as it stands at that moment, because a parent registered
+ * earlier in the same batch unblocks its children (P24-T06).
+ */
+export type SatusehatLocationBlockerCheck = {
+  entry: SatusehatLocationTreeEntry;
+  clinicLatitude: number | null;
+  clinicLongitude: number | null;
+  parent: { name: string; satusehatLocationId: string | null } | null;
+};
+
+/** Stores the Location id SATUSEHAT holds for one row (P24-T06). */
+export type SaveSatusehatLocationIdPayload = {
+  kind: SatusehatLocationKindValue;
+  id: string;
+  satusehatLocationId: string;
+};
+
+/**
+ * The state one registration request walks the tree with (P24-T06).
+ * `locationIds` starts as the stored ids and gains each id the batch registers,
+ * so a parent registered a moment ago unblocks its children in the same batch.
+ */
+export type SatusehatLocationRegistrationContext = {
+  organizationId: string;
+  clinicLatitude: number | null;
+  clinicLongitude: number | null;
+  registeredClinicLocationId: string | null;
+  locationIds: Map<string, string | null>;
+  entriesById: Map<string, SatusehatLocationTreeEntry>;
+  actorUserId: string;
+};
+
+/** One row as it is pushed: its current id and its parent as the batch stands. */
+export type SatusehatLocationPushInput = {
+  entry: SatusehatLocationTreeEntry;
+  context: SatusehatLocationRegistrationContext;
+  currentId: string | null;
+  parent: { name: string; satusehatLocationId: string | null } | null;
+};
+
+/** What registering one row produced, and whether the rest of the batch must stop. */
+export type SatusehatLocationEntryRegistration = {
+  view: SatusehatLocationRegistrationOutcomeView;
+  shouldStopBatch: boolean;
 };
