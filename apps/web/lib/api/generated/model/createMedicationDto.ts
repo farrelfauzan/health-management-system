@@ -40,4 +40,5 @@ export interface CreateMedicationDto {
      */
   reorderLevel?: number;
   isVaccine?: boolean;
+  isMidwifePrescribable?: boolean;
 }

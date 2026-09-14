@@ -5,8 +5,10 @@ import { useTranslations } from 'next-intl';
 import { useForm } from '@tanstack/react-form';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
+  CLINICIAN_PROFESSIONS,
   createDoctorSchema,
   doctorEmailSchema,
+  type ClinicianProfessionValue,
   type CreateDoctorInput,
   type DoctorEducation,
   type DoctorLicense,
@@ -24,6 +26,11 @@ import {
   DialogTitle,
   Input,
   PhoneInput,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@hms/ui';
 
 import { CredentialCatalogHint } from '#components/client/doctors/credential-catalog-hint';
@@ -63,6 +70,7 @@ import { useSpecialtiesList } from '#lib/specialties/use-specialties-list';
 
 const PATIENT_PICKER_PAGE = { page: 1, limit: 100 };
 const LICENSE_DESCRIPTION_ID = 'licenseNumber-description';
+const PROFESSION_DESCRIPTION_ID = 'doctor-profession-description';
 const EMAIL_DESCRIPTION_ID = 'email-description';
 
 type DoctorFormDialogProps = {
@@ -134,6 +142,7 @@ export function DoctorFormDialog({
       licenseNumber: doctor?.licenseNumber ?? '',
       fullName: doctor?.fullName ?? '',
       specialtyId: doctor?.specialtyId ?? '',
+      profession: (doctor?.profession ?? 'DOCTOR') as ClinicianProfessionValue,
       phoneNumber: doctor?.phoneNumber ?? '',
       // Option codes, not the printed labels the response also carries.
       title: doctor?.titleValue?.code ?? '',
@@ -170,6 +179,7 @@ export function DoctorFormDialog({
             input: {
               fullName: value.fullName,
               specialtyId: value.specialtyId,
+              profession: value.profession,
               phoneNumber: value.phoneNumber,
               isActive: value.isActive,
               ...profileFields,
@@ -182,6 +192,7 @@ export function DoctorFormDialog({
             licenseNumber: value.licenseNumber,
             fullName: value.fullName,
             specialtyId: value.specialtyId,
+            profession: value.profession,
             phoneNumber: value.phoneNumber,
             isActive: value.isActive,
             patientIds: value.patientIds.length > 0 ? value.patientIds : undefined,
@@ -222,6 +233,40 @@ export function DoctorFormDialog({
         >
           <RequiredLegend />
           {formError ? <InlineNotice tone="error">{formError}</InlineNotice> : null}
+
+          {/* P24-T03 (FR-MW-03). Decides the account's role on create; the API
+              refuses a change once the clinician has any clinical history. */}
+          <form.Field name="profession">
+            {(field) => (
+              <div className="space-y-1.5">
+                <FormLabel htmlFor={field.name} className="font-heading text-xs text-slate-600">
+                  {t('doctors.form.profession')}
+                </FormLabel>
+                <Select
+                  value={field.state.value}
+                  onValueChange={(value) => field.handleChange(value as ClinicianProfessionValue)}
+                >
+                  <SelectTrigger
+                    id={field.name}
+                    className="w-full"
+                    aria-describedby={PROFESSION_DESCRIPTION_ID}
+                  >
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {CLINICIAN_PROFESSIONS.map((option) => (
+                      <SelectItem key={option} value={option}>
+                        {t(`doctors.professions.${option}`)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FieldDescription id={PROFESSION_DESCRIPTION_ID}>
+                  {t('doctors.form.professionDescription')}
+                </FieldDescription>
+              </div>
+            )}
+          </form.Field>
 
           {!isEditMode ? (
             <form.Field

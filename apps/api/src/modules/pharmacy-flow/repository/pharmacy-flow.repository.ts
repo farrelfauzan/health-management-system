@@ -8,6 +8,7 @@ import {
   ListStockReceiptsParams,
   DispenseRecordDetailRecord,
   PrescriptionDetailRecord,
+  PrescribingClinicianRecord,
   PrescriptionScopeActor,
   resolvePrescriptionStatusAfterDispense,
   UpdateMedicationRecordPayload,
@@ -212,10 +213,12 @@ export class PharmacyFlowRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async listMedications(params: ListMedicationsParams) {
-    const { page, limit, search, category, reorderOnly, inventoryDate } = params;
+    const { page, limit, search, category, reorderOnly, midwifePrescribableOnly, inventoryDate } =
+      params;
 
     const where = {
       ...(category ? { category } : {}),
+      ...(midwifePrescribableOnly ? { isMidwifePrescribable: true } : {}),
       ...(search
         ? {
             OR: [
@@ -341,6 +344,8 @@ export class PharmacyFlowRepository {
           unit: payload.unit ?? null,
           category: payload.category ?? null,
           reorderLevel: payload.reorderLevel,
+          isVaccine: payload.isVaccine ?? false,
+          isMidwifePrescribable: payload.isMidwifePrescribable ?? false,
         },
         include: STOCK_RELATION_INCLUDE,
       })
@@ -363,6 +368,10 @@ export class PharmacyFlowRepository {
           ...(payload.unit !== undefined ? { unit: payload.unit } : {}),
           ...(payload.category !== undefined ? { category: payload.category } : {}),
           ...(payload.reorderLevel !== undefined ? { reorderLevel: payload.reorderLevel } : {}),
+          ...(payload.isVaccine !== undefined ? { isVaccine: payload.isVaccine } : {}),
+          ...(payload.isMidwifePrescribable !== undefined
+            ? { isMidwifePrescribable: payload.isMidwifePrescribable }
+            : {}),
         },
         include: this.availableStockInclude(inventoryDate),
       })
@@ -480,7 +489,7 @@ export class PharmacyFlowRepository {
     });
   }
 
-  async findActiveDoctorById(id: string) {
+  async findActiveDoctorById(id: string): Promise<PrescribingClinicianRecord | null> {
     return this.prisma.findFirstActive(this.prisma.doctorProfile, {
       where: {
         id,
@@ -489,11 +498,12 @@ export class PharmacyFlowRepository {
       select: {
         id: true,
         ownerUserId: true,
+        profession: true,
       },
     });
   }
 
-  async findActiveDoctorByOwnerUserId(ownerUserId: string) {
+  async findActiveDoctorByOwnerUserId(ownerUserId: string): Promise<PrescribingClinicianRecord | null> {
     return this.prisma.findFirstActive(this.prisma.doctorProfile, {
       where: {
         ownerUserId,
@@ -502,6 +512,7 @@ export class PharmacyFlowRepository {
       select: {
         id: true,
         ownerUserId: true,
+        profession: true,
       },
     });
   }

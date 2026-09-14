@@ -18,13 +18,19 @@ function toMedicationSearchOption(medication: MedicationResponse): CodeSearchOpt
   };
 }
 
-export function useMedicationSearch(search: string) {
+/**
+ * `isMidwifePrescriber` narrows the search to what a midwife may prescribe
+ * (P24-T04). The API refuses any other line she writes; this only keeps the
+ * picker from offering it.
+ */
+export function useMedicationSearch(search: string, isMidwifePrescriber: boolean = false) {
   const trimmed = search.trim();
   const isEnabled = trimmed.length >= MIN_CODE_SEARCH_LENGTH;
   const requestParams: MedicationControllerListMedicationsV1Params = {
     search: trimmed,
     page: 1,
     limit: CODE_SEARCH_LIMIT,
+    ...(isMidwifePrescriber ? { midwifePrescribableOnly: 'true' } : {}),
   };
   const query = useApiQuery<MedicationResponse[]>({
     queryKey: getMedicationControllerListMedicationsV1QueryKey(requestParams),

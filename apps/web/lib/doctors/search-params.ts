@@ -1,4 +1,4 @@
-import { listDoctorsQuerySchema } from '@hms/shared-types';
+import { listDoctorsQuerySchema, type ClinicianProfessionValue } from '@hms/shared-types';
 
 export type DoctorsSearchParams = {
   page: number;
@@ -8,6 +8,7 @@ export type DoctorsSearchParams = {
   isActive?: 'true' | 'false';
   /** Kept as the wire string so it round-trips through the URL unchanged. */
   missingNik?: 'true' | 'false';
+  profession?: ClinicianProfessionValue;
 };
 
 type RawSearchParams = Record<string, string | string[] | undefined>;
@@ -34,6 +35,7 @@ export function parseDoctorsSearchParams(raw: RawSearchParams): DoctorsSearchPar
     specialtyId: pickFirst(raw.specialtyId),
     isActive: active,
     missingNik,
+    profession: pickFirst(raw.profession),
   });
 
   if (!parsed.success) {
@@ -47,6 +49,7 @@ export function parseDoctorsSearchParams(raw: RawSearchParams): DoctorsSearchPar
     specialtyId: parsed.data.specialtyId,
     isActive: active === 'true' || active === 'false' ? active : undefined,
     missingNik: missingNik === 'true' || missingNik === 'false' ? missingNik : undefined,
+    profession: parsed.data.profession,
   };
 }
 
@@ -67,6 +70,9 @@ export function buildDoctorsSearchParams(next: DoctorsSearchParams): URLSearchPa
   }
   if (next.missingNik) {
     params.set('missingNik', next.missingNik);
+  }
+  if (next.profession) {
+    params.set('profession', next.profession);
   }
 
   return params;

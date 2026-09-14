@@ -12,6 +12,7 @@ type EncounterPrescriptionsCardProps = {
   patientId: string;
   prescriptions: EncounterRelatedPrescription[];
   isEditable: boolean;
+  isMidwifePrescriber: boolean;
 };
 
 export function EncounterPrescriptionsCard({
@@ -19,6 +20,7 @@ export function EncounterPrescriptionsCard({
   patientId,
   prescriptions,
   isEditable,
+  isMidwifePrescriber,
 }: EncounterPrescriptionsCardProps) {
   const t = useTranslations('clinical');
   const format = useFormatter();
@@ -30,7 +32,11 @@ export function EncounterPrescriptionsCard({
       <CardContent className="space-y-4">
         {isEditable ? (
           <Can action="write" subject="Prescription">
-            <EncounterPrescriptionForm encounterId={encounterId} patientId={patientId} />
+            <EncounterPrescriptionForm
+              encounterId={encounterId}
+              patientId={patientId}
+              isMidwifePrescriber={isMidwifePrescriber}
+            />
           </Can>
         ) : null}
         {prescriptions.length > 0 ? (

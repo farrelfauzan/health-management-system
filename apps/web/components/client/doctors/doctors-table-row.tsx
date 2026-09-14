@@ -106,6 +106,9 @@ export function DoctorsTableRow({
           </div>
         </div>
       </TableCell>
+      <TableCell className="px-4 text-sm text-slate-600">
+        {t(`doctors.professions.${doctor.profession}`)}
+      </TableCell>
       <DataTableMonoCell>{doctor.licenseNumber}</DataTableMonoCell>
       <TableCell className="px-4 text-sm text-slate-600">
         {formatScheduleSummary(doctor.schedules, {

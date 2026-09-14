@@ -107,7 +107,7 @@
       "navigation": {
         "dashboard": "Dasbor",
         "patients": "Pasien",
-        "doctors": "Dokter",
+        "doctors": "Tenaga Klinis",
         "appointments": "Janji temu",
         "registration": "Pendaftaran",
         "encounters": "Pemeriksaan",
@@ -244,6 +244,7 @@
           "superAdmin": "Super Admin",
           "admin": "Admin",
           "doctor": "Dokter",
+          "midwife": "Bidan",
           "pharmacist": "Apoteker",
           "patient": "Pasien",
           "staff": "Staf"

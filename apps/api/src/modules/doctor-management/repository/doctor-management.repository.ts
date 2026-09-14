@@ -342,6 +342,23 @@ export class DoctorManagementRepository {
    * this hashes with the secret pepper and queries the blind index. Exact match
    * only — the blind index supports equality, never `contains`.
    */
+  /**
+   * Whether any encounter, admission or prescription names this clinician
+   * (P24-T03). Soft-deleted rows count: they are still history. Each lookup
+   * stops at the first row, because one is enough.
+   */
+  async hasClinicalHistory(doctorId: string): Promise<boolean> {
+    const [encounter, admission, prescription] = await Promise.all([
+      this.prisma.encounter.findFirst({ where: { doctorId }, select: { id: true } }),
+      this.prisma.admission.findFirst({
+        where: { admittingDoctorId: doctorId },
+        select: { id: true },
+      }),
+      this.prisma.prescription.findFirst({ where: { doctorId }, select: { id: true } }),
+    ]);
+    return encounter !== null || admission !== null || prescription !== null;
+  }
+
   async findDoctorByNik(normalisedNik: string) {
     return this.prisma.findFirstActive(this.prisma.doctorProfile, {
       where: {
@@ -421,6 +438,7 @@ export class DoctorManagementRepository {
             licenseNumber: payload.licenseNumber,
             fullName: payload.fullName,
             specialtyId: payload.specialtyId,
+            profession: payload.profession,
             phoneNumber: payload.phoneNumber,
             title: payload.title ?? null,
             degrees: payload.degrees ?? null,
@@ -513,6 +531,7 @@ export class DoctorManagementRepository {
           data: {
             ...(payload.fullName !== undefined ? { fullName: payload.fullName } : {}),
             ...(payload.specialtyId !== undefined ? { specialtyId: payload.specialtyId } : {}),
+            ...(payload.profession !== undefined ? { profession: payload.profession } : {}),
             ...(payload.phoneNumber !== undefined ? { phoneNumber: payload.phoneNumber } : {}),
             ...(payload.title !== undefined ? { title: payload.title } : {}),
             ...(payload.degrees !== undefined ? { degrees: payload.degrees } : {}),

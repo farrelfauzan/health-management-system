@@ -1,3 +1,4 @@
+import type { ClinicianProfessionValue } from '#doctor-management/schemas';
 import type { ChargeModeValue, FulfilmentSiteValue } from '#laboratory/schemas';
 import type {
   CompoundPreparationValue,
@@ -13,6 +14,7 @@ export type ListMedicationsParams = {
   search?: string;
   category?: MedicationCategoryValue;
   reorderOnly?: boolean;
+  midwifePrescribableOnly?: boolean;
   inventoryDate: Date;
 };
 
@@ -56,8 +58,19 @@ export type MedicationRecord = {
   stockQty: number;
   reorderLevel: number;
   isVaccine: boolean;
+  isMidwifePrescribable: boolean;
   createdAt: Date;
   updatedAt: Date;
+};
+
+/**
+ * The clinician a prescription is written under (P24-T04). `profession` is
+ * what decides whether the midwife prescribing boundary applies.
+ */
+export type PrescribingClinicianRecord = {
+  id: string;
+  ownerUserId: string | null;
+  profession: ClinicianProfessionValue;
 };
 
 /**
@@ -80,6 +93,7 @@ export type CreateMedicationRecordPayload = {
   category?: MedicationCategoryValue;
   reorderLevel: number;
   isVaccine?: boolean;
+  isMidwifePrescribable?: boolean;
 };
 
 export type UpdateMedicationRecordPayload = {
@@ -92,6 +106,7 @@ export type UpdateMedicationRecordPayload = {
   category?: MedicationCategoryValue | null;
   reorderLevel?: number;
   isVaccine?: boolean;
+  isMidwifePrescribable?: boolean;
 };
 
 export type MedicationStockRecord = {

@@ -2359,6 +2359,10 @@ model Medication {
   /// rather than in a catalog of their own because they *are* KFA products;
   /// the flag is what filters the immunisation picker down to them.
   isVaccine    Boolean             @default(false) @map("is_vaccine")
+  /// Whether a midwife may prescribe this item (P24-T04, FR-MW-06). False by
+  /// default and never seeded: Permenkes 28/2017 limits a bidan to her own
+  /// authorities, and which catalog items fall inside them is the clinic's call.
+  isMidwifePrescribable Boolean @default(false) @map("is_midwife_prescribable")
   createdAt    DateTime            @default(now()) @map("created_at")
   updatedAt    DateTime            @updatedAt @map("updated_at")
   deletedAt    DateTime?           @map("deleted_at")

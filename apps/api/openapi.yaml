@@ -28631,6 +28631,14 @@ paths:
             enum:
               - "true"
               - "false"
+        - name: midwifePrescribableOnly
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - "true"
+              - "false"
       responses:
         "200":
           description: A searchable, paginated medication inventory list.
@@ -50464,6 +50472,11 @@ components:
         specialtyId:
           type: string
           format: uuid
+        profession:
+          type: string
+          enum:
+            - DOCTOR
+            - MIDWIFE
         phoneNumber:
           description: Indonesian phone number. Accepts 0812…, +62 812-…, 62812… and
             punctuated forms; stored as 62812….
@@ -50568,6 +50581,11 @@ components:
         specialtyId:
           type: string
           format: uuid
+        profession:
+          type: string
+          enum:
+            - DOCTOR
+            - MIDWIFE
         phoneNumber:
           description: Indonesian phone number. Accepts 0812…, +62 812-…, 62812… and
             punctuated forms; stored as 62812….
@@ -51004,6 +51022,8 @@ components:
           default: 0
         isVaccine:
           type: boolean
+        isMidwifePrescribable:
+          type: boolean
       required:
         - code
         - name
@@ -51074,6 +51094,8 @@ components:
           maximum: 1000000
           exclusiveMaximum: false
         isVaccine:
+          type: boolean
+        isMidwifePrescribable:
           type: boolean
     CreatePrescriptionDto:
       type: object

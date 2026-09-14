@@ -312,6 +312,19 @@ describe('PharmacyFlow integration', () => {
 
       expect(response.status).toBe(400);
     });
+    it('narrows the list to midwife-prescribable items when asked', async () => {
+      const token = await buildToken('midwife-user', 'bidan@hms.local');
+      mockActorWithPermissions([{ action: 'read', resource: 'Medication', scope: 'ANY' }]);
+
+      const response = await request(app.getHttpServer())
+        .get('/api/v1/v1/medications?midwifePrescribableOnly=true')
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.status).toBe(200);
+      expect(pharmacyRepositoryMock.listMedications).toHaveBeenCalledWith(
+        expect.objectContaining({ midwifePrescribableOnly: true }),
+      );
+    });
   });
 
   describe('POST /medications', () => {
@@ -584,6 +597,25 @@ describe('PharmacyFlow integration', () => {
         .send({ ...createPayload, doctorId: undefined });
 
       expect(response.status).toBe(403);
+      expect(pharmacyRepositoryMock.createPrescription).not.toHaveBeenCalled();
+    });
+
+    it('returns 422 MEDICATION_NOT_MIDWIFE_PRESCRIBABLE for a midwife line on an unflagged medication', async () => {
+      const token = await buildToken('midwife-user', 'bidan@hms.local');
+      mockActorWithPermissions([{ action: 'write', resource: 'Prescription', scope: 'OWN' }]);
+      pharmacyRepositoryMock.findActiveDoctorByOwnerUserId.mockResolvedValue({
+        id: doctorId,
+        ownerUserId: 'midwife-user',
+        profession: 'MIDWIFE',
+      });
+
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/v1/prescriptions')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ ...createPayload, doctorId: undefined });
+
+      expect(response.status).toBe(422);
+      expect(response.body.error.code).toBe('MEDICATION_NOT_MIDWIFE_PRESCRIBABLE');
       expect(pharmacyRepositoryMock.createPrescription).not.toHaveBeenCalled();
     });
 
