@@ -70,8 +70,22 @@ describe('SATUSEHAT Location tree (P24-T06)', () => {
     });
   }
 
+  // The three credentials must be set together or not at all
+  // (`resolveSatusehatConfig`), and CI sets none of them. The client itself is
+  // mocked, so these only give the registration service an organization id.
+  const satusehatCredentialKeys = [
+    'SATUSEHAT_ORGANIZATION_ID',
+    'SATUSEHAT_CLIENT_ID',
+    'SATUSEHAT_CLIENT_SECRET',
+  ] as const;
+  const previousCredentials = Object.fromEntries(
+    satusehatCredentialKeys.map((key) => [key, process.env[key]]),
+  );
+
   beforeAll(async () => {
     process.env.SATUSEHAT_ORGANIZATION_ID = '10000004';
+    process.env.SATUSEHAT_CLIENT_ID = 'spec-client-id';
+    process.env.SATUSEHAT_CLIENT_SECRET = 'spec-client-secret';
     const moduleRef = await Test.createTestingModule({ imports: [AppModule] })
       .overrideProvider(AuthRepository)
       .useValue(authRepositoryMock)
@@ -94,6 +108,13 @@ describe('SATUSEHAT Location tree (P24-T06)', () => {
 
   afterAll(async () => {
     await app.close();
+    for (const key of satusehatCredentialKeys) {
+      if (previousCredentials[key] === undefined) {
+        delete process.env[key];
+      } else {
+        process.env[key] = previousCredentials[key];
+      }
+    }
   });
 
   beforeEach(() => {
