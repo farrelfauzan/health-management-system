@@ -549,9 +549,9 @@
       "signOut": "Keluar"
     },
     "doctors": {
-      "title": "Dokter",
-      "subtitle": "Kelola profil tenaga medis, kredensial, jadwal, dan penetapan pasien.",
-      "add": "Tambah Dokter Baru",
+      "title": "Tenaga Klinis",
+      "subtitle": "Kelola profil dokter dan bidan, kredensial, jadwal, dan penetapan pasien.",
+      "add": "Tambah Tenaga Klinis",
       "assignPatient": "Tetapkan Pasien",
       "manageSchedule": "Kelola Jadwal",
       "sendInvitation": "Kirim Undangan",
@@ -562,17 +562,18 @@
         "submitting": "Mengirim...",
         "error": "Undangan gagal dikirim. Silakan coba lagi."
       },
-      "itemLabel": "dokter",
+      "itemLabel": "tenaga klinis",
       "quickFilter": "Filter Cepat",
       "searchPlaceholder": "Nama, nomor STR, atau spesialisasi...",
       "specialty": "Spesialisasi",
       "allSpecialties": "Semua Spesialisasi",
-      "emptyTitle": "Dokter tidak ditemukan",
-      "errorTitle": "Dokter gagal dimuat",
-      "emptyDescription": "Sesuaikan filter atau tambahkan dokter baru untuk melihat data.",
-      "errorDescription": "Terjadi kesalahan saat mengambil direktori dokter. Sistem mencoba kembali secara otomatis.",
+      "emptyTitle": "Tenaga klinis tidak ditemukan",
+      "errorTitle": "Tenaga klinis gagal dimuat",
+      "emptyDescription": "Sesuaikan filter atau tambahkan tenaga klinis baru untuk melihat data.",
+      "errorDescription": "Terjadi kesalahan saat mengambil direktori tenaga klinis. Sistem mencoba kembali secara otomatis.",
       "columns": {
-        "name": "Nama Dokter",
+        "name": "Nama",
+        "profession": "Profesi",
         "license": "Nomor STR",
         "schedule": "Jadwal",
         "patients": "Pasien"
@@ -670,14 +671,14 @@
         "maxPatients": "Maksimum pasien untuk entri {index}"
       },
       "form": {
-        "edit": "Ubah Dokter",
-        "create": "Tambah Dokter Baru",
-        "editDescription": "Perbarui profil dokter.",
-        "createDescription": "Daftarkan profil dokter baru dan, bila perlu, tetapkan pasien awal.",
+        "edit": "Ubah Tenaga Klinis",
+        "create": "Tambah Tenaga Klinis",
+        "editDescription": "Perbarui profil tenaga klinis.",
+        "createDescription": "Daftarkan dokter atau bidan dan, bila perlu, tetapkan pasien awal.",
         "saveError": "Dokter gagal disimpan. Silakan coba lagi.",
         "license": "Nomor STR",
-        "licenseDescription": "Nomor STR dokter, persis seperti tercetak pada STR atau yang tertera di SATUSEHAT SDMK.",
-        "licenseTooltip": "STR (Surat Tanda Registrasi) diterbitkan Konsil Kesehatan Indonesia untuk tiap dokter dan berlaku seumur hidup berdasarkan UU 17/2023, karena itu nomor ini dipakai sebagai identitas dokter di sini. Nomor yang terbit sejak September 2023 berupa dua huruf diikuti 14 angka; nomor lama yang seluruhnya angka tetap berlaku. SIP berbeda, satu untuk tiap tempat praktik, jadi catat setiap SIP di bagian Izin Praktik pada data dokter.",
+        "licenseDescription": "Nomor STR tenaga klinis, persis seperti tercetak pada STR atau yang tertera di SATUSEHAT SDMK.",
+        "licenseTooltip": "STR (Surat Tanda Registrasi) diterbitkan Konsil Kesehatan Indonesia untuk tiap tenaga kesehatan dan berlaku seumur hidup berdasarkan UU 17/2023, karena itu nomor ini dipakai sebagai identitas tenaga kesehatan di sini. Nomor yang terbit sejak September 2023 berupa dua huruf diikuti 14 angka; nomor lama yang seluruhnya angka tetap berlaku. SIP berbeda, satu untuk tiap tempat praktik, jadi catat setiap SIP di bagian Izin Praktik pada data tenaga kesehatan.",
         "fullName": "Nama Lengkap",
         "specialty": "Spesialisasi",
         "phone": "Nomor Telepon",
@@ -695,7 +696,9 @@
         "emailRequired": "Masukkan email dokter. Setiap dokter memerlukan akun untuk masuk, dan undangan dikirim ke alamat ini.",
         "emailInvalid": "Masukkan alamat email yang valid, misalnya budi.santoso@clinic.local.",
         "emailNoAccount": "Dokter ini belum memiliki akun sehingga belum bisa masuk. Gunakan Kirim Undangan di daftar dokter untuk memberi akses.",
-        "createAction": "Buat Dokter"
+        "createAction": "Buat Tenaga Klinis",
+        "profession": "Profesi",
+        "professionDescription": "Menentukan peran akun. Tidak dapat diubah setelah tenaga klinis ini memiliki kunjungan, rawat inap, atau resep."
       },
       "identity": "Identitas Tenaga Medis",
       "reveal": "Tampilkan",
@@ -725,7 +728,7 @@
       "patientsPermission": "Anda tidak memiliki izin untuk melihat pasien dokter ini.",
       "manage": "Kelola",
       "attention": "{count} perlu perhatian",
-      "licenseRequired": "Belum ada izin yang dicatat. Dokter yang berpraktik memerlukan STR dan SIP untuk setiap lokasi praktik.",
+      "licenseRequired": "Belum ada izin yang dicatat. Tenaga klinis yang berpraktik memerlukan STR dan SIP untuk setiap lokasi praktik.",
       "addEducation": "Tambah Pendidikan",
       "identifiersError": "Identitas tenaga medis gagal ditampilkan.",
       "linkToSatusehat": "Tautkan ke SATUSEHAT",
@@ -765,6 +768,12 @@
           "notConfigured": "Integrasi SATUSEHAT belum dikonfigurasi.",
           "unreachable": "SATUSEHAT tidak dapat dihubungi. Coba lagi."
         }
+      },
+      "profession": "Profesi",
+      "allProfessions": "Semua Profesi",
+      "professions": {
+        "DOCTOR": "Dokter",
+        "MIDWIFE": "Bidan"
       }
     },
     "portal": {

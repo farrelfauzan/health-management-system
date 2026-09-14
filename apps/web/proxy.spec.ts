@@ -69,6 +69,14 @@ describe('proxy', () => {
     expect(response.headers.get('location')).toBe(`${BASE_URL}/doctor/dashboard`);
   });
 
+  it('sends a midwife reaching for the admin shell to the doctor shell', () => {
+    const midwifeToken = buildToken({ exp: futureUnix(), roles: ['MIDWIFE'] });
+    const response = proxy(buildRequest('/admin/administration', midwifeToken));
+
+    expect(response.status).toBe(307);
+    expect(response.headers.get('location')).toBe(`${BASE_URL}/doctor/dashboard`);
+  });
+
   it('clears the session of a valid token holding no known shell role', () => {
     const strangerToken = buildToken({ exp: futureUnix(), roles: ['AUDITOR'] });
     const response = proxy(buildRequest('/admin/administration', strangerToken));
@@ -247,6 +255,13 @@ describe('proxy', () => {
   it('lets a doctor session into the doctor shell', () => {
     const doctorToken = buildToken({ exp: futureUnix(), roles: ['DOCTOR'] });
     const response = proxy(buildRequest('/doctor/encounters', doctorToken));
+
+    expect(response.status).toBe(200);
+  });
+
+  it('lets a midwife session into the doctor shell (P24-T03)', () => {
+    const midwifeToken = buildToken({ exp: futureUnix(), roles: ['MIDWIFE'] });
+    const response = proxy(buildRequest('/doctor/encounters', midwifeToken));
 
     expect(response.status).toBe(200);
   });

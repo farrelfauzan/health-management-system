@@ -40,7 +40,7 @@ describe('DoctorLicensesCard', () => {
   it('prompts for a licence when none is recorded', () => {
     renderCard([]);
 
-    expect(screen.getByText(/Dokter yang berpraktik memerlukan STR/)).toBeInTheDocument();
+    expect(screen.getByText(/Tenaga klinis yang berpraktik memerlukan STR/)).toBeInTheDocument();
   });
 
   it('marks an expired SIP, which is what a licensing audit looks for', () => {

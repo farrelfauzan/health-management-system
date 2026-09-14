@@ -1,4 +1,5 @@
 import {
+  ClinicianProfessionValue,
   DoctorRecord,
   joinDegreeCodes,
   splitDegreeCodes,
@@ -49,32 +50,39 @@ export class DoctorProfileCompletionService {
   ) {}
 
   async completeOwnDoctorProfile(payload: CompleteOwnDoctorProfileDto, currentUser: CurrentUser) {
-    await this.assertHoldsDoctorRole(currentUser);
+    const profession = await this.resolveOwnClinicianProfession(currentUser);
     const existing = await this.doctorManagementRepository.findDoctorByOwnerUserId(currentUser.sub);
     const doctorId = existing
       ? await this.fillOwnDoctorProfile(existing.id, payload, currentUser)
-      : await this.createOwnDoctorProfile(payload, currentUser);
+      : await this.createOwnDoctorProfile(payload, currentUser, profession);
     return this.doctorManagementService.getDoctorById(doctorId, currentUser);
   }
 
   /**
-   * The gate is for doctors only (P20-T04 has not decided what a profile is
-   * for anyone else), and so is the only way to mint a doctor profile without
-   * an administrator.
+   * The gate is for clinicians only (P20-T04 has not decided what a profile is
+   * for anyone else), and so is the only way to mint a clinician profile
+   * without an administrator. The profile's profession follows the role the
+   * account was invited into (P24-T03): a MIDWIFE account completes a midwife
+   * profile, and an account holding DOCTOR stays a doctor.
    */
-  private async assertHoldsDoctorRole(currentUser: CurrentUser): Promise<void> {
+  private async resolveOwnClinicianProfession(
+    currentUser: CurrentUser,
+  ): Promise<ClinicianProfessionValue> {
     const actor = await this.authRepository.findUserById(currentUser.sub);
-    const isDoctor = (actor?.roles ?? []).some(
-      (userRole) => userRole.unassignedAt === null && isClinicianRoleCode(userRole.role.code),
-    );
-    if (!isDoctor) {
+    const clinicianRoleCodes = (actor?.roles ?? [])
+      .filter((userRole) => userRole.unassignedAt === null)
+      .map((userRole) => userRole.role.code)
+      .filter((code) => isClinicianRoleCode(code));
+    if (clinicianRoleCodes.length === 0) {
       throw new ForbiddenException('Only a doctor can complete a doctor profile');
     }
+    return clinicianRoleCodes.includes('DOCTOR') ? 'DOCTOR' : 'MIDWIFE';
   }
 
   private async createOwnDoctorProfile(
     payload: CompleteOwnDoctorProfileDto,
     currentUser: CurrentUser,
+    profession: ClinicianProfessionValue,
   ): Promise<string> {
     const { specialtyId, licenseNumber, nik } = payload;
     if (!specialtyId || !licenseNumber || !nik) {
@@ -89,6 +97,7 @@ export class DoctorProfileCompletionService {
         licenseNumber,
         fullName: payload.fullName,
         specialtyId,
+        profession,
         phoneNumber: payload.phoneNumber,
         title: payload.title,
         degrees: payload.degrees ? (joinDegreeCodes(payload.degrees) ?? undefined) : undefined,

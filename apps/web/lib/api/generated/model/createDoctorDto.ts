@@ -7,6 +7,7 @@
  */
 import type { CreateDoctorDtoEducationsItem } from './createDoctorDtoEducationsItem';
 import type { CreateDoctorDtoLicensesItem } from './createDoctorDtoLicensesItem';
+import type { CreateDoctorDtoProfession } from './createDoctorDtoProfession';
 
 export interface CreateDoctorDto {
   /**
@@ -20,6 +21,7 @@ export interface CreateDoctorDto {
      */
   fullName: string;
   specialtyId: string;
+  profession?: CreateDoctorDtoProfession;
   /**
      * Indonesian phone number. Accepts 0812…, +62 812-…, 62812… and punctuated forms; stored as 62812….
      * @minLength 6
