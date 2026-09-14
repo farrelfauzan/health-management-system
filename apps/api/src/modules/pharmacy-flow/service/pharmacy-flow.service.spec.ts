@@ -3,6 +3,7 @@ import {
   ConflictException,
   ForbiddenException,
   NotFoundException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
@@ -244,6 +245,7 @@ describe('PharmacyFlowService', () => {
     repositoryMock.findActiveDoctorById.mockResolvedValue({
       id: doctorId,
       ownerUserId: null,
+      profession: 'DOCTOR',
     });
     repositoryMock.findActiveDoctorByOwnerUserId.mockResolvedValue({
       id: doctorId,
@@ -601,6 +603,62 @@ describe('PharmacyFlowService', () => {
       await expect(service.createPrescription(createPayload, currentUser)).rejects.toBeInstanceOf(
         BadRequestException,
       );
+    });
+
+    // P24-T04 (FR-MW-06). A bidan prescribes only what the clinic flagged.
+    it('refuses a midwife line for an unflagged medication before anything is written', async () => {
+      mockPermissions([{ action: 'write', resource: 'Prescription', scope: 'ANY' }]);
+      repositoryMock.findActiveDoctorById.mockResolvedValue({
+        id: doctorId,
+        ownerUserId: null,
+        profession: 'MIDWIFE',
+      });
+      repositoryMock.findActiveMedicationsByIds.mockResolvedValue([
+        { id: medicationId, code: 'MED-0001', name: 'Amoxicillin', isMidwifePrescribable: false },
+      ]);
+
+      const actualError = await service
+        .createPrescription(createPayload, currentUser)
+        .catch((err: unknown) => err);
+
+      expect(actualError).toBeInstanceOf(UnprocessableEntityException);
+      expect((actualError as UnprocessableEntityException).getResponse()).toEqual(
+        expect.objectContaining({
+          code: 'MEDICATION_NOT_MIDWIFE_PRESCRIBABLE',
+          errors: { medicationIds: [medicationId] },
+        }),
+      );
+      expect(repositoryMock.createPrescription).not.toHaveBeenCalled();
+    });
+
+    it('saves a midwife line for a flagged medication', async () => {
+      mockPermissions([{ action: 'write', resource: 'Prescription', scope: 'ANY' }]);
+      repositoryMock.findActiveDoctorById.mockResolvedValue({
+        id: doctorId,
+        ownerUserId: null,
+        profession: 'MIDWIFE',
+      });
+      repositoryMock.findActiveMedicationsByIds.mockResolvedValue([
+        { id: medicationId, code: 'FE-0001', name: 'Tablet Tambah Darah', isMidwifePrescribable: true },
+      ]);
+
+      await service.createPrescription(createPayload, currentUser);
+
+      expect(repositoryMock.createPrescription).toHaveBeenCalledWith(
+        expect.objectContaining({ doctorId }),
+      );
+    });
+
+    it('never checks the midwife flag on a doctor line', async () => {
+      mockPermissions([{ action: 'write', resource: 'Prescription', scope: 'ANY' }]);
+      repositoryMock.findActiveMedicationsByIds.mockResolvedValue([
+        { id: medicationId, code: 'MED-0001', name: 'Amoxicillin', isMidwifePrescribable: false },
+      ]);
+
+      await service.createPrescription(createPayload, currentUser);
+
+      expect(repositoryMock.findActiveMedicationsByIds).toHaveBeenCalledTimes(1);
+      expect(repositoryMock.createPrescription).toHaveBeenCalled();
     });
 
     it('throws forbidden for write:own scope when actor has no doctor profile', async () => {

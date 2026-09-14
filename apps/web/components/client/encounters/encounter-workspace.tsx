@@ -202,6 +202,7 @@ export function EncounterWorkspace({
             patientId={encounter.patientId}
             prescriptions={encounter.prescriptions}
             isEditable={isEditable}
+            isMidwifePrescriber={encounter.doctor.profession === 'MIDWIFE'}
           />
         </div>
       </div>

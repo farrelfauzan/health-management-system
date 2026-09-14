@@ -787,6 +787,7 @@ export const MedicationScalarFieldEnum = {
   reorderLevel: 'reorderLevel',
   unitPrice: 'unitPrice',
   isVaccine: 'isVaccine',
+  isMidwifePrescribable: 'isMidwifePrescribable',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   deletedAt: 'deletedAt'

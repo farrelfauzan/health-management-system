@@ -1074,6 +1074,7 @@ export * from './managedDocumentControllerWithdrawDocumentV1200DataType';
 export * from './medicationControllerCreateMedicationV1201';
 export * from './medicationControllerCreateMedicationV1201Data';
 export * from './medicationControllerListMedicationsV1Category';
+export * from './medicationControllerListMedicationsV1MidwifePrescribableOnly';
 export * from './medicationControllerListMedicationsV1Params';
 export * from './medicationControllerListMedicationsV1ReorderOnly';
 export * from './medicationControllerListMedicationsV1200';

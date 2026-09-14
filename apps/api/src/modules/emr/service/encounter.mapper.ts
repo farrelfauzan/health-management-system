@@ -60,6 +60,7 @@ export class EncounterMapper {
         licenseNumber: encounter.doctor.licenseNumber,
         fullName: encounter.doctor.fullName,
         satusehatReportable: encounter.doctor.nikLast4 !== null,
+        profession: encounter.doctor.profession,
       },
       vitalSigns: encounter.vitalSigns.map((row) => this.toVitalSignsResponse(row)),
       diagnoses: encounter.diagnoses.map((row) => this.toDiagnosisResponse(row)),

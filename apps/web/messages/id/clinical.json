@@ -888,6 +888,7 @@
       "prescriptionForm": {
         "medicationLabel": "Obat",
         "medicationSearch": "Cari obat berdasarkan nama atau kode",
+        "midwifeScopeHint": "Hanya obat yang diizinkan klinik untuk diresepkan bidan yang ditampilkan.",
         "pickMedication": "Pilih obat terlebih dahulu sebelum menambahkannya ke resep.",
         "duplicateMedication": "Obat ini sudah ada di dalam resep.",
         "dosage": "Dosis",
