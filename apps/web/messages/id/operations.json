@@ -708,6 +708,43 @@
           "UNPAIRED": "Terkirim, id tidak tercatat",
           "ERROR": "Tidak dapat diperiksa"
         }
+      },
+      "satusehatLocations": {
+        "tab": "Lokasi SATUSEHAT",
+        "title": "Lokasi SATUSEHAT",
+        "description": "Daftarkan lokasi klinik, setiap poli, serta bangsal, kamar, dan tempat tidur ke SATUSEHAT. Induk didaftarkan lebih dulu; baris menunggu sampai induknya terdaftar. Kunjungan tetap melaporkan lokasi klinik sampai lokasinya terdaftar.",
+        "registerAll": "Daftarkan semua",
+        "registering": "Mendaftarkan...",
+        "register": "Daftarkan",
+        "push": "Kirim perubahan",
+        "loading": "Memuat lokasi...",
+        "loadError": "Pohon lokasi SATUSEHAT gagal dimuat.",
+        "empty": "Belum ada yang dapat didaftarkan. Simpan profil klinik dan tambahkan poli atau bangsal terlebih dahulu.",
+        "registerError": "Lokasi gagal didaftarkan. Silakan coba lagi.",
+        "summary": "{done} dari {total} baris diproses.",
+        "stoppedEarly": "SATUSEHAT berhenti merespons, sehingga baris selebihnya tidak dikirim. Coba lagi sebentar lagi.",
+        "notRegistered": "Belum terdaftar",
+        "inactive": "Nonaktif",
+        "kind": {
+          "SITE": "Lokasi klinik",
+          "SPECIALTY": "Poli",
+          "WARD": "Bangsal",
+          "ROOM": "Kamar",
+          "BED": "Tempat tidur"
+        },
+        "status": {
+          "REGISTERED": "Terdaftar",
+          "UNREGISTERED": "Belum terdaftar",
+          "BLOCKED": "Tertahan"
+        },
+        "outcome": {
+          "CREATED": "Terdaftar",
+          "ADOPTED": "Ditemukan di SATUSEHAT",
+          "UPDATED": "Perubahan terkirim",
+          "BLOCKED": "Tertahan",
+          "FAILED": "Gagal",
+          "SKIPPED": "Tidak dikirim"
+        }
       }
     },
     "administration": {

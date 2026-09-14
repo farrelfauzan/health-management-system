@@ -708,6 +708,43 @@
           "UNPAIRED": "Sent, id not recorded",
           "ERROR": "Could not check"
         }
+      },
+      "satusehatLocations": {
+        "tab": "SATUSEHAT Locations",
+        "title": "SATUSEHAT Locations",
+        "description": "Register the clinic site, each poli, and the ward, room and bed tree on SATUSEHAT. Parents register first; a row waits until its parent is registered. Encounters report the clinic site until their location is registered.",
+        "registerAll": "Register all",
+        "registering": "Registering...",
+        "register": "Register",
+        "push": "Push changes",
+        "loading": "Loading locations...",
+        "loadError": "Unable to load the SATUSEHAT location tree.",
+        "empty": "Nothing to register yet. Save the clinic profile and add polis or wards first.",
+        "registerError": "Unable to register the locations. Please try again.",
+        "summary": "{done} of {total} rows processed.",
+        "stoppedEarly": "SATUSEHAT stopped responding, so the remaining rows were not sent. Try again in a minute.",
+        "notRegistered": "Not registered",
+        "inactive": "Inactive",
+        "kind": {
+          "SITE": "Clinic site",
+          "SPECIALTY": "Poli",
+          "WARD": "Ward",
+          "ROOM": "Room",
+          "BED": "Bed"
+        },
+        "status": {
+          "REGISTERED": "Registered",
+          "UNREGISTERED": "Not registered",
+          "BLOCKED": "Blocked"
+        },
+        "outcome": {
+          "CREATED": "Registered",
+          "ADOPTED": "Found on SATUSEHAT",
+          "UPDATED": "Changes pushed",
+          "BLOCKED": "Blocked",
+          "FAILED": "Failed",
+          "SKIPPED": "Not sent"
+        }
       }
     },
     "administration": {

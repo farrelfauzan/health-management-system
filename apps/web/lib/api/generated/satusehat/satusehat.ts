@@ -22,10 +22,13 @@ import type {
 
 import type {
   LinkDoctorByIhsDto,
+  RegisterSatusehatLocationsDto,
   SatusehatLinkControllerLinkDoctorByIhsV1200,
   SatusehatLinkControllerLinkDoctorV1200,
   SatusehatLinkControllerLinkPatientV1200,
   SatusehatLinkControllerPreviewDoctorIhsLinkV1200,
+  SatusehatLocationControllerListLocationsV1200,
+  SatusehatLocationControllerRegisterLocationsV1200,
   SatusehatRecordControllerCompareEncounterRecordV1200,
   SatusehatSubmissionControllerCheckSubmissionV1200,
   SatusehatSubmissionControllerGetEnvironmentV1200,
@@ -983,6 +986,192 @@ export function useSatusehatRecordControllerCompareEncounterRecordV1<TData = Awa
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getSatusehatRecordControllerCompareEncounterRecordV1QueryOptions(encounterId,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary The clinic's SATUSEHAT Location tree
+ */
+export const satusehatLocationControllerListLocationsV1 = (
+
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<SatusehatLocationControllerListLocationsV1200>(
+      {url: `/api/v1/satusehat/locations`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getSatusehatLocationControllerListLocationsV1QueryKey = () => {
+    return [
+    `/api/v1/satusehat/locations`
+    ] as const;
+    }
+
+
+export const getSatusehatLocationControllerListLocationsV1QueryOptions = <TData = Awaited<ReturnType<typeof satusehatLocationControllerListLocationsV1>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof satusehatLocationControllerListLocationsV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getSatusehatLocationControllerListLocationsV1QueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof satusehatLocationControllerListLocationsV1>>> = ({ signal }) => satusehatLocationControllerListLocationsV1(signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof satusehatLocationControllerListLocationsV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type SatusehatLocationControllerListLocationsV1QueryResult = NonNullable<Awaited<ReturnType<typeof satusehatLocationControllerListLocationsV1>>>
+export type SatusehatLocationControllerListLocationsV1QueryError = unknown
+
+
+export function useSatusehatLocationControllerListLocationsV1<TData = Awaited<ReturnType<typeof satusehatLocationControllerListLocationsV1>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof satusehatLocationControllerListLocationsV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof satusehatLocationControllerListLocationsV1>>,
+          TError,
+          Awaited<ReturnType<typeof satusehatLocationControllerListLocationsV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSatusehatLocationControllerListLocationsV1<TData = Awaited<ReturnType<typeof satusehatLocationControllerListLocationsV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof satusehatLocationControllerListLocationsV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof satusehatLocationControllerListLocationsV1>>,
+          TError,
+          Awaited<ReturnType<typeof satusehatLocationControllerListLocationsV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSatusehatLocationControllerListLocationsV1<TData = Awaited<ReturnType<typeof satusehatLocationControllerListLocationsV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof satusehatLocationControllerListLocationsV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary The clinic's SATUSEHAT Location tree
+ */
+
+export function useSatusehatLocationControllerListLocationsV1<TData = Awaited<ReturnType<typeof satusehatLocationControllerListLocationsV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof satusehatLocationControllerListLocationsV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getSatusehatLocationControllerListLocationsV1QueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Register clinic rows as SATUSEHAT Locations, or push their changes
+ */
+export const satusehatLocationControllerRegisterLocationsV1 = (
+    registerSatusehatLocationsDto: RegisterSatusehatLocationsDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<SatusehatLocationControllerRegisterLocationsV1200>(
+      {url: `/api/v1/satusehat/locations/register`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: registerSatusehatLocationsDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getSatusehatLocationControllerRegisterLocationsV1QueryKey = (registerSatusehatLocationsDto?: RegisterSatusehatLocationsDto,) => {
+    return [
+    'POST', `/api/v1/satusehat/locations/register`, registerSatusehatLocationsDto
+    ] as const;
+    }
+
+
+export const getSatusehatLocationControllerRegisterLocationsV1QueryOptions = <TData = Awaited<ReturnType<typeof satusehatLocationControllerRegisterLocationsV1>>, TError = unknown>(registerSatusehatLocationsDto: RegisterSatusehatLocationsDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof satusehatLocationControllerRegisterLocationsV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getSatusehatLocationControllerRegisterLocationsV1QueryKey(registerSatusehatLocationsDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof satusehatLocationControllerRegisterLocationsV1>>> = ({ signal }) => satusehatLocationControllerRegisterLocationsV1(registerSatusehatLocationsDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof satusehatLocationControllerRegisterLocationsV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type SatusehatLocationControllerRegisterLocationsV1QueryResult = NonNullable<Awaited<ReturnType<typeof satusehatLocationControllerRegisterLocationsV1>>>
+export type SatusehatLocationControllerRegisterLocationsV1QueryError = unknown
+
+
+export function useSatusehatLocationControllerRegisterLocationsV1<TData = Awaited<ReturnType<typeof satusehatLocationControllerRegisterLocationsV1>>, TError = unknown>(
+ registerSatusehatLocationsDto: RegisterSatusehatLocationsDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof satusehatLocationControllerRegisterLocationsV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof satusehatLocationControllerRegisterLocationsV1>>,
+          TError,
+          Awaited<ReturnType<typeof satusehatLocationControllerRegisterLocationsV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSatusehatLocationControllerRegisterLocationsV1<TData = Awaited<ReturnType<typeof satusehatLocationControllerRegisterLocationsV1>>, TError = unknown>(
+ registerSatusehatLocationsDto: RegisterSatusehatLocationsDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof satusehatLocationControllerRegisterLocationsV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof satusehatLocationControllerRegisterLocationsV1>>,
+          TError,
+          Awaited<ReturnType<typeof satusehatLocationControllerRegisterLocationsV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSatusehatLocationControllerRegisterLocationsV1<TData = Awaited<ReturnType<typeof satusehatLocationControllerRegisterLocationsV1>>, TError = unknown>(
+ registerSatusehatLocationsDto: RegisterSatusehatLocationsDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof satusehatLocationControllerRegisterLocationsV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Register clinic rows as SATUSEHAT Locations, or push their changes
+ */
+
+export function useSatusehatLocationControllerRegisterLocationsV1<TData = Awaited<ReturnType<typeof satusehatLocationControllerRegisterLocationsV1>>, TError = unknown>(
+ registerSatusehatLocationsDto: RegisterSatusehatLocationsDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof satusehatLocationControllerRegisterLocationsV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getSatusehatLocationControllerRegisterLocationsV1QueryOptions(registerSatusehatLocationsDto,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

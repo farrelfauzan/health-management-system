@@ -255,6 +255,11 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     ('satusehat.submission.read:any', 'SatusehatSubmission', 'read', 'ANY', 'Read SATUSEHAT submission outbox status'),
     ('satusehat.submission.retry:any', 'SatusehatSubmission', 'retry', 'ANY', 'Retry failed SATUSEHAT submissions'),
     ('satusehat.record.read:own', 'SatusehatRecord', 'read', 'OWN', 'Compare what SATUSEHAT holds for an encounter with the local record, as its treating clinician'),
+    -- P24-T06. Two keys rather than one: seeing which polis, wards, rooms and
+    -- beds are registered is harmless, while registering them writes to the
+    -- clinic's national facility record.
+    ('satusehat.location.read:any', 'SatusehatLocation', 'read', 'ANY', 'Read which clinic locations are registered on SATUSEHAT'),
+    ('satusehat.location.write:any', 'SatusehatLocation', 'write', 'ANY', 'Register clinic locations on SATUSEHAT and push their changes'),
     ('bpjs.config.manage:any', 'BpjsConfig', 'manage', 'ANY', 'Manage BPJS bridging credentials and connection settings (PCare and Antrean Online)'),
     -- P23-T04. Read-only in practice: the Notion connector is configured by
     -- environment (P23-T02), so this grants the status view and the Bug Board
@@ -569,6 +574,8 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('ADMIN', 'satusehat.link:any'),
     ('ADMIN', 'satusehat.submission.read:any'),
     ('ADMIN', 'satusehat.submission.retry:any'),
+    ('ADMIN', 'satusehat.location.read:any'),
+    ('ADMIN', 'satusehat.location.write:any'),
     -- BPJS credential custody is a back-office operation: the stored PCare
     -- login can create and delete claims, so only ADMIN manages it. Secrets
     -- are write-only in the API regardless of this grant.

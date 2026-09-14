@@ -152,6 +152,11 @@ export const ADMIN_PORTAL_ADMIN_RULES: AppRule[] = [
   { action: 'link', subject: 'Satusehat' },
   { action: 'read', subject: 'SatusehatSubmission' },
   { action: 'retry', subject: 'SatusehatSubmission' },
+  // P24-T06. Mirrors the two location grants `seed.sql` gives ADMIN; without
+  // them the "Lokasi SATUSEHAT" tab never renders for a session hint that
+  // predates the keys.
+  { action: 'read', subject: 'SatusehatLocation' },
+  { action: 'write', subject: 'SatusehatLocation' },
   { action: 'read', subject: 'Notification' },
   { action: 'manage', subject: 'Notification' },
   // SJ-1. Mirrors the three organization grants `seed.sql` gives ADMIN, so an

@@ -151,6 +151,9 @@ export type AppSubject =
   // clinical content, so a subject of its own rather than a mode of
   // `SatusehatSubmission`, which the front desk holds.
   | 'SatusehatRecord'
+  // P24-T06. The clinic's Location tree on SATUSEHAT. Its own subject: reading
+  // it is harmless, registering writes the national facility record.
+  | 'SatusehatLocation'
   // P23-T04/T05. Saling Jaga's Notion bug-report connector. Its own subject
   // rather than a mode of `BpjsConfig` or a generic integrations one, because
   // the two grants answer to different owners: a clinic administrator

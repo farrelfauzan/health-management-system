@@ -44722,6 +44722,241 @@ paths:
       summary: Compare this visit with what SATUSEHAT holds
       tags:
         - SATUSEHAT
+  /api/v1/satusehat/locations:
+    get:
+      operationId: SatusehatLocationController_listLocations_v1
+      parameters: []
+      responses:
+        "200":
+          description: "Every row that registers as a SATUSEHAT Location — the root site,
+            each poli, and the ward → room → bed tree — flat and parents first,
+            with REGISTERED / UNREGISTERED / BLOCKED and the reason a row waits:
+            missing clinic coordinates, an unmapped room class, or an
+            unregistered parent (P24-T06)."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      nodes:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            kind:
+                              type: string
+                            id:
+                              type: string
+                            parentId:
+                              nullable: true
+                            depth:
+                              type: integer
+                            name:
+                              type: string
+                            code:
+                              nullable: true
+                            isActive:
+                              type: boolean
+                            satusehatLocationId:
+                              type: string
+                            status:
+                              type: string
+                            blockReason:
+                              nullable: true
+                            blockMessage:
+                              nullable: true
+                          required:
+                            - kind
+                            - id
+                            - parentId
+                            - depth
+                            - name
+                            - code
+                            - isActive
+                            - satusehatLocationId
+                            - status
+                            - blockReason
+                            - blockMessage
+                    required:
+                      - nodes
+                required:
+                  - data
+                example:
+                  data:
+                    nodes:
+                      - kind: SITE
+                        id: 4f1c2a9e-6b3d-4e8a-9c7f-1a2b3c4d5e6f
+                        parentId: null
+                        depth: 0
+                        name: Klinik Pratama Sehat
+                        code: null
+                        isActive: true
+                        satusehatLocationId: b017aa54-f1df-4ec2-9d84-8823815d7228
+                        status: REGISTERED
+                        blockReason: null
+                        blockMessage: null
+                      - kind: SPECIALTY
+                        id: 7a8b9c0d-1e2f-4a3b-8c4d-5e6f7a8b9c0d
+                        parentId: 4f1c2a9e-6b3d-4e8a-9c7f-1a2b3c4d5e6f
+                        depth: 1
+                        name: Poli KIA
+                        code: null
+                        isActive: true
+                        satusehatLocationId: null
+                        status: UNREGISTERED
+                        blockReason: null
+                        blockMessage: null
+                      - kind: ROOM
+                        id: 2c3d4e5f-6a7b-4c8d-9e0f-1a2b3c4d5e6f
+                        parentId: 9d8c7b6a-5f4e-4d3c-8b2a-1f0e9d8c7b6a
+                        depth: 2
+                        name: Kamar Melati 1
+                        code: MEL-01
+                        isActive: true
+                        satusehatLocationId: null
+                        status: BLOCKED
+                        blockReason: UNMAPPED_SERVICE_CLASS
+                        blockMessage: Room class "Kelas Utama" has no SATUSEHAT service class
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: The clinic's SATUSEHAT Location tree
+      tags: &a63
+        - SATUSEHAT
+  /api/v1/satusehat/locations/register:
+    post:
+      operationId: SatusehatLocationController_registerLocations_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterSatusehatLocationsDto"
+      responses:
+        "200":
+          description: "Runs sequentially in tree order, parents first. An unregistered
+            row is looked up by identifier before any POST and adopted when
+            SATUSEHAT already holds it; a registered row is sent again as a PUT,
+            which is how a rename or a deactivation reaches SATUSEHAT. Every
+            write is audited. A breaker-open or credential failure stops the
+            batch: the rows after `processedCount` come back SKIPPED (P24-T06)."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      outcomes:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            kind:
+                              type: string
+                            id:
+                              type: string
+                            name:
+                              type: string
+                            outcome:
+                              type: string
+                            satusehatLocationId:
+                              type: string
+                            message:
+                              nullable: true
+                          required:
+                            - kind
+                            - id
+                            - name
+                            - outcome
+                            - satusehatLocationId
+                            - message
+                      processedCount:
+                        type: integer
+                      stoppedEarly:
+                        type: boolean
+                    required:
+                      - outcomes
+                      - processedCount
+                      - stoppedEarly
+                required:
+                  - data
+                example:
+                  data:
+                    outcomes:
+                      - kind: SPECIALTY
+                        id: 7a8b9c0d-1e2f-4a3b-8c4d-5e6f7a8b9c0d
+                        name: Poli KIA
+                        outcome: CREATED
+                        satusehatLocationId: e3b2c1a0-9f8e-4d7c-8b6a-5f4e3d2c1b0a
+                        message: null
+                      - kind: WARD
+                        id: 9d8c7b6a-5f4e-4d3c-8b2a-1f0e9d8c7b6a
+                        name: Bangsal Melati
+                        outcome: ADOPTED
+                        satusehatLocationId: a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d
+                        message: null
+                      - kind: ROOM
+                        id: 2c3d4e5f-6a7b-4c8d-9e0f-1a2b3c4d5e6f
+                        name: Kamar Melati 1
+                        outcome: BLOCKED
+                        satusehatLocationId: null
+                        message: Room class "Kelas Utama" has no SATUSEHAT service class
+                    processedCount: 3
+                    stoppedEarly: false
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: A named target is not a registrable location.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: A named target is not a registrable location.
+      security:
+        - bearer: []
+      summary: Register clinic rows as SATUSEHAT Locations, or push their changes
+      tags: *a63
   /api/v1/bpjs/config:
     get:
       operationId: BpjsPcareConfigController_getConfig_v1
@@ -44835,7 +45070,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS PCare bridging configuration
-      tags: &a63
+      tags: &a64
         - BPJS PCare
     put:
       operationId: BpjsPcareConfigController_upsertConfig_v1
@@ -44973,7 +45208,7 @@ paths:
       security:
         - bearer: []
       summary: Create or replace the BPJS PCare bridging configuration
-      tags: *a63
+      tags: *a64
     delete:
       operationId: BpjsPcareConfigController_deleteConfig_v1
       parameters: []
@@ -45032,7 +45267,7 @@ paths:
       security:
         - bearer: []
       summary: Delete the BPJS PCare bridging configuration
-      tags: *a63
+      tags: *a64
   /api/v1/bpjs/config/test-connection:
     post:
       operationId: BpjsPcareConfigController_testConnection_v1
@@ -45098,7 +45333,7 @@ paths:
       security:
         - bearer: []
       summary: Test the stored BPJS PCare credentials
-      tags: *a63
+      tags: *a64
   /api/v1/bpjs/reference/sync:
     post:
       operationId: BpjsReferenceController_syncCatalogs_v1
@@ -45186,7 +45421,7 @@ paths:
       security:
         - bearer: []
       summary: Sync the enumerable BPJS PCare reference catalogs
-      tags: &a64
+      tags: &a65
         - BPJS PCare
   /api/v1/bpjs/reference/status:
     get:
@@ -45253,7 +45488,7 @@ paths:
       security:
         - bearer: []
       summary: Read per-catalog BPJS reference sync status
-      tags: *a64
+      tags: *a65
   /api/v1/bpjs/reference/{catalog}:
     get:
       operationId: BpjsReferenceController_searchCatalog_v1
@@ -45347,7 +45582,7 @@ paths:
       security:
         - bearer: []
       summary: Search a synced BPJS reference catalog locally
-      tags: *a64
+      tags: *a65
   /api/v1/bpjs/reference/{catalog}/search:
     post:
       operationId: BpjsReferenceController_searchCatalogRemote_v1
@@ -45453,7 +45688,7 @@ paths:
       security:
         - bearer: []
       summary: Search a keyword-only BPJS catalog live and cache the results
-      tags: *a64
+      tags: *a65
   /api/v1/bpjs/mappings:
     get:
       operationId: BpjsMappingController_getOverview_v1
@@ -45541,7 +45776,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS mapping overview
-      tags: &a65
+      tags: &a66
         - BPJS PCare
   /api/v1/bpjs/mappings/doctors/{doctorId}:
     put:
@@ -45635,7 +45870,7 @@ paths:
       security:
         - bearer: []
       summary: Set or clear a doctor’s BPJS kdDokter mapping
-      tags: *a65
+      tags: *a66
   /api/v1/bpjs/mappings/specialties/{specialtyId}:
     put:
       operationId: BpjsMappingController_setSpecialtyMapping_v1
@@ -45724,7 +45959,7 @@ paths:
       security:
         - bearer: []
       summary: Set or clear a specialty’s BPJS kdPoli mapping
-      tags: *a65
+      tags: *a66
   /api/v1/bpjs/mappings/medications/{medicationId}:
     put:
       operationId: BpjsMappingController_setMedicationMapping_v1
@@ -45818,7 +46053,7 @@ paths:
       security:
         - bearer: []
       summary: Link or unlink a medication’s DPHO code
-      tags: *a65
+      tags: *a66
   /api/v1/bpjs/eligibility/patients/{patientId}/check:
     post:
       operationId: BpjsEligibilityController_checkEligibility_v1
@@ -46118,7 +46353,7 @@ paths:
       security:
         - bearer: []
       summary: List BPJS PCare submission outbox entries
-      tags: &a66
+      tags: &a67
         - BPJS PCare
   /api/v1/bpjs/submissions/{id}/retry:
     post:
@@ -46227,7 +46462,7 @@ paths:
       security:
         - bearer: []
       summary: Retry a failed BPJS PCare submission
-      tags: *a66
+      tags: *a67
   /api/v1/bpjs/reports/monthly:
     get:
       operationId: BpjsReportController_getMonthlyReport_v1
@@ -46474,7 +46709,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS Antrean Online bridging configuration
-      tags: &a67
+      tags: &a68
         - BPJS Antrean
     put:
       operationId: BpjsAntreanConfigController_upsertConfig_v1
@@ -46615,7 +46850,7 @@ paths:
       security:
         - bearer: []
       summary: Create or replace the BPJS Antrean Online bridging configuration
-      tags: *a67
+      tags: *a68
     delete:
       operationId: BpjsAntreanConfigController_deleteConfig_v1
       parameters: []
@@ -46674,7 +46909,7 @@ paths:
       security:
         - bearer: []
       summary: Delete the BPJS Antrean Online bridging configuration
-      tags: *a67
+      tags: *a68
   /api/v1/bpjs/antrean/config/test-connection:
     post:
       operationId: BpjsAntreanConfigController_testConnection_v1
@@ -46740,7 +46975,7 @@ paths:
       security:
         - bearer: []
       summary: Test the stored BPJS Antrean credentials
-      tags: *a67
+      tags: *a68
   /api/v1/bpjs/antrean/inbound-readiness:
     get:
       operationId: BpjsAntreanConfigController_getInboundReadiness_v1
@@ -46810,7 +47045,7 @@ paths:
       security:
         - bearer: []
       summary: Report whether the inbound Antrean web services can serve BPJS
-      tags: *a67
+      tags: *a68
   /api/v1/bpjs/antrean/hfis-reconciliation:
     get:
       operationId: BpjsAntreanConfigController_getHfisReconciliation_v1
@@ -46912,7 +47147,7 @@ paths:
       security:
         - bearer: []
       summary: Compare HFIS against HMS and report the disagreements
-      tags: *a67
+      tags: *a68
   /api/v1/admin/features:
     get:
       operationId: FeatureAdminController_getEntitlements_v1
@@ -46991,7 +47226,7 @@ paths:
       security:
         - bearer: []
       summary: List every feature and whether this client has it
-      tags: &a68
+      tags: &a69
         - Feature Entitlements
   /api/v1/admin/features/{key}:
     put:
@@ -47108,7 +47343,7 @@ paths:
       security:
         - bearer: []
       summary: Switch a feature on or off for this client
-      tags: *a68
+      tags: *a69
   /api/v1/features/availability:
     get:
       operationId: FeatureAvailabilityController_getAvailability_v1
@@ -47231,7 +47466,7 @@ paths:
       security:
         - bearer: []
       summary: List active roles
-      tags: &a69
+      tags: &a70
         - RBAC
     post:
       operationId: RbacController_createRole_v1
@@ -47318,7 +47553,7 @@ paths:
       security:
         - bearer: []
       summary: Create a custom role
-      tags: *a69
+      tags: *a70
   /api/v1/rbac/permissions:
     get:
       operationId: RbacController_getPermissionCatalog_v1
@@ -47398,7 +47633,7 @@ paths:
       security:
         - bearer: []
       summary: List the permission catalog
-      tags: *a69
+      tags: *a70
   /api/v1/rbac/roles/{id}:
     get:
       operationId: RbacController_getRoleById_v1
@@ -47517,7 +47752,7 @@ paths:
       security:
         - bearer: []
       summary: Get a role with its permissions and member count
-      tags: *a69
+      tags: *a70
     patch:
       operationId: RbacController_updateRole_v1
       parameters:
@@ -47616,7 +47851,7 @@ paths:
       security:
         - bearer: []
       summary: Update a role name or description
-      tags: *a69
+      tags: *a70
     delete:
       operationId: RbacController_deleteRole_v1
       parameters:
@@ -47692,7 +47927,7 @@ paths:
       security:
         - bearer: []
       summary: Soft-delete a role
-      tags: *a69
+      tags: *a70
   /api/v1/rbac/roles/{id}/permissions:
     put:
       operationId: RbacController_setRolePermissions_v1
@@ -47838,7 +48073,7 @@ paths:
       security:
         - bearer: []
       summary: Replace the permission set attached to a role
-      tags: *a69
+      tags: *a70
   /api/v1/rbac/assign-role:
     post:
       operationId: RbacController_assignRole_v1
@@ -47930,7 +48165,7 @@ paths:
       security:
         - bearer: []
       summary: Assign a role to a user
-      tags: *a69
+      tags: *a70
   /api/v1/rbac/unassign-role:
     post:
       operationId: RbacController_unassignRole_v1
@@ -48022,7 +48257,7 @@ paths:
       security:
         - bearer: []
       summary: Unassign a role from a user
-      tags: *a69
+      tags: *a70
   /api/v1/health:
     get:
       operationId: HealthController_getHealth_v1
@@ -52103,6 +52338,31 @@ components:
           pattern: ^[0-9A-Za-z-]+$
       required:
         - ihsNumber
+    RegisterSatusehatLocationsDto:
+      type: object
+      properties:
+        all:
+          type: boolean
+        targets:
+          type: array
+          maxItems: 500
+          items:
+            type: object
+            properties:
+              kind:
+                type: string
+                enum:
+                  - SITE
+                  - SPECIALTY
+                  - WARD
+                  - ROOM
+                  - BED
+              id:
+                type: string
+                format: uuid
+            required:
+              - kind
+              - id
     UpsertBpjsPcareConfigDto:
       type: object
       properties:

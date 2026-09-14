@@ -787,3 +787,35 @@ export type SatusehatVitalSignDefinition = {
   unit: string;
   ucumCode: string;
 };
+
+/** A FHIR Location as SATUSEHAT accepts it (P24-T06). */
+export type SatusehatFhirLocation = {
+  resourceType: 'Location';
+  id?: string;
+  identifier: { system: string; value: string }[];
+  status: 'active' | 'inactive';
+  name: string;
+  mode: 'instance';
+  physicalType: SatusehatFhirCodeableConcept;
+  position?: { longitude: number; latitude: number; altitude: number };
+  managingOrganization: SatusehatFhirReference;
+  partOf?: SatusehatFhirReference;
+  extension?: { url: string; valueCodeableConcept: SatusehatFhirCodeableConcept }[];
+};
+
+/**
+ * What the Location builder needs for one clinic row (P24-T06). `parent` is
+ * null for the root site only; `serviceClassCode` is set for rooms and beds.
+ */
+export type SatusehatLocationResourceInput = {
+  organizationId: string;
+  localId: string;
+  satusehatLocationId: string | null;
+  physicalTypeCode: 'si' | 'ro' | 'wa' | 'bd';
+  name: string;
+  isActive: boolean;
+  latitude: number | null;
+  longitude: number | null;
+  parent: { satusehatLocationId: string; name: string } | null;
+  serviceClassCode: string | null;
+};
