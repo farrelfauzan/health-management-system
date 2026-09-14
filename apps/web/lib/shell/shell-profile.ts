@@ -4,7 +4,7 @@ export type ShellProfile = {
   displayName: string;
   isFallbackName?: boolean;
   roleLabel: string;
-  roleKey?: 'superAdmin' | 'admin' | 'doctor' | 'pharmacist' | 'patient' | 'staff' | null;
+  roleKey?: 'superAdmin' | 'admin' | 'doctor' | 'midwife' | 'pharmacist' | 'patient' | 'staff' | null;
   email: string;
 };
 
@@ -50,6 +50,7 @@ function resolveRoleKey(role: string): ShellProfile['roleKey'] {
     SUPER_ADMIN: 'superAdmin',
     ADMIN: 'admin',
     DOCTOR: 'doctor',
+    MIDWIFE: 'midwife',
     PHARMACIST: 'pharmacist',
     PATIENT: 'patient',
   };

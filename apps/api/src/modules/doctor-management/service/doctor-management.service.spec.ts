@@ -1,5 +1,5 @@
 import { updateDoctorSchema } from '@hms/shared-types';
-import { BadRequestException, ConflictException, ForbiddenException } from '@nestjs/common';
+import { UnprocessableEntityException, BadRequestException, ConflictException, ForbiddenException } from '@nestjs/common';
 
 import { AuditService } from '../../../common/audit/audit.service';
 import { AdminManagementService } from '../../admin-management/service/admin-management.service';
@@ -42,6 +42,7 @@ function buildActor(
 
 describe('DoctorManagementService', () => {
   const doctorManagementRepositoryMock = {
+    hasClinicalHistory: jest.fn(),
     listDoctors: jest.fn(),
     findDoctorById: jest.fn(),
     findDoctorDetailById: jest.fn(),
@@ -120,6 +121,7 @@ describe('DoctorManagementService', () => {
     licenseNumber: 'LIC-0001',
     fullName: 'Dr. First',
     specialtyId,
+    profession: 'DOCTOR' as const,
     specialty: { id: specialtyId, name: 'Cardiology' },
     phoneNumber: '0812345678',
     ownerUser: null,
@@ -326,6 +328,7 @@ describe('DoctorManagementService', () => {
       email: inputDoctorEmail,
       doctorProfileId: doctorId,
       invitedById: currentUser.sub,
+      roleCode: 'DOCTOR',
     });
     expect(result.email).toBe(inputDoctorEmail);
     expect(result.invitationStatus).toBe('PENDING');
@@ -1009,6 +1012,94 @@ describe('DoctorManagementService', () => {
     expect(result.specialty).toBe('Neurology');
   });
 
+  // P24-T03 (FR-MW-03). The account's role follows the profile's profession.
+  it('invites a midwife into the MIDWIFE role', async () => {
+    (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
+      buildActor([{ action: 'create', resource: 'Doctor', scope: 'ANY' }]),
+    );
+    (doctorManagementRepositoryMock.findDoctorByLicenseNumber as jest.Mock).mockResolvedValue(null);
+    (doctorManagementRepositoryMock.findActiveSpecialtyById as jest.Mock).mockResolvedValue({
+      id: specialtyId,
+    });
+    (doctorManagementRepositoryMock.createDoctor as jest.Mock).mockResolvedValue({
+      ...doctorRecord,
+      profession: 'MIDWIFE',
+    });
+
+    await service.createDoctor(
+      {
+        licenseNumber: 'LIC-0002',
+        fullName: 'Bidan Sari',
+        specialtyId,
+        profession: 'MIDWIFE',
+        phoneNumber: '0812345678',
+        email: inputDoctorEmail,
+        nik: inputDoctorNik,
+        isActive: true,
+      },
+      currentUser,
+    );
+
+    expect(doctorManagementRepositoryMock.createDoctor).toHaveBeenCalledWith(
+      expect.objectContaining({ profession: 'MIDWIFE' }),
+    );
+    expect(userInvitationServiceMock.inviteDoctorOwner).toHaveBeenCalledWith(
+      expect.objectContaining({ roleCode: 'MIDWIFE' }),
+    );
+  });
+
+  it('refuses a profession change once the clinician has clinical history', async () => {
+    (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
+      buildActor([{ action: 'update', resource: 'Doctor', scope: 'ANY' }]),
+    );
+    (doctorManagementRepositoryMock.findDoctorById as jest.Mock).mockResolvedValue(doctorRecord);
+    (doctorManagementRepositoryMock.hasClinicalHistory as jest.Mock).mockResolvedValue(true);
+
+    const actualError = await service
+      .updateDoctor(doctorId, { profession: 'MIDWIFE' }, currentUser)
+      .catch((err: unknown) => err);
+
+    expect(actualError).toBeInstanceOf(UnprocessableEntityException);
+    expect((actualError as UnprocessableEntityException).getResponse()).toEqual(
+      expect.objectContaining({ code: 'CLINICIAN_PROFESSION_LOCKED' }),
+    );
+    expect(doctorManagementRepositoryMock.updateDoctor).not.toHaveBeenCalled();
+  });
+
+  it('allows a profession change while the clinician has no clinical history', async () => {
+    (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
+      buildActor([{ action: 'update', resource: 'Doctor', scope: 'ANY' }]),
+    );
+    (doctorManagementRepositoryMock.findDoctorById as jest.Mock).mockResolvedValue(doctorRecord);
+    (doctorManagementRepositoryMock.hasClinicalHistory as jest.Mock).mockResolvedValue(false);
+    (doctorManagementRepositoryMock.updateDoctor as jest.Mock).mockResolvedValue({
+      doctor: { ...doctorRecord, profession: 'MIDWIFE' },
+      clearedSatusehatLink: false,
+    });
+
+    await service.updateDoctor(doctorId, { profession: 'MIDWIFE' }, currentUser);
+
+    expect(doctorManagementRepositoryMock.updateDoctor).toHaveBeenCalledWith(
+      doctorId,
+      expect.objectContaining({ profession: 'MIDWIFE' }),
+    );
+  });
+
+  it('does not look for clinical history when the profession is unchanged', async () => {
+    (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
+      buildActor([{ action: 'update', resource: 'Doctor', scope: 'ANY' }]),
+    );
+    (doctorManagementRepositoryMock.findDoctorById as jest.Mock).mockResolvedValue(doctorRecord);
+    (doctorManagementRepositoryMock.updateDoctor as jest.Mock).mockResolvedValue({
+      doctor: doctorRecord,
+      clearedSatusehatLink: false,
+    });
+
+    await service.updateDoctor(doctorId, { profession: 'DOCTOR' }, currentUser);
+
+    expect(doctorManagementRepositoryMock.hasClinicalHistory).not.toHaveBeenCalled();
+  });
+
   it('refuses an own-scope caller on the administrative route, even for their own profile', async () => {
     (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
       buildActor([{ action: 'update', resource: 'Doctor', scope: 'OWN' }]),
@@ -1111,6 +1202,7 @@ describe('DoctorManagementService', () => {
         email: 'dr.legacy@clinic.local',
         doctorProfileId: doctorId,
         invitedById: currentUser.sub,
+        roleCode: 'DOCTOR',
       });
       expect(doctorManagementRepositoryMock.updateDoctor).not.toHaveBeenCalled();
       expect(result.invitationStatus).toBe('PENDING');

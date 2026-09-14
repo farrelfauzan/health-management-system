@@ -1703,6 +1703,23 @@ export type EnumChannelVerificationMethodWithAggregatesFilter<$PrismaModel = nev
   _max?: Prisma.NestedEnumChannelVerificationMethodFilter<$PrismaModel>
 }
 
+export type EnumSatusehatServiceClassNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.SatusehatServiceClass | Prisma.EnumSatusehatServiceClassFieldRefInput<$PrismaModel> | null
+  in?: $Enums.SatusehatServiceClass[] | Prisma.ListEnumSatusehatServiceClassFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.SatusehatServiceClass[] | Prisma.ListEnumSatusehatServiceClassFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumSatusehatServiceClassNullableFilter<$PrismaModel> | $Enums.SatusehatServiceClass | null
+}
+
+export type EnumSatusehatServiceClassNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.SatusehatServiceClass | Prisma.EnumSatusehatServiceClassFieldRefInput<$PrismaModel> | null
+  in?: $Enums.SatusehatServiceClass[] | Prisma.ListEnumSatusehatServiceClassFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.SatusehatServiceClass[] | Prisma.ListEnumSatusehatServiceClassFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumSatusehatServiceClassNullableWithAggregatesFilter<$PrismaModel> | $Enums.SatusehatServiceClass | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumSatusehatServiceClassNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumSatusehatServiceClassNullableFilter<$PrismaModel>
+}
+
 export type EnumBedStatusFilter<$PrismaModel = never> = {
   equals?: $Enums.BedStatus | Prisma.EnumBedStatusFieldRefInput<$PrismaModel>
   in?: $Enums.BedStatus[] | Prisma.ListEnumBedStatusFieldRefInput<$PrismaModel>
@@ -3736,6 +3753,23 @@ export type NestedEnumChannelVerificationMethodWithAggregatesFilter<$PrismaModel
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumChannelVerificationMethodFilter<$PrismaModel>
   _max?: Prisma.NestedEnumChannelVerificationMethodFilter<$PrismaModel>
+}
+
+export type NestedEnumSatusehatServiceClassNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.SatusehatServiceClass | Prisma.EnumSatusehatServiceClassFieldRefInput<$PrismaModel> | null
+  in?: $Enums.SatusehatServiceClass[] | Prisma.ListEnumSatusehatServiceClassFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.SatusehatServiceClass[] | Prisma.ListEnumSatusehatServiceClassFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumSatusehatServiceClassNullableFilter<$PrismaModel> | $Enums.SatusehatServiceClass | null
+}
+
+export type NestedEnumSatusehatServiceClassNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.SatusehatServiceClass | Prisma.EnumSatusehatServiceClassFieldRefInput<$PrismaModel> | null
+  in?: $Enums.SatusehatServiceClass[] | Prisma.ListEnumSatusehatServiceClassFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.SatusehatServiceClass[] | Prisma.ListEnumSatusehatServiceClassFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumSatusehatServiceClassNullableWithAggregatesFilter<$PrismaModel> | $Enums.SatusehatServiceClass | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumSatusehatServiceClassNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumSatusehatServiceClassNullableFilter<$PrismaModel>
 }
 
 export type NestedEnumBedStatusFilter<$PrismaModel = never> = {

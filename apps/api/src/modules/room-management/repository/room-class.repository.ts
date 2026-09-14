@@ -4,6 +4,7 @@ import {
   PagedRecords,
   RoomClassBedTallyRecord,
   RoomClassRecord,
+  SatusehatServiceClassValue,
   UpdateRoomClassRecordPayload,
 } from '@hms/shared-types';
 import { Injectable } from '@nestjs/common';
@@ -20,6 +21,7 @@ type RoomClassRow = {
   name: string;
   description: string | null;
   quota: number | null;
+  satusehatServiceClass: SatusehatServiceClassValue | null;
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -99,6 +101,7 @@ export class RoomClassRepository {
           name: payload.name,
           description: payload.description,
           quota: payload.quota,
+          satusehatServiceClass: payload.satusehatServiceClass,
           isActive: payload.isActive,
         },
       });
@@ -144,6 +147,7 @@ export class RoomClassRepository {
       name: row.name,
       description: row.description,
       quota: row.quota,
+      satusehatServiceClass: row.satusehatServiceClass,
       isActive: row.isActive,
       createdAt: row.createdAt,
       updatedAt: row.updatedAt,

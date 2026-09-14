@@ -549,9 +549,9 @@
       "signOut": "Sign out"
     },
     "doctors": {
-      "title": "Doctors",
-      "subtitle": "Manage practitioner profiles, credentials, schedules, and patient assignments.",
-      "add": "Add New Doctor",
+      "title": "Clinical Staff",
+      "subtitle": "Manage doctor and midwife profiles, credentials, schedules, and patient assignments.",
+      "add": "Add Clinician",
       "assignPatient": "Assign Patient",
       "manageSchedule": "Manage Schedule",
       "sendInvitation": "Send Invitation",
@@ -562,17 +562,18 @@
         "submitting": "Sending...",
         "error": "Unable to send the invitation. Please try again."
       },
-      "itemLabel": "doctors",
+      "itemLabel": "clinicians",
       "quickFilter": "Quick Filter",
       "searchPlaceholder": "Name, STR number, or specialty...",
       "specialty": "Specialty",
       "allSpecialties": "All Specialties",
-      "emptyTitle": "No doctors found",
-      "errorTitle": "Unable to load doctors",
-      "emptyDescription": "Adjust the filters or add a new doctor to see records here.",
-      "errorDescription": "Something went wrong while fetching the doctor directory. It retries automatically.",
+      "emptyTitle": "No clinicians found",
+      "errorTitle": "Unable to load clinical staff",
+      "emptyDescription": "Adjust the filters or add a new clinician to see records here.",
+      "errorDescription": "Something went wrong while fetching the clinical staff directory. It retries automatically.",
       "columns": {
-        "name": "Doctor Name",
+        "name": "Name",
+        "profession": "Profession",
         "license": "STR Number",
         "schedule": "Schedule",
         "patients": "Patients"
@@ -670,14 +671,14 @@
         "maxPatients": "Maximum patients for entry {index}"
       },
       "form": {
-        "edit": "Edit Doctor",
-        "create": "Add New Doctor",
-        "editDescription": "Update the doctor profile.",
-        "createDescription": "Register a new doctor profile, optionally assigning initial patients.",
+        "edit": "Edit Clinician",
+        "create": "Add Clinician",
+        "editDescription": "Update the clinician profile.",
+        "createDescription": "Register a doctor or midwife, optionally assigning initial patients.",
         "saveError": "Unable to save the doctor. Please try again.",
         "license": "STR Number",
-        "licenseDescription": "The doctor's STR number, exactly as printed on their STR or shown in SATUSEHAT SDMK.",
-        "licenseTooltip": "The STR (Surat Tanda Registrasi) is issued per doctor by the Konsil Kesehatan Indonesia and is lifetime under UU 17/2023, which is why it identifies a doctor here. Numbers issued since September 2023 are two letters followed by 14 digits; older all-digit numbers are still valid. A SIP is different, one per practice location, so record each SIP under Licenses on the doctor's record.",
+        "licenseDescription": "The clinician's STR number, exactly as printed on their STR or shown in SATUSEHAT SDMK.",
+        "licenseTooltip": "The STR (Surat Tanda Registrasi) is issued per health worker by the Konsil Kesehatan Indonesia and is lifetime under UU 17/2023, which is why it identifies a health worker here. Numbers issued since September 2023 are two letters followed by 14 digits; older all-digit numbers are still valid. A SIP is different, one per practice location, so record each SIP under Licenses on the health worker's record.",
         "fullName": "Full Name",
         "specialty": "Specialty",
         "phone": "Phone Number",
@@ -695,7 +696,9 @@
         "emailRequired": "Enter the doctor's email. Every doctor needs an account to sign in, and the invitation is sent to this address.",
         "emailInvalid": "Enter a valid email address, such as budi.santoso@clinic.local.",
         "emailNoAccount": "This doctor has no account yet and cannot sign in. Use Send Invitation on the doctor list to give them access.",
-        "createAction": "Create Doctor"
+        "createAction": "Create Clinician",
+        "profession": "Profession",
+        "professionDescription": "Decides the account's role. It cannot change once this clinician has encounters, admissions or prescriptions."
       },
       "identity": "Practitioner Identity",
       "reveal": "Reveal",
@@ -725,7 +728,7 @@
       "patientsPermission": "You do not have permission to view this doctor's patients.",
       "manage": "Manage",
       "attention": "{count, plural, one {# needs attention} other {# need attention}}",
-      "licenseRequired": "No license recorded. A practicing doctor needs an STR and a SIP for each practice location.",
+      "licenseRequired": "No license recorded. A practicing clinician needs an STR and a SIP for each practice location.",
       "addEducation": "Add Education",
       "identifiersError": "Unable to reveal practitioner identifiers.",
       "linkToSatusehat": "Link to SATUSEHAT",
@@ -765,6 +768,12 @@
           "notConfigured": "The SATUSEHAT integration is not configured yet.",
           "unreachable": "SATUSEHAT could not be reached. Try again."
         }
+      },
+      "profession": "Profession",
+      "allProfessions": "All Professions",
+      "professions": {
+        "DOCTOR": "Doctor",
+        "MIDWIFE": "Midwife"
       }
     },
     "portal": {

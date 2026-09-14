@@ -39,8 +39,20 @@ export type ClinicProfileModel = runtime.Types.Result.DefaultSelection<Prisma.$C
 
 export type AggregateClinicProfile = {
   _count: ClinicProfileCountAggregateOutputType | null
+  _avg: ClinicProfileAvgAggregateOutputType | null
+  _sum: ClinicProfileSumAggregateOutputType | null
   _min: ClinicProfileMinAggregateOutputType | null
   _max: ClinicProfileMaxAggregateOutputType | null
+}
+
+export type ClinicProfileAvgAggregateOutputType = {
+  latitude: runtime.Decimal | null
+  longitude: runtime.Decimal | null
+}
+
+export type ClinicProfileSumAggregateOutputType = {
+  latitude: runtime.Decimal | null
+  longitude: runtime.Decimal | null
 }
 
 export type ClinicProfileMinAggregateOutputType = {
@@ -55,6 +67,9 @@ export type ClinicProfileMinAggregateOutputType = {
   taxId: string | null
   logoStorageKey: string | null
   logoMimeType: string | null
+  latitude: runtime.Decimal | null
+  longitude: runtime.Decimal | null
+  satusehatLocationId: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -71,6 +86,9 @@ export type ClinicProfileMaxAggregateOutputType = {
   taxId: string | null
   logoStorageKey: string | null
   logoMimeType: string | null
+  latitude: runtime.Decimal | null
+  longitude: runtime.Decimal | null
+  satusehatLocationId: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -87,11 +105,24 @@ export type ClinicProfileCountAggregateOutputType = {
   taxId: number
   logoStorageKey: number
   logoMimeType: number
+  latitude: number
+  longitude: number
+  satusehatLocationId: number
   createdAt: number
   updatedAt: number
   _all: number
 }
 
+
+export type ClinicProfileAvgAggregateInputType = {
+  latitude?: true
+  longitude?: true
+}
+
+export type ClinicProfileSumAggregateInputType = {
+  latitude?: true
+  longitude?: true
+}
 
 export type ClinicProfileMinAggregateInputType = {
   id?: true
@@ -105,6 +136,9 @@ export type ClinicProfileMinAggregateInputType = {
   taxId?: true
   logoStorageKey?: true
   logoMimeType?: true
+  latitude?: true
+  longitude?: true
+  satusehatLocationId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -121,6 +155,9 @@ export type ClinicProfileMaxAggregateInputType = {
   taxId?: true
   logoStorageKey?: true
   logoMimeType?: true
+  latitude?: true
+  longitude?: true
+  satusehatLocationId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -137,6 +174,9 @@ export type ClinicProfileCountAggregateInputType = {
   taxId?: true
   logoStorageKey?: true
   logoMimeType?: true
+  latitude?: true
+  longitude?: true
+  satusehatLocationId?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -180,6 +220,18 @@ export type ClinicProfileAggregateArgs<ExtArgs extends runtime.Types.Extensions.
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: ClinicProfileAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: ClinicProfileSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: ClinicProfileMinAggregateInputType
@@ -210,6 +262,8 @@ export type ClinicProfileGroupByArgs<ExtArgs extends runtime.Types.Extensions.In
   take?: number
   skip?: number
   _count?: ClinicProfileCountAggregateInputType | true
+  _avg?: ClinicProfileAvgAggregateInputType
+  _sum?: ClinicProfileSumAggregateInputType
   _min?: ClinicProfileMinAggregateInputType
   _max?: ClinicProfileMaxAggregateInputType
 }
@@ -226,9 +280,14 @@ export type ClinicProfileGroupByOutputType = {
   taxId: string | null
   logoStorageKey: string | null
   logoMimeType: string | null
+  latitude: runtime.Decimal | null
+  longitude: runtime.Decimal | null
+  satusehatLocationId: string | null
   createdAt: Date
   updatedAt: Date
   _count: ClinicProfileCountAggregateOutputType | null
+  _avg: ClinicProfileAvgAggregateOutputType | null
+  _sum: ClinicProfileSumAggregateOutputType | null
   _min: ClinicProfileMinAggregateOutputType | null
   _max: ClinicProfileMaxAggregateOutputType | null
 }
@@ -263,6 +322,9 @@ export type ClinicProfileWhereInput = {
   taxId?: Prisma.StringNullableFilter<"ClinicProfile"> | string | null
   logoStorageKey?: Prisma.StringNullableFilter<"ClinicProfile"> | string | null
   logoMimeType?: Prisma.StringNullableFilter<"ClinicProfile"> | string | null
+  latitude?: Prisma.DecimalNullableFilter<"ClinicProfile"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  longitude?: Prisma.DecimalNullableFilter<"ClinicProfile"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  satusehatLocationId?: Prisma.StringNullableFilter<"ClinicProfile"> | string | null
   createdAt?: Prisma.DateTimeFilter<"ClinicProfile"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ClinicProfile"> | Date | string
 }
@@ -279,6 +341,9 @@ export type ClinicProfileOrderByWithRelationInput = {
   taxId?: Prisma.SortOrderInput | Prisma.SortOrder
   logoStorageKey?: Prisma.SortOrderInput | Prisma.SortOrder
   logoMimeType?: Prisma.SortOrderInput | Prisma.SortOrder
+  latitude?: Prisma.SortOrderInput | Prisma.SortOrder
+  longitude?: Prisma.SortOrderInput | Prisma.SortOrder
+  satusehatLocationId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -298,6 +363,9 @@ export type ClinicProfileWhereUniqueInput = Prisma.AtLeast<{
   taxId?: Prisma.StringNullableFilter<"ClinicProfile"> | string | null
   logoStorageKey?: Prisma.StringNullableFilter<"ClinicProfile"> | string | null
   logoMimeType?: Prisma.StringNullableFilter<"ClinicProfile"> | string | null
+  latitude?: Prisma.DecimalNullableFilter<"ClinicProfile"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  longitude?: Prisma.DecimalNullableFilter<"ClinicProfile"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  satusehatLocationId?: Prisma.StringNullableFilter<"ClinicProfile"> | string | null
   createdAt?: Prisma.DateTimeFilter<"ClinicProfile"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ClinicProfile"> | Date | string
 }, "id" | "facilityId">
@@ -314,11 +382,16 @@ export type ClinicProfileOrderByWithAggregationInput = {
   taxId?: Prisma.SortOrderInput | Prisma.SortOrder
   logoStorageKey?: Prisma.SortOrderInput | Prisma.SortOrder
   logoMimeType?: Prisma.SortOrderInput | Prisma.SortOrder
+  latitude?: Prisma.SortOrderInput | Prisma.SortOrder
+  longitude?: Prisma.SortOrderInput | Prisma.SortOrder
+  satusehatLocationId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.ClinicProfileCountOrderByAggregateInput
+  _avg?: Prisma.ClinicProfileAvgOrderByAggregateInput
   _max?: Prisma.ClinicProfileMaxOrderByAggregateInput
   _min?: Prisma.ClinicProfileMinOrderByAggregateInput
+  _sum?: Prisma.ClinicProfileSumOrderByAggregateInput
 }
 
 export type ClinicProfileScalarWhereWithAggregatesInput = {
@@ -336,6 +409,9 @@ export type ClinicProfileScalarWhereWithAggregatesInput = {
   taxId?: Prisma.StringNullableWithAggregatesFilter<"ClinicProfile"> | string | null
   logoStorageKey?: Prisma.StringNullableWithAggregatesFilter<"ClinicProfile"> | string | null
   logoMimeType?: Prisma.StringNullableWithAggregatesFilter<"ClinicProfile"> | string | null
+  latitude?: Prisma.DecimalNullableWithAggregatesFilter<"ClinicProfile"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  longitude?: Prisma.DecimalNullableWithAggregatesFilter<"ClinicProfile"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  satusehatLocationId?: Prisma.StringNullableWithAggregatesFilter<"ClinicProfile"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"ClinicProfile"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"ClinicProfile"> | Date | string
 }
@@ -352,6 +428,9 @@ export type ClinicProfileCreateInput = {
   taxId?: string | null
   logoStorageKey?: string | null
   logoMimeType?: string | null
+  latitude?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  longitude?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  satusehatLocationId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -368,6 +447,9 @@ export type ClinicProfileUncheckedCreateInput = {
   taxId?: string | null
   logoStorageKey?: string | null
   logoMimeType?: string | null
+  latitude?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  longitude?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  satusehatLocationId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -384,6 +466,9 @@ export type ClinicProfileUpdateInput = {
   taxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logoStorageKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logoMimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latitude?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  longitude?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  satusehatLocationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -400,6 +485,9 @@ export type ClinicProfileUncheckedUpdateInput = {
   taxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logoStorageKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logoMimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latitude?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  longitude?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  satusehatLocationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -416,6 +504,9 @@ export type ClinicProfileCreateManyInput = {
   taxId?: string | null
   logoStorageKey?: string | null
   logoMimeType?: string | null
+  latitude?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  longitude?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  satusehatLocationId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -432,6 +523,9 @@ export type ClinicProfileUpdateManyMutationInput = {
   taxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logoStorageKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logoMimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latitude?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  longitude?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  satusehatLocationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -448,6 +542,9 @@ export type ClinicProfileUncheckedUpdateManyInput = {
   taxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logoStorageKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   logoMimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latitude?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  longitude?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  satusehatLocationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -464,8 +561,16 @@ export type ClinicProfileCountOrderByAggregateInput = {
   taxId?: Prisma.SortOrder
   logoStorageKey?: Prisma.SortOrder
   logoMimeType?: Prisma.SortOrder
+  latitude?: Prisma.SortOrder
+  longitude?: Prisma.SortOrder
+  satusehatLocationId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type ClinicProfileAvgOrderByAggregateInput = {
+  latitude?: Prisma.SortOrder
+  longitude?: Prisma.SortOrder
 }
 
 export type ClinicProfileMaxOrderByAggregateInput = {
@@ -480,6 +585,9 @@ export type ClinicProfileMaxOrderByAggregateInput = {
   taxId?: Prisma.SortOrder
   logoStorageKey?: Prisma.SortOrder
   logoMimeType?: Prisma.SortOrder
+  latitude?: Prisma.SortOrder
+  longitude?: Prisma.SortOrder
+  satusehatLocationId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -496,8 +604,16 @@ export type ClinicProfileMinOrderByAggregateInput = {
   taxId?: Prisma.SortOrder
   logoStorageKey?: Prisma.SortOrder
   logoMimeType?: Prisma.SortOrder
+  latitude?: Prisma.SortOrder
+  longitude?: Prisma.SortOrder
+  satusehatLocationId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type ClinicProfileSumOrderByAggregateInput = {
+  latitude?: Prisma.SortOrder
+  longitude?: Prisma.SortOrder
 }
 
 
@@ -514,6 +630,9 @@ export type ClinicProfileSelect<ExtArgs extends runtime.Types.Extensions.Interna
   taxId?: boolean
   logoStorageKey?: boolean
   logoMimeType?: boolean
+  latitude?: boolean
+  longitude?: boolean
+  satusehatLocationId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["clinicProfile"]>
@@ -530,6 +649,9 @@ export type ClinicProfileSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   taxId?: boolean
   logoStorageKey?: boolean
   logoMimeType?: boolean
+  latitude?: boolean
+  longitude?: boolean
+  satusehatLocationId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["clinicProfile"]>
@@ -546,6 +668,9 @@ export type ClinicProfileSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   taxId?: boolean
   logoStorageKey?: boolean
   logoMimeType?: boolean
+  latitude?: boolean
+  longitude?: boolean
+  satusehatLocationId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["clinicProfile"]>
@@ -562,11 +687,14 @@ export type ClinicProfileSelectScalar = {
   taxId?: boolean
   logoStorageKey?: boolean
   logoMimeType?: boolean
+  latitude?: boolean
+  longitude?: boolean
+  satusehatLocationId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ClinicProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "facilityId" | "name" | "legalName" | "address" | "phoneNumber" | "email" | "licenseNumber" | "taxId" | "logoStorageKey" | "logoMimeType" | "createdAt" | "updatedAt", ExtArgs["result"]["clinicProfile"]>
+export type ClinicProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "facilityId" | "name" | "legalName" | "address" | "phoneNumber" | "email" | "licenseNumber" | "taxId" | "logoStorageKey" | "logoMimeType" | "latitude" | "longitude" | "satusehatLocationId" | "createdAt" | "updatedAt", ExtArgs["result"]["clinicProfile"]>
 
 export type $ClinicProfilePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "ClinicProfile"
@@ -601,6 +729,18 @@ export type $ClinicProfilePayload<ExtArgs extends runtime.Types.Extensions.Inter
      * that a future re-encode target would silently make wrong.
      */
     logoMimeType: string | null
+    /**
+     * Decimal degrees, required before any SATUSEHAT Location is registered
+     * (P24-T05, FR-LOC-01). Validated to Indonesia's bounding box because the
+     * official Location example swaps latitude and longitude.
+     */
+    latitude: runtime.Decimal | null
+    longitude: runtime.Decimal | null
+    /**
+     * The root site Location once registered (FR-LOC-02). While null, bundles
+     * keep using `SATUSEHAT_LOCATION_ID`, exactly as before this column existed.
+     */
+    satusehatLocationId: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["clinicProfile"]>
@@ -1037,6 +1177,9 @@ export interface ClinicProfileFieldRefs {
   readonly taxId: Prisma.FieldRef<"ClinicProfile", 'String'>
   readonly logoStorageKey: Prisma.FieldRef<"ClinicProfile", 'String'>
   readonly logoMimeType: Prisma.FieldRef<"ClinicProfile", 'String'>
+  readonly latitude: Prisma.FieldRef<"ClinicProfile", 'Decimal'>
+  readonly longitude: Prisma.FieldRef<"ClinicProfile", 'Decimal'>
+  readonly satusehatLocationId: Prisma.FieldRef<"ClinicProfile", 'String'>
   readonly createdAt: Prisma.FieldRef<"ClinicProfile", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"ClinicProfile", 'DateTime'>
 }

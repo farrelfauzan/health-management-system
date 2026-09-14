@@ -35,6 +35,7 @@ describe('DoctorManagement integration', () => {
     findDoctorIdentifiers: jest.fn(),
     createDoctor: jest.fn(),
     updateDoctor: jest.fn(),
+    hasClinicalHistory: jest.fn(),
     replaceDoctorSchedules: jest.fn(),
     listEducationFieldOfStudyCodes: jest.fn(),
   };
@@ -226,6 +227,53 @@ describe('DoctorManagement integration', () => {
     expect(doctorRepositoryMock.createDoctor).toHaveBeenCalledWith(
       expect.objectContaining({ actorUserId: 'admin-user' }),
     );
+  });
+
+  // P24-T03 (US-MW-01). A bidan is created with her profession, and her
+  // invitation carries the MIDWIFE role rather than DOCTOR.
+  it('creates a midwife whose invitation carries the MIDWIFE role', async () => {
+    const token = await buildToken('admin-user', 'admin@hms.local');
+    mockActorWithPermissions([{ action: 'create', resource: 'Doctor', scope: 'ANY' }]);
+    doctorRepositoryMock.findActiveSpecialtyById.mockResolvedValue({ id: specialtyId });
+    doctorRepositoryMock.createDoctor.mockResolvedValue({ ...doctorRecord, profession: 'MIDWIFE' });
+
+    const response = await request(app.getHttpServer())
+      .post('/api/v1/v1/doctors')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        licenseNumber: 'LIC-0002',
+        fullName: 'Bidan Sari',
+        specialtyId,
+        profession: 'MIDWIFE',
+        phoneNumber: '0812345678',
+        email: 'bidan.sari@clinic.local',
+        nik: '3173011503800002',
+      });
+
+    expect(response.status).toBe(201);
+    expect(response.body.data.profession).toBe('MIDWIFE');
+    expect(doctorRepositoryMock.createDoctor).toHaveBeenCalledWith(
+      expect.objectContaining({ profession: 'MIDWIFE' }),
+    );
+    expect(userInvitationServiceMock.inviteDoctorOwner).toHaveBeenCalledWith(
+      expect.objectContaining({ roleCode: 'MIDWIFE' }),
+    );
+  });
+
+  it('returns 422 CLINICIAN_PROFESSION_LOCKED when a clinician with history changes profession', async () => {
+    const token = await buildToken('admin-user', 'admin@hms.local');
+    mockActorWithPermissions([{ action: 'update', resource: 'Doctor', scope: 'ANY' }]);
+    doctorRepositoryMock.findDoctorById.mockResolvedValue(doctorRecord);
+    doctorRepositoryMock.hasClinicalHistory.mockResolvedValue(true);
+
+    const response = await request(app.getHttpServer())
+      .patch(`/api/v1/v1/doctors/${doctorId}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ profession: 'MIDWIFE' });
+
+    expect(response.status).toBe(422);
+    expect(response.body.error.code).toBe('CLINICIAN_PROFESSION_LOCKED');
+    expect(doctorRepositoryMock.updateDoctor).not.toHaveBeenCalled();
   });
 
   it('returns 409 when creating a doctor with duplicate license number', async () => {

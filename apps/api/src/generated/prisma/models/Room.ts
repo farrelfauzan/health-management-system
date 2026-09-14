@@ -36,6 +36,7 @@ export type RoomMinAggregateOutputType = {
   code: string | null
   name: string | null
   description: string | null
+  satusehatLocationId: string | null
   isActive: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -49,6 +50,7 @@ export type RoomMaxAggregateOutputType = {
   code: string | null
   name: string | null
   description: string | null
+  satusehatLocationId: string | null
   isActive: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -62,6 +64,7 @@ export type RoomCountAggregateOutputType = {
   code: number
   name: number
   description: number
+  satusehatLocationId: number
   isActive: number
   createdAt: number
   updatedAt: number
@@ -77,6 +80,7 @@ export type RoomMinAggregateInputType = {
   code?: true
   name?: true
   description?: true
+  satusehatLocationId?: true
   isActive?: true
   createdAt?: true
   updatedAt?: true
@@ -90,6 +94,7 @@ export type RoomMaxAggregateInputType = {
   code?: true
   name?: true
   description?: true
+  satusehatLocationId?: true
   isActive?: true
   createdAt?: true
   updatedAt?: true
@@ -103,6 +108,7 @@ export type RoomCountAggregateInputType = {
   code?: true
   name?: true
   description?: true
+  satusehatLocationId?: true
   isActive?: true
   createdAt?: true
   updatedAt?: true
@@ -189,6 +195,7 @@ export type RoomGroupByOutputType = {
   code: string
   name: string
   description: string | null
+  satusehatLocationId: string | null
   isActive: boolean
   createdAt: Date
   updatedAt: Date
@@ -223,6 +230,7 @@ export type RoomWhereInput = {
   code?: Prisma.StringFilter<"Room"> | string
   name?: Prisma.StringFilter<"Room"> | string
   description?: Prisma.StringNullableFilter<"Room"> | string | null
+  satusehatLocationId?: Prisma.StringNullableFilter<"Room"> | string | null
   isActive?: Prisma.BoolFilter<"Room"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Room"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Room"> | Date | string
@@ -239,6 +247,7 @@ export type RoomOrderByWithRelationInput = {
   code?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
+  satusehatLocationId?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -258,6 +267,7 @@ export type RoomWhereUniqueInput = Prisma.AtLeast<{
   code?: Prisma.StringFilter<"Room"> | string
   name?: Prisma.StringFilter<"Room"> | string
   description?: Prisma.StringNullableFilter<"Room"> | string | null
+  satusehatLocationId?: Prisma.StringNullableFilter<"Room"> | string | null
   isActive?: Prisma.BoolFilter<"Room"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Room"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Room"> | Date | string
@@ -274,6 +284,7 @@ export type RoomOrderByWithAggregationInput = {
   code?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
+  satusehatLocationId?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -293,6 +304,7 @@ export type RoomScalarWhereWithAggregatesInput = {
   code?: Prisma.StringWithAggregatesFilter<"Room"> | string
   name?: Prisma.StringWithAggregatesFilter<"Room"> | string
   description?: Prisma.StringNullableWithAggregatesFilter<"Room"> | string | null
+  satusehatLocationId?: Prisma.StringNullableWithAggregatesFilter<"Room"> | string | null
   isActive?: Prisma.BoolWithAggregatesFilter<"Room"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Room"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Room"> | Date | string
@@ -304,6 +316,7 @@ export type RoomCreateInput = {
   code: string
   name: string
   description?: string | null
+  satusehatLocationId?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -320,6 +333,7 @@ export type RoomUncheckedCreateInput = {
   code: string
   name: string
   description?: string | null
+  satusehatLocationId?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -332,6 +346,7 @@ export type RoomUpdateInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  satusehatLocationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -348,6 +363,7 @@ export type RoomUncheckedUpdateInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  satusehatLocationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -362,6 +378,7 @@ export type RoomCreateManyInput = {
   code: string
   name: string
   description?: string | null
+  satusehatLocationId?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -373,6 +390,7 @@ export type RoomUpdateManyMutationInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  satusehatLocationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -386,6 +404,7 @@ export type RoomUncheckedUpdateManyInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  satusehatLocationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -409,6 +428,7 @@ export type RoomCountOrderByAggregateInput = {
   code?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  satusehatLocationId?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -422,6 +442,7 @@ export type RoomMaxOrderByAggregateInput = {
   code?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  satusehatLocationId?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -435,6 +456,7 @@ export type RoomMinOrderByAggregateInput = {
   code?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  satusehatLocationId?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -549,6 +571,7 @@ export type RoomCreateWithoutRoomClassInput = {
   code: string
   name: string
   description?: string | null
+  satusehatLocationId?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -563,6 +586,7 @@ export type RoomUncheckedCreateWithoutRoomClassInput = {
   code: string
   name: string
   description?: string | null
+  satusehatLocationId?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -606,6 +630,7 @@ export type RoomScalarWhereInput = {
   code?: Prisma.StringFilter<"Room"> | string
   name?: Prisma.StringFilter<"Room"> | string
   description?: Prisma.StringNullableFilter<"Room"> | string | null
+  satusehatLocationId?: Prisma.StringNullableFilter<"Room"> | string | null
   isActive?: Prisma.BoolFilter<"Room"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Room"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Room"> | Date | string
@@ -617,6 +642,7 @@ export type RoomCreateWithoutWardInput = {
   code: string
   name: string
   description?: string | null
+  satusehatLocationId?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -631,6 +657,7 @@ export type RoomUncheckedCreateWithoutWardInput = {
   code: string
   name: string
   description?: string | null
+  satusehatLocationId?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -669,6 +696,7 @@ export type RoomCreateWithoutBedsInput = {
   code: string
   name: string
   description?: string | null
+  satusehatLocationId?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -684,6 +712,7 @@ export type RoomUncheckedCreateWithoutBedsInput = {
   code: string
   name: string
   description?: string | null
+  satusehatLocationId?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -711,6 +740,7 @@ export type RoomUpdateWithoutBedsInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  satusehatLocationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -726,6 +756,7 @@ export type RoomUncheckedUpdateWithoutBedsInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  satusehatLocationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -738,6 +769,7 @@ export type RoomCreateManyRoomClassInput = {
   code: string
   name: string
   description?: string | null
+  satusehatLocationId?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -749,6 +781,7 @@ export type RoomUpdateWithoutRoomClassInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  satusehatLocationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -763,6 +796,7 @@ export type RoomUncheckedUpdateWithoutRoomClassInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  satusehatLocationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -776,6 +810,7 @@ export type RoomUncheckedUpdateManyWithoutRoomClassInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  satusehatLocationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -788,6 +823,7 @@ export type RoomCreateManyWardInput = {
   code: string
   name: string
   description?: string | null
+  satusehatLocationId?: string | null
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -799,6 +835,7 @@ export type RoomUpdateWithoutWardInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  satusehatLocationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -813,6 +850,7 @@ export type RoomUncheckedUpdateWithoutWardInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  satusehatLocationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -826,6 +864,7 @@ export type RoomUncheckedUpdateManyWithoutWardInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  satusehatLocationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -870,6 +909,7 @@ export type RoomSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   code?: boolean
   name?: boolean
   description?: boolean
+  satusehatLocationId?: boolean
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -887,6 +927,7 @@ export type RoomSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   code?: boolean
   name?: boolean
   description?: boolean
+  satusehatLocationId?: boolean
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -902,6 +943,7 @@ export type RoomSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   code?: boolean
   name?: boolean
   description?: boolean
+  satusehatLocationId?: boolean
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -917,13 +959,14 @@ export type RoomSelectScalar = {
   code?: boolean
   name?: boolean
   description?: boolean
+  satusehatLocationId?: boolean
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
 }
 
-export type RoomOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "wardId" | "roomClassId" | "code" | "name" | "description" | "isActive" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["room"]>
+export type RoomOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "wardId" | "roomClassId" | "code" | "name" | "description" | "satusehatLocationId" | "isActive" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["room"]>
 export type RoomInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   ward?: boolean | Prisma.WardDefaultArgs<ExtArgs>
   roomClass?: boolean | Prisma.RoomClassDefaultArgs<ExtArgs>
@@ -953,6 +996,10 @@ export type $RoomPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     code: string
     name: string
     description: string | null
+    /**
+     * The room's SATUSEHAT Location (`ro`) once registered (P24-T05/T06).
+     */
+    satusehatLocationId: string | null
     isActive: boolean
     createdAt: Date
     updatedAt: Date
@@ -1389,6 +1436,7 @@ export interface RoomFieldRefs {
   readonly code: Prisma.FieldRef<"Room", 'String'>
   readonly name: Prisma.FieldRef<"Room", 'String'>
   readonly description: Prisma.FieldRef<"Room", 'String'>
+  readonly satusehatLocationId: Prisma.FieldRef<"Room", 'String'>
   readonly isActive: Prisma.FieldRef<"Room", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"Room", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Room", 'DateTime'>

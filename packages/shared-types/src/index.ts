@@ -83,6 +83,7 @@ export * from '#laboratory/resolve-lab-reference-range';
 export * from '#satusehat/schemas';
 export * from '#satusehat/contracts';
 export * from '#satusehat/types';
+export * from '#satusehat/resolve-satusehat-service-class-code';
 export * from '#pharmacy-flow/schemas';
 export * from '#pharmacy-flow/contracts';
 export * from '#pharmacy-flow/types';

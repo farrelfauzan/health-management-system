@@ -39,7 +39,6 @@ import { resolveInvitationStatus } from './resolve-invitation-status';
 const INVITATION_TOKEN_BYTES = 32;
 const MILLISECONDS_PER_HOUR = 60 * 60 * 1000;
 const SUPER_ADMIN_ROLE_CODE = 'SUPER_ADMIN';
-const DOCTOR_ROLE_CODE = 'DOCTOR';
 const PRIVILEGED_ROLE_CODES: ReadonlySet<string> = new Set([SUPER_ADMIN_ROLE_CODE]);
 
 type InvitationRow = Awaited<ReturnType<UserInvitationRepository['findInvitationById']>>;
@@ -140,13 +139,13 @@ export class UserInvitationService {
    * everyone else gets.
    */
   async inviteDoctorOwner(params: InviteDoctorOwnerParams): Promise<UserInvitationView> {
-    await this.assertRoleCodesExist([DOCTOR_ROLE_CODE]);
+    await this.assertRoleCodesExist([params.roleCode]);
     const now = new Date();
     const token = this.mintToken();
     const invitation = await this.userInvitationRepository.createInvitation({
       email: params.email,
       tokenHash: this.hashToken(token),
-      roleCodes: [DOCTOR_ROLE_CODE],
+      roleCodes: [params.roleCode],
       invitedById: params.invitedById,
       expiresAt: this.resolveExpiry(now),
       doctorProfileId: params.doctorProfileId,
@@ -156,7 +155,7 @@ export class UserInvitationService {
       resource: 'user_invitation',
       actorUserId: params.invitedById,
       resourceId: invitation.id,
-      metadata: { roleCodes: [DOCTOR_ROLE_CODE], doctorProfileId: params.doctorProfileId },
+      metadata: { roleCodes: [params.roleCode], doctorProfileId: params.doctorProfileId },
     });
     await this.deliverInvitation(invitation, token);
     return this.presentInvitation(invitation, await this.resolveRoleNames([invitation]), now);

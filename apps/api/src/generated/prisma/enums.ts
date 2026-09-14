@@ -343,6 +343,17 @@ export const DoctorLicenseType = {
 export type DoctorLicenseType = (typeof DoctorLicenseType)[keyof typeof DoctorLicenseType]
 
 
+export const SatusehatServiceClass = {
+  CLASS_1: 'CLASS_1',
+  CLASS_2: 'CLASS_2',
+  CLASS_3: 'CLASS_3',
+  VIP: 'VIP',
+  VVIP: 'VVIP'
+} as const
+
+export type SatusehatServiceClass = (typeof SatusehatServiceClass)[keyof typeof SatusehatServiceClass]
+
+
 export const ClinicianProfession = {
   DOCTOR: 'DOCTOR',
   MIDWIFE: 'MIDWIFE'

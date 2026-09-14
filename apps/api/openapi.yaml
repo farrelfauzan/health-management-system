@@ -49342,6 +49342,20 @@ components:
           minLength: 1
           maxLength: 255
           nullable: true
+        latitude:
+          type: number
+          minimum: -11
+          exclusiveMinimum: false
+          maximum: 6
+          exclusiveMaximum: false
+          nullable: true
+        longitude:
+          type: number
+          minimum: 95
+          exclusiveMinimum: false
+          maximum: 141
+          exclusiveMaximum: false
+          nullable: true
     CreateClinicLogoUploadUrlDto:
       type: object
       properties:
@@ -50223,6 +50237,11 @@ components:
         specialtyId:
           type: string
           format: uuid
+        profession:
+          type: string
+          enum:
+            - DOCTOR
+            - MIDWIFE
         phoneNumber:
           description: Indonesian phone number. Accepts 0812…, +62 812-…, 62812… and
             punctuated forms; stored as 62812….
@@ -50327,6 +50346,11 @@ components:
         specialtyId:
           type: string
           format: uuid
+        profession:
+          type: string
+          enum:
+            - DOCTOR
+            - MIDWIFE
         phoneNumber:
           description: Indonesian phone number. Accepts 0812…, +62 812-…, 62812… and
             punctuated forms; stored as 62812….
@@ -51100,6 +51124,14 @@ components:
           exclusiveMinimum: false
           maximum: 9999
           exclusiveMaximum: false
+        satusehatServiceClass:
+          type: string
+          enum:
+            - CLASS_1
+            - CLASS_2
+            - CLASS_3
+            - VIP
+            - VVIP
         isActive:
           type: boolean
       required:
@@ -51122,6 +51154,15 @@ components:
           exclusiveMinimum: false
           maximum: 9999
           exclusiveMaximum: false
+          nullable: true
+        satusehatServiceClass:
+          type: string
+          enum:
+            - CLASS_1
+            - CLASS_2
+            - CLASS_3
+            - VIP
+            - VVIP
           nullable: true
         isActive:
           type: boolean

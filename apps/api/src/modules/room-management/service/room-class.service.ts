@@ -62,6 +62,7 @@ export class RoomClassService {
         name: payload.name,
         description: payload.description,
         quota: payload.quota,
+        satusehatServiceClass: payload.satusehatServiceClass,
         isActive: payload.isActive,
       });
       return this.roomInventoryMapper.toRoomClassResponse(created, 0);
@@ -169,6 +170,9 @@ export class RoomClassService {
       ...(payload.name !== undefined ? { name: payload.name } : {}),
       ...(payload.description !== undefined ? { description: payload.description } : {}),
       ...(payload.quota !== undefined ? { quota: payload.quota } : {}),
+      ...(payload.satusehatServiceClass !== undefined
+        ? { satusehatServiceClass: payload.satusehatServiceClass }
+        : {}),
       ...(payload.isActive !== undefined ? { isActive: payload.isActive } : {}),
     };
   }

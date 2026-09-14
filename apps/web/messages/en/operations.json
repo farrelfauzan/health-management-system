@@ -844,7 +844,9 @@
           "phoneNumber": "Phone number",
           "email": "Email",
           "licenseNumber": "Operating licence number",
-          "taxId": "Tax ID (NPWP)"
+          "taxId": "Tax ID (NPWP)",
+          "latitude": "Latitude",
+          "longitude": "Longitude"
         },
         "logo": {
           "label": "Logo",
@@ -865,8 +867,10 @@
           "loadFailed": "Unable to load the clinic profile. Please try again."
         },
         "errors": {
-          "saveFailed": "Unable to save the clinic profile. Please try again."
-        }
+          "saveFailed": "Unable to save the clinic profile. Please try again.",
+          "coordinatesPair": "Enter both latitude and longitude as numbers, or leave both empty."
+        },
+        "coordinatesHint": "Decimal degrees, used to register the clinic's locations on SATUSEHAT. In Indonesia latitude is between -11 and 6 and longitude between 95 and 141 — check they are not swapped."
       },
       "offboarding": {
         "offboard": "Offboard",
@@ -957,7 +961,17 @@
       "noRooms": "No rooms yet. Create a room under the Rooms tab first.",
       "noRoomsDescription": "Every bed belongs to a room. Create one first, then come back to add beds.",
       "goToWards": "Go to Wards",
-      "goToRooms": "Go to Rooms"
+      "goToRooms": "Go to Rooms",
+      "satusehatServiceClass": "SATUSEHAT service class",
+      "serviceClassUnmapped": "Not mapped",
+      "serviceClassHint": "Rooms of an unmapped class cannot be registered on SATUSEHAT. A class above VVIP maps to VVIP.",
+      "serviceClasses": {
+        "CLASS_1": "Class 1",
+        "CLASS_2": "Class 2",
+        "CLASS_3": "Class 3",
+        "VIP": "VIP",
+        "VVIP": "VVIP"
+      }
     },
     "admissions": {
       "title": "Admissions",

@@ -43,4 +43,10 @@ describe('resolveShellProfile', () => {
       email: '',
     });
   });
+
+  it('labels a midwife session as a midwife (P24-T03)', () => {
+    const actualProfile = resolveShellProfile({ email: 'bidan.sari@clinic.local', roles: ['MIDWIFE'] });
+
+    expect(actualProfile.roleKey).toBe('midwife');
+  });
 });

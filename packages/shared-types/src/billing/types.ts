@@ -320,6 +320,9 @@ export type ClinicProfileRecord = {
   taxId: string | null;
   logoStorageKey: string | null;
   logoMimeType: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  satusehatLocationId: string | null;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -340,6 +343,8 @@ export type SaveClinicProfileData = {
   taxId?: string | null;
   logoStorageKey?: string | null;
   logoMimeType?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
 };
 
 /**

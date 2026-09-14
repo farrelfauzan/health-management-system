@@ -69,7 +69,7 @@ describe('AppSidebar', () => {
     const expectedLabels = [
       'Dasbor',
       'Pasien',
-      'Dokter',
+      'Tenaga Klinis',
       'Janji temu',
       'Pendaftaran',
       'Farmasi',
@@ -89,7 +89,7 @@ describe('AppSidebar', () => {
     expect(screen.getByRole('link', { name: 'Pasien' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Dasbor' })).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Asisten AI' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('link', { name: 'Dokter' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Tenaga Klinis' })).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Farmasi' })).not.toBeInTheDocument();
   });
 
@@ -103,7 +103,7 @@ describe('AppSidebar', () => {
     const expectedLabels = [
       'Dasbor',
       'Pasien',
-      'Dokter',
+      'Tenaga Klinis',
       'Janji temu',
       'Pendaftaran',
       'Farmasi',
