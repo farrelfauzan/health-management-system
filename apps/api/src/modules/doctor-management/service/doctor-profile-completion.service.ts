@@ -1,4 +1,9 @@
-import { DoctorRecord, joinDegreeCodes, splitDegreeCodes } from '@hms/shared-types';
+import {
+  DoctorRecord,
+  joinDegreeCodes,
+  splitDegreeCodes,
+  isClinicianRoleCode,
+} from '@hms/shared-types';
 import {
   BadRequestException,
   ConflictException,
@@ -17,7 +22,6 @@ import { DoctorCredentialOptionService } from './doctor-credential-option.servic
 import { DoctorManagementService } from './doctor-management.service';
 
 const DOCTOR_AUDIT_RESOURCE = 'DoctorProfile';
-const DOCTOR_ROLE_CODE = 'DOCTOR';
 const NIK_TAKEN_MESSAGE = 'This NIK already belongs to another doctor';
 
 /**
@@ -61,7 +65,7 @@ export class DoctorProfileCompletionService {
   private async assertHoldsDoctorRole(currentUser: CurrentUser): Promise<void> {
     const actor = await this.authRepository.findUserById(currentUser.sub);
     const isDoctor = (actor?.roles ?? []).some(
-      (userRole) => userRole.unassignedAt === null && userRole.role.code === DOCTOR_ROLE_CODE,
+      (userRole) => userRole.unassignedAt === null && isClinicianRoleCode(userRole.role.code),
     );
     if (!isDoctor) {
       throw new ForbiddenException('Only a doctor can complete a doctor profile');

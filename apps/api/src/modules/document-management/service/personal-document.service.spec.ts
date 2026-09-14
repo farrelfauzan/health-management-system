@@ -58,6 +58,35 @@ describe('PersonalDocumentService', () => {
   });
 
   describe('getPreview', () => {
+    // D-034. A midwife's personal corpus lives with the clinicians', under the
+    // DOCTOR owner type, not the admin one.
+    it("opens a midwife's own document under the clinician owner type", async () => {
+      authRepositoryMock.findUserById.mockResolvedValue({
+        id: DOCTOR_ID,
+        roles: [
+          {
+            role: {
+              code: 'MIDWIFE',
+              permissions: [{ permission: { resource: 'Document', action: 'read', scope: 'OWN' } }],
+            },
+          },
+        ],
+      });
+      documentRepositoryMock.findDocumentById.mockResolvedValue(buildDocumentRecord());
+      objectStorageServiceMock.getObject.mockResolvedValue({
+        key: STORAGE_KEY,
+        body: Buffer.from('catatan'),
+      });
+
+      await service.getPreview(DOCUMENT_ID, ACTOR);
+
+      expect(documentRepositoryMock.findDocumentById).toHaveBeenCalledWith(
+        DOCUMENT_ID,
+        'DOCTOR',
+        DOCTOR_ID,
+      );
+    });
+
     it('returns my own Markdown document’s text, stripped of markup', async () => {
       documentRepositoryMock.findDocumentById.mockResolvedValue(buildDocumentRecord());
       objectStorageServiceMock.getObject.mockResolvedValue({

@@ -38,7 +38,11 @@ WITH seed_roles(code, name, description) AS (
     -- P18-T03/T04 collects specimens and enters results. Deliberately holds
     -- no clinical `:any` key beyond the lab ones — a lab technician has no
     -- reason to read an encounter note.
-    ('LAB_TECHNICIAN', 'Lab Technician', 'Laboratory workflow operator')
+    ('LAB_TECHNICIAN', 'Lab Technician', 'Laboratory workflow operator'),
+    -- D-034 (P24-T02). A clinician like DOCTOR, on the same clinician profile
+    -- and the same portal. Her grants are DOCTOR's, less one; see the
+    -- MIDWIFE block at the end of the role permissions below.
+    ('MIDWIFE', 'Midwife', 'Clinical user (bidan) with clinician-scoped access')
 )
 INSERT INTO "roles" (
   "id",
@@ -931,7 +935,64 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('ADMIN', 'bug-report.create:own'),
     ('DOCTOR', 'bug-report.create:own'),
     ('PHARMACIST', 'bug-report.create:own'),
-    ('LAB_TECHNICIAN', 'bug-report.create:own')
+    ('LAB_TECHNICIAN', 'bug-report.create:own'),
+    -- D-034 (P24-T02). MIDWIFE holds every DOCTOR grant above except
+    -- `lab-result.verify:any`: signing out a lab result is not among a
+    -- midwife's own authorities in Permenkes 28/2017 Pasal 19-21. Kept in the
+    -- same order as DOCTOR's rows, and `midwife-rbac-seed.spec.ts` fails when
+    -- a DOCTOR grant is added here without a decision about midwives. What she
+    -- may prescribe is narrowed in the service, not here (P24-T04).
+    ('MIDWIFE', 'portal.doctor-access:any'),
+    ('MIDWIFE', 'auth.logout:own'),
+    ('MIDWIFE', 'patient.read:own'),
+    ('MIDWIFE', 'doctor.read:any'),
+    ('MIDWIFE', 'doctor.read-identifier:own'),
+    ('MIDWIFE', 'doctor.update:own'),
+    ('MIDWIFE', 'doctor.schedule.write:own'),
+    ('MIDWIFE', 'appointment.read:own'),
+    ('MIDWIFE', 'appointment.update:own'),
+    ('MIDWIFE', 'appointment.cancel:own'),
+    ('MIDWIFE', 'appointment.session.read:own'),
+    ('MIDWIFE', 'registration.read:any'),
+    ('MIDWIFE', 'encounter.read:own'),
+    ('MIDWIFE', 'encounter.write:own'),
+    ('MIDWIFE', 'satusehat.record.read:own'),
+    ('MIDWIFE', 'icd10-code.read:any'),
+    ('MIDWIFE', 'icd9cm-code.read:any'),
+    ('MIDWIFE', 'medication.read:any'),
+    ('MIDWIFE', 'lab-test.read:any'),
+    ('MIDWIFE', 'lab-order.read:own'),
+    ('MIDWIFE', 'lab-order.write:own'),
+    ('MIDWIFE', 'lab-settings.read:any'),
+    ('MIDWIFE', 'prescription.read:own'),
+    ('MIDWIFE', 'prescription.write:own'),
+    ('MIDWIFE', 'chat.session.create:own'),
+    ('MIDWIFE', 'chat.session.read:own'),
+    ('MIDWIFE', 'chat.session.delete:own'),
+    ('MIDWIFE', 'chat.message.create:own'),
+    ('MIDWIFE', 'chat.message.read:own'),
+    ('MIDWIFE', 'document.read:own'),
+    ('MIDWIFE', 'document.write:own'),
+    ('MIDWIFE', 'patient-document.read:own'),
+    ('MIDWIFE', 'patient-document.write:own'),
+    ('MIDWIFE', 'patient-document.release:own'),
+    ('MIDWIFE', 'vault-document.read:own'),
+    ('MIDWIFE', 'vault-document.write:own'),
+    ('MIDWIFE', 'vault-document.delete:own'),
+    ('MIDWIFE', 'vault-document.share:own'),
+    ('MIDWIFE', 'clinic-profile.read:any'),
+    ('MIDWIFE', 'feature.read-availability:own'),
+    ('MIDWIFE', 'roomclass.read:any'),
+    ('MIDWIFE', 'ward.read:any'),
+    ('MIDWIFE', 'room.read:any'),
+    ('MIDWIFE', 'bed.read:any'),
+    ('MIDWIFE', 'admission.read:own'),
+    ('MIDWIFE', 'admission.admit:any'),
+    ('MIDWIFE', 'admission.transfer:any'),
+    ('MIDWIFE', 'admission.discharge:any'),
+    ('MIDWIFE', 'notification.read:own'),
+    ('MIDWIFE', 'notification.manage:own'),
+    ('MIDWIFE', 'bug-report.create:own')
 ),
 combined_role_permissions AS (
   SELECT 'SUPER_ADMIN'::text AS role_code, p."permission_key"

@@ -23907,6 +23907,14 @@ paths:
             enum:
               - "true"
               - "false"
+        - name: profession
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - DOCTOR
+              - MIDWIFE
       responses:
         "200":
           description: A paginated list of doctors.
@@ -23929,6 +23937,8 @@ paths:
                         specialtyId:
                           type: string
                         specialty:
+                          type: string
+                        profession:
                           type: string
                         phoneNumber:
                           type: string
@@ -24011,6 +24021,7 @@ paths:
                         - fullName
                         - specialtyId
                         - specialty
+                        - profession
                         - phoneNumber
                         - email
                         - title
@@ -24050,6 +24061,7 @@ paths:
                       fullName: Dr. Budi Santoso
                       specialtyId: eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee
                       specialty: Internal Medicine
+                      profession: DOCTOR
                       phoneNumber: "+628129876543"
                       email: budi.santoso@clinic.local
                       title: dr.
@@ -24166,6 +24178,8 @@ paths:
                         type: string
                       specialty:
                         type: string
+                      profession:
+                        type: string
                       phoneNumber:
                         type: string
                       email:
@@ -24224,6 +24238,7 @@ paths:
                       - fullName
                       - specialtyId
                       - specialty
+                      - profession
                       - phoneNumber
                       - email
                       - title
@@ -24250,6 +24265,7 @@ paths:
                     fullName: Dr. Budi Santoso
                     specialtyId: eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee
                     specialty: Internal Medicine
+                    profession: DOCTOR
                     phoneNumber: "+628129876543"
                     email: budi.santoso@clinic.local
                     title: dr.
@@ -24331,6 +24347,8 @@ paths:
                       specialtyId:
                         type: string
                       specialty:
+                        type: string
+                      profession:
                         type: string
                       phoneNumber:
                         type: string
@@ -24496,6 +24514,7 @@ paths:
                       - fullName
                       - specialtyId
                       - specialty
+                      - profession
                       - phoneNumber
                       - email
                       - title
@@ -24524,6 +24543,7 @@ paths:
                     fullName: Dr. Budi Santoso
                     specialtyId: eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee
                     specialty: Internal Medicine
+                    profession: DOCTOR
                     phoneNumber: "+628129876543"
                     email: budi.santoso@clinic.local
                     title: dr.
@@ -24669,6 +24689,8 @@ paths:
                         type: string
                       specialty:
                         type: string
+                      profession:
+                        type: string
                       phoneNumber:
                         type: string
                       email:
@@ -24727,6 +24749,7 @@ paths:
                       - fullName
                       - specialtyId
                       - specialty
+                      - profession
                       - phoneNumber
                       - email
                       - title
@@ -24753,6 +24776,7 @@ paths:
                     fullName: Dr. Budi Santoso
                     specialtyId: eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee
                     specialty: Internal Medicine
+                    profession: DOCTOR
                     phoneNumber: "+628129876543"
                     email: budi.santoso@clinic.local
                     title: dr.
@@ -24926,6 +24950,8 @@ paths:
                         type: string
                       specialty:
                         type: string
+                      profession:
+                        type: string
                       phoneNumber:
                         type: string
                       email:
@@ -24984,6 +25010,7 @@ paths:
                       - fullName
                       - specialtyId
                       - specialty
+                      - profession
                       - phoneNumber
                       - email
                       - title
@@ -25010,6 +25037,7 @@ paths:
                     fullName: Dr. Budi Santoso
                     specialtyId: eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee
                     specialty: Internal Medicine
+                    profession: DOCTOR
                     phoneNumber: "+628129876543"
                     email: budi.santoso@clinic.local
                     title: dr.
@@ -25203,6 +25231,8 @@ paths:
                         type: string
                       specialty:
                         type: string
+                      profession:
+                        type: string
                       phoneNumber:
                         type: string
                       email:
@@ -25367,6 +25397,7 @@ paths:
                       - fullName
                       - specialtyId
                       - specialty
+                      - profession
                       - phoneNumber
                       - email
                       - title
@@ -25395,6 +25426,7 @@ paths:
                     fullName: Dr. Budi Santoso
                     specialtyId: eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee
                     specialty: Internal Medicine
+                    profession: DOCTOR
                     phoneNumber: "+628129876543"
                     email: budi.santoso@clinic.local
                     title: dr.
@@ -25537,6 +25569,8 @@ paths:
                         type: string
                       specialty:
                         type: string
+                      profession:
+                        type: string
                       phoneNumber:
                         type: string
                       email:
@@ -25701,6 +25735,7 @@ paths:
                       - fullName
                       - specialtyId
                       - specialty
+                      - profession
                       - phoneNumber
                       - email
                       - title
@@ -25732,6 +25767,7 @@ paths:
                     fullName: Dr. Budi Santoso
                     specialtyId: eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee
                     specialty: Internal Medicine
+                    profession: DOCTOR
                     phoneNumber: "+628129876543"
                     email: budi.santoso@clinic.local
                     title: dr.
@@ -25891,6 +25927,8 @@ paths:
                         type: string
                       specialty:
                         type: string
+                      profession:
+                        type: string
                       phoneNumber:
                         type: string
                       email:
@@ -26055,6 +26093,7 @@ paths:
                       - fullName
                       - specialtyId
                       - specialty
+                      - profession
                       - phoneNumber
                       - email
                       - title
@@ -26086,6 +26125,7 @@ paths:
                     fullName: Dr. Budi Santoso
                     specialtyId: eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee
                     specialty: Internal Medicine
+                    profession: DOCTOR
                     phoneNumber: "+628129876543"
                     email: budi.santoso@clinic.local
                     title: dr.

@@ -582,6 +582,23 @@ export type EnumDoctorCredentialKindWithAggregatesFilter<$PrismaModel = never> =
   _max?: Prisma.NestedEnumDoctorCredentialKindFilter<$PrismaModel>
 }
 
+export type EnumClinicianProfessionFilter<$PrismaModel = never> = {
+  equals?: $Enums.ClinicianProfession | Prisma.EnumClinicianProfessionFieldRefInput<$PrismaModel>
+  in?: $Enums.ClinicianProfession[] | Prisma.ListEnumClinicianProfessionFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ClinicianProfession[] | Prisma.ListEnumClinicianProfessionFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumClinicianProfessionFilter<$PrismaModel> | $Enums.ClinicianProfession
+}
+
+export type EnumClinicianProfessionWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ClinicianProfession | Prisma.EnumClinicianProfessionFieldRefInput<$PrismaModel>
+  in?: $Enums.ClinicianProfession[] | Prisma.ListEnumClinicianProfessionFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ClinicianProfession[] | Prisma.ListEnumClinicianProfessionFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumClinicianProfessionWithAggregatesFilter<$PrismaModel> | $Enums.ClinicianProfession
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumClinicianProfessionFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumClinicianProfessionFilter<$PrismaModel>
+}
+
 export type EnumDoctorLicenseTypeFilter<$PrismaModel = never> = {
   equals?: $Enums.DoctorLicenseType | Prisma.EnumDoctorLicenseTypeFieldRefInput<$PrismaModel>
   in?: $Enums.DoctorLicenseType[] | Prisma.ListEnumDoctorLicenseTypeFieldRefInput<$PrismaModel>
@@ -2669,6 +2686,23 @@ export type NestedEnumDoctorCredentialKindWithAggregatesFilter<$PrismaModel = ne
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumDoctorCredentialKindFilter<$PrismaModel>
   _max?: Prisma.NestedEnumDoctorCredentialKindFilter<$PrismaModel>
+}
+
+export type NestedEnumClinicianProfessionFilter<$PrismaModel = never> = {
+  equals?: $Enums.ClinicianProfession | Prisma.EnumClinicianProfessionFieldRefInput<$PrismaModel>
+  in?: $Enums.ClinicianProfession[] | Prisma.ListEnumClinicianProfessionFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ClinicianProfession[] | Prisma.ListEnumClinicianProfessionFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumClinicianProfessionFilter<$PrismaModel> | $Enums.ClinicianProfession
+}
+
+export type NestedEnumClinicianProfessionWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ClinicianProfession | Prisma.EnumClinicianProfessionFieldRefInput<$PrismaModel>
+  in?: $Enums.ClinicianProfession[] | Prisma.ListEnumClinicianProfessionFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ClinicianProfession[] | Prisma.ListEnumClinicianProfessionFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumClinicianProfessionWithAggregatesFilter<$PrismaModel> | $Enums.ClinicianProfession
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumClinicianProfessionFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumClinicianProfessionFilter<$PrismaModel>
 }
 
 export type NestedEnumDoctorLicenseTypeFilter<$PrismaModel = never> = {

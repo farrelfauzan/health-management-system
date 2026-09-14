@@ -9,6 +9,7 @@ import {
   ExpiryReportItemResponse,
   checkMedicationExpiryToolArgsSchema,
   checkMedicationExpiryToolResultSchema,
+  CLINICIAN_ROLE_CODES,
 } from '@hms/shared-types';
 
 import { CurrentUser } from '../../../../common/auth/current-user.type';
@@ -56,7 +57,7 @@ export class CheckMedicationExpiryTool implements ChatTool {
    */
   readonly channels: readonly ChatChannelValue[] = ['DOCTOR', 'ADMIN'];
 
-  readonly allowedRoleCodes: readonly string[] = ['DOCTOR', 'ADMIN', 'SUPER_ADMIN'];
+  readonly allowedRoleCodes: readonly string[] = [...CLINICIAN_ROLE_CODES, 'ADMIN', 'SUPER_ADMIN'];
 
   readonly requiredPermission: {
     readonly resource: string;

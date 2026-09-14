@@ -482,6 +482,7 @@ export const DoctorProfileScalarFieldEnum = {
   licenseNumber: 'licenseNumber',
   fullName: 'fullName',
   specialtyId: 'specialtyId',
+  profession: 'profession',
   phoneNumber: 'phoneNumber',
   ownerUserId: 'ownerUserId',
   isActive: 'isActive',

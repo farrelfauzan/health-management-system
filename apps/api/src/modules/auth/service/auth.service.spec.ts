@@ -492,7 +492,28 @@ describe('AuthService', () => {
       expect(actualSession.isProfileIncomplete).toBe(true);
     });
 
-    it('never gates a role other than DOCTOR, and never even looks for a profile', async () => {
+    // D-034. The gate is for every clinician role: a midwife invited without a
+    // profile must complete one before she can examine anybody.
+    it('gates a midwife who has no clinician profile', async () => {
+      (authRepositoryMock.findUserByEmail as jest.Mock).mockResolvedValue({
+        ...user,
+        roles: [
+          {
+            unassignedAt: null,
+            role: {
+              code: 'MIDWIFE',
+              permissions: [{ permission: { permissionKey: 'portal.doctor-access:any' } }],
+            },
+          },
+        ],
+      });
+
+      const actualSession = await loginForSession();
+
+      expect(actualSession.isProfileIncomplete).toBe(true);
+    });
+
+    it('never gates a non-clinician role, and never even looks for a profile', async () => {
       // P20-T04 has not decided what a profile is for anyone else.
       (authRepositoryMock.findUserByEmail as jest.Mock).mockResolvedValue({
         ...user,

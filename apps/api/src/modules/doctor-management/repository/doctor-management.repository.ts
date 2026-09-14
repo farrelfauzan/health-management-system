@@ -29,6 +29,7 @@ const DOCTOR_RECORD_SELECT = {
   licenseNumber: true,
   fullName: true,
   specialtyId: true,
+  profession: true,
   phoneNumber: true,
   title: true,
   degrees: true,
@@ -157,7 +158,8 @@ export class DoctorManagementRepository {
   ) {}
 
   async listDoctors(params: ListDoctorsParams) {
-    const { page, limit, search, specialtyId, patientId, isActive, missingNik } = params;
+    const { page, limit, search, specialtyId, patientId, isActive, missingNik, profession } =
+      params;
     const skip = (page - 1) * limit;
 
     const where = {
@@ -167,6 +169,7 @@ export class DoctorManagementRepository {
       // actually needs, and the one carrying the uniqueness constraint, so a
       // half-written row reads as missing here instead of as present.
       ...(missingNik === undefined ? {} : { nikIndex: missingNik ? null : { not: null } }),
+      ...(profession === undefined ? {} : { profession }),
       ...(patientId
         ? {
             patients: {

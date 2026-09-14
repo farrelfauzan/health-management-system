@@ -354,6 +354,14 @@ export const SatusehatServiceClass = {
 export type SatusehatServiceClass = (typeof SatusehatServiceClass)[keyof typeof SatusehatServiceClass]
 
 
+export const ClinicianProfession = {
+  DOCTOR: 'DOCTOR',
+  MIDWIFE: 'MIDWIFE'
+} as const
+
+export type ClinicianProfession = (typeof ClinicianProfession)[keyof typeof ClinicianProfession]
+
+
 export const AppointmentStatus = {
   REQUESTED: 'REQUESTED',
   SCHEDULED: 'SCHEDULED',

@@ -107,6 +107,8 @@ export * from '#auth/unpack-permission-hint';
 export * from '#rbac/schemas';
 export * from '#rbac/contracts';
 export * from '#rbac/types';
+export * from '#rbac/clinician-role-codes';
+export * from '#rbac/is-clinician-role-code';
 export * from '#ai-chatbot/schemas';
 export * from '#ai-chatbot/contracts';
 export * from '#ai-chatbot/types';

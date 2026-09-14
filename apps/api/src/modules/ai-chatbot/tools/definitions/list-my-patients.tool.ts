@@ -8,6 +8,7 @@ import {
   ListMyPatientsToolResult,
   listMyPatientsToolArgsSchema,
   listMyPatientsToolResultSchema,
+  CLINICIAN_ROLE_CODES,
 } from '@hms/shared-types';
 
 import { CurrentUser } from '../../../../common/auth/current-user.type';
@@ -46,7 +47,7 @@ export class ListMyPatientsTool implements ChatTool {
 
   readonly channels: readonly ChatChannelValue[] = ['DOCTOR'];
 
-  readonly allowedRoleCodes: readonly string[] = ['DOCTOR'];
+  readonly allowedRoleCodes: readonly string[] = [...CLINICIAN_ROLE_CODES];
 
   readonly requiredPermission: {
     readonly resource: string;

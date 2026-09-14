@@ -84,6 +84,8 @@
     "#rbac/schemas": "./src/rbac/schemas.ts",
     "#rbac/contracts": "./src/rbac/contracts.ts",
     "#rbac/types": "./src/rbac/types.ts",
+    "#rbac/clinician-role-codes": "./src/rbac/clinician-role-codes.ts",
+    "#rbac/is-clinician-role-code": "./src/rbac/is-clinician-role-code.ts",
     "#ai-chatbot/schemas": "./src/ai-chatbot/schemas.ts",
     "#ai-chatbot/contracts": "./src/ai-chatbot/contracts.ts",
     "#ai-chatbot/types": "./src/ai-chatbot/types.ts",

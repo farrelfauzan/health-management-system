@@ -245,9 +245,9 @@ Organization (SATUSEHAT_ORGANIZATION_ID)
 | FR-NB-03 | MUST | Resolving the IHS number for a patient without a NIK but with a mother: take the mother's NIK, `GET /Patient?identifier=https://fhir.kemkes.go.id/id/nik-ibu\|{nik}`, and pick the entry whose `birthDate` and `multipleBirthInteger` match. If none matches, `POST /Patient` with the `nik-ibu` identifier. Store the IHS number on the baby and audit `SATUSEHAT_PATIENT_CREATED` or `SATUSEHAT_PATIENT_LINKED` (`lookup: 'NIK_IBU'`) |
 | FR-NB-04 | MUST | A mother without a NIK, or not found on SATUSEHAT, fails the baby's submission with a distinct message ("NIK ibu belum tercatat" / "Ibu tidak ditemukan di SATUSEHAT"), not the generic "Patient has no NIK" |
 | FR-NB-05 | MUST | Adding a first NIK to a newborn that already has an IHS number PATCHes that SATUSEHAT Patient (SATUSEHAT checks NIK + name + birth date against Dukcapil) and keeps the IHS number. P21-T09's unlink-on-NIK-change rule exempts this case. A rejection is shown to the admin; the NIK is saved locally either way |
-| FR-IM-01 | MUST | Immunization sends `recorded` (row `createdAt`), `primarySource`, and `performer[].function` = `AP` (administering, `v2-0443`) next to the actor |
-| FR-IM-02 | MUST | New `Immunization.isHistorical` (default false) for doses copied from a card or KIA book. `primarySource = !isHistorical`. A new, non-historical dose requires `expirationDate` (400 from the shared schema). A historical dose without one is kept locally and skipped in the bundle, with the gap named in the skipped-items log (P21-T02) |
-| FR-IM-03 | SHOULD | `Immunization.reason` (`ImmunizationReason`) → `reasonCode` in `http://terminology.kemkes.go.id/CodeSystem/immunization-reason`: `IM-Dasar`, `IM-Baduta`, `IM-SD`, `IM-WUS`, `IM-Tambahan`, `IM-Khusus`, `IM-Pilihan`. Routine timing (`immunization-routine-timing`) follows once the spike confirms the full code list |
+| FR-IM-01 | MUST | Immunization sends `recorded` (row `createdAt`), `primarySource`, `protocolApplied[0].doseNumberPositiveInt`, and `performer[].function` next to the actor: `AP` (administering, `v2-0443`) for a dose given here, **`EP` for a historical dose**. Staging enforces the pairing (RuleNumber 10307, P24-T01) |
+| FR-IM-02 | MUST | New `Immunization.isHistorical` (default false) for doses copied from a card or KIA book. `primarySource = !isHistorical`. A new, non-historical dose requires `expirationDate` **and `lotNumber`** (400 from the shared schema; staging refuses either missing, RuleNumber 10306/10307). A historical dose without one is kept locally and skipped in the bundle, with the gap named in the skipped-items log (P21-T02) |
+| FR-IM-03 | MUST | `Immunization.reason` (`ImmunizationReason`) → `reasonCode` in `http://terminology.kemkes.go.id/CodeSystem/immunization-reason`: `IM-Dasar`, `IM-Baduta`, `IM-SD`, `IM-WUS`, `IM-Tambahan`, `IM-Khusus`, `IM-Pilihan`. Routine timing (`immunization-routine-timing`) follows once the spike confirms the full code list |
 | FR-IM-04 | MUST | `Immunization.location` = the poli Location from E2 when registered |
 | FR-IM-05 | MUST | Depends on P21-T02: `satusehatImmunizationId` is persisted, and a resubmission never POSTs the same dose twice |
 
@@ -411,12 +411,12 @@ Sprint 28 = 29 points, Sprint 29 = 27, Sprint 30 = 19 (16 without T17). Sprint 3
 
 | # | Question | Owner | Needed by | Blocking? |
 | --- | --- | --- | --- | --- |
-| Q1 | Does SATUSEHAT accept a poli Location without `serviceClass`? | Engineering (P24-T01) | 2026-09-18 | Blocks P24-T06 |
+| Q1 | Does SATUSEHAT accept a poli Location without `serviceClass`? **Answered 2026-09-13: yes (201), see `docs/ops/klinik-bidan-sandbox-spike.md` §1** | Engineering (P24-T01) | 2026-09-18 | Resolved |
 | Q2 | Rawat gabung: does the baby get her own admission and bed, or does she ride on the mother's stay? The partial unique index allows one open assignment per bed | Product + pilot bidan | 2026-09-18 | Blocks newborn stays in P24-T08 |
 | Q3 | Should the EMR enforce delegated authority (Permenkes 28/2017 Pasal 22–25: program immunisation beyond HB0, IUD/implant, MTBS), or leave it to the clinic? | Product + clinic compliance | 2026-09-25 | No |
 | Q4 | Has PP 28/2024 or a newer Permenkes replaced Permenkes 28/2017 on midwife authority? | Product (legal check) | 2026-09-25 | No |
 | Q5 | Who runs KYC at a klinik bidan, and does P20-T04's staff profile land before Sprint 30? If not, where does the operator NIK live in the meantime? | Product | 2026-09-22 | Blocks P24-T15 |
-| Q6 | Is there a KYC sandbox? | Engineering (P24-T01) | 2026-09-18 | Blocks P24-T16 verification |
+| Q6 | Is there a KYC sandbox? **Partly answered 2026-09-13: a staging endpoint exists and expects the encrypted body; end-to-end needs a registered key pair (spike §3)** | Engineering (P24-T01) | 2026-09-18 | Blocks P24-T16 verification until keys exist |
 | Q7 | Do we ever know a patient's entitled room class (BPJS), so that `naik-kelas` / `turun-kelas` can be sent? | Product | 2026-10-01 | No |
 | Q8 | Keep the `/doctor` URL for midwives, or add a `/bidan` alias later? | Product | 2026-09-25 | No |
 
@@ -450,12 +450,24 @@ Sprint 28 = 29 points, Sprint 29 = 27, Sprint 30 = 19 (16 without T17). Sprint 3
 | Rawat inap: IMP, `location[]` with periods on transfer, serviceClass extension, discharge codes | satusehat.kemkes.go.id/platform/docs/id/interoperability/rawat-inap-new/ | VERIFIED |
 | Sub-extension name `upgradeClassIndicator` vs `upgradeClass` | same page (narrative and example disagree) | UNVERIFIED |
 | Newborn Patient via `nik-ibu`, duplicate check, PATCH to add NIK | satusehat.kemkes.go.id/platform/docs/id/master-data/master-patient-index/pasien-bayi/ | VERIFIED |
-| `multipleBirthInteger` for a single birth | same page ("can use 0") | UNVERIFIED |
+| `multipleBirthInteger` for a single birth | same page ("can use 0"); not observable on staging, where no test mother is female (spike §2) | STILL UNVERIFIED |
 | KYC generate-url, hybrid encryption, challenge-code, operator access-code flow | satusehat.kemkes.go.id/platform/docs/id/kyc/kyc-doc/ | VERIFIED |
-| KYC sandbox availability | official doc shows staging URLs; a third-party README says there is none | UNVERIFIED |
+| KYC sandbox availability | staging `/kyc/v1/*` answers with decrypt errors, so it exists (P21-T01, spike §3) | PARTLY VERIFIED |
 | Midwife resolves through the same Practitioner NIK lookup | satusehat.kemkes.go.id/platform/docs/id/api-catalogue/onboardings/apis/practitioner/ | VERIFIED |
-| How a midwife's profession shows in the Practitioner response | — | UNVERIFIED |
+| How a midwife's profession shows in the Practitioner response | no sandbox midwife NIK; a Practitioner read carries no profession field for anyone (P21-T08, spike §6) | STILL UNVERIFIED (not needed by D-034) |
 | Immunization mandatory set, reason codes, `performer.function` | satusehat.kemkes.go.id/platform/docs/id/interoperability/imunisasi-new/ | VERIFIED |
-| Routine-timing code list (e.g. a "kejar" code) | same guide, list incomplete | UNVERIFIED |
+| Routine-timing code list (e.g. a "kejar" code) | same guide, list incomplete; not probed | UNVERIFIED |
 | Midwife own authority (Pasal 19–21) and delegated authority (Pasal 22–25) | Permenkes 28/2017, official PDF | VERIFIED |
 | UU 4/2019 Kebidanan repealed by UU 17/2023; implementing rules survive where compatible | UU 17/2023 Pasal 454 | VERIFIED (secondary) |
+
+### 13.3 Decisions from the P24-T01 spike (2026-09-13)
+
+Findings and requests: `docs/ops/klinik-bidan-sandbox-spike.md`.
+
+- **Q1 (poli without `serviceClass`): accepted.** A poli is a plain `ro` Location under the site.
+- **FR-LOC-07:** a second POST with the same identifier is refused with 400 `duplicate` (RuleNumber 20002), never a second resource. The registration service searches first; if it still meets that 400, it adopts the id through the search instead of reporting a failure.
+- **FR-LOC-01:** staging does not enforce `position`. Requiring coordinates stays our rule.
+- **FR-IM-01..03 corrected above.** Staging refuses today's Immunization on `reasonCode`, `primarySource`, `protocolApplied` and performer `function`; a new dose also needs `lotNumber` and `expirationDate`; the function is `AP`/`OP` for a new dose and `EP` for a historical one. Some KFA vaccine products are refused by the vaccine terminology (RuleNumber 10103), which P24-T12 should log as a named skip reason.
+- **FR-NB-03/04:** the platform refuses a `nik-ibu` whose Patient is not female ("Patient with nik-ibu is not female"), so FR-NB-04 gains that third failure message. The newborn flow could not be exercised on staging: no published test NIK is a female patient, and creating a Patient returns 500. P24-T11's live verification needs a female test mother from Kemenkes, or the first production clinic.
+- **FR-IP-03:** a direct admission needs its own `Registration`, because `Encounter.registrationId` is required and unique. Suggested: a new `RegistrationType` `ADMISSION` with no queue number (P24-T09). A `finished` Encounter without a diagnosis is refused (RuleNumber 10457).
+

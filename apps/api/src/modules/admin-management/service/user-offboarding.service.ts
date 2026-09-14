@@ -7,6 +7,7 @@ import {
   resolveOffboardingDeadline,
   UserOffboardingConfig,
   UserOffboardingPreview,
+  isClinicianRoleCode,
 } from '@hms/shared-types';
 import {
   BadRequestException,
@@ -259,7 +260,9 @@ export class UserOffboardingService {
    * precedence `VaultDocumentAccessService` resolves their vault by.
    */
   private resolveVaultUrl(roleCodes: readonly string[]): string {
-    const path = roleCodes.includes('DOCTOR') ? DOCTOR_VAULT_PATH : ADMIN_VAULT_PATH;
+    const path = roleCodes.some((code) => isClinicianRoleCode(code))
+      ? DOCTOR_VAULT_PATH
+      : ADMIN_VAULT_PATH;
     return `${this.config.webAppBaseUrl}${path}`;
   }
 

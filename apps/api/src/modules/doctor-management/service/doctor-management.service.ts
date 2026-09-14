@@ -717,6 +717,7 @@ export class DoctorManagementService {
       fullName: doctor.fullName,
       specialtyId: doctor.specialtyId,
       specialty: doctor.specialty.name,
+      profession: doctor.profession,
       phoneNumber: doctor.phoneNumber ?? undefined,
       // Sourced from the linked account, the only place it is stored — or,
       // before that account exists, from the invitation holding it (P19-T15).

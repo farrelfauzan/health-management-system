@@ -15,6 +15,7 @@ import {
   OFFBOARDED_PERMISSION_KEYS,
   resolveMissingDoctorProfileFields,
   resolveOffboardingDeadline,
+  isClinicianRoleCode,
 } from '@hms/shared-types';
 
 import { AuditService } from '../../../common/audit/audit.service';
@@ -38,9 +39,6 @@ const REFRESH_TOKEN_BYTES = 32;
 
 /** Offboarding deadlines are clinic calendar days (P16-T41). */
 const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
-
-/** The only role the profile-completion gate applies to (P20-T02). */
-const DOCTOR_ROLE_CODE = 'DOCTOR';
 
 /**
  * The shape of a user row as the login and refresh paths see it, narrowed to
@@ -654,7 +652,9 @@ export class AuthService {
     id: string;
     roles: SessionUserRecord['roles'];
   }): Promise<boolean> {
-    if (!this.resolveActiveRoleCodes(user.roles).includes(DOCTOR_ROLE_CODE)) {
+    // The profile-completion gate (P20-T02) applies to every clinician role,
+    // a midwife as much as a doctor (D-034).
+    if (!this.resolveActiveRoleCodes(user.roles).some((code) => isClinicianRoleCode(code))) {
       return false;
     }
     const stored = await this.authRepository.findDoctorProfileCompleteness(user.id);

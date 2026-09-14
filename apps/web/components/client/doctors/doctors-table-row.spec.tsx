@@ -17,6 +17,7 @@ const DOCTOR: DoctorListItem = {
   fullName: 'Dr. Budi Santoso',
   specialtyId: '0f1cbb1f-8f4a-4bb0-9a5e-2d94f7a3c111',
   specialty: 'Cardiology',
+  profession: 'DOCTOR',
   phoneNumber: '+628129876543',
   email: 'budi.santoso@clinic.local',
   invitationStatus: 'ACCEPTED',
