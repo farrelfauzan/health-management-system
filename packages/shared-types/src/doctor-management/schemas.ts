@@ -218,6 +218,22 @@ export const clinicianProfessionSchema = z.enum(CLINICIAN_PROFESSIONS);
 
 export type ClinicianProfessionValue = z.infer<typeof clinicianProfessionSchema>;
 
+/**
+ * The role a clinician's account is invited into or granted, by profession
+ * (P24-T03, FR-MW-03). Keyed on the profile so the account can never hold a
+ * different kind of clinician than the record it signs in to.
+ */
+export const CLINICIAN_ROLE_CODE_BY_PROFESSION = {
+  DOCTOR: 'DOCTOR',
+  MIDWIFE: 'MIDWIFE',
+} as const satisfies Record<ClinicianProfessionValue, string>;
+
+/**
+ * P24-T03 (FR-MW-03). The 422 code for a profession change on a clinician who
+ * already has an encounter, an admission or a prescription.
+ */
+export const CLINICIAN_PROFESSION_LOCKED_ERROR_CODE = 'CLINICIAN_PROFESSION_LOCKED';
+
 export const listDoctorsQuerySchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(10),
@@ -244,6 +260,8 @@ export const createDoctorSchema = z.object({
   licenseNumber: z.string().trim().min(3).max(64),
   fullName: z.string().trim().min(2).max(120),
   specialtyId: z.string().uuid(),
+  /** Doctor or midwife (D-034). Omitted means DOCTOR, as before P24-T03. */
+  profession: clinicianProfessionSchema.optional(),
   // SATUSEHAT Practitioner requires at least one ContactPoint, and phone is
   // the one the profile owns — the email lives on the user account.
   phoneNumber: indonesianPhoneNumberSchema,
@@ -295,6 +313,8 @@ export const updateDoctorSchema = z
   .object({
     fullName: z.string().trim().min(2).max(120).optional(),
     specialtyId: z.string().uuid().optional(),
+    /** Refused with 422 once the clinician has clinical history (P24-T03). */
+    profession: clinicianProfessionSchema.optional(),
     phoneNumber: indonesianPhoneNumberSchema.optional(),
     title: doctorTitleSchema.nullable().optional(),
     degrees: doctorDegreesSchema.nullable().optional(),

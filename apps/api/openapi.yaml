@@ -50229,6 +50229,11 @@ components:
         specialtyId:
           type: string
           format: uuid
+        profession:
+          type: string
+          enum:
+            - DOCTOR
+            - MIDWIFE
         phoneNumber:
           description: Indonesian phone number. Accepts 0812…, +62 812-…, 62812… and
             punctuated forms; stored as 62812….
@@ -50333,6 +50338,11 @@ components:
         specialtyId:
           type: string
           format: uuid
+        profession:
+          type: string
+          enum:
+            - DOCTOR
+            - MIDWIFE
         phoneNumber:
           description: Indonesian phone number. Accepts 0812…, +62 812-…, 62812… and
             punctuated forms; stored as 62812….

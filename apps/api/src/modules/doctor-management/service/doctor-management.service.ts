@@ -16,6 +16,8 @@ import {
   joinDegreeCodes,
   maskIdentifierLast4,
   splitDegreeCodes,
+  CLINICIAN_PROFESSION_LOCKED_ERROR_CODE,
+  CLINICIAN_ROLE_CODE_BY_PROFESSION,
 } from '@hms/shared-types';
 import {
   BadRequestException,
@@ -24,6 +26,7 @@ import {
   Injectable,
   NotFoundException,
   UnauthorizedException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 
 import { AuditService } from '../../../common/audit/audit.service';
@@ -41,7 +44,6 @@ import { DoctorManagementRepository } from '../repository/doctor-management.repo
 import { DoctorCredentialOptionService } from './doctor-credential-option.service';
 
 const DOCTOR_AUDIT_RESOURCE = 'DoctorProfile';
-const DOCTOR_ROLE_CODE = 'DOCTOR';
 
 function parseDateOnly(value: string): Date {
   return new Date(`${value}T00:00:00.000Z`);
@@ -216,6 +218,7 @@ export class DoctorManagementService {
         licenseNumber: payload.licenseNumber,
         fullName: payload.fullName,
         specialtyId: payload.specialtyId,
+        profession: payload.profession ?? 'DOCTOR',
         phoneNumber: payload.phoneNumber,
         title: payload.title,
         degrees: payload.degrees ? (joinDegreeCodes(payload.degrees) ?? undefined) : undefined,
@@ -343,7 +346,7 @@ export class DoctorManagementService {
       // email wearing the wrong words. It may not hold DOCTOR yet, though.
       await this.adminManagementService.grantRoleCodes({
         userId: ownerPlan.userId,
-        roleCodes: [DOCTOR_ROLE_CODE],
+        roleCodes: [CLINICIAN_ROLE_CODE_BY_PROFESSION[created.profession]],
         assignedById: actorUserId,
       });
       return { ...created, ownerUser: { email: ownerPlan.email } };
@@ -352,6 +355,7 @@ export class DoctorManagementService {
       email: ownerPlan.email,
       doctorProfileId: created.id,
       invitedById: actorUserId,
+      roleCode: CLINICIAN_ROLE_CODE_BY_PROFESSION[created.profession],
     });
     // Folded into the response rather than re-read: this row was just written,
     // and the create select ran before it existed.
@@ -381,6 +385,10 @@ export class DoctorManagementService {
 
     if (!doctor) {
       throw new NotFoundException('Doctor not found');
+    }
+
+    if (payload.profession !== undefined && payload.profession !== doctor.profession) {
+      await this.assertProfessionEditable(id);
     }
 
     if (payload.ownerUserId) {
@@ -424,6 +432,7 @@ export class DoctorManagementService {
       this.doctorManagementRepository.updateDoctor(id, {
         fullName: payload.fullName,
         specialtyId: payload.specialtyId,
+        profession: payload.profession,
         phoneNumber: payload.phoneNumber,
         title: payload.title,
         degrees: payload.degrees === undefined ? undefined : joinDegreeCodes(payload.degrees ?? []),
@@ -442,6 +451,24 @@ export class DoctorManagementService {
       updated.doctor,
       await this.doctorCredentialOptionService.buildResolver(),
     );
+  }
+
+  /**
+   * Refuses a profession change once the clinician has treated anyone
+   * (P24-T03, FR-MW-03). An encounter, an admission or a prescription already
+   * names who treated the patient, and relabelling the profile would silently
+   * change that history. Converting such a profile is a deliberate
+   * SUPER_ADMIN data fix, not a form edit.
+   */
+  private async assertProfessionEditable(doctorId: string): Promise<void> {
+    if (!(await this.doctorManagementRepository.hasClinicalHistory(doctorId))) {
+      return;
+    }
+    throw new UnprocessableEntityException({
+      code: CLINICIAN_PROFESSION_LOCKED_ERROR_CODE,
+      message:
+        'The profession cannot change once this clinician has encounters, admissions or prescriptions',
+    });
   }
 
   /**

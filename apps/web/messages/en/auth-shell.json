@@ -107,7 +107,7 @@
       "navigation": {
         "dashboard": "Dashboard",
         "patients": "Patients",
-        "doctors": "Doctors",
+        "doctors": "Clinical Staff",
         "appointments": "Appointments",
         "registration": "Registration",
         "encounters": "Encounters",
@@ -244,6 +244,7 @@
           "superAdmin": "Super Admin",
           "admin": "Admin",
           "doctor": "Doctor",
+          "midwife": "Midwife",
           "pharmacist": "Pharmacist",
           "patient": "Patient",
           "staff": "Staff"

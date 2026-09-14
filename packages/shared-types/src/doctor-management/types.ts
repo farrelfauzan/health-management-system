@@ -32,6 +32,7 @@ export type CreateDoctorRecordPayload = {
   licenseNumber: string;
   fullName: string;
   specialtyId: string;
+  profession: ClinicianProfessionValue;
   phoneNumber: string;
   title?: string;
   degrees?: string;
@@ -47,6 +48,7 @@ export type CreateDoctorRecordPayload = {
 export type UpdateDoctorRecordPayload = {
   fullName?: string;
   specialtyId?: string;
+  profession?: ClinicianProfessionValue;
   phoneNumber?: string;
   title?: string | null;
   degrees?: string | null;

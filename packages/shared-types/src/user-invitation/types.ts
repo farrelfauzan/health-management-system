@@ -55,6 +55,8 @@ export type InviteDoctorOwnerParams = {
   email: string;
   doctorProfileId: string;
   invitedById: string;
+  /** DOCTOR or MIDWIFE, from the profile's profession (P24-T03). */
+  roleCode: string;
 };
 
 /**

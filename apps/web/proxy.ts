@@ -22,7 +22,9 @@ const ADMIN_PORTAL_PERMISSION = 'portal.admin-access:any';
 const DOCTOR_PORTAL_PERMISSION = 'portal.doctor-access:any';
 const PATIENT_PORTAL_PERMISSION = 'portal.patient-access:own';
 const ADMIN_ROLES = ['SUPER_ADMIN', 'ADMIN'];
-const DOCTOR_ROLES = ['DOCTOR'];
+// Every clinician role (CLINICIAN_ROLE_CODES, D-034): a midwife works in the
+// doctor shell rather than a /bidan copy of it (P24-T03, Q8).
+const DOCTOR_ROLES = ['DOCTOR', 'MIDWIFE'];
 const PHARMACIST_ROLES = ['PHARMACIST'];
 const LAB_TECHNICIAN_ROLES = ['LAB_TECHNICIAN'];
 const PATIENT_ROLES = ['PATIENT'];
