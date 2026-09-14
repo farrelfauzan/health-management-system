@@ -29,6 +29,9 @@ describe('buildLabRequestContext', () => {
     licenseNumber: '440/1234/DPMPTSP',
     taxId: '01.234.567.8-901.000',
     hasLogo: false,
+    latitude: null,
+    longitude: null,
+    satusehatLocationId: null,
     updatedAt: timestamp.toISOString(),
   };
 

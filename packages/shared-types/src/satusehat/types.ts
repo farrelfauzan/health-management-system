@@ -1,7 +1,9 @@
 import type { LabResultFlagValue, LabSpecimenTypeValue } from '#laboratory/schemas';
 import type {
+  SatusehatLocationBlockReasonValue,
   SatusehatResourceOutcomeValue,
   SatusehatResourceSkipReasonValue,
+  SatusehatServiceClassValue,
   SatusehatSubmissionKindValue,
   SatusehatSubmissionStatusValue,
 } from '#satusehat/schemas';
@@ -556,4 +558,27 @@ export type SatusehatPractitionerSummary = {
   ihsNumber: string;
   name: string | null;
   maskedNik: string | null;
+};
+
+/**
+ * What decides whether a row may be registered as a SATUSEHAT Location
+ * (P24-T05). `roomClass` is present for rooms and beds only: a site, poli or
+ * ward carries no service class.
+ */
+export type SatusehatLocationRegistrationCheckInput = {
+  clinicLatitude: number | null;
+  clinicLongitude: number | null;
+  roomClass: { name: string; satusehatServiceClass: SatusehatServiceClassValue | null } | null;
+};
+
+/** Why a row cannot be registered yet, and the message that names what to fix. */
+export type SatusehatLocationRegistrationBlocker = {
+  reason: SatusehatLocationBlockReasonValue;
+  message: string;
+};
+
+/** Where the root site Location id comes from (FR-LOC-02). */
+export type SatusehatRootLocationSources = {
+  registeredRootLocationId: string | null;
+  configuredLocationId: string | undefined;
 };

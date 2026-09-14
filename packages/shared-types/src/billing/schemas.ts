@@ -317,6 +317,21 @@ export const createClinicLogoUploadUrlSchema = z.object({
 const optionalClinicProfileTextSchema = z.string().trim().max(255);
 
 /**
+ * Indonesia's bounding box, in decimal degrees (P24-T05, FR-LOC-01). The official
+ * SATUSEHAT Location example swaps latitude and longitude, so each bound says
+ * what the other value would look like: a latitude of 106 is a longitude.
+ */
+export const clinicLatitudeSchema = z
+  .number()
+  .min(-11, 'Latitude in Indonesia is between -11 and 6; this looks like a longitude')
+  .max(6, 'Latitude in Indonesia is between -11 and 6; this looks like a longitude');
+
+export const clinicLongitudeSchema = z
+  .number()
+  .min(95, 'Longitude in Indonesia is between 95 and 141; this looks like a latitude')
+  .max(141, 'Longitude in Indonesia is between 95 and 141; this looks like a latitude');
+
+/**
  * Every field is optional because this is a PATCH over a record clinics fill
  * in over time, and `.nullable()` on the optional ones is what lets a value be
  * *cleared* — `undefined` means "leave it alone", `null` means "remove it".
@@ -340,10 +355,21 @@ export const updateClinicProfileSchema = z
      * not become this clinic's letterhead.
      */
     logoStorageKey: z.string().trim().min(1).max(255).nullable().optional(),
+    /** The clinic's position for SATUSEHAT Locations (P24-T05). Saved as a pair. */
+    latitude: clinicLatitudeSchema.nullable().optional(),
+    longitude: clinicLongitudeSchema.nullable().optional(),
   })
   .refine((input) => Object.values(input).some((value) => value !== undefined), {
     message: 'At least one field must be provided',
-  });
+  })
+  // A lone latitude is half a position, and a Location cannot be registered
+  // from half a position — so the two are written, or cleared, together.
+  .refine(
+    (input) =>
+      (input.latitude === undefined) === (input.longitude === undefined) &&
+      (input.latitude === null) === (input.longitude === null),
+    { message: 'Latitude and longitude are saved together', path: ['longitude'] },
+  );
 
 export type CreateClinicLogoUploadUrlInput = z.infer<typeof createClinicLogoUploadUrlSchema>;
 export type UpdateClinicProfileInput = z.infer<typeof updateClinicProfileSchema>;

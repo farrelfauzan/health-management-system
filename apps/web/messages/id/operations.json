@@ -844,7 +844,9 @@
           "phoneNumber": "Nomor telepon",
           "email": "Email",
           "licenseNumber": "Nomor izin operasional",
-          "taxId": "NPWP"
+          "taxId": "NPWP",
+          "latitude": "Lintang (latitude)",
+          "longitude": "Bujur (longitude)"
         },
         "logo": {
           "label": "Logo",
@@ -865,8 +867,10 @@
           "loadFailed": "Profil klinik gagal dimuat. Silakan coba lagi."
         },
         "errors": {
-          "saveFailed": "Profil klinik gagal disimpan. Silakan coba lagi."
-        }
+          "saveFailed": "Profil klinik gagal disimpan. Silakan coba lagi.",
+          "coordinatesPair": "Isi lintang dan bujur sebagai angka, atau kosongkan keduanya."
+        },
+        "coordinatesHint": "Derajat desimal, dipakai untuk mendaftarkan lokasi klinik ke SATUSEHAT. Di Indonesia lintang berada di antara -11 dan 6, bujur di antara 95 dan 141 — pastikan tidak tertukar."
       },
       "offboarding": {
         "offboard": "Offboarding",
@@ -957,7 +961,17 @@
       "noRooms": "Belum ada kamar. Buat kamar lebih dulu pada tab Kamar.",
       "noRoomsDescription": "Setiap tempat tidur berada di dalam sebuah kamar. Buat kamar lebih dulu, lalu kembali ke sini untuk menambahkan tempat tidur.",
       "goToWards": "Buka tab Bangsal",
-      "goToRooms": "Buka tab Kamar"
+      "goToRooms": "Buka tab Kamar",
+      "satusehatServiceClass": "Kelas layanan SATUSEHAT",
+      "serviceClassUnmapped": "Belum dipetakan",
+      "serviceClassHint": "Kamar dengan kelas yang belum dipetakan tidak bisa didaftarkan ke SATUSEHAT. Kelas di atas VVIP dipetakan ke VVIP.",
+      "serviceClasses": {
+        "CLASS_1": "Kelas 1",
+        "CLASS_2": "Kelas 2",
+        "CLASS_3": "Kelas 3",
+        "VIP": "VIP",
+        "VVIP": "VVIP"
+      }
     },
     "admissions": {
       "title": "Rawat Inap",

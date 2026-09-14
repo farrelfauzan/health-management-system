@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { satusehatServiceClassSchema } from '#satusehat/schemas';
+
 /**
  * MAINTENANCE is deliberately distinct from a retired bed: a bed being cleaned
  * or repaired is still inventory the occupancy board must show, while a
@@ -75,6 +77,8 @@ export const createRoomClassSchema = z.object({
    * would be two things a reader has to check for.
    */
   quota: z.coerce.number().int().min(1).max(MAX_ROOM_CLASS_QUOTA).optional(),
+  /** The SATUSEHAT service class rooms of this class report as (FR-LOC-05). */
+  satusehatServiceClass: satusehatServiceClassSchema.optional(),
   isActive: z.boolean().optional(),
 });
 
@@ -84,6 +88,8 @@ export const updateRoomClassSchema = z
     description: descriptionSchema.nullable().optional(),
     /** `null` clears the quota, which is how a clinic says "uncapped" again. */
     quota: z.coerce.number().int().min(1).max(MAX_ROOM_CLASS_QUOTA).nullable().optional(),
+    /** `null` unmaps the class; its rooms then cannot be registered. */
+    satusehatServiceClass: satusehatServiceClassSchema.nullable().optional(),
     isActive: z.boolean().optional(),
   })
   // `code` is absent for the same reason as on a ward: it is the handle the

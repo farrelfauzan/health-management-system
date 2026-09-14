@@ -14,6 +14,9 @@ describe('toClinicProfileView', () => {
     taxId: '01.234.567.8-901.000',
     logoStorageKey: null,
     logoMimeType: null,
+    latitude: null,
+    longitude: null,
+    satusehatLocationId: null,
     createdAt: new Date('2026-09-18T02:00:00.000Z'),
     updatedAt: new Date('2026-09-18T02:15:00.000Z'),
   };
@@ -30,6 +33,9 @@ describe('toClinicProfileView', () => {
       licenseNumber: '440/1234/DPMPTSP',
       taxId: '01.234.567.8-901.000',
       hasLogo: false,
+      latitude: null,
+      longitude: null,
+      satusehatLocationId: null,
       updatedAt: '2026-09-18T02:15:00.000Z',
     });
   });
