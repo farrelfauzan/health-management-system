@@ -1,4 +1,4 @@
-import { NotificationShell } from '@hms/shared-types';
+import { NotificationShell, isClinicianRoleCode } from '@hms/shared-types';
 import { Injectable } from '@nestjs/common';
 
 import { NotificationRepository } from '../repository/notification.repository';
@@ -6,7 +6,6 @@ import { NotificationRepository } from '../repository/notification.repository';
 const ADMIN_PORTAL_PERMISSION = 'portal.admin-access:any';
 const DOCTOR_PORTAL_PERMISSION = 'portal.doctor-access:any';
 const ADMIN_ROLES = ['SUPER_ADMIN', 'ADMIN'];
-const DOCTOR_ROLES = ['DOCTOR'];
 const ADMIN_VAULT_HREF = '/admin/vault';
 const DOCTOR_VAULT_HREF = '/doctor/vault';
 const ADMIN_LAB_ORDER_PATH_PREFIX = '/admin/laboratory/';
@@ -54,7 +53,7 @@ export class NotificationHrefService {
     }
     const hasDoctorShell =
       claims.permissionKeys.includes(DOCTOR_PORTAL_PERMISSION) ||
-      claims.roleCodes.some((code) => DOCTOR_ROLES.includes(code));
+      claims.roleCodes.some((code) => isClinicianRoleCode(code));
     return hasDoctorShell ? 'doctor' : null;
   }
 

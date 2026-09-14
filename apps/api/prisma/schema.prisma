@@ -494,6 +494,17 @@ enum DoctorLicenseType {
   SIP
 }
 
+/// What kind of clinician a profile belongs to (D-034, P24-T02). A midwife is a
+/// profession on the clinician profile, not a second aggregate: every foreign
+/// key into `DoctorProfile` and every access check keys on the profile, so
+/// they already work for both.
+enum ClinicianProfession {
+  DOCTOR
+  MIDWIFE
+
+  @@map("clinician_profession")
+}
+
 enum AppointmentStatus {
   REQUESTED
   SCHEDULED
@@ -1636,6 +1647,8 @@ model DoctorProfile {
   licenseNumber String    @unique @map("license_number")
   fullName      String    @map("full_name")
   specialtyId   String    @map("specialty_id") @db.Uuid
+  /// Doctor or midwife (D-034). Every profile created before P24-T02 is a doctor.
+  profession    ClinicianProfession @default(DOCTOR)
   phoneNumber   String?   @map("phone_number")
   /// The account this doctor signs in with. An address is collected at
   /// creation and owned by `User` — there is no `email` column here, by
@@ -1723,6 +1736,7 @@ model DoctorProfile {
 
   @@index([deletedAt])
   @@index([isActive])
+  @@index([profession])
   @@index([fullName])
   @@index([specialtyId])
   @@map("doctor_profiles")

@@ -1,4 +1,8 @@
-import type { DoctorEducationInput, DoctorLicenseTypeValue } from '#doctor-management/schemas';
+import type {
+  ClinicianProfessionValue,
+  DoctorEducationInput,
+  DoctorLicenseTypeValue,
+} from '#doctor-management/schemas';
 import type { SpecialtySummary } from '#specialty/contracts';
 
 /**
@@ -21,6 +25,7 @@ export type ListDoctorsParams = {
   isActive?: boolean;
   /** `true` keeps only doctors with no NIK on file, `false` only those with one. */
   missingNik?: boolean;
+  profession?: ClinicianProfessionValue;
 };
 
 export type CreateDoctorRecordPayload = {
@@ -71,6 +76,7 @@ export type DoctorRecord = {
   fullName: string;
   specialtyId: string;
   specialty: SpecialtySummary;
+  profession: ClinicianProfessionValue;
   phoneNumber: string | null;
   title: string | null;
   degrees: string | null;

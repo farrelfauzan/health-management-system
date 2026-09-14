@@ -75,6 +75,16 @@ describe('DoctorProfileCompletionService (P20-T02)', () => {
     expect(repositoryMock.createDoctor).not.toHaveBeenCalled();
   });
 
+  // D-034. A midwife signs in on the same clinician profile and completes it
+  // the same way a doctor does.
+  it('lets a midwife complete her clinician profile', async () => {
+    (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(buildActor('MIDWIFE'));
+
+    await service.completeOwnDoctorProfile(creationPayload, currentUser);
+
+    expect(repositoryMock.createDoctor).toHaveBeenCalled();
+  });
+
   it('refuses a DOCTOR role that has been unassigned', async () => {
     (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
       buildActor('DOCTOR', new Date('2026-09-01T00:00:00.000Z')),

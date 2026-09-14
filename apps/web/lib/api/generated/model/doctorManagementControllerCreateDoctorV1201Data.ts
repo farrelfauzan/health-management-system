@@ -14,6 +14,7 @@ export type DoctorManagementControllerCreateDoctorV1201Data = {
   fullName: string;
   specialtyId: string;
   specialty: string;
+  profession: string;
   phoneNumber: string;
   email: string;
   title: string;

@@ -1,5 +1,6 @@
 import type { DoctorCredentialValue } from '#doctor-credential-option/contracts';
 import type {
+  ClinicianProfessionValue,
   DoctorInvitationStatusValue,
   DoctorLicenseTypeValue,
 } from '#doctor-management/schemas';
@@ -10,6 +11,8 @@ export type DoctorProfile = {
   fullName: string;
   specialtyId: string;
   specialty: string;
+  /** Doctor or midwife (D-034). Every profile created before P24-T02 is `DOCTOR`. */
+  profession: ClinicianProfessionValue;
   phoneNumber?: string;
   /**
    * Read from the linked user account, not stored on the profile. While an

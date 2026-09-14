@@ -54,7 +54,7 @@ describe('CheckMedicationStockTool', () => {
     // personal data, so one tool answers both audiences rather than two
     // projections that could drift apart.
     expect(actualTool.channels).toEqual(['DOCTOR', 'ADMIN']);
-    expect(actualTool.allowedRoleCodes).toEqual(['DOCTOR', 'ADMIN', 'SUPER_ADMIN']);
+    expect(actualTool.allowedRoleCodes).toEqual(['DOCTOR', 'MIDWIFE', 'ADMIN', 'SUPER_ADMIN']);
   });
 
   it('searches by the requested name as the asking user, capped at the list page limit', async () => {

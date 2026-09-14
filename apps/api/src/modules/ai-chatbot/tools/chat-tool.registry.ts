@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import { ChatChannelValue, ChatToolNameValue } from '@hms/shared-types';
+import { ChatChannelValue, ChatToolNameValue, CLINICIAN_ROLE_CODES } from '@hms/shared-types';
 
 import { ActorScopeResolution } from '../../../common/authorization/actor.types';
 import { AiChatbotError } from '../ai-chatbot.error';
@@ -19,7 +19,9 @@ import {
  */
 const CHANNEL_ROLE_CODES: Record<ChatChannelValue, readonly string[]> = {
   PATIENT: ['PATIENT'],
-  DOCTOR: ['DOCTOR'],
+  // Every clinician role, not only doctors: a midwife reads her own patients
+  // and agenda the same way (D-034).
+  DOCTOR: CLINICIAN_ROLE_CODES,
   // SUPER_ADMIN is admitted alongside ADMIN because it is a superset role in
   // seed.sql, and an operator who can do everything being unable to ask how
   // long the queue is would read as a bug rather than as a control.

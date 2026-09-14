@@ -7,6 +7,7 @@
  */
 import type { DoctorManagementControllerListDoctorsV1IsActive } from './doctorManagementControllerListDoctorsV1IsActive';
 import type { DoctorManagementControllerListDoctorsV1MissingNik } from './doctorManagementControllerListDoctorsV1MissingNik';
+import type { DoctorManagementControllerListDoctorsV1Profession } from './doctorManagementControllerListDoctorsV1Profession';
 
 export type DoctorManagementControllerListDoctorsV1Params = {
 /**
@@ -26,4 +27,5 @@ specialtyId?: string;
 patientId?: string;
 isActive?: DoctorManagementControllerListDoctorsV1IsActive;
 missingNik?: DoctorManagementControllerListDoctorsV1MissingNik;
+profession?: DoctorManagementControllerListDoctorsV1Profession;
 };

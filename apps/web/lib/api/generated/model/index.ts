@@ -563,6 +563,7 @@ export * from './doctorManagementControllerInviteDoctorAccountV1201DataTitleValu
 export * from './doctorManagementControllerListDoctorsV1IsActive';
 export * from './doctorManagementControllerListDoctorsV1MissingNik';
 export * from './doctorManagementControllerListDoctorsV1Params';
+export * from './doctorManagementControllerListDoctorsV1Profession';
 export * from './doctorManagementControllerListDoctorsV1200';
 export * from './doctorManagementControllerListDoctorsV1200DataItem';
 export * from './doctorManagementControllerListDoctorsV1200DataItemDegreeValuesItem';

@@ -1,4 +1,4 @@
-import { VaultDocumentOwnerTypeValue } from '@hms/shared-types';
+import { VaultDocumentOwnerTypeValue, isClinicianRoleCode } from '@hms/shared-types';
 import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 
 import { CurrentUser } from '../../../common/auth/current-user.type';
@@ -62,7 +62,8 @@ export class VaultDocumentAccessService {
     // edit. Keying ownership off a mutable label would let a rename silently
     // move which vault a user opens.
     const roleCodes = actorRecord.roles.map((userRole) => userRole.role.code);
-    if (roleCodes.includes('DOCTOR')) {
+    // A midwife keeps her papers in the clinician vault, like a doctor (D-034).
+    if (roleCodes.some((code) => isClinicianRoleCode(code))) {
       return 'DOCTOR';
     }
     if (roleCodes.includes('ADMIN') || roleCodes.includes('SUPER_ADMIN')) {

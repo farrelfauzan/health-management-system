@@ -27,6 +27,7 @@ import {
   PERSONAL_DOCUMENT_NOT_PREVIEWABLE_ERROR_CODE,
   PersonalDocumentPreviewView,
   isManagedDocumentPreviewMimeType,
+  isClinicianRoleCode,
 } from '@hms/shared-types';
 
 import { CurrentUser } from '../../../common/auth/current-user.type';
@@ -333,7 +334,8 @@ export class PersonalDocumentService {
     // edit. Keying ownership off a mutable label would let a rename silently
     // move which corpus a user opens.
     const roleCodes = actorRecord.roles.map((userRole) => userRole.role.code);
-    if (roleCodes.includes('DOCTOR')) {
+    // A midwife keeps her papers in the clinician vault, like a doctor (D-034).
+    if (roleCodes.some((code) => isClinicianRoleCode(code))) {
       return 'DOCTOR';
     }
     if (roleCodes.includes('ADMIN') || roleCodes.includes('SUPER_ADMIN')) {

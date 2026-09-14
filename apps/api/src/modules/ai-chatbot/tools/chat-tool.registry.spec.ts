@@ -1,4 +1,5 @@
 import {
+  CLINICIAN_ROLE_CODES,
   checkMedicationStockToolArgsSchema,
   listMyPatientsToolArgsSchema,
 } from '@hms/shared-types';
@@ -68,6 +69,23 @@ describe('ChatToolRegistry', () => {
       const doctorCaller = buildCaller(['DOCTOR'], mockDoctorPermissions);
 
       const actualOffered = registry.listOfferedTools(doctorCaller, 'DOCTOR');
+
+      expect(actualOffered.map((tool) => tool.name).sort()).toEqual([
+        'check_medication_stock',
+        'list_my_patients',
+      ]);
+    });
+
+    // D-034. The doctor channel belongs to every clinician role, so a midwife
+    // with the same grants is offered the same catalogue.
+    it('offers a midwife on the doctor channel the same catalogue as a doctor', () => {
+      const registry = buildRegistry([
+        { ...buildListMyPatientsTool(), allowedRoleCodes: [...CLINICIAN_ROLE_CODES] },
+        { ...buildStockTool(), allowedRoleCodes: [...CLINICIAN_ROLE_CODES] },
+      ]);
+      const midwifeCaller = buildCaller(['MIDWIFE'], mockDoctorPermissions);
+
+      const actualOffered = registry.listOfferedTools(midwifeCaller, 'DOCTOR');
 
       expect(actualOffered.map((tool) => tool.name).sort()).toEqual([
         'check_medication_stock',
