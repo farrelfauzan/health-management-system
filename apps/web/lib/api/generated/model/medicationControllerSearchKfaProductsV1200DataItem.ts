@@ -13,4 +13,5 @@ export type MedicationControllerSearchKfaProductsV1200DataItem = {
   manufacturer: string;
   packagingUnit: string;
   isActive: boolean;
+  templateKfaCode: string;
 };

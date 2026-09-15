@@ -80,6 +80,28 @@
       "EXPIRED": "Expired",
       "EXPIRING": "Expiring",
       "UNKNOWN": "Unknown expiry"
+    },
+    "midwifeFormulary": {
+      "applyButton": "Apply midwife list",
+      "title": "Apply the midwife formulary",
+      "description": "Items a midwife may give on her own authority under Permenkes 28/2017, matched against your catalog. Checked rows will be marked as prescribable by midwives. Nothing is unmarked.",
+      "loading": "Matching the catalog…",
+      "previewError": "The midwife formulary could not be matched against the catalog.",
+      "templateLookupSkipped": "KFA could not be reached, so only exact KFA codes and name suggestions were matched. Other manufacturers of the same medicine may be missing.",
+      "matchedBy": {
+        "KFA_CODE": "KFA code",
+        "KFA_TEMPLATE": "Same KFA generic",
+        "KEYWORD": "Name suggestion"
+      },
+      "alreadyFlagged": "Already marked",
+      "keywordHint": "Matched by name only. Fill in its KFA code to mark it.",
+      "unmatchedTitle": "Not in your catalog",
+      "unmatchedHint": "Add this medication to the catalog, fill in its KFA code, then apply again.",
+      "cancel": "Cancel",
+      "confirm": "{count, plural, =0 {Nothing to mark} one {Mark # medication} other {Mark # medications}}",
+      "applying": "Applying…",
+      "applied": "{count, plural, =0 {No new medications marked} one {# medication marked for midwives} other {# medications marked for midwives}}",
+      "applyError": "The midwife formulary could not be applied."
     }
   }
 }

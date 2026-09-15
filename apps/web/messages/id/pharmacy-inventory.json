@@ -80,6 +80,28 @@
       "EXPIRED": "Kedaluwarsa",
       "EXPIRING": "Segera kedaluwarsa",
       "UNKNOWN": "Kedaluwarsa tidak diketahui"
+    },
+    "midwifeFormulary": {
+      "applyButton": "Terapkan daftar bidan",
+      "title": "Terapkan formularium bidan",
+      "description": "Obat yang boleh diberikan bidan atas kewenangannya sendiri menurut Permenkes 28/2017, dicocokkan dengan katalog Anda. Baris yang dicentang akan ditandai boleh diresepkan bidan. Tidak ada tanda yang dicabut.",
+      "loading": "Mencocokkan katalog…",
+      "previewError": "Formularium bidan tidak dapat dicocokkan dengan katalog.",
+      "templateLookupSkipped": "KFA tidak dapat dihubungi, jadi hanya kode KFA yang sama persis dan saran nama yang dicocokkan. Obat yang sama dari pabrikan lain mungkin belum muncul.",
+      "matchedBy": {
+        "KFA_CODE": "Kode KFA",
+        "KFA_TEMPLATE": "Generik KFA sama",
+        "KEYWORD": "Saran nama"
+      },
+      "alreadyFlagged": "Sudah ditandai",
+      "keywordHint": "Hanya cocok berdasarkan nama. Isi kode KFA-nya untuk menandai.",
+      "unmatchedTitle": "Belum ada di katalog",
+      "unmatchedHint": "Tambahkan obat ini ke katalog, isi kode KFA, lalu terapkan lagi",
+      "cancel": "Batal",
+      "confirm": "{count, plural, =0 {Tidak ada yang ditandai} other {Tandai # obat}}",
+      "applying": "Menerapkan…",
+      "applied": "{count, plural, =0 {Tidak ada obat baru yang ditandai} other {# obat ditandai boleh diresepkan bidan}}",
+      "applyError": "Formularium bidan tidak dapat diterapkan."
     }
   }
 }
