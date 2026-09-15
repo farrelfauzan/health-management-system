@@ -774,6 +774,81 @@
       "professions": {
         "DOCTOR": "Dokter",
         "MIDWIFE": "Bidan"
+      },
+      "authorities": {
+        "title": "Kewenangan Bidan",
+        "description": "Kewenangan tambahan berdasarkan surat keputusan dinas (Permenkes 28/2017 Pasal 23–26).",
+        "empty": "Belum ada kewenangan tambahan yang dicatat.",
+        "loadError": "Kewenangan gagal dimuat.",
+        "add": "Tambah kewenangan",
+        "edit": "Ubah",
+        "revoke": "Cabut",
+        "downloadDecree": "Unduh SK",
+        "downloadError": "SK gagal diunduh.",
+        "noDecree": "SK belum diunggah",
+        "columns": {
+          "kind": "Kewenangan",
+          "decree": "Nomor SK",
+          "validity": "Masa berlaku",
+          "status": "Status",
+          "decreeFile": "SK"
+        },
+        "kind": {
+          "IUD_IMPLANT": "Pemasangan AKDR & implan",
+          "MTBS": "MTBS (anak sakit)",
+          "PROGRAM_IMMUNIZATION": "Imunisasi program",
+          "INTEGRATED_ANC": "ANC terintegrasi",
+          "NO_OTHER_WORKER": "Daerah tanpa tenaga kesehatan lain"
+        },
+        "status": {
+          "ACTIVE": "Aktif",
+          "EXPIRING_SOON": "Segera berakhir",
+          "EXPIRED": "Kedaluwarsa",
+          "REVOKED": "Dicabut"
+        },
+        "validity": {
+          "range": "{from} – {until}",
+          "openEnded": "Sejak {from}, tanpa batas"
+        },
+        "revokedOn": "Dicabut {date}: {reason}",
+        "form": {
+          "createTitle": "Tambah kewenangan",
+          "editTitle": "Ubah kewenangan",
+          "description": "Catat kewenangan tambahan {name} sesuai surat keputusan dinas kesehatan.",
+          "kind": "Jenis kewenangan",
+          "kindPlaceholder": "Pilih kewenangan",
+          "kindLocked": "Jenis tidak dapat diubah. Cabut kewenangan ini lalu catat yang baru.",
+          "trainingCertificateNumber": "Nomor sertifikat pelatihan",
+          "decreeNumber": "Nomor SK",
+          "decreeIssuedAt": "Tanggal SK",
+          "validFrom": "Berlaku sejak",
+          "validUntil": "Berlaku sampai",
+          "validUntilHint": "Kosongkan jika tanpa batas waktu.",
+          "decreeFile": "Berkas SK (PDF atau gambar)",
+          "decreeFileKeep": "Berkas SK saat ini dipertahankan jika tidak dipilih berkas baru.",
+          "decreeFileTooLarge": "Ukuran berkas maksimal 20 MB.",
+          "decreeFileType": "Berkas harus PDF, JPEG, PNG, atau WebP.",
+          "kindRequired": "Pilih jenis kewenangan.",
+          "decreeNumberRequired": "Nomor SK wajib diisi.",
+          "decreeIssuedAtRequired": "Tanggal SK wajib diisi.",
+          "validFromRequired": "Tanggal mulai berlaku wajib diisi.",
+          "validityOrder": "Tanggal akhir harus sama atau setelah tanggal mulai.",
+          "uploading": "Mengunggah SK...",
+          "submitting": "Menyimpan...",
+          "submit": "Simpan",
+          "error": "Kewenangan gagal disimpan. Silakan coba lagi.",
+          "requiresMidwife": "Kewenangan hanya dapat dicatat untuk bidan.",
+          "alreadyActive": "Kewenangan jenis ini masih aktif. Ubah masa berlakunya atau cabut dulu."
+        },
+        "revokeDialog": {
+          "title": "Cabut kewenangan",
+          "description": "Kewenangan {kind} milik {name} akan berakhir sekarang. Catatannya tetap tersimpan.",
+          "reason": "Alasan pencabutan",
+          "reasonRequired": "Alasan wajib diisi (minimal 3 karakter).",
+          "submitting": "Mencabut...",
+          "submit": "Cabut kewenangan",
+          "error": "Kewenangan gagal dicabut. Silakan coba lagi."
+        }
       }
     },
     "portal": {

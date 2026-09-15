@@ -234,6 +234,14 @@
         "bugReportPublishFailed": {
           "title": "Sebuah laporan bug gagal dipublikasikan",
           "body": "Laporan {reference} tidak sampai ke Bug Board ({reason}). Periksa konektor Notion."
+        },
+        "doctorAuthorityExpiring": {
+          "title": "Kewenangan bidan akan berakhir",
+          "body": "Kewenangan {kind} milik {doctorName} (SK {decreeNumber}) berakhir pada {validUntil}."
+        },
+        "doctorAuthorityExpired": {
+          "title": "Kewenangan bidan telah berakhir",
+          "body": "Kewenangan {kind} milik {doctorName} (SK {decreeNumber}) berakhir pada {validUntil}."
         }
       },
       "profile": {

@@ -774,6 +774,81 @@
       "professions": {
         "DOCTOR": "Doctor",
         "MIDWIFE": "Midwife"
+      },
+      "authorities": {
+        "title": "Midwife Authorities",
+        "description": "Additional authorities granted by a district decision letter (Permenkes 28/2017 Art. 23–26).",
+        "empty": "No additional authority is recorded yet.",
+        "loadError": "Unable to load authorities.",
+        "add": "Add authority",
+        "edit": "Edit",
+        "revoke": "Revoke",
+        "downloadDecree": "Download letter",
+        "downloadError": "Unable to download the letter.",
+        "noDecree": "No letter uploaded",
+        "columns": {
+          "kind": "Authority",
+          "decree": "Decree no.",
+          "validity": "Validity",
+          "status": "Status",
+          "decreeFile": "Letter"
+        },
+        "kind": {
+          "IUD_IMPLANT": "IUD & implant insertion",
+          "MTBS": "IMCI (sick child)",
+          "PROGRAM_IMMUNIZATION": "Programme immunisation",
+          "INTEGRATED_ANC": "Integrated ANC",
+          "NO_OTHER_WORKER": "Area with no other health worker"
+        },
+        "status": {
+          "ACTIVE": "Active",
+          "EXPIRING_SOON": "Expiring soon",
+          "EXPIRED": "Expired",
+          "REVOKED": "Revoked"
+        },
+        "validity": {
+          "range": "{from} – {until}",
+          "openEnded": "From {from}, open-ended"
+        },
+        "revokedOn": "Revoked {date}: {reason}",
+        "form": {
+          "createTitle": "Add authority",
+          "editTitle": "Edit authority",
+          "description": "Record an additional authority for {name} as granted by the district health office.",
+          "kind": "Authority",
+          "kindPlaceholder": "Choose an authority",
+          "kindLocked": "The kind cannot be changed. Revoke this authority and record a new one.",
+          "trainingCertificateNumber": "Training certificate number",
+          "decreeNumber": "Decree number",
+          "decreeIssuedAt": "Decree date",
+          "validFrom": "Valid from",
+          "validUntil": "Valid until",
+          "validUntilHint": "Leave empty for an open-ended grant.",
+          "decreeFile": "Decision letter (PDF or image)",
+          "decreeFileKeep": "The current letter is kept unless a new file is chosen.",
+          "decreeFileTooLarge": "The file must be 20 MB or smaller.",
+          "decreeFileType": "The file must be a PDF, JPEG, PNG, or WebP.",
+          "kindRequired": "Choose an authority.",
+          "decreeNumberRequired": "The decree number is required.",
+          "decreeIssuedAtRequired": "The decree date is required.",
+          "validFromRequired": "The start date is required.",
+          "validityOrder": "The end date must be on or after the start date.",
+          "uploading": "Uploading letter...",
+          "submitting": "Saving...",
+          "submit": "Save",
+          "error": "Unable to save the authority. Please try again.",
+          "requiresMidwife": "Authorities can only be recorded for a midwife.",
+          "alreadyActive": "An authority of this kind is still active. Edit its validity or revoke it first."
+        },
+        "revokeDialog": {
+          "title": "Revoke authority",
+          "description": "{name}'s {kind} authority ends now. The record is kept.",
+          "reason": "Reason for revoking",
+          "reasonRequired": "A reason is required (at least 3 characters).",
+          "submitting": "Revoking...",
+          "submit": "Revoke authority",
+          "error": "Unable to revoke the authority. Please try again."
+        }
       }
     },
     "portal": {

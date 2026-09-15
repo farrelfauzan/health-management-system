@@ -234,6 +234,14 @@
         "bugReportPublishFailed": {
           "title": "A bug report could not be published",
           "body": "Report {reference} could not reach the Bug Board ({reason}). Check the Notion connector."
+        },
+        "doctorAuthorityExpiring": {
+          "title": "Midwife authority expiring",
+          "body": "{doctorName}'s {kind} authority (decree {decreeNumber}) ends on {validUntil}."
+        },
+        "doctorAuthorityExpired": {
+          "title": "Midwife authority expired",
+          "body": "{doctorName}'s {kind} authority (decree {decreeNumber}) ended on {validUntil}."
         }
       },
       "profile": {

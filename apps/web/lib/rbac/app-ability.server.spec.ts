@@ -31,6 +31,18 @@ describe('resolveAppAbilityRules integration permissions', () => {
     expect(ability.can('write', 'DocumentTemplate')).toBe(false);
   });
 
+  it('maps the midwife authority keys to the DoctorAuthority subject', () => {
+    // P25-T02. The read key alone renders the card; the write key alone must
+    // not, and neither implies anything about the licence roster.
+    const ability = buildAppAbility(
+      resolveAppAbilityRules({ permissions: ['doctor.authority.read:any'] }),
+    );
+
+    expect(ability.can('read', 'DoctorAuthority')).toBe(true);
+    expect(ability.can('write', 'DoctorAuthority')).toBe(false);
+    expect(ability.can('read', 'DoctorLicenseExpiry')).toBe(false);
+  });
+
   it('maps pharmacy inventory permissions independently from medication catalog permissions', () => {
     const ability = buildAppAbility(
       resolveAppAbilityRules({

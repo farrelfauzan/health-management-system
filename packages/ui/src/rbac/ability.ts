@@ -60,6 +60,11 @@ export type AppSubject =
   // patients — the directory is something a patient browses when choosing who
   // to book with, and a list of who is out of licence is not.
   | 'DoctorLicenseExpiry'
+  // P25-T02. A midwife's delegated authorities (kewenangan). Its own subject
+  // for the same reason as the licence roster: `Doctor` read is held by
+  // doctors and patients, and what a clinician has been cleared to do is a
+  // compliance record, not part of the directory.
+  | 'DoctorAuthority'
   | 'DoctorSchedule'
   | 'DoctorPatient'
   | 'DoctorPatientActivity'
