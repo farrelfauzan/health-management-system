@@ -28534,10 +28534,13 @@ paths:
                               type: string
                             fullName:
                               type: string
+                            dateOfBirth:
+                              type: string
                           required:
                             - id
                             - mrn
                             - fullName
+                            - dateOfBirth
                         appointment:
                           type: object
                           properties:
@@ -28622,6 +28625,7 @@ paths:
                         id: 11111111-1111-4111-8111-111111111111
                         mrn: "00000001"
                         fullName: Aisha Rahman
+                        dateOfBirth: 1990-05-12
                       appointment:
                         id: 44444444-4444-4444-8444-444444444444
                         scheduledAt: 2026-07-21T09:00:00.000Z
@@ -52458,6 +52462,12 @@ components:
         doctorId:
           type: string
           format: uuid
+        childVisitPurpose:
+          type: string
+          enum:
+            - WELL_CHILD
+            - NEONATAL_FIRST_AID
+            - SICK_CHILD
       required:
         - registrationId
     UpdateEncounterSoapDto:
@@ -52590,6 +52600,11 @@ components:
         performedAt:
           type: string
           format: date-time
+        contraceptiveImplantAction:
+          type: string
+          enum:
+            - INSERTION
+            - REMOVAL
     AddImmunizationDto:
       type: object
       properties:
