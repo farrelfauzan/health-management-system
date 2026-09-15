@@ -78,6 +78,7 @@ function buildAuditEvent(
       // can carry a patient's name from a search box, and this table is read
       // by more people than the records it points at.
       route: request.route?.path ?? null,
+      ...(options.metadataFromResponse?.(responseBody) ?? {}),
     },
   };
 }

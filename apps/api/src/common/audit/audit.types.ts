@@ -34,6 +34,13 @@ export type AuditedRouteOptions = {
   readonly patientIdParam?: string;
   /** Query key carrying the patient id, for filtered collection routes. */
   readonly patientIdQuery?: string;
+  /**
+   * Extra metadata read from the response body once the handler resolved,
+   * for routes whose one audit row must say what changed — a bulk action
+   * naming the ids it touched (P25-T04). Merged over the method and route
+   * keys; keep it to identifiers, never patient-identifiable values.
+   */
+  readonly metadataFromResponse?: (responseBody: unknown) => Record<string, unknown>;
 };
 
 /**

@@ -33,6 +33,7 @@ import { useFormatter, useLocale, useTranslations } from 'next-intl';
 import { ExpiryReportTable } from '#components/client/pharmacy/expiry-report-table';
 import { InventoryStatCards } from '#components/client/pharmacy/inventory-stat-cards';
 import { MedicationFormDialog } from '#components/client/pharmacy/medication-form-dialog';
+import { MidwifeFormularyApplyDialog } from '#components/client/pharmacy/midwife-formulary-apply-dialog';
 import { ReceiveStockDialog } from '#components/client/pharmacy/receive-stock-dialog';
 import { InlineNotice } from '#components/client/shared/inline-notice';
 import { NumberedPagination } from '#components/client/shared/numbered-pagination';
@@ -73,6 +74,7 @@ export function InventoryPanel() {
   );
   const [receiptMedicationId, setReceiptMedicationId] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const [isFormularyOpen, setIsFormularyOpen] = useState(false);
   const medicationParams: MedicationControllerListMedicationsV1Params = {
     page,
     limit: PAGE_SIZE,
@@ -125,6 +127,12 @@ export function InventoryPanel() {
             <p className="mt-1 text-sm text-slate-500">{t('catalogDescription')}</p>
           </div>
           <div className="flex flex-wrap gap-2">
+            {canUpdateMedication ? (
+              <Button type="button" variant="outline" onClick={() => setIsFormularyOpen(true)}>
+                <Icon name="checklist" size={18} />
+                {t('midwifeFormulary.applyButton')}
+              </Button>
+            ) : null}
             {canReceiveStock ? (
               <Button type="button" variant="outline" onClick={() => setReceiptMedicationId('')}>
                 <Icon name="inventory" size={18} />
@@ -285,6 +293,9 @@ export function InventoryPanel() {
           medication={editingMedication}
           onSaved={showMessage}
         />
+      ) : null}
+      {isFormularyOpen ? (
+        <MidwifeFormularyApplyDialog open onOpenChange={setIsFormularyOpen} />
       ) : null}
       {receiptMedicationId !== null ? (
         <ReceiveStockDialog

@@ -89,6 +89,7 @@ export const ModelName = {
   Icd9cmCode: 'Icd9cmCode',
   Procedure: 'Procedure',
   Medication: 'Medication',
+  MidwifeFormularyItem: 'MidwifeFormularyItem',
   Prescription: 'Prescription',
   PrescriptionMedication: 'PrescriptionMedication',
   PrescriptionItemComponent: 'PrescriptionItemComponent',
@@ -833,6 +834,23 @@ export const MedicationScalarFieldEnum = {
 } as const
 
 export type MedicationScalarFieldEnum = (typeof MedicationScalarFieldEnum)[keyof typeof MedicationScalarFieldEnum]
+
+
+export const MidwifeFormularyItemScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  displayName: 'displayName',
+  group: 'group',
+  regulationBasis: 'regulationBasis',
+  kfaCodes: 'kfaCodes',
+  kfaTemplateCodes: 'kfaTemplateCodes',
+  matchKeywords: 'matchKeywords',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type MidwifeFormularyItemScalarFieldEnum = (typeof MidwifeFormularyItemScalarFieldEnum)[keyof typeof MidwifeFormularyItemScalarFieldEnum]
 
 
 export const PrescriptionScalarFieldEnum = {

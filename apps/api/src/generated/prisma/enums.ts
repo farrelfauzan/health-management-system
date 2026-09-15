@@ -66,6 +66,7 @@ export const AuditAction = {
   SATUSEHAT_LINK_CLEARED: 'SATUSEHAT_LINK_CLEARED',
   SATUSEHAT_LOCATION_REGISTERED: 'SATUSEHAT_LOCATION_REGISTERED',
   SATUSEHAT_LOCATION_UPDATED: 'SATUSEHAT_LOCATION_UPDATED',
+  MEDICATION_MIDWIFE_FORMULARY_APPLIED: 'MEDICATION_MIDWIFE_FORMULARY_APPLIED',
   IMMUNIZATION_RECORDED: 'IMMUNIZATION_RECORDED',
   IMMUNIZATION_REMOVED: 'IMMUNIZATION_REMOVED',
   BPJS_CONFIG_CREATED: 'BPJS_CONFIG_CREATED',
@@ -396,6 +397,14 @@ export const ClinicianProfession = {
 } as const
 
 export type ClinicianProfession = (typeof ClinicianProfession)[keyof typeof ClinicianProfession]
+
+
+export const MidwifeFormularyGroup = {
+  OWN_AUTHORITY: 'OWN_AUTHORITY',
+  AUTHORITY_BOUND: 'AUTHORITY_BOUND'
+} as const
+
+export type MidwifeFormularyGroup = (typeof MidwifeFormularyGroup)[keyof typeof MidwifeFormularyGroup]
 
 
 export const DoctorAuthorityKind = {

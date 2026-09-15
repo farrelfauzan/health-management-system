@@ -8,12 +8,15 @@ import { resolveSatusehatConfig } from './satusehat.config';
 import {
   SatusehatConfig,
   SatusehatKfaProduct,
+  SatusehatKfaProductDetailResponse,
   SatusehatKfaResponseItem,
   SatusehatKfaSearchResponse,
 } from './satusehat.types';
 
 const PRODUCTS_PATH = '/products/all';
+const PRODUCT_DETAIL_PATH = '/products';
 const PHARMACY_PRODUCT_TYPE = 'farmasi';
+const KFA_IDENTIFIER = 'kfa';
 
 /**
  * Product lookups against the KFA (Kamus Farmasi dan Alat Kesehatan) dictionary
@@ -53,20 +56,51 @@ export class SatusehatKfaClient {
     if (!response.ok) {
       throw this.describeFailure(response.status);
     }
-    const body = await this.parseBody(response);
+    const body = (await this.parseBody(response)) as SatusehatKfaSearchResponse;
     return this.extractProducts(body);
   }
 
+  /**
+   * One product by its KFA code, from the detail endpoint the P25-T04 probe
+   * verified, or null when KFA does not know the code — a template (92-level)
+   * code answers `result: null` here, which is how the formulary preview
+   * tells a product code from anything else. Same single attempt as a search:
+   * an administrator is waiting on the preview.
+   */
+  async getProduct(kfaCode: string): Promise<SatusehatKfaProduct | null> {
+    if (!this.satusehatConfig.isConfigured) {
+      throw new SatusehatError(
+        'SATUSEHAT_NOT_CONFIGURED',
+        'SATUSEHAT credentials are not configured for this deployment',
+      );
+    }
+    const query = new URLSearchParams({ identifier: KFA_IDENTIFIER, code: kfaCode });
+    const response = await this.fetchJson(`${PRODUCT_DETAIL_PATH}?${query.toString()}`);
+    if (!response.ok) {
+      throw this.describeFailure(response.status);
+    }
+    const body = (await this.parseBody(response)) as SatusehatKfaProductDetailResponse;
+    const result = body.result;
+    if (typeof result !== 'object' || result === null) {
+      return null;
+    }
+    return this.extractProducts({ items: [result] })[0] ?? null;
+  }
+
   private async fetchProducts(keyword: string, limit: number): Promise<Response> {
-    const accessToken = await this.tokenClient.getAccessToken();
     const query = new URLSearchParams({
       page: '1',
       size: String(limit),
       product_type: PHARMACY_PRODUCT_TYPE,
       keyword,
     });
+    return this.fetchJson(`${PRODUCTS_PATH}?${query.toString()}`);
+  }
+
+  private async fetchJson(pathWithQuery: string): Promise<Response> {
+    const accessToken = await this.tokenClient.getAccessToken();
     try {
-      return await fetch(`${this.satusehatConfig.kfaBaseUrl}${PRODUCTS_PATH}?${query.toString()}`, {
+      return await fetch(`${this.satusehatConfig.kfaBaseUrl}${pathWithQuery}`, {
         method: 'GET',
         headers: { Authorization: `Bearer ${accessToken}`, Accept: 'application/json' },
         signal: AbortSignal.timeout(this.satusehatConfig.requestTimeoutMs),
@@ -98,7 +132,9 @@ export class SatusehatKfaClient {
     );
   }
 
-  private async parseBody(response: Response): Promise<SatusehatKfaSearchResponse> {
+  private async parseBody(
+    response: Response,
+  ): Promise<SatusehatKfaSearchResponse | SatusehatKfaProductDetailResponse> {
     const body: unknown = await response.json().catch(() => undefined);
     if (typeof body !== 'object' || body === null) {
       throw new SatusehatError(
@@ -107,7 +143,7 @@ export class SatusehatKfaClient {
         response.status,
       );
     }
-    return body as SatusehatKfaSearchResponse;
+    return body as SatusehatKfaSearchResponse | SatusehatKfaProductDetailResponse;
   }
 
   /**
@@ -134,8 +170,20 @@ export class SatusehatKfaClient {
           manufacturer: typeof item.manufacturer === 'string' ? item.manufacturer : null,
           packagingUnit: typeof item.uom?.name === 'string' ? item.uom.name : null,
           isActive: item.active === true,
+          templateKfaCode: readTemplateKfaCode(item),
         },
       ];
     });
   }
+}
+
+/**
+ * The template code, trimmed, or null. Read defensively: the probe saw the
+ * key on every farmasi and alkes row, but a dictionary this large is not
+ * uniform and a missing template must never drop the product.
+ */
+function readTemplateKfaCode(item: SatusehatKfaResponseItem): string | null {
+  const rawCode = item.product_template?.kfa_code;
+  const templateKfaCode = typeof rawCode === 'string' ? rawCode.trim() : '';
+  return templateKfaCode === '' ? null : templateKfaCode;
 }

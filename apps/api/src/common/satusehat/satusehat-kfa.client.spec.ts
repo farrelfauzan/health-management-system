@@ -66,7 +66,9 @@ describe('SatusehatKfaClient', () => {
     expect(url.searchParams.get('keyword')).toBe('paracetamol');
     expect(url.searchParams.get('size')).toBe('15');
     expect(url.searchParams.get('product_type')).toBe('farmasi');
-    expect((actualInit.headers as Record<string, string>).Authorization).toBe('Bearer access-token');
+    expect((actualInit.headers as Record<string, string>).Authorization).toBe(
+      'Bearer access-token',
+    );
   });
 
   it('maps the nested items shape to products', async () => {
@@ -81,6 +83,7 @@ describe('SatusehatKfaClient', () => {
               manufacturer: 'KIMIA FARMA',
               dosage_form: { name: 'Tablet' },
               uom: { name: 'Tablet' },
+              product_template: { kfa_code: '92000135', name: 'Paracetamol 500 mg Tablet' },
             },
           ],
         },
@@ -98,6 +101,7 @@ describe('SatusehatKfaClient', () => {
         manufacturer: 'KIMIA FARMA',
         packagingUnit: 'Tablet',
         isActive: true,
+        templateKfaCode: '92000135',
       },
     ]);
   });
@@ -118,14 +122,61 @@ describe('SatusehatKfaClient', () => {
         manufacturer: null,
         packagingUnit: null,
         isActive: false,
+        templateKfaCode: null,
       },
     ]);
+  });
+
+  it('reads one product by code from the detail endpoint', async () => {
+    mockFetch.mockResolvedValue(
+      buildResponse(200, {
+        search_code: '93015491',
+        search_identifier: 'kfa',
+        result: {
+          kfa_code: '93015491',
+          name: 'Ferrous Fumarate 60 mg / Folic Acid 0,4 mg Tablet Salut Gula (TABLET TAMBAH DARAH)',
+          active: true,
+          product_template: { kfa_code: '92000653' },
+        },
+      }),
+    );
+    const client = buildClient();
+
+    const actualProduct = await client.getProduct('93015491');
+
+    const [actualUrl] = mockFetch.mock.calls[0] as [string];
+    const url = new URL(actualUrl);
+    expect(url.origin + url.pathname).toBe('https://kfa.test/kfa-v2/products');
+    expect(url.searchParams.get('identifier')).toBe('kfa');
+    expect(url.searchParams.get('code')).toBe('93015491');
+    expect(actualProduct).toMatchObject({ kfaCode: '93015491', templateKfaCode: '92000653' });
+  });
+
+  it('answers null for a code the dictionary does not know', async () => {
+    mockFetch.mockResolvedValue(
+      buildResponse(200, { search_code: '92000653', search_identifier: 'kfa', result: null }),
+    );
+    const client = buildClient();
+
+    await expect(client.getProduct('92000653')).resolves.toBeNull();
+  });
+
+  it('refuses a detail lookup when credentials are absent', async () => {
+    const client = buildClient({ SATUSEHAT_KFA_BASE_URL: 'https://kfa.test/kfa-v2' });
+
+    await expect(client.getProduct('93015491')).rejects.toMatchObject({
+      code: 'SATUSEHAT_NOT_CONFIGURED',
+    });
+    expect(mockFetch).not.toHaveBeenCalled();
   });
 
   it('drops a row that carries no code or no name, since it cannot be chosen', async () => {
     mockFetch.mockResolvedValue(
       buildResponse(200, {
-        items: [{ name: 'No code here', active: true }, { kfa_code: '93000001', active: true }],
+        items: [
+          { name: 'No code here', active: true },
+          { kfa_code: '93000001', active: true },
+        ],
       }),
     );
     const client = buildClient();

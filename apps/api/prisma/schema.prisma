@@ -95,6 +95,10 @@ enum AuditAction {
   SATUSEHAT_LOCATION_REGISTERED
   /// A registered row's name or status was pushed to SATUSEHAT (FR-LOC-08).
   SATUSEHAT_LOCATION_UPDATED
+  /// The midwife formulary template was applied to the catalog (P25-T04):
+  /// the clinic confirmed which matched rows a bidan may prescribe. Metadata
+  /// carries the ids newly flagged; the action never unflags.
+  MEDICATION_MIDWIFE_FORMULARY_APPLIED
   IMMUNIZATION_RECORDED
   IMMUNIZATION_REMOVED
   BPJS_CONFIG_CREATED
@@ -569,6 +573,16 @@ enum ClinicianProfession {
   MIDWIFE
 
   @@map("clinician_profession")
+}
+
+/// Which of a bidan's authorities a midwife formulary template item sits
+/// under (P25-T04, FR-FORM-01). `OWN_AUTHORITY` is what Permenkes 28/2017
+/// lets her give on her own; `AUTHORITY_BOUND` (P25-T05) needs delegation.
+enum MidwifeFormularyGroup {
+  OWN_AUTHORITY
+  AUTHORITY_BOUND
+
+  @@map("midwife_formulary_group")
 }
 
 /// What a midwife may do beyond her own authority (P25-T02). Kept by D-036
@@ -2543,6 +2557,31 @@ model Medication {
   @@index([reorderLevel])
   @@index([deletedAt])
   @@map("medications")
+}
+
+/// The midwife formulary template (P25-T04, FR-FORM-01/02): what Permenkes
+/// 28/2017 lets a bidan give on her own authority, as a list the clinic
+/// applies to its own catalog in one confirmed step. Reference data owned by
+/// the seed, never edited from the UI. `kfaCodes` are accepted KFA product
+/// codes, `kfaTemplateCodes` the generic (92-level) templates those products
+/// sit under, and `matchKeywords` name fragments that only *suggest* a row.
+/// Applying the template flags `Medication.isMidwifePrescribable`; the seed
+/// itself never sets that flag (FR-MW-06).
+model MidwifeFormularyItem {
+  id               String                @id @default(uuid()) @db.Uuid
+  code             String                @unique
+  displayName      String                @map("display_name")
+  group            MidwifeFormularyGroup
+  regulationBasis  String                @map("regulation_basis")
+  kfaCodes         String[]              @default([]) @map("kfa_codes")
+  kfaTemplateCodes String[]              @default([]) @map("kfa_template_codes")
+  matchKeywords    String[]              @default([]) @map("match_keywords")
+  sortOrder        Int                   @default(0) @map("sort_order")
+  createdAt        DateTime              @default(now()) @map("created_at")
+  updatedAt        DateTime              @updatedAt @map("updated_at")
+
+  @@index([group, sortOrder])
+  @@map("midwife_formulary_items")
 }
 
 model Prescription {

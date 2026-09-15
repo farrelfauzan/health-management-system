@@ -92,6 +92,44 @@ function hasUniqueMedicationIds(items: Array<{ medicationId?: string }>): boolea
  */
 export const MEDICATION_NOT_MIDWIFE_PRESCRIBABLE_ERROR_CODE = 'MEDICATION_NOT_MIDWIFE_PRESCRIBABLE';
 
+/**
+ * P25-T04 (FR-FORM-01). Which of a bidan's authorities a formulary template
+ * item sits under. `OWN_AUTHORITY` is what Permenkes 28/2017 lets her give on
+ * her own; `AUTHORITY_BOUND` (P25-T05) needs a doctor's delegation.
+ */
+export const MIDWIFE_FORMULARY_GROUPS = ['OWN_AUTHORITY', 'AUTHORITY_BOUND'] as const;
+
+export const midwifeFormularyGroupSchema = z.enum(MIDWIFE_FORMULARY_GROUPS);
+
+export type MidwifeFormularyGroupValue = z.infer<typeof midwifeFormularyGroupSchema>;
+
+/**
+ * How a catalog row was matched to a template item. `KFA_CODE` is an exact
+ * product code from the item's list, `KFA_TEMPLATE` shares the item's KFA
+ * template (92-level) code — the same generic from another manufacturer — and
+ * `KEYWORD` is a name-only suggestion that the clinic must verify by hand and
+ * that `apply` never accepts.
+ */
+export const MIDWIFE_FORMULARY_MATCH_KINDS = ['KFA_CODE', 'KFA_TEMPLATE', 'KEYWORD'] as const;
+
+export const midwifeFormularyMatchKindSchema = z.enum(MIDWIFE_FORMULARY_MATCH_KINDS);
+
+export type MidwifeFormularyMatchKindValue = z.infer<typeof midwifeFormularyMatchKindSchema>;
+
+/** Applying the template to an id the recomputed preview does not match. */
+export const MIDWIFE_FORMULARY_MEDICATION_NOT_MATCHED_ERROR_CODE =
+  'MIDWIFE_FORMULARY_MEDICATION_NOT_MATCHED';
+
+export const MAX_MIDWIFE_FORMULARY_APPLY_IDS = 200;
+
+export const applyMidwifeFormularySchema = z
+  .object({
+    medicationIds: z.array(z.string().uuid()).min(1).max(MAX_MIDWIFE_FORMULARY_APPLY_IDS),
+  })
+  .strict();
+
+export type ApplyMidwifeFormularyInput = z.infer<typeof applyMidwifeFormularySchema>;
+
 export const listMedicationsQuerySchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(10),

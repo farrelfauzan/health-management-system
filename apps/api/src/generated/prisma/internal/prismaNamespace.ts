@@ -422,6 +422,7 @@ export const ModelName = {
   Icd9cmCode: 'Icd9cmCode',
   Procedure: 'Procedure',
   Medication: 'Medication',
+  MidwifeFormularyItem: 'MidwifeFormularyItem',
   Prescription: 'Prescription',
   PrescriptionMedication: 'PrescriptionMedication',
   PrescriptionItemComponent: 'PrescriptionItemComponent',
@@ -513,7 +514,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientDeliveryConsent" | "documentDelivery" | "documentDeliveryLink" | "patientAllergy" | "doctorCredentialOption" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorLicenseExpiryNotice" | "doctorAuthority" | "doctorAuthorityExpiryNotice" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "prescriptionItemComponent" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "satusehatSubmissionResource" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "vaultDocumentExpiryNotice" | "vaultDocumentShare" | "userOffboardingNotice" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit" | "documentType" | "documentTypeApprover" | "managedDocument" | "documentApprovalRequest" | "documentApprovalApprover" | "documentApprovalDecision" | "labTest" | "labReferenceRange" | "labPanel" | "labPanelMember" | "labOrderCounter" | "labOrder" | "labOrderItem" | "labSpecimenCounter" | "labSpecimen" | "labResult" | "laboratorySettings" | "labReport" | "immunization" | "province" | "regency" | "district" | "village" | "bugReport" | "bugReportCounter"
+    modelProps: "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientDeliveryConsent" | "documentDelivery" | "documentDeliveryLink" | "patientAllergy" | "doctorCredentialOption" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorLicenseExpiryNotice" | "doctorAuthority" | "doctorAuthorityExpiryNotice" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "midwifeFormularyItem" | "prescription" | "prescriptionMedication" | "prescriptionItemComponent" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "satusehatSubmissionResource" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "vaultDocumentExpiryNotice" | "vaultDocumentShare" | "userOffboardingNotice" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit" | "documentType" | "documentTypeApprover" | "managedDocument" | "documentApprovalRequest" | "documentApprovalApprover" | "documentApprovalDecision" | "labTest" | "labReferenceRange" | "labPanel" | "labPanelMember" | "labOrderCounter" | "labOrder" | "labOrderItem" | "labSpecimenCounter" | "labSpecimen" | "labResult" | "laboratorySettings" | "labReport" | "immunization" | "province" | "regency" | "district" | "village" | "bugReport" | "bugReportCounter"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -3326,6 +3327,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.MedicationCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.MedicationCountAggregateOutputType> | number
+        }
+      }
+    }
+    MidwifeFormularyItem: {
+      payload: Prisma.$MidwifeFormularyItemPayload<ExtArgs>
+      fields: Prisma.MidwifeFormularyItemFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.MidwifeFormularyItemFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MidwifeFormularyItemPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.MidwifeFormularyItemFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MidwifeFormularyItemPayload>
+        }
+        findFirst: {
+          args: Prisma.MidwifeFormularyItemFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MidwifeFormularyItemPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.MidwifeFormularyItemFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MidwifeFormularyItemPayload>
+        }
+        findMany: {
+          args: Prisma.MidwifeFormularyItemFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MidwifeFormularyItemPayload>[]
+        }
+        create: {
+          args: Prisma.MidwifeFormularyItemCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MidwifeFormularyItemPayload>
+        }
+        createMany: {
+          args: Prisma.MidwifeFormularyItemCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.MidwifeFormularyItemCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MidwifeFormularyItemPayload>[]
+        }
+        delete: {
+          args: Prisma.MidwifeFormularyItemDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MidwifeFormularyItemPayload>
+        }
+        update: {
+          args: Prisma.MidwifeFormularyItemUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MidwifeFormularyItemPayload>
+        }
+        deleteMany: {
+          args: Prisma.MidwifeFormularyItemDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.MidwifeFormularyItemUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.MidwifeFormularyItemUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MidwifeFormularyItemPayload>[]
+        }
+        upsert: {
+          args: Prisma.MidwifeFormularyItemUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MidwifeFormularyItemPayload>
+        }
+        aggregate: {
+          args: Prisma.MidwifeFormularyItemAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateMidwifeFormularyItem>
+        }
+        groupBy: {
+          args: Prisma.MidwifeFormularyItemGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MidwifeFormularyItemGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.MidwifeFormularyItemCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MidwifeFormularyItemCountAggregateOutputType> | number
         }
       }
     }
@@ -9644,6 +9719,23 @@ export const MedicationScalarFieldEnum = {
 export type MedicationScalarFieldEnum = (typeof MedicationScalarFieldEnum)[keyof typeof MedicationScalarFieldEnum]
 
 
+export const MidwifeFormularyItemScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  displayName: 'displayName',
+  group: 'group',
+  regulationBasis: 'regulationBasis',
+  kfaCodes: 'kfaCodes',
+  kfaTemplateCodes: 'kfaTemplateCodes',
+  matchKeywords: 'matchKeywords',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type MidwifeFormularyItemScalarFieldEnum = (typeof MidwifeFormularyItemScalarFieldEnum)[keyof typeof MidwifeFormularyItemScalarFieldEnum]
+
+
 export const PrescriptionScalarFieldEnum = {
   id: 'id',
   patientId: 'patientId',
@@ -11550,6 +11642,20 @@ export type ListEnumMedicationCategoryFieldRefInput<$PrismaModel> = FieldRefInpu
 
 
 /**
+ * Reference to a field of type 'MidwifeFormularyGroup'
+ */
+export type EnumMidwifeFormularyGroupFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MidwifeFormularyGroup'>
+    
+
+
+/**
+ * Reference to a field of type 'MidwifeFormularyGroup[]'
+ */
+export type ListEnumMidwifeFormularyGroupFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MidwifeFormularyGroup[]'>
+    
+
+
+/**
  * Reference to a field of type 'PrescriptionStatus'
  */
 export type EnumPrescriptionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PrescriptionStatus'>
@@ -12620,6 +12726,7 @@ export type GlobalOmitConfig = {
   icd9cmCode?: Prisma.Icd9cmCodeOmit
   procedure?: Prisma.ProcedureOmit
   medication?: Prisma.MedicationOmit
+  midwifeFormularyItem?: Prisma.MidwifeFormularyItemOmit
   prescription?: Prisma.PrescriptionOmit
   prescriptionMedication?: Prisma.PrescriptionMedicationOmit
   prescriptionItemComponent?: Prisma.PrescriptionItemComponentOmit

@@ -21,13 +21,16 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  ApplyMidwifeFormularyDto,
   CreateDispenseDto,
   CreateMedicationDto,
   CreatePrescriptionDto,
   DispenseControllerCreateDispenseV1201,
+  MedicationControllerApplyMidwifeFormularyV1200,
   MedicationControllerCreateMedicationV1201,
   MedicationControllerListMedicationsV1200,
   MedicationControllerListMedicationsV1Params,
+  MedicationControllerPreviewMidwifeFormularyV1200,
   MedicationControllerSearchKfaProductsV1200,
   MedicationControllerSearchKfaProductsV1Params,
   MedicationControllerUpdateMedicationV1200,
@@ -327,6 +330,192 @@ export function useMedicationControllerSearchKfaProductsV1<TData = Awaited<Retur
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getMedicationControllerSearchKfaProductsV1QueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Preview the midwife formulary template against the catalog
+ */
+export const medicationControllerPreviewMidwifeFormularyV1 = (
+
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<MedicationControllerPreviewMidwifeFormularyV1200>(
+      {url: `/api/v1/medications/midwife-formulary/preview`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getMedicationControllerPreviewMidwifeFormularyV1QueryKey = () => {
+    return [
+    `/api/v1/medications/midwife-formulary/preview`
+    ] as const;
+    }
+
+
+export const getMedicationControllerPreviewMidwifeFormularyV1QueryOptions = <TData = Awaited<ReturnType<typeof medicationControllerPreviewMidwifeFormularyV1>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof medicationControllerPreviewMidwifeFormularyV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getMedicationControllerPreviewMidwifeFormularyV1QueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof medicationControllerPreviewMidwifeFormularyV1>>> = ({ signal }) => medicationControllerPreviewMidwifeFormularyV1(signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof medicationControllerPreviewMidwifeFormularyV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type MedicationControllerPreviewMidwifeFormularyV1QueryResult = NonNullable<Awaited<ReturnType<typeof medicationControllerPreviewMidwifeFormularyV1>>>
+export type MedicationControllerPreviewMidwifeFormularyV1QueryError = unknown
+
+
+export function useMedicationControllerPreviewMidwifeFormularyV1<TData = Awaited<ReturnType<typeof medicationControllerPreviewMidwifeFormularyV1>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof medicationControllerPreviewMidwifeFormularyV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof medicationControllerPreviewMidwifeFormularyV1>>,
+          TError,
+          Awaited<ReturnType<typeof medicationControllerPreviewMidwifeFormularyV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useMedicationControllerPreviewMidwifeFormularyV1<TData = Awaited<ReturnType<typeof medicationControllerPreviewMidwifeFormularyV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof medicationControllerPreviewMidwifeFormularyV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof medicationControllerPreviewMidwifeFormularyV1>>,
+          TError,
+          Awaited<ReturnType<typeof medicationControllerPreviewMidwifeFormularyV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useMedicationControllerPreviewMidwifeFormularyV1<TData = Awaited<ReturnType<typeof medicationControllerPreviewMidwifeFormularyV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof medicationControllerPreviewMidwifeFormularyV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Preview the midwife formulary template against the catalog
+ */
+
+export function useMedicationControllerPreviewMidwifeFormularyV1<TData = Awaited<ReturnType<typeof medicationControllerPreviewMidwifeFormularyV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof medicationControllerPreviewMidwifeFormularyV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getMedicationControllerPreviewMidwifeFormularyV1QueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Flag the chosen matched medications as midwife-prescribable
+ */
+export const medicationControllerApplyMidwifeFormularyV1 = (
+    applyMidwifeFormularyDto: ApplyMidwifeFormularyDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<MedicationControllerApplyMidwifeFormularyV1200>(
+      {url: `/api/v1/medications/midwife-formulary/apply`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: applyMidwifeFormularyDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getMedicationControllerApplyMidwifeFormularyV1QueryKey = (applyMidwifeFormularyDto?: ApplyMidwifeFormularyDto,) => {
+    return [
+    'POST', `/api/v1/medications/midwife-formulary/apply`, applyMidwifeFormularyDto
+    ] as const;
+    }
+
+
+export const getMedicationControllerApplyMidwifeFormularyV1QueryOptions = <TData = Awaited<ReturnType<typeof medicationControllerApplyMidwifeFormularyV1>>, TError = unknown>(applyMidwifeFormularyDto: ApplyMidwifeFormularyDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof medicationControllerApplyMidwifeFormularyV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getMedicationControllerApplyMidwifeFormularyV1QueryKey(applyMidwifeFormularyDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof medicationControllerApplyMidwifeFormularyV1>>> = ({ signal }) => medicationControllerApplyMidwifeFormularyV1(applyMidwifeFormularyDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof medicationControllerApplyMidwifeFormularyV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type MedicationControllerApplyMidwifeFormularyV1QueryResult = NonNullable<Awaited<ReturnType<typeof medicationControllerApplyMidwifeFormularyV1>>>
+export type MedicationControllerApplyMidwifeFormularyV1QueryError = unknown
+
+
+export function useMedicationControllerApplyMidwifeFormularyV1<TData = Awaited<ReturnType<typeof medicationControllerApplyMidwifeFormularyV1>>, TError = unknown>(
+ applyMidwifeFormularyDto: ApplyMidwifeFormularyDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof medicationControllerApplyMidwifeFormularyV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof medicationControllerApplyMidwifeFormularyV1>>,
+          TError,
+          Awaited<ReturnType<typeof medicationControllerApplyMidwifeFormularyV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useMedicationControllerApplyMidwifeFormularyV1<TData = Awaited<ReturnType<typeof medicationControllerApplyMidwifeFormularyV1>>, TError = unknown>(
+ applyMidwifeFormularyDto: ApplyMidwifeFormularyDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof medicationControllerApplyMidwifeFormularyV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof medicationControllerApplyMidwifeFormularyV1>>,
+          TError,
+          Awaited<ReturnType<typeof medicationControllerApplyMidwifeFormularyV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useMedicationControllerApplyMidwifeFormularyV1<TData = Awaited<ReturnType<typeof medicationControllerApplyMidwifeFormularyV1>>, TError = unknown>(
+ applyMidwifeFormularyDto: ApplyMidwifeFormularyDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof medicationControllerApplyMidwifeFormularyV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Flag the chosen matched medications as midwife-prescribable
+ */
+
+export function useMedicationControllerApplyMidwifeFormularyV1<TData = Awaited<ReturnType<typeof medicationControllerApplyMidwifeFormularyV1>>, TError = unknown>(
+ applyMidwifeFormularyDto: ApplyMidwifeFormularyDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof medicationControllerApplyMidwifeFormularyV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getMedicationControllerApplyMidwifeFormularyV1QueryOptions(applyMidwifeFormularyDto,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

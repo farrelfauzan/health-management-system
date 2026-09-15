@@ -29684,6 +29684,8 @@ paths:
                           type: string
                         isActive:
                           type: boolean
+                        templateKfaCode:
+                          type: string
                       required:
                         - kfaCode
                         - name
@@ -29691,6 +29693,7 @@ paths:
                         - manufacturer
                         - packagingUnit
                         - isActive
+                        - templateKfaCode
                 required:
                   - data
                 example:
@@ -29701,6 +29704,7 @@ paths:
                       manufacturer: KIMIA FARMA
                       packagingUnit: Tablet
                       isActive: true
+                      templateKfaCode: "92000135"
         "401":
           description: Authentication is required.
           content:
@@ -29722,6 +29726,301 @@ paths:
       security:
         - bearer: []
       summary: Search the KFA product dictionary
+      tags: *a41
+  /api/v1/medications/midwife-formulary/preview:
+    get:
+      operationId: MedicationController_previewMidwifeFormulary_v1
+      parameters: []
+      responses:
+        "200":
+          description: "Per template item, the non-deleted catalog rows it matches and
+            how: `KFA_CODE` (exact product code), `KFA_TEMPLATE` (same KFA
+            template, another manufacturer — resolved live from KFA,
+            `templateLookup` says whether that ran) or `KEYWORD` (a name-only
+            suggestion the clinic must verify; `apply` never accepts it). Items
+            no row matches are listed under `unmatchedItems`. Nothing is
+            written."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            item:
+                              type: object
+                              properties:
+                                id:
+                                  type: string
+                                code:
+                                  type: string
+                                displayName:
+                                  type: string
+                                group:
+                                  type: string
+                                regulationBasis:
+                                  type: string
+                                kfaCodes:
+                                  type: array
+                                  items:
+                                    type: string
+                                kfaTemplateCodes:
+                                  type: array
+                                  items:
+                                    type: string
+                                matchKeywords:
+                                  type: array
+                                  items:
+                                    type: string
+                                sortOrder:
+                                  type: integer
+                              required:
+                                - id
+                                - code
+                                - displayName
+                                - group
+                                - regulationBasis
+                                - kfaCodes
+                                - kfaTemplateCodes
+                                - matchKeywords
+                                - sortOrder
+                            matches:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  medicationId:
+                                    type: string
+                                  name:
+                                    type: string
+                                  kfaCode:
+                                    type: string
+                                  isMidwifePrescribable:
+                                    type: boolean
+                                  matchedBy:
+                                    type: string
+                                required:
+                                  - medicationId
+                                  - name
+                                  - kfaCode
+                                  - isMidwifePrescribable
+                                  - matchedBy
+                          required:
+                            - item
+                            - matches
+                      unmatchedItems:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            code:
+                              type: string
+                            displayName:
+                              type: string
+                            group:
+                              type: string
+                            regulationBasis:
+                              type: string
+                            kfaCodes:
+                              type: array
+                              items:
+                                type: string
+                            kfaTemplateCodes:
+                              type: array
+                              items:
+                                type: string
+                            matchKeywords:
+                              type: array
+                              items:
+                                type: string
+                            sortOrder:
+                              type: integer
+                          required:
+                            - id
+                            - code
+                            - displayName
+                            - group
+                            - regulationBasis
+                            - kfaCodes
+                            - kfaTemplateCodes
+                            - matchKeywords
+                            - sortOrder
+                      templateLookup:
+                        type: string
+                    required:
+                      - items
+                      - unmatchedItems
+                      - templateLookup
+                required:
+                  - data
+                example:
+                  data:
+                    items:
+                      - item:
+                          id: 99999999-aaaa-4aaa-8aaa-999999999901
+                          code: FE_PREGNANCY
+                          displayName: Tablet tambah darah (zat besi + asam folat) untuk ibu hamil
+                          group: OWN_AUTHORITY
+                          regulationBasis: Permenkes 28/2017 Pasal 19 ayat (3) huruf e
+                          kfaCodes:
+                            - "93015491"
+                            - "93027609"
+                          kfaTemplateCodes:
+                            - "92000653"
+                            - "92004223"
+                            - "92000700"
+                          matchKeywords:
+                            - tablet tambah darah
+                            - ttd
+                            - ferrous
+                            - zat besi
+                          sortOrder: 10
+                        matches:
+                          - medicationId: 66666666-6666-4666-8666-666666666666
+                            name: Tablet Tambah Darah
+                            kfaCode: "93015491"
+                            isMidwifePrescribable: false
+                            matchedBy: KFA_CODE
+                    unmatchedItems:
+                      - id: 99999999-aaaa-4aaa-8aaa-999999999902
+                        code: VIT_K1_NEWBORN
+                        displayName: Vitamin K1 (fitomenadion) injeksi untuk bayi baru lahir
+                        group: OWN_AUTHORITY
+                        regulationBasis: Permenkes 28/2017 Pasal 20 ayat (3)
+                        kfaCodes:
+                          - "93006337"
+                        kfaTemplateCodes:
+                          - "92000971"
+                        matchKeywords:
+                          - phytomenadione
+                          - fitomenadion
+                          - vitamin k
+                        sortOrder: 40
+                    templateLookup: COMPLETED
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Preview the midwife formulary template against the catalog
+      tags: *a41
+  /api/v1/medications/midwife-formulary/apply:
+    post:
+      operationId: MedicationController_applyMidwifeFormulary_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ApplyMidwifeFormularyDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  medicationIds:
+                    - 66666666-6666-4666-8666-666666666666
+      responses:
+        "200":
+          description: The preview is recomputed on the server; any id it does not match
+            by code or template refuses the whole call with 422
+            `MIDWIFE_FORMULARY_MEDICATION_NOT_MATCHED` and nothing is written.
+            Otherwise the chosen rows are flagged in one statement and each id
+            answers `FLAGGED` or `ALREADY_FLAGGED`. This never unflags a row.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      flaggedCount:
+                        type: integer
+                      alreadyFlaggedCount:
+                        type: integer
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            medicationId:
+                              type: string
+                            outcome:
+                              type: string
+                          required:
+                            - medicationId
+                            - outcome
+                    required:
+                      - flaggedCount
+                      - alreadyFlaggedCount
+                      - items
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    flaggedCount: 1
+                    alreadyFlaggedCount: 0
+                    items:
+                      - medicationId: 66666666-6666-4666-8666-666666666666
+                        outcome: FLAGGED
+                  message: 1 flagged, 0 already flagged
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Flag the chosen matched medications as midwife-prescribable
       tags: *a41
   /api/v1/medications/{id}:
     patch:
@@ -51851,6 +52150,18 @@ components:
           nullable: true
         force:
           type: boolean
+    ApplyMidwifeFormularyDto:
+      type: object
+      properties:
+        medicationIds:
+          type: array
+          minItems: 1
+          maxItems: 200
+          items:
+            type: string
+            format: uuid
+      required:
+        - medicationIds
     CreateMedicationDto:
       type: object
       properties:

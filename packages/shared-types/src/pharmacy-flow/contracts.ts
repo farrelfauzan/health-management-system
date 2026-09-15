@@ -4,6 +4,8 @@ import type {
   DispenseStatusValue,
   MedicationCategoryValue,
   MedicationUnitValue,
+  MidwifeFormularyGroupValue,
+  MidwifeFormularyMatchKindValue,
   PrescriptionStatusValue,
 } from '#pharmacy-flow/schemas';
 
@@ -20,6 +22,66 @@ export type KfaProductResponse = {
   manufacturer: string | null;
   packagingUnit: string | null;
   isActive: boolean;
+  /**
+   * The KFA template (92-level) code the product is a manufacturer-specific
+   * instance of (P25-T04), or null when KFA carries none. What tells two iron
+   * tablets from different manufacturers apart from two different drugs.
+   */
+  templateKfaCode: string | null;
+};
+
+/** One row of the midwife formulary template (P25-T04, FR-FORM-01). */
+export type MidwifeFormularyItemResponse = {
+  id: string;
+  code: string;
+  displayName: string;
+  group: MidwifeFormularyGroupValue;
+  regulationBasis: string;
+  kfaCodes: string[];
+  kfaTemplateCodes: string[];
+  matchKeywords: string[];
+  sortOrder: number;
+};
+
+/** A catalog row that a template item matched, and how. */
+export type MidwifeFormularyMatchResponse = {
+  medicationId: string;
+  name: string;
+  kfaCode: string | null;
+  isMidwifePrescribable: boolean;
+  matchedBy: MidwifeFormularyMatchKindValue;
+};
+
+export type MidwifeFormularyPreviewItemResponse = {
+  item: MidwifeFormularyItemResponse;
+  matches: MidwifeFormularyMatchResponse[];
+};
+
+/**
+ * Whether the preview could ask KFA for the template code behind every
+ * unmatched catalog code. `SKIPPED` means only exact codes and keywords were
+ * used: the platform is not configured for this deployment or did not answer.
+ */
+export type MidwifeFormularyTemplateLookupStatus = 'COMPLETED' | 'SKIPPED';
+
+export type MidwifeFormularyPreviewResponse = {
+  items: MidwifeFormularyPreviewItemResponse[];
+  /** Template items no catalog row matched by code, template or keyword. */
+  unmatchedItems: MidwifeFormularyItemResponse[];
+  templateLookup: MidwifeFormularyTemplateLookupStatus;
+};
+
+export type MidwifeFormularyApplyOutcome = 'FLAGGED' | 'ALREADY_FLAGGED';
+
+export type MidwifeFormularyApplyItemResponse = {
+  medicationId: string;
+  outcome: MidwifeFormularyApplyOutcome;
+};
+
+export type MidwifeFormularyApplyResponse = {
+  flaggedCount: number;
+  alreadyFlaggedCount: number;
+  items: MidwifeFormularyApplyItemResponse[];
 };
 
 export type MedicationResponse = {

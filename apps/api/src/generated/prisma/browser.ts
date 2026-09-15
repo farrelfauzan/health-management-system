@@ -468,6 +468,18 @@ export type Procedure = Prisma.ProcedureModel
  */
 export type Medication = Prisma.MedicationModel
 /**
+ * Model MidwifeFormularyItem
+ * The midwife formulary template (P25-T04, FR-FORM-01/02): what Permenkes
+ * 28/2017 lets a bidan give on her own authority, as a list the clinic
+ * applies to its own catalog in one confirmed step. Reference data owned by
+ * the seed, never edited from the UI. `kfaCodes` are accepted KFA product
+ * codes, `kfaTemplateCodes` the generic (92-level) templates those products
+ * sit under, and `matchKeywords` name fragments that only *suggest* a row.
+ * Applying the template flags `Medication.isMidwifePrescribable`; the seed
+ * itself never sets that flag (FR-MW-06).
+ */
+export type MidwifeFormularyItem = Prisma.MidwifeFormularyItemModel
+/**
  * Model Prescription
  * 
  */

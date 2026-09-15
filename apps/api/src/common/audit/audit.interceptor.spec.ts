@@ -275,4 +275,25 @@ describe('AuditInterceptor', () => {
     ).rejects.toThrow('not found');
     expect(recordedEvents).toEqual([]);
   });
+
+  it('merges metadata read from the response body over the route keys', async () => {
+    await runInterceptor({
+      options: {
+        resource: 'medication-midwife-formulary',
+        action: AuditAction.UPDATE,
+        idParam: null,
+        metadataFromResponse: (responseBody) => ({
+          flaggedMedicationIds: (responseBody as { data: { ids: string[] } }).data.ids,
+        }),
+      },
+      request: buildRequest({ method: 'POST', route: { path: '/api/v1/medications/apply' } }),
+      responseBody: { data: { ids: [PATIENT_ID] } },
+    });
+
+    expect(onlyRecordedEvent().metadata).toEqual({
+      method: 'POST',
+      route: '/api/v1/medications/apply',
+      flaggedMedicationIds: [PATIENT_ID],
+    });
+  });
 });
