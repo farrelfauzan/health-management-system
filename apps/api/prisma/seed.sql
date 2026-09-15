@@ -1928,7 +1928,7 @@ INSERT INTO "midwife_formulary_items" (
   "updated_at"
 )
 SELECT
-  md5('midwife-formulary-item:' || code)::uuid,
+  md5('formulary-item:' || code)::uuid,
   code,
   display_name,
   "group"::"midwife_formulary_group",
