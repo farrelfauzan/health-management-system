@@ -4,11 +4,13 @@ import { useState, type ChangeEvent } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   DOCTOR_AUTHORITY_ALREADY_ACTIVE_ERROR_CODE,
-  DOCTOR_AUTHORITY_DECREE_MAX_SIZE_BYTES,
-  DOCTOR_AUTHORITY_DECREE_MIME_TYPES,
+  DOCTOR_AUTHORITY_GRANT_DOCUMENT_MAX_SIZE_BYTES,
+  DOCTOR_AUTHORITY_GRANT_DOCUMENT_MIME_TYPES,
+  DOCTOR_AUTHORITY_GRANT_KINDS,
   DOCTOR_AUTHORITY_KINDS,
   DOCTOR_AUTHORITY_REQUIRES_MIDWIFE_ERROR_CODE,
   type DoctorAuthority,
+  type DoctorAuthorityGrantKindValue,
   type DoctorAuthorityKindValue,
 } from '@hms/shared-types';
 import {
@@ -40,8 +42,8 @@ import {
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { resolveApiErrorCode } from '#lib/api/resolve-api-error-code';
 import { parseApiSuccess } from '#lib/api/response';
-import { isDoctorAuthorityDecreeMimeType } from '#lib/doctors/is-doctor-authority-decree-mime-type';
-import { uploadDoctorAuthorityDecree } from '#lib/doctors/upload-doctor-authority-decree';
+import { isDoctorAuthorityGrantDocumentMimeType } from '#lib/doctors/is-doctor-authority-grant-document-mime-type';
+import { uploadDoctorAuthorityGrantDocument } from '#lib/doctors/upload-doctor-authority-grant-document';
 
 const FIELD_ID_PREFIX = 'doctor-authority';
 
@@ -50,17 +52,19 @@ type DoctorAuthorityFormDialogProps = {
   onOpenChange: (open: boolean) => void;
   doctorId: string;
   doctorName: string;
-  /** Absent to grant a new authority; present to edit its numbers, dates and letter. */
+  /** Absent to grant a new authority; present to edit its evidence and dates. */
   authority?: DoctorAuthority;
 };
 
 type SubmitStage = 'idle' | 'uploading' | 'saving';
 
 /**
- * Grants or edits one midwife authority (P25-T02). A chosen letter is sent
- * through the presigned URL first, and only its storage key reaches the save;
- * the API then reads the object back before recording it. The kind is fixed
- * once granted — editing shows it read-only.
+ * Grants or edits one midwife authority (P25-T02, D-036). Every grant names
+ * the evidence it rests on (a dinas penetapan, a government penugasan, or a
+ * competence on the STR) and always carries a training certificate and an end
+ * date. A chosen document is sent through the presigned URL first, and only its
+ * storage key reaches the save; the API reads the object back before recording
+ * it. The kind is fixed once granted, so editing shows it read-only.
  */
 export function DoctorAuthorityFormDialog({
   open,
@@ -73,81 +77,79 @@ export function DoctorAuthorityFormDialog({
   const queryClient = useQueryClient();
   const isEditMode = authority !== undefined;
   const [kind, setKind] = useState<string>(authority?.kind ?? '');
+  const [grantKind, setGrantKind] = useState<string>(authority?.grantKind ?? '');
+  const [grantReference, setGrantReference] = useState<string>(authority?.grantReference ?? '');
+  const [grantIssuedAt, setGrantIssuedAt] = useState<string>(authority?.grantIssuedAt ?? '');
   const [trainingCertificateNumber, setTrainingCertificateNumber] = useState<string>(
     authority?.trainingCertificateNumber ?? '',
   );
-  const [decreeNumber, setDecreeNumber] = useState<string>(authority?.decreeNumber ?? '');
-  const [decreeIssuedAt, setDecreeIssuedAt] = useState<string>(authority?.decreeIssuedAt ?? '');
   const [validFrom, setValidFrom] = useState<string>(authority?.validFrom ?? '');
   const [validUntil, setValidUntil] = useState<string>(authority?.validUntil ?? '');
-  const [decreeFile, setDecreeFile] = useState<File | null>(null);
+  const [grantDocumentFile, setGrantDocumentFile] = useState<File | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
   const [stage, setStage] = useState<SubmitStage>('idle');
 
   function resolveValidationError(): string | null {
-    if (!isEditMode && kind === '') {
-      return t('doctors.authorities.form.kindRequired');
+    const requiredChecks = [
+      [!isEditMode && kind === '', 'kindRequired'],
+      [grantKind === '', 'grantKindRequired'],
+      [grantReference.trim() === '', 'grantReferenceRequired'],
+      [grantIssuedAt === '', 'grantIssuedAtRequired'],
+      [trainingCertificateNumber.trim() === '', 'trainingCertificateNumberRequired'],
+      [validFrom === '', 'validFromRequired'],
+      [validUntil === '', 'validUntilRequired'],
+    ] as const;
+    const missingField = requiredChecks.find(([isMissing]) => isMissing);
+    if (missingField) {
+      return t(`doctors.authorities.form.${missingField[1]}`);
     }
-    if (decreeNumber.trim() === '') {
-      return t('doctors.authorities.form.decreeNumberRequired');
-    }
-    if (decreeIssuedAt === '') {
-      return t('doctors.authorities.form.decreeIssuedAtRequired');
-    }
-    if (validFrom === '') {
-      return t('doctors.authorities.form.validFromRequired');
-    }
-    if (validUntil !== '' && validUntil < validFrom) {
-      return t('doctors.authorities.form.validityOrder');
-    }
-    return null;
+    return validUntil < validFrom ? t('doctors.authorities.form.validityOrder') : null;
   }
 
   function handleFileChange(event: ChangeEvent<HTMLInputElement>): void {
     const file = event.target.files?.[0] ?? null;
-    if (file && !isDoctorAuthorityDecreeMimeType(file.type)) {
-      setFormError(t('doctors.authorities.form.decreeFileType'));
-      setDecreeFile(null);
+    if (file && !isDoctorAuthorityGrantDocumentMimeType(file.type)) {
+      setFormError(t('doctors.authorities.form.grantDocumentFileType'));
+      setGrantDocumentFile(null);
       return;
     }
-    if (file && file.size > DOCTOR_AUTHORITY_DECREE_MAX_SIZE_BYTES) {
-      setFormError(t('doctors.authorities.form.decreeFileTooLarge'));
-      setDecreeFile(null);
+    if (file && file.size > DOCTOR_AUTHORITY_GRANT_DOCUMENT_MAX_SIZE_BYTES) {
+      setFormError(t('doctors.authorities.form.grantDocumentFileTooLarge'));
+      setGrantDocumentFile(null);
       return;
     }
     setFormError(null);
-    setDecreeFile(file);
+    setGrantDocumentFile(file);
   }
 
   async function uploadChosenFile(): Promise<string | undefined> {
-    if (!decreeFile || !isDoctorAuthorityDecreeMimeType(decreeFile.type)) {
+    if (!grantDocumentFile || !isDoctorAuthorityGrantDocumentMimeType(grantDocumentFile.type)) {
       return undefined;
     }
     setStage('uploading');
-    return uploadDoctorAuthorityDecree({ doctorId, file: decreeFile, mimeType: decreeFile.type });
+    return uploadDoctorAuthorityGrantDocument({
+      doctorId,
+      file: grantDocumentFile,
+      mimeType: grantDocumentFile.type,
+    });
   }
 
-  async function saveAuthority(decreeStorageKey: string | undefined): Promise<void> {
+  async function saveAuthority(grantDocumentStorageKey: string | undefined): Promise<void> {
     setStage('saving');
+    const evidence = {
+      grantKind: grantKind as DoctorAuthorityGrantKindValue,
+      grantReference: grantReference.trim(),
+      grantIssuedAt,
+      trainingCertificateNumber: trainingCertificateNumber.trim(),
+      validFrom,
+      validUntil,
+      ...(grantDocumentStorageKey ? { grantDocumentStorageKey } : {}),
+    };
     const response = authority
-      ? await doctorAuthorityControllerUpdateAuthorityV1(doctorId, authority.id, {
-          trainingCertificateNumber: trainingCertificateNumber.trim() || null,
-          decreeNumber: decreeNumber.trim(),
-          decreeIssuedAt,
-          validFrom,
-          validUntil: validUntil === '' ? null : validUntil,
-          ...(decreeStorageKey ? { decreeStorageKey } : {}),
-        })
+      ? await doctorAuthorityControllerUpdateAuthorityV1(doctorId, authority.id, evidence)
       : await doctorAuthorityControllerCreateAuthorityV1(doctorId, {
           kind: kind as DoctorAuthorityKindValue,
-          ...(trainingCertificateNumber.trim()
-            ? { trainingCertificateNumber: trainingCertificateNumber.trim() }
-            : {}),
-          decreeNumber: decreeNumber.trim(),
-          decreeIssuedAt,
-          validFrom,
-          ...(validUntil ? { validUntil } : {}),
-          ...(decreeStorageKey ? { decreeStorageKey } : {}),
+          ...evidence,
         });
     parseApiSuccess<DoctorAuthority>(response, t('doctors.authorities.form.error'));
   }
@@ -184,6 +186,12 @@ export function DoctorAuthorityFormDialog({
   }
 
   const isBusy = stage !== 'idle';
+  const grantReferenceLabel =
+    grantKind === ''
+      ? t('doctors.authorities.form.grantReference')
+      : t(
+          `doctors.authorities.form.grantReferenceByKind.${grantKind as DoctorAuthorityGrantKindValue}`,
+        );
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -233,36 +241,56 @@ export function DoctorAuthorityFormDialog({
               </FieldDescription>
             ) : null}
           </div>
+          <div className="space-y-1.5">
+            <FormLabel
+              htmlFor={`${FIELD_ID_PREFIX}-grant-kind`}
+              className="font-heading text-xs text-slate-600"
+              required
+            >
+              {t('doctors.authorities.form.grantKind')}
+            </FormLabel>
+            <Select value={grantKind} disabled={isBusy} onValueChange={setGrantKind}>
+              <SelectTrigger id={`${FIELD_ID_PREFIX}-grant-kind`} className="w-full">
+                <SelectValue placeholder={t('doctors.authorities.form.grantKindPlaceholder')} />
+              </SelectTrigger>
+              <SelectContent>
+                {DOCTOR_AUTHORITY_GRANT_KINDS.map((value) => (
+                  <SelectItem key={value} value={value}>
+                    {t(`doctors.authorities.grantKind.${value}`)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="space-y-1.5">
               <FormLabel
-                htmlFor={`${FIELD_ID_PREFIX}-decree-number`}
+                htmlFor={`${FIELD_ID_PREFIX}-grant-reference`}
                 className="font-heading text-xs text-slate-600"
                 required
               >
-                {t('doctors.authorities.form.decreeNumber')}
+                {grantReferenceLabel}
               </FormLabel>
               <Input
-                id={`${FIELD_ID_PREFIX}-decree-number`}
-                value={decreeNumber}
+                id={`${FIELD_ID_PREFIX}-grant-reference`}
+                value={grantReference}
                 disabled={isBusy}
-                placeholder="440/123/2026"
-                onChange={(event) => setDecreeNumber(event.target.value)}
+                onChange={(event) => setGrantReference(event.target.value)}
               />
             </div>
             <div className="space-y-1.5">
               <FormLabel
-                htmlFor={`${FIELD_ID_PREFIX}-decree-issued-at`}
+                htmlFor={`${FIELD_ID_PREFIX}-grant-issued-at`}
                 className="font-heading text-xs text-slate-600"
                 required
               >
-                {t('doctors.authorities.form.decreeIssuedAt')}
+                {t('doctors.authorities.form.grantIssuedAt')}
               </FormLabel>
               <DatePicker
-                id={`${FIELD_ID_PREFIX}-decree-issued-at`}
-                value={decreeIssuedAt}
+                id={`${FIELD_ID_PREFIX}-grant-issued-at`}
+                value={grantIssuedAt}
                 disabled={isBusy}
-                onValueChange={setDecreeIssuedAt}
+                onValueChange={setGrantIssuedAt}
               />
             </div>
             <div className="space-y-1.5">
@@ -284,6 +312,7 @@ export function DoctorAuthorityFormDialog({
               <FormLabel
                 htmlFor={`${FIELD_ID_PREFIX}-valid-until`}
                 className="font-heading text-xs text-slate-600"
+                required
               >
                 {t('doctors.authorities.form.validUntil')}
               </FormLabel>
@@ -304,6 +333,7 @@ export function DoctorAuthorityFormDialog({
             <FormLabel
               htmlFor={`${FIELD_ID_PREFIX}-training`}
               className="font-heading text-xs text-slate-600"
+              required
             >
               {t('doctors.authorities.form.trainingCertificateNumber')}
             </FormLabel>
@@ -316,21 +346,21 @@ export function DoctorAuthorityFormDialog({
           </div>
           <div className="space-y-1.5">
             <FormLabel
-              htmlFor={`${FIELD_ID_PREFIX}-decree-file`}
+              htmlFor={`${FIELD_ID_PREFIX}-grant-document-file`}
               className="font-heading text-xs text-slate-600"
             >
-              {t('doctors.authorities.form.decreeFile')}
+              {t('doctors.authorities.form.grantDocumentFile')}
             </FormLabel>
             <Input
-              id={`${FIELD_ID_PREFIX}-decree-file`}
+              id={`${FIELD_ID_PREFIX}-grant-document-file`}
               type="file"
-              accept={DOCTOR_AUTHORITY_DECREE_MIME_TYPES.join(',')}
+              accept={DOCTOR_AUTHORITY_GRANT_DOCUMENT_MIME_TYPES.join(',')}
               disabled={isBusy}
               onChange={handleFileChange}
             />
-            {authority?.hasDecree ? (
-              <FieldDescription id={`${FIELD_ID_PREFIX}-decree-file-keep`}>
-                {t('doctors.authorities.form.decreeFileKeep')}
+            {authority?.hasGrantDocument ? (
+              <FieldDescription id={`${FIELD_ID_PREFIX}-grant-document-file-keep`}>
+                {t('doctors.authorities.form.grantDocumentFileKeep')}
               </FieldDescription>
             ) : null}
           </div>

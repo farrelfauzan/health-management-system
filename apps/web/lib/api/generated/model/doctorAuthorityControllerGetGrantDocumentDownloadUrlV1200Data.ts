@@ -6,7 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type DoctorAuthorityControllerGetDecreeDownloadUrlV1200Data = {
+export type DoctorAuthorityControllerGetGrantDocumentDownloadUrlV1200Data = {
   url: string;
   expiresAt: string;
 };

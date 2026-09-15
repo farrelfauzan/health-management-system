@@ -10,13 +10,14 @@ export type DoctorAuthorityControllerRevokeAuthorityV1200Data = {
   id: string;
   doctorId: string;
   kind: string;
+  grantKind: string;
   trainingCertificateNumber: string;
-  decreeNumber: string;
-  decreeIssuedAt: string;
+  grantReference: string;
+  grantIssuedAt: string;
   validFrom: string;
   validUntil: string;
-  hasDecree: boolean;
-  decreeMimeType: string;
+  hasGrantDocument: boolean;
+  grantDocumentMimeType: string;
   status: string;
   revokedAt: string;
   revokeReason: string;

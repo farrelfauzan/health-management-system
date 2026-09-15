@@ -623,6 +623,13 @@ export type EnumDoctorAuthorityKindFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumDoctorAuthorityKindFilter<$PrismaModel> | $Enums.DoctorAuthorityKind
 }
 
+export type EnumDoctorAuthorityGrantKindFilter<$PrismaModel = never> = {
+  equals?: $Enums.DoctorAuthorityGrantKind | Prisma.EnumDoctorAuthorityGrantKindFieldRefInput<$PrismaModel>
+  in?: $Enums.DoctorAuthorityGrantKind[] | Prisma.ListEnumDoctorAuthorityGrantKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DoctorAuthorityGrantKind[] | Prisma.ListEnumDoctorAuthorityGrantKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDoctorAuthorityGrantKindFilter<$PrismaModel> | $Enums.DoctorAuthorityGrantKind
+}
+
 export type EnumDoctorAuthorityKindWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.DoctorAuthorityKind | Prisma.EnumDoctorAuthorityKindFieldRefInput<$PrismaModel>
   in?: $Enums.DoctorAuthorityKind[] | Prisma.ListEnumDoctorAuthorityKindFieldRefInput<$PrismaModel>
@@ -631,6 +638,16 @@ export type EnumDoctorAuthorityKindWithAggregatesFilter<$PrismaModel = never> = 
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumDoctorAuthorityKindFilter<$PrismaModel>
   _max?: Prisma.NestedEnumDoctorAuthorityKindFilter<$PrismaModel>
+}
+
+export type EnumDoctorAuthorityGrantKindWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.DoctorAuthorityGrantKind | Prisma.EnumDoctorAuthorityGrantKindFieldRefInput<$PrismaModel>
+  in?: $Enums.DoctorAuthorityGrantKind[] | Prisma.ListEnumDoctorAuthorityGrantKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DoctorAuthorityGrantKind[] | Prisma.ListEnumDoctorAuthorityGrantKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDoctorAuthorityGrantKindWithAggregatesFilter<$PrismaModel> | $Enums.DoctorAuthorityGrantKind
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumDoctorAuthorityGrantKindFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumDoctorAuthorityGrantKindFilter<$PrismaModel>
 }
 
 export type EnumAppointmentSessionStatusFilter<$PrismaModel = never> = {
@@ -2746,6 +2763,13 @@ export type NestedEnumDoctorAuthorityKindFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumDoctorAuthorityKindFilter<$PrismaModel> | $Enums.DoctorAuthorityKind
 }
 
+export type NestedEnumDoctorAuthorityGrantKindFilter<$PrismaModel = never> = {
+  equals?: $Enums.DoctorAuthorityGrantKind | Prisma.EnumDoctorAuthorityGrantKindFieldRefInput<$PrismaModel>
+  in?: $Enums.DoctorAuthorityGrantKind[] | Prisma.ListEnumDoctorAuthorityGrantKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DoctorAuthorityGrantKind[] | Prisma.ListEnumDoctorAuthorityGrantKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDoctorAuthorityGrantKindFilter<$PrismaModel> | $Enums.DoctorAuthorityGrantKind
+}
+
 export type NestedEnumDoctorAuthorityKindWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.DoctorAuthorityKind | Prisma.EnumDoctorAuthorityKindFieldRefInput<$PrismaModel>
   in?: $Enums.DoctorAuthorityKind[] | Prisma.ListEnumDoctorAuthorityKindFieldRefInput<$PrismaModel>
@@ -2754,6 +2778,16 @@ export type NestedEnumDoctorAuthorityKindWithAggregatesFilter<$PrismaModel = nev
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumDoctorAuthorityKindFilter<$PrismaModel>
   _max?: Prisma.NestedEnumDoctorAuthorityKindFilter<$PrismaModel>
+}
+
+export type NestedEnumDoctorAuthorityGrantKindWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.DoctorAuthorityGrantKind | Prisma.EnumDoctorAuthorityGrantKindFieldRefInput<$PrismaModel>
+  in?: $Enums.DoctorAuthorityGrantKind[] | Prisma.ListEnumDoctorAuthorityGrantKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DoctorAuthorityGrantKind[] | Prisma.ListEnumDoctorAuthorityGrantKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDoctorAuthorityGrantKindWithAggregatesFilter<$PrismaModel> | $Enums.DoctorAuthorityGrantKind
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumDoctorAuthorityGrantKindFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumDoctorAuthorityGrantKindFilter<$PrismaModel>
 }
 
 export type NestedEnumAppointmentSessionStatusFilter<$PrismaModel = never> = {

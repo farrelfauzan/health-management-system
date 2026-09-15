@@ -237,11 +237,11 @@
         },
         "doctorAuthorityExpiring": {
           "title": "Midwife authority expiring",
-          "body": "{doctorName}'s {kind} authority (decree {decreeNumber}) ends on {validUntil}."
+          "body": "{doctorName}'s {kind} authority (no. {grantReference}) ends on {validUntil}."
         },
         "doctorAuthorityExpired": {
           "title": "Midwife authority expired",
-          "body": "{doctorName}'s {kind} authority (decree {decreeNumber}) ended on {validUntil}."
+          "body": "{doctorName}'s {kind} authority (no. {grantReference}) ended on {validUntil}."
         }
       },
       "profile": {

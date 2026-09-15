@@ -21,14 +21,15 @@ function buildRecord(overrides: Partial<DoctorAuthorityRecord> = {}): DoctorAuth
     id: AUTHORITY_ID,
     doctorId: DOCTOR_ID,
     kind: 'IUD_IMPLANT',
-    trainingCertificateNumber: null,
-    decreeNumber: '440/123/2026',
-    decreeIssuedAt: new Date('2025-12-15T00:00:00.000Z'),
+    grantKind: 'DINAS_PENETAPAN',
+    grantReference: '440/123/2026',
+    grantIssuedAt: new Date('2025-12-15T00:00:00.000Z'),
+    trainingCertificateNumber: 'CTU-2025-0042',
     validFrom: new Date('2026-01-01T00:00:00.000Z'),
     validUntil: new Date('2027-12-31T00:00:00.000Z'),
-    decreeStorageKey: null,
-    decreeMimeType: null,
-    decreeSizeBytes: null,
+    grantDocumentStorageKey: null,
+    grantDocumentMimeType: null,
+    grantDocumentSizeBytes: null,
     revokedAt: null,
     revokedById: null,
     revokeReason: null,
@@ -72,12 +73,12 @@ describe('DoctorAuthorityService', () => {
       profession: 'MIDWIFE',
     });
     repositoryMock.hasLiveAuthority.mockResolvedValue(false);
-    repositoryMock.create.mockImplementation(async ({ decree, ...payload }) =>
+    repositoryMock.create.mockImplementation(async ({ grantDocument, ...payload }) =>
       buildRecord({
         ...payload,
-        decreeStorageKey: decree?.storageKey ?? null,
-        decreeMimeType: decree?.mimeType ?? null,
-        decreeSizeBytes: decree?.sizeBytes ?? null,
+        grantDocumentStorageKey: grantDocument?.storageKey ?? null,
+        grantDocumentMimeType: grantDocument?.mimeType ?? null,
+        grantDocumentSizeBytes: grantDocument?.sizeBytes ?? null,
       }),
     );
     service = new DoctorAuthorityService(
@@ -130,8 +131,10 @@ describe('DoctorAuthorityService', () => {
   describe('createAuthority', () => {
     const input = {
       kind: 'IUD_IMPLANT' as const,
-      decreeNumber: '440/123/2026',
-      decreeIssuedAt: '2025-12-15',
+      grantKind: 'DINAS_PENETAPAN' as const,
+      grantReference: '440/123/2026',
+      grantIssuedAt: '2025-12-15',
+      trainingCertificateNumber: 'CTU-2025-0042',
       validFrom: '2026-01-01',
       validUntil: '2027-12-31',
     };
@@ -178,12 +181,18 @@ describe('DoctorAuthorityService', () => {
         expect.objectContaining({
           doctorId: DOCTOR_ID,
           kind: 'IUD_IMPLANT',
+          grantKind: 'DINAS_PENETAPAN',
+          trainingCertificateNumber: 'CTU-2025-0042',
           createdById: 'admin-user',
           validUntil: new Date('2027-12-31T00:00:00.000Z'),
-          decree: null,
+          grantDocument: null,
         }),
       );
-      expect(actual).toMatchObject({ kind: 'IUD_IMPLANT', hasDecree: false, status: 'ACTIVE' });
+      expect(actual).toMatchObject({
+        kind: 'IUD_IMPLANT',
+        hasGrantDocument: false,
+        status: 'ACTIVE',
+      });
     });
 
     it('refuses a storage key minted outside this clinician’s prefix without touching storage', async () => {
@@ -191,7 +200,8 @@ describe('DoctorAuthorityService', () => {
         DOCTOR_ID,
         {
           ...input,
-          decreeStorageKey: 'documents/vault/doctor/9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d.pdf',
+          grantDocumentStorageKey:
+            'documents/vault/doctor/9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d.pdf',
         },
         ACTOR,
       );
@@ -201,7 +211,7 @@ describe('DoctorAuthorityService', () => {
       expect(repositoryMock.create).not.toHaveBeenCalled();
     });
 
-    it('reads the letter back from storage before recording it', async () => {
+    it('reads the grant document back from storage before recording it', async () => {
       const storageKey = `doctor-authorities/${DOCTOR_ID}/9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d.pdf`;
       storageMock.headObject.mockResolvedValue({
         key: storageKey,
@@ -211,30 +221,30 @@ describe('DoctorAuthorityService', () => {
 
       const actual = await service.createAuthority(
         DOCTOR_ID,
-        { ...input, decreeStorageKey: storageKey },
+        { ...input, grantDocumentStorageKey: storageKey },
         ACTOR,
       );
 
       expect(repositoryMock.create).toHaveBeenCalledWith(
         expect.objectContaining({
-          decree: { storageKey, mimeType: 'application/pdf', sizeBytes: 1024 },
+          grantDocument: { storageKey, mimeType: 'application/pdf', sizeBytes: 1024 },
         }),
       );
-      expect(actual.hasDecree).toBe(true);
+      expect(actual.hasGrantDocument).toBe(true);
     });
   });
 
   describe('updateAuthority', () => {
     it('cannot change the kind: the input type has no such field and a stray one is ignored', async () => {
       repositoryMock.findById.mockResolvedValue(buildRecord());
-      repositoryMock.update.mockResolvedValue(buildRecord({ decreeNumber: '440/124/2026' }));
-      const inputWithStrayKind = { decreeNumber: '440/124/2026', kind: 'MTBS' };
+      repositoryMock.update.mockResolvedValue(buildRecord({ grantReference: '440/124/2026' }));
+      const inputWithStrayKind = { grantReference: '440/124/2026', kind: 'MTBS' };
 
       await service.updateAuthority(DOCTOR_ID, AUTHORITY_ID, inputWithStrayKind);
 
       const [, actualPayload] = repositoryMock.update.mock.calls[0];
       expect(actualPayload).not.toHaveProperty('kind');
-      expect(actualPayload.decreeNumber).toBe('440/124/2026');
+      expect(actualPayload.grantReference).toBe('440/124/2026');
     });
 
     it('refuses an end date before the stored start date', async () => {
@@ -249,7 +259,7 @@ describe('DoctorAuthorityService', () => {
       repositoryMock.findById.mockResolvedValue(null);
 
       await expect(
-        service.updateAuthority(DOCTOR_ID, AUTHORITY_ID, { decreeNumber: 'x' }),
+        service.updateAuthority(DOCTOR_ID, AUTHORITY_ID, { grantReference: 'x' }),
       ).rejects.toBeInstanceOf(NotFoundException);
     });
   });
@@ -264,13 +274,13 @@ describe('DoctorAuthorityService', () => {
       const actual = await service.revokeAuthority(
         DOCTOR_ID,
         AUTHORITY_ID,
-        { reason: 'Letter withdrawn' },
+        { reason: 'Penetapan withdrawn' },
         ACTOR,
       );
 
       expect(repositoryMock.revoke).toHaveBeenCalledWith(
         AUTHORITY_ID,
-        expect.objectContaining({ revokedById: 'admin-user', revokeReason: 'Letter withdrawn' }),
+        expect.objectContaining({ revokedById: 'admin-user', revokeReason: 'Penetapan withdrawn' }),
       );
       expect(actual.status).toBe('REVOKED');
     });
@@ -296,7 +306,6 @@ describe('DoctorAuthorityService', () => {
           kind: 'MTBS',
           validUntil: new Date('2027-10-31T00:00:00.000Z'),
         }),
-        buildRecord({ id: 'open', kind: 'INTEGRATED_ANC', validUntil: null }),
       ]);
 
       const actual = await service.listAuthorities(DOCTOR_ID);
@@ -304,7 +313,6 @@ describe('DoctorAuthorityService', () => {
       expect(actual.map((row) => [row.id, row.status])).toEqual([
         ['soon', 'EXPIRING_SOON'],
         ['lapsed', 'EXPIRED'],
-        ['open', 'ACTIVE'],
       ]);
     });
   });

@@ -9357,14 +9357,15 @@ export const DoctorAuthorityScalarFieldEnum = {
   id: 'id',
   doctorId: 'doctorId',
   kind: 'kind',
+  grantKind: 'grantKind',
+  grantReference: 'grantReference',
+  grantIssuedAt: 'grantIssuedAt',
   trainingCertificateNumber: 'trainingCertificateNumber',
-  decreeNumber: 'decreeNumber',
-  decreeIssuedAt: 'decreeIssuedAt',
   validFrom: 'validFrom',
   validUntil: 'validUntil',
-  decreeStorageKey: 'decreeStorageKey',
-  decreeMimeType: 'decreeMimeType',
-  decreeSizeBytes: 'decreeSizeBytes',
+  grantDocumentStorageKey: 'grantDocumentStorageKey',
+  grantDocumentMimeType: 'grantDocumentMimeType',
+  grantDocumentSizeBytes: 'grantDocumentSizeBytes',
   revokedAt: 'revokedAt',
   revokedById: 'revokedById',
   revokeReason: 'revokeReason',
@@ -11317,6 +11318,20 @@ export type EnumDoctorAuthorityKindFieldRefInput<$PrismaModel> = FieldRefInputTy
  * Reference to a field of type 'DoctorAuthorityKind[]'
  */
 export type ListEnumDoctorAuthorityKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DoctorAuthorityKind[]'>
+    
+
+
+/**
+ * Reference to a field of type 'DoctorAuthorityGrantKind'
+ */
+export type EnumDoctorAuthorityGrantKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DoctorAuthorityGrantKind'>
+    
+
+
+/**
+ * Reference to a field of type 'DoctorAuthorityGrantKind[]'
+ */
+export type ListEnumDoctorAuthorityGrantKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DoctorAuthorityGrantKind[]'>
     
 
 

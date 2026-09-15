@@ -1,13 +1,23 @@
 -- P25-T02, part A: the enum values behind a midwife's delegated authority
--- (kewenangan, Permenkes 28/2017 Pasal 23–26). In a folder of their own, ahead
--- of the table that uses them: Postgres will not let an enum value be added
--- and then referenced in the same transaction, and part B references all of
--- these. Stamped 20261031 by the orchestrator; parallel tickets take 20261101+.
+-- (kewenangan), shaped by D-036 (docs/post-mvp/decisions.md). In a folder of
+-- their own, ahead of the table that uses them: Postgres will not let an enum
+-- value be added and then referenced in the same transaction, and part B
+-- references all of these. Stamped 20261031 by the orchestrator; parallel
+-- tickets take 20261101+.
 
 -- CreateEnum
--- One value per grant a district decision letter can make. `NO_OTHER_WORKER`
--- is the broad authority for a place with no other health worker (Pasal 26).
+-- One value per action an authority covers. Which actions need one is still
+-- the Permenkes 28/2017 Pasal 25 list, kept as the reference by Permenkes
+-- 13/2025 Pasal 305(1). `NO_OTHER_WORKER` is the authority for a place with no
+-- other health worker (PP 28/2024 Pasal 744(2)(a), Permenkes 13/2025 Pasal 186).
 CREATE TYPE "doctor_authority_kind" AS ENUM ('IUD_IMPLANT', 'MTBS', 'PROGRAM_IMMUNIZATION', 'INTEGRATED_ANC', 'NO_OTHER_WORKER');
+
+-- CreateEnum
+-- The evidence a grant rests on, one per authority: a dinas kesehatan
+-- penetapan (PP 28/2024 Pasal 744(3), Permenkes 13/2025 Pasal 186), a
+-- government penugasan after training (Permenkes 13/2025 Pasal 187(2)), or a
+-- training-added competence written on the STR (PP 28/2024 Pasal 742(3)–(4)).
+CREATE TYPE "doctor_authority_grant_kind" AS ENUM ('DINAS_PENETAPAN', 'GOVERNMENT_PENUGASAN', 'STR_ANNOTATION');
 
 -- AlterEnum
 -- Three audit verbs rather than CREATE / UPDATE: each is a decision about what

@@ -1,9 +1,19 @@
 -- P25-T02, part B: the record of a midwife's delegated authority
--- (kewenangan). It hangs off `doctor_profiles` like `doctor_licenses`, and only
--- a MIDWIFE profile may carry one — the service refuses the rest, because a
--- CHECK cannot see the profession on the parent row.
+-- (kewenangan), shaped by D-036 (docs/post-mvp/decisions.md). It hangs off
+-- `doctor_profiles` like `doctor_licenses`, and only a MIDWIFE profile may
+-- carry one — the service refuses the rest, because a CHECK cannot see the
+-- profession on the parent row.
 --
--- The decision letter lives on the row (`decree_storage_key` and friends, the
+-- Legal basis: PP 28/2024 Pasal 744 and Permenkes 13/2025 Pasal 185–187 for
+-- programme and no-other-worker authority; PP 28/2024 Pasal 742(3)–(4) for a
+-- competence added through training and written on the STR. Which actions
+-- need an authority is still the Permenkes 28/2017 Pasal 25 list, kept as the
+-- reference by Permenkes 13/2025 Pasal 305(1).
+--
+-- The evidence is one of three (`grant_kind`), with its reference and date.
+-- The training certificate is always required (PP 28/2024 Pasal 744(4)) and so
+-- is an end date: the government sets the period (Pasal 744(8)), so no row is
+-- open-ended. The evidence document lives on the row (`grant_document_*`, the
 -- way `managed_documents` stores its payload) rather than as a `documents`
 -- row: `documents.owner_id` is a user FK and a clinician can exist with no
 -- account (NO_ACCOUNT), so there is nobody for such a row to belong to.
@@ -13,15 +23,16 @@ CREATE TABLE "doctor_authorities" (
     "id" UUID NOT NULL,
     "doctor_id" UUID NOT NULL,
     "kind" "doctor_authority_kind" NOT NULL,
-    "training_certificate_number" TEXT,
-    "decree_number" TEXT NOT NULL,
-    "decree_issued_at" DATE NOT NULL,
+    "grant_kind" "doctor_authority_grant_kind" NOT NULL,
+    -- The penetapan number, the penugasan letter number, or the STR number.
+    "grant_reference" TEXT NOT NULL,
+    "grant_issued_at" DATE NOT NULL,
+    "training_certificate_number" TEXT NOT NULL,
     "valid_from" DATE NOT NULL,
-    -- Null is open-ended: valid until revoked.
-    "valid_until" DATE,
-    "decree_storage_key" TEXT,
-    "decree_mime_type" TEXT,
-    "decree_size_bytes" INTEGER,
+    "valid_until" DATE NOT NULL,
+    "grant_document_storage_key" TEXT,
+    "grant_document_mime_type" TEXT,
+    "grant_document_size_bytes" INTEGER,
     "revoked_at" TIMESTAMPTZ(3),
     "revoked_by_id" UUID,
     "revoke_reason" TEXT,
@@ -32,7 +43,7 @@ CREATE TABLE "doctor_authorities" (
 
     CONSTRAINT "doctor_authorities_pkey" PRIMARY KEY ("id"),
     -- Hand-written; Prisma has no syntax for it and the drift check ignores it.
-    CONSTRAINT "doctor_authorities_validity_order_check" CHECK ("valid_until" IS NULL OR "valid_until" >= "valid_from")
+    CONSTRAINT "doctor_authorities_validity_order_check" CHECK ("valid_until" >= "valid_from")
 );
 
 -- CreateTable
@@ -68,9 +79,9 @@ CREATE INDEX "doctor_authorities_revoked_by_id_idx" ON "doctor_authorities"("rev
 -- revoked or soft-deleted row steps aside so the same kind can be granted
 -- again, and renewal is an edit of the dates or a revoke-and-regrant. Prisma
 -- cannot express a partial unique index and `migrate diff` cannot see it,
--- which is house style (see `doctor_patients_active_pair_key` and the diagnoses index). The
--- service maps the P2002 this raises under a race to the same 409 the
--- pre-check returns.
+-- which is house style (see `doctor_patients_active_pair_key` and the
+-- diagnoses index). The service maps the P2002 this raises under a race to the
+-- same 409 the pre-check returns.
 CREATE UNIQUE INDEX "doctor_authorities_live_kind_key" ON "doctor_authorities"("doctor_id", "kind") WHERE "revoked_at" IS NULL AND "deleted_at" IS NULL;
 
 -- CreateIndex

@@ -14,11 +14,11 @@ vi.mock('#lib/api/generated/doctor-authorities/doctor-authorities', () => ({
   getDoctorAuthorityControllerListAuthoritiesV1QueryKey: (doctorId: string) => [
     `/api/v1/doctors/${doctorId}/authorities`,
   ],
-  doctorAuthorityControllerGetDecreeDownloadUrlV1: vi.fn(),
+  doctorAuthorityControllerGetGrantDocumentDownloadUrlV1: vi.fn(),
   doctorAuthorityControllerCreateAuthorityV1: vi.fn(),
   doctorAuthorityControllerUpdateAuthorityV1: vi.fn(),
   doctorAuthorityControllerRevokeAuthorityV1: vi.fn(),
-  doctorAuthorityControllerCreateDecreeUploadUrlV1: vi.fn(),
+  doctorAuthorityControllerCreateGrantDocumentUploadUrlV1: vi.fn(),
 }));
 
 const { DoctorAuthoritiesCard } = await import('./doctor-authorities-card');
@@ -28,13 +28,14 @@ function buildAuthority(overrides: Partial<DoctorAuthority> = {}): DoctorAuthori
     id: 'authority-1',
     doctorId: 'midwife-1',
     kind: 'IUD_IMPLANT',
-    trainingCertificateNumber: null,
-    decreeNumber: '440/123/2026',
-    decreeIssuedAt: '2025-12-15',
+    grantKind: 'DINAS_PENETAPAN',
+    grantReference: '440/123/2026',
+    grantIssuedAt: '2025-12-15',
+    trainingCertificateNumber: 'CTU-2025-0042',
     validFrom: '2026-01-01',
     validUntil: '2027-12-31',
-    hasDecree: true,
-    decreeMimeType: 'application/pdf',
+    hasGrantDocument: true,
+    grantDocumentMimeType: 'application/pdf',
     status: 'ACTIVE',
     revokedAt: null,
     revokeReason: null,
@@ -81,13 +82,14 @@ describe('DoctorAuthoritiesCard (P25-T02)', () => {
     expect(listAuthoritiesMock).not.toHaveBeenCalled();
   });
 
-  it('renders for a MIDWIFE with the admin preset: kind, decree, Aktif and a letter download', async () => {
+  it('renders for a MIDWIFE with the admin preset: kind, evidence, Aktif and a document download', async () => {
     renderCard('MIDWIFE', ADMIN_PORTAL_ADMIN_RULES);
 
     expect(await screen.findByText('Pemasangan AKDR & implan')).toBeInTheDocument();
     expect(screen.getByText('440/123/2026')).toBeInTheDocument();
+    expect(screen.getByText(/Penetapan Dinas Kesehatan/)).toBeInTheDocument();
     expect(screen.getByText('Aktif')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Unduh SK/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Unduh dokumen bukti/ })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Tambah kewenangan/ })).toBeInTheDocument();
     expect(listAuthoritiesMock.mock.calls[0]?.[0]).toBe('midwife-1');
   });
@@ -100,8 +102,8 @@ describe('DoctorAuthoritiesCard (P25-T02)', () => {
           buildAuthority({
             status: 'REVOKED',
             revokedAt: '2026-06-01T02:00:00.000Z',
-            revokeReason: 'SK dicabut dinas',
-            hasDecree: false,
+            revokeReason: 'Penetapan dicabut dinas',
+            hasGrantDocument: false,
           }),
         ],
       },
@@ -110,7 +112,7 @@ describe('DoctorAuthoritiesCard (P25-T02)', () => {
     renderCard('MIDWIFE', ADMIN_PORTAL_ADMIN_RULES);
 
     expect(await screen.findByText('Dicabut')).toBeInTheDocument();
-    expect(screen.getByText('SK belum diunggah')).toBeInTheDocument();
+    expect(screen.getByText('Dokumen bukti belum diunggah')).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Cabut' })).not.toBeInTheDocument();
   });
 });

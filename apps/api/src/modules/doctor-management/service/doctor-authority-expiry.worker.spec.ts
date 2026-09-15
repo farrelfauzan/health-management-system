@@ -13,7 +13,8 @@ function buildRecord(
     doctorId: 'doctor-1',
     doctorName: 'Bd. Siti Aminah',
     kind: 'IUD_IMPLANT',
-    decreeNumber: '440/123/2026',
+    grantKind: 'DINAS_PENETAPAN',
+    grantReference: '440/123/2026',
     validUntil: new Date('2027-12-31T00:00:00.000Z'),
     ...overrides,
   };
@@ -108,7 +109,7 @@ describe('DoctorAuthorityExpiryWorker', () => {
     ]);
   });
 
-  it('asks the service for candidates only — revoked and open-ended rows never reach it', async () => {
+  it('asks the service for candidates only — revoked and deleted rows never reach it', async () => {
     // The exclusion lives in the repository query; the worker's contract is
     // that it notifies exactly what the service hands it and nothing else.
     doctorAuthorityServiceMock.claimExpiryNotice.mockResolvedValue(true);

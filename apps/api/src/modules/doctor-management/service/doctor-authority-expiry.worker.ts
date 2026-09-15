@@ -20,9 +20,9 @@ function buildDoctorHref(doctorId: string): string {
  * The reminder sweep for a midwife's delegated authorities (P25-T02,
  * FR-AUTH-05), modelled line for line on `DoctorLicenseExpiryWorker`: an
  * `unref`'d interval on bootstrap, on by default, safe to re-run because each
- * threshold is claimed once through `doctor_authority_expiry_notices`. Only
- * end-dated, unrevoked rows are swept — an open-ended grant has nothing to
- * reach, and a revoked one is no longer the clinic's obligation.
+ * threshold is claimed once through `doctor_authority_expiry_notices`. Every
+ * unrevoked, undeleted grant is swept: the government sets each grant's period
+ * (PP 28/2024 Pasal 744(8)), so every row has an end date to reach (D-036).
  */
 @Injectable()
 export class DoctorAuthorityExpiryWorker implements OnApplicationBootstrap, OnApplicationShutdown {
@@ -118,7 +118,8 @@ export class DoctorAuthorityExpiryWorker implements OnApplicationBootstrap, OnAp
       params: {
         doctorName: record.doctorName,
         kind: record.kind,
-        decreeNumber: record.decreeNumber,
+        grantKind: record.grantKind,
+        grantReference: record.grantReference,
         validUntil: record.validUntil.toISOString().slice(0, 10),
         daysUntilExpiry: String(daysUntilExpiry),
       },
