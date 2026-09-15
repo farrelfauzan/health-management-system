@@ -1051,7 +1051,13 @@
         "error": "Tindakan gagal dicatat. Silakan coba lagi.",
         "retractError": "Tindakan gagal ditarik. Silakan coba lagi.",
         "retract": "Tarik tindakan {code}",
-        "empty": "Belum ada tindakan berkode untuk kunjungan ini."
+        "empty": "Belum ada tindakan berkode untuk kunjungan ini.",
+        "implantAction": {
+          "label": "Implan kontrasepsi",
+          "none": "Bukan tindakan implan",
+          "INSERTION": "Pemasangan implan",
+          "REMOVAL": "Pencabutan implan"
+        }
       },
       "vitals": {
         "title": "Tanda Vital",
@@ -1270,6 +1276,25 @@
           "NO_VERIFIED_RESULT": "belum ada hasil terverifikasi",
           "UNCODED_COMPOUND_COMPONENT": "komponen racikan tanpa kode"
         }
+      },
+      "childVisitPurpose": {
+        "label": "Tujuan kunjungan anak",
+        "hint": "Wajib dipilih bidan untuk pasien berusia di bawah 5 tahun.",
+        "required": "Pilih tujuan kunjungan anak.",
+        "summary": "Tujuan kunjungan: {purpose}",
+        "options": {
+          "WELL_CHILD": "Kunjungan anak sehat (KN, imunisasi, tumbuh kembang)",
+          "NEONATAL_FIRST_AID": "Penanganan awal kegawatdaruratan neonatus, lalu rujuk",
+          "SICK_CHILD": "Anak sakit (MTBS)"
+        },
+        "errors": {
+          "CHILD_VISIT_PURPOSE_REQUIRED": "Bidan wajib memilih tujuan kunjungan untuk anak di bawah 5 tahun.",
+          "CHILD_VISIT_PURPOSE_INVALID": "Penanganan awal kegawatdaruratan neonatus hanya untuk bayi berusia 28 hari atau kurang."
+        }
+      },
+      "midwifeAuthority": {
+        "refused": "Bidan belum memiliki kewenangan aktif untuk {kind}.",
+        "referral": "Rujuk ke dokter atau puskesmas"
       }
     }
   }

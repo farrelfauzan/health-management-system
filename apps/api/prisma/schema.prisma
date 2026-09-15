@@ -329,6 +329,10 @@ enum AuditAction {
   DOCTOR_AUTHORITY_GRANTED
   DOCTOR_AUTHORITY_UPDATED
   DOCTOR_AUTHORITY_REVOKED
+  /// A midwife was refused a procedure or an encounter because she held no
+  /// active delegated authority of the kind it needs (P25-T03). Written
+  /// explicitly before the 422, because the interceptor never logs a 4xx.
+  MIDWIFE_AUTHORITY_REFUSED
 }
 
 enum BpjsSubmissionType {
@@ -466,6 +470,25 @@ enum EncounterPrognosis {
   MALAM
 
   @@map("encounter_prognosis")
+}
+
+/// Why a midwife is seeing a child under five (P25-T03). Only `SICK_CHILD`
+/// needs the MTBS authority; the other two are her own authority.
+enum EncounterChildVisitPurpose {
+  WELL_CHILD
+  NEONATAL_FIRST_AID
+  SICK_CHILD
+
+  @@map("encounter_child_visit_purpose")
+}
+
+/// A contraceptive implant inserted or removed (P25-T03). No ICD-9-CM code
+/// names an implant, so the procedure carries this flag instead.
+enum ContraceptiveImplantAction {
+  INSERTION
+  REMOVAL
+
+  @@map("contraceptive_implant_action")
 }
 
 /// How a vaccine was given. Maps onto the HL7 v3 RouteOfAdministration codes
@@ -2242,6 +2265,9 @@ model Encounter {
   /// one — the element is then omitted rather than defaulted, so the national
   /// record never carries an assessment that was not made.
   prognosis  EncounterPrognosis?
+  /// Null unless a midwife opened the encounter for a child under 60 months
+  /// (P25-T03); `SICK_CHILD` was allowed only with an active MTBS authority.
+  childVisitPurpose EncounterChildVisitPurpose? @map("child_visit_purpose")
 
   registration         Registration          @relation(fields: [registrationId], references: [id], onDelete: Restrict)
   patient              PatientProfile        @relation(fields: [patientId], references: [id], onDelete: Restrict)
@@ -2429,6 +2455,9 @@ model Procedure {
   /// When the action was performed, which can precede the moment it was
   /// written down.
   performedAt  DateTime  @default(now()) @map("performed_at")
+  /// Set when the procedure inserted or removed a contraceptive implant; a
+  /// midwife then needed an active IUD_IMPLANT authority (P25-T03).
+  contraceptiveImplantAction ContraceptiveImplantAction? @map("contraceptive_implant_action")
   recordedById String?   @map("recorded_by_id") @db.Uuid
   createdAt    DateTime  @default(now()) @map("created_at")
   updatedAt    DateTime  @updatedAt @map("updated_at")

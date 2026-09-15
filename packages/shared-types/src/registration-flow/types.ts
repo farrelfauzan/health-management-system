@@ -104,6 +104,8 @@ export type RegistrationPatientProjection = {
   mrn: string;
   fullName: string;
   ownerUserId: string | null;
+  /** Read for the registration list only; the public queue board never shows it. */
+  dateOfBirth: Date;
 };
 
 export type RegistrationDoctorProjection = {

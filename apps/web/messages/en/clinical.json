@@ -1051,7 +1051,13 @@
         "error": "Unable to record the procedure. Please try again.",
         "retractError": "Unable to retract the procedure. Please try again.",
         "retract": "Retract procedure {code}",
-        "empty": "No procedure coded for this visit."
+        "empty": "No procedure coded for this visit.",
+        "implantAction": {
+          "label": "Contraceptive implant",
+          "none": "Not an implant procedure",
+          "INSERTION": "Implant insertion",
+          "REMOVAL": "Implant removal"
+        }
       },
       "vitals": {
         "title": "Vital Signs",
@@ -1270,6 +1276,25 @@
           "NO_VERIFIED_RESULT": "no verified result",
           "UNCODED_COMPOUND_COMPONENT": "uncoded compound component"
         }
+      },
+      "childVisitPurpose": {
+        "label": "Child visit purpose",
+        "hint": "Required when a midwife sees a patient under five.",
+        "required": "Select the purpose of this child visit.",
+        "summary": "Visit purpose: {purpose}",
+        "options": {
+          "WELL_CHILD": "Well-child visit (neonatal visit, immunisation, growth monitoring)",
+          "NEONATAL_FIRST_AID": "First aid for a neonatal emergency, then refer",
+          "SICK_CHILD": "Sick child (IMCI)"
+        },
+        "errors": {
+          "CHILD_VISIT_PURPOSE_REQUIRED": "A midwife must select the visit purpose for a child under five.",
+          "CHILD_VISIT_PURPOSE_INVALID": "Neonatal emergency first aid applies only to a baby aged 28 days or less."
+        }
+      },
+      "midwifeAuthority": {
+        "refused": "This midwife holds no active authority for {kind}.",
+        "referral": "Refer to a doctor or a puskesmas"
       }
     }
   }

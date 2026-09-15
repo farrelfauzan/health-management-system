@@ -717,7 +717,8 @@ export const EncounterScalarFieldEnum = {
   objective: 'objective',
   assessment: 'assessment',
   plan: 'plan',
-  prognosis: 'prognosis'
+  prognosis: 'prognosis',
+  childVisitPurpose: 'childVisitPurpose'
 } as const
 
 export type EncounterScalarFieldEnum = (typeof EncounterScalarFieldEnum)[keyof typeof EncounterScalarFieldEnum]
@@ -802,6 +803,7 @@ export const ProcedureScalarFieldEnum = {
   display: 'display',
   notes: 'notes',
   performedAt: 'performedAt',
+  contraceptiveImplantAction: 'contraceptiveImplantAction',
   recordedById: 'recordedById',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',

@@ -43,7 +43,7 @@ function buildRegistration(
     registeredAt: '2026-07-18T08:00:00.000Z',
     createdAt: '2026-07-18T08:00:00.000Z',
     updatedAt: '2026-07-18T08:00:00.000Z',
-    patient: { id: 'patient-1', mrn: 'MRN-0001', fullName: 'John Doe' },
+    patient: { id: 'patient-1', mrn: 'MRN-0001', fullName: 'John Doe', dateOfBirth: '1990-01-01' },
     appointment,
     todaySession,
   };

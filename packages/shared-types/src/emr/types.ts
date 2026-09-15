@@ -1,6 +1,8 @@
 import type { ClinicianProfessionValue } from '#doctor-management/schemas';
 import type {
+  ContraceptiveImplantActionValue,
   DiagnosisTypeValue,
+  EncounterChildVisitPurposeValue,
   EncounterPrognosisValue,
   EncounterStatusValue,
   ImmunizationRouteValue,
@@ -36,6 +38,8 @@ export type EncounterRecord = SoapNote & {
   status: EncounterStatusValue;
   startedAt: Date;
   endedAt: Date | null;
+  /** Null unless a midwife opened the encounter for a child under five (P25-T03). */
+  childVisitPurpose: EncounterChildVisitPurposeValue | null;
   createdById: string | null;
   createdAt: Date;
   updatedAt: Date;
@@ -45,7 +49,42 @@ export type CreateEncounterRecordPayload = {
   registrationId: string;
   patientId: string;
   doctorId: string;
+  childVisitPurpose: EncounterChildVisitPurposeValue | null;
   createdById: string;
+};
+
+/**
+ * The attending clinician as the encounter lifecycle resolves them: enough to
+ * know whose record it is and whether the P25-T03 midwife rules apply.
+ */
+export type EncounterAttendingClinicianRecord = {
+  id: string;
+  ownerUserId: string | null;
+  profession: ClinicianProfessionValue;
+};
+
+/**
+ * What the procedure gate (P25-T03, FR-AUTH-02) is asked, after the code has
+ * been resolved from whichever input path the caller used.
+ */
+export type AssertMidwifeProcedureAuthorityParams = {
+  encounter: EncounterWithRelationsRecord;
+  code: string;
+  contraceptiveImplantAction?: ContraceptiveImplantActionValue;
+  performedAt?: Date;
+  actorUserId: string;
+};
+
+/**
+ * What the child-visit-purpose rule (P25-T03, FR-AUTH-03) is asked when an
+ * encounter opens, before anything is written.
+ */
+export type ResolveChildVisitPurposeParams = {
+  clinician: EncounterAttendingClinicianRecord;
+  patient: { id: string; dateOfBirth: Date };
+  registrationId: string;
+  requestedPurpose?: EncounterChildVisitPurposeValue;
+  actorUserId: string;
 };
 
 export type UpdateEncounterRecordPayload = Partial<SoapNote> & {
@@ -130,6 +169,7 @@ export type ProcedureRecord = {
   display: string;
   notes: string | null;
   performedAt: Date;
+  contraceptiveImplantAction: ContraceptiveImplantActionValue | null;
   recordedById: string | null;
   createdAt: Date;
   updatedAt: Date;
@@ -142,6 +182,7 @@ export type CreateProcedureRecordPayload = {
   display: string;
   notes?: string;
   performedAt?: Date;
+  contraceptiveImplantAction?: ContraceptiveImplantActionValue;
   recordedById: string;
 };
 
@@ -229,7 +270,8 @@ export type EncounterSourceRegistrationRecord = {
   id: string;
   patientId: string;
   status: RegistrationStatusValue;
-  patient: { id: string; ownerUserId: string | null; isActive: boolean };
+  /** `dateOfBirth` decides whether a midwife must name a child visit purpose (P25-T03). */
+  patient: { id: string; ownerUserId: string | null; isActive: boolean; dateOfBirth: Date };
 };
 
 export type BpjsReferralRecord = {

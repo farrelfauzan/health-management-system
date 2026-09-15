@@ -10,4 +10,5 @@ export type RegistrationFlowControllerListRegistrationsV1200DataItemPatient = {
   id: string;
   mrn: string;
   fullName: string;
+  dateOfBirth: string;
 };

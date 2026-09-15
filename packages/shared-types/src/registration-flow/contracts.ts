@@ -88,8 +88,19 @@ export type RegistrationRelatedAppointment = {
   doctor: RegistrationRelatedDoctor;
 };
 
+/**
+ * The patient on a staff registration list. Carries the birth date so the
+ * open-encounter dialog can ask a midwife for the child visit purpose by the
+ * same rule the API enforces (P25-T03). Kept off `RegistrationRelatedPatient`
+ * because the queue board shares that shape and is shown in waiting rooms.
+ */
+export type RegistrationListPatient = RegistrationRelatedPatient & {
+  /** Calendar date, `YYYY-MM-DD`. */
+  dateOfBirth: string;
+};
+
 export type RegistrationListItem = RegistrationResponse & {
-  patient: RegistrationRelatedPatient;
+  patient: RegistrationListPatient;
   appointment?: RegistrationRelatedAppointment;
 };
 
