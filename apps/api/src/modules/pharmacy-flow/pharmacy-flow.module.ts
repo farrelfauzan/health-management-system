@@ -5,10 +5,12 @@ import { AuthModule } from '../auth/auth.module';
 import { BillingModule } from '../billing/billing.module';
 import { ClinicalRequestDocumentModule } from '../clinical-request-document/clinical-request-document.module';
 import { KfaLookupService } from './service/kfa-lookup.service';
+import { MidwifeFormularyService } from './service/midwife-formulary.service';
 import { DispenseController } from './controller/dispense.controller';
 import { MedicationController } from './controller/medication.controller';
 import { InventoryController } from './controller/inventory.controller';
 import { PrescriptionController } from './controller/prescription.controller';
+import { MidwifeFormularyRepository } from './repository/midwife-formulary.repository';
 import { PharmacyFlowRepository } from './repository/pharmacy-flow.repository';
 import { PharmacyFlowService } from './service/pharmacy-flow.service';
 
@@ -19,8 +21,19 @@ import { PharmacyFlowService } from './service/pharmacy-flow.service';
   // SatusehatModule for the KFA product lookup the catalog form searches: the
   // national code is the platform's, so the platform is what answers for it.
   imports: [AuthModule, BillingModule, ClinicalRequestDocumentModule, SatusehatModule],
-  controllers: [MedicationController, PrescriptionController, DispenseController, InventoryController],
-  providers: [PharmacyFlowRepository, PharmacyFlowService, KfaLookupService],
+  controllers: [
+    MedicationController,
+    PrescriptionController,
+    DispenseController,
+    InventoryController,
+  ],
+  providers: [
+    PharmacyFlowRepository,
+    PharmacyFlowService,
+    KfaLookupService,
+    MidwifeFormularyRepository,
+    MidwifeFormularyService,
+  ],
   // The service only — the AI chatbot's pharmacy tools (P15-T05) call it as
   // the asking user, exactly as this module's controllers do. Cross-module
   // access never reaches the repository.

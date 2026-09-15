@@ -1837,6 +1837,120 @@ SET
   "updated_at" = NOW()
 WHERE "medications"."kfa_code" LIKE '99000000000%';
 
+-- P25-T04 (FR-FORM-01). The midwife formulary template: what Permenkes
+-- 28/2017 lets a bidan give on her own authority, so a klinik bidan does not
+-- start with a midwife who cannot prescribe iron tablets. Reference data owned
+-- by this seed (ON CONFLICT DO UPDATE on every column), applied to the catalog
+-- only through the confirmed "Terapkan daftar bidan" step. This block never
+-- touches `medications.is_midwife_prescribable` (FR-MW-06): which catalog
+-- rows fall inside a bidan's authority is the clinic's decision.
+--
+-- Every KFA code below came from a live lookup against the SATUSEHAT staging
+-- KFA dictionary on 2026-09-15; the lookup names and the raw response keys are
+-- in docs/ops/midwife-formulary-kfa-probe.md. `kfa_codes` are product codes
+-- (93-level for farmasi, 83-level for alkes), `kfa_template_codes` the generic
+-- template (92/82-level) codes those products sit under, and `match_keywords`
+-- name fragments that only suggest a row. AUTHORITY_BOUND rows are P25-T05.
+WITH seed_midwife_formulary_items(code, display_name, "group", regulation_basis, kfa_codes, kfa_template_codes, match_keywords, sort_order) AS (
+  VALUES
+    -- Ferrous Fumarate 60 mg / Folic Acid 0,4 mg Tablet Salut Gula (TABLET TAMBAH DARAH and other makers); 180 mg strength included
+    ('FE_PREGNANCY', 'Tablet tambah darah (zat besi + asam folat) untuk ibu hamil',
+      'OWN_AUTHORITY', 'Permenkes 28/2017 Pasal 19 ayat (3) huruf e',
+      ARRAY['93015491', '93027609', '93026885', '93024087', '93027000', '93003805', '93026544', '93027349', '93006443', '93014372'],
+      ARRAY['92000653', '92004223', '92000700'],
+      ARRAY['tablet tambah darah', 'ttd', 'ferrous', 'zat besi', 'fe folat'], 10),
+    -- Retinol Palmitate 200.000 IU Kapsul Lunak
+    ('VIT_A_POSTPARTUM', 'Vitamin A 200.000 IU untuk ibu nifas',
+      'OWN_AUTHORITY', 'Permenkes 28/2017 Pasal 19 ayat (3) huruf f',
+      ARRAY['93006228', '93020870', '93002593', '93006475'],
+      ARRAY['92000809'],
+      ARRAY['vitamin a', 'retinol'], 20),
+    -- Oxytocin 10 IU/mL Injeksi, active products only
+    ('OXYTOCIN_AMTSL', 'Oksitosin injeksi 10 IU/mL (manajemen aktif kala III)',
+      'OWN_AUTHORITY', 'Permenkes 28/2017 Pasal 19 ayat (3) huruf h',
+      ARRAY['93020784', '93025032', '93012760', '93002907', '93007458', '93011974', '93013579', '93026877', '93021623', '93021932', '93019223', '93013595', '93015797', '93015796', '93008863', '93002165', '93005047', '93004476'],
+      ARRAY['92000756'],
+      ARRAY['oxytocin', 'oksitosin'], 30),
+    -- Phytomenadione 2 mg/mL Injeksi (and the 10 mg/mL PHAPROS vial); tablets deliberately excluded
+    ('VIT_K1_NEWBORN', 'Vitamin K1 (fitomenadion) injeksi untuk bayi baru lahir',
+      'OWN_AUTHORITY', 'Permenkes 28/2017 Pasal 20 ayat (3)',
+      ARRAY['93006337', '93004858', '93012410', '93011289', '93012929', '93001719', '93002908', '93006686', '93006685', '93004290', '93021333', '93020444', '93012105', '93001129'],
+      ARRAY['92000971', '92000659'],
+      ARRAY['phytomenadione', 'fitomenadion', 'vitamin k'], 40),
+    -- Vaksin Hepatitis B Recombinant (BIO FARMA, ENGERIX-B, EUVAX B, HBV); Immunization acceptance check pending, see the probe doc
+    ('HEP_B_BIRTH_DOSE', 'Vaksin hepatitis B (HB0) untuk bayi baru lahir',
+      'OWN_AUTHORITY', 'Permenkes 28/2017 Pasal 20 ayat (3)',
+      ARRAY['93023161', '93023162', '93026075', '93026222', '93023169', '93023170', '93023171', '93023173', '93026465', '93026157', '93023172', '93023168', '93008995'],
+      ARRAY['92000819', '92005974'],
+      ARRAY['hepatitis b', 'hb0'], 50),
+    -- Oxytetracycline 1% Salep Mata and Chloramphenicol 1% Salep Mata; no erythromycin eye ointment exists in KFA
+    ('NEONATAL_EYE_PROPHYLAXIS', 'Salep mata antibiotik profilaksis untuk bayi baru lahir',
+      'OWN_AUTHORITY', 'Permenkes 28/2017 Pasal 20 ayat (3) (pelayanan neonatal esensial)',
+      ARRAY['93025900', '93001559', '93025331', '93018792', '93022418', '93011655', '93022417', '93022415', '93022416', '93016724'],
+      ARRAY['92000844', '92001727'],
+      ARRAY['salep mata', 'oxytetracycline', 'oksitetrasiklin', 'chloramphenicol', 'kloramfenikol', 'erythromycin', 'eritromisin'], 60),
+    -- Levonorgestrel 0,15 mg / Ethinylestradiol 0,03 mg tablets (PIL KB KOMBINASI, MICROGYNON, ANDALAN and others)
+    ('COC_PILL', 'Pil KB kombinasi (levonorgestrel + etinilestradiol)',
+      'OWN_AUTHORITY', 'Permenkes 28/2017 Pasal 21 huruf b',
+      ARRAY['93007752', '93027381', '93025897', '93006642', '93005960', '93002909', '93014048', '93011016', '93011399', '93021924', '93016926', '93011961', '93011759', '93007678', '93001796', '93017549'],
+      ARRAY['92001040', '92001059', '92003225', '92006300'],
+      ARRAY['pil kb', 'levonorgestrel', 'ethinylestradiol', 'etinilestradiol', 'kontrasepsi oral'], 70),
+    -- Medroxyprogesterone Acetate / Estradiol Cypionate monthly injections (25/5, 50/10, 60/7,5, 120/10)
+    ('INJECTABLE_1_MONTH', 'Suntik KB 1 bulan (medroksiprogesteron + estradiol sipionat)',
+      'OWN_AUTHORITY', 'Permenkes 28/2017 Pasal 21 huruf b',
+      ARRAY['93005976', '93018607', '93013658', '93013661', '93018609', '93006022', '93018602', '93006071'],
+      ARRAY['92001726', '92000984', '92002400', '92002415'],
+      ARRAY['suntik kb 1 bulan', 'estradiol cypionate', 'estradiol cipionate', 'estradiol sipionat'], 80),
+    -- Medroxyprogesterone Acetate 150 mg/mL and 150 mg/3 mL Suspensi Injeksi (DMPA)
+    ('INJECTABLE_3_MONTH', 'Suntik KB 3 bulan (DMPA 150 mg)',
+      'OWN_AUTHORITY', 'Permenkes 28/2017 Pasal 21 huruf b',
+      ARRAY['93025649', '93024568', '93005904', '93005903', '93004982', '93022234', '93022237', '93022236', '93022235', '93014786'],
+      ARRAY['92001008', '92001009'],
+      ARRAY['suntik kb 3 bulan', 'medroxyprogesterone', 'medroksiprogesteron', 'dmpa', 'depo'], 90),
+    -- Latex condom / Non-latex condom: alkes product (83) and template (82) codes; the female condom and lubricants are left out
+    ('MALE_CONDOM', 'Kondom laki-laki',
+      'OWN_AUTHORITY', 'Permenkes 28/2017 Pasal 21 huruf b',
+      ARRAY['83063766', '83063680', '83063666', '83009092', '83012785', '83022833', '83022836', '83022830', '83007217', '83026729', '83061420', '83066143', '83066109'],
+      ARRAY['82000343', '82000344'],
+      ARRAY['kondom', 'condom'], 100)
+)
+INSERT INTO "midwife_formulary_items" (
+  "id",
+  "code",
+  "display_name",
+  "group",
+  "regulation_basis",
+  "kfa_codes",
+  "kfa_template_codes",
+  "match_keywords",
+  "sort_order",
+  "created_at",
+  "updated_at"
+)
+SELECT
+  md5('midwife-formulary-item:' || code)::uuid,
+  code,
+  display_name,
+  "group"::"midwife_formulary_group",
+  regulation_basis,
+  kfa_codes,
+  kfa_template_codes,
+  match_keywords,
+  sort_order,
+  NOW(),
+  NOW()
+FROM seed_midwife_formulary_items
+ON CONFLICT ("code") DO UPDATE
+SET
+  "display_name" = EXCLUDED."display_name",
+  "group" = EXCLUDED."group",
+  "regulation_basis" = EXCLUDED."regulation_basis",
+  "kfa_codes" = EXCLUDED."kfa_codes",
+  "kfa_template_codes" = EXCLUDED."kfa_template_codes",
+  "match_keywords" = EXCLUDED."match_keywords",
+  "sort_order" = EXCLUDED."sort_order",
+  "updated_at" = NOW();
+
 -- Starter service tariffs so invoice generation works out of the box in
 -- development and demos: one consultation fee plus two common tindakan mapped
 -- to codes from the ICD-9-CM starter set. Prices are placeholders — every

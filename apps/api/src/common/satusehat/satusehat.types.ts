@@ -33,6 +33,19 @@ export type SatusehatKfaProduct = {
   readonly manufacturer: string | null;
   readonly packagingUnit: string | null;
   readonly isActive: boolean;
+  /**
+   * The template (92-level) code under `product_template.kfa_code` (P25-T04
+   * probe), or null when the row carries none.
+   */
+  readonly templateKfaCode: string | null;
+};
+
+/**
+ * The product-detail body from `/products?identifier=kfa&code=…`: `result` is
+ * the same row shape the search returns, or null for a code KFA does not know.
+ */
+export type SatusehatKfaProductDetailResponse = {
+  readonly result?: SatusehatKfaResponseItem | null;
 };
 
 /**
@@ -51,6 +64,7 @@ export type SatusehatKfaResponseItem = {
   readonly manufacturer?: unknown;
   readonly dosage_form?: { readonly name?: unknown };
   readonly uom?: { readonly name?: unknown };
+  readonly product_template?: { readonly kfa_code?: unknown } | null;
 };
 
 export type SatusehatErrorCode =

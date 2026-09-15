@@ -338,6 +338,18 @@ const registration = {
 // catalog entry.
 const kfaCode = '93000001';
 
+const midwifeFormularyItem = {
+  id: '99999999-aaaa-4aaa-8aaa-999999999901',
+  code: 'FE_PREGNANCY',
+  displayName: 'Tablet tambah darah (zat besi + asam folat) untuk ibu hamil',
+  group: 'OWN_AUTHORITY',
+  regulationBasis: 'Permenkes 28/2017 Pasal 19 ayat (3) huruf e',
+  kfaCodes: ['93015491', '93027609'],
+  kfaTemplateCodes: ['92000653', '92004223', '92000700'],
+  matchKeywords: ['tablet tambah darah', 'ttd', 'ferrous', 'zat besi'],
+  sortOrder: 10,
+};
+
 const medication = {
   id: medicationId,
   code: 'MED-PARA-500',
@@ -992,6 +1004,43 @@ export const PHASE_THREE_EXAMPLES = {
       manufacturer: 'KIMIA FARMA',
       packagingUnit: 'Tablet',
       isActive: true,
+      templateKfaCode: '92000135',
+    },
+    midwifeFormularyPreview: {
+      items: [
+        {
+          item: midwifeFormularyItem,
+          matches: [
+            {
+              medicationId,
+              name: 'Tablet Tambah Darah',
+              kfaCode: '93015491',
+              isMidwifePrescribable: false,
+              matchedBy: 'KFA_CODE',
+            },
+          ],
+        },
+      ],
+      unmatchedItems: [
+        {
+          ...midwifeFormularyItem,
+          id: '99999999-aaaa-4aaa-8aaa-999999999902',
+          code: 'VIT_K1_NEWBORN',
+          displayName: 'Vitamin K1 (fitomenadion) injeksi untuk bayi baru lahir',
+          regulationBasis: 'Permenkes 28/2017 Pasal 20 ayat (3)',
+          kfaCodes: ['93006337'],
+          kfaTemplateCodes: ['92000971'],
+          matchKeywords: ['phytomenadione', 'fitomenadion', 'vitamin k'],
+          sortOrder: 40,
+        },
+      ],
+      templateLookup: 'COMPLETED',
+    },
+    midwifeFormularyApplyRequest: { medicationIds: [medicationId] },
+    midwifeFormularyApply: {
+      flaggedCount: 1,
+      alreadyFlaggedCount: 0,
+      items: [{ medicationId, outcome: 'FLAGGED' }],
     },
     stockReceiptRequest: {
       medicationId,

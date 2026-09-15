@@ -847,6 +847,23 @@ export type EnumMedicationCategoryNullableWithAggregatesFilter<$PrismaModel = ne
   _max?: Prisma.NestedEnumMedicationCategoryNullableFilter<$PrismaModel>
 }
 
+export type EnumMidwifeFormularyGroupFilter<$PrismaModel = never> = {
+  equals?: $Enums.MidwifeFormularyGroup | Prisma.EnumMidwifeFormularyGroupFieldRefInput<$PrismaModel>
+  in?: $Enums.MidwifeFormularyGroup[] | Prisma.ListEnumMidwifeFormularyGroupFieldRefInput<$PrismaModel>
+  notIn?: $Enums.MidwifeFormularyGroup[] | Prisma.ListEnumMidwifeFormularyGroupFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumMidwifeFormularyGroupFilter<$PrismaModel> | $Enums.MidwifeFormularyGroup
+}
+
+export type EnumMidwifeFormularyGroupWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.MidwifeFormularyGroup | Prisma.EnumMidwifeFormularyGroupFieldRefInput<$PrismaModel>
+  in?: $Enums.MidwifeFormularyGroup[] | Prisma.ListEnumMidwifeFormularyGroupFieldRefInput<$PrismaModel>
+  notIn?: $Enums.MidwifeFormularyGroup[] | Prisma.ListEnumMidwifeFormularyGroupFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumMidwifeFormularyGroupWithAggregatesFilter<$PrismaModel> | $Enums.MidwifeFormularyGroup
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumMidwifeFormularyGroupFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumMidwifeFormularyGroupFilter<$PrismaModel>
+}
+
 export type EnumPrescriptionStatusFilter<$PrismaModel = never> = {
   equals?: $Enums.PrescriptionStatus | Prisma.EnumPrescriptionStatusFieldRefInput<$PrismaModel>
   in?: $Enums.PrescriptionStatus[] | Prisma.ListEnumPrescriptionStatusFieldRefInput<$PrismaModel>
@@ -2951,6 +2968,23 @@ export type NestedEnumMedicationCategoryNullableWithAggregatesFilter<$PrismaMode
   _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
   _min?: Prisma.NestedEnumMedicationCategoryNullableFilter<$PrismaModel>
   _max?: Prisma.NestedEnumMedicationCategoryNullableFilter<$PrismaModel>
+}
+
+export type NestedEnumMidwifeFormularyGroupFilter<$PrismaModel = never> = {
+  equals?: $Enums.MidwifeFormularyGroup | Prisma.EnumMidwifeFormularyGroupFieldRefInput<$PrismaModel>
+  in?: $Enums.MidwifeFormularyGroup[] | Prisma.ListEnumMidwifeFormularyGroupFieldRefInput<$PrismaModel>
+  notIn?: $Enums.MidwifeFormularyGroup[] | Prisma.ListEnumMidwifeFormularyGroupFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumMidwifeFormularyGroupFilter<$PrismaModel> | $Enums.MidwifeFormularyGroup
+}
+
+export type NestedEnumMidwifeFormularyGroupWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.MidwifeFormularyGroup | Prisma.EnumMidwifeFormularyGroupFieldRefInput<$PrismaModel>
+  in?: $Enums.MidwifeFormularyGroup[] | Prisma.ListEnumMidwifeFormularyGroupFieldRefInput<$PrismaModel>
+  notIn?: $Enums.MidwifeFormularyGroup[] | Prisma.ListEnumMidwifeFormularyGroupFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumMidwifeFormularyGroupWithAggregatesFilter<$PrismaModel> | $Enums.MidwifeFormularyGroup
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumMidwifeFormularyGroupFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumMidwifeFormularyGroupFilter<$PrismaModel>
 }
 
 export type NestedEnumPrescriptionStatusFilter<$PrismaModel = never> = {

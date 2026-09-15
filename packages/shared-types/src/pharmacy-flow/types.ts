@@ -1,10 +1,13 @@
 import type { ClinicianProfessionValue } from '#doctor-management/schemas';
 import type { ChargeModeValue, FulfilmentSiteValue } from '#laboratory/schemas';
+import type { MidwifeFormularyTemplateLookupStatus } from '#pharmacy-flow/contracts';
 import type {
   CompoundPreparationValue,
   DispenseStatusValue,
   MedicationCategoryValue,
   MedicationUnitValue,
+  MidwifeFormularyGroupValue,
+  MidwifeFormularyMatchKindValue,
   PrescriptionStatusValue,
 } from '#pharmacy-flow/schemas';
 
@@ -319,4 +322,64 @@ export type ActiveDoctorProjection = {
 export type ActivePatientProjection = {
   id: string;
   ownerUserId: string | null;
+};
+
+/** A `midwife_formulary_items` row as the repository reads it (P25-T04). */
+export type MidwifeFormularyItemRecord = {
+  id: string;
+  code: string;
+  displayName: string;
+  group: MidwifeFormularyGroupValue;
+  regulationBasis: string;
+  kfaCodes: string[];
+  kfaTemplateCodes: string[];
+  matchKeywords: string[];
+  sortOrder: number;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+/** The catalog projection the formulary matcher reads: every non-deleted row. */
+export type MidwifeFormularyCandidateRecord = {
+  id: string;
+  name: string;
+  kfaCode: string | null;
+  isMidwifePrescribable: boolean;
+};
+
+export type MidwifeFormularyMatch = {
+  medicationId: string;
+  name: string;
+  kfaCode: string | null;
+  isMidwifePrescribable: boolean;
+  matchedBy: MidwifeFormularyMatchKindValue;
+};
+
+export type MidwifeFormularyItemMatches = {
+  item: MidwifeFormularyItemRecord;
+  matches: MidwifeFormularyMatch[];
+};
+
+export type MidwifeFormularyMatchInput = {
+  items: MidwifeFormularyItemRecord[];
+  medications: MidwifeFormularyCandidateRecord[];
+  /** KFA template code per catalog product code, for rows KFA answered for. */
+  templateCodesByKfaCode: ReadonlyMap<string, string>;
+};
+
+export type MidwifeFormularyMatchResult = {
+  items: MidwifeFormularyItemMatches[];
+  unmatchedItems: MidwifeFormularyItemRecord[];
+};
+
+/** KFA template codes resolved for a preview, and whether the lookup ran in full. */
+export type MidwifeFormularyTemplateLookup = {
+  readonly codes: ReadonlyMap<string, string>;
+  readonly status: MidwifeFormularyTemplateLookupStatus;
+};
+
+/** A recomputed preview, before it is shaped into the response. */
+export type MidwifeFormularyPreview = {
+  readonly result: MidwifeFormularyMatchResult;
+  readonly templateLookup: MidwifeFormularyTemplateLookupStatus;
 };
