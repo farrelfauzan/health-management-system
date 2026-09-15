@@ -1,6 +1,8 @@
 import type { DoctorCredentialValue } from '#doctor-credential-option/contracts';
 import type {
   ClinicianProfessionValue,
+  DoctorAuthorityGrantKindValue,
+  DoctorAuthorityKindValue,
   DoctorInvitationStatusValue,
   DoctorLicenseTypeValue,
 } from '#doctor-management/schemas';
@@ -169,4 +171,47 @@ export type DoctorLicenseExpiryBucketsView = {
   within30Days: DoctorLicenseExpiryRow[];
   within60Days: DoctorLicenseExpiryRow[];
   within90Days: DoctorLicenseExpiryRow[];
+};
+
+/**
+ * Lifecycle of one authority as the card renders it (P25-T02). Computed by
+ * the API against the clinic's calendar day so two readers never disagree.
+ */
+export type DoctorAuthorityStatusValue = 'ACTIVE' | 'EXPIRING_SOON' | 'EXPIRED' | 'REVOKED';
+
+/**
+ * One midwife authority (kewenangan) as the API returns it (D-036). Storage
+ * columns are never exposed: `hasGrantDocument` says whether the evidence
+ * document is on file, and the download route signs a URL for it.
+ */
+export type DoctorAuthority = {
+  id: string;
+  doctorId: string;
+  kind: DoctorAuthorityKindValue;
+  grantKind: DoctorAuthorityGrantKindValue;
+  grantReference: string;
+  grantIssuedAt: string;
+  trainingCertificateNumber: string;
+  validFrom: string;
+  /** Always set: the government sets the period, so no grant is open-ended. */
+  validUntil: string;
+  hasGrantDocument: boolean;
+  grantDocumentMimeType: string | null;
+  status: DoctorAuthorityStatusValue;
+  revokedAt: string | null;
+  revokeReason: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type DoctorAuthorityUploadUrlView = {
+  url: string;
+  storageKey: string;
+  expiresAt: string;
+  requiredHeaders: Readonly<Record<string, string>>;
+};
+
+export type DoctorAuthorityDownloadView = {
+  url: string;
+  expiresAt: string;
 };

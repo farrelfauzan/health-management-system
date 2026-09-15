@@ -322,6 +322,13 @@ enum AuditAction {
   /// Notion's own error code and nothing else, because that code is the
   /// difference between the two failures an operator confuses.
   BUG_REPORT_PUBLISH_FAILED
+  /// A midwife's delegated authority (kewenangan, P25-T02) was granted, its
+  /// numbers or dates edited, or revoked. Three verbs rather than CREATE /
+  /// UPDATE because each is a decision about what a clinician may do, and the
+  /// log has to read as one.
+  DOCTOR_AUTHORITY_GRANTED
+  DOCTOR_AUTHORITY_UPDATED
+  DOCTOR_AUTHORITY_REVOKED
 }
 
 enum BpjsSubmissionType {
@@ -522,6 +529,33 @@ enum ClinicianProfession {
   MIDWIFE
 
   @@map("clinician_profession")
+}
+
+/// What a midwife may do beyond her own authority (P25-T02). Kept by D-036
+/// (docs/post-mvp/decisions.md): which actions need an authority is still the
+/// Permenkes 28/2017 Pasal 25 list, kept as the reference by Permenkes 13/2025
+/// Pasal 305(1). `NO_OTHER_WORKER` is the authority for a place with no other
+/// health worker (PP 28/2024 Pasal 744(2)(a), Permenkes 13/2025 Pasal 186).
+enum DoctorAuthorityKind {
+  IUD_IMPLANT
+  MTBS
+  PROGRAM_IMMUNIZATION
+  INTEGRATED_ANC
+  NO_OTHER_WORKER
+
+  @@map("doctor_authority_kind")
+}
+
+/// The evidence an authority rests on, one per row (D-036): a dinas kesehatan
+/// penetapan (PP 28/2024 Pasal 744(3), Permenkes 13/2025 Pasal 186), a
+/// government penugasan after training (Permenkes 13/2025 Pasal 187(2)), or a
+/// training-added competence written on the STR (PP 28/2024 Pasal 742(3)–(4)).
+enum DoctorAuthorityGrantKind {
+  DINAS_PENETAPAN
+  GOVERNMENT_PENUGASAN
+  STR_ANNOTATION
+
+  @@map("doctor_authority_grant_kind")
 }
 
 enum AppointmentStatus {
@@ -944,6 +978,8 @@ model User {
   verifiedLabResults        LabResult[]                @relation("LabResultVerifiedBy")
   requestedLabReports       LabReport[]                @relation("LabReportRequestedBy")
   updatedLaboratorySettings LaboratorySettings[]       @relation("LaboratorySettingsUpdatedBy")
+  grantedDoctorAuthorities  DoctorAuthority[]          @relation("DoctorAuthorityCreatedBy")
+  revokedDoctorAuthorities  DoctorAuthority[]          @relation("DoctorAuthorityRevokedBy")
 
   @@index([organizationUnitId])
   /// The offboarding sweep's one read: everyone currently in a window.
@@ -1742,6 +1778,7 @@ model DoctorProfile {
   appointmentSessions AppointmentSession[]
   prescriptions       Prescription[]
   licenses            DoctorLicense[]
+  authorities         DoctorAuthority[]
   educations          DoctorEducation[]
   encounters          Encounter[]
   admissions          Admission[]
@@ -1834,6 +1871,77 @@ model DoctorLicenseExpiryNotice {
   @@unique([licenseId, thresholdDays])
   @@index([licenseId])
   @@map("doctor_license_expiry_notices")
+}
+
+/// A midwife's delegated authority — *kewenangan* (P25-T02, D-036). Hangs off
+/// `DoctorProfile` like `DoctorLicense`, and only a `MIDWIFE` profile may carry
+/// one (the service refuses the rest). The grant rests on PP 28/2024 Pasal 744
+/// and Permenkes 13/2025 Pasal 185–187, or on a training-added competence on
+/// the STR (PP 28/2024 Pasal 742(3)–(4)).
+///
+/// The training certificate and the end date are always required: training is
+/// the precondition of every grant (PP 28/2024 Pasal 744(4)) and the government
+/// sets its period (Pasal 744(8)), so nothing here is open-ended.
+///
+/// The evidence document is stored on the row (`grant_document_*` columns, as
+/// `ManagedDocument` stores its payload) rather than as a `Document`:
+/// `Document.ownerId` is a User FK and a clinician can exist with no account
+/// (`NO_ACCOUNT`), so there is nobody for a `Document` row to belong to.
+///
+/// One live authority per kind is a hand-written partial unique index on
+/// `(doctor_id, kind) WHERE revoked_at IS NULL AND deleted_at IS NULL` — see
+/// the migration. Prisma cannot express it, and the drift check cannot see
+/// it, so renewal edits the dates or revokes and re-grants.
+model DoctorAuthority {
+  id                        String                   @id @default(uuid()) @db.Uuid
+  doctorId                  String                   @map("doctor_id") @db.Uuid
+  kind                      DoctorAuthorityKind
+  grantKind                 DoctorAuthorityGrantKind @map("grant_kind")
+  /// The penetapan number, the penugasan letter number, or the STR number.
+  grantReference            String                   @map("grant_reference")
+  grantIssuedAt             DateTime                 @map("grant_issued_at") @db.Date
+  trainingCertificateNumber String                   @map("training_certificate_number")
+  validFrom                 DateTime                 @map("valid_from") @db.Date
+  validUntil                DateTime                 @map("valid_until") @db.Date
+  grantDocumentStorageKey   String?                  @map("grant_document_storage_key")
+  grantDocumentMimeType     String?                  @map("grant_document_mime_type")
+  grantDocumentSizeBytes    Int?                     @map("grant_document_size_bytes")
+  revokedAt                 DateTime?                @map("revoked_at") @db.Timestamptz(3)
+  revokedById               String?                  @map("revoked_by_id") @db.Uuid
+  revokeReason              String?                  @map("revoke_reason")
+  createdById               String                   @map("created_by_id") @db.Uuid
+  createdAt                 DateTime                 @default(now()) @map("created_at")
+  updatedAt                 DateTime                 @updatedAt @map("updated_at")
+  deletedAt                 DateTime?                @map("deleted_at")
+
+  doctor    DoctorProfile @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  createdBy User          @relation("DoctorAuthorityCreatedBy", fields: [createdById], references: [id])
+  revokedBy User?         @relation("DoctorAuthorityRevokedBy", fields: [revokedById], references: [id])
+
+  expiryNotices DoctorAuthorityExpiryNotice[]
+
+  @@index([doctorId])
+  @@index([validUntil])
+  @@index([deletedAt])
+  @@index([createdById])
+  @@index([revokedById])
+  @@map("doctor_authorities")
+}
+
+/// Which expiry thresholds an authority has been announced at (P25-T02,
+/// FR-AUTH-05). Mirrors `DoctorLicenseExpiryNotice` and is deliberately not
+/// generic: the two sweeps have different audiences and different rows.
+model DoctorAuthorityExpiryNotice {
+  id            String   @id @default(uuid()) @db.Uuid
+  authorityId   String   @map("authority_id") @db.Uuid
+  thresholdDays Int      @map("threshold_days")
+  notifiedAt    DateTime @default(now()) @map("notified_at")
+
+  authority DoctorAuthority @relation(fields: [authorityId], references: [id], onDelete: Cascade)
+
+  @@unique([authorityId, thresholdDays])
+  @@index([authorityId])
+  @@map("doctor_authority_expiry_notices")
 }
 
 model DoctorSchedule {
@@ -4560,6 +4668,12 @@ enum NotificationType {
   /// the failure is otherwise silent: the reporter was answered at intake and
   /// never sees the board.
   BUG_REPORT_PUBLISH_FAILED
+  /// A midwife's delegated authority (P25-T02, FR-AUTH-05) is approaching, or
+  /// past, the end of its validity. Broadcast to holders of
+  /// `doctor.authority.read:any` — the grant that renders the card is the
+  /// grant that is told. Raised from the row's dates, never from the letter.
+  DOCTOR_AUTHORITY_EXPIRING
+  DOCTOR_AUTHORITY_EXPIRED
 
   @@map("notification_type")
 }

@@ -72,6 +72,8 @@ export const ModelName = {
   DoctorEducation: 'DoctorEducation',
   DoctorLicense: 'DoctorLicense',
   DoctorLicenseExpiryNotice: 'DoctorLicenseExpiryNotice',
+  DoctorAuthority: 'DoctorAuthority',
+  DoctorAuthorityExpiryNotice: 'DoctorAuthorityExpiryNotice',
   DoctorSchedule: 'DoctorSchedule',
   AppointmentSession: 'AppointmentSession',
   DoctorPatient: 'DoctorPatient',
@@ -540,6 +542,41 @@ export const DoctorLicenseExpiryNoticeScalarFieldEnum = {
 } as const
 
 export type DoctorLicenseExpiryNoticeScalarFieldEnum = (typeof DoctorLicenseExpiryNoticeScalarFieldEnum)[keyof typeof DoctorLicenseExpiryNoticeScalarFieldEnum]
+
+
+export const DoctorAuthorityScalarFieldEnum = {
+  id: 'id',
+  doctorId: 'doctorId',
+  kind: 'kind',
+  grantKind: 'grantKind',
+  grantReference: 'grantReference',
+  grantIssuedAt: 'grantIssuedAt',
+  trainingCertificateNumber: 'trainingCertificateNumber',
+  validFrom: 'validFrom',
+  validUntil: 'validUntil',
+  grantDocumentStorageKey: 'grantDocumentStorageKey',
+  grantDocumentMimeType: 'grantDocumentMimeType',
+  grantDocumentSizeBytes: 'grantDocumentSizeBytes',
+  revokedAt: 'revokedAt',
+  revokedById: 'revokedById',
+  revokeReason: 'revokeReason',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type DoctorAuthorityScalarFieldEnum = (typeof DoctorAuthorityScalarFieldEnum)[keyof typeof DoctorAuthorityScalarFieldEnum]
+
+
+export const DoctorAuthorityExpiryNoticeScalarFieldEnum = {
+  id: 'id',
+  authorityId: 'authorityId',
+  thresholdDays: 'thresholdDays',
+  notifiedAt: 'notifiedAt'
+} as const
+
+export type DoctorAuthorityExpiryNoticeScalarFieldEnum = (typeof DoctorAuthorityExpiryNoticeScalarFieldEnum)[keyof typeof DoctorAuthorityExpiryNoticeScalarFieldEnum]
 
 
 export const DoctorScheduleScalarFieldEnum = {

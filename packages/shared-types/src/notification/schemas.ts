@@ -43,6 +43,15 @@ export const NOTIFICATION_TYPES = [
   'LICENCE_EXPIRING',
   'LICENCE_EXPIRED',
   /**
+   * A midwife's delegated authority (kewenangan, P25-T02) is approaching, or
+   * past, the end of the period the government set for it (D-036). Broadcast
+   * to whoever holds `doctor.authority.read:any`, the same grant that renders
+   * the card. Raised from `DoctorAuthority` — a grant reference and a date —
+   * never from the grant document itself.
+   */
+  'DOCTOR_AUTHORITY_EXPIRING',
+  'DOCTOR_AUTHORITY_EXPIRED',
+  /**
    * A clinical document was released to the patient (P16-T40, FR-E4-25),
    * addressed to the attending doctor — the doctor's end of dual delivery.
    */

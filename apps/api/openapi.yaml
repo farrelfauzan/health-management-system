@@ -26727,6 +26727,764 @@ paths:
         - bearer: []
       summary: Edit or deactivate a doctor credential option
       tags: *a35
+  /api/v1/doctors/{doctorId}/authorities:
+    get:
+      operationId: DoctorAuthorityController_listAuthorities_v1
+      parameters:
+        - name: doctorId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Every recorded authority of the clinician, live rows first, each
+            with its status judged on the clinic’s calendar day. A profile that
+            is not a midwife has none.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        doctorId:
+                          type: string
+                        kind:
+                          type: string
+                        grantKind:
+                          type: string
+                        trainingCertificateNumber:
+                          type: string
+                        grantReference:
+                          type: string
+                        grantIssuedAt:
+                          type: string
+                        validFrom:
+                          type: string
+                        validUntil:
+                          type: string
+                        hasGrantDocument:
+                          type: boolean
+                        grantDocumentMimeType:
+                          type: string
+                        status:
+                          type: string
+                        revokedAt:
+                          nullable: true
+                        revokeReason:
+                          nullable: true
+                        createdAt:
+                          type: string
+                        updatedAt:
+                          type: string
+                      required:
+                        - id
+                        - doctorId
+                        - kind
+                        - grantKind
+                        - trainingCertificateNumber
+                        - grantReference
+                        - grantIssuedAt
+                        - validFrom
+                        - validUntil
+                        - hasGrantDocument
+                        - grantDocumentMimeType
+                        - status
+                        - revokedAt
+                        - revokeReason
+                        - createdAt
+                        - updatedAt
+                required:
+                  - data
+                example:
+                  data:
+                    - id: 7c2e1f7a-3b6d-4d0e-9a1f-5e8c2b7d4a10
+                      doctorId: 1f0a3d94-5c2b-4b31-9c8d-77bf1c3a0e21
+                      kind: IUD_IMPLANT
+                      grantKind: DINAS_PENETAPAN
+                      trainingCertificateNumber: CTU-2025-0042
+                      grantReference: 440/123/2026
+                      grantIssuedAt: 2025-12-15
+                      validFrom: 2026-01-01
+                      validUntil: 2027-12-31
+                      hasGrantDocument: true
+                      grantDocumentMimeType: application/pdf
+                      status: ACTIVE
+                      revokedAt: null
+                      revokeReason: null
+                      createdAt: 2026-01-02T03:00:00.000Z
+                      updatedAt: 2026-01-02T03:00:00.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Doctor not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Doctor not found.
+      security:
+        - bearer: []
+      summary: List a clinician’s delegated authorities
+      tags: &a36
+        - Doctor Authorities
+    post:
+      operationId: DoctorAuthorityController_createAuthority_v1
+      parameters:
+        - name: doctorId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateDoctorAuthorityDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  kind: IUD_IMPLANT
+                  grantKind: DINAS_PENETAPAN
+                  trainingCertificateNumber: CTU-2025-0042
+                  grantReference: 440/123/2026
+                  grantIssuedAt: 2025-12-15
+                  validFrom: 2026-01-01
+                  validUntil: 2027-12-31
+                  grantDocumentStorageKey: doctor-authorities/1f0a3d94-5c2b-4b31-9c8d-77bf1c3a0e21/9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d.pdf
+      responses:
+        "201":
+          description: Records one authority against a midwife. Refused with 422
+            `DOCTOR_AUTHORITY_REQUIRES_MIDWIFE` for any other profession and
+            with 409 `DOCTOR_AUTHORITY_ALREADY_ACTIVE` while a live authority of
+            the same kind exists — renew by editing its dates, or revoke and
+            grant again. Every grant names its evidence (`grantKind`,
+            `grantReference`, `grantIssuedAt`) and carries a training
+            certificate and an end date (D-036). `grantDocumentStorageKey` must
+            come from the upload-url route for this clinician.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      doctorId:
+                        type: string
+                      kind:
+                        type: string
+                      grantKind:
+                        type: string
+                      trainingCertificateNumber:
+                        type: string
+                      grantReference:
+                        type: string
+                      grantIssuedAt:
+                        type: string
+                      validFrom:
+                        type: string
+                      validUntil:
+                        type: string
+                      hasGrantDocument:
+                        type: boolean
+                      grantDocumentMimeType:
+                        type: string
+                      status:
+                        type: string
+                      revokedAt:
+                        nullable: true
+                      revokeReason:
+                        nullable: true
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - doctorId
+                      - kind
+                      - grantKind
+                      - trainingCertificateNumber
+                      - grantReference
+                      - grantIssuedAt
+                      - validFrom
+                      - validUntil
+                      - hasGrantDocument
+                      - grantDocumentMimeType
+                      - status
+                      - revokedAt
+                      - revokeReason
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 7c2e1f7a-3b6d-4d0e-9a1f-5e8c2b7d4a10
+                    doctorId: 1f0a3d94-5c2b-4b31-9c8d-77bf1c3a0e21
+                    kind: IUD_IMPLANT
+                    grantKind: DINAS_PENETAPAN
+                    trainingCertificateNumber: CTU-2025-0042
+                    grantReference: 440/123/2026
+                    grantIssuedAt: 2025-12-15
+                    validFrom: 2026-01-01
+                    validUntil: 2027-12-31
+                    hasGrantDocument: true
+                    grantDocumentMimeType: application/pdf
+                    status: ACTIVE
+                    revokedAt: null
+                    revokeReason: null
+                    createdAt: 2026-01-02T03:00:00.000Z
+                    updatedAt: 2026-01-02T03:00:00.000Z
+                  message: Authority granted
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Doctor not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Doctor not found.
+      security:
+        - bearer: []
+      summary: Grant a delegated authority
+      tags: *a36
+  /api/v1/doctors/{doctorId}/authorities/upload-url:
+    post:
+      operationId: DoctorAuthorityController_createGrantDocumentUploadUrl_v1
+      parameters:
+        - name: doctorId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateDoctorAuthorityUploadUrlDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  mimeType: application/pdf
+                  sizeBytes: 245760
+      responses:
+        "200":
+          description: A presigned PUT under `doctor-authorities/{doctorId}/`. Nothing is
+            recorded until a create or update names the returned `storageKey`;
+            the API then reads the object back from storage before trusting it.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      url:
+                        type: string
+                      storageKey:
+                        type: string
+                      expiresAt:
+                        type: string
+                      requiredHeaders:
+                        type: object
+                        properties:
+                          Content-Type:
+                            type: string
+                        required:
+                          - Content-Type
+                    required:
+                      - url
+                      - storageKey
+                      - expiresAt
+                      - requiredHeaders
+                required:
+                  - data
+                example:
+                  data:
+                    url: https://storage.example.com/hms/doctor-authorities/…?X-Amz-Signature=…
+                    storageKey: doctor-authorities/1f0a3d94-5c2b-4b31-9c8d-77bf1c3a0e21/9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d.pdf
+                    expiresAt: 2026-01-02T03:15:00.000Z
+                    requiredHeaders:
+                      Content-Type: application/pdf
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Doctor not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Doctor not found.
+      security:
+        - bearer: []
+      summary: Sign an upload of a grant document
+      tags: *a36
+  /api/v1/doctors/{doctorId}/authorities/{id}:
+    patch:
+      operationId: DoctorAuthorityController_updateAuthority_v1
+      parameters:
+        - name: doctorId
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateDoctorAuthorityDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  grantReference: 440/124/2026
+                  validUntil: 2028-12-31
+      responses:
+        "200":
+          description: "Changes the evidence, the dates or the grant document. The kind is
+            fixed at grant: changing what an authority *is* is a revoke and a
+            fresh grant. The end date can move but cannot be cleared, because
+            every grant is end-dated (D-036); `grantDocumentStorageKey: null`
+            detaches the document."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      doctorId:
+                        type: string
+                      kind:
+                        type: string
+                      grantKind:
+                        type: string
+                      trainingCertificateNumber:
+                        type: string
+                      grantReference:
+                        type: string
+                      grantIssuedAt:
+                        type: string
+                      validFrom:
+                        type: string
+                      validUntil:
+                        type: string
+                      hasGrantDocument:
+                        type: boolean
+                      grantDocumentMimeType:
+                        type: string
+                      status:
+                        type: string
+                      revokedAt:
+                        nullable: true
+                      revokeReason:
+                        nullable: true
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - doctorId
+                      - kind
+                      - grantKind
+                      - trainingCertificateNumber
+                      - grantReference
+                      - grantIssuedAt
+                      - validFrom
+                      - validUntil
+                      - hasGrantDocument
+                      - grantDocumentMimeType
+                      - status
+                      - revokedAt
+                      - revokeReason
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 7c2e1f7a-3b6d-4d0e-9a1f-5e8c2b7d4a10
+                    doctorId: 1f0a3d94-5c2b-4b31-9c8d-77bf1c3a0e21
+                    kind: IUD_IMPLANT
+                    grantKind: DINAS_PENETAPAN
+                    trainingCertificateNumber: CTU-2025-0042
+                    grantReference: 440/123/2026
+                    grantIssuedAt: 2025-12-15
+                    validFrom: 2026-01-01
+                    validUntil: 2027-12-31
+                    hasGrantDocument: true
+                    grantDocumentMimeType: application/pdf
+                    status: ACTIVE
+                    revokedAt: null
+                    revokeReason: null
+                    createdAt: 2026-01-02T03:00:00.000Z
+                    updatedAt: 2026-01-02T03:00:00.000Z
+                  message: Authority updated
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Doctor or authority not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Doctor or authority not found.
+      security:
+        - bearer: []
+      summary: Edit a delegated authority
+      tags: *a36
+  /api/v1/doctors/{doctorId}/authorities/{id}/revoke:
+    post:
+      operationId: DoctorAuthorityController_revokeAuthority_v1
+      parameters:
+        - name: doctorId
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RevokeDoctorAuthorityDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  reason: Penetapan withdrawn by the district health office
+      responses:
+        "200":
+          description: Ends the authority now, recording who revoked it and why. The row
+            stays for the audit trail; the same kind can be granted afresh
+            afterwards.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      doctorId:
+                        type: string
+                      kind:
+                        type: string
+                      grantKind:
+                        type: string
+                      trainingCertificateNumber:
+                        type: string
+                      grantReference:
+                        type: string
+                      grantIssuedAt:
+                        type: string
+                      validFrom:
+                        type: string
+                      validUntil:
+                        type: string
+                      hasGrantDocument:
+                        type: boolean
+                      grantDocumentMimeType:
+                        type: string
+                      status:
+                        type: string
+                      revokedAt:
+                        type: string
+                      revokeReason:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - doctorId
+                      - kind
+                      - grantKind
+                      - trainingCertificateNumber
+                      - grantReference
+                      - grantIssuedAt
+                      - validFrom
+                      - validUntil
+                      - hasGrantDocument
+                      - grantDocumentMimeType
+                      - status
+                      - revokedAt
+                      - revokeReason
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 7c2e1f7a-3b6d-4d0e-9a1f-5e8c2b7d4a10
+                    doctorId: 1f0a3d94-5c2b-4b31-9c8d-77bf1c3a0e21
+                    kind: IUD_IMPLANT
+                    grantKind: DINAS_PENETAPAN
+                    trainingCertificateNumber: CTU-2025-0042
+                    grantReference: 440/123/2026
+                    grantIssuedAt: 2025-12-15
+                    validFrom: 2026-01-01
+                    validUntil: 2027-12-31
+                    hasGrantDocument: true
+                    grantDocumentMimeType: application/pdf
+                    status: REVOKED
+                    revokedAt: 2026-06-01T02:00:00.000Z
+                    revokeReason: Penetapan withdrawn by the district health office
+                    createdAt: 2026-01-02T03:00:00.000Z
+                    updatedAt: 2026-06-01T02:00:00.000Z
+                  message: Authority revoked
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Doctor or authority not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Doctor or authority not found.
+      security:
+        - bearer: []
+      summary: Revoke a delegated authority
+      tags: *a36
+  /api/v1/doctors/{doctorId}/authorities/{id}/grant-document/download:
+    get:
+      operationId: DoctorAuthorityController_getGrantDocumentDownloadUrl_v1
+      parameters:
+        - name: doctorId
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A short-lived signed URL serving the grant document as an
+            attachment under its stored type.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      url:
+                        type: string
+                      expiresAt:
+                        type: string
+                    required:
+                      - url
+                      - expiresAt
+                required:
+                  - data
+                example:
+                  data:
+                    url: https://storage.example.com/hms/doctor-authorities/…?X-Amz-Signature=…
+                    expiresAt: 2026-01-02T03:15:00.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Doctor or authority not found, or no grant document is on file.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Doctor or authority not found, or no grant document is on file.
+      security:
+        - bearer: []
+      summary: Sign a download of the grant document
+      tags: *a36
   /api/v1/users/invitations:
     get:
       operationId: UserInvitationAdminController_listInvitations_v1
@@ -26876,7 +27634,7 @@ paths:
       security:
         - bearer: []
       summary: List staff invitations
-      tags: &a36
+      tags: &a37
         - Admin Management
     post:
       operationId: UserInvitationAdminController_createInvitation_v1
@@ -26994,7 +27752,7 @@ paths:
       security:
         - bearer: []
       summary: Invite a staff user by email
-      tags: *a36
+      tags: *a37
   /api/v1/users/invitations/{id}/resend:
     post:
       operationId: UserInvitationAdminController_resendInvitation_v1
@@ -27103,7 +27861,7 @@ paths:
       security:
         - bearer: []
       summary: Resend a staff invitation
-      tags: *a36
+      tags: *a37
   /api/v1/users/invitations/{id}:
     delete:
       operationId: UserInvitationAdminController_revokeInvitation_v1
@@ -27212,7 +27970,7 @@ paths:
       security:
         - bearer: []
       summary: Revoke a staff invitation
-      tags: *a36
+      tags: *a37
   /api/v1/invitations/{token}:
     get:
       operationId: UserInvitationPublicController_previewInvitation_v1
@@ -27259,7 +28017,7 @@ paths:
                     code: NOT_FOUND
                     message: No invitation matches this link.
       summary: Validate an invitation link
-      tags: &a37
+      tags: &a38
         - Admin Management
   /api/v1/invitations/{token}/accept:
     post:
@@ -27325,7 +28083,7 @@ paths:
                     code: NOT_FOUND
                     message: No invitation matches this link.
       summary: Accept an invitation and set a password
-      tags: *a37
+      tags: *a38
   /api/v1/doctor-patient-assignments:
     post:
       operationId: DoctorPatientController_assignDoctorToPatient_v1
@@ -27420,7 +28178,7 @@ paths:
       security:
         - bearer: []
       summary: Assign a doctor to a patient
-      tags: &a38
+      tags: &a39
         - Doctor Patient
   /api/v1/doctor-patient-assignments/activity:
     get:
@@ -27567,7 +28325,7 @@ paths:
       security:
         - bearer: []
       summary: List doctor-patient assignment activity
-      tags: *a38
+      tags: *a39
   /api/v1/doctor-patient-assignments/{id}:
     delete:
       operationId: DoctorPatientController_unassignDoctorFromPatient_v1
@@ -27663,7 +28421,7 @@ paths:
       security:
         - bearer: []
       summary: Unassign a doctor from a patient
-      tags: *a38
+      tags: *a39
   /api/v1/registrations:
     get:
       operationId: RegistrationFlowController_listRegistrations_v1
@@ -27917,7 +28675,7 @@ paths:
       security:
         - bearer: []
       summary: List registrations
-      tags: &a39
+      tags: &a40
         - Registration Flow
     post:
       operationId: RegistrationFlowController_createRegistration_v1
@@ -28064,7 +28822,7 @@ paths:
       security:
         - bearer: []
       summary: Create a registration
-      tags: *a39
+      tags: *a40
   /api/v1/registrations/queue-board:
     get:
       operationId: RegistrationFlowController_getQueueBoard_v1
@@ -28280,7 +29038,7 @@ paths:
       security:
         - bearer: []
       summary: Get a day's queue board
-      tags: *a39
+      tags: *a40
   /api/v1/registrations/{id}:
     get:
       operationId: RegistrationFlowController_getRegistrationById_v1
@@ -28416,7 +29174,7 @@ paths:
       security:
         - bearer: []
       summary: Get a registration
-      tags: *a39
+      tags: *a40
     patch:
       operationId: RegistrationFlowController_updateRegistration_v1
       parameters:
@@ -28579,7 +29337,7 @@ paths:
       security:
         - bearer: []
       summary: Update a registration
-      tags: *a39
+      tags: *a40
   /api/v1/medications:
     get:
       operationId: MedicationController_listMedications_v1
@@ -28748,7 +29506,7 @@ paths:
       security:
         - bearer: []
       summary: List medications
-      tags: &a40
+      tags: &a41
         - Pharmacy Flow
     post:
       operationId: MedicationController_createMedication_v1
@@ -28873,7 +29631,7 @@ paths:
       security:
         - bearer: []
       summary: Create a medication
-      tags: *a40
+      tags: *a41
   /api/v1/medications/kfa-products:
     get:
       operationId: MedicationController_searchKfaProducts_v1
@@ -28960,7 +29718,7 @@ paths:
       security:
         - bearer: []
       summary: Search the KFA product dictionary
-      tags: *a40
+      tags: *a41
   /api/v1/medications/{id}:
     patch:
       operationId: MedicationController_updateMedication_v1
@@ -29094,7 +29852,7 @@ paths:
       security:
         - bearer: []
       summary: Update a medication
-      tags: *a40
+      tags: *a41
   /api/v1/prescriptions:
     get:
       operationId: PrescriptionController_listPrescriptions_v1
@@ -29315,7 +30073,7 @@ paths:
       security:
         - bearer: []
       summary: List prescriptions
-      tags: &a41
+      tags: &a42
         - Pharmacy Flow
     post:
       operationId: PrescriptionController_createPrescription_v1
@@ -29507,7 +30265,7 @@ paths:
       security:
         - bearer: []
       summary: Create a prescription
-      tags: *a41
+      tags: *a42
   /api/v1/prescriptions/{id}/document:
     post:
       operationId: PrescriptionController_printPrescriptionDocument_v1
@@ -29590,7 +30348,7 @@ paths:
       security:
         - bearer: []
       summary: Print the resep for a prescription
-      tags: *a41
+      tags: *a42
   /api/v1/dispenses:
     post:
       operationId: DispenseController_createDispense_v1
@@ -29864,7 +30622,7 @@ paths:
       security:
         - bearer: []
       summary: List stock receipts
-      tags: &a42
+      tags: &a43
         - Pharmacy Inventory
     post:
       operationId: InventoryController_createReceipt_v1
@@ -29987,7 +30745,7 @@ paths:
       security:
         - bearer: []
       summary: Record a stock receipt
-      tags: *a42
+      tags: *a43
   /api/v1/inventory/summary:
     get:
       operationId: InventoryController_getSummary_v1
@@ -30086,7 +30844,7 @@ paths:
       security:
         - bearer: []
       summary: Get inventory summary
-      tags: *a42
+      tags: *a43
   /api/v1/inventory/expiry-report:
     get:
       operationId: InventoryController_getExpiryReport_v1
@@ -30214,7 +30972,7 @@ paths:
       security:
         - bearer: []
       summary: Get medication expiry report
-      tags: *a42
+      tags: *a43
   /api/v1/organization-units/tree:
     get:
       operationId: OrganizationUnitController_getTree_v1
@@ -30374,7 +31132,7 @@ paths:
       security:
         - bearer: []
       summary: Read the organization structure tree
-      tags: &a43
+      tags: &a44
         - Organization Structure
   /api/v1/organization-units:
     post:
@@ -30490,7 +31248,7 @@ paths:
       security:
         - bearer: []
       summary: Create an organization unit
-      tags: *a43
+      tags: *a44
   /api/v1/organization-units/{id}:
     patch:
       operationId: OrganizationUnitController_updateUnit_v1
@@ -30609,7 +31367,7 @@ paths:
       security:
         - bearer: []
       summary: Rename or re-kind an organization unit
-      tags: *a43
+      tags: *a44
     delete:
       operationId: OrganizationUnitController_deleteUnit_v1
       parameters:
@@ -30664,7 +31422,7 @@ paths:
       security:
         - bearer: []
       summary: Permanently delete an organization unit
-      tags: *a43
+      tags: *a44
   /api/v1/organization-units/{id}/move:
     patch:
       operationId: OrganizationUnitController_moveUnit_v1
@@ -30784,7 +31542,7 @@ paths:
       security:
         - bearer: []
       summary: Move an organization unit to a new parent
-      tags: *a43
+      tags: *a44
   /api/v1/organization-units/{id}/archive:
     post:
       operationId: OrganizationUnitController_archiveUnit_v1
@@ -30841,7 +31599,7 @@ paths:
       security:
         - bearer: []
       summary: Archive an organization unit
-      tags: *a43
+      tags: *a44
   /api/v1/organization-units/{id}/members:
     get:
       operationId: OrganizationUnitMemberController_listMembers_v1
@@ -30967,7 +31725,7 @@ paths:
       security:
         - bearer: []
       summary: List the staff assigned to an organization unit
-      tags: &a44
+      tags: &a45
         - Organization Structure
   /api/v1/organization-units/{id}/members/{userId}:
     put:
@@ -31059,7 +31817,7 @@ paths:
       security:
         - bearer: []
       summary: Assign a person to an organization unit
-      tags: *a44
+      tags: *a45
     delete:
       operationId: OrganizationUnitMemberController_unassignMember_v1
       parameters:
@@ -31119,7 +31877,7 @@ paths:
       security:
         - bearer: []
       summary: Remove a person from an organization unit
-      tags: *a44
+      tags: *a45
   /api/v1/audit:
     get:
       operationId: AuditController_listAuditEvents_v1
@@ -31724,7 +32482,7 @@ paths:
       security:
         - bearer: []
       summary: List room classes
-      tags: &a45
+      tags: &a46
         - Room Management
     post:
       operationId: RoomClassController_createRoomClass_v1
@@ -31830,7 +32588,7 @@ paths:
       security:
         - bearer: []
       summary: Create a room class
-      tags: *a45
+      tags: *a46
   /api/v1/room-classes/{id}:
     get:
       operationId: RoomClassController_getRoomClass_v1
@@ -31922,7 +32680,7 @@ paths:
       security:
         - bearer: []
       summary: Get a room class
-      tags: *a45
+      tags: *a46
     patch:
       operationId: RoomClassController_updateRoomClass_v1
       parameters:
@@ -32041,7 +32799,7 @@ paths:
       security:
         - bearer: []
       summary: Update a room class
-      tags: *a45
+      tags: *a46
     delete:
       operationId: RoomClassController_retireRoomClass_v1
       parameters:
@@ -32095,7 +32853,7 @@ paths:
       security:
         - bearer: []
       summary: Retire a room class
-      tags: *a45
+      tags: *a46
   /api/v1/wards:
     get:
       operationId: WardController_listWards_v1
@@ -32218,7 +32976,7 @@ paths:
       security:
         - bearer: []
       summary: List wards
-      tags: &a46
+      tags: &a47
         - Room Management
     post:
       operationId: WardController_createWard_v1
@@ -32314,7 +33072,7 @@ paths:
       security:
         - bearer: []
       summary: Create a ward
-      tags: *a46
+      tags: *a47
   /api/v1/wards/{id}:
     get:
       operationId: WardController_getWard_v1
@@ -32398,7 +33156,7 @@ paths:
       security:
         - bearer: []
       summary: Get a ward
-      tags: *a46
+      tags: *a47
     patch:
       operationId: WardController_updateWard_v1
       parameters:
@@ -32507,7 +33265,7 @@ paths:
       security:
         - bearer: []
       summary: Update a ward
-      tags: *a46
+      tags: *a47
     delete:
       operationId: WardController_retireWard_v1
       parameters:
@@ -32562,7 +33320,7 @@ paths:
       security:
         - bearer: []
       summary: Retire a ward
-      tags: *a46
+      tags: *a47
   /api/v1/rooms:
     get:
       operationId: RoomController_listRooms_v1
@@ -32742,7 +33500,7 @@ paths:
       security:
         - bearer: []
       summary: List rooms
-      tags: &a47
+      tags: &a48
         - Room Management
     post:
       operationId: RoomController_createRoom_v1
@@ -32883,7 +33641,7 @@ paths:
       security:
         - bearer: []
       summary: Create a room
-      tags: *a47
+      tags: *a48
   /api/v1/rooms/{id}:
     get:
       operationId: RoomController_getRoom_v1
@@ -33011,7 +33769,7 @@ paths:
       security:
         - bearer: []
       summary: Get a room
-      tags: *a47
+      tags: *a48
     patch:
       operationId: RoomController_updateRoom_v1
       parameters:
@@ -33163,7 +33921,7 @@ paths:
       security:
         - bearer: []
       summary: Update a room
-      tags: *a47
+      tags: *a48
     delete:
       operationId: RoomController_retireRoom_v1
       parameters:
@@ -33217,7 +33975,7 @@ paths:
       security:
         - bearer: []
       summary: Retire a room
-      tags: *a47
+      tags: *a48
   /api/v1/beds:
     get:
       operationId: BedController_listBeds_v1
@@ -33409,7 +34167,7 @@ paths:
       security:
         - bearer: []
       summary: List beds
-      tags: &a48
+      tags: &a49
         - Room Management
     post:
       operationId: BedController_createBed_v1
@@ -33558,7 +34316,7 @@ paths:
       security:
         - bearer: []
       summary: Create a bed
-      tags: *a48
+      tags: *a49
   /api/v1/beds/{id}:
     get:
       operationId: BedController_getBed_v1
@@ -33696,7 +34454,7 @@ paths:
       security:
         - bearer: []
       summary: Get a bed
-      tags: *a48
+      tags: *a49
     patch:
       operationId: BedController_updateBed_v1
       parameters:
@@ -33860,7 +34618,7 @@ paths:
       security:
         - bearer: []
       summary: Update a bed
-      tags: *a48
+      tags: *a49
     delete:
       operationId: BedController_retireBed_v1
       parameters:
@@ -33914,7 +34672,7 @@ paths:
       security:
         - bearer: []
       summary: Retire a bed
-      tags: *a48
+      tags: *a49
   /api/v1/room-occupancy:
     get:
       operationId: RoomOccupancyController_getOccupancy_v1
@@ -34390,7 +35148,7 @@ paths:
       security:
         - bearer: []
       summary: List admissions
-      tags: &a49
+      tags: &a50
         - Admission Flow
     post:
       operationId: AdmissionFlowController_admitPatient_v1
@@ -34683,7 +35441,7 @@ paths:
       security:
         - bearer: []
       summary: Admit a patient
-      tags: *a49
+      tags: *a50
   /api/v1/admissions/{id}:
     get:
       operationId: AdmissionFlowController_getAdmission_v1
@@ -34959,7 +35717,7 @@ paths:
       security:
         - bearer: []
       summary: Get an admission
-      tags: *a49
+      tags: *a50
     patch:
       operationId: AdmissionFlowController_updateAdmission_v1
       parameters:
@@ -35259,7 +36017,7 @@ paths:
       security:
         - bearer: []
       summary: Correct an open admission
-      tags: *a49
+      tags: *a50
   /api/v1/admissions/{id}/transfer:
     post:
       operationId: AdmissionFlowController_transferAdmission_v1
@@ -35560,7 +36318,7 @@ paths:
       security:
         - bearer: []
       summary: Transfer an admitted patient to another bed
-      tags: *a49
+      tags: *a50
   /api/v1/admissions/{id}/discharge:
     post:
       operationId: AdmissionFlowController_dischargeAdmission_v1
@@ -35896,7 +36654,7 @@ paths:
       security:
         - bearer: []
       summary: Discharge an admitted patient
-      tags: *a49
+      tags: *a50
   /api/v1/admissions/{id}/cancel:
     post:
       operationId: AdmissionFlowController_cancelAdmission_v1
@@ -36198,7 +36956,7 @@ paths:
       security:
         - bearer: []
       summary: Cancel an admission opened in error
-      tags: *a49
+      tags: *a50
   /api/v1/admin/integrations/notion/status:
     get:
       operationId: NotionConnectorController_getStatus_v1
@@ -36264,7 +37022,7 @@ paths:
       security:
         - bearer: []
       summary: Read the Notion bug-report connector status
-      tags: &a50
+      tags: &a51
         - Notion Connector
   /api/v1/admin/integrations/notion/test-connection:
     post:
@@ -36345,7 +37103,7 @@ paths:
       security:
         - bearer: []
       summary: Test the Notion connection and check the Bug Board schema
-      tags: *a50
+      tags: *a51
   /api/v1/bug-reports:
     post:
       operationId: BugReportController_submitReport_v1
@@ -36663,7 +37421,7 @@ paths:
       security:
         - bearer: []
       summary: List clinical encounters
-      tags: &a51
+      tags: &a52
         - Encounters
     post:
       operationId: EncounterController_openEncounter_v1
@@ -36834,7 +37592,7 @@ paths:
       security:
         - bearer: []
       summary: Open a clinical encounter
-      tags: *a51
+      tags: *a52
   /api/v1/encounters/{id}:
     get:
       operationId: EncounterController_getEncounterById_v1
@@ -37239,7 +37997,7 @@ paths:
       security:
         - bearer: []
       summary: Get a clinical encounter
-      tags: *a51
+      tags: *a52
     patch:
       operationId: EncounterController_updateEncounterSoap_v1
       parameters:
@@ -37426,7 +38184,7 @@ paths:
       security:
         - bearer: []
       summary: Write the SOAP note
-      tags: *a51
+      tags: *a52
   /api/v1/encounters/{id}/close:
     post:
       operationId: EncounterController_closeEncounter_v1
@@ -37598,7 +38356,7 @@ paths:
       security:
         - bearer: []
       summary: Close a clinical encounter
-      tags: *a51
+      tags: *a52
   /api/v1/encounters/{id}/cancel:
     post:
       operationId: EncounterController_cancelEncounter_v1
@@ -37767,7 +38525,7 @@ paths:
       security:
         - bearer: []
       summary: Cancel a clinical encounter
-      tags: *a51
+      tags: *a52
   /api/v1/encounters/{encounterId}/vital-signs:
     post:
       operationId: EncounterClinicalDataController_recordVitalSigns_v1
@@ -37916,7 +38674,7 @@ paths:
       security:
         - bearer: []
       summary: Record a vital-signs measurement
-      tags: &a52
+      tags: &a53
         - Encounters
   /api/v1/encounters/{encounterId}/diagnoses:
     post:
@@ -38040,7 +38798,7 @@ paths:
       security:
         - bearer: []
       summary: Code a diagnosis
-      tags: *a52
+      tags: *a53
   /api/v1/encounters/{encounterId}/diagnoses/{diagnosisId}:
     delete:
       operationId: EncounterClinicalDataController_removeDiagnosis_v1
@@ -38100,7 +38858,7 @@ paths:
       security:
         - bearer: []
       summary: Retract a diagnosis
-      tags: *a52
+      tags: *a53
   /api/v1/encounters/{encounterId}/procedures:
     post:
       operationId: EncounterClinicalDataController_addProcedure_v1
@@ -38218,7 +38976,7 @@ paths:
       security:
         - bearer: []
       summary: Code a procedure
-      tags: *a52
+      tags: *a53
   /api/v1/encounters/{encounterId}/procedures/{procedureId}:
     delete:
       operationId: EncounterClinicalDataController_removeProcedure_v1
@@ -38277,7 +39035,7 @@ paths:
       security:
         - bearer: []
       summary: Retract a procedure
-      tags: *a52
+      tags: *a53
   /api/v1/encounters/{encounterId}/immunizations:
     post:
       operationId: EncounterClinicalDataController_addImmunization_v1
@@ -38428,7 +39186,7 @@ paths:
       security:
         - bearer: []
       summary: Record a vaccination
-      tags: *a52
+      tags: *a53
   /api/v1/encounters/{encounterId}/immunizations/{immunizationId}:
     delete:
       operationId: EncounterClinicalDataController_removeImmunization_v1
@@ -38487,7 +39245,7 @@ paths:
       security:
         - bearer: []
       summary: Retract a vaccination
-      tags: *a52
+      tags: *a53
   /api/v1/encounters/{encounterId}/bpjs-referral:
     put:
       operationId: EncounterClinicalDataController_saveBpjsReferral_v1
@@ -38611,7 +39369,7 @@ paths:
       security:
         - bearer: []
       summary: Record or replace the encounter’s BPJS rujukan
-      tags: *a52
+      tags: *a53
     get:
       operationId: EncounterClinicalDataController_getBpjsReferral_v1
       parameters:
@@ -38702,7 +39460,7 @@ paths:
       security:
         - bearer: []
       summary: Read the encounter’s recorded BPJS rujukan
-      tags: *a52
+      tags: *a53
     delete:
       operationId: EncounterClinicalDataController_removeBpjsReferral_v1
       parameters:
@@ -38756,7 +39514,7 @@ paths:
       security:
         - bearer: []
       summary: Retract the encounter’s BPJS rujukan
-      tags: *a52
+      tags: *a53
   /api/v1/patients/{patientId}/immunizations:
     get:
       operationId: PatientImmunizationController_listPatientImmunizations_v1
@@ -39020,7 +39778,7 @@ paths:
       security:
         - bearer: []
       summary: List laboratory tests
-      tags: &a53
+      tags: &a54
         - Laboratory Catalog
     post:
       operationId: LabTestController_createLabTest_v1
@@ -39187,7 +39945,7 @@ paths:
       security:
         - bearer: []
       summary: Create a laboratory test
-      tags: *a53
+      tags: *a54
   /api/v1/lab-tests/{id}:
     patch:
       operationId: LabTestController_updateLabTest_v1
@@ -39362,7 +40120,7 @@ paths:
       security:
         - bearer: []
       summary: Update a laboratory test
-      tags: *a53
+      tags: *a54
   /api/v1/lab-tests/{id}/reference-ranges:
     put:
       operationId: LabTestController_replaceReferenceRanges_v1
@@ -39547,7 +40305,7 @@ paths:
       security:
         - bearer: []
       summary: Replace a test’s reference ranges
-      tags: *a53
+      tags: *a54
   /api/v1/lab-panels:
     get:
       operationId: LabPanelController_listLabPanels_v1
@@ -39667,7 +40425,7 @@ paths:
       security:
         - bearer: []
       summary: List laboratory panels
-      tags: &a54
+      tags: &a55
         - Laboratory Catalog
     post:
       operationId: LabPanelController_createLabPanel_v1
@@ -39810,7 +40568,7 @@ paths:
       security:
         - bearer: []
       summary: Create a laboratory panel
-      tags: *a54
+      tags: *a55
   /api/v1/lab-panels/{id}:
     patch:
       operationId: LabPanelController_updateLabPanel_v1
@@ -39955,7 +40713,7 @@ paths:
       security:
         - bearer: []
       summary: Update a laboratory panel
-      tags: *a54
+      tags: *a55
   /api/v1/encounters/{encounterId}/lab-orders:
     post:
       operationId: EncounterLabOrderController_createLabOrder_v1
@@ -40151,7 +40909,7 @@ paths:
       security:
         - bearer: []
       summary: Order laboratory tests on an encounter
-      tags: &a55
+      tags: &a56
         - Laboratory Orders
     get:
       operationId: EncounterLabOrderController_listEncounterLabOrders_v1
@@ -40316,7 +41074,7 @@ paths:
       security:
         - bearer: []
       summary: List an encounter’s laboratory orders
-      tags: *a55
+      tags: *a56
   /api/v1/lab-orders/intake:
     post:
       operationId: LabOrderController_createWalkInLabOrder_v1
@@ -40479,7 +41237,7 @@ paths:
       security:
         - bearer: []
       summary: Register a walk-in or external lab request
-      tags: &a56
+      tags: &a57
         - Laboratory Orders
   /api/v1/lab-orders:
     get:
@@ -40663,7 +41421,7 @@ paths:
       security:
         - bearer: []
       summary: List laboratory orders
-      tags: *a56
+      tags: *a57
   /api/v1/lab-orders/{id}:
     get:
       operationId: LabOrderController_getLabOrderById_v1
@@ -40824,7 +41582,7 @@ paths:
       security:
         - bearer: []
       summary: Read one laboratory order
-      tags: *a56
+      tags: *a57
   /api/v1/lab-orders/{id}/cancel:
     post:
       operationId: LabOrderController_cancelLabOrder_v1
@@ -41024,7 +41782,7 @@ paths:
       security:
         - bearer: []
       summary: Cancel a laboratory order
-      tags: *a56
+      tags: *a57
   /api/v1/lab-orders/{id}/disposition:
     patch:
       operationId: LabOrderController_updateDisposition_v1
@@ -41221,7 +41979,7 @@ paths:
       security:
         - bearer: []
       summary: Change where a laboratory order is filled and who pays
-      tags: *a56
+      tags: *a57
   /api/v1/lab-orders/{id}/request-document:
     post:
       operationId: LabOrderController_printRequestLetter_v1
@@ -41304,7 +42062,7 @@ paths:
       security:
         - bearer: []
       summary: Print the surat pengantar for a laboratory order
-      tags: *a56
+      tags: *a57
   /api/v1/lab-orders/{id}/collect:
     post:
       operationId: LabSpecimenController_collectLabSpecimens_v1
@@ -41420,7 +42178,7 @@ paths:
       security:
         - bearer: []
       summary: Collect the specimens an order needs
-      tags: &a57
+      tags: &a58
         - Laboratory Specimens
   /api/v1/lab-specimens/{id}/receive:
     post:
@@ -41510,7 +42268,7 @@ paths:
       security:
         - bearer: []
       summary: Mark a specimen as arrived in the lab
-      tags: *a57
+      tags: *a58
   /api/v1/lab-specimens/{id}/reject:
     post:
       operationId: LabSpecimenController_rejectLabSpecimen_v1
@@ -41622,7 +42380,7 @@ paths:
       security:
         - bearer: []
       summary: Reject a specimen and ask for a fresh draw
-      tags: *a57
+      tags: *a58
   /api/v1/lab-specimens/{id}/label:
     get:
       operationId: LabSpecimenController_getSpecimenLabel_v1
@@ -41725,7 +42483,7 @@ paths:
       security:
         - bearer: []
       summary: Read a specimen label payload
-      tags: *a57
+      tags: *a58
   /api/v1/lab-worklist:
     get:
       operationId: LabWorklistController_listWorklist_v1
@@ -42077,7 +42835,7 @@ paths:
       security:
         - bearer: []
       summary: Read the values entered on a laboratory order
-      tags: &a58
+      tags: &a59
         - Laboratory Results
     put:
       operationId: LabResultController_enterLabResults_v1
@@ -42337,7 +43095,7 @@ paths:
       security:
         - bearer: []
       summary: Enter results for a laboratory order
-      tags: *a58
+      tags: *a59
   /api/v1/lab-orders/{id}/release:
     post:
       operationId: LabResultController_releaseLabOrder_v1
@@ -42606,7 +43364,7 @@ paths:
       security:
         - bearer: []
       summary: Release a laboratory order
-      tags: *a58
+      tags: *a59
   /api/v1/lab-results/{id}/amend:
     post:
       operationId: LabResultController_amendLabResult_v1
@@ -42764,7 +43522,7 @@ paths:
       security:
         - bearer: []
       summary: Amend a released laboratory result
-      tags: *a58
+      tags: *a59
   /api/v1/patients/{id}/lab-results:
     get:
       operationId: PatientLabResultController_listPatientLabResults_v1
@@ -43003,7 +43761,7 @@ paths:
       security:
         - bearer: []
       summary: Read the laboratory verification settings
-      tags: &a59
+      tags: &a60
         - Laboratory Settings
     patch:
       operationId: LaboratorySettingsController_updateLaboratorySettings_v1
@@ -43089,7 +43847,7 @@ paths:
       security:
         - bearer: []
       summary: Change the laboratory verification settings
-      tags: *a59
+      tags: *a60
   /api/v1/lab-orders/{id}/report:
     get:
       operationId: LabReportController_downloadReport_v1
@@ -43178,7 +43936,7 @@ paths:
       security:
         - bearer: []
       summary: Download the current laboratory report
-      tags: &a60
+      tags: &a61
         - Laboratory Orders
   /api/v1/lab-orders/{id}/reports:
     get:
@@ -43378,7 +44136,7 @@ paths:
       security:
         - bearer: []
       summary: List the versions of a laboratory report
-      tags: *a60
+      tags: *a61
   /api/v1/lab-orders/{id}/reports/{reportId}/retry:
     post:
       operationId: LabReportController_retryReport_v1
@@ -43587,7 +44345,7 @@ paths:
       security:
         - bearer: []
       summary: Render a laboratory report version again
-      tags: *a60
+      tags: *a61
   /api/v1/satusehat/patients/{patientId}/link:
     post:
       operationId: SatusehatLinkController_linkPatient_v1
@@ -43657,7 +44415,7 @@ paths:
       security:
         - bearer: []
       summary: Link a patient to their SATUSEHAT IHS number
-      tags: &a61
+      tags: &a62
         - SATUSEHAT
   /api/v1/satusehat/doctors/{doctorId}/link:
     post:
@@ -43728,7 +44486,7 @@ paths:
       security:
         - bearer: []
       summary: Link a doctor to their SATUSEHAT IHS practitioner number
-      tags: *a61
+      tags: *a62
   /api/v1/satusehat/doctors/{doctorId}/link-by-ihs/preview:
     post:
       operationId: SatusehatLinkController_previewDoctorIhsLink_v1
@@ -43836,7 +44594,7 @@ paths:
       security:
         - bearer: []
       summary: Preview linking a doctor to a hand-typed SATUSEHAT IHS number
-      tags: *a61
+      tags: *a62
   /api/v1/satusehat/doctors/{doctorId}/link-by-ihs:
     post:
       operationId: SatusehatLinkController_linkDoctorByIhs_v1
@@ -43931,7 +44689,7 @@ paths:
       security:
         - bearer: []
       summary: Link a doctor to a hand-typed SATUSEHAT IHS number after confirmation
-      tags: *a61
+      tags: *a62
   /api/v1/satusehat/environment:
     get:
       operationId: SatusehatSubmissionController_getEnvironment_v1
@@ -43990,7 +44748,7 @@ paths:
       security:
         - bearer: []
       summary: Which SATUSEHAT environment this deployment reports to
-      tags: &a62
+      tags: &a63
         - SATUSEHAT
   /api/v1/satusehat/submissions:
     get:
@@ -44174,7 +44932,7 @@ paths:
       security:
         - bearer: []
       summary: List SATUSEHAT submission outbox entries
-      tags: *a62
+      tags: *a63
   /api/v1/satusehat/submissions/{id}:
     get:
       operationId: SatusehatSubmissionController_getSubmissionDetail_v1
@@ -44342,7 +45100,7 @@ paths:
       security:
         - bearer: []
       summary: One SATUSEHAT submission and what it sent
-      tags: *a62
+      tags: *a63
   /api/v1/satusehat/submissions/{id}/check:
     post:
       operationId: SatusehatSubmissionController_checkSubmission_v1
@@ -44446,7 +45204,7 @@ paths:
       security:
         - bearer: []
       summary: Check with SATUSEHAT whether it still holds what we sent
-      tags: *a62
+      tags: *a63
   /api/v1/satusehat/submissions/{id}/retry:
     post:
       operationId: SatusehatSubmissionController_retrySubmission_v1
@@ -44567,7 +45325,7 @@ paths:
       security:
         - bearer: []
       summary: Retry a failed SATUSEHAT submission
-      tags: *a62
+      tags: *a63
   /api/v1/satusehat/encounters/{encounterId}/record-comparison:
     get:
       operationId: SatusehatRecordController_compareEncounterRecord_v1
@@ -44841,7 +45599,7 @@ paths:
       security:
         - bearer: []
       summary: The clinic's SATUSEHAT Location tree
-      tags: &a63
+      tags: &a64
         - SATUSEHAT
   /api/v1/satusehat/locations/register:
     post:
@@ -44956,7 +45714,7 @@ paths:
       security:
         - bearer: []
       summary: Register clinic rows as SATUSEHAT Locations, or push their changes
-      tags: *a63
+      tags: *a64
   /api/v1/bpjs/config:
     get:
       operationId: BpjsPcareConfigController_getConfig_v1
@@ -45070,7 +45828,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS PCare bridging configuration
-      tags: &a64
+      tags: &a65
         - BPJS PCare
     put:
       operationId: BpjsPcareConfigController_upsertConfig_v1
@@ -45208,7 +45966,7 @@ paths:
       security:
         - bearer: []
       summary: Create or replace the BPJS PCare bridging configuration
-      tags: *a64
+      tags: *a65
     delete:
       operationId: BpjsPcareConfigController_deleteConfig_v1
       parameters: []
@@ -45267,7 +46025,7 @@ paths:
       security:
         - bearer: []
       summary: Delete the BPJS PCare bridging configuration
-      tags: *a64
+      tags: *a65
   /api/v1/bpjs/config/test-connection:
     post:
       operationId: BpjsPcareConfigController_testConnection_v1
@@ -45333,7 +46091,7 @@ paths:
       security:
         - bearer: []
       summary: Test the stored BPJS PCare credentials
-      tags: *a64
+      tags: *a65
   /api/v1/bpjs/reference/sync:
     post:
       operationId: BpjsReferenceController_syncCatalogs_v1
@@ -45421,7 +46179,7 @@ paths:
       security:
         - bearer: []
       summary: Sync the enumerable BPJS PCare reference catalogs
-      tags: &a65
+      tags: &a66
         - BPJS PCare
   /api/v1/bpjs/reference/status:
     get:
@@ -45488,7 +46246,7 @@ paths:
       security:
         - bearer: []
       summary: Read per-catalog BPJS reference sync status
-      tags: *a65
+      tags: *a66
   /api/v1/bpjs/reference/{catalog}:
     get:
       operationId: BpjsReferenceController_searchCatalog_v1
@@ -45582,7 +46340,7 @@ paths:
       security:
         - bearer: []
       summary: Search a synced BPJS reference catalog locally
-      tags: *a65
+      tags: *a66
   /api/v1/bpjs/reference/{catalog}/search:
     post:
       operationId: BpjsReferenceController_searchCatalogRemote_v1
@@ -45688,7 +46446,7 @@ paths:
       security:
         - bearer: []
       summary: Search a keyword-only BPJS catalog live and cache the results
-      tags: *a65
+      tags: *a66
   /api/v1/bpjs/mappings:
     get:
       operationId: BpjsMappingController_getOverview_v1
@@ -45776,7 +46534,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS mapping overview
-      tags: &a66
+      tags: &a67
         - BPJS PCare
   /api/v1/bpjs/mappings/doctors/{doctorId}:
     put:
@@ -45870,7 +46628,7 @@ paths:
       security:
         - bearer: []
       summary: Set or clear a doctor’s BPJS kdDokter mapping
-      tags: *a66
+      tags: *a67
   /api/v1/bpjs/mappings/specialties/{specialtyId}:
     put:
       operationId: BpjsMappingController_setSpecialtyMapping_v1
@@ -45959,7 +46717,7 @@ paths:
       security:
         - bearer: []
       summary: Set or clear a specialty’s BPJS kdPoli mapping
-      tags: *a66
+      tags: *a67
   /api/v1/bpjs/mappings/medications/{medicationId}:
     put:
       operationId: BpjsMappingController_setMedicationMapping_v1
@@ -46053,7 +46811,7 @@ paths:
       security:
         - bearer: []
       summary: Link or unlink a medication’s DPHO code
-      tags: *a66
+      tags: *a67
   /api/v1/bpjs/eligibility/patients/{patientId}/check:
     post:
       operationId: BpjsEligibilityController_checkEligibility_v1
@@ -46353,7 +47111,7 @@ paths:
       security:
         - bearer: []
       summary: List BPJS PCare submission outbox entries
-      tags: &a67
+      tags: &a68
         - BPJS PCare
   /api/v1/bpjs/submissions/{id}/retry:
     post:
@@ -46462,7 +47220,7 @@ paths:
       security:
         - bearer: []
       summary: Retry a failed BPJS PCare submission
-      tags: *a67
+      tags: *a68
   /api/v1/bpjs/reports/monthly:
     get:
       operationId: BpjsReportController_getMonthlyReport_v1
@@ -46709,7 +47467,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS Antrean Online bridging configuration
-      tags: &a68
+      tags: &a69
         - BPJS Antrean
     put:
       operationId: BpjsAntreanConfigController_upsertConfig_v1
@@ -46850,7 +47608,7 @@ paths:
       security:
         - bearer: []
       summary: Create or replace the BPJS Antrean Online bridging configuration
-      tags: *a68
+      tags: *a69
     delete:
       operationId: BpjsAntreanConfigController_deleteConfig_v1
       parameters: []
@@ -46909,7 +47667,7 @@ paths:
       security:
         - bearer: []
       summary: Delete the BPJS Antrean Online bridging configuration
-      tags: *a68
+      tags: *a69
   /api/v1/bpjs/antrean/config/test-connection:
     post:
       operationId: BpjsAntreanConfigController_testConnection_v1
@@ -46975,7 +47733,7 @@ paths:
       security:
         - bearer: []
       summary: Test the stored BPJS Antrean credentials
-      tags: *a68
+      tags: *a69
   /api/v1/bpjs/antrean/inbound-readiness:
     get:
       operationId: BpjsAntreanConfigController_getInboundReadiness_v1
@@ -47045,7 +47803,7 @@ paths:
       security:
         - bearer: []
       summary: Report whether the inbound Antrean web services can serve BPJS
-      tags: *a68
+      tags: *a69
   /api/v1/bpjs/antrean/hfis-reconciliation:
     get:
       operationId: BpjsAntreanConfigController_getHfisReconciliation_v1
@@ -47147,7 +47905,7 @@ paths:
       security:
         - bearer: []
       summary: Compare HFIS against HMS and report the disagreements
-      tags: *a68
+      tags: *a69
   /api/v1/admin/features:
     get:
       operationId: FeatureAdminController_getEntitlements_v1
@@ -47226,7 +47984,7 @@ paths:
       security:
         - bearer: []
       summary: List every feature and whether this client has it
-      tags: &a69
+      tags: &a70
         - Feature Entitlements
   /api/v1/admin/features/{key}:
     put:
@@ -47343,7 +48101,7 @@ paths:
       security:
         - bearer: []
       summary: Switch a feature on or off for this client
-      tags: *a69
+      tags: *a70
   /api/v1/features/availability:
     get:
       operationId: FeatureAvailabilityController_getAvailability_v1
@@ -47466,7 +48224,7 @@ paths:
       security:
         - bearer: []
       summary: List active roles
-      tags: &a70
+      tags: &a71
         - RBAC
     post:
       operationId: RbacController_createRole_v1
@@ -47553,7 +48311,7 @@ paths:
       security:
         - bearer: []
       summary: Create a custom role
-      tags: *a70
+      tags: *a71
   /api/v1/rbac/permissions:
     get:
       operationId: RbacController_getPermissionCatalog_v1
@@ -47633,7 +48391,7 @@ paths:
       security:
         - bearer: []
       summary: List the permission catalog
-      tags: *a70
+      tags: *a71
   /api/v1/rbac/roles/{id}:
     get:
       operationId: RbacController_getRoleById_v1
@@ -47752,7 +48510,7 @@ paths:
       security:
         - bearer: []
       summary: Get a role with its permissions and member count
-      tags: *a70
+      tags: *a71
     patch:
       operationId: RbacController_updateRole_v1
       parameters:
@@ -47851,7 +48609,7 @@ paths:
       security:
         - bearer: []
       summary: Update a role name or description
-      tags: *a70
+      tags: *a71
     delete:
       operationId: RbacController_deleteRole_v1
       parameters:
@@ -47927,7 +48685,7 @@ paths:
       security:
         - bearer: []
       summary: Soft-delete a role
-      tags: *a70
+      tags: *a71
   /api/v1/rbac/roles/{id}/permissions:
     put:
       operationId: RbacController_setRolePermissions_v1
@@ -48073,7 +48831,7 @@ paths:
       security:
         - bearer: []
       summary: Replace the permission set attached to a role
-      tags: *a70
+      tags: *a71
   /api/v1/rbac/assign-role:
     post:
       operationId: RbacController_assignRole_v1
@@ -48165,7 +48923,7 @@ paths:
       security:
         - bearer: []
       summary: Assign a role to a user
-      tags: *a70
+      tags: *a71
   /api/v1/rbac/unassign-role:
     post:
       operationId: RbacController_unassignRole_v1
@@ -48257,7 +49015,7 @@ paths:
       security:
         - bearer: []
       summary: Unassign a role from a user
-      tags: *a70
+      tags: *a71
   /api/v1/health:
     get:
       operationId: HealthController_getHealth_v1
@@ -50849,6 +51607,111 @@ components:
           exclusiveMaximum: false
         isActive:
           type: boolean
+    CreateDoctorAuthorityDto:
+      type: object
+      properties:
+        kind:
+          type: string
+          enum:
+            - IUD_IMPLANT
+            - MTBS
+            - PROGRAM_IMMUNIZATION
+            - INTEGRATED_ANC
+            - NO_OTHER_WORKER
+        grantKind:
+          type: string
+          enum:
+            - DINAS_PENETAPAN
+            - GOVERNMENT_PENUGASAN
+            - STR_ANNOTATION
+        grantReference:
+          type: string
+          minLength: 1
+          maxLength: 128
+        grantIssuedAt:
+          type: string
+          pattern: ^\d{4}-\d{2}-\d{2}$
+        trainingCertificateNumber:
+          type: string
+          minLength: 1
+          maxLength: 128
+        validFrom:
+          type: string
+          pattern: ^\d{4}-\d{2}-\d{2}$
+        validUntil:
+          type: string
+          pattern: ^\d{4}-\d{2}-\d{2}$
+        grantDocumentStorageKey:
+          type: string
+          minLength: 1
+          maxLength: 512
+      required:
+        - kind
+        - grantKind
+        - grantReference
+        - grantIssuedAt
+        - trainingCertificateNumber
+        - validFrom
+        - validUntil
+    CreateDoctorAuthorityUploadUrlDto:
+      type: object
+      properties:
+        mimeType:
+          type: string
+          enum:
+            - application/pdf
+            - image/jpeg
+            - image/png
+            - image/webp
+        sizeBytes:
+          type: integer
+          minimum: 0
+          exclusiveMinimum: true
+          maximum: 20971520
+          exclusiveMaximum: false
+      required:
+        - mimeType
+        - sizeBytes
+    UpdateDoctorAuthorityDto:
+      type: object
+      properties:
+        grantKind:
+          type: string
+          enum:
+            - DINAS_PENETAPAN
+            - GOVERNMENT_PENUGASAN
+            - STR_ANNOTATION
+        grantReference:
+          type: string
+          minLength: 1
+          maxLength: 128
+        grantIssuedAt:
+          type: string
+          pattern: ^\d{4}-\d{2}-\d{2}$
+        trainingCertificateNumber:
+          type: string
+          minLength: 1
+          maxLength: 128
+        validFrom:
+          type: string
+          pattern: ^\d{4}-\d{2}-\d{2}$
+        validUntil:
+          type: string
+          pattern: ^\d{4}-\d{2}-\d{2}$
+        grantDocumentStorageKey:
+          type: string
+          minLength: 1
+          maxLength: 512
+          nullable: true
+    RevokeDoctorAuthorityDto:
+      type: object
+      properties:
+        reason:
+          type: string
+          minLength: 3
+          maxLength: 500
+      required:
+        - reason
     CreateUserInvitationDto:
       type: object
       properties:

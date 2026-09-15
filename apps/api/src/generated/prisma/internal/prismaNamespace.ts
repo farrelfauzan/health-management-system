@@ -405,6 +405,8 @@ export const ModelName = {
   DoctorEducation: 'DoctorEducation',
   DoctorLicense: 'DoctorLicense',
   DoctorLicenseExpiryNotice: 'DoctorLicenseExpiryNotice',
+  DoctorAuthority: 'DoctorAuthority',
+  DoctorAuthorityExpiryNotice: 'DoctorAuthorityExpiryNotice',
   DoctorSchedule: 'DoctorSchedule',
   AppointmentSession: 'AppointmentSession',
   DoctorPatient: 'DoctorPatient',
@@ -511,7 +513,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientDeliveryConsent" | "documentDelivery" | "documentDeliveryLink" | "patientAllergy" | "doctorCredentialOption" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorLicenseExpiryNotice" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "prescriptionItemComponent" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "satusehatSubmissionResource" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "vaultDocumentExpiryNotice" | "vaultDocumentShare" | "userOffboardingNotice" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit" | "documentType" | "documentTypeApprover" | "managedDocument" | "documentApprovalRequest" | "documentApprovalApprover" | "documentApprovalDecision" | "labTest" | "labReferenceRange" | "labPanel" | "labPanelMember" | "labOrderCounter" | "labOrder" | "labOrderItem" | "labSpecimenCounter" | "labSpecimen" | "labResult" | "laboratorySettings" | "labReport" | "immunization" | "province" | "regency" | "district" | "village" | "bugReport" | "bugReportCounter"
+    modelProps: "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientDeliveryConsent" | "documentDelivery" | "documentDeliveryLink" | "patientAllergy" | "doctorCredentialOption" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorLicenseExpiryNotice" | "doctorAuthority" | "doctorAuthorityExpiryNotice" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "prescription" | "prescriptionMedication" | "prescriptionItemComponent" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "satusehatSubmissionResource" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "vaultDocumentExpiryNotice" | "vaultDocumentShare" | "userOffboardingNotice" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit" | "documentType" | "documentTypeApprover" | "managedDocument" | "documentApprovalRequest" | "documentApprovalApprover" | "documentApprovalDecision" | "labTest" | "labReferenceRange" | "labPanel" | "labPanelMember" | "labOrderCounter" | "labOrder" | "labOrderItem" | "labSpecimenCounter" | "labSpecimen" | "labResult" | "laboratorySettings" | "labReport" | "immunization" | "province" | "regency" | "district" | "village" | "bugReport" | "bugReportCounter"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2066,6 +2068,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.DoctorLicenseExpiryNoticeCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.DoctorLicenseExpiryNoticeCountAggregateOutputType> | number
+        }
+      }
+    }
+    DoctorAuthority: {
+      payload: Prisma.$DoctorAuthorityPayload<ExtArgs>
+      fields: Prisma.DoctorAuthorityFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.DoctorAuthorityFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorAuthorityPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.DoctorAuthorityFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorAuthorityPayload>
+        }
+        findFirst: {
+          args: Prisma.DoctorAuthorityFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorAuthorityPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.DoctorAuthorityFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorAuthorityPayload>
+        }
+        findMany: {
+          args: Prisma.DoctorAuthorityFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorAuthorityPayload>[]
+        }
+        create: {
+          args: Prisma.DoctorAuthorityCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorAuthorityPayload>
+        }
+        createMany: {
+          args: Prisma.DoctorAuthorityCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.DoctorAuthorityCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorAuthorityPayload>[]
+        }
+        delete: {
+          args: Prisma.DoctorAuthorityDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorAuthorityPayload>
+        }
+        update: {
+          args: Prisma.DoctorAuthorityUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorAuthorityPayload>
+        }
+        deleteMany: {
+          args: Prisma.DoctorAuthorityDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.DoctorAuthorityUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.DoctorAuthorityUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorAuthorityPayload>[]
+        }
+        upsert: {
+          args: Prisma.DoctorAuthorityUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorAuthorityPayload>
+        }
+        aggregate: {
+          args: Prisma.DoctorAuthorityAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateDoctorAuthority>
+        }
+        groupBy: {
+          args: Prisma.DoctorAuthorityGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DoctorAuthorityGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.DoctorAuthorityCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DoctorAuthorityCountAggregateOutputType> | number
+        }
+      }
+    }
+    DoctorAuthorityExpiryNotice: {
+      payload: Prisma.$DoctorAuthorityExpiryNoticePayload<ExtArgs>
+      fields: Prisma.DoctorAuthorityExpiryNoticeFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.DoctorAuthorityExpiryNoticeFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorAuthorityExpiryNoticePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.DoctorAuthorityExpiryNoticeFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorAuthorityExpiryNoticePayload>
+        }
+        findFirst: {
+          args: Prisma.DoctorAuthorityExpiryNoticeFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorAuthorityExpiryNoticePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.DoctorAuthorityExpiryNoticeFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorAuthorityExpiryNoticePayload>
+        }
+        findMany: {
+          args: Prisma.DoctorAuthorityExpiryNoticeFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorAuthorityExpiryNoticePayload>[]
+        }
+        create: {
+          args: Prisma.DoctorAuthorityExpiryNoticeCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorAuthorityExpiryNoticePayload>
+        }
+        createMany: {
+          args: Prisma.DoctorAuthorityExpiryNoticeCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.DoctorAuthorityExpiryNoticeCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorAuthorityExpiryNoticePayload>[]
+        }
+        delete: {
+          args: Prisma.DoctorAuthorityExpiryNoticeDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorAuthorityExpiryNoticePayload>
+        }
+        update: {
+          args: Prisma.DoctorAuthorityExpiryNoticeUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorAuthorityExpiryNoticePayload>
+        }
+        deleteMany: {
+          args: Prisma.DoctorAuthorityExpiryNoticeDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.DoctorAuthorityExpiryNoticeUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.DoctorAuthorityExpiryNoticeUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorAuthorityExpiryNoticePayload>[]
+        }
+        upsert: {
+          args: Prisma.DoctorAuthorityExpiryNoticeUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorAuthorityExpiryNoticePayload>
+        }
+        aggregate: {
+          args: Prisma.DoctorAuthorityExpiryNoticeAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateDoctorAuthorityExpiryNotice>
+        }
+        groupBy: {
+          args: Prisma.DoctorAuthorityExpiryNoticeGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DoctorAuthorityExpiryNoticeGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.DoctorAuthorityExpiryNoticeCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DoctorAuthorityExpiryNoticeCountAggregateOutputType> | number
         }
       }
     }
@@ -9203,6 +9353,41 @@ export const DoctorLicenseExpiryNoticeScalarFieldEnum = {
 export type DoctorLicenseExpiryNoticeScalarFieldEnum = (typeof DoctorLicenseExpiryNoticeScalarFieldEnum)[keyof typeof DoctorLicenseExpiryNoticeScalarFieldEnum]
 
 
+export const DoctorAuthorityScalarFieldEnum = {
+  id: 'id',
+  doctorId: 'doctorId',
+  kind: 'kind',
+  grantKind: 'grantKind',
+  grantReference: 'grantReference',
+  grantIssuedAt: 'grantIssuedAt',
+  trainingCertificateNumber: 'trainingCertificateNumber',
+  validFrom: 'validFrom',
+  validUntil: 'validUntil',
+  grantDocumentStorageKey: 'grantDocumentStorageKey',
+  grantDocumentMimeType: 'grantDocumentMimeType',
+  grantDocumentSizeBytes: 'grantDocumentSizeBytes',
+  revokedAt: 'revokedAt',
+  revokedById: 'revokedById',
+  revokeReason: 'revokeReason',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type DoctorAuthorityScalarFieldEnum = (typeof DoctorAuthorityScalarFieldEnum)[keyof typeof DoctorAuthorityScalarFieldEnum]
+
+
+export const DoctorAuthorityExpiryNoticeScalarFieldEnum = {
+  id: 'id',
+  authorityId: 'authorityId',
+  thresholdDays: 'thresholdDays',
+  notifiedAt: 'notifiedAt'
+} as const
+
+export type DoctorAuthorityExpiryNoticeScalarFieldEnum = (typeof DoctorAuthorityExpiryNoticeScalarFieldEnum)[keyof typeof DoctorAuthorityExpiryNoticeScalarFieldEnum]
+
+
 export const DoctorScheduleScalarFieldEnum = {
   id: 'id',
   doctorId: 'doctorId',
@@ -11123,6 +11308,34 @@ export type ListEnumDoctorLicenseTypeFieldRefInput<$PrismaModel> = FieldRefInput
 
 
 /**
+ * Reference to a field of type 'DoctorAuthorityKind'
+ */
+export type EnumDoctorAuthorityKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DoctorAuthorityKind'>
+    
+
+
+/**
+ * Reference to a field of type 'DoctorAuthorityKind[]'
+ */
+export type ListEnumDoctorAuthorityKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DoctorAuthorityKind[]'>
+    
+
+
+/**
+ * Reference to a field of type 'DoctorAuthorityGrantKind'
+ */
+export type EnumDoctorAuthorityGrantKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DoctorAuthorityGrantKind'>
+    
+
+
+/**
+ * Reference to a field of type 'DoctorAuthorityGrantKind[]'
+ */
+export type ListEnumDoctorAuthorityGrantKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DoctorAuthorityGrantKind[]'>
+    
+
+
+/**
  * Reference to a field of type 'AppointmentSessionStatus'
  */
 export type EnumAppointmentSessionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AppointmentSessionStatus'>
@@ -12344,6 +12557,8 @@ export type GlobalOmitConfig = {
   doctorEducation?: Prisma.DoctorEducationOmit
   doctorLicense?: Prisma.DoctorLicenseOmit
   doctorLicenseExpiryNotice?: Prisma.DoctorLicenseExpiryNoticeOmit
+  doctorAuthority?: Prisma.DoctorAuthorityOmit
+  doctorAuthorityExpiryNotice?: Prisma.DoctorAuthorityExpiryNoticeOmit
   doctorSchedule?: Prisma.DoctorScheduleOmit
   appointmentSession?: Prisma.AppointmentSessionOmit
   doctorPatient?: Prisma.DoctorPatientOmit

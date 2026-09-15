@@ -164,6 +164,13 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     -- reading a doctor's profile are different questions with different
     -- audiences.
     ('doctor.license-expiry.read:any', 'DoctorLicenseExpiry', 'read', 'ANY', 'Read the practitioner licence expiry dashboard'),
+    -- P25-T02. A midwife's delegated authorities (kewenangan). Their own
+    -- subject and pair, ADMIN alone: what a clinician has been cleared to do
+    -- is a compliance record, and `doctor.read:any` is held by doctors and
+    -- patients who have no business reading it. Not granted to MIDWIFE either
+    -- — a midwife viewing her own authorities is out of scope for now.
+    ('doctor.authority.read:any', 'DoctorAuthority', 'read', 'ANY', 'Read a clinician''s delegated authorities'),
+    ('doctor.authority.write:any', 'DoctorAuthority', 'write', 'ANY', 'Grant, edit and revoke a clinician''s delegated authorities'),
     ('doctor-patient.assign:any', 'DoctorPatient', 'assign', 'ANY', 'Assign doctors to patients'),
     ('doctor-patient.unassign:any', 'DoctorPatient', 'unassign', 'ANY', 'Unassign doctor-patient assignments'),
     ('doctor-patient.activity.read:any', 'DoctorPatientActivity', 'read', 'ANY', 'Read doctor-patient assignment activity log'),
@@ -496,6 +503,8 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     -- this one: the expiry roster is the clinic's compliance record, not part
     -- of the public directory.
     ('ADMIN', 'doctor.license-expiry.read:any'),
+    ('ADMIN', 'doctor.authority.read:any'),
+    ('ADMIN', 'doctor.authority.write:any'),
     ('ADMIN', 'doctor.read:any'),
     ('ADMIN', 'doctor.create:any'),
     ('ADMIN', 'doctor.update:any'),
