@@ -37064,6 +37064,10 @@ paths:
                               type: string
                             performedByName:
                               type: string
+                            isHistorical:
+                              type: boolean
+                            reason:
+                              type: string
                             createdAt:
                               type: string
                             updatedAt:
@@ -37083,6 +37087,8 @@ paths:
                             - site
                             - performedById
                             - performedByName
+                            - isHistorical
+                            - reason
                             - createdAt
                             - updatedAt
                       prescriptions:
@@ -37202,6 +37208,8 @@ paths:
                         site: LEFT_THIGH
                         performedById: 22222222-2222-4222-8222-222222222222
                         performedByName: dr. Sari Wulandari
+                        isHistorical: false
+                        reason: IM_DASAR
                         createdAt: 2026-07-20T08:00:00.000Z
                         updatedAt: 2026-07-20T08:00:00.000Z
                     prescriptions:
@@ -38303,6 +38311,8 @@ paths:
                   doseNumber: 3
                   route: IM
                   site: LEFT_THIGH
+                  isHistorical: false
+                  reason: IM_DASAR
       responses:
         "201":
           description: The vaccination was recorded against the encounter. Only a catalog
@@ -38344,6 +38354,10 @@ paths:
                         type: string
                       performedByName:
                         type: string
+                      isHistorical:
+                        type: boolean
+                      reason:
+                        type: string
                       createdAt:
                         type: string
                       updatedAt:
@@ -38363,6 +38377,8 @@ paths:
                       - site
                       - performedById
                       - performedByName
+                      - isHistorical
+                      - reason
                       - createdAt
                       - updatedAt
                   message:
@@ -38386,6 +38402,8 @@ paths:
                     site: LEFT_THIGH
                     performedById: 22222222-2222-4222-8222-222222222222
                     performedByName: dr. Sari Wulandari
+                    isHistorical: false
+                    reason: IM_DASAR
                     createdAt: 2026-07-20T08:00:00.000Z
                     updatedAt: 2026-07-20T08:00:00.000Z
                   message: Immunization recorded
@@ -38807,6 +38825,10 @@ paths:
                           type: string
                         performedByName:
                           type: string
+                        isHistorical:
+                          type: boolean
+                        reason:
+                          type: string
                         createdAt:
                           type: string
                         updatedAt:
@@ -38826,6 +38848,8 @@ paths:
                         - site
                         - performedById
                         - performedByName
+                        - isHistorical
+                        - reason
                         - createdAt
                         - updatedAt
                 required:
@@ -38846,6 +38870,8 @@ paths:
                       site: LEFT_THIGH
                       performedById: 22222222-2222-4222-8222-222222222222
                       performedByName: dr. Sari Wulandari
+                      isHistorical: false
+                      reason: IM_DASAR
                       createdAt: 2026-07-20T08:00:00.000Z
                       updatedAt: 2026-07-20T08:00:00.000Z
         "401":
@@ -51804,8 +51830,22 @@ components:
           type: string
           minLength: 1
           maxLength: 1000
+        isHistorical:
+          type: boolean
+          default: false
+        reason:
+          type: string
+          enum:
+            - IM_DASAR
+            - IM_BADUTA
+            - IM_SD
+            - IM_WUS
+            - IM_TAMBAHAN
+            - IM_KHUSUS
+            - IM_PILIHAN
       required:
         - medicationId
+        - reason
     UpsertBpjsReferralDto:
       type: object
       properties:

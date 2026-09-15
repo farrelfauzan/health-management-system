@@ -5,6 +5,7 @@
  * Health Management System API
  * OpenAPI spec version: 1.0.0
  */
+import type { AddImmunizationDtoReason } from './addImmunizationDtoReason';
 import type { AddImmunizationDtoRoute } from './addImmunizationDtoRoute';
 import type { AddImmunizationDtoSite } from './addImmunizationDtoSite';
 
@@ -30,4 +31,6 @@ export interface AddImmunizationDto {
      * @maxLength 1000
      */
   notes?: string;
+  isHistorical?: boolean;
+  reason: AddImmunizationDtoReason;
 }

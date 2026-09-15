@@ -190,6 +190,8 @@ const immunizationRecord = {
   site: 'LEFT_THIGH',
   performedById: doctorId,
   performedByName: 'dr. Sari Wulandari',
+  isHistorical: false,
+  reason: 'IM_DASAR',
   createdAt: timestamp,
   updatedAt: timestamp,
 };
@@ -944,6 +946,8 @@ export const PHASE_THREE_EXAMPLES = {
       doseNumber: 3,
       route: 'IM',
       site: 'LEFT_THIGH',
+      isHistorical: false,
+      reason: 'IM_DASAR',
     },
     listItem: {
       ...encounter,

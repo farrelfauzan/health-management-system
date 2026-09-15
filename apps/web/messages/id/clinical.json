@@ -1058,6 +1058,14 @@
         "route": "Rute",
         "site": "Lokasi",
         "noKfa": "Tanpa kode KFA — tercatat di sini, tidak dilaporkan ke SATUSEHAT.",
+        "historical": "Dosis historis (dari Buku KIA)",
+        "historicalHint": "Untuk dosis yang disalin dari kartu atau Buku KIA. Nomor batch dan kedaluwarsa tidak wajib, dan dosis dilaporkan ke SATUSEHAT sebagai catatan historis.",
+        "historicalBadge": "Historis",
+        "reason": "Alasan imunisasi",
+        "reasonPlaceholder": "Pilih alasan imunisasi",
+        "pickReason": "Pilih alasan imunisasi.",
+        "newDoseRequired": "Dosis yang diberikan di sini wajib mencantumkan nomor batch, tanggal kedaluwarsa, dan dosis ke-. Centang \"Dosis historis\" jika disalin dari kartu atau Buku KIA.",
+        "doseRequired": "Isi dosis ke- — SATUSEHAT menolak imunisasi tanpa nomor dosis.",
         "routes": {
           "IM": "Intramuskular",
           "SC": "Subkutan",
@@ -1071,6 +1079,15 @@
           "LEFT_THIGH": "Paha kiri",
           "RIGHT_THIGH": "Paha kanan",
           "OTHER": "Lainnya"
+        },
+        "reasons": {
+          "IM_DASAR": "Imunisasi dasar",
+          "IM_BADUTA": "Imunisasi baduta",
+          "IM_SD": "Imunisasi anak sekolah dasar",
+          "IM_WUS": "Imunisasi wanita usia subur",
+          "IM_TAMBAHAN": "Imunisasi tambahan",
+          "IM_KHUSUS": "Imunisasi khusus",
+          "IM_PILIHAN": "Imunisasi pilihan"
         }
       },
       "laboratory": {
@@ -1179,7 +1196,10 @@
           "NO_ICD9CM_CODE": "tanpa kode ICD-9-CM",
           "NO_LOINC_CODE": "tanpa kode LOINC",
           "NO_VERIFIED_RESULT": "belum ada hasil terverifikasi",
-          "UNCODED_COMPOUND_COMPONENT": "komponen racikan tanpa kode"
+          "UNCODED_COMPOUND_COMPONENT": "komponen racikan tanpa kode",
+          "IMMUNIZATION_DOSE_NUMBER_MISSING": "imunisasi tanpa dosis ke-",
+          "IMMUNIZATION_REASON_MISSING": "imunisasi tanpa alasan",
+          "IMMUNIZATION_PERFORMER_UNLINKED": "pemberi imunisasi belum tertaut SATUSEHAT"
         }
       }
     }

@@ -496,6 +496,8 @@ describe('SatusehatFhirMapper', () => {
   });
 
   describe('mapImmunization', () => {
+    const recordedAt = new Date('2026-07-28T02:15:00.000Z');
+
     function buildImmunizationInput(overrides: Record<string, unknown> = {}) {
       return {
         immunizationId: '3c4d5e6f-7a8b-4c9d-8e0f-1a2b3c4d5e6f',
@@ -505,9 +507,12 @@ describe('SatusehatFhirMapper', () => {
         patientName: 'Budi Santoso',
         encounterReference: 'urn:uuid:encounter-entry',
         occurredAt: startedAt,
+        recordedAt,
+        isHistorical: false,
         lotNumber: 'LOT-DPT-2026-04',
         expirationDate: '2027-04-30',
         doseNumber: 3,
+        reason: 'IM_DASAR' as const,
         route: 'IM' as const,
         site: 'LEFT_THIGH' as const,
         performerIhsNumber: 'N10000001',
@@ -516,7 +521,7 @@ describe('SatusehatFhirMapper', () => {
       };
     }
 
-    it('maps a KFA-coded vaccination to a completed Immunization', () => {
+    it('maps a dose given here to the full set staging enforces (P24-T12)', () => {
       const actualImmunization = mapper.mapImmunization(buildImmunizationInput());
 
       expect(actualImmunization).toEqual({
@@ -541,6 +546,9 @@ describe('SatusehatFhirMapper', () => {
         patient: { reference: 'Patient/P02478375538', display: 'Budi Santoso' },
         encounter: { reference: 'urn:uuid:encounter-entry' },
         occurrenceDateTime: '2026-07-28T02:00:00.000Z',
+        recorded: '2026-07-28T02:15:00.000Z',
+        primarySource: true,
+        location: { reference: 'Location/location-uuid', display: 'Ruang Periksa Umum' },
         lotNumber: 'LOT-DPT-2026-04',
         expirationDate: '2027-04-30',
         site: {
@@ -561,28 +569,76 @@ describe('SatusehatFhirMapper', () => {
             },
           ],
         },
+        reasonCode: [
+          {
+            coding: [
+              {
+                system: 'http://terminology.kemkes.go.id/CodeSystem/immunization-reason',
+                code: 'IM-Dasar',
+                display: 'Imunisasi Dasar',
+              },
+            ],
+          },
+        ],
         performer: [
-          { actor: { reference: 'Practitioner/N10000001', display: 'dr. Sari Wulandari' } },
+          {
+            function: {
+              coding: [
+                {
+                  system: 'http://terminology.hl7.org/CodeSystem/v2-0443',
+                  code: 'AP',
+                  display: 'Administering Provider',
+                },
+              ],
+            },
+            actor: { reference: 'Practitioner/N10000001', display: 'dr. Sari Wulandari' },
+          },
         ],
         protocolApplied: [{ doseNumberPositiveInt: 3 }],
       });
     });
 
-    it('omits the dose when none was recorded, rather than sending 1', () => {
+    it('sends a historical dose as not primary-source, entered by its performer, without lot or expiry', () => {
+      // Staging pairs the function with primarySource (RuleNumber 10307) and
+      // accepts a historical dose with neither batch fact; a lot the card
+      // happened to show is left off because that shape was never probed.
       const actualImmunization = mapper.mapImmunization(
-        buildImmunizationInput({ doseNumber: undefined }),
+        buildImmunizationInput({ isHistorical: true }),
       );
 
-      expect(actualImmunization.protocolApplied).toBeUndefined();
-    });
-
-    it('omits the lot and expiry a nurse copying from a card may not have', () => {
-      const actualImmunization = mapper.mapImmunization(
-        buildImmunizationInput({ lotNumber: undefined, expirationDate: undefined }),
-      );
-
+      expect(actualImmunization.primarySource).toBe(false);
+      expect(actualImmunization.performer[0]?.function.coding[0]?.code).toBe('EP');
       expect(actualImmunization.lotNumber).toBeUndefined();
       expect(actualImmunization.expirationDate).toBeUndefined();
+      expect(actualImmunization.protocolApplied).toEqual([{ doseNumberPositiveInt: 3 }]);
+      expect(actualImmunization.reasonCode[0]?.coding[0]?.code).toBe('IM-Dasar');
+    });
+
+    it.each([
+      ['IM_BADUTA' as const, 'IM-Baduta'],
+      ['IM_SD' as const, 'IM-SD'],
+      ['IM_WUS' as const, 'IM-WUS'],
+      ['IM_TAMBAHAN' as const, 'IM-Tambahan'],
+      ['IM_KHUSUS' as const, 'IM-Khusus'],
+      ['IM_PILIHAN' as const, 'IM-Pilihan'],
+    ])('restores the hyphen the enum folded: %s → %s', (reason, expectedCode) => {
+      const actualImmunization = mapper.mapImmunization(buildImmunizationInput({ reason }));
+
+      expect(actualImmunization.reasonCode[0]?.coding[0]).toEqual({
+        system: 'http://terminology.kemkes.go.id/CodeSystem/immunization-reason',
+        code: expectedCode,
+        display: expect.any(String),
+      });
+    });
+
+    it('refuses to map without the root Location the platform requires', () => {
+      const unconfiguredMapper = new SatusehatFhirMapper(
+        buildConfigService({ SATUSEHAT_LOCATION_ID: '' }),
+      );
+
+      expect(() => unconfiguredMapper.mapImmunization(buildImmunizationInput())).toThrow(
+        SatusehatError,
+      );
     });
 
     it('omits site OTHER, because v3 has no code for "somewhere else"', () => {

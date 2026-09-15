@@ -2,15 +2,16 @@
 
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import type {
-  AddImmunizationInput,
-  ImmunizationResponse,
-  ImmunizationRouteValue,
-  ImmunizationSiteValue,
+import {
+  IMMUNIZATION_REASONS,
+  type AddImmunizationInput,
+  type ImmunizationResponse,
 } from '@hms/shared-types';
 import {
   Button,
+  Checkbox,
   Input,
+  Label,
   Select,
   SelectContent,
   SelectItem,
@@ -24,67 +25,73 @@ import { LocalizedDatePicker } from '#components/client/shared/localized-date-pi
 import { encounterClinicalDataControllerAddImmunizationV1 } from '#lib/api/generated/encounters/encounters';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { parseApiSuccess } from '#lib/api/response';
+import { buildImmunizationPayload } from '#lib/encounters/build-immunization-payload';
 import { IMMUNIZATION_ROUTES, IMMUNIZATION_SITES } from '#lib/encounters/immunization-options';
 import { invalidateEncounterQueries } from '#lib/encounters/invalidate-encounter-queries';
+import { UNSPECIFIED_IMMUNIZATION_OPTION } from '#lib/encounters/unspecified-immunization-option';
 import { useVaccineCatalog } from '#lib/encounters/use-vaccine-catalog';
-
-const UNSPECIFIED = 'UNSPECIFIED';
 
 type EncounterImmunizationFormProps = {
   encounterId: string;
 };
 
 /**
- * Records one vaccination. Only the vaccine is required: a doctor recording a
- * dose from a patient's card may not have the lot, the expiry or the dose
- * number, and a record with what they do have is worth more than no record —
- * the SATUSEHAT mapper omits what is absent rather than inventing it.
+ * Records one vaccination (P10-T16, P24-T12). The vaccine, the reason and the
+ * dose number are always required, because SATUSEHAT refuses an Immunization
+ * without them. A dose given here also needs its lot number and expiry. A
+ * dose copied from a card or KIA book is ticked "historical" and needs
+ * neither, so nobody has to invent an expiry date to record what the book says.
  */
 export function EncounterImmunizationForm({ encounterId }: EncounterImmunizationFormProps) {
   const queryClient = useQueryClient();
   const t = useTranslations('clinical');
   const [medicationId, setMedicationId] = useState<string>('');
+  const [reason, setReason] = useState<string>('');
+  const [isHistorical, setIsHistorical] = useState<boolean>(false);
   const [lotNumber, setLotNumber] = useState<string>('');
   const [expirationDate, setExpirationDate] = useState<string>('');
   const [doseNumber, setDoseNumber] = useState<string>('');
-  const [route, setRoute] = useState<string>(UNSPECIFIED);
-  const [site, setSite] = useState<string>(UNSPECIFIED);
+  const [route, setRoute] = useState<string>(UNSPECIFIED_IMMUNIZATION_OPTION);
+  const [site, setSite] = useState<string>(UNSPECIFIED_IMMUNIZATION_OPTION);
   const [actionError, setActionError] = useState<string | null>(null);
   const vaccineQuery = useVaccineCatalog();
   const addMutation = useMutation({
     mutationFn: (payload: AddImmunizationInput) =>
       encounterClinicalDataControllerAddImmunizationV1(encounterId, payload),
   });
+  const historicalCheckboxId = `immunization-historical-${encounterId}`;
+  const batchSuffix = isHistorical ? '' : ' *';
 
   function resetForm(): void {
     setMedicationId('');
+    setReason('');
+    setIsHistorical(false);
     setLotNumber('');
     setExpirationDate('');
     setDoseNumber('');
-    setRoute(UNSPECIFIED);
-    setSite(UNSPECIFIED);
+    setRoute(UNSPECIFIED_IMMUNIZATION_OPTION);
+    setSite(UNSPECIFIED_IMMUNIZATION_OPTION);
   }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
     setActionError(null);
-
-    if (!medicationId) {
-      setActionError(t('encounters.immunization.pick'));
+    const result = buildImmunizationPayload({
+      medicationId,
+      reason,
+      isHistorical,
+      lotNumber,
+      expirationDate,
+      doseNumber,
+      route,
+      site,
+    });
+    if (result.payload === null) {
+      setActionError(t(result.errorKey));
       return;
     }
-
-    const payload: AddImmunizationInput = {
-      medicationId,
-      ...(lotNumber.trim() ? { lotNumber: lotNumber.trim() } : {}),
-      ...(expirationDate ? { expirationDate } : {}),
-      ...(doseNumber ? { doseNumber: Number(doseNumber) } : {}),
-      ...(route === UNSPECIFIED ? {} : { route: route as ImmunizationRouteValue }),
-      ...(site === UNSPECIFIED ? {} : { site: site as ImmunizationSiteValue }),
-    };
-
     try {
-      const response = await addMutation.mutateAsync(payload);
+      const response = await addMutation.mutateAsync(result.payload);
       parseApiSuccess<ImmunizationResponse>(response, t('encounters.immunization.addError'));
       await invalidateEncounterQueries(queryClient);
       resetForm();
@@ -112,24 +119,51 @@ export function EncounterImmunizationForm({ encounterId }: EncounterImmunization
         // vaccine simply cannot record one yet, and the fix is in the catalog.
         <p className="text-xs text-slate-500">{t('encounters.immunization.noVaccines')}</p>
       ) : null}
+      <Select value={reason} onValueChange={setReason}>
+        <SelectTrigger aria-label={t('encounters.immunization.reason')}>
+          <SelectValue placeholder={t('encounters.immunization.reasonPlaceholder')} />
+        </SelectTrigger>
+        <SelectContent>
+          {IMMUNIZATION_REASONS.map((option) => (
+            <SelectItem key={option} value={option}>
+              {t(`encounters.immunization.reasons.${option}`)}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+      <div className="space-y-1">
+        <div className="flex items-center gap-2">
+          <Checkbox
+            id={historicalCheckboxId}
+            checked={isHistorical}
+            onCheckedChange={(checked) => setIsHistorical(checked === true)}
+          />
+          <Label htmlFor={historicalCheckboxId} className="text-sm text-slate-700">
+            {t('encounters.immunization.historical')}
+          </Label>
+        </div>
+        <p className="text-xs text-slate-500">{t('encounters.immunization.historicalHint')}</p>
+      </div>
       <div className="grid gap-3 sm:grid-cols-3">
         <Input
-          placeholder={t('encounters.immunization.lotNumber')}
+          placeholder={`${t('encounters.immunization.lotNumber')}${batchSuffix}`}
           aria-label={t('encounters.immunization.lotNumber')}
+          aria-required={!isHistorical}
           value={lotNumber}
           onChange={(event) => setLotNumber(event.target.value)}
         />
         <LocalizedDatePicker
           aria-label={t('encounters.immunization.expirationDate')}
-          placeholder={t('encounters.immunization.expirationDate')}
+          placeholder={`${t('encounters.immunization.expirationDate')}${batchSuffix}`}
           value={expirationDate}
           onValueChange={setExpirationDate}
         />
         <Input
           type="number"
           min={1}
-          placeholder={t('encounters.immunization.doseNumber')}
+          placeholder={`${t('encounters.immunization.doseNumber')} *`}
           aria-label={t('encounters.immunization.doseNumber')}
+          aria-required
           value={doseNumber}
           onChange={(event) => setDoseNumber(event.target.value)}
         />
@@ -140,7 +174,9 @@ export function EncounterImmunizationForm({ encounterId }: EncounterImmunization
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value={UNSPECIFIED}>{t('encounters.immunization.route')}</SelectItem>
+            <SelectItem value={UNSPECIFIED_IMMUNIZATION_OPTION}>
+              {t('encounters.immunization.route')}
+            </SelectItem>
             {IMMUNIZATION_ROUTES.map((option) => (
               <SelectItem key={option} value={option}>
                 {t(`encounters.immunization.routes.${option}`)}
@@ -153,7 +189,9 @@ export function EncounterImmunizationForm({ encounterId }: EncounterImmunization
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value={UNSPECIFIED}>{t('encounters.immunization.site')}</SelectItem>
+            <SelectItem value={UNSPECIFIED_IMMUNIZATION_OPTION}>
+              {t('encounters.immunization.site')}
+            </SelectItem>
             {IMMUNIZATION_SITES.map((option) => (
               <SelectItem key={option} value={option}>
                 {t(`encounters.immunization.sites.${option}`)}

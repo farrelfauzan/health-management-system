@@ -5,12 +5,13 @@ import {
   SatusehatSubmissionBundleData,
   SatusehatSubmissionDispenseItem,
   SatusehatSubmissionMedication,
-  SatusehatSubmissionImmunization,
   SatusehatSubmissionPrescriptionItem,
   SatusehatSubmissionProcedure,
   SatusehatSubmissionRecord,
   SatusehatLabReportBundleData,
   SatusehatLabReportItem,
+  SatusehatReportableImmunization,
+  SatusehatResourceSkipReasonValue,
   SaveAllergyIhsIdPayload,
   SaveImmunizationIhsIdPayload,
 } from '@hms/shared-types';
@@ -36,6 +37,7 @@ import { resolveSatusehatConfig } from '../../../common/satusehat/satusehat.conf
 import { SatusehatConfig } from '../../../common/satusehat/satusehat.types';
 import { SatusehatLinkRepository } from '../repository/satusehat-link.repository';
 import { SatusehatSubmissionRepository } from '../repository/satusehat-submission.repository';
+import { resolveSatusehatImmunizationEntry } from './resolve-satusehat-immunization-entry';
 import { SatusehatResourceListBuilder } from './satusehat-resource-list.builder';
 import { SatusehatSubmissionDataError } from './satusehat-submission-data.error';
 
@@ -78,6 +80,20 @@ const PERMANENT_ERROR_CODES: readonly string[] = [
   'SATUSEHAT_REQUEST_REJECTED',
 ];
 const MAX_STORED_ERROR_LENGTH = 2000;
+
+/**
+ * How the gap log describes each reason a vaccination was left out. Counts
+ * only, never the vaccine: the log is read live by an operator, and a vaccine
+ * name says what the patient was given.
+ */
+const IMMUNIZATION_SKIP_DESCRIPTIONS: Readonly<
+  Partial<Record<SatusehatResourceSkipReasonValue, string>>
+> = {
+  NO_KFA_CODE: 'whose vaccine has no KFA code',
+  IMMUNIZATION_DOSE_NUMBER_MISSING: 'with no dose number for protocolApplied',
+  IMMUNIZATION_REASON_MISSING: 'with no immunisation reason for reasonCode',
+  IMMUNIZATION_PERFORMER_UNLINKED: 'whose performer has no SATUSEHAT practitioner id',
+};
 
 /** FHIR resource type names are upper camel case with no separators. */
 const FHIR_RESOURCE_TYPE_PATTERN = /^[A-Z][A-Za-z]+$/;
@@ -1090,11 +1106,13 @@ export class SatusehatSubmissionService {
   }
 
   /**
-   * Builds one Immunization entry per KFA-coded vaccination on the visit.
+   * Builds one Immunization entry per vaccination the platform can accept.
    *
-   * A vaccine whose catalog row has no KFA code is skipped and named in the
-   * gap report — the platform only accepts KFA-coded products, and the fix is
-   * the catalog, not a guessed code. The vaccination stays in the local record
+   * A row is left out — and named on the resource list — when it lacks
+   * something the platform refuses to do without (P24-T12): a KFA code, a
+   * dose number, a reason, or a performer with a practitioner id. The fix is
+   * the catalog or the row, not a guessed value, and one refused resource
+   * would fail the whole visit. The vaccination stays in the local record
    * either way, which is the point of recording it structurally at all.
    */
   private buildImmunizationEntries(
@@ -1105,53 +1123,81 @@ export class SatusehatSubmissionService {
     immunizationFullUrls: Map<string, string>,
     resourceList: SatusehatResourceListBuilder,
   ): SatusehatFhirBundleEntry[] {
-    const skipped = bundleData.immunizations.filter(
-      (immunization) => immunization.kfaCode === null,
-    );
-    this.reportImmunizationGaps(skipped);
-    resourceList.recordSkipped('Immunization', 'NO_KFA_CODE', skipped.length);
-    return bundleData.immunizations
-      .filter(
-        (immunization): immunization is SatusehatSubmissionImmunization & { kfaCode: string } =>
-          immunization.kfaCode !== null,
-      )
-      .map((immunization) => {
-        const fullUrl = `urn:uuid:${randomUUID()}`;
-        immunizationFullUrls.set(fullUrl, immunization.immunizationId);
-        resourceList.trackLocalRecord(fullUrl, immunization.immunizationId);
-        return {
-          fullUrl,
-          resource: this.fhirMapper.mapImmunization({
-            immunizationId: immunization.immunizationId,
-            kfaCode: immunization.kfaCode,
-            vaccineName: immunization.vaccineName,
-            patientIhsNumber,
-            patientName: bundleData.patientName,
-            encounterReference: encounterFullUrl,
-            occurredAt: immunization.occurredAt,
-            lotNumber: immunization.lotNumber ?? undefined,
-            expirationDate: immunization.expirationDate ?? undefined,
-            doseNumber: immunization.doseNumber ?? undefined,
-            route: immunization.route ?? undefined,
-            site: immunization.site ?? undefined,
-            performerIhsNumber: practitionerIhsNumber,
-            performerName: bundleData.doctorName,
-            notes: immunization.notes ?? undefined,
-          }),
-          request: { method: 'POST', url: 'Immunization' },
-        };
+    const entries: SatusehatFhirBundleEntry[] = [];
+    const skipCounts = new Map<SatusehatResourceSkipReasonValue, number>();
+    for (const immunization of bundleData.immunizations) {
+      const resolution = resolveSatusehatImmunizationEntry({
+        immunization,
+        encounterDoctorId: bundleData.doctorId,
+        encounterDoctorName: bundleData.doctorName,
+        encounterPractitionerIhsNumber: practitionerIhsNumber,
       });
+      if (resolution.skipReason !== null) {
+        skipCounts.set(resolution.skipReason, (skipCounts.get(resolution.skipReason) ?? 0) + 1);
+        continue;
+      }
+      const fullUrl = `urn:uuid:${randomUUID()}`;
+      immunizationFullUrls.set(fullUrl, immunization.immunizationId);
+      resourceList.trackLocalRecord(fullUrl, immunization.immunizationId);
+      entries.push({
+        fullUrl,
+        resource: this.mapImmunizationEntry(
+          resolution.immunization,
+          bundleData,
+          encounterFullUrl,
+          patientIhsNumber,
+        ),
+        request: { method: 'POST', url: 'Immunization' },
+      });
+    }
+    this.reportImmunizationGaps(skipCounts, resourceList);
+    return entries;
   }
 
+  private mapImmunizationEntry(
+    immunization: SatusehatReportableImmunization,
+    bundleData: SatusehatSubmissionBundleData,
+    encounterFullUrl: string,
+    patientIhsNumber: string,
+  ): SatusehatFhirBundleEntry['resource'] {
+    return this.fhirMapper.mapImmunization({
+      immunizationId: immunization.immunizationId,
+      kfaCode: immunization.kfaCode,
+      vaccineName: immunization.vaccineName,
+      patientIhsNumber,
+      patientName: bundleData.patientName,
+      encounterReference: encounterFullUrl,
+      occurredAt: immunization.occurredAt,
+      recordedAt: immunization.recordedAt,
+      isHistorical: immunization.isHistorical,
+      lotNumber: immunization.lotNumber ?? undefined,
+      expirationDate: immunization.expirationDate ?? undefined,
+      doseNumber: immunization.doseNumber,
+      reason: immunization.reason,
+      route: immunization.route ?? undefined,
+      site: immunization.site ?? undefined,
+      performerIhsNumber: immunization.performer.ihsNumber,
+      performerName: immunization.performer.name,
+      notes: immunization.notes ?? undefined,
+    });
+  }
+
+  /**
+   * Every skip goes on the resource list under its reason (P21-T02) and into
+   * the log as a count — the operator reading live sees the same categories
+   * the monitor shows afterwards, and neither names a vaccine.
+   */
   private reportImmunizationGaps(
-    skippedImmunizations: readonly SatusehatSubmissionImmunization[],
+    skipCounts: ReadonlyMap<SatusehatResourceSkipReasonValue, number>,
+    resourceList: SatusehatResourceListBuilder,
   ): void {
-    if (skippedImmunizations.length === 0) {
-      return;
+    for (const [reason, count] of skipCounts) {
+      resourceList.recordSkipped('Immunization', reason, count);
+      const description = IMMUNIZATION_SKIP_DESCRIPTIONS[reason] ?? `skipped as ${reason}`;
+      this.logger.warn(
+        `SATUSEHAT immunization mapping gap: skipped ${count} vaccination(s) ${description}`,
+      );
     }
-    this.logger.warn(
-      `SATUSEHAT immunization mapping gap: skipped ${skippedImmunizations.length} vaccination(s) whose vaccine has no KFA code`,
-    );
   }
 
   /**

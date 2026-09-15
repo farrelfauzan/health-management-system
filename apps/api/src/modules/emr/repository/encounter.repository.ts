@@ -10,6 +10,7 @@ import {
   EncounterDetailRecord,
   EncounterSourceRegistrationRecord,
   EncounterWithRelationsRecord,
+  ImmunizationReasonValue,
   ImmunizationRecord,
   ListEncountersParams,
   ProcedureRecord,
@@ -41,6 +42,8 @@ type ImmunizationRow = {
   site: 'LEFT_ARM' | 'RIGHT_ARM' | 'LEFT_THIGH' | 'RIGHT_THIGH' | 'OTHER' | null;
   performedById: string | null;
   notes: string | null;
+  isHistorical: boolean;
+  reason: ImmunizationReasonValue | null;
   createdAt: Date;
   updatedAt: Date;
   medication: { name: string; kfaCode: string | null };
@@ -69,6 +72,8 @@ function toImmunizationRecord(row: ImmunizationRow): ImmunizationRecord {
     performedById: row.performedById,
     performedByName: row.performedBy?.fullName ?? null,
     notes: row.notes,
+    isHistorical: row.isHistorical,
+    reason: row.reason,
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
   };
@@ -537,6 +542,8 @@ export class EncounterRepository {
         site: payload.site,
         performedById: payload.performedById,
         notes: payload.notes,
+        isHistorical: payload.isHistorical,
+        reason: payload.reason,
       },
       include: IMMUNIZATION_INCLUDE,
     });

@@ -128,6 +128,13 @@ export type SatusehatFhirAllergyIntolerance = {
   reaction?: SatusehatFhirAllergyReaction[];
 };
 
+/**
+ * The set SATUSEHAT enforces on every Immunization (P24-T12): `recorded`,
+ * `primarySource`, `reasonCode`, `protocolApplied`, `location`, and a
+ * performer whose `function` matches `primarySource` — `AP` for a dose given
+ * here, `EP` for one copied from a card. Lot and expiry are mandatory only for
+ * a primary-source dose, which is why they stay optional here.
+ */
 export type SatusehatFhirImmunization = {
   resourceType: 'Immunization';
   identifier: SatusehatFhirIdentifier[];
@@ -136,12 +143,16 @@ export type SatusehatFhirImmunization = {
   patient: SatusehatFhirReference;
   encounter: SatusehatFhirReference;
   occurrenceDateTime: string;
+  recorded: string;
+  primarySource: boolean;
+  location: SatusehatFhirReference;
   lotNumber?: string;
   expirationDate?: string;
   site?: SatusehatFhirCodeableConcept;
   route?: SatusehatFhirCodeableConcept;
-  performer?: Array<{ actor: SatusehatFhirReference }>;
-  protocolApplied?: Array<{ doseNumberPositiveInt: number }>;
+  reasonCode: SatusehatFhirCodeableConcept[];
+  performer: Array<{ function: SatusehatFhirCodeableConcept; actor: SatusehatFhirReference }>;
+  protocolApplied: Array<{ doseNumberPositiveInt: number }>;
   note?: SatusehatFhirAnnotation[];
 };
 
@@ -319,6 +330,15 @@ export type SatusehatAllergyMapInput = {
   recorderName?: string;
 };
 
+export type SatusehatImmunizationReasonCode =
+  | 'IM_DASAR'
+  | 'IM_BADUTA'
+  | 'IM_SD'
+  | 'IM_WUS'
+  | 'IM_TAMBAHAN'
+  | 'IM_KHUSUS'
+  | 'IM_PILIHAN';
+
 export type SatusehatImmunizationMapInput = {
   immunizationId: string;
   kfaCode: string;
@@ -327,13 +347,21 @@ export type SatusehatImmunizationMapInput = {
   patientName?: string;
   encounterReference: string;
   occurredAt: Date;
+  /** When the row was written down — `Immunization.recorded`, not the dose time. */
+  recordedAt: Date;
+  /**
+   * A dose copied from a card or KIA book: reported as not primary-source with
+   * an entering performer, and without lot or expiry (P24-T12, FR-IM-02).
+   */
+  isHistorical: boolean;
   lotNumber?: string;
   /** Calendar date, `YYYY-MM-DD` — an expiry has no time and no timezone. */
   expirationDate?: string;
-  doseNumber?: number;
+  doseNumber: number;
+  reason: SatusehatImmunizationReasonCode;
   route?: 'IM' | 'SC' | 'ID' | 'ORAL' | 'NASAL';
   site?: 'LEFT_ARM' | 'RIGHT_ARM' | 'LEFT_THIGH' | 'RIGHT_THIGH' | 'OTHER';
-  performerIhsNumber?: string;
+  performerIhsNumber: string;
   performerName?: string;
   notes?: string;
 };

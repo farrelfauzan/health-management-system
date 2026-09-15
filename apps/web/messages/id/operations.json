@@ -700,7 +700,10 @@
           "NO_ICD9CM_CODE": "tanpa kode ICD-9-CM",
           "NO_LOINC_CODE": "tanpa kode LOINC",
           "NO_VERIFIED_RESULT": "hasil belum diverifikasi",
-          "UNCODED_COMPOUND_COMPONENT": "komponen racikan tanpa kode"
+          "UNCODED_COMPOUND_COMPONENT": "komponen racikan tanpa kode",
+          "IMMUNIZATION_DOSE_NUMBER_MISSING": "imunisasi tanpa dosis ke-",
+          "IMMUNIZATION_REASON_MISSING": "imunisasi tanpa alasan",
+          "IMMUNIZATION_PERFORMER_UNLINKED": "pemberi imunisasi belum tertaut SATUSEHAT"
         },
         "outcome": {
           "FOUND": "Ada di SATUSEHAT",

@@ -10,6 +10,7 @@ export * from './acceptUserInvitationDto';
 export * from './addDiagnosisDto';
 export * from './addDiagnosisDtoType';
 export * from './addImmunizationDto';
+export * from './addImmunizationDtoReason';
 export * from './addImmunizationDtoRoute';
 export * from './addImmunizationDtoSite';
 export * from './addInvoiceItemDto';

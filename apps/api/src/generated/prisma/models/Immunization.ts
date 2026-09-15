@@ -52,6 +52,8 @@ export type ImmunizationMinAggregateOutputType = {
   site: $Enums.ImmunizationSite | null
   performedById: string | null
   notes: string | null
+  isHistorical: boolean | null
+  reason: $Enums.ImmunizationReason | null
   satusehatImmunizationId: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -71,6 +73,8 @@ export type ImmunizationMaxAggregateOutputType = {
   site: $Enums.ImmunizationSite | null
   performedById: string | null
   notes: string | null
+  isHistorical: boolean | null
+  reason: $Enums.ImmunizationReason | null
   satusehatImmunizationId: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -90,6 +94,8 @@ export type ImmunizationCountAggregateOutputType = {
   site: number
   performedById: number
   notes: number
+  isHistorical: number
+  reason: number
   satusehatImmunizationId: number
   createdAt: number
   updatedAt: number
@@ -119,6 +125,8 @@ export type ImmunizationMinAggregateInputType = {
   site?: true
   performedById?: true
   notes?: true
+  isHistorical?: true
+  reason?: true
   satusehatImmunizationId?: true
   createdAt?: true
   updatedAt?: true
@@ -138,6 +146,8 @@ export type ImmunizationMaxAggregateInputType = {
   site?: true
   performedById?: true
   notes?: true
+  isHistorical?: true
+  reason?: true
   satusehatImmunizationId?: true
   createdAt?: true
   updatedAt?: true
@@ -157,6 +167,8 @@ export type ImmunizationCountAggregateInputType = {
   site?: true
   performedById?: true
   notes?: true
+  isHistorical?: true
+  reason?: true
   satusehatImmunizationId?: true
   createdAt?: true
   updatedAt?: true
@@ -263,6 +275,8 @@ export type ImmunizationGroupByOutputType = {
   site: $Enums.ImmunizationSite | null
   performedById: string | null
   notes: string | null
+  isHistorical: boolean
+  reason: $Enums.ImmunizationReason | null
   satusehatImmunizationId: string | null
   createdAt: Date
   updatedAt: Date
@@ -305,6 +319,8 @@ export type ImmunizationWhereInput = {
   site?: Prisma.EnumImmunizationSiteNullableFilter<"Immunization"> | $Enums.ImmunizationSite | null
   performedById?: Prisma.UuidNullableFilter<"Immunization"> | string | null
   notes?: Prisma.StringNullableFilter<"Immunization"> | string | null
+  isHistorical?: Prisma.BoolFilter<"Immunization"> | boolean
+  reason?: Prisma.EnumImmunizationReasonNullableFilter<"Immunization"> | $Enums.ImmunizationReason | null
   satusehatImmunizationId?: Prisma.StringNullableFilter<"Immunization"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Immunization"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Immunization"> | Date | string
@@ -328,6 +344,8 @@ export type ImmunizationOrderByWithRelationInput = {
   site?: Prisma.SortOrderInput | Prisma.SortOrder
   performedById?: Prisma.SortOrderInput | Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
+  isHistorical?: Prisma.SortOrder
+  reason?: Prisma.SortOrderInput | Prisma.SortOrder
   satusehatImmunizationId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -354,6 +372,8 @@ export type ImmunizationWhereUniqueInput = Prisma.AtLeast<{
   site?: Prisma.EnumImmunizationSiteNullableFilter<"Immunization"> | $Enums.ImmunizationSite | null
   performedById?: Prisma.UuidNullableFilter<"Immunization"> | string | null
   notes?: Prisma.StringNullableFilter<"Immunization"> | string | null
+  isHistorical?: Prisma.BoolFilter<"Immunization"> | boolean
+  reason?: Prisma.EnumImmunizationReasonNullableFilter<"Immunization"> | $Enums.ImmunizationReason | null
   satusehatImmunizationId?: Prisma.StringNullableFilter<"Immunization"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Immunization"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Immunization"> | Date | string
@@ -377,6 +397,8 @@ export type ImmunizationOrderByWithAggregationInput = {
   site?: Prisma.SortOrderInput | Prisma.SortOrder
   performedById?: Prisma.SortOrderInput | Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
+  isHistorical?: Prisma.SortOrder
+  reason?: Prisma.SortOrderInput | Prisma.SortOrder
   satusehatImmunizationId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -404,6 +426,8 @@ export type ImmunizationScalarWhereWithAggregatesInput = {
   site?: Prisma.EnumImmunizationSiteNullableWithAggregatesFilter<"Immunization"> | $Enums.ImmunizationSite | null
   performedById?: Prisma.UuidNullableWithAggregatesFilter<"Immunization"> | string | null
   notes?: Prisma.StringNullableWithAggregatesFilter<"Immunization"> | string | null
+  isHistorical?: Prisma.BoolWithAggregatesFilter<"Immunization"> | boolean
+  reason?: Prisma.EnumImmunizationReasonNullableWithAggregatesFilter<"Immunization"> | $Enums.ImmunizationReason | null
   satusehatImmunizationId?: Prisma.StringNullableWithAggregatesFilter<"Immunization"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Immunization"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Immunization"> | Date | string
@@ -419,6 +443,8 @@ export type ImmunizationCreateInput = {
   route?: $Enums.ImmunizationRoute | null
   site?: $Enums.ImmunizationSite | null
   notes?: string | null
+  isHistorical?: boolean
+  reason?: $Enums.ImmunizationReason | null
   satusehatImmunizationId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -442,6 +468,8 @@ export type ImmunizationUncheckedCreateInput = {
   site?: $Enums.ImmunizationSite | null
   performedById?: string | null
   notes?: string | null
+  isHistorical?: boolean
+  reason?: $Enums.ImmunizationReason | null
   satusehatImmunizationId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -457,6 +485,8 @@ export type ImmunizationUpdateInput = {
   route?: Prisma.NullableEnumImmunizationRouteFieldUpdateOperationsInput | $Enums.ImmunizationRoute | null
   site?: Prisma.NullableEnumImmunizationSiteFieldUpdateOperationsInput | $Enums.ImmunizationSite | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isHistorical?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  reason?: Prisma.NullableEnumImmunizationReasonFieldUpdateOperationsInput | $Enums.ImmunizationReason | null
   satusehatImmunizationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -480,6 +510,8 @@ export type ImmunizationUncheckedUpdateInput = {
   site?: Prisma.NullableEnumImmunizationSiteFieldUpdateOperationsInput | $Enums.ImmunizationSite | null
   performedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isHistorical?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  reason?: Prisma.NullableEnumImmunizationReasonFieldUpdateOperationsInput | $Enums.ImmunizationReason | null
   satusehatImmunizationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -499,6 +531,8 @@ export type ImmunizationCreateManyInput = {
   site?: $Enums.ImmunizationSite | null
   performedById?: string | null
   notes?: string | null
+  isHistorical?: boolean
+  reason?: $Enums.ImmunizationReason | null
   satusehatImmunizationId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -514,6 +548,8 @@ export type ImmunizationUpdateManyMutationInput = {
   route?: Prisma.NullableEnumImmunizationRouteFieldUpdateOperationsInput | $Enums.ImmunizationRoute | null
   site?: Prisma.NullableEnumImmunizationSiteFieldUpdateOperationsInput | $Enums.ImmunizationSite | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isHistorical?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  reason?: Prisma.NullableEnumImmunizationReasonFieldUpdateOperationsInput | $Enums.ImmunizationReason | null
   satusehatImmunizationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -533,6 +569,8 @@ export type ImmunizationUncheckedUpdateManyInput = {
   site?: Prisma.NullableEnumImmunizationSiteFieldUpdateOperationsInput | $Enums.ImmunizationSite | null
   performedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isHistorical?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  reason?: Prisma.NullableEnumImmunizationReasonFieldUpdateOperationsInput | $Enums.ImmunizationReason | null
   satusehatImmunizationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -562,6 +600,8 @@ export type ImmunizationCountOrderByAggregateInput = {
   site?: Prisma.SortOrder
   performedById?: Prisma.SortOrder
   notes?: Prisma.SortOrder
+  isHistorical?: Prisma.SortOrder
+  reason?: Prisma.SortOrder
   satusehatImmunizationId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -585,6 +625,8 @@ export type ImmunizationMaxOrderByAggregateInput = {
   site?: Prisma.SortOrder
   performedById?: Prisma.SortOrder
   notes?: Prisma.SortOrder
+  isHistorical?: Prisma.SortOrder
+  reason?: Prisma.SortOrder
   satusehatImmunizationId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -604,6 +646,8 @@ export type ImmunizationMinOrderByAggregateInput = {
   site?: Prisma.SortOrder
   performedById?: Prisma.SortOrder
   notes?: Prisma.SortOrder
+  isHistorical?: Prisma.SortOrder
+  reason?: Prisma.SortOrder
   satusehatImmunizationId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -790,6 +834,10 @@ export type NullableEnumImmunizationSiteFieldUpdateOperationsInput = {
   set?: $Enums.ImmunizationSite | null
 }
 
+export type NullableEnumImmunizationReasonFieldUpdateOperationsInput = {
+  set?: $Enums.ImmunizationReason | null
+}
+
 export type ImmunizationCreateWithoutPatientInput = {
   id?: string
   occurredAt: Date | string
@@ -799,6 +847,8 @@ export type ImmunizationCreateWithoutPatientInput = {
   route?: $Enums.ImmunizationRoute | null
   site?: $Enums.ImmunizationSite | null
   notes?: string | null
+  isHistorical?: boolean
+  reason?: $Enums.ImmunizationReason | null
   satusehatImmunizationId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -820,6 +870,8 @@ export type ImmunizationUncheckedCreateWithoutPatientInput = {
   site?: $Enums.ImmunizationSite | null
   performedById?: string | null
   notes?: string | null
+  isHistorical?: boolean
+  reason?: $Enums.ImmunizationReason | null
   satusehatImmunizationId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -868,6 +920,8 @@ export type ImmunizationScalarWhereInput = {
   site?: Prisma.EnumImmunizationSiteNullableFilter<"Immunization"> | $Enums.ImmunizationSite | null
   performedById?: Prisma.UuidNullableFilter<"Immunization"> | string | null
   notes?: Prisma.StringNullableFilter<"Immunization"> | string | null
+  isHistorical?: Prisma.BoolFilter<"Immunization"> | boolean
+  reason?: Prisma.EnumImmunizationReasonNullableFilter<"Immunization"> | $Enums.ImmunizationReason | null
   satusehatImmunizationId?: Prisma.StringNullableFilter<"Immunization"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Immunization"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Immunization"> | Date | string
@@ -883,6 +937,8 @@ export type ImmunizationCreateWithoutPerformedByInput = {
   route?: $Enums.ImmunizationRoute | null
   site?: $Enums.ImmunizationSite | null
   notes?: string | null
+  isHistorical?: boolean
+  reason?: $Enums.ImmunizationReason | null
   satusehatImmunizationId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -904,6 +960,8 @@ export type ImmunizationUncheckedCreateWithoutPerformedByInput = {
   route?: $Enums.ImmunizationRoute | null
   site?: $Enums.ImmunizationSite | null
   notes?: string | null
+  isHistorical?: boolean
+  reason?: $Enums.ImmunizationReason | null
   satusehatImmunizationId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -945,6 +1003,8 @@ export type ImmunizationCreateWithoutEncounterInput = {
   route?: $Enums.ImmunizationRoute | null
   site?: $Enums.ImmunizationSite | null
   notes?: string | null
+  isHistorical?: boolean
+  reason?: $Enums.ImmunizationReason | null
   satusehatImmunizationId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -966,6 +1026,8 @@ export type ImmunizationUncheckedCreateWithoutEncounterInput = {
   site?: $Enums.ImmunizationSite | null
   performedById?: string | null
   notes?: string | null
+  isHistorical?: boolean
+  reason?: $Enums.ImmunizationReason | null
   satusehatImmunizationId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1007,6 +1069,8 @@ export type ImmunizationCreateWithoutMedicationInput = {
   route?: $Enums.ImmunizationRoute | null
   site?: $Enums.ImmunizationSite | null
   notes?: string | null
+  isHistorical?: boolean
+  reason?: $Enums.ImmunizationReason | null
   satusehatImmunizationId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1028,6 +1092,8 @@ export type ImmunizationUncheckedCreateWithoutMedicationInput = {
   site?: $Enums.ImmunizationSite | null
   performedById?: string | null
   notes?: string | null
+  isHistorical?: boolean
+  reason?: $Enums.ImmunizationReason | null
   satusehatImmunizationId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1072,6 +1138,8 @@ export type ImmunizationCreateManyPatientInput = {
   site?: $Enums.ImmunizationSite | null
   performedById?: string | null
   notes?: string | null
+  isHistorical?: boolean
+  reason?: $Enums.ImmunizationReason | null
   satusehatImmunizationId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1087,6 +1155,8 @@ export type ImmunizationUpdateWithoutPatientInput = {
   route?: Prisma.NullableEnumImmunizationRouteFieldUpdateOperationsInput | $Enums.ImmunizationRoute | null
   site?: Prisma.NullableEnumImmunizationSiteFieldUpdateOperationsInput | $Enums.ImmunizationSite | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isHistorical?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  reason?: Prisma.NullableEnumImmunizationReasonFieldUpdateOperationsInput | $Enums.ImmunizationReason | null
   satusehatImmunizationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1108,6 +1178,8 @@ export type ImmunizationUncheckedUpdateWithoutPatientInput = {
   site?: Prisma.NullableEnumImmunizationSiteFieldUpdateOperationsInput | $Enums.ImmunizationSite | null
   performedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isHistorical?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  reason?: Prisma.NullableEnumImmunizationReasonFieldUpdateOperationsInput | $Enums.ImmunizationReason | null
   satusehatImmunizationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1126,6 +1198,8 @@ export type ImmunizationUncheckedUpdateManyWithoutPatientInput = {
   site?: Prisma.NullableEnumImmunizationSiteFieldUpdateOperationsInput | $Enums.ImmunizationSite | null
   performedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isHistorical?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  reason?: Prisma.NullableEnumImmunizationReasonFieldUpdateOperationsInput | $Enums.ImmunizationReason | null
   satusehatImmunizationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1144,6 +1218,8 @@ export type ImmunizationCreateManyPerformedByInput = {
   route?: $Enums.ImmunizationRoute | null
   site?: $Enums.ImmunizationSite | null
   notes?: string | null
+  isHistorical?: boolean
+  reason?: $Enums.ImmunizationReason | null
   satusehatImmunizationId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1159,6 +1235,8 @@ export type ImmunizationUpdateWithoutPerformedByInput = {
   route?: Prisma.NullableEnumImmunizationRouteFieldUpdateOperationsInput | $Enums.ImmunizationRoute | null
   site?: Prisma.NullableEnumImmunizationSiteFieldUpdateOperationsInput | $Enums.ImmunizationSite | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isHistorical?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  reason?: Prisma.NullableEnumImmunizationReasonFieldUpdateOperationsInput | $Enums.ImmunizationReason | null
   satusehatImmunizationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1180,6 +1258,8 @@ export type ImmunizationUncheckedUpdateWithoutPerformedByInput = {
   route?: Prisma.NullableEnumImmunizationRouteFieldUpdateOperationsInput | $Enums.ImmunizationRoute | null
   site?: Prisma.NullableEnumImmunizationSiteFieldUpdateOperationsInput | $Enums.ImmunizationSite | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isHistorical?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  reason?: Prisma.NullableEnumImmunizationReasonFieldUpdateOperationsInput | $Enums.ImmunizationReason | null
   satusehatImmunizationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1198,6 +1278,8 @@ export type ImmunizationUncheckedUpdateManyWithoutPerformedByInput = {
   route?: Prisma.NullableEnumImmunizationRouteFieldUpdateOperationsInput | $Enums.ImmunizationRoute | null
   site?: Prisma.NullableEnumImmunizationSiteFieldUpdateOperationsInput | $Enums.ImmunizationSite | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isHistorical?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  reason?: Prisma.NullableEnumImmunizationReasonFieldUpdateOperationsInput | $Enums.ImmunizationReason | null
   satusehatImmunizationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1216,6 +1298,8 @@ export type ImmunizationCreateManyEncounterInput = {
   site?: $Enums.ImmunizationSite | null
   performedById?: string | null
   notes?: string | null
+  isHistorical?: boolean
+  reason?: $Enums.ImmunizationReason | null
   satusehatImmunizationId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1231,6 +1315,8 @@ export type ImmunizationUpdateWithoutEncounterInput = {
   route?: Prisma.NullableEnumImmunizationRouteFieldUpdateOperationsInput | $Enums.ImmunizationRoute | null
   site?: Prisma.NullableEnumImmunizationSiteFieldUpdateOperationsInput | $Enums.ImmunizationSite | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isHistorical?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  reason?: Prisma.NullableEnumImmunizationReasonFieldUpdateOperationsInput | $Enums.ImmunizationReason | null
   satusehatImmunizationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1252,6 +1338,8 @@ export type ImmunizationUncheckedUpdateWithoutEncounterInput = {
   site?: Prisma.NullableEnumImmunizationSiteFieldUpdateOperationsInput | $Enums.ImmunizationSite | null
   performedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isHistorical?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  reason?: Prisma.NullableEnumImmunizationReasonFieldUpdateOperationsInput | $Enums.ImmunizationReason | null
   satusehatImmunizationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1270,6 +1358,8 @@ export type ImmunizationUncheckedUpdateManyWithoutEncounterInput = {
   site?: Prisma.NullableEnumImmunizationSiteFieldUpdateOperationsInput | $Enums.ImmunizationSite | null
   performedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isHistorical?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  reason?: Prisma.NullableEnumImmunizationReasonFieldUpdateOperationsInput | $Enums.ImmunizationReason | null
   satusehatImmunizationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1288,6 +1378,8 @@ export type ImmunizationCreateManyMedicationInput = {
   site?: $Enums.ImmunizationSite | null
   performedById?: string | null
   notes?: string | null
+  isHistorical?: boolean
+  reason?: $Enums.ImmunizationReason | null
   satusehatImmunizationId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1303,6 +1395,8 @@ export type ImmunizationUpdateWithoutMedicationInput = {
   route?: Prisma.NullableEnumImmunizationRouteFieldUpdateOperationsInput | $Enums.ImmunizationRoute | null
   site?: Prisma.NullableEnumImmunizationSiteFieldUpdateOperationsInput | $Enums.ImmunizationSite | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isHistorical?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  reason?: Prisma.NullableEnumImmunizationReasonFieldUpdateOperationsInput | $Enums.ImmunizationReason | null
   satusehatImmunizationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1324,6 +1418,8 @@ export type ImmunizationUncheckedUpdateWithoutMedicationInput = {
   site?: Prisma.NullableEnumImmunizationSiteFieldUpdateOperationsInput | $Enums.ImmunizationSite | null
   performedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isHistorical?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  reason?: Prisma.NullableEnumImmunizationReasonFieldUpdateOperationsInput | $Enums.ImmunizationReason | null
   satusehatImmunizationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1342,6 +1438,8 @@ export type ImmunizationUncheckedUpdateManyWithoutMedicationInput = {
   site?: Prisma.NullableEnumImmunizationSiteFieldUpdateOperationsInput | $Enums.ImmunizationSite | null
   performedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isHistorical?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  reason?: Prisma.NullableEnumImmunizationReasonFieldUpdateOperationsInput | $Enums.ImmunizationReason | null
   satusehatImmunizationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1363,6 +1461,8 @@ export type ImmunizationSelect<ExtArgs extends runtime.Types.Extensions.Internal
   site?: boolean
   performedById?: boolean
   notes?: boolean
+  isHistorical?: boolean
+  reason?: boolean
   satusehatImmunizationId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1386,6 +1486,8 @@ export type ImmunizationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   site?: boolean
   performedById?: boolean
   notes?: boolean
+  isHistorical?: boolean
+  reason?: boolean
   satusehatImmunizationId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1409,6 +1511,8 @@ export type ImmunizationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   site?: boolean
   performedById?: boolean
   notes?: boolean
+  isHistorical?: boolean
+  reason?: boolean
   satusehatImmunizationId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1432,13 +1536,15 @@ export type ImmunizationSelectScalar = {
   site?: boolean
   performedById?: boolean
   notes?: boolean
+  isHistorical?: boolean
+  reason?: boolean
   satusehatImmunizationId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
 }
 
-export type ImmunizationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "encounterId" | "patientId" | "medicationId" | "occurredAt" | "lotNumber" | "expirationDate" | "doseNumber" | "route" | "site" | "performedById" | "notes" | "satusehatImmunizationId" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["immunization"]>
+export type ImmunizationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "encounterId" | "patientId" | "medicationId" | "occurredAt" | "lotNumber" | "expirationDate" | "doseNumber" | "route" | "site" | "performedById" | "notes" | "isHistorical" | "reason" | "satusehatImmunizationId" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["immunization"]>
 export type ImmunizationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   encounter?: boolean | Prisma.EncounterDefaultArgs<ExtArgs>
   patient?: boolean | Prisma.PatientProfileDefaultArgs<ExtArgs>
@@ -1489,6 +1595,17 @@ export type $ImmunizationPayload<ExtArgs extends runtime.Types.Extensions.Intern
     site: $Enums.ImmunizationSite | null
     performedById: string | null
     notes: string | null
+    /**
+     * A dose copied from a card or KIA book rather than given here (P24-T12,
+     * FR-IM-02). Reported with `primarySource: false` and an entering
+     * performer, and without the lot and expiry a new dose must carry.
+     */
+    isHistorical: boolean
+    /**
+     * Nullable only for rows recorded before the form required it; the bundle
+     * skips such a row with `IMMUNIZATION_REASON_MISSING` rather than inventing one.
+     */
+    reason: $Enums.ImmunizationReason | null
     /**
      * IHS id returned by SATUSEHAT on first successful submission. Non-null
      * means reported.
@@ -1936,6 +2053,8 @@ export interface ImmunizationFieldRefs {
   readonly site: Prisma.FieldRef<"Immunization", 'ImmunizationSite'>
   readonly performedById: Prisma.FieldRef<"Immunization", 'String'>
   readonly notes: Prisma.FieldRef<"Immunization", 'String'>
+  readonly isHistorical: Prisma.FieldRef<"Immunization", 'Boolean'>
+  readonly reason: Prisma.FieldRef<"Immunization", 'ImmunizationReason'>
   readonly satusehatImmunizationId: Prisma.FieldRef<"Immunization", 'String'>
   readonly createdAt: Prisma.FieldRef<"Immunization", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Immunization", 'DateTime'>

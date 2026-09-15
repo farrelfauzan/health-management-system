@@ -10652,6 +10652,8 @@ export const ImmunizationScalarFieldEnum = {
   site: 'site',
   performedById: 'performedById',
   notes: 'notes',
+  isHistorical: 'isHistorical',
+  reason: 'reason',
   satusehatImmunizationId: 'satusehatImmunizationId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
@@ -12169,6 +12171,20 @@ export type EnumImmunizationSiteFieldRefInput<$PrismaModel> = FieldRefInputType<
  * Reference to a field of type 'ImmunizationSite[]'
  */
 export type ListEnumImmunizationSiteFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ImmunizationSite[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ImmunizationReason'
+ */
+export type EnumImmunizationReasonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ImmunizationReason'>
+    
+
+
+/**
+ * Reference to a field of type 'ImmunizationReason[]'
+ */
+export type ListEnumImmunizationReasonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ImmunizationReason[]'>
     
 
 

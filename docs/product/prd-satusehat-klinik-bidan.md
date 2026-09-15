@@ -246,7 +246,7 @@ Organization (SATUSEHAT_ORGANIZATION_ID)
 | FR-NB-04 | MUST | A mother without a NIK, or not found on SATUSEHAT, fails the baby's submission with a distinct message ("NIK ibu belum tercatat" / "Ibu tidak ditemukan di SATUSEHAT"), not the generic "Patient has no NIK" |
 | FR-NB-05 | MUST | Adding a first NIK to a newborn that already has an IHS number PATCHes that SATUSEHAT Patient (SATUSEHAT checks NIK + name + birth date against Dukcapil) and keeps the IHS number. P21-T09's unlink-on-NIK-change rule exempts this case. A rejection is shown to the admin; the NIK is saved locally either way |
 | FR-IM-01 | MUST | Immunization sends `recorded` (row `createdAt`), `primarySource`, `protocolApplied[0].doseNumberPositiveInt`, and `performer[].function` next to the actor: `AP` (administering, `v2-0443`) for a dose given here, **`EP` for a historical dose**. Staging enforces the pairing (RuleNumber 10307, P24-T01) |
-| FR-IM-02 | MUST | New `Immunization.isHistorical` (default false) for doses copied from a card or KIA book. `primarySource = !isHistorical`. A new, non-historical dose requires `expirationDate` **and `lotNumber`** (400 from the shared schema; staging refuses either missing, RuleNumber 10306/10307). A historical dose without one is kept locally and skipped in the bundle, with the gap named in the skipped-items log (P21-T02) |
+| FR-IM-02 | MUST | New `Immunization.isHistorical` (default false) for doses copied from a card or KIA book. `primarySource = !isHistorical`. A new, non-historical dose requires `expirationDate` **and `lotNumber`** (400 from the shared schema; staging refuses either missing, RuleNumber 10306/10307). A historical dose is saved without them and **sent** with `primarySource: false`, performer function `EP`, and no lot or expiry (staging accepts that shape, P24-T01 spike §4). The dose number and reason are required at save for every new row; a legacy row missing either is skipped with `IMMUNIZATION_DOSE_NUMBER_MISSING` / `IMMUNIZATION_REASON_MISSING` (P24-T12) |
 | FR-IM-03 | MUST | `Immunization.reason` (`ImmunizationReason`) → `reasonCode` in `http://terminology.kemkes.go.id/CodeSystem/immunization-reason`: `IM-Dasar`, `IM-Baduta`, `IM-SD`, `IM-WUS`, `IM-Tambahan`, `IM-Khusus`, `IM-Pilihan`. Routine timing (`immunization-routine-timing`) follows once the spike confirms the full code list |
 | FR-IM-04 | MUST | `Immunization.location` = the poli Location from E2 when registered |
 | FR-IM-05 | MUST | Depends on P21-T02: `satusehatImmunizationId` is persisted, and a resubmission never POSTs the same dose twice |
@@ -260,7 +260,7 @@ Organization (SATUSEHAT_ORGANIZATION_ID)
 - **US-NB-03** — As a front desk officer, I want the baby's record to survive her NIK arriving.
   - *Given* a newborn with IHS `P0123…`, *when* staff enter her NIK, *then* the SATUSEHAT Patient is PATCHed and `P0123…` remains her IHS number.
 - **US-IM-01** — As a bidan, I want to record a dose copied from a KIA book without inventing an expiry date.
-  - *Given* "historis" is ticked and there is no expiry, *when* she saves, *then* the dose is recorded, and the next bundle skips it with reason `IMMUNIZATION_EXPIRY_MISSING`.
+  - *Given* "historis" is ticked and there is no expiry, *when* she saves, *then* the dose is recorded, and the next bundle sends it with `primarySource: false`, performer function `EP`, and no lot or expiry (corrected by P24-T12; the earlier `IMMUNIZATION_EXPIRY_MISSING` skip was dropped because staging accepts this shape).
 
 **Data model delta** — `patient_profiles.mother_patient_id uuid null` (FK, `Restrict`), `patient_profiles.birth_order int null` with `CHECK (mother_patient_id IS NULL OR birth_order >= 1)`; `immunizations.is_historical boolean not null default false`; enum `ImmunizationReason` and nullable `immunizations.reason`.
 
@@ -437,7 +437,7 @@ Sprint 28 = 29 points, Sprint 29 = 27, Sprint 30 = 19 (16 without T17). Sprint 3
 | Same class, no transfer | `…serviceClass.upgradeClassIndicator` | `http://terminology.kemkes.go.id/CodeSystem/locationUpgradeClass` | `kelas-tetap` |
 | `HOME` / `AGAINST_ADVICE` / `REFERRED` / `OTHER` | `hospitalization.dischargeDisposition` | `http://terminology.hl7.org/CodeSystem/discharge-disposition` | `home` / `aadvice` / `other-hcf` / `oth` |
 | `DIED` | same | `http://terminology.kemkes.go.id/CodeSystem/discharge-disposition` | `exp-lt48h` / `exp-gt48h` |
-| Administering performer | `Immunization.performer.function` | `http://terminology.hl7.org/CodeSystem/v2-0443` | `AP` |
+| Performer, dose given here / historical dose | `Immunization.performer.function` | `http://terminology.hl7.org/CodeSystem/v2-0443` | `AP` / `EP` |
 | `ImmunizationReason` | `Immunization.reasonCode` | `http://terminology.kemkes.go.id/CodeSystem/immunization-reason` | `IM-Dasar`, `IM-Baduta`, `IM-SD`, `IM-WUS`, `IM-Tambahan`, `IM-Khusus`, `IM-Pilihan` |
 | Mother's NIK | `Patient.identifier` | `https://fhir.kemkes.go.id/id/nik-ibu` | the NIK |
 

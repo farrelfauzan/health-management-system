@@ -92,6 +92,8 @@ describe('EncounterClinicalDataService', () => {
       performedById: doctorId,
       performedByName: 'dr. Sari Wulandari',
       notes: null,
+      isHistorical: false,
+      reason: 'IM_DASAR',
       createdAt: timestamp,
       updatedAt: timestamp,
       ...overrides,

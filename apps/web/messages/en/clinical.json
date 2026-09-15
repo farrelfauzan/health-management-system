@@ -1058,6 +1058,14 @@
         "route": "Route",
         "site": "Site",
         "noKfa": "No KFA code — recorded here, not reported to SATUSEHAT.",
+        "historical": "Historical dose (from KIA book)",
+        "historicalHint": "For a dose copied from a card or KIA book. Lot number and expiry are optional, and the dose is reported to SATUSEHAT as a historical record.",
+        "historicalBadge": "Historical",
+        "reason": "Immunisation reason",
+        "reasonPlaceholder": "Choose the immunisation reason",
+        "pickReason": "Choose the immunisation reason.",
+        "newDoseRequired": "A dose given here needs its lot number, expiry date and dose number. Tick \"Historical dose\" if it was copied from a card or KIA book.",
+        "doseRequired": "Enter the dose number — SATUSEHAT refuses an immunisation without one.",
         "routes": {
           "IM": "Intramuscular",
           "SC": "Subcutaneous",
@@ -1071,6 +1079,15 @@
           "LEFT_THIGH": "Left thigh",
           "RIGHT_THIGH": "Right thigh",
           "OTHER": "Other"
+        },
+        "reasons": {
+          "IM_DASAR": "Basic immunisation",
+          "IM_BADUTA": "Under-two booster",
+          "IM_SD": "Primary-school immunisation",
+          "IM_WUS": "Women of childbearing age",
+          "IM_TAMBAHAN": "Supplementary immunisation",
+          "IM_KHUSUS": "Special immunisation",
+          "IM_PILIHAN": "Optional immunisation"
         }
       },
       "laboratory": {
@@ -1179,7 +1196,10 @@
           "NO_ICD9CM_CODE": "no ICD-9-CM code",
           "NO_LOINC_CODE": "no LOINC code",
           "NO_VERIFIED_RESULT": "no verified result",
-          "UNCODED_COMPOUND_COMPONENT": "uncoded compound component"
+          "UNCODED_COMPOUND_COMPONENT": "uncoded compound component",
+          "IMMUNIZATION_DOSE_NUMBER_MISSING": "immunisation with no dose number",
+          "IMMUNIZATION_REASON_MISSING": "immunisation with no reason",
+          "IMMUNIZATION_PERFORMER_UNLINKED": "vaccinator not linked to SATUSEHAT"
         }
       }
     }

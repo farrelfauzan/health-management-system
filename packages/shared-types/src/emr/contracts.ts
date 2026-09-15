@@ -3,6 +3,7 @@ import type {
   DiagnosisTypeValue,
   EncounterPrognosisValue,
   EncounterStatusValue,
+  ImmunizationReasonValue,
   ImmunizationRouteValue,
   ImmunizationSiteValue,
 } from '#emr/schemas';
@@ -87,6 +88,10 @@ export type ImmunizationResponse = {
   performedById?: string;
   performedByName?: string;
   notes?: string;
+  /** A dose copied from a card or KIA book rather than given here (P24-T12). */
+  isHistorical: boolean;
+  /** Absent only on rows recorded before the form required it. */
+  reason?: ImmunizationReasonValue;
   createdAt: string;
   updatedAt: string;
 };
