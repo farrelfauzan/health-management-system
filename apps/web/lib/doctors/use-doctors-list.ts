@@ -16,6 +16,9 @@ export function useDoctorsList(params: DoctorsSearchParams) {
     specialtyId: params.specialtyId,
     isActive: params.isActive,
     missingNik: params.missingNik,
+    // P24-T03. Without this the "Profesi" filter updated the URL and the
+    // list kept showing every clinician.
+    profession: params.profession,
   };
 
   const query = useApiQuery<DoctorListItem[]>({
