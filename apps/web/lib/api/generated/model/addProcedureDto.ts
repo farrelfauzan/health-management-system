@@ -5,6 +5,7 @@
  * Health Management System API
  * OpenAPI spec version: 1.0.0
  */
+import type { AddProcedureDtoContraceptiveImplantAction } from './addProcedureDtoContraceptiveImplantAction';
 
 export interface AddProcedureDto {
   icd9cmCodeId?: string;
@@ -24,4 +25,5 @@ export interface AddProcedureDto {
      */
   notes?: string;
   performedAt?: string;
+  contraceptiveImplantAction?: AddProcedureDtoContraceptiveImplantAction;
 }

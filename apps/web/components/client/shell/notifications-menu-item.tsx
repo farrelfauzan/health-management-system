@@ -18,6 +18,10 @@ const NOTIFICATION_TYPE_ICONS: Record<string, string> = {
   VAULT_DOCUMENT_OPENED: 'visibility',
   LICENCE_EXPIRING: 'gpp_maybe',
   LICENCE_EXPIRED: 'gpp_bad',
+  // P25-T02. A midwife's delegated authority lapsing: the same pair of glyphs
+  // as the licence, because to the administrator it is the same kind of chore.
+  DOCTOR_AUTHORITY_EXPIRING: 'gpp_maybe',
+  DOCTOR_AUTHORITY_EXPIRED: 'gpp_bad',
   PATIENT_DOCUMENT_RELEASED: 'lab_profile',
   // P18-T04. The critical value gets the alarm icon rather than the flask: the
   // point of the row is that somebody has to act now.

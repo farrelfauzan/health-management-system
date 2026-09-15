@@ -414,3 +414,169 @@ export const updateDoctorRequestSchema = z.preprocess(
 );
 export type UpdateOwnDoctorProfileInput = z.infer<typeof updateOwnDoctorProfileSchema>;
 export type CompleteOwnDoctorProfileInput = z.infer<typeof completeOwnDoctorProfileSchema>;
+
+/**
+ * What a midwife may do beyond her own authority — *kewenangan* (P25-T02).
+ * Kept as they were by D-036 (`docs/post-mvp/decisions.md`): which actions
+ * need an authority is still the Permenkes 28/2017 Pasal 25 list, which
+ * Permenkes 13/2025 Pasal 305(1) keeps as the reference although 28/2017 is
+ * revoked (Pasal 309 huruf cc). The grant itself rests on PP 28/2024 Pasal 744
+ * and Permenkes 13/2025 Pasal 185–187 (programme and no-other-worker
+ * authority) or PP 28/2024 Pasal 742(3)–(4) (training-added competence on the
+ * STR). "Authority" rather than "authorization" because the repo already uses
+ * the latter for RBAC.
+ */
+export const DOCTOR_AUTHORITY_KINDS = [
+  'IUD_IMPLANT',
+  'MTBS',
+  'PROGRAM_IMMUNIZATION',
+  'INTEGRATED_ANC',
+  'NO_OTHER_WORKER',
+] as const;
+
+export const doctorAuthorityKindSchema = z.enum(DOCTOR_AUTHORITY_KINDS);
+
+export type DoctorAuthorityKindValue = z.infer<typeof doctorAuthorityKindSchema>;
+
+/**
+ * The evidence a grant rests on — exactly one per authority (D-036):
+ * - `DINAS_PENETAPAN`: a penetapan by the kepala dinas kesehatan
+ *   kabupaten/kota, e.g. that no other health worker is available
+ *   (PP 28/2024 Pasal 744(3), Permenkes 13/2025 Pasal 186).
+ * - `GOVERNMENT_PENUGASAN`: a penugasan by central or regional government for
+ *   a programme need, given after training (Permenkes 13/2025 Pasal 187(2)).
+ * - `STR_ANNOTATION`: a competence added through training and written on the
+ *   STR (PP 28/2024 Pasal 742(3)–(4)).
+ */
+export const DOCTOR_AUTHORITY_GRANT_KINDS = [
+  'DINAS_PENETAPAN',
+  'GOVERNMENT_PENUGASAN',
+  'STR_ANNOTATION',
+] as const;
+
+export const doctorAuthorityGrantKindSchema = z.enum(DOCTOR_AUTHORITY_GRANT_KINDS);
+
+export type DoctorAuthorityGrantKindValue = z.infer<typeof doctorAuthorityGrantKindSchema>;
+
+/** The authority can only hang off a `MIDWIFE` profile (422). */
+export const DOCTOR_AUTHORITY_REQUIRES_MIDWIFE_ERROR_CODE = 'DOCTOR_AUTHORITY_REQUIRES_MIDWIFE';
+
+/** A live (unrevoked, undeleted) authority of that kind already exists (409). */
+export const DOCTOR_AUTHORITY_ALREADY_ACTIVE_ERROR_CODE = 'DOCTOR_AUTHORITY_ALREADY_ACTIVE';
+
+/**
+ * A midwife tried something that needs a delegated authority she does not
+ * hold on that day (P25-T03, 422, `details.kind` names it). The basis is PP
+ * 28/2024 Pasal 744 (D-036), not the revoked Permenkes 28/2017 Pasal 23.
+ */
+export const MIDWIFE_AUTHORITY_REQUIRED_ERROR_CODE = 'MIDWIFE_AUTHORITY_REQUIRED';
+
+/**
+ * What a grant document may be uploaded as. Narrower than storage's own list
+ * on purpose — a surface narrows what storage accepts, never widens it — and
+ * no text types, because a penetapan, a penugasan letter or an STR is a PDF or
+ * a photograph.
+ */
+export const DOCTOR_AUTHORITY_GRANT_DOCUMENT_MIME_TYPES = [
+  'application/pdf',
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+] as const;
+
+export const doctorAuthorityGrantDocumentMimeTypeSchema = z.enum(
+  DOCTOR_AUTHORITY_GRANT_DOCUMENT_MIME_TYPES,
+);
+
+export type DoctorAuthorityGrantDocumentMimeTypeValue = z.infer<
+  typeof doctorAuthorityGrantDocumentMimeTypeSchema
+>;
+
+export const DOCTOR_AUTHORITY_GRANT_DOCUMENT_MAX_SIZE_BYTES = 20 * 1024 * 1024;
+
+/** The object-key prefix every grant document upload is minted under, per clinician. */
+export const DOCTOR_AUTHORITY_GRANT_DOCUMENT_KEY_ROOT = 'doctor-authorities';
+
+const grantDocumentStorageKeySchema = z.string().trim().min(1).max(512);
+
+const authorityReferenceSchema = z.string().trim().min(1).max(128);
+
+function hasValidityOrder(input: {
+  validFrom?: string | undefined;
+  validUntil?: string | undefined;
+}): boolean {
+  if (!input.validFrom || !input.validUntil) {
+    return true;
+  }
+  return input.validUntil >= input.validFrom;
+}
+
+/**
+ * Grants one authority. Everything but the document is required: the training
+ * certificate always, because training is the precondition of every grant
+ * (PP 28/2024 Pasal 744(4), Permenkes 13/2025 Pasal 186(2) and 187(2)), and an
+ * end date always, because the government sets the period (PP 28/2024 Pasal
+ * 744(8)) — there is no open-ended grant (D-036).
+ */
+export const createDoctorAuthoritySchema = z
+  .object({
+    kind: doctorAuthorityKindSchema,
+    grantKind: doctorAuthorityGrantKindSchema,
+    /** The penetapan number, the penugasan letter number, or the STR number. */
+    grantReference: authorityReferenceSchema,
+    grantIssuedAt: licenseDateSchema,
+    trainingCertificateNumber: authorityReferenceSchema,
+    validFrom: licenseDateSchema,
+    validUntil: licenseDateSchema,
+    /** A key minted by the upload-url route; the document itself is optional. */
+    grantDocumentStorageKey: grantDocumentStorageKeySchema.optional(),
+  })
+  .refine(hasValidityOrder, {
+    message: 'validUntil must be on or after validFrom',
+    path: ['validUntil'],
+  });
+
+export type CreateDoctorAuthorityInput = z.infer<typeof createDoctorAuthoritySchema>;
+
+/**
+ * Edits the evidence and the dates — never `kind`. Changing what an authority
+ * *is* is a revoke and a fresh grant, so the audit trail keeps both. The end
+ * date can move but cannot be cleared; `grantDocumentStorageKey: null`
+ * detaches the document.
+ */
+export const updateDoctorAuthoritySchema = z
+  .object({
+    grantKind: doctorAuthorityGrantKindSchema.optional(),
+    grantReference: authorityReferenceSchema.optional(),
+    grantIssuedAt: licenseDateSchema.optional(),
+    trainingCertificateNumber: authorityReferenceSchema.optional(),
+    validFrom: licenseDateSchema.optional(),
+    validUntil: licenseDateSchema.optional(),
+    grantDocumentStorageKey: grantDocumentStorageKeySchema.nullable().optional(),
+  })
+  .strict()
+  .refine(hasValidityOrder, {
+    message: 'validUntil must be on or after validFrom',
+    path: ['validUntil'],
+  });
+
+export type UpdateDoctorAuthorityInput = z.infer<typeof updateDoctorAuthoritySchema>;
+
+export const revokeDoctorAuthoritySchema = z.object({
+  reason: z.string().trim().min(3).max(500),
+});
+
+export type RevokeDoctorAuthorityInput = z.infer<typeof revokeDoctorAuthoritySchema>;
+
+export const createDoctorAuthorityUploadUrlSchema = z.object({
+  mimeType: doctorAuthorityGrantDocumentMimeTypeSchema,
+  sizeBytes: z.coerce
+    .number()
+    .int()
+    .positive()
+    .max(DOCTOR_AUTHORITY_GRANT_DOCUMENT_MAX_SIZE_BYTES),
+});
+
+export type CreateDoctorAuthorityUploadUrlInput = z.infer<
+  typeof createDoctorAuthorityUploadUrlSchema
+>;

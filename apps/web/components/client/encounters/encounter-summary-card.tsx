@@ -63,6 +63,14 @@ export function EncounterSummaryCard({ encounter, patientHref }: EncounterSummar
                 }),
             })}
           </p>
+          {encounter.childVisitPurpose ? (
+            <p className="flex items-center gap-1.5 text-slate-600" data-testid="child-visit-purpose">
+              <Icon name="child_care" size={16} className="text-slate-400" />
+              {t('encounters.childVisitPurpose.summary', {
+                purpose: t(`encounters.childVisitPurpose.options.${encounter.childVisitPurpose}`),
+              })}
+            </p>
+          ) : null}
           <StatusBadge
             status={encounter.status}
             label={t(`encounters.status.${encounter.status}`)}

@@ -1,6 +1,14 @@
-import { BadRequestException, ConflictException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 import { AuditContextService } from '../../../common/audit/audit-context.service';
+import { AuditService } from '../../../common/audit/audit.service';
+import { DoctorAuthorityService } from '../../doctor-management/service/doctor-authority.service';
 import { AuthRepository } from '../../auth/repository/auth.repository';
 import { PharmacyFlowService } from '../../pharmacy-flow/service/pharmacy-flow.service';
 import { Icd9cmCodeService } from '../../terminology/service/icd9cm-code.service';
@@ -13,6 +21,7 @@ import { EncounterRepository } from '../repository/encounter.repository';
 import { EncounterAccessService } from './encounter-access.service';
 import { EncounterClinicalDataService } from './encounter-clinical-data.service';
 import { EncounterMapper } from './encounter.mapper';
+import { MidwifeAuthorityEnforcementService } from './midwife-authority-enforcement.service';
 
 type PermissionScope = 'ANY' | 'OWN';
 
@@ -58,6 +67,12 @@ describe('EncounterClinicalDataService', () => {
     findActiveIcd9cmCodeById: jest.fn(),
   } as unknown as Icd9cmCodeService;
 
+  const doctorAuthorityServiceMock = {
+    hasActiveAuthority: jest.fn(),
+  } as unknown as DoctorAuthorityService;
+  const auditServiceMock = { record: jest.fn() } as unknown as AuditService;
+  const configServiceMock = { get: jest.fn(() => 'Asia/Jakarta') } as unknown as ConfigService;
+
   const service = new EncounterClinicalDataService(
     encounterRepositoryMock,
     new EncounterAccessService(encounterRepositoryMock, authRepositoryMock, new AuditContextService()),
@@ -65,6 +80,11 @@ describe('EncounterClinicalDataService', () => {
     icd10CodeServiceMock,
     icd9cmCodeServiceMock,
     pharmacyFlowServiceMock,
+    new MidwifeAuthorityEnforcementService(
+      doctorAuthorityServiceMock,
+      auditServiceMock,
+      configServiceMock,
+    ),
   );
 
   const currentUser = { sub: '4e8580c4-9e80-44ff-9f8f-8c8f9d8d90f8', email: 'admin@hms.local' };
@@ -328,6 +348,168 @@ describe('EncounterClinicalDataService', () => {
       );
 
       expect(actual.code).toBe('93.94');
+    });
+
+    describe('midwife authority gate (P25-T03)', () => {
+      const midwifeEncounter = {
+        ...openEncounter,
+        doctor: { ...openEncounter.doctor, nikLast4: null, profession: 'MIDWIFE' as const },
+      };
+      const iudCatalogCode = {
+        id: icd9cmCodeId,
+        code: '69.7',
+        display: 'Insertion of contraceptive device',
+        isActive: true,
+      };
+
+      function mockSavedProcedure(code: string): void {
+        (encounterRepositoryMock.createProcedure as jest.Mock).mockResolvedValue({
+          id: 'procedure-1',
+          encounterId,
+          icd9cmCodeId: null,
+          code,
+          display: 'Procedure',
+          notes: null,
+          performedAt: timestamp,
+          contraceptiveImplantAction: null,
+          recordedById: currentUser.sub,
+          createdAt: timestamp,
+          updatedAt: timestamp,
+        });
+      }
+
+      beforeEach(() => {
+        (encounterRepositoryMock.findEncounterWithRelationsById as jest.Mock).mockResolvedValue(
+          midwifeEncounter,
+        );
+      });
+
+      it('refuses 69.7 without IUD_IMPLANT: 422, nothing saved, refusal audited', async () => {
+        (icd9cmCodeServiceMock.findActiveIcd9cmCodeById as jest.Mock).mockResolvedValue(
+          iudCatalogCode,
+        );
+        (doctorAuthorityServiceMock.hasActiveAuthority as jest.Mock).mockResolvedValue(false);
+
+        await expect(
+          service.addProcedure(encounterId, { icd9cmCodeId } as AddProcedureDto, currentUser),
+        ).rejects.toBeInstanceOf(UnprocessableEntityException);
+
+        expect(encounterRepositoryMock.createProcedure).not.toHaveBeenCalled();
+        expect(auditServiceMock.record).toHaveBeenCalledWith(
+          expect.objectContaining({
+            action: 'MIDWIFE_AUTHORITY_REFUSED',
+            metadata: expect.objectContaining({ kind: 'IUD_IMPLANT', code: '69.7' }),
+          }),
+        );
+      });
+
+      it('saves 69.7 when the midwife holds an active IUD_IMPLANT authority', async () => {
+        (icd9cmCodeServiceMock.findActiveIcd9cmCodeById as jest.Mock).mockResolvedValue(
+          iudCatalogCode,
+        );
+        (doctorAuthorityServiceMock.hasActiveAuthority as jest.Mock).mockResolvedValue(true);
+        mockSavedProcedure('69.7');
+
+        const actual = await service.addProcedure(
+          encounterId,
+          { icd9cmCodeId } as AddProcedureDto,
+          currentUser,
+        );
+
+        expect(actual.code).toBe('69.7');
+        expect(auditServiceMock.record).not.toHaveBeenCalled();
+      });
+
+      it.each(['69.7', '97.71'])(
+        'gates the free code %p sent without icd9cmCodeId',
+        async (inputCode) => {
+          (doctorAuthorityServiceMock.hasActiveAuthority as jest.Mock).mockResolvedValue(false);
+
+          await expect(
+            service.addProcedure(
+              encounterId,
+              { code: inputCode, display: 'IUD' } as AddProcedureDto,
+              currentUser,
+            ),
+          ).rejects.toBeInstanceOf(UnprocessableEntityException);
+
+          expect(icd9cmCodeServiceMock.findActiveIcd9cmCodeById).not.toHaveBeenCalled();
+          expect(encounterRepositoryMock.createProcedure).not.toHaveBeenCalled();
+        },
+      );
+
+      it('does not gate 99.23', async () => {
+        mockSavedProcedure('99.23');
+
+        await service.addProcedure(
+          encounterId,
+          { code: '99.23', display: 'Injection of steroid' } as AddProcedureDto,
+          currentUser,
+        );
+
+        expect(doctorAuthorityServiceMock.hasActiveAuthority).not.toHaveBeenCalled();
+        expect(encounterRepositoryMock.createProcedure).toHaveBeenCalled();
+      });
+
+      it('gates a procedure flagged as a contraceptive implant insertion', async () => {
+        (doctorAuthorityServiceMock.hasActiveAuthority as jest.Mock).mockResolvedValue(false);
+
+        await expect(
+          service.addProcedure(
+            encounterId,
+            {
+              code: '99.23',
+              display: 'Implant',
+              contraceptiveImplantAction: 'INSERTION',
+            } as AddProcedureDto,
+            currentUser,
+          ),
+        ).rejects.toBeInstanceOf(UnprocessableEntityException);
+
+        expect(doctorAuthorityServiceMock.hasActiveAuthority).toHaveBeenCalledWith(
+          expect.objectContaining({ kind: 'IUD_IMPLANT' }),
+        );
+        expect(encounterRepositoryMock.createProcedure).not.toHaveBeenCalled();
+      });
+
+      it('refuses a backdated procedure performed before the authority was valid', async () => {
+        (doctorAuthorityServiceMock.hasActiveAuthority as jest.Mock).mockImplementation(
+          (params: { onDate?: string }) => Promise.resolve((params.onDate ?? '') >= '2026-07-01'),
+        );
+
+        await expect(
+          service.addProcedure(
+            encounterId,
+            {
+              code: '69.7',
+              display: 'IUD',
+              performedAt: '2026-06-30T10:00:00.000Z',
+            } as AddProcedureDto,
+            currentUser,
+          ),
+        ).rejects.toBeInstanceOf(UnprocessableEntityException);
+
+        expect(doctorAuthorityServiceMock.hasActiveAuthority).toHaveBeenCalledWith(
+          expect.objectContaining({ onDate: '2026-06-30' }),
+        );
+      });
+
+      it('never checks a doctor recording 69.7', async () => {
+        (encounterRepositoryMock.findEncounterWithRelationsById as jest.Mock).mockResolvedValue({
+          ...midwifeEncounter,
+          doctor: { ...midwifeEncounter.doctor, profession: 'DOCTOR' },
+        });
+        mockSavedProcedure('69.7');
+
+        await service.addProcedure(
+          encounterId,
+          { code: '69.7', display: 'IUD' } as AddProcedureDto,
+          currentUser,
+        );
+
+        expect(doctorAuthorityServiceMock.hasActiveAuthority).not.toHaveBeenCalled();
+        expect(encounterRepositoryMock.createProcedure).toHaveBeenCalled();
+      });
     });
   });
 

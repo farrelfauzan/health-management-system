@@ -774,6 +774,95 @@
       "professions": {
         "DOCTOR": "Dokter",
         "MIDWIFE": "Bidan"
+      },
+      "authorities": {
+        "title": "Kewenangan Bidan",
+        "description": "Kewenangan tambahan berdasarkan penetapan dinas kesehatan, penugasan pemerintah, atau kompetensi yang dicatat di STR (PP 28/2024 Pasal 742–744).",
+        "empty": "Belum ada kewenangan tambahan yang dicatat.",
+        "loadError": "Kewenangan gagal dimuat.",
+        "add": "Tambah kewenangan",
+        "edit": "Ubah",
+        "revoke": "Cabut",
+        "downloadGrantDocument": "Unduh dokumen bukti",
+        "downloadError": "Dokumen bukti gagal diunduh.",
+        "noGrantDocument": "Dokumen bukti belum diunggah",
+        "columns": {
+          "kind": "Kewenangan",
+          "grantReference": "Dasar kewenangan",
+          "validity": "Masa berlaku",
+          "status": "Status",
+          "grantDocumentFile": "Dokumen"
+        },
+        "kind": {
+          "IUD_IMPLANT": "Pemasangan AKDR & implan",
+          "MTBS": "MTBS (anak sakit)",
+          "PROGRAM_IMMUNIZATION": "Imunisasi program",
+          "INTEGRATED_ANC": "ANC terintegrasi",
+          "NO_OTHER_WORKER": "Daerah tanpa tenaga kesehatan lain"
+        },
+        "grantKind": {
+          "DINAS_PENETAPAN": "Penetapan Dinas Kesehatan",
+          "GOVERNMENT_PENUGASAN": "Surat penugasan pemerintah",
+          "STR_ANNOTATION": "Catatan kompetensi di STR"
+        },
+        "status": {
+          "ACTIVE": "Aktif",
+          "EXPIRING_SOON": "Segera berakhir",
+          "EXPIRED": "Kedaluwarsa",
+          "REVOKED": "Dicabut"
+        },
+        "validity": {
+          "range": "{from} – {until}"
+        },
+        "revokedOn": "Dicabut {date}: {reason}",
+        "form": {
+          "createTitle": "Tambah kewenangan",
+          "editTitle": "Ubah kewenangan",
+          "description": "Catat kewenangan tambahan {name} beserta bukti pemberiannya.",
+          "kind": "Jenis kewenangan",
+          "kindPlaceholder": "Pilih kewenangan",
+          "kindLocked": "Jenis tidak dapat diubah. Cabut kewenangan ini lalu catat yang baru.",
+          "trainingCertificateNumber": "Nomor sertifikat pelatihan",
+          "grantReference": "Nomor bukti",
+          "grantIssuedAt": "Tanggal terbit",
+          "validFrom": "Berlaku sejak",
+          "validUntil": "Berlaku sampai",
+          "validUntilHint": "Isi sesuai masa berlaku yang ditetapkan pemerintah.",
+          "grantDocumentFile": "Dokumen bukti (PDF atau gambar)",
+          "grantDocumentFileKeep": "Dokumen bukti saat ini dipertahankan jika tidak dipilih berkas baru.",
+          "grantDocumentFileTooLarge": "Ukuran berkas maksimal 20 MB.",
+          "grantDocumentFileType": "Berkas harus PDF, JPEG, PNG, atau WebP.",
+          "kindRequired": "Pilih jenis kewenangan.",
+          "grantReferenceRequired": "Nomor bukti wajib diisi.",
+          "grantIssuedAtRequired": "Tanggal terbit wajib diisi.",
+          "validFromRequired": "Tanggal mulai berlaku wajib diisi.",
+          "validityOrder": "Tanggal akhir harus sama atau setelah tanggal mulai.",
+          "uploading": "Mengunggah dokumen bukti...",
+          "submitting": "Menyimpan...",
+          "submit": "Simpan",
+          "error": "Kewenangan gagal disimpan. Silakan coba lagi.",
+          "requiresMidwife": "Kewenangan hanya dapat dicatat untuk bidan.",
+          "alreadyActive": "Kewenangan jenis ini masih aktif. Ubah masa berlakunya atau cabut dulu.",
+          "grantKind": "Jenis bukti kewenangan",
+          "grantKindPlaceholder": "Pilih jenis bukti",
+          "grantReferenceByKind": {
+            "DINAS_PENETAPAN": "Nomor penetapan",
+            "GOVERNMENT_PENUGASAN": "Nomor surat penugasan",
+            "STR_ANNOTATION": "Nomor STR"
+          },
+          "grantKindRequired": "Pilih jenis bukti kewenangan.",
+          "trainingCertificateNumberRequired": "Nomor sertifikat pelatihan wajib diisi.",
+          "validUntilRequired": "Tanggal akhir berlaku wajib diisi."
+        },
+        "revokeDialog": {
+          "title": "Cabut kewenangan",
+          "description": "Kewenangan {kind} milik {name} akan berakhir sekarang. Catatannya tetap tersimpan.",
+          "reason": "Alasan pencabutan",
+          "reasonRequired": "Alasan wajib diisi (minimal 3 karakter).",
+          "submitting": "Mencabut...",
+          "submit": "Cabut kewenangan",
+          "error": "Kewenangan gagal dicabut. Silakan coba lagi."
+        }
       }
     },
     "portal": {
@@ -962,7 +1051,13 @@
         "error": "Tindakan gagal dicatat. Silakan coba lagi.",
         "retractError": "Tindakan gagal ditarik. Silakan coba lagi.",
         "retract": "Tarik tindakan {code}",
-        "empty": "Belum ada tindakan berkode untuk kunjungan ini."
+        "empty": "Belum ada tindakan berkode untuk kunjungan ini.",
+        "implantAction": {
+          "label": "Implan kontrasepsi",
+          "none": "Bukan tindakan implan",
+          "INSERTION": "Pemasangan implan",
+          "REMOVAL": "Pencabutan implan"
+        }
       },
       "vitals": {
         "title": "Tanda Vital",
@@ -1201,6 +1296,25 @@
           "IMMUNIZATION_REASON_MISSING": "imunisasi tanpa alasan",
           "IMMUNIZATION_PERFORMER_UNLINKED": "pemberi imunisasi belum tertaut SATUSEHAT"
         }
+      },
+      "childVisitPurpose": {
+        "label": "Tujuan kunjungan anak",
+        "hint": "Wajib dipilih bidan untuk pasien berusia di bawah 5 tahun.",
+        "required": "Pilih tujuan kunjungan anak.",
+        "summary": "Tujuan kunjungan: {purpose}",
+        "options": {
+          "WELL_CHILD": "Kunjungan anak sehat (KN, imunisasi, tumbuh kembang)",
+          "NEONATAL_FIRST_AID": "Penanganan awal kegawatdaruratan neonatus, lalu rujuk",
+          "SICK_CHILD": "Anak sakit (MTBS)"
+        },
+        "errors": {
+          "CHILD_VISIT_PURPOSE_REQUIRED": "Bidan wajib memilih tujuan kunjungan untuk anak di bawah 5 tahun.",
+          "CHILD_VISIT_PURPOSE_INVALID": "Penanganan awal kegawatdaruratan neonatus hanya untuk bayi berusia 28 hari atau kurang."
+        }
+      },
+      "midwifeAuthority": {
+        "refused": "Bidan belum memiliki kewenangan aktif untuk {kind}.",
+        "referral": "Rujuk ke dokter atau puskesmas"
       }
     }
   }

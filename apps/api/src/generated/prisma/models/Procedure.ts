@@ -39,6 +39,7 @@ export type ProcedureMinAggregateOutputType = {
   display: string | null
   notes: string | null
   performedAt: Date | null
+  contraceptiveImplantAction: $Enums.ContraceptiveImplantAction | null
   recordedById: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -53,6 +54,7 @@ export type ProcedureMaxAggregateOutputType = {
   display: string | null
   notes: string | null
   performedAt: Date | null
+  contraceptiveImplantAction: $Enums.ContraceptiveImplantAction | null
   recordedById: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -67,6 +69,7 @@ export type ProcedureCountAggregateOutputType = {
   display: number
   notes: number
   performedAt: number
+  contraceptiveImplantAction: number
   recordedById: number
   createdAt: number
   updatedAt: number
@@ -83,6 +86,7 @@ export type ProcedureMinAggregateInputType = {
   display?: true
   notes?: true
   performedAt?: true
+  contraceptiveImplantAction?: true
   recordedById?: true
   createdAt?: true
   updatedAt?: true
@@ -97,6 +101,7 @@ export type ProcedureMaxAggregateInputType = {
   display?: true
   notes?: true
   performedAt?: true
+  contraceptiveImplantAction?: true
   recordedById?: true
   createdAt?: true
   updatedAt?: true
@@ -111,6 +116,7 @@ export type ProcedureCountAggregateInputType = {
   display?: true
   notes?: true
   performedAt?: true
+  contraceptiveImplantAction?: true
   recordedById?: true
   createdAt?: true
   updatedAt?: true
@@ -198,6 +204,7 @@ export type ProcedureGroupByOutputType = {
   display: string
   notes: string | null
   performedAt: Date
+  contraceptiveImplantAction: $Enums.ContraceptiveImplantAction | null
   recordedById: string | null
   createdAt: Date
   updatedAt: Date
@@ -233,6 +240,7 @@ export type ProcedureWhereInput = {
   display?: Prisma.StringFilter<"Procedure"> | string
   notes?: Prisma.StringNullableFilter<"Procedure"> | string | null
   performedAt?: Prisma.DateTimeFilter<"Procedure"> | Date | string
+  contraceptiveImplantAction?: Prisma.EnumContraceptiveImplantActionNullableFilter<"Procedure"> | $Enums.ContraceptiveImplantAction | null
   recordedById?: Prisma.UuidNullableFilter<"Procedure"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Procedure"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Procedure"> | Date | string
@@ -250,6 +258,7 @@ export type ProcedureOrderByWithRelationInput = {
   display?: Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   performedAt?: Prisma.SortOrder
+  contraceptiveImplantAction?: Prisma.SortOrderInput | Prisma.SortOrder
   recordedById?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -270,6 +279,7 @@ export type ProcedureWhereUniqueInput = Prisma.AtLeast<{
   display?: Prisma.StringFilter<"Procedure"> | string
   notes?: Prisma.StringNullableFilter<"Procedure"> | string | null
   performedAt?: Prisma.DateTimeFilter<"Procedure"> | Date | string
+  contraceptiveImplantAction?: Prisma.EnumContraceptiveImplantActionNullableFilter<"Procedure"> | $Enums.ContraceptiveImplantAction | null
   recordedById?: Prisma.UuidNullableFilter<"Procedure"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Procedure"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Procedure"> | Date | string
@@ -287,6 +297,7 @@ export type ProcedureOrderByWithAggregationInput = {
   display?: Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   performedAt?: Prisma.SortOrder
+  contraceptiveImplantAction?: Prisma.SortOrderInput | Prisma.SortOrder
   recordedById?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -307,6 +318,7 @@ export type ProcedureScalarWhereWithAggregatesInput = {
   display?: Prisma.StringWithAggregatesFilter<"Procedure"> | string
   notes?: Prisma.StringNullableWithAggregatesFilter<"Procedure"> | string | null
   performedAt?: Prisma.DateTimeWithAggregatesFilter<"Procedure"> | Date | string
+  contraceptiveImplantAction?: Prisma.EnumContraceptiveImplantActionNullableWithAggregatesFilter<"Procedure"> | $Enums.ContraceptiveImplantAction | null
   recordedById?: Prisma.UuidNullableWithAggregatesFilter<"Procedure"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Procedure"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Procedure"> | Date | string
@@ -319,6 +331,7 @@ export type ProcedureCreateInput = {
   display: string
   notes?: string | null
   performedAt?: Date | string
+  contraceptiveImplantAction?: $Enums.ContraceptiveImplantAction | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -335,6 +348,7 @@ export type ProcedureUncheckedCreateInput = {
   display: string
   notes?: string | null
   performedAt?: Date | string
+  contraceptiveImplantAction?: $Enums.ContraceptiveImplantAction | null
   recordedById?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -347,6 +361,7 @@ export type ProcedureUpdateInput = {
   display?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   performedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contraceptiveImplantAction?: Prisma.NullableEnumContraceptiveImplantActionFieldUpdateOperationsInput | $Enums.ContraceptiveImplantAction | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -363,6 +378,7 @@ export type ProcedureUncheckedUpdateInput = {
   display?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   performedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contraceptiveImplantAction?: Prisma.NullableEnumContraceptiveImplantActionFieldUpdateOperationsInput | $Enums.ContraceptiveImplantAction | null
   recordedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -377,6 +393,7 @@ export type ProcedureCreateManyInput = {
   display: string
   notes?: string | null
   performedAt?: Date | string
+  contraceptiveImplantAction?: $Enums.ContraceptiveImplantAction | null
   recordedById?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -389,6 +406,7 @@ export type ProcedureUpdateManyMutationInput = {
   display?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   performedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contraceptiveImplantAction?: Prisma.NullableEnumContraceptiveImplantActionFieldUpdateOperationsInput | $Enums.ContraceptiveImplantAction | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -402,6 +420,7 @@ export type ProcedureUncheckedUpdateManyInput = {
   display?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   performedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contraceptiveImplantAction?: Prisma.NullableEnumContraceptiveImplantActionFieldUpdateOperationsInput | $Enums.ContraceptiveImplantAction | null
   recordedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -426,6 +445,7 @@ export type ProcedureCountOrderByAggregateInput = {
   display?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   performedAt?: Prisma.SortOrder
+  contraceptiveImplantAction?: Prisma.SortOrder
   recordedById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -440,6 +460,7 @@ export type ProcedureMaxOrderByAggregateInput = {
   display?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   performedAt?: Prisma.SortOrder
+  contraceptiveImplantAction?: Prisma.SortOrder
   recordedById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -454,6 +475,7 @@ export type ProcedureMinOrderByAggregateInput = {
   display?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   performedAt?: Prisma.SortOrder
+  contraceptiveImplantAction?: Prisma.SortOrder
   recordedById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -586,12 +608,17 @@ export type ProcedureUncheckedUpdateManyWithoutIcd9cmCodeNestedInput = {
   deleteMany?: Prisma.ProcedureScalarWhereInput | Prisma.ProcedureScalarWhereInput[]
 }
 
+export type NullableEnumContraceptiveImplantActionFieldUpdateOperationsInput = {
+  set?: $Enums.ContraceptiveImplantAction | null
+}
+
 export type ProcedureCreateWithoutRecordedByInput = {
   id?: string
   code: string
   display: string
   notes?: string | null
   performedAt?: Date | string
+  contraceptiveImplantAction?: $Enums.ContraceptiveImplantAction | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -607,6 +634,7 @@ export type ProcedureUncheckedCreateWithoutRecordedByInput = {
   display: string
   notes?: string | null
   performedAt?: Date | string
+  contraceptiveImplantAction?: $Enums.ContraceptiveImplantAction | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -649,6 +677,7 @@ export type ProcedureScalarWhereInput = {
   display?: Prisma.StringFilter<"Procedure"> | string
   notes?: Prisma.StringNullableFilter<"Procedure"> | string | null
   performedAt?: Prisma.DateTimeFilter<"Procedure"> | Date | string
+  contraceptiveImplantAction?: Prisma.EnumContraceptiveImplantActionNullableFilter<"Procedure"> | $Enums.ContraceptiveImplantAction | null
   recordedById?: Prisma.UuidNullableFilter<"Procedure"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Procedure"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Procedure"> | Date | string
@@ -661,6 +690,7 @@ export type ProcedureCreateWithoutEncounterInput = {
   display: string
   notes?: string | null
   performedAt?: Date | string
+  contraceptiveImplantAction?: $Enums.ContraceptiveImplantAction | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -675,6 +705,7 @@ export type ProcedureUncheckedCreateWithoutEncounterInput = {
   display: string
   notes?: string | null
   performedAt?: Date | string
+  contraceptiveImplantAction?: $Enums.ContraceptiveImplantAction | null
   recordedById?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -713,6 +744,7 @@ export type ProcedureCreateWithoutIcd9cmCodeInput = {
   display: string
   notes?: string | null
   performedAt?: Date | string
+  contraceptiveImplantAction?: $Enums.ContraceptiveImplantAction | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -727,6 +759,7 @@ export type ProcedureUncheckedCreateWithoutIcd9cmCodeInput = {
   display: string
   notes?: string | null
   performedAt?: Date | string
+  contraceptiveImplantAction?: $Enums.ContraceptiveImplantAction | null
   recordedById?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -767,6 +800,7 @@ export type ProcedureCreateManyRecordedByInput = {
   display: string
   notes?: string | null
   performedAt?: Date | string
+  contraceptiveImplantAction?: $Enums.ContraceptiveImplantAction | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -778,6 +812,7 @@ export type ProcedureUpdateWithoutRecordedByInput = {
   display?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   performedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contraceptiveImplantAction?: Prisma.NullableEnumContraceptiveImplantActionFieldUpdateOperationsInput | $Enums.ContraceptiveImplantAction | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -793,6 +828,7 @@ export type ProcedureUncheckedUpdateWithoutRecordedByInput = {
   display?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   performedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contraceptiveImplantAction?: Prisma.NullableEnumContraceptiveImplantActionFieldUpdateOperationsInput | $Enums.ContraceptiveImplantAction | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -806,6 +842,7 @@ export type ProcedureUncheckedUpdateManyWithoutRecordedByInput = {
   display?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   performedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contraceptiveImplantAction?: Prisma.NullableEnumContraceptiveImplantActionFieldUpdateOperationsInput | $Enums.ContraceptiveImplantAction | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -818,6 +855,7 @@ export type ProcedureCreateManyEncounterInput = {
   display: string
   notes?: string | null
   performedAt?: Date | string
+  contraceptiveImplantAction?: $Enums.ContraceptiveImplantAction | null
   recordedById?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -830,6 +868,7 @@ export type ProcedureUpdateWithoutEncounterInput = {
   display?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   performedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contraceptiveImplantAction?: Prisma.NullableEnumContraceptiveImplantActionFieldUpdateOperationsInput | $Enums.ContraceptiveImplantAction | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -844,6 +883,7 @@ export type ProcedureUncheckedUpdateWithoutEncounterInput = {
   display?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   performedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contraceptiveImplantAction?: Prisma.NullableEnumContraceptiveImplantActionFieldUpdateOperationsInput | $Enums.ContraceptiveImplantAction | null
   recordedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -857,6 +897,7 @@ export type ProcedureUncheckedUpdateManyWithoutEncounterInput = {
   display?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   performedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contraceptiveImplantAction?: Prisma.NullableEnumContraceptiveImplantActionFieldUpdateOperationsInput | $Enums.ContraceptiveImplantAction | null
   recordedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -870,6 +911,7 @@ export type ProcedureCreateManyIcd9cmCodeInput = {
   display: string
   notes?: string | null
   performedAt?: Date | string
+  contraceptiveImplantAction?: $Enums.ContraceptiveImplantAction | null
   recordedById?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -882,6 +924,7 @@ export type ProcedureUpdateWithoutIcd9cmCodeInput = {
   display?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   performedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contraceptiveImplantAction?: Prisma.NullableEnumContraceptiveImplantActionFieldUpdateOperationsInput | $Enums.ContraceptiveImplantAction | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -896,6 +939,7 @@ export type ProcedureUncheckedUpdateWithoutIcd9cmCodeInput = {
   display?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   performedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contraceptiveImplantAction?: Prisma.NullableEnumContraceptiveImplantActionFieldUpdateOperationsInput | $Enums.ContraceptiveImplantAction | null
   recordedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -909,6 +953,7 @@ export type ProcedureUncheckedUpdateManyWithoutIcd9cmCodeInput = {
   display?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   performedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contraceptiveImplantAction?: Prisma.NullableEnumContraceptiveImplantActionFieldUpdateOperationsInput | $Enums.ContraceptiveImplantAction | null
   recordedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -925,6 +970,7 @@ export type ProcedureSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   display?: boolean
   notes?: boolean
   performedAt?: boolean
+  contraceptiveImplantAction?: boolean
   recordedById?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -942,6 +988,7 @@ export type ProcedureSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   display?: boolean
   notes?: boolean
   performedAt?: boolean
+  contraceptiveImplantAction?: boolean
   recordedById?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -959,6 +1006,7 @@ export type ProcedureSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   display?: boolean
   notes?: boolean
   performedAt?: boolean
+  contraceptiveImplantAction?: boolean
   recordedById?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -976,13 +1024,14 @@ export type ProcedureSelectScalar = {
   display?: boolean
   notes?: boolean
   performedAt?: boolean
+  contraceptiveImplantAction?: boolean
   recordedById?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
 }
 
-export type ProcedureOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "encounterId" | "icd9cmCodeId" | "code" | "display" | "notes" | "performedAt" | "recordedById" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["procedure"]>
+export type ProcedureOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "encounterId" | "icd9cmCodeId" | "code" | "display" | "notes" | "performedAt" | "contraceptiveImplantAction" | "recordedById" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["procedure"]>
 export type ProcedureInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   encounter?: boolean | Prisma.EncounterDefaultArgs<ExtArgs>
   icd9cmCode?: boolean | Prisma.Procedure$icd9cmCodeArgs<ExtArgs>
@@ -1018,6 +1067,11 @@ export type $ProcedurePayload<ExtArgs extends runtime.Types.Extensions.InternalA
      * written down.
      */
     performedAt: Date
+    /**
+     * Set when the procedure inserted or removed a contraceptive implant; a
+     * midwife then needed an active IUD_IMPLANT authority (P25-T03).
+     */
+    contraceptiveImplantAction: $Enums.ContraceptiveImplantAction | null
     recordedById: string | null
     createdAt: Date
     updatedAt: Date
@@ -1455,6 +1509,7 @@ export interface ProcedureFieldRefs {
   readonly display: Prisma.FieldRef<"Procedure", 'String'>
   readonly notes: Prisma.FieldRef<"Procedure", 'String'>
   readonly performedAt: Prisma.FieldRef<"Procedure", 'DateTime'>
+  readonly contraceptiveImplantAction: Prisma.FieldRef<"Procedure", 'ContraceptiveImplantAction'>
   readonly recordedById: Prisma.FieldRef<"Procedure", 'String'>
   readonly createdAt: Prisma.FieldRef<"Procedure", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Procedure", 'DateTime'>

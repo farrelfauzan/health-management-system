@@ -152,7 +152,11 @@ export const AuditAction = {
   BUG_REPORT_TRIAGED: 'BUG_REPORT_TRIAGED',
   BUG_REPORT_HELD: 'BUG_REPORT_HELD',
   BUG_REPORT_PUBLISHED: 'BUG_REPORT_PUBLISHED',
-  BUG_REPORT_PUBLISH_FAILED: 'BUG_REPORT_PUBLISH_FAILED'
+  BUG_REPORT_PUBLISH_FAILED: 'BUG_REPORT_PUBLISH_FAILED',
+  DOCTOR_AUTHORITY_GRANTED: 'DOCTOR_AUTHORITY_GRANTED',
+  DOCTOR_AUTHORITY_UPDATED: 'DOCTOR_AUTHORITY_UPDATED',
+  DOCTOR_AUTHORITY_REVOKED: 'DOCTOR_AUTHORITY_REVOKED',
+  MIDWIFE_AUTHORITY_REFUSED: 'MIDWIFE_AUTHORITY_REFUSED'
 } as const
 
 export type AuditAction = (typeof AuditAction)[keyof typeof AuditAction]
@@ -306,6 +310,23 @@ export const EncounterPrognosis = {
 export type EncounterPrognosis = (typeof EncounterPrognosis)[keyof typeof EncounterPrognosis]
 
 
+export const EncounterChildVisitPurpose = {
+  WELL_CHILD: 'WELL_CHILD',
+  NEONATAL_FIRST_AID: 'NEONATAL_FIRST_AID',
+  SICK_CHILD: 'SICK_CHILD'
+} as const
+
+export type EncounterChildVisitPurpose = (typeof EncounterChildVisitPurpose)[keyof typeof EncounterChildVisitPurpose]
+
+
+export const ContraceptiveImplantAction = {
+  INSERTION: 'INSERTION',
+  REMOVAL: 'REMOVAL'
+} as const
+
+export type ContraceptiveImplantAction = (typeof ContraceptiveImplantAction)[keyof typeof ContraceptiveImplantAction]
+
+
 export const ImmunizationRoute = {
   IM: 'IM',
   SC: 'SC',
@@ -375,6 +396,26 @@ export const ClinicianProfession = {
 } as const
 
 export type ClinicianProfession = (typeof ClinicianProfession)[keyof typeof ClinicianProfession]
+
+
+export const DoctorAuthorityKind = {
+  IUD_IMPLANT: 'IUD_IMPLANT',
+  MTBS: 'MTBS',
+  PROGRAM_IMMUNIZATION: 'PROGRAM_IMMUNIZATION',
+  INTEGRATED_ANC: 'INTEGRATED_ANC',
+  NO_OTHER_WORKER: 'NO_OTHER_WORKER'
+} as const
+
+export type DoctorAuthorityKind = (typeof DoctorAuthorityKind)[keyof typeof DoctorAuthorityKind]
+
+
+export const DoctorAuthorityGrantKind = {
+  DINAS_PENETAPAN: 'DINAS_PENETAPAN',
+  GOVERNMENT_PENUGASAN: 'GOVERNMENT_PENUGASAN',
+  STR_ANNOTATION: 'STR_ANNOTATION'
+} as const
+
+export type DoctorAuthorityGrantKind = (typeof DoctorAuthorityGrantKind)[keyof typeof DoctorAuthorityGrantKind]
 
 
 export const AppointmentStatus = {
@@ -908,7 +949,9 @@ export const NotificationType = {
   DOCUMENT_APPROVAL_DUE_SOON: 'DOCUMENT_APPROVAL_DUE_SOON',
   DOCUMENT_APPROVAL_OVERDUE: 'DOCUMENT_APPROVAL_OVERDUE',
   BUG_REPORT_HELD: 'BUG_REPORT_HELD',
-  BUG_REPORT_PUBLISH_FAILED: 'BUG_REPORT_PUBLISH_FAILED'
+  BUG_REPORT_PUBLISH_FAILED: 'BUG_REPORT_PUBLISH_FAILED',
+  DOCTOR_AUTHORITY_EXPIRING: 'DOCTOR_AUTHORITY_EXPIRING',
+  DOCTOR_AUTHORITY_EXPIRED: 'DOCTOR_AUTHORITY_EXPIRED'
 } as const
 
 export type NotificationType = (typeof NotificationType)[keyof typeof NotificationType]

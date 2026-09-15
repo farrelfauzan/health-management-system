@@ -7,6 +7,7 @@ import request from 'supertest';
 import { AppModule } from '../../app.module';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { AuthRepository } from '../auth/repository/auth.repository';
+import { DoctorAuthorityRepository } from '../doctor-management/repository/doctor-authority.repository';
 import { LabOrderRepository } from '../laboratory/repository/lab-order.repository';
 import { PharmacyFlowRepository } from '../pharmacy-flow/repository/pharmacy-flow.repository';
 import { Icd10CodeRepository } from '../terminology/repository/icd10-code.repository';
@@ -48,6 +49,13 @@ describe('EMR integration', () => {
   // overridden for the same reason the laboratory one is.
   const pharmacyFlowRepositoryMock = {
     findActiveVaccineById: jest.fn(),
+  };
+
+  // P25-T03. A midwife's procedures and under-five visits ask
+  // `DoctorAuthorityService.hasActiveAuthority`, which reads this repository.
+  // `PrismaService` is stubbed wholesale, so it is overridden here too.
+  const doctorAuthorityRepositoryMock = {
+    hasActiveAuthority: jest.fn(() => Promise.resolve(false)),
   };
 
   const icd10CodeRepositoryMock = {
@@ -136,6 +144,8 @@ describe('EMR integration', () => {
       .useValue(encounterRepositoryMock)
       .overrideProvider(Icd10CodeRepository)
       .useValue(icd10CodeRepositoryMock)
+      .overrideProvider(DoctorAuthorityRepository)
+      .useValue(doctorAuthorityRepositoryMock)
       .overrideProvider(LabOrderRepository)
       .useValue(labOrderRepositoryMock)
       .overrideProvider(PharmacyFlowRepository)
@@ -234,6 +244,89 @@ describe('EMR integration', () => {
 
     expect(response.status).toBe(201);
     expect(response.body.message).toBe('Encounter opened');
+  });
+
+  describe('midwife authority enforcement (P25-T03)', () => {
+    const midwifeEncounterRecord = {
+      ...encounterRecord,
+      childVisitPurpose: null,
+      doctor: { ...encounterRecord.doctor, nikLast4: null, profession: 'MIDWIFE' },
+    };
+
+    it('refuses 69.7 from a midwife without IUD_IMPLANT with the documented envelope', async () => {
+      const token = await buildToken('admin-user', 'admin@hms.local');
+      mockActorWithPermissions([{ action: 'write', resource: 'Encounter', scope: 'ANY' }]);
+      encounterRepositoryMock.findEncounterWithRelationsById.mockResolvedValue(
+        midwifeEncounterRecord,
+      );
+      doctorAuthorityRepositoryMock.hasActiveAuthority.mockResolvedValue(false);
+
+      const response = await request(app.getHttpServer())
+        .post(`/api/v1/v1/encounters/${encounterId}/procedures`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ code: '69.7', display: 'Insertion of contraceptive device' });
+
+      expect(response.status).toBe(422);
+      expect(response.body.error).toEqual(
+        expect.objectContaining({
+          code: 'MIDWIFE_AUTHORITY_REQUIRED',
+          details: { kind: 'IUD_IMPLANT' },
+        }),
+      );
+      expect(encounterRepositoryMock.createProcedure).not.toHaveBeenCalled();
+      expect(prismaServiceMock.auditLog.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          action: 'MIDWIFE_AUTHORITY_REFUSED',
+          resource: 'encounter-procedure',
+          metadata: {
+            kind: 'IUD_IMPLANT',
+            code: '69.7',
+            encounterId,
+            doctorId,
+          },
+        }),
+      });
+    });
+
+    it('refuses a SICK_CHILD encounter for a midwife without MTBS and opens nothing', async () => {
+      jest.useFakeTimers({ doNotFake: ['nextTick', 'setImmediate', 'setTimeout'] });
+      jest.setSystemTime(new Date('2026-09-15T03:00:00.000Z'));
+      const token = await buildToken('admin-user', 'admin@hms.local');
+      mockActorWithPermissions([{ action: 'write', resource: 'Encounter', scope: 'ANY' }]);
+      encounterRepositoryMock.findRegistrationForEncounter.mockResolvedValue({
+        id: registrationId,
+        patientId,
+        status: 'CHECKED_IN',
+        patient: {
+          id: patientId,
+          ownerUserId: null,
+          isActive: true,
+          dateOfBirth: new Date('2023-06-01T00:00:00.000Z'),
+        },
+      });
+      encounterRepositoryMock.findEncounterIdByRegistrationId.mockResolvedValue(null);
+      encounterRepositoryMock.findActiveDoctorById.mockResolvedValue({
+        id: doctorId,
+        ownerUserId: null,
+        profession: 'MIDWIFE',
+      });
+      doctorAuthorityRepositoryMock.hasActiveAuthority.mockResolvedValue(false);
+
+      const response = await request(app.getHttpServer())
+        .post('/api/v1/v1/encounters')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ registrationId, doctorId, childVisitPurpose: 'SICK_CHILD' });
+      jest.useRealTimers();
+
+      expect(response.status).toBe(422);
+      expect(response.body.error).toEqual(
+        expect.objectContaining({ code: 'MIDWIFE_AUTHORITY_REQUIRED', details: { kind: 'MTBS' } }),
+      );
+      expect(encounterRepositoryMock.createEncounter).not.toHaveBeenCalled();
+      expect(prismaServiceMock.auditLog.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({ action: 'MIDWIFE_AUTHORITY_REFUSED', resource: 'encounter' }),
+      });
+    });
   });
 
   it('returns 409 when the registration has not checked in', async () => {

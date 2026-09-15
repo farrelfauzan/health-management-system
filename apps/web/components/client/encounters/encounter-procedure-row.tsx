@@ -44,6 +44,11 @@ export function EncounterProcedureRow({
       <div>
         <span className="font-mono text-sm font-medium text-slate-900">{procedure.code}</span>
         <p className="text-sm text-slate-700">{procedure.display}</p>
+        {procedure.contraceptiveImplantAction ? (
+          <p className="text-xs font-medium text-slate-600">
+            {t(`encounters.procedure.implantAction.${procedure.contraceptiveImplantAction}`)}
+          </p>
+        ) : null}
         {procedure.notes ? <p className="text-xs text-slate-500">{procedure.notes}</p> : null}
         {actionError ? <InlineNotice tone="error">{actionError}</InlineNotice> : null}
       </div>

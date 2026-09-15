@@ -4,9 +4,13 @@ import {
   ForbiddenException,
   Logger,
   NotFoundException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 import { AuditContextService } from '../../../common/audit/audit-context.service';
+import { AuditService } from '../../../common/audit/audit.service';
+import { DoctorAuthorityService } from '../../doctor-management/service/doctor-authority.service';
 import { AuthRepository } from '../../auth/repository/auth.repository';
 import { LabOrderService } from '../../laboratory/service/lab-order.service';
 import { LabResultService } from '../../laboratory/service/lab-result.service';
@@ -17,6 +21,7 @@ import { EncounterRepository } from '../repository/encounter.repository';
 import { EncounterAccessService } from './encounter-access.service';
 import { EncounterMapper } from './encounter.mapper';
 import { EncounterService } from './encounter.service';
+import { MidwifeAuthorityEnforcementService } from './midwife-authority-enforcement.service';
 
 type PermissionScope = 'ANY' | 'OWN';
 
@@ -64,12 +69,22 @@ describe('EncounterService', () => {
   const labResultServiceMock = {
     findReleasedResultsForEncounter: jest.fn(() => Promise.resolve([])),
   } as unknown as LabResultService;
+  const doctorAuthorityServiceMock = {
+    hasActiveAuthority: jest.fn(),
+  } as unknown as DoctorAuthorityService;
+  const auditServiceMock = { record: jest.fn() } as unknown as AuditService;
+  const configServiceMock = { get: jest.fn(() => 'Asia/Jakarta') } as unknown as ConfigService;
   const service = new EncounterService(
     encounterRepositoryMock,
     accessService,
     new EncounterMapper(),
     labOrderServiceMock,
     labResultServiceMock,
+    new MidwifeAuthorityEnforcementService(
+      doctorAuthorityServiceMock,
+      auditServiceMock,
+      configServiceMock,
+    ),
   );
 
   const adminUser = { sub: '4e8580c4-9e80-44ff-9f8f-8c8f9d8d90f8', email: 'admin@hms.local' };
@@ -111,7 +126,7 @@ describe('EncounterService', () => {
     id: registrationId,
     patientId,
     status: 'CHECKED_IN' as const,
-    patient: { id: patientId, ownerUserId: null, isActive: true },
+    patient: { id: patientId, ownerUserId: null, isActive: true, dateOfBirth: new Date('1990-01-01') },
   };
 
   function mockActor(
@@ -295,6 +310,7 @@ describe('EncounterService', () => {
         registrationId,
         patientId,
         doctorId,
+        childVisitPurpose: null,
         createdById: adminUser.sub,
       });
       expect(actual.status).toBe('IN_PROGRESS');
@@ -402,6 +418,99 @@ describe('EncounterService', () => {
       await expect(
         service.openEncounter({ registrationId } as OpenEncounterDto, adminUser),
       ).rejects.toBeInstanceOf(BadRequestException);
+    });
+  });
+
+  describe('openEncounter — child visit purpose (P25-T03)', () => {
+    const midwifeProfile = { id: doctorId, ownerUserId: doctorUser.sub, profession: 'MIDWIFE' };
+
+    function mockMidwifeOpening(dateOfBirth: string): void {
+      mockAdminWriter();
+      (encounterRepositoryMock.findRegistrationForEncounter as jest.Mock).mockResolvedValue({
+        ...checkedInRegistration,
+        patient: { ...checkedInRegistration.patient, dateOfBirth: new Date(`${dateOfBirth}T00:00:00.000Z`) },
+      });
+      (encounterRepositoryMock.findEncounterIdByRegistrationId as jest.Mock).mockResolvedValue(null);
+      (encounterRepositoryMock.findActiveDoctorById as jest.Mock).mockResolvedValue(midwifeProfile);
+      (encounterRepositoryMock.createEncounter as jest.Mock).mockResolvedValue(encounterRecord);
+    }
+
+    beforeEach(() => {
+      jest.useFakeTimers().setSystemTime(new Date('2026-09-15T03:00:00.000Z'));
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    it('refuses a sick 3-year-old for a midwife without MTBS and creates nothing', async () => {
+      mockMidwifeOpening('2023-06-01');
+      (doctorAuthorityServiceMock.hasActiveAuthority as jest.Mock).mockResolvedValue(false);
+
+      await expect(
+        service.openEncounter(
+          { registrationId, doctorId, childVisitPurpose: 'SICK_CHILD' } as OpenEncounterDto,
+          adminUser,
+        ),
+      ).rejects.toBeInstanceOf(UnprocessableEntityException);
+
+      expect(encounterRepositoryMock.createEncounter).not.toHaveBeenCalled();
+      expect(auditServiceMock.record).toHaveBeenCalled();
+    });
+
+    it('opens a well-child visit for the same midwife and stores the purpose', async () => {
+      mockMidwifeOpening('2023-06-01');
+
+      await service.openEncounter(
+        { registrationId, doctorId, childVisitPurpose: 'WELL_CHILD' } as OpenEncounterDto,
+        adminUser,
+      );
+
+      expect(encounterRepositoryMock.createEncounter).toHaveBeenCalledWith(
+        expect.objectContaining({ childVisitPurpose: 'WELL_CHILD' }),
+      );
+      expect(doctorAuthorityServiceMock.hasActiveAuthority).not.toHaveBeenCalled();
+    });
+
+    it('opens neonatal first aid for a 10-day-old without MTBS', async () => {
+      mockMidwifeOpening('2026-09-05');
+
+      await service.openEncounter(
+        { registrationId, doctorId, childVisitPurpose: 'NEONATAL_FIRST_AID' } as OpenEncounterDto,
+        adminUser,
+      );
+
+      expect(encounterRepositoryMock.createEncounter).toHaveBeenCalledWith(
+        expect.objectContaining({ childVisitPurpose: 'NEONATAL_FIRST_AID' }),
+      );
+    });
+
+    it('requires a purpose from a midwife seeing a child under five', async () => {
+      mockMidwifeOpening('2023-06-01');
+
+      await expect(
+        service.openEncounter({ registrationId, doctorId } as OpenEncounterDto, adminUser),
+      ).rejects.toBeInstanceOf(UnprocessableEntityException);
+
+      expect(encounterRepositoryMock.createEncounter).not.toHaveBeenCalled();
+    });
+
+    it('never asks a doctor, and stores null even when a purpose is sent', async () => {
+      mockMidwifeOpening('2023-06-01');
+      (encounterRepositoryMock.findActiveDoctorById as jest.Mock).mockResolvedValue({
+        ...midwifeProfile,
+        profession: 'DOCTOR',
+      });
+
+      await service.openEncounter(
+        { registrationId, doctorId, childVisitPurpose: 'SICK_CHILD' } as OpenEncounterDto,
+        adminUser,
+      );
+
+      expect(encounterRepositoryMock.createEncounter).toHaveBeenCalledWith(
+        expect.objectContaining({ childVisitPurpose: null }),
+      );
+      expect(doctorAuthorityServiceMock.hasActiveAuthority).not.toHaveBeenCalled();
     });
   });
 

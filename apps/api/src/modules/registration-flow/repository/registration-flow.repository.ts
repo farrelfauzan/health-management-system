@@ -28,6 +28,7 @@ const REGISTRATION_RELATIONS_INCLUDE = {
       mrn: true,
       fullName: true,
       ownerUserId: true,
+      dateOfBirth: true,
     },
   },
   appointment: {

@@ -7,6 +7,7 @@ import {
   CreateProcedureRecordPayload,
   CreateVitalSignsRecordPayload,
   DiagnosisRecord,
+  EncounterAttendingClinicianRecord,
   EncounterDetailRecord,
   EncounterSourceRegistrationRecord,
   EncounterWithRelationsRecord,
@@ -168,6 +169,7 @@ export class EncounterRepository {
             id: true,
             ownerUserId: true,
             isActive: true,
+            dateOfBirth: true,
           },
         },
       },
@@ -181,17 +183,19 @@ export class EncounterRepository {
     });
   }
 
-  async findActiveDoctorById(doctorId: string) {
+  async findActiveDoctorById(doctorId: string): Promise<EncounterAttendingClinicianRecord | null> {
     return this.prisma.findFirstActive(this.prisma.doctorProfile, {
       where: { id: doctorId, isActive: true },
-      select: { id: true, ownerUserId: true },
+      select: { id: true, ownerUserId: true, profession: true },
     });
   }
 
-  async findActiveDoctorByOwnerUserId(ownerUserId: string) {
+  async findActiveDoctorByOwnerUserId(
+    ownerUserId: string,
+  ): Promise<EncounterAttendingClinicianRecord | null> {
     return this.prisma.findFirstActive(this.prisma.doctorProfile, {
       where: { ownerUserId, isActive: true },
-      select: { id: true, ownerUserId: true },
+      select: { id: true, ownerUserId: true, profession: true },
     });
   }
 
@@ -215,6 +219,7 @@ export class EncounterRepository {
           registrationId: payload.registrationId,
           patientId: payload.patientId,
           doctorId: payload.doctorId,
+          childVisitPurpose: payload.childVisitPurpose,
           createdById: payload.createdById,
         },
         include: ENCOUNTER_LIST_INCLUDE,
@@ -513,6 +518,7 @@ export class EncounterRepository {
         display: payload.display,
         notes: payload.notes,
         performedAt: payload.performedAt,
+        contraceptiveImplantAction: payload.contraceptiveImplantAction,
         recordedById: payload.recordedById,
       },
     });

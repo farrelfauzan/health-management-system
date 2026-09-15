@@ -60,6 +60,9 @@ const SUBJECT_BY_RESOURCE: Record<string, AppSubject> = {
   patient: 'Patient',
   doctor: 'Doctor',
   'doctor.schedule': 'DoctorSchedule',
+  // P25-T02. `doctor.authority.read/write:any` → the authorities card on the
+  // clinician detail page.
+  'doctor.authority': 'DoctorAuthority',
   'doctor-patient': 'DoctorPatient',
   'doctor-patient.activity': 'DoctorPatientActivity',
   appointment: 'Appointment',
