@@ -22,6 +22,7 @@ import { UpsertBpjsReferralDto } from '../dto/upsert-bpjs-referral.dto';
 import { EncounterRepository } from '../repository/encounter.repository';
 import { EncounterAccessService } from './encounter-access.service';
 import { EncounterMapper } from './encounter.mapper';
+import { MidwifeAuthorityEnforcementService } from './midwife-authority-enforcement.service';
 
 type CodedEntry = {
   code: string;
@@ -48,6 +49,7 @@ export class EncounterClinicalDataService {
     private readonly icd10CodeService: Icd10CodeService,
     private readonly icd9cmCodeService: Icd9cmCodeService,
     private readonly pharmacyFlowService: PharmacyFlowService,
+    private readonly midwifeAuthorityEnforcementService: MidwifeAuthorityEnforcementService,
   ) {}
 
   /**
@@ -169,20 +171,34 @@ export class EncounterClinicalDataService {
     await this.encounterRepository.softDeleteBpjsReferral(referral.id);
   }
 
+  /**
+   * Codes a procedure. The midwife authority gate (P25-T03) runs on the code
+   * resolved from whichever path the caller used — catalog id or free code —
+   * and before the row is written, so a refused procedure is never saved.
+   */
   async addProcedure(
     encounterId: string,
     payload: AddProcedureDto,
     currentUser: CurrentUser,
   ): Promise<ProcedureResponse> {
-    await this.assertWritableEncounter(encounterId, currentUser);
+    const encounter = await this.assertWritableEncounter(encounterId, currentUser);
     const entry = await this.resolveProcedureEntry(payload);
+    const performedAt = payload.performedAt ? new Date(payload.performedAt) : undefined;
+    await this.midwifeAuthorityEnforcementService.assertProcedureAllowed({
+      encounter,
+      code: entry.code,
+      contraceptiveImplantAction: payload.contraceptiveImplantAction,
+      performedAt,
+      actorUserId: currentUser.sub,
+    });
     const created = await this.encounterRepository.createProcedure({
       encounterId,
       icd9cmCodeId: payload.icd9cmCodeId,
       code: entry.code,
       display: entry.display,
       notes: payload.notes,
-      performedAt: payload.performedAt ? new Date(payload.performedAt) : undefined,
+      performedAt,
+      contraceptiveImplantAction: payload.contraceptiveImplantAction,
       recordedById: currentUser.sub,
     });
 
@@ -306,7 +322,7 @@ export class EncounterClinicalDataService {
       throw new BadRequestException('Both code and display are required without a catalog code');
     }
 
-    return { code: payload.code, display: payload.display };
+    return { code: payload.code.trim(), display: payload.display };
   }
 
   /**

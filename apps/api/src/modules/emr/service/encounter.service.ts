@@ -2,6 +2,7 @@ import {
   ActorScopeResolution,
   canTransitionRegistrationStatus,
   CloseEncounterMeta,
+  EncounterAttendingClinicianRecord,
   EncounterDetail,
   EncounterListItem,
   EncountersListMeta,
@@ -26,6 +27,7 @@ import { LabOrderService } from '../../laboratory/service/lab-order.service';
 import { LabResultService } from '../../laboratory/service/lab-result.service';
 import { EncounterAccessService } from './encounter-access.service';
 import { EncounterMapper } from './encounter.mapper';
+import { MidwifeAuthorityEnforcementService } from './midwife-authority-enforcement.service';
 
 function parseEncounterDateOnly(value: string): Date {
   const [yearPart = '', monthPart = '', dayPart = ''] = value.split('-');
@@ -47,6 +49,7 @@ export class EncounterService {
     private readonly encounterMapper: EncounterMapper,
     private readonly labOrderService: LabOrderService,
     private readonly labResultService: LabResultService,
+    private readonly midwifeAuthorityEnforcementService: MidwifeAuthorityEnforcementService,
   ) {}
 
   async listEncounters(
@@ -100,6 +103,10 @@ export class EncounterService {
    * Opens the clinical record for a checked-in registration. The registration
    * is the authorisation to see the patient, so no prior doctor-patient
    * assignment is required — walk-ins are the normal case in an FKTP.
+   *
+   * A midwife seeing a child under five names the visit purpose, and
+   * `SICK_CHILD` needs an active MTBS authority (P25-T03); the check runs
+   * before the encounter is created, so a refusal leaves nothing behind.
    */
   async openEncounter(
     payload: OpenEncounterDto,
@@ -109,11 +116,21 @@ export class EncounterService {
     const registration = await this.findRegistrationOrThrow(payload.registrationId);
     this.assertRegistrationReadyForEncounter(registration);
     await this.assertRegistrationHasNoEncounter(registration.id);
-    const doctorId = await this.resolveAttendingDoctorId(payload, scope, currentUser);
+    const clinician = await this.resolveAttendingClinician(payload, scope, currentUser);
+    const childVisitPurpose = await this.midwifeAuthorityEnforcementService.resolveChildVisitPurpose(
+      {
+        clinician,
+        patient: registration.patient,
+        registrationId: registration.id,
+        requestedPurpose: payload.childVisitPurpose,
+        actorUserId: currentUser.sub,
+      },
+    );
     const created = await this.encounterRepository.createEncounter({
       registrationId: registration.id,
       patientId: registration.patientId,
-      doctorId,
+      doctorId: clinician.id,
+      childVisitPurpose,
       createdById: currentUser.sub,
     });
     const listItem = this.encounterMapper.toEncounterListItem(created);
@@ -233,11 +250,11 @@ export class EncounterService {
     };
   }
 
-  private async resolveAttendingDoctorId(
+  private async resolveAttendingClinician(
     payload: OpenEncounterDto,
     scope: ActorScopeResolution,
     currentUser: CurrentUser,
-  ): Promise<string> {
+  ): Promise<EncounterAttendingClinicianRecord> {
     if (!scope.hasAny) {
       const ownDoctor = await this.encounterRepository.findActiveDoctorByOwnerUserId(
         currentUser.sub,
@@ -251,7 +268,7 @@ export class EncounterService {
         throw new ForbiddenException('You may only open encounters you attend');
       }
 
-      return ownDoctor.id;
+      return ownDoctor;
     }
 
     if (!payload.doctorId) {
@@ -264,7 +281,7 @@ export class EncounterService {
       throw new BadRequestException('Doctor not found or inactive');
     }
 
-    return doctor.id;
+    return doctor;
   }
 
   private assertRegistrationReadyForEncounter(

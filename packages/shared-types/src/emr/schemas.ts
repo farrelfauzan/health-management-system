@@ -122,6 +122,54 @@ const encounterDateSchema = z
   }, 'Date must be a valid calendar date');
 
 /**
+ * Why a midwife is seeing a child under five (P25-T03, FR-AUTH-03). The
+ * encounter has no other field saying the child is *sick*, and gating every
+ * under-five visit would block her own-authority work (KN visits, HB0, growth
+ * monitoring, first handling of a neonatal emergency — Permenkes 28/2017
+ * Pasal 20), so the purpose is named when the encounter opens and only
+ * `SICK_CHILD` needs the MTBS authority.
+ */
+export const ENCOUNTER_CHILD_VISIT_PURPOSES = [
+  'WELL_CHILD',
+  'NEONATAL_FIRST_AID',
+  'SICK_CHILD',
+] as const;
+
+export const encounterChildVisitPurposeSchema = z.enum(ENCOUNTER_CHILD_VISIT_PURPOSES);
+
+export type EncounterChildVisitPurposeValue = z.infer<typeof encounterChildVisitPurposeSchema>;
+
+/**
+ * A midwife must name a purpose for a child younger than this many months on
+ * the clinic-local day: MTBS covers 0–59 months (Permenkes 25/2014 Pasal 1
+ * angka 10), so 60 months exactly is not asked.
+ */
+export const MIDWIFE_CHILD_VISIT_PURPOSE_AGE_LIMIT_MONTHS = 60;
+
+/**
+ * `NEONATAL_FIRST_AID` is valid up to and including this age in days — the
+ * neonatal period (Permenkes 25/2014 Pasal 1 angka 2; 28/2017 Pasal 20(4)).
+ */
+export const NEONATAL_FIRST_AID_MAX_AGE_DAYS = 28;
+
+/** A midwife opened an encounter for a child under five without a purpose (422). */
+export const CHILD_VISIT_PURPOSE_REQUIRED_ERROR_CODE = 'CHILD_VISIT_PURPOSE_REQUIRED';
+
+/** The purpose does not fit the child's age — `NEONATAL_FIRST_AID` past 28 days (422). */
+export const CHILD_VISIT_PURPOSE_INVALID_ERROR_CODE = 'CHILD_VISIT_PURPOSE_INVALID';
+
+/**
+ * Inserting or removing a contraceptive implant (P25-T03). No ICD-9-CM code
+ * names an implant, so the procedure carries this flag and a midwife needs
+ * `IUD_IMPLANT` whenever it is set — until P25-T14 gates by KB method.
+ */
+export const CONTRACEPTIVE_IMPLANT_ACTIONS = ['INSERTION', 'REMOVAL'] as const;
+
+export const contraceptiveImplantActionSchema = z.enum(CONTRACEPTIVE_IMPLANT_ACTIONS);
+
+export type ContraceptiveImplantActionValue = z.infer<typeof contraceptiveImplantActionSchema>;
+
+/**
  * Opens the clinical record for a checked-in registration. `doctorId` is
  * optional: a doctor opening their own encounter is resolved from their
  * profile, while front-desk staff name the attending practitioner explicitly.
@@ -129,6 +177,11 @@ const encounterDateSchema = z
 export const openEncounterSchema = z.object({
   registrationId: z.string().uuid(),
   doctorId: z.string().uuid().optional(),
+  /**
+   * Required when the attending clinician is a midwife and the patient is
+   * under 60 months; ignored (stored as null) otherwise (P25-T03).
+   */
+  childVisitPurpose: encounterChildVisitPurposeSchema.optional(),
 });
 
 /**
@@ -210,6 +263,11 @@ export const addProcedureSchema = z
     display: z.string().trim().min(1).max(MAX_DISPLAY_LENGTH).optional(),
     notes: z.string().trim().min(1).max(MAX_NOTES_LENGTH).optional(),
     performedAt: z.string().datetime().optional(),
+    /**
+     * Set when the procedure inserts or removes a contraceptive implant; a
+     * midwife then needs the `IUD_IMPLANT` authority (P25-T03).
+     */
+    contraceptiveImplantAction: contraceptiveImplantActionSchema.optional(),
   })
   .refine((payload) => payload.icd9cmCodeId !== undefined || (payload.code && payload.display), {
     message: 'Provide icd9cmCodeId, or both code and display',

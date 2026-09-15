@@ -781,6 +781,7 @@ export class RegistrationFlowService {
         id: registration.patient.id,
         mrn: registration.patient.mrn,
         fullName: registration.patient.fullName,
+        dateOfBirth: formatCalendarDate(registration.patient.dateOfBirth),
       },
       appointment: registration.appointment
         ? {

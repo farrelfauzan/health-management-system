@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 
 import { AuthModule } from '../auth/auth.module';
+import { DoctorManagementModule } from '../doctor-management/doctor-management.module';
 import { LaboratoryModule } from '../laboratory/laboratory.module';
 import { PharmacyFlowModule } from '../pharmacy-flow/pharmacy-flow.module';
 import { TerminologyModule } from '../terminology/terminology.module';
@@ -12,6 +13,7 @@ import { EncounterAccessService } from './service/encounter-access.service';
 import { EncounterClinicalDataService } from './service/encounter-clinical-data.service';
 import { EncounterMapper } from './service/encounter.mapper';
 import { EncounterService } from './service/encounter.service';
+import { MidwifeAuthorityEnforcementService } from './service/midwife-authority-enforcement.service';
 
 @Module({
   // PharmacyFlowModule for the vaccine lookup behind P10-T16: vaccines are KFA
@@ -21,7 +23,17 @@ import { EncounterService } from './service/encounter.service';
   // raised on the visit, and closing names what is still outstanding. The
   // dependency runs one way — the laboratory reads the encounter row it needs
   // from its own repository, so nothing here is circular.
-  imports: [AuthModule, TerminologyModule, PharmacyFlowModule, LaboratoryModule],
+  // DoctorManagementModule for P25-T03: a midwife's procedures and under-five
+  // visits are checked against her delegated authorities through
+  // `DoctorAuthorityService`, never its repository. Nothing in that module
+  // imports this one, so the edge needs no forwardRef.
+  imports: [
+    AuthModule,
+    TerminologyModule,
+    PharmacyFlowModule,
+    LaboratoryModule,
+    DoctorManagementModule,
+  ],
   controllers: [
     EncounterController,
     EncounterClinicalDataController,
@@ -33,6 +45,7 @@ import { EncounterService } from './service/encounter.service';
     EncounterMapper,
     EncounterService,
     EncounterClinicalDataService,
+    MidwifeAuthorityEnforcementService,
   ],
   exports: [EncounterService],
 })

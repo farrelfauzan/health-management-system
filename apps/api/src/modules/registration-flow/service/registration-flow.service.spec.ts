@@ -114,6 +114,7 @@ describe('RegistrationFlowService', () => {
       mrn: 'MRN-0001',
       fullName: 'Patient One',
       ownerUserId: null,
+      dateOfBirth: new Date('1990-01-01T00:00:00.000Z'),
     },
     appointment: null,
     specialty: null,

@@ -132,6 +132,11 @@ const NEVER_GATED_CONTROLLERS: readonly string[] = [
   // there is no entitlement to sell, and switching it off would only hide the
   // one screen that explains why bug reports stopped arriving.
   'NotionConnectorController',
+  // P25-T02. A midwife's delegated authorities are personnel compliance, like
+  // the licence roster beside them: the record of what a clinician may do
+  // is not a module the clinic bought, and switching off a feature must not
+  // make her authority unreadable while P25-T03 still enforces it.
+  'DoctorAuthorityController',
 ];
 
 /**

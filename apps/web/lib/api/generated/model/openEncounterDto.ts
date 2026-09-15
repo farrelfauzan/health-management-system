@@ -5,8 +5,10 @@
  * Health Management System API
  * OpenAPI spec version: 1.0.0
  */
+import type { OpenEncounterDtoChildVisitPurpose } from './openEncounterDtoChildVisitPurpose';
 
 export interface OpenEncounterDto {
   registrationId: string;
   doctorId?: string;
+  childVisitPurpose?: OpenEncounterDtoChildVisitPurpose;
 }
