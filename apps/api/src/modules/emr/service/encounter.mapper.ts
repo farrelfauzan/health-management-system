@@ -155,6 +155,8 @@ export class EncounterMapper {
       performedById: immunization.performedById ?? undefined,
       performedByName: immunization.performedByName ?? undefined,
       notes: immunization.notes ?? undefined,
+      isHistorical: immunization.isHistorical,
+      reason: immunization.reason ?? undefined,
       createdAt: immunization.createdAt.toISOString(),
       updatedAt: immunization.updatedAt.toISOString(),
     };

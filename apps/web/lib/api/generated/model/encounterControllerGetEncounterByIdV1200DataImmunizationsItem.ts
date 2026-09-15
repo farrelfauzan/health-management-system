@@ -21,6 +21,8 @@ export type EncounterControllerGetEncounterByIdV1200DataImmunizationsItem = {
   site: string;
   performedById: string;
   performedByName: string;
+  isHistorical: boolean;
+  reason: string;
   createdAt: string;
   updatedAt: string;
 };

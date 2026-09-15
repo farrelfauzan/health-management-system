@@ -50,6 +50,13 @@ export const SATUSEHAT_RESOURCE_SKIP_REASONS = [
   'NO_LOINC_CODE',
   'NO_VERIFIED_RESULT',
   'UNCODED_COMPOUND_COMPONENT',
+  // P24-T12: an Immunization the platform would refuse for want of a
+  // mandatory element (dose number → protocolApplied, reason → reasonCode),
+  // or whose performer has no practitioner id to be named by. Skipped and
+  // named rather than failing the whole visit's bundle.
+  'IMMUNIZATION_DOSE_NUMBER_MISSING',
+  'IMMUNIZATION_REASON_MISSING',
+  'IMMUNIZATION_PERFORMER_UNLINKED',
 ] as const;
 
 export const satusehatResourceSkipReasonSchema = z.enum(SATUSEHAT_RESOURCE_SKIP_REASONS);

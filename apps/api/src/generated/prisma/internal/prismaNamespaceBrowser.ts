@@ -2048,6 +2048,8 @@ export const ImmunizationScalarFieldEnum = {
   site: 'site',
   performedById: 'performedById',
   notes: 'notes',
+  isHistorical: 'isHistorical',
+  reason: 'reason',
   satusehatImmunizationId: 'satusehatImmunizationId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',

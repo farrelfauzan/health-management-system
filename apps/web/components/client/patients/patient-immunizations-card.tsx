@@ -50,6 +50,9 @@ export function PatientImmunizationsCard({ patientId }: PatientImmunizationsCard
                     ? ` · ${t('encounters.immunization.dose', { number: immunization.doseNumber })}`
                     : null}
                   {immunization.lotNumber ? ` · Lot ${immunization.lotNumber}` : null}
+                  {immunization.isHistorical
+                    ? ` · ${t('encounters.immunization.historicalBadge')}`
+                    : null}
                 </p>
               </li>
             ))}

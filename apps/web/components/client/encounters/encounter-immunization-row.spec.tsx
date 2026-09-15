@@ -25,6 +25,8 @@ function buildImmunization(overrides: Partial<ImmunizationResponse> = {}): Immun
     lotNumber: 'LOT-DPT-2026-04',
     route: 'IM',
     site: 'LEFT_THIGH',
+    isHistorical: false,
+    reason: 'IM_DASAR',
     createdAt: '2026-07-28T02:10:00.000Z',
     updatedAt: '2026-07-28T02:10:00.000Z',
     ...overrides,
@@ -48,6 +50,13 @@ function renderRow(immunization: ImmunizationResponse, isEditable = true): void 
 }
 
 describe('EncounterImmunizationRow', () => {
+  it('marks a dose copied from a KIA book as historical and names its reason', () => {
+    renderRow(buildImmunization({ isHistorical: true }));
+
+    expect(screen.getByText(/Historis/)).toBeInTheDocument();
+    expect(screen.getByText(/Imunisasi dasar/)).toBeInTheDocument();
+  });
+
   it('names the vaccine and the facts a clinician reads off the card', () => {
     renderRow(buildImmunization());
 

@@ -433,13 +433,20 @@ export class SatusehatSubmissionRepository {
           select: {
             id: true,
             occurredAt: true,
+            createdAt: true,
             lotNumber: true,
             expirationDate: true,
             doseNumber: true,
             route: true,
             site: true,
             notes: true,
+            isHistorical: true,
+            reason: true,
+            performedById: true,
             medication: { select: { name: true, kfaCode: true } },
+            // The clinician named on the row, who may not be the attending
+            // doctor (P24-T12): a midwife's dose is reported under the midwife.
+            performedBy: { select: { fullName: true, satusehatPractitionerId: true } },
           },
         },
         procedures: {
@@ -542,6 +549,7 @@ export class SatusehatSubmissionRepository {
         kfaCode: immunization.medication.kfaCode,
         vaccineName: immunization.medication.name,
         occurredAt: immunization.occurredAt,
+        recordedAt: immunization.createdAt,
         lotNumber: immunization.lotNumber,
         // Date-only on the wire: an expiry is a calendar fact, and an instant
         // would put a timezone on something that does not have one.
@@ -552,6 +560,11 @@ export class SatusehatSubmissionRepository {
         route: immunization.route,
         site: immunization.site,
         notes: immunization.notes,
+        isHistorical: immunization.isHistorical,
+        reason: immunization.reason,
+        performerId: immunization.performedById,
+        performerName: immunization.performedBy?.fullName ?? null,
+        performerIhsNumber: immunization.performedBy?.satusehatPractitionerId ?? null,
       })),
       unreportedAllergies: encounter.patient.allergies
         .filter((allergy) => allergy.deletedAt === null)

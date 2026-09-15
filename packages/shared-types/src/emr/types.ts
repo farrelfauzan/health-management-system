@@ -5,6 +5,7 @@ import type {
   EncounterChildVisitPurposeValue,
   EncounterPrognosisValue,
   EncounterStatusValue,
+  ImmunizationReasonValue,
   ImmunizationRouteValue,
   ImmunizationSiteValue,
 } from '#emr/schemas';
@@ -321,6 +322,8 @@ export type ImmunizationRecord = {
   performedById: string | null;
   performedByName: string | null;
   notes: string | null;
+  isHistorical: boolean;
+  reason: ImmunizationReasonValue | null;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -337,4 +340,6 @@ export type CreateImmunizationRecordPayload = {
   site?: ImmunizationSiteValue;
   performedById?: string;
   notes?: string;
+  isHistorical: boolean;
+  reason: ImmunizationReasonValue;
 };

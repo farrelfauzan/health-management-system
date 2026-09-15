@@ -2142,6 +2142,13 @@ export type EnumImmunizationSiteNullableFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumImmunizationSiteNullableFilter<$PrismaModel> | $Enums.ImmunizationSite | null
 }
 
+export type EnumImmunizationReasonNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.ImmunizationReason | Prisma.EnumImmunizationReasonFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ImmunizationReason[] | Prisma.ListEnumImmunizationReasonFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ImmunizationReason[] | Prisma.ListEnumImmunizationReasonFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumImmunizationReasonNullableFilter<$PrismaModel> | $Enums.ImmunizationReason | null
+}
+
 export type EnumImmunizationRouteNullableWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.ImmunizationRoute | Prisma.EnumImmunizationRouteFieldRefInput<$PrismaModel> | null
   in?: $Enums.ImmunizationRoute[] | Prisma.ListEnumImmunizationRouteFieldRefInput<$PrismaModel> | null
@@ -2160,6 +2167,16 @@ export type EnumImmunizationSiteNullableWithAggregatesFilter<$PrismaModel = neve
   _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
   _min?: Prisma.NestedEnumImmunizationSiteNullableFilter<$PrismaModel>
   _max?: Prisma.NestedEnumImmunizationSiteNullableFilter<$PrismaModel>
+}
+
+export type EnumImmunizationReasonNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ImmunizationReason | Prisma.EnumImmunizationReasonFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ImmunizationReason[] | Prisma.ListEnumImmunizationReasonFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ImmunizationReason[] | Prisma.ListEnumImmunizationReasonFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumImmunizationReasonNullableWithAggregatesFilter<$PrismaModel> | $Enums.ImmunizationReason | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumImmunizationReasonNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumImmunizationReasonNullableFilter<$PrismaModel>
 }
 
 export type EnumBugReportStatusFilter<$PrismaModel = never> = {
@@ -4279,6 +4296,13 @@ export type NestedEnumImmunizationSiteNullableFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumImmunizationSiteNullableFilter<$PrismaModel> | $Enums.ImmunizationSite | null
 }
 
+export type NestedEnumImmunizationReasonNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.ImmunizationReason | Prisma.EnumImmunizationReasonFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ImmunizationReason[] | Prisma.ListEnumImmunizationReasonFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ImmunizationReason[] | Prisma.ListEnumImmunizationReasonFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumImmunizationReasonNullableFilter<$PrismaModel> | $Enums.ImmunizationReason | null
+}
+
 export type NestedEnumImmunizationRouteNullableWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.ImmunizationRoute | Prisma.EnumImmunizationRouteFieldRefInput<$PrismaModel> | null
   in?: $Enums.ImmunizationRoute[] | Prisma.ListEnumImmunizationRouteFieldRefInput<$PrismaModel> | null
@@ -4297,6 +4321,16 @@ export type NestedEnumImmunizationSiteNullableWithAggregatesFilter<$PrismaModel 
   _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
   _min?: Prisma.NestedEnumImmunizationSiteNullableFilter<$PrismaModel>
   _max?: Prisma.NestedEnumImmunizationSiteNullableFilter<$PrismaModel>
+}
+
+export type NestedEnumImmunizationReasonNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ImmunizationReason | Prisma.EnumImmunizationReasonFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ImmunizationReason[] | Prisma.ListEnumImmunizationReasonFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ImmunizationReason[] | Prisma.ListEnumImmunizationReasonFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumImmunizationReasonNullableWithAggregatesFilter<$PrismaModel> | $Enums.ImmunizationReason | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumImmunizationReasonNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumImmunizationReasonNullableFilter<$PrismaModel>
 }
 
 export type NestedEnumBugReportStatusFilter<$PrismaModel = never> = {

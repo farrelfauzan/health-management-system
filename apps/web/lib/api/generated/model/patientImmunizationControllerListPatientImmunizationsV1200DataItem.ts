@@ -21,6 +21,8 @@ export type PatientImmunizationControllerListPatientImmunizationsV1200DataItem =
   site: string;
   performedById: string;
   performedByName: string;
+  isHistorical: boolean;
+  reason: string;
   createdAt: string;
   updatedAt: string;
 };

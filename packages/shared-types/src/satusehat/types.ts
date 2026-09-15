@@ -1,3 +1,4 @@
+import type { ImmunizationReasonValue } from '#emr/schemas';
 import type { LabResultFlagValue, LabSpecimenTypeValue } from '#laboratory/schemas';
 import type { SatusehatLocationRegistrationOutcomeView } from '#satusehat/contracts';
 import type {
@@ -179,17 +180,68 @@ export type SatusehatSubmissionAllergy = {
  * uncoded, which is what makes the row unreportable — recorded locally,
  * skipped in the bundle, named in the gap log (P10-T16).
  */
+/**
+ * One vaccination row as the bundle builder reads it (P10-T16, P24-T12).
+ *
+ * `recordedAt` is the row's `createdAt` — when the clinic wrote it down,
+ * which is what `Immunization.recorded` means, as opposed to `occurredAt`,
+ * when the dose went in. The performer fields describe the clinician named on
+ * the row, who may not be the attending doctor: a midwife's dose is reported
+ * under the midwife, and `performerIhsNumber` is null when that clinician
+ * has no SATUSEHAT practitioner id yet.
+ */
 export type SatusehatSubmissionImmunization = {
   immunizationId: string;
   kfaCode: string | null;
   vaccineName: string;
   occurredAt: Date;
+  recordedAt: Date;
   lotNumber: string | null;
   expirationDate: string | null;
   doseNumber: number | null;
   route: 'IM' | 'SC' | 'ID' | 'ORAL' | 'NASAL' | null;
   site: 'LEFT_ARM' | 'RIGHT_ARM' | 'LEFT_THIGH' | 'RIGHT_THIGH' | 'OTHER' | null;
   notes: string | null;
+  isHistorical: boolean;
+  reason: ImmunizationReasonValue | null;
+  performerId: string | null;
+  performerName: string | null;
+  performerIhsNumber: string | null;
+};
+
+/** The clinician an Immunization entry names as its performer (P24-T12). */
+export type SatusehatImmunizationPerformer = {
+  ihsNumber: string;
+  name: string;
+};
+
+/**
+ * A vaccination row with everything the platform demands present: a KFA
+ * code, a dose number for `protocolApplied`, a reason for `reasonCode`, and a
+ * performer with a practitioner id. Narrowed once, so the mapper input needs
+ * no defaults.
+ */
+export type SatusehatReportableImmunization = SatusehatSubmissionImmunization & {
+  kfaCode: string;
+  doseNumber: number;
+  reason: ImmunizationReasonValue;
+  performer: SatusehatImmunizationPerformer;
+};
+
+/**
+ * What the bundle builder does with one vaccination row: send it, or leave it
+ * out under a named reason the resource list records (P21-T02, P24-T12).
+ */
+export type SatusehatImmunizationEntryResolution =
+  | { skipReason: SatusehatResourceSkipReasonValue; immunization: null }
+  | { skipReason: null; immunization: SatusehatReportableImmunization };
+
+export type ResolveSatusehatImmunizationEntryInput = {
+  immunization: SatusehatSubmissionImmunization;
+  encounterDoctorId: string;
+  encounterDoctorName: string;
+  /** Already resolved — and auto-linked if need be — for the Encounter itself. */
+  encounterPractitionerIhsNumber: string;
 };
 
 export type SatusehatSubmissionDispenseItem = {

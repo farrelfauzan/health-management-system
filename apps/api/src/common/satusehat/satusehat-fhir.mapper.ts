@@ -31,6 +31,7 @@ import {
   SatusehatFhirMedicationDispense,
   SatusehatFhirMedicationRequest,
   SatusehatImmunizationMapInput,
+  SatusehatImmunizationReasonCode,
   SatusehatFhirObservation,
   SatusehatFhirObservationReferenceRange,
   SatusehatFhirProcedure,
@@ -101,6 +102,42 @@ const IMMUNIZATION_SITE_CODES: Readonly<Record<string, { code: string; display: 
   RIGHT_THIGH: { code: 'RT', display: 'Right thigh' },
   // No v3 code for "somewhere else": sending one would be inventing a site.
   OTHER: { code: '', display: '' },
+};
+
+const IMMUNIZATION_REASON_SYSTEM =
+  'http://terminology.kemkes.go.id/CodeSystem/immunization-reason';
+
+/**
+ * The platform's own immunization-reason codes (P24-T12, FR-IM-03). The
+ * stored value folds the hyphen into an underscore because it is an enum;
+ * the wire code is the platform's spelling, which the terminology validates
+ * (RuleNumber 10105).
+ */
+const IMMUNIZATION_REASON_CODES: Readonly<
+  Record<SatusehatImmunizationReasonCode, { code: string; display: string }>
+> = {
+  IM_DASAR: { code: 'IM-Dasar', display: 'Imunisasi Dasar' },
+  IM_BADUTA: { code: 'IM-Baduta', display: 'Imunisasi Baduta' },
+  IM_SD: { code: 'IM-SD', display: 'Imunisasi Anak Sekolah Dasar' },
+  IM_WUS: { code: 'IM-WUS', display: 'Imunisasi Wanita Usia Subur' },
+  IM_TAMBAHAN: { code: 'IM-Tambahan', display: 'Imunisasi Tambahan' },
+  IM_KHUSUS: { code: 'IM-Khusus', display: 'Imunisasi Khusus' },
+  IM_PILIHAN: { code: 'IM-Pilihan', display: 'Imunisasi Pilihan' },
+};
+
+const PERFORMER_FUNCTION_SYSTEM = 'http://terminology.hl7.org/CodeSystem/v2-0443';
+
+/**
+ * Who the named performer is to the dose (HL7 v2 table 0443). The platform
+ * pairs the function with `primarySource` (RuleNumber 10307): a dose given
+ * here is administered by its performer, a dose copied from a card was only
+ * entered by them, and the other pairing is refused.
+ */
+const IMMUNIZATION_PERFORMER_FUNCTIONS: Readonly<
+  Record<'ADMINISTERING' | 'ENTERING', { code: string; display: string }>
+> = {
+  ADMINISTERING: { code: 'AP', display: 'Administering Provider' },
+  ENTERING: { code: 'EP', display: 'Entering Provider' },
 };
 
 /**
@@ -648,13 +685,29 @@ export class SatusehatFhirMapper {
    * one with five where three are invented. `site: OTHER` has no v3 code at
    * all, so it is omitted for the same reason.
    */
+  /**
+   * The set the platform enforces (P24-T12, spike §4): `recorded` is when the
+   * row was written, `primarySource` says whether the dose was given here,
+   * and the performer's `function` must agree with it — `AP` for a dose given
+   * here, `EP` for one copied from a card (RuleNumber 10307). `reasonCode`,
+   * `protocolApplied` and `location` are mandatory outright, so the caller
+   * skips a row that cannot fill them rather than the mapper inventing values.
+   * The location is the root site: no poli Location is registered yet.
+   */
   mapImmunization(input: SatusehatImmunizationMapInput): SatusehatFhirImmunization {
     const organizationId = this.requireConfigValue(
       this.satusehatConfig.organizationId,
       'SATUSEHAT_ORGANIZATION_ID',
     );
+    const locationId = this.requireConfigValue(
+      this.satusehatConfig.locationId,
+      'SATUSEHAT_LOCATION_ID',
+    );
     const route = input.route ? IMMUNIZATION_ROUTE_CODES[input.route] : undefined;
     const site = input.site ? IMMUNIZATION_SITE_CODES[input.site] : undefined;
+    const performerFunction = input.isHistorical
+      ? IMMUNIZATION_PERFORMER_FUNCTIONS.ENTERING
+      : IMMUNIZATION_PERFORMER_FUNCTIONS.ADMINISTERING;
     return {
       resourceType: 'Immunization',
       identifier: [
@@ -671,30 +724,48 @@ export class SatusehatFhirMapper {
       patient: this.buildReference(`Patient/${input.patientIhsNumber}`, input.patientName),
       encounter: { reference: input.encounterReference },
       occurrenceDateTime: this.toFhirInstant(input.occurredAt),
-      ...(input.lotNumber ? { lotNumber: input.lotNumber } : {}),
-      ...(input.expirationDate ? { expirationDate: input.expirationDate } : {}),
+      recorded: this.toFhirInstant(input.recordedAt),
+      primarySource: !input.isHistorical,
+      location: this.buildReference(`Location/${locationId}`, this.satusehatConfig.locationName),
+      ...this.buildImmunizationBatch(input),
       ...(site && site.code
         ? { site: { coding: [{ system: ACT_SITE_SYSTEM, ...site }] } }
         : {}),
       ...(route
         ? { route: { coding: [{ system: ROUTE_OF_ADMINISTRATION_SYSTEM, ...route }] } }
         : {}),
-      ...(input.performerIhsNumber
-        ? {
-            performer: [
-              {
-                actor: this.buildReference(
-                  `Practitioner/${input.performerIhsNumber}`,
-                  input.performerName,
-                ),
-              },
-            ],
-          }
-        : {}),
-      ...(input.doseNumber === undefined
-        ? {}
-        : { protocolApplied: [{ doseNumberPositiveInt: input.doseNumber }] }),
+      reasonCode: [
+        { coding: [{ system: IMMUNIZATION_REASON_SYSTEM, ...IMMUNIZATION_REASON_CODES[input.reason] }] },
+      ],
+      performer: [
+        {
+          function: { coding: [{ system: PERFORMER_FUNCTION_SYSTEM, ...performerFunction }] },
+          actor: this.buildReference(
+            `Practitioner/${input.performerIhsNumber}`,
+            input.performerName,
+          ),
+        },
+      ],
+      protocolApplied: [{ doseNumberPositiveInt: input.doseNumber }],
       ...(input.notes && input.notes.trim() !== '' ? { note: [{ text: input.notes }] } : {}),
+    };
+  }
+
+  /**
+   * Lot and expiry travel only with a dose given here. A historical dose is
+   * sent without them even when the card showed one: staging accepted exactly
+   * that shape (spike §4), and a historical dose carrying batch facts is a
+   * shape nobody has tested against the platform.
+   */
+  private buildImmunizationBatch(
+    input: SatusehatImmunizationMapInput,
+  ): Pick<SatusehatFhirImmunization, 'lotNumber' | 'expirationDate'> {
+    if (input.isHistorical) {
+      return {};
+    }
+    return {
+      ...(input.lotNumber ? { lotNumber: input.lotNumber } : {}),
+      ...(input.expirationDate ? { expirationDate: input.expirationDate } : {}),
     };
   }
 

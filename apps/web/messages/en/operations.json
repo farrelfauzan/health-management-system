@@ -700,7 +700,10 @@
           "NO_ICD9CM_CODE": "no ICD-9-CM code",
           "NO_LOINC_CODE": "no LOINC code",
           "NO_VERIFIED_RESULT": "no verified result",
-          "UNCODED_COMPOUND_COMPONENT": "uncoded compound component"
+          "UNCODED_COMPOUND_COMPONENT": "uncoded compound component",
+          "IMMUNIZATION_DOSE_NUMBER_MISSING": "immunisation with no dose number",
+          "IMMUNIZATION_REASON_MISSING": "immunisation with no reason",
+          "IMMUNIZATION_PERFORMER_UNLINKED": "vaccinator not linked to SATUSEHAT"
         },
         "outcome": {
           "FOUND": "Held by SATUSEHAT",
