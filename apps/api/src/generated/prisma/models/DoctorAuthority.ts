@@ -14,11 +14,17 @@ import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model DoctorAuthority
- * A midwife's delegated authority — *kewenangan* (P25-T02, Permenkes 28/2017
- * Pasal 23–26). Hangs off `DoctorProfile` like `DoctorLicense`, and only a
- * `MIDWIFE` profile may carry one (the service refuses the rest).
+ * A midwife's delegated authority — *kewenangan* (P25-T02, D-036). Hangs off
+ * `DoctorProfile` like `DoctorLicense`, and only a `MIDWIFE` profile may carry
+ * one (the service refuses the rest). The grant rests on PP 28/2024 Pasal 744
+ * and Permenkes 13/2025 Pasal 185–187, or on a training-added competence on
+ * the STR (PP 28/2024 Pasal 742(3)–(4)).
  * 
- * The decision letter is stored on the row (`decree_*` columns, as
+ * The training certificate and the end date are always required: training is
+ * the precondition of every grant (PP 28/2024 Pasal 744(4)) and the government
+ * sets its period (Pasal 744(8)), so nothing here is open-ended.
+ * 
+ * The evidence document is stored on the row (`grant_document_*` columns, as
  * `ManagedDocument` stores its payload) rather than as a `Document`:
  * `Document.ownerId` is a User FK and a clinician can exist with no account
  * (`NO_ACCOUNT`), so there is nobody for a `Document` row to belong to.
@@ -39,25 +45,26 @@ export type AggregateDoctorAuthority = {
 }
 
 export type DoctorAuthorityAvgAggregateOutputType = {
-  decreeSizeBytes: number | null
+  grantDocumentSizeBytes: number | null
 }
 
 export type DoctorAuthoritySumAggregateOutputType = {
-  decreeSizeBytes: number | null
+  grantDocumentSizeBytes: number | null
 }
 
 export type DoctorAuthorityMinAggregateOutputType = {
   id: string | null
   doctorId: string | null
   kind: $Enums.DoctorAuthorityKind | null
+  grantKind: $Enums.DoctorAuthorityGrantKind | null
+  grantReference: string | null
+  grantIssuedAt: Date | null
   trainingCertificateNumber: string | null
-  decreeNumber: string | null
-  decreeIssuedAt: Date | null
   validFrom: Date | null
   validUntil: Date | null
-  decreeStorageKey: string | null
-  decreeMimeType: string | null
-  decreeSizeBytes: number | null
+  grantDocumentStorageKey: string | null
+  grantDocumentMimeType: string | null
+  grantDocumentSizeBytes: number | null
   revokedAt: Date | null
   revokedById: string | null
   revokeReason: string | null
@@ -71,14 +78,15 @@ export type DoctorAuthorityMaxAggregateOutputType = {
   id: string | null
   doctorId: string | null
   kind: $Enums.DoctorAuthorityKind | null
+  grantKind: $Enums.DoctorAuthorityGrantKind | null
+  grantReference: string | null
+  grantIssuedAt: Date | null
   trainingCertificateNumber: string | null
-  decreeNumber: string | null
-  decreeIssuedAt: Date | null
   validFrom: Date | null
   validUntil: Date | null
-  decreeStorageKey: string | null
-  decreeMimeType: string | null
-  decreeSizeBytes: number | null
+  grantDocumentStorageKey: string | null
+  grantDocumentMimeType: string | null
+  grantDocumentSizeBytes: number | null
   revokedAt: Date | null
   revokedById: string | null
   revokeReason: string | null
@@ -92,14 +100,15 @@ export type DoctorAuthorityCountAggregateOutputType = {
   id: number
   doctorId: number
   kind: number
+  grantKind: number
+  grantReference: number
+  grantIssuedAt: number
   trainingCertificateNumber: number
-  decreeNumber: number
-  decreeIssuedAt: number
   validFrom: number
   validUntil: number
-  decreeStorageKey: number
-  decreeMimeType: number
-  decreeSizeBytes: number
+  grantDocumentStorageKey: number
+  grantDocumentMimeType: number
+  grantDocumentSizeBytes: number
   revokedAt: number
   revokedById: number
   revokeReason: number
@@ -112,25 +121,26 @@ export type DoctorAuthorityCountAggregateOutputType = {
 
 
 export type DoctorAuthorityAvgAggregateInputType = {
-  decreeSizeBytes?: true
+  grantDocumentSizeBytes?: true
 }
 
 export type DoctorAuthoritySumAggregateInputType = {
-  decreeSizeBytes?: true
+  grantDocumentSizeBytes?: true
 }
 
 export type DoctorAuthorityMinAggregateInputType = {
   id?: true
   doctorId?: true
   kind?: true
+  grantKind?: true
+  grantReference?: true
+  grantIssuedAt?: true
   trainingCertificateNumber?: true
-  decreeNumber?: true
-  decreeIssuedAt?: true
   validFrom?: true
   validUntil?: true
-  decreeStorageKey?: true
-  decreeMimeType?: true
-  decreeSizeBytes?: true
+  grantDocumentStorageKey?: true
+  grantDocumentMimeType?: true
+  grantDocumentSizeBytes?: true
   revokedAt?: true
   revokedById?: true
   revokeReason?: true
@@ -144,14 +154,15 @@ export type DoctorAuthorityMaxAggregateInputType = {
   id?: true
   doctorId?: true
   kind?: true
+  grantKind?: true
+  grantReference?: true
+  grantIssuedAt?: true
   trainingCertificateNumber?: true
-  decreeNumber?: true
-  decreeIssuedAt?: true
   validFrom?: true
   validUntil?: true
-  decreeStorageKey?: true
-  decreeMimeType?: true
-  decreeSizeBytes?: true
+  grantDocumentStorageKey?: true
+  grantDocumentMimeType?: true
+  grantDocumentSizeBytes?: true
   revokedAt?: true
   revokedById?: true
   revokeReason?: true
@@ -165,14 +176,15 @@ export type DoctorAuthorityCountAggregateInputType = {
   id?: true
   doctorId?: true
   kind?: true
+  grantKind?: true
+  grantReference?: true
+  grantIssuedAt?: true
   trainingCertificateNumber?: true
-  decreeNumber?: true
-  decreeIssuedAt?: true
   validFrom?: true
   validUntil?: true
-  decreeStorageKey?: true
-  decreeMimeType?: true
-  decreeSizeBytes?: true
+  grantDocumentStorageKey?: true
+  grantDocumentMimeType?: true
+  grantDocumentSizeBytes?: true
   revokedAt?: true
   revokedById?: true
   revokeReason?: true
@@ -273,14 +285,15 @@ export type DoctorAuthorityGroupByOutputType = {
   id: string
   doctorId: string
   kind: $Enums.DoctorAuthorityKind
-  trainingCertificateNumber: string | null
-  decreeNumber: string
-  decreeIssuedAt: Date
+  grantKind: $Enums.DoctorAuthorityGrantKind
+  grantReference: string
+  grantIssuedAt: Date
+  trainingCertificateNumber: string
   validFrom: Date
-  validUntil: Date | null
-  decreeStorageKey: string | null
-  decreeMimeType: string | null
-  decreeSizeBytes: number | null
+  validUntil: Date
+  grantDocumentStorageKey: string | null
+  grantDocumentMimeType: string | null
+  grantDocumentSizeBytes: number | null
   revokedAt: Date | null
   revokedById: string | null
   revokeReason: string | null
@@ -317,14 +330,15 @@ export type DoctorAuthorityWhereInput = {
   id?: Prisma.UuidFilter<"DoctorAuthority"> | string
   doctorId?: Prisma.UuidFilter<"DoctorAuthority"> | string
   kind?: Prisma.EnumDoctorAuthorityKindFilter<"DoctorAuthority"> | $Enums.DoctorAuthorityKind
-  trainingCertificateNumber?: Prisma.StringNullableFilter<"DoctorAuthority"> | string | null
-  decreeNumber?: Prisma.StringFilter<"DoctorAuthority"> | string
-  decreeIssuedAt?: Prisma.DateTimeFilter<"DoctorAuthority"> | Date | string
+  grantKind?: Prisma.EnumDoctorAuthorityGrantKindFilter<"DoctorAuthority"> | $Enums.DoctorAuthorityGrantKind
+  grantReference?: Prisma.StringFilter<"DoctorAuthority"> | string
+  grantIssuedAt?: Prisma.DateTimeFilter<"DoctorAuthority"> | Date | string
+  trainingCertificateNumber?: Prisma.StringFilter<"DoctorAuthority"> | string
   validFrom?: Prisma.DateTimeFilter<"DoctorAuthority"> | Date | string
-  validUntil?: Prisma.DateTimeNullableFilter<"DoctorAuthority"> | Date | string | null
-  decreeStorageKey?: Prisma.StringNullableFilter<"DoctorAuthority"> | string | null
-  decreeMimeType?: Prisma.StringNullableFilter<"DoctorAuthority"> | string | null
-  decreeSizeBytes?: Prisma.IntNullableFilter<"DoctorAuthority"> | number | null
+  validUntil?: Prisma.DateTimeFilter<"DoctorAuthority"> | Date | string
+  grantDocumentStorageKey?: Prisma.StringNullableFilter<"DoctorAuthority"> | string | null
+  grantDocumentMimeType?: Prisma.StringNullableFilter<"DoctorAuthority"> | string | null
+  grantDocumentSizeBytes?: Prisma.IntNullableFilter<"DoctorAuthority"> | number | null
   revokedAt?: Prisma.DateTimeNullableFilter<"DoctorAuthority"> | Date | string | null
   revokedById?: Prisma.UuidNullableFilter<"DoctorAuthority"> | string | null
   revokeReason?: Prisma.StringNullableFilter<"DoctorAuthority"> | string | null
@@ -342,14 +356,15 @@ export type DoctorAuthorityOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   doctorId?: Prisma.SortOrder
   kind?: Prisma.SortOrder
-  trainingCertificateNumber?: Prisma.SortOrderInput | Prisma.SortOrder
-  decreeNumber?: Prisma.SortOrder
-  decreeIssuedAt?: Prisma.SortOrder
+  grantKind?: Prisma.SortOrder
+  grantReference?: Prisma.SortOrder
+  grantIssuedAt?: Prisma.SortOrder
+  trainingCertificateNumber?: Prisma.SortOrder
   validFrom?: Prisma.SortOrder
-  validUntil?: Prisma.SortOrderInput | Prisma.SortOrder
-  decreeStorageKey?: Prisma.SortOrderInput | Prisma.SortOrder
-  decreeMimeType?: Prisma.SortOrderInput | Prisma.SortOrder
-  decreeSizeBytes?: Prisma.SortOrderInput | Prisma.SortOrder
+  validUntil?: Prisma.SortOrder
+  grantDocumentStorageKey?: Prisma.SortOrderInput | Prisma.SortOrder
+  grantDocumentMimeType?: Prisma.SortOrderInput | Prisma.SortOrder
+  grantDocumentSizeBytes?: Prisma.SortOrderInput | Prisma.SortOrder
   revokedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   revokedById?: Prisma.SortOrderInput | Prisma.SortOrder
   revokeReason?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -370,14 +385,15 @@ export type DoctorAuthorityWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.DoctorAuthorityWhereInput | Prisma.DoctorAuthorityWhereInput[]
   doctorId?: Prisma.UuidFilter<"DoctorAuthority"> | string
   kind?: Prisma.EnumDoctorAuthorityKindFilter<"DoctorAuthority"> | $Enums.DoctorAuthorityKind
-  trainingCertificateNumber?: Prisma.StringNullableFilter<"DoctorAuthority"> | string | null
-  decreeNumber?: Prisma.StringFilter<"DoctorAuthority"> | string
-  decreeIssuedAt?: Prisma.DateTimeFilter<"DoctorAuthority"> | Date | string
+  grantKind?: Prisma.EnumDoctorAuthorityGrantKindFilter<"DoctorAuthority"> | $Enums.DoctorAuthorityGrantKind
+  grantReference?: Prisma.StringFilter<"DoctorAuthority"> | string
+  grantIssuedAt?: Prisma.DateTimeFilter<"DoctorAuthority"> | Date | string
+  trainingCertificateNumber?: Prisma.StringFilter<"DoctorAuthority"> | string
   validFrom?: Prisma.DateTimeFilter<"DoctorAuthority"> | Date | string
-  validUntil?: Prisma.DateTimeNullableFilter<"DoctorAuthority"> | Date | string | null
-  decreeStorageKey?: Prisma.StringNullableFilter<"DoctorAuthority"> | string | null
-  decreeMimeType?: Prisma.StringNullableFilter<"DoctorAuthority"> | string | null
-  decreeSizeBytes?: Prisma.IntNullableFilter<"DoctorAuthority"> | number | null
+  validUntil?: Prisma.DateTimeFilter<"DoctorAuthority"> | Date | string
+  grantDocumentStorageKey?: Prisma.StringNullableFilter<"DoctorAuthority"> | string | null
+  grantDocumentMimeType?: Prisma.StringNullableFilter<"DoctorAuthority"> | string | null
+  grantDocumentSizeBytes?: Prisma.IntNullableFilter<"DoctorAuthority"> | number | null
   revokedAt?: Prisma.DateTimeNullableFilter<"DoctorAuthority"> | Date | string | null
   revokedById?: Prisma.UuidNullableFilter<"DoctorAuthority"> | string | null
   revokeReason?: Prisma.StringNullableFilter<"DoctorAuthority"> | string | null
@@ -395,14 +411,15 @@ export type DoctorAuthorityOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   doctorId?: Prisma.SortOrder
   kind?: Prisma.SortOrder
-  trainingCertificateNumber?: Prisma.SortOrderInput | Prisma.SortOrder
-  decreeNumber?: Prisma.SortOrder
-  decreeIssuedAt?: Prisma.SortOrder
+  grantKind?: Prisma.SortOrder
+  grantReference?: Prisma.SortOrder
+  grantIssuedAt?: Prisma.SortOrder
+  trainingCertificateNumber?: Prisma.SortOrder
   validFrom?: Prisma.SortOrder
-  validUntil?: Prisma.SortOrderInput | Prisma.SortOrder
-  decreeStorageKey?: Prisma.SortOrderInput | Prisma.SortOrder
-  decreeMimeType?: Prisma.SortOrderInput | Prisma.SortOrder
-  decreeSizeBytes?: Prisma.SortOrderInput | Prisma.SortOrder
+  validUntil?: Prisma.SortOrder
+  grantDocumentStorageKey?: Prisma.SortOrderInput | Prisma.SortOrder
+  grantDocumentMimeType?: Prisma.SortOrderInput | Prisma.SortOrder
+  grantDocumentSizeBytes?: Prisma.SortOrderInput | Prisma.SortOrder
   revokedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   revokedById?: Prisma.SortOrderInput | Prisma.SortOrder
   revokeReason?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -424,14 +441,15 @@ export type DoctorAuthorityScalarWhereWithAggregatesInput = {
   id?: Prisma.UuidWithAggregatesFilter<"DoctorAuthority"> | string
   doctorId?: Prisma.UuidWithAggregatesFilter<"DoctorAuthority"> | string
   kind?: Prisma.EnumDoctorAuthorityKindWithAggregatesFilter<"DoctorAuthority"> | $Enums.DoctorAuthorityKind
-  trainingCertificateNumber?: Prisma.StringNullableWithAggregatesFilter<"DoctorAuthority"> | string | null
-  decreeNumber?: Prisma.StringWithAggregatesFilter<"DoctorAuthority"> | string
-  decreeIssuedAt?: Prisma.DateTimeWithAggregatesFilter<"DoctorAuthority"> | Date | string
+  grantKind?: Prisma.EnumDoctorAuthorityGrantKindWithAggregatesFilter<"DoctorAuthority"> | $Enums.DoctorAuthorityGrantKind
+  grantReference?: Prisma.StringWithAggregatesFilter<"DoctorAuthority"> | string
+  grantIssuedAt?: Prisma.DateTimeWithAggregatesFilter<"DoctorAuthority"> | Date | string
+  trainingCertificateNumber?: Prisma.StringWithAggregatesFilter<"DoctorAuthority"> | string
   validFrom?: Prisma.DateTimeWithAggregatesFilter<"DoctorAuthority"> | Date | string
-  validUntil?: Prisma.DateTimeNullableWithAggregatesFilter<"DoctorAuthority"> | Date | string | null
-  decreeStorageKey?: Prisma.StringNullableWithAggregatesFilter<"DoctorAuthority"> | string | null
-  decreeMimeType?: Prisma.StringNullableWithAggregatesFilter<"DoctorAuthority"> | string | null
-  decreeSizeBytes?: Prisma.IntNullableWithAggregatesFilter<"DoctorAuthority"> | number | null
+  validUntil?: Prisma.DateTimeWithAggregatesFilter<"DoctorAuthority"> | Date | string
+  grantDocumentStorageKey?: Prisma.StringNullableWithAggregatesFilter<"DoctorAuthority"> | string | null
+  grantDocumentMimeType?: Prisma.StringNullableWithAggregatesFilter<"DoctorAuthority"> | string | null
+  grantDocumentSizeBytes?: Prisma.IntNullableWithAggregatesFilter<"DoctorAuthority"> | number | null
   revokedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"DoctorAuthority"> | Date | string | null
   revokedById?: Prisma.UuidNullableWithAggregatesFilter<"DoctorAuthority"> | string | null
   revokeReason?: Prisma.StringNullableWithAggregatesFilter<"DoctorAuthority"> | string | null
@@ -444,14 +462,15 @@ export type DoctorAuthorityScalarWhereWithAggregatesInput = {
 export type DoctorAuthorityCreateInput = {
   id?: string
   kind: $Enums.DoctorAuthorityKind
-  trainingCertificateNumber?: string | null
-  decreeNumber: string
-  decreeIssuedAt: Date | string
+  grantKind: $Enums.DoctorAuthorityGrantKind
+  grantReference: string
+  grantIssuedAt: Date | string
+  trainingCertificateNumber: string
   validFrom: Date | string
-  validUntil?: Date | string | null
-  decreeStorageKey?: string | null
-  decreeMimeType?: string | null
-  decreeSizeBytes?: number | null
+  validUntil: Date | string
+  grantDocumentStorageKey?: string | null
+  grantDocumentMimeType?: string | null
+  grantDocumentSizeBytes?: number | null
   revokedAt?: Date | string | null
   revokeReason?: string | null
   createdAt?: Date | string
@@ -467,14 +486,15 @@ export type DoctorAuthorityUncheckedCreateInput = {
   id?: string
   doctorId: string
   kind: $Enums.DoctorAuthorityKind
-  trainingCertificateNumber?: string | null
-  decreeNumber: string
-  decreeIssuedAt: Date | string
+  grantKind: $Enums.DoctorAuthorityGrantKind
+  grantReference: string
+  grantIssuedAt: Date | string
+  trainingCertificateNumber: string
   validFrom: Date | string
-  validUntil?: Date | string | null
-  decreeStorageKey?: string | null
-  decreeMimeType?: string | null
-  decreeSizeBytes?: number | null
+  validUntil: Date | string
+  grantDocumentStorageKey?: string | null
+  grantDocumentMimeType?: string | null
+  grantDocumentSizeBytes?: number | null
   revokedAt?: Date | string | null
   revokedById?: string | null
   revokeReason?: string | null
@@ -488,14 +508,15 @@ export type DoctorAuthorityUncheckedCreateInput = {
 export type DoctorAuthorityUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.EnumDoctorAuthorityKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityKind
-  trainingCertificateNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  decreeNumber?: Prisma.StringFieldUpdateOperationsInput | string
-  decreeIssuedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  grantKind?: Prisma.EnumDoctorAuthorityGrantKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityGrantKind
+  grantReference?: Prisma.StringFieldUpdateOperationsInput | string
+  grantIssuedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  trainingCertificateNumber?: Prisma.StringFieldUpdateOperationsInput | string
   validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  decreeStorageKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  decreeMimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  decreeSizeBytes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  validUntil?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  grantDocumentStorageKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  grantDocumentMimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  grantDocumentSizeBytes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   revokedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   revokeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -511,14 +532,15 @@ export type DoctorAuthorityUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   doctorId?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.EnumDoctorAuthorityKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityKind
-  trainingCertificateNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  decreeNumber?: Prisma.StringFieldUpdateOperationsInput | string
-  decreeIssuedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  grantKind?: Prisma.EnumDoctorAuthorityGrantKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityGrantKind
+  grantReference?: Prisma.StringFieldUpdateOperationsInput | string
+  grantIssuedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  trainingCertificateNumber?: Prisma.StringFieldUpdateOperationsInput | string
   validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  decreeStorageKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  decreeMimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  decreeSizeBytes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  validUntil?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  grantDocumentStorageKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  grantDocumentMimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  grantDocumentSizeBytes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   revokedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   revokedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   revokeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -533,14 +555,15 @@ export type DoctorAuthorityCreateManyInput = {
   id?: string
   doctorId: string
   kind: $Enums.DoctorAuthorityKind
-  trainingCertificateNumber?: string | null
-  decreeNumber: string
-  decreeIssuedAt: Date | string
+  grantKind: $Enums.DoctorAuthorityGrantKind
+  grantReference: string
+  grantIssuedAt: Date | string
+  trainingCertificateNumber: string
   validFrom: Date | string
-  validUntil?: Date | string | null
-  decreeStorageKey?: string | null
-  decreeMimeType?: string | null
-  decreeSizeBytes?: number | null
+  validUntil: Date | string
+  grantDocumentStorageKey?: string | null
+  grantDocumentMimeType?: string | null
+  grantDocumentSizeBytes?: number | null
   revokedAt?: Date | string | null
   revokedById?: string | null
   revokeReason?: string | null
@@ -553,14 +576,15 @@ export type DoctorAuthorityCreateManyInput = {
 export type DoctorAuthorityUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.EnumDoctorAuthorityKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityKind
-  trainingCertificateNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  decreeNumber?: Prisma.StringFieldUpdateOperationsInput | string
-  decreeIssuedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  grantKind?: Prisma.EnumDoctorAuthorityGrantKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityGrantKind
+  grantReference?: Prisma.StringFieldUpdateOperationsInput | string
+  grantIssuedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  trainingCertificateNumber?: Prisma.StringFieldUpdateOperationsInput | string
   validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  decreeStorageKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  decreeMimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  decreeSizeBytes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  validUntil?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  grantDocumentStorageKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  grantDocumentMimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  grantDocumentSizeBytes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   revokedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   revokeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -572,14 +596,15 @@ export type DoctorAuthorityUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   doctorId?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.EnumDoctorAuthorityKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityKind
-  trainingCertificateNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  decreeNumber?: Prisma.StringFieldUpdateOperationsInput | string
-  decreeIssuedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  grantKind?: Prisma.EnumDoctorAuthorityGrantKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityGrantKind
+  grantReference?: Prisma.StringFieldUpdateOperationsInput | string
+  grantIssuedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  trainingCertificateNumber?: Prisma.StringFieldUpdateOperationsInput | string
   validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  decreeStorageKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  decreeMimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  decreeSizeBytes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  validUntil?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  grantDocumentStorageKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  grantDocumentMimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  grantDocumentSizeBytes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   revokedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   revokedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   revokeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -603,14 +628,15 @@ export type DoctorAuthorityCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   doctorId?: Prisma.SortOrder
   kind?: Prisma.SortOrder
+  grantKind?: Prisma.SortOrder
+  grantReference?: Prisma.SortOrder
+  grantIssuedAt?: Prisma.SortOrder
   trainingCertificateNumber?: Prisma.SortOrder
-  decreeNumber?: Prisma.SortOrder
-  decreeIssuedAt?: Prisma.SortOrder
   validFrom?: Prisma.SortOrder
   validUntil?: Prisma.SortOrder
-  decreeStorageKey?: Prisma.SortOrder
-  decreeMimeType?: Prisma.SortOrder
-  decreeSizeBytes?: Prisma.SortOrder
+  grantDocumentStorageKey?: Prisma.SortOrder
+  grantDocumentMimeType?: Prisma.SortOrder
+  grantDocumentSizeBytes?: Prisma.SortOrder
   revokedAt?: Prisma.SortOrder
   revokedById?: Prisma.SortOrder
   revokeReason?: Prisma.SortOrder
@@ -621,21 +647,22 @@ export type DoctorAuthorityCountOrderByAggregateInput = {
 }
 
 export type DoctorAuthorityAvgOrderByAggregateInput = {
-  decreeSizeBytes?: Prisma.SortOrder
+  grantDocumentSizeBytes?: Prisma.SortOrder
 }
 
 export type DoctorAuthorityMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   doctorId?: Prisma.SortOrder
   kind?: Prisma.SortOrder
+  grantKind?: Prisma.SortOrder
+  grantReference?: Prisma.SortOrder
+  grantIssuedAt?: Prisma.SortOrder
   trainingCertificateNumber?: Prisma.SortOrder
-  decreeNumber?: Prisma.SortOrder
-  decreeIssuedAt?: Prisma.SortOrder
   validFrom?: Prisma.SortOrder
   validUntil?: Prisma.SortOrder
-  decreeStorageKey?: Prisma.SortOrder
-  decreeMimeType?: Prisma.SortOrder
-  decreeSizeBytes?: Prisma.SortOrder
+  grantDocumentStorageKey?: Prisma.SortOrder
+  grantDocumentMimeType?: Prisma.SortOrder
+  grantDocumentSizeBytes?: Prisma.SortOrder
   revokedAt?: Prisma.SortOrder
   revokedById?: Prisma.SortOrder
   revokeReason?: Prisma.SortOrder
@@ -649,14 +676,15 @@ export type DoctorAuthorityMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   doctorId?: Prisma.SortOrder
   kind?: Prisma.SortOrder
+  grantKind?: Prisma.SortOrder
+  grantReference?: Prisma.SortOrder
+  grantIssuedAt?: Prisma.SortOrder
   trainingCertificateNumber?: Prisma.SortOrder
-  decreeNumber?: Prisma.SortOrder
-  decreeIssuedAt?: Prisma.SortOrder
   validFrom?: Prisma.SortOrder
   validUntil?: Prisma.SortOrder
-  decreeStorageKey?: Prisma.SortOrder
-  decreeMimeType?: Prisma.SortOrder
-  decreeSizeBytes?: Prisma.SortOrder
+  grantDocumentStorageKey?: Prisma.SortOrder
+  grantDocumentMimeType?: Prisma.SortOrder
+  grantDocumentSizeBytes?: Prisma.SortOrder
   revokedAt?: Prisma.SortOrder
   revokedById?: Prisma.SortOrder
   revokeReason?: Prisma.SortOrder
@@ -667,7 +695,7 @@ export type DoctorAuthorityMinOrderByAggregateInput = {
 }
 
 export type DoctorAuthoritySumOrderByAggregateInput = {
-  decreeSizeBytes?: Prisma.SortOrder
+  grantDocumentSizeBytes?: Prisma.SortOrder
 }
 
 export type DoctorAuthorityScalarRelationFilter = {
@@ -805,6 +833,10 @@ export type EnumDoctorAuthorityKindFieldUpdateOperationsInput = {
   set?: $Enums.DoctorAuthorityKind
 }
 
+export type EnumDoctorAuthorityGrantKindFieldUpdateOperationsInput = {
+  set?: $Enums.DoctorAuthorityGrantKind
+}
+
 export type DoctorAuthorityCreateNestedOneWithoutExpiryNoticesInput = {
   create?: Prisma.XOR<Prisma.DoctorAuthorityCreateWithoutExpiryNoticesInput, Prisma.DoctorAuthorityUncheckedCreateWithoutExpiryNoticesInput>
   connectOrCreate?: Prisma.DoctorAuthorityCreateOrConnectWithoutExpiryNoticesInput
@@ -822,14 +854,15 @@ export type DoctorAuthorityUpdateOneRequiredWithoutExpiryNoticesNestedInput = {
 export type DoctorAuthorityCreateWithoutCreatedByInput = {
   id?: string
   kind: $Enums.DoctorAuthorityKind
-  trainingCertificateNumber?: string | null
-  decreeNumber: string
-  decreeIssuedAt: Date | string
+  grantKind: $Enums.DoctorAuthorityGrantKind
+  grantReference: string
+  grantIssuedAt: Date | string
+  trainingCertificateNumber: string
   validFrom: Date | string
-  validUntil?: Date | string | null
-  decreeStorageKey?: string | null
-  decreeMimeType?: string | null
-  decreeSizeBytes?: number | null
+  validUntil: Date | string
+  grantDocumentStorageKey?: string | null
+  grantDocumentMimeType?: string | null
+  grantDocumentSizeBytes?: number | null
   revokedAt?: Date | string | null
   revokeReason?: string | null
   createdAt?: Date | string
@@ -844,14 +877,15 @@ export type DoctorAuthorityUncheckedCreateWithoutCreatedByInput = {
   id?: string
   doctorId: string
   kind: $Enums.DoctorAuthorityKind
-  trainingCertificateNumber?: string | null
-  decreeNumber: string
-  decreeIssuedAt: Date | string
+  grantKind: $Enums.DoctorAuthorityGrantKind
+  grantReference: string
+  grantIssuedAt: Date | string
+  trainingCertificateNumber: string
   validFrom: Date | string
-  validUntil?: Date | string | null
-  decreeStorageKey?: string | null
-  decreeMimeType?: string | null
-  decreeSizeBytes?: number | null
+  validUntil: Date | string
+  grantDocumentStorageKey?: string | null
+  grantDocumentMimeType?: string | null
+  grantDocumentSizeBytes?: number | null
   revokedAt?: Date | string | null
   revokedById?: string | null
   revokeReason?: string | null
@@ -874,14 +908,15 @@ export type DoctorAuthorityCreateManyCreatedByInputEnvelope = {
 export type DoctorAuthorityCreateWithoutRevokedByInput = {
   id?: string
   kind: $Enums.DoctorAuthorityKind
-  trainingCertificateNumber?: string | null
-  decreeNumber: string
-  decreeIssuedAt: Date | string
+  grantKind: $Enums.DoctorAuthorityGrantKind
+  grantReference: string
+  grantIssuedAt: Date | string
+  trainingCertificateNumber: string
   validFrom: Date | string
-  validUntil?: Date | string | null
-  decreeStorageKey?: string | null
-  decreeMimeType?: string | null
-  decreeSizeBytes?: number | null
+  validUntil: Date | string
+  grantDocumentStorageKey?: string | null
+  grantDocumentMimeType?: string | null
+  grantDocumentSizeBytes?: number | null
   revokedAt?: Date | string | null
   revokeReason?: string | null
   createdAt?: Date | string
@@ -896,14 +931,15 @@ export type DoctorAuthorityUncheckedCreateWithoutRevokedByInput = {
   id?: string
   doctorId: string
   kind: $Enums.DoctorAuthorityKind
-  trainingCertificateNumber?: string | null
-  decreeNumber: string
-  decreeIssuedAt: Date | string
+  grantKind: $Enums.DoctorAuthorityGrantKind
+  grantReference: string
+  grantIssuedAt: Date | string
+  trainingCertificateNumber: string
   validFrom: Date | string
-  validUntil?: Date | string | null
-  decreeStorageKey?: string | null
-  decreeMimeType?: string | null
-  decreeSizeBytes?: number | null
+  validUntil: Date | string
+  grantDocumentStorageKey?: string | null
+  grantDocumentMimeType?: string | null
+  grantDocumentSizeBytes?: number | null
   revokedAt?: Date | string | null
   revokeReason?: string | null
   createdById: string
@@ -946,14 +982,15 @@ export type DoctorAuthorityScalarWhereInput = {
   id?: Prisma.UuidFilter<"DoctorAuthority"> | string
   doctorId?: Prisma.UuidFilter<"DoctorAuthority"> | string
   kind?: Prisma.EnumDoctorAuthorityKindFilter<"DoctorAuthority"> | $Enums.DoctorAuthorityKind
-  trainingCertificateNumber?: Prisma.StringNullableFilter<"DoctorAuthority"> | string | null
-  decreeNumber?: Prisma.StringFilter<"DoctorAuthority"> | string
-  decreeIssuedAt?: Prisma.DateTimeFilter<"DoctorAuthority"> | Date | string
+  grantKind?: Prisma.EnumDoctorAuthorityGrantKindFilter<"DoctorAuthority"> | $Enums.DoctorAuthorityGrantKind
+  grantReference?: Prisma.StringFilter<"DoctorAuthority"> | string
+  grantIssuedAt?: Prisma.DateTimeFilter<"DoctorAuthority"> | Date | string
+  trainingCertificateNumber?: Prisma.StringFilter<"DoctorAuthority"> | string
   validFrom?: Prisma.DateTimeFilter<"DoctorAuthority"> | Date | string
-  validUntil?: Prisma.DateTimeNullableFilter<"DoctorAuthority"> | Date | string | null
-  decreeStorageKey?: Prisma.StringNullableFilter<"DoctorAuthority"> | string | null
-  decreeMimeType?: Prisma.StringNullableFilter<"DoctorAuthority"> | string | null
-  decreeSizeBytes?: Prisma.IntNullableFilter<"DoctorAuthority"> | number | null
+  validUntil?: Prisma.DateTimeFilter<"DoctorAuthority"> | Date | string
+  grantDocumentStorageKey?: Prisma.StringNullableFilter<"DoctorAuthority"> | string | null
+  grantDocumentMimeType?: Prisma.StringNullableFilter<"DoctorAuthority"> | string | null
+  grantDocumentSizeBytes?: Prisma.IntNullableFilter<"DoctorAuthority"> | number | null
   revokedAt?: Prisma.DateTimeNullableFilter<"DoctorAuthority"> | Date | string | null
   revokedById?: Prisma.UuidNullableFilter<"DoctorAuthority"> | string | null
   revokeReason?: Prisma.StringNullableFilter<"DoctorAuthority"> | string | null
@@ -982,14 +1019,15 @@ export type DoctorAuthorityUpdateManyWithWhereWithoutRevokedByInput = {
 export type DoctorAuthorityCreateWithoutDoctorInput = {
   id?: string
   kind: $Enums.DoctorAuthorityKind
-  trainingCertificateNumber?: string | null
-  decreeNumber: string
-  decreeIssuedAt: Date | string
+  grantKind: $Enums.DoctorAuthorityGrantKind
+  grantReference: string
+  grantIssuedAt: Date | string
+  trainingCertificateNumber: string
   validFrom: Date | string
-  validUntil?: Date | string | null
-  decreeStorageKey?: string | null
-  decreeMimeType?: string | null
-  decreeSizeBytes?: number | null
+  validUntil: Date | string
+  grantDocumentStorageKey?: string | null
+  grantDocumentMimeType?: string | null
+  grantDocumentSizeBytes?: number | null
   revokedAt?: Date | string | null
   revokeReason?: string | null
   createdAt?: Date | string
@@ -1003,14 +1041,15 @@ export type DoctorAuthorityCreateWithoutDoctorInput = {
 export type DoctorAuthorityUncheckedCreateWithoutDoctorInput = {
   id?: string
   kind: $Enums.DoctorAuthorityKind
-  trainingCertificateNumber?: string | null
-  decreeNumber: string
-  decreeIssuedAt: Date | string
+  grantKind: $Enums.DoctorAuthorityGrantKind
+  grantReference: string
+  grantIssuedAt: Date | string
+  trainingCertificateNumber: string
   validFrom: Date | string
-  validUntil?: Date | string | null
-  decreeStorageKey?: string | null
-  decreeMimeType?: string | null
-  decreeSizeBytes?: number | null
+  validUntil: Date | string
+  grantDocumentStorageKey?: string | null
+  grantDocumentMimeType?: string | null
+  grantDocumentSizeBytes?: number | null
   revokedAt?: Date | string | null
   revokedById?: string | null
   revokeReason?: string | null
@@ -1050,14 +1089,15 @@ export type DoctorAuthorityUpdateManyWithWhereWithoutDoctorInput = {
 export type DoctorAuthorityCreateWithoutExpiryNoticesInput = {
   id?: string
   kind: $Enums.DoctorAuthorityKind
-  trainingCertificateNumber?: string | null
-  decreeNumber: string
-  decreeIssuedAt: Date | string
+  grantKind: $Enums.DoctorAuthorityGrantKind
+  grantReference: string
+  grantIssuedAt: Date | string
+  trainingCertificateNumber: string
   validFrom: Date | string
-  validUntil?: Date | string | null
-  decreeStorageKey?: string | null
-  decreeMimeType?: string | null
-  decreeSizeBytes?: number | null
+  validUntil: Date | string
+  grantDocumentStorageKey?: string | null
+  grantDocumentMimeType?: string | null
+  grantDocumentSizeBytes?: number | null
   revokedAt?: Date | string | null
   revokeReason?: string | null
   createdAt?: Date | string
@@ -1072,14 +1112,15 @@ export type DoctorAuthorityUncheckedCreateWithoutExpiryNoticesInput = {
   id?: string
   doctorId: string
   kind: $Enums.DoctorAuthorityKind
-  trainingCertificateNumber?: string | null
-  decreeNumber: string
-  decreeIssuedAt: Date | string
+  grantKind: $Enums.DoctorAuthorityGrantKind
+  grantReference: string
+  grantIssuedAt: Date | string
+  trainingCertificateNumber: string
   validFrom: Date | string
-  validUntil?: Date | string | null
-  decreeStorageKey?: string | null
-  decreeMimeType?: string | null
-  decreeSizeBytes?: number | null
+  validUntil: Date | string
+  grantDocumentStorageKey?: string | null
+  grantDocumentMimeType?: string | null
+  grantDocumentSizeBytes?: number | null
   revokedAt?: Date | string | null
   revokedById?: string | null
   revokeReason?: string | null
@@ -1108,14 +1149,15 @@ export type DoctorAuthorityUpdateToOneWithWhereWithoutExpiryNoticesInput = {
 export type DoctorAuthorityUpdateWithoutExpiryNoticesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.EnumDoctorAuthorityKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityKind
-  trainingCertificateNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  decreeNumber?: Prisma.StringFieldUpdateOperationsInput | string
-  decreeIssuedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  grantKind?: Prisma.EnumDoctorAuthorityGrantKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityGrantKind
+  grantReference?: Prisma.StringFieldUpdateOperationsInput | string
+  grantIssuedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  trainingCertificateNumber?: Prisma.StringFieldUpdateOperationsInput | string
   validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  decreeStorageKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  decreeMimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  decreeSizeBytes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  validUntil?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  grantDocumentStorageKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  grantDocumentMimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  grantDocumentSizeBytes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   revokedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   revokeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1130,14 +1172,15 @@ export type DoctorAuthorityUncheckedUpdateWithoutExpiryNoticesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   doctorId?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.EnumDoctorAuthorityKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityKind
-  trainingCertificateNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  decreeNumber?: Prisma.StringFieldUpdateOperationsInput | string
-  decreeIssuedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  grantKind?: Prisma.EnumDoctorAuthorityGrantKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityGrantKind
+  grantReference?: Prisma.StringFieldUpdateOperationsInput | string
+  grantIssuedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  trainingCertificateNumber?: Prisma.StringFieldUpdateOperationsInput | string
   validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  decreeStorageKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  decreeMimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  decreeSizeBytes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  validUntil?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  grantDocumentStorageKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  grantDocumentMimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  grantDocumentSizeBytes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   revokedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   revokedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   revokeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1151,14 +1194,15 @@ export type DoctorAuthorityCreateManyCreatedByInput = {
   id?: string
   doctorId: string
   kind: $Enums.DoctorAuthorityKind
-  trainingCertificateNumber?: string | null
-  decreeNumber: string
-  decreeIssuedAt: Date | string
+  grantKind: $Enums.DoctorAuthorityGrantKind
+  grantReference: string
+  grantIssuedAt: Date | string
+  trainingCertificateNumber: string
   validFrom: Date | string
-  validUntil?: Date | string | null
-  decreeStorageKey?: string | null
-  decreeMimeType?: string | null
-  decreeSizeBytes?: number | null
+  validUntil: Date | string
+  grantDocumentStorageKey?: string | null
+  grantDocumentMimeType?: string | null
+  grantDocumentSizeBytes?: number | null
   revokedAt?: Date | string | null
   revokedById?: string | null
   revokeReason?: string | null
@@ -1171,14 +1215,15 @@ export type DoctorAuthorityCreateManyRevokedByInput = {
   id?: string
   doctorId: string
   kind: $Enums.DoctorAuthorityKind
-  trainingCertificateNumber?: string | null
-  decreeNumber: string
-  decreeIssuedAt: Date | string
+  grantKind: $Enums.DoctorAuthorityGrantKind
+  grantReference: string
+  grantIssuedAt: Date | string
+  trainingCertificateNumber: string
   validFrom: Date | string
-  validUntil?: Date | string | null
-  decreeStorageKey?: string | null
-  decreeMimeType?: string | null
-  decreeSizeBytes?: number | null
+  validUntil: Date | string
+  grantDocumentStorageKey?: string | null
+  grantDocumentMimeType?: string | null
+  grantDocumentSizeBytes?: number | null
   revokedAt?: Date | string | null
   revokeReason?: string | null
   createdById: string
@@ -1190,14 +1235,15 @@ export type DoctorAuthorityCreateManyRevokedByInput = {
 export type DoctorAuthorityUpdateWithoutCreatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.EnumDoctorAuthorityKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityKind
-  trainingCertificateNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  decreeNumber?: Prisma.StringFieldUpdateOperationsInput | string
-  decreeIssuedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  grantKind?: Prisma.EnumDoctorAuthorityGrantKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityGrantKind
+  grantReference?: Prisma.StringFieldUpdateOperationsInput | string
+  grantIssuedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  trainingCertificateNumber?: Prisma.StringFieldUpdateOperationsInput | string
   validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  decreeStorageKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  decreeMimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  decreeSizeBytes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  validUntil?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  grantDocumentStorageKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  grantDocumentMimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  grantDocumentSizeBytes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   revokedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   revokeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1212,14 +1258,15 @@ export type DoctorAuthorityUncheckedUpdateWithoutCreatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   doctorId?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.EnumDoctorAuthorityKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityKind
-  trainingCertificateNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  decreeNumber?: Prisma.StringFieldUpdateOperationsInput | string
-  decreeIssuedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  grantKind?: Prisma.EnumDoctorAuthorityGrantKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityGrantKind
+  grantReference?: Prisma.StringFieldUpdateOperationsInput | string
+  grantIssuedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  trainingCertificateNumber?: Prisma.StringFieldUpdateOperationsInput | string
   validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  decreeStorageKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  decreeMimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  decreeSizeBytes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  validUntil?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  grantDocumentStorageKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  grantDocumentMimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  grantDocumentSizeBytes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   revokedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   revokedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   revokeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1233,14 +1280,15 @@ export type DoctorAuthorityUncheckedUpdateManyWithoutCreatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   doctorId?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.EnumDoctorAuthorityKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityKind
-  trainingCertificateNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  decreeNumber?: Prisma.StringFieldUpdateOperationsInput | string
-  decreeIssuedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  grantKind?: Prisma.EnumDoctorAuthorityGrantKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityGrantKind
+  grantReference?: Prisma.StringFieldUpdateOperationsInput | string
+  grantIssuedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  trainingCertificateNumber?: Prisma.StringFieldUpdateOperationsInput | string
   validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  decreeStorageKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  decreeMimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  decreeSizeBytes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  validUntil?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  grantDocumentStorageKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  grantDocumentMimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  grantDocumentSizeBytes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   revokedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   revokedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   revokeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1252,14 +1300,15 @@ export type DoctorAuthorityUncheckedUpdateManyWithoutCreatedByInput = {
 export type DoctorAuthorityUpdateWithoutRevokedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.EnumDoctorAuthorityKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityKind
-  trainingCertificateNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  decreeNumber?: Prisma.StringFieldUpdateOperationsInput | string
-  decreeIssuedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  grantKind?: Prisma.EnumDoctorAuthorityGrantKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityGrantKind
+  grantReference?: Prisma.StringFieldUpdateOperationsInput | string
+  grantIssuedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  trainingCertificateNumber?: Prisma.StringFieldUpdateOperationsInput | string
   validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  decreeStorageKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  decreeMimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  decreeSizeBytes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  validUntil?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  grantDocumentStorageKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  grantDocumentMimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  grantDocumentSizeBytes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   revokedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   revokeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1274,14 +1323,15 @@ export type DoctorAuthorityUncheckedUpdateWithoutRevokedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   doctorId?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.EnumDoctorAuthorityKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityKind
-  trainingCertificateNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  decreeNumber?: Prisma.StringFieldUpdateOperationsInput | string
-  decreeIssuedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  grantKind?: Prisma.EnumDoctorAuthorityGrantKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityGrantKind
+  grantReference?: Prisma.StringFieldUpdateOperationsInput | string
+  grantIssuedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  trainingCertificateNumber?: Prisma.StringFieldUpdateOperationsInput | string
   validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  decreeStorageKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  decreeMimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  decreeSizeBytes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  validUntil?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  grantDocumentStorageKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  grantDocumentMimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  grantDocumentSizeBytes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   revokedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   revokeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1295,14 +1345,15 @@ export type DoctorAuthorityUncheckedUpdateManyWithoutRevokedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   doctorId?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.EnumDoctorAuthorityKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityKind
-  trainingCertificateNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  decreeNumber?: Prisma.StringFieldUpdateOperationsInput | string
-  decreeIssuedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  grantKind?: Prisma.EnumDoctorAuthorityGrantKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityGrantKind
+  grantReference?: Prisma.StringFieldUpdateOperationsInput | string
+  grantIssuedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  trainingCertificateNumber?: Prisma.StringFieldUpdateOperationsInput | string
   validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  decreeStorageKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  decreeMimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  decreeSizeBytes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  validUntil?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  grantDocumentStorageKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  grantDocumentMimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  grantDocumentSizeBytes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   revokedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   revokeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1314,14 +1365,15 @@ export type DoctorAuthorityUncheckedUpdateManyWithoutRevokedByInput = {
 export type DoctorAuthorityCreateManyDoctorInput = {
   id?: string
   kind: $Enums.DoctorAuthorityKind
-  trainingCertificateNumber?: string | null
-  decreeNumber: string
-  decreeIssuedAt: Date | string
+  grantKind: $Enums.DoctorAuthorityGrantKind
+  grantReference: string
+  grantIssuedAt: Date | string
+  trainingCertificateNumber: string
   validFrom: Date | string
-  validUntil?: Date | string | null
-  decreeStorageKey?: string | null
-  decreeMimeType?: string | null
-  decreeSizeBytes?: number | null
+  validUntil: Date | string
+  grantDocumentStorageKey?: string | null
+  grantDocumentMimeType?: string | null
+  grantDocumentSizeBytes?: number | null
   revokedAt?: Date | string | null
   revokedById?: string | null
   revokeReason?: string | null
@@ -1334,14 +1386,15 @@ export type DoctorAuthorityCreateManyDoctorInput = {
 export type DoctorAuthorityUpdateWithoutDoctorInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.EnumDoctorAuthorityKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityKind
-  trainingCertificateNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  decreeNumber?: Prisma.StringFieldUpdateOperationsInput | string
-  decreeIssuedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  grantKind?: Prisma.EnumDoctorAuthorityGrantKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityGrantKind
+  grantReference?: Prisma.StringFieldUpdateOperationsInput | string
+  grantIssuedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  trainingCertificateNumber?: Prisma.StringFieldUpdateOperationsInput | string
   validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  decreeStorageKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  decreeMimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  decreeSizeBytes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  validUntil?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  grantDocumentStorageKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  grantDocumentMimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  grantDocumentSizeBytes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   revokedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   revokeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1355,14 +1408,15 @@ export type DoctorAuthorityUpdateWithoutDoctorInput = {
 export type DoctorAuthorityUncheckedUpdateWithoutDoctorInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.EnumDoctorAuthorityKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityKind
-  trainingCertificateNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  decreeNumber?: Prisma.StringFieldUpdateOperationsInput | string
-  decreeIssuedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  grantKind?: Prisma.EnumDoctorAuthorityGrantKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityGrantKind
+  grantReference?: Prisma.StringFieldUpdateOperationsInput | string
+  grantIssuedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  trainingCertificateNumber?: Prisma.StringFieldUpdateOperationsInput | string
   validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  decreeStorageKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  decreeMimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  decreeSizeBytes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  validUntil?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  grantDocumentStorageKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  grantDocumentMimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  grantDocumentSizeBytes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   revokedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   revokedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   revokeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1376,14 +1430,15 @@ export type DoctorAuthorityUncheckedUpdateWithoutDoctorInput = {
 export type DoctorAuthorityUncheckedUpdateManyWithoutDoctorInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   kind?: Prisma.EnumDoctorAuthorityKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityKind
-  trainingCertificateNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  decreeNumber?: Prisma.StringFieldUpdateOperationsInput | string
-  decreeIssuedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  grantKind?: Prisma.EnumDoctorAuthorityGrantKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityGrantKind
+  grantReference?: Prisma.StringFieldUpdateOperationsInput | string
+  grantIssuedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  trainingCertificateNumber?: Prisma.StringFieldUpdateOperationsInput | string
   validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  decreeStorageKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  decreeMimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  decreeSizeBytes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  validUntil?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  grantDocumentStorageKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  grantDocumentMimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  grantDocumentSizeBytes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   revokedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   revokedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   revokeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1428,14 +1483,15 @@ export type DoctorAuthoritySelect<ExtArgs extends runtime.Types.Extensions.Inter
   id?: boolean
   doctorId?: boolean
   kind?: boolean
+  grantKind?: boolean
+  grantReference?: boolean
+  grantIssuedAt?: boolean
   trainingCertificateNumber?: boolean
-  decreeNumber?: boolean
-  decreeIssuedAt?: boolean
   validFrom?: boolean
   validUntil?: boolean
-  decreeStorageKey?: boolean
-  decreeMimeType?: boolean
-  decreeSizeBytes?: boolean
+  grantDocumentStorageKey?: boolean
+  grantDocumentMimeType?: boolean
+  grantDocumentSizeBytes?: boolean
   revokedAt?: boolean
   revokedById?: boolean
   revokeReason?: boolean
@@ -1454,14 +1510,15 @@ export type DoctorAuthoritySelectCreateManyAndReturn<ExtArgs extends runtime.Typ
   id?: boolean
   doctorId?: boolean
   kind?: boolean
+  grantKind?: boolean
+  grantReference?: boolean
+  grantIssuedAt?: boolean
   trainingCertificateNumber?: boolean
-  decreeNumber?: boolean
-  decreeIssuedAt?: boolean
   validFrom?: boolean
   validUntil?: boolean
-  decreeStorageKey?: boolean
-  decreeMimeType?: boolean
-  decreeSizeBytes?: boolean
+  grantDocumentStorageKey?: boolean
+  grantDocumentMimeType?: boolean
+  grantDocumentSizeBytes?: boolean
   revokedAt?: boolean
   revokedById?: boolean
   revokeReason?: boolean
@@ -1478,14 +1535,15 @@ export type DoctorAuthoritySelectUpdateManyAndReturn<ExtArgs extends runtime.Typ
   id?: boolean
   doctorId?: boolean
   kind?: boolean
+  grantKind?: boolean
+  grantReference?: boolean
+  grantIssuedAt?: boolean
   trainingCertificateNumber?: boolean
-  decreeNumber?: boolean
-  decreeIssuedAt?: boolean
   validFrom?: boolean
   validUntil?: boolean
-  decreeStorageKey?: boolean
-  decreeMimeType?: boolean
-  decreeSizeBytes?: boolean
+  grantDocumentStorageKey?: boolean
+  grantDocumentMimeType?: boolean
+  grantDocumentSizeBytes?: boolean
   revokedAt?: boolean
   revokedById?: boolean
   revokeReason?: boolean
@@ -1502,14 +1560,15 @@ export type DoctorAuthoritySelectScalar = {
   id?: boolean
   doctorId?: boolean
   kind?: boolean
+  grantKind?: boolean
+  grantReference?: boolean
+  grantIssuedAt?: boolean
   trainingCertificateNumber?: boolean
-  decreeNumber?: boolean
-  decreeIssuedAt?: boolean
   validFrom?: boolean
   validUntil?: boolean
-  decreeStorageKey?: boolean
-  decreeMimeType?: boolean
-  decreeSizeBytes?: boolean
+  grantDocumentStorageKey?: boolean
+  grantDocumentMimeType?: boolean
+  grantDocumentSizeBytes?: boolean
   revokedAt?: boolean
   revokedById?: boolean
   revokeReason?: boolean
@@ -1519,7 +1578,7 @@ export type DoctorAuthoritySelectScalar = {
   deletedAt?: boolean
 }
 
-export type DoctorAuthorityOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "doctorId" | "kind" | "trainingCertificateNumber" | "decreeNumber" | "decreeIssuedAt" | "validFrom" | "validUntil" | "decreeStorageKey" | "decreeMimeType" | "decreeSizeBytes" | "revokedAt" | "revokedById" | "revokeReason" | "createdById" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["doctorAuthority"]>
+export type DoctorAuthorityOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "doctorId" | "kind" | "grantKind" | "grantReference" | "grantIssuedAt" | "trainingCertificateNumber" | "validFrom" | "validUntil" | "grantDocumentStorageKey" | "grantDocumentMimeType" | "grantDocumentSizeBytes" | "revokedAt" | "revokedById" | "revokeReason" | "createdById" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["doctorAuthority"]>
 export type DoctorAuthorityInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   doctor?: boolean | Prisma.DoctorProfileDefaultArgs<ExtArgs>
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -1550,17 +1609,18 @@ export type $DoctorAuthorityPayload<ExtArgs extends runtime.Types.Extensions.Int
     id: string
     doctorId: string
     kind: $Enums.DoctorAuthorityKind
-    trainingCertificateNumber: string | null
-    decreeNumber: string
-    decreeIssuedAt: Date
-    validFrom: Date
+    grantKind: $Enums.DoctorAuthorityGrantKind
     /**
-     * Null is open-ended: valid until revoked.
+     * The penetapan number, the penugasan letter number, or the STR number.
      */
-    validUntil: Date | null
-    decreeStorageKey: string | null
-    decreeMimeType: string | null
-    decreeSizeBytes: number | null
+    grantReference: string
+    grantIssuedAt: Date
+    trainingCertificateNumber: string
+    validFrom: Date
+    validUntil: Date
+    grantDocumentStorageKey: string | null
+    grantDocumentMimeType: string | null
+    grantDocumentSizeBytes: number | null
     revokedAt: Date | null
     revokedById: string | null
     revokeReason: string | null
@@ -1998,14 +2058,15 @@ export interface DoctorAuthorityFieldRefs {
   readonly id: Prisma.FieldRef<"DoctorAuthority", 'String'>
   readonly doctorId: Prisma.FieldRef<"DoctorAuthority", 'String'>
   readonly kind: Prisma.FieldRef<"DoctorAuthority", 'DoctorAuthorityKind'>
+  readonly grantKind: Prisma.FieldRef<"DoctorAuthority", 'DoctorAuthorityGrantKind'>
+  readonly grantReference: Prisma.FieldRef<"DoctorAuthority", 'String'>
+  readonly grantIssuedAt: Prisma.FieldRef<"DoctorAuthority", 'DateTime'>
   readonly trainingCertificateNumber: Prisma.FieldRef<"DoctorAuthority", 'String'>
-  readonly decreeNumber: Prisma.FieldRef<"DoctorAuthority", 'String'>
-  readonly decreeIssuedAt: Prisma.FieldRef<"DoctorAuthority", 'DateTime'>
   readonly validFrom: Prisma.FieldRef<"DoctorAuthority", 'DateTime'>
   readonly validUntil: Prisma.FieldRef<"DoctorAuthority", 'DateTime'>
-  readonly decreeStorageKey: Prisma.FieldRef<"DoctorAuthority", 'String'>
-  readonly decreeMimeType: Prisma.FieldRef<"DoctorAuthority", 'String'>
-  readonly decreeSizeBytes: Prisma.FieldRef<"DoctorAuthority", 'Int'>
+  readonly grantDocumentStorageKey: Prisma.FieldRef<"DoctorAuthority", 'String'>
+  readonly grantDocumentMimeType: Prisma.FieldRef<"DoctorAuthority", 'String'>
+  readonly grantDocumentSizeBytes: Prisma.FieldRef<"DoctorAuthority", 'Int'>
   readonly revokedAt: Prisma.FieldRef<"DoctorAuthority", 'DateTime'>
   readonly revokedById: Prisma.FieldRef<"DoctorAuthority", 'String'>
   readonly revokeReason: Prisma.FieldRef<"DoctorAuthority", 'String'>

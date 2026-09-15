@@ -7,21 +7,22 @@ function toDateOnly(value: Date): string {
 }
 
 /**
- * The API shape of one authority (P25-T02). Storage columns are folded into
- * `hasDecree` — the key names a bucket path and never leaves the API.
+ * The API shape of one authority (P25-T02, D-036). Storage columns are folded into
+ * `hasGrantDocument` — the key names a bucket path and never leaves the API.
  */
 export function toDoctorAuthorityView(record: DoctorAuthorityRecord, today: Date): DoctorAuthority {
   return {
     id: record.id,
     doctorId: record.doctorId,
     kind: record.kind,
+    grantKind: record.grantKind,
     trainingCertificateNumber: record.trainingCertificateNumber,
-    decreeNumber: record.decreeNumber,
-    decreeIssuedAt: toDateOnly(record.decreeIssuedAt),
+    grantReference: record.grantReference,
+    grantIssuedAt: toDateOnly(record.grantIssuedAt),
     validFrom: toDateOnly(record.validFrom),
-    validUntil: record.validUntil === null ? null : toDateOnly(record.validUntil),
-    hasDecree: record.decreeStorageKey !== null,
-    decreeMimeType: record.decreeMimeType,
+    validUntil: toDateOnly(record.validUntil),
+    hasGrantDocument: record.grantDocumentStorageKey !== null,
+    grantDocumentMimeType: record.grantDocumentMimeType,
     status: resolveDoctorAuthorityStatus(record, today),
     revokedAt: record.revokedAt === null ? null : record.revokedAt.toISOString(),
     revokeReason: record.revokeReason,

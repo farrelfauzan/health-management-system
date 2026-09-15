@@ -37,7 +37,7 @@ import { DoctorProfileCompletionService } from './service/doctor-profile-complet
  * Exports `DoctorAuthorityService` (P25-T02) so enforcement (P25-T03) can ask
  * `hasActiveAuthority` — by the service, never the repository, so "active" is
  * one rule in the clinic's calendar. `StorageModule` is imported for the
- * decision letter's presigned upload and download.
+ * grant document's presigned upload and download.
  */
 @Module({
   imports: [

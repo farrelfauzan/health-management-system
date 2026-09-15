@@ -777,21 +777,21 @@
       },
       "authorities": {
         "title": "Midwife Authorities",
-        "description": "Additional authorities granted by a district decision letter (Permenkes 28/2017 Art. 23–26).",
+        "description": "Additional authorities granted by a district health office penetapan, a government assignment, or a competence recorded on the STR (PP 28/2024 Art. 742–744).",
         "empty": "No additional authority is recorded yet.",
         "loadError": "Unable to load authorities.",
         "add": "Add authority",
         "edit": "Edit",
         "revoke": "Revoke",
-        "downloadDecree": "Download letter",
-        "downloadError": "Unable to download the letter.",
-        "noDecree": "No letter uploaded",
+        "downloadGrantDocument": "Download evidence",
+        "downloadError": "Unable to download the evidence document.",
+        "noGrantDocument": "No evidence document uploaded",
         "columns": {
           "kind": "Authority",
-          "decree": "Decree no.",
+          "grantReference": "Grant",
           "validity": "Validity",
           "status": "Status",
-          "decreeFile": "Letter"
+          "grantDocumentFile": "Document"
         },
         "kind": {
           "IUD_IMPLANT": "IUD & implant insertion",
@@ -800,6 +800,11 @@
           "INTEGRATED_ANC": "Integrated ANC",
           "NO_OTHER_WORKER": "Area with no other health worker"
         },
+        "grantKind": {
+          "DINAS_PENETAPAN": "District health office penetapan",
+          "GOVERNMENT_PENUGASAN": "Government assignment letter",
+          "STR_ANNOTATION": "Competence on the STR"
+        },
         "status": {
           "ACTIVE": "Active",
           "EXPIRING_SOON": "Expiring soon",
@@ -807,38 +812,47 @@
           "REVOKED": "Revoked"
         },
         "validity": {
-          "range": "{from} – {until}",
-          "openEnded": "From {from}, open-ended"
+          "range": "{from} – {until}"
         },
         "revokedOn": "Revoked {date}: {reason}",
         "form": {
           "createTitle": "Add authority",
           "editTitle": "Edit authority",
-          "description": "Record an additional authority for {name} as granted by the district health office.",
+          "description": "Record an additional authority for {name} with the evidence it was granted on.",
           "kind": "Authority",
           "kindPlaceholder": "Choose an authority",
           "kindLocked": "The kind cannot be changed. Revoke this authority and record a new one.",
           "trainingCertificateNumber": "Training certificate number",
-          "decreeNumber": "Decree number",
-          "decreeIssuedAt": "Decree date",
+          "grantReference": "Reference number",
+          "grantIssuedAt": "Issue date",
           "validFrom": "Valid from",
           "validUntil": "Valid until",
-          "validUntilHint": "Leave empty for an open-ended grant.",
-          "decreeFile": "Decision letter (PDF or image)",
-          "decreeFileKeep": "The current letter is kept unless a new file is chosen.",
-          "decreeFileTooLarge": "The file must be 20 MB or smaller.",
-          "decreeFileType": "The file must be a PDF, JPEG, PNG, or WebP.",
+          "validUntilHint": "Use the validity period the government set.",
+          "grantDocumentFile": "Evidence document (PDF or image)",
+          "grantDocumentFileKeep": "The current document is kept unless a new file is chosen.",
+          "grantDocumentFileTooLarge": "The file must be 20 MB or smaller.",
+          "grantDocumentFileType": "The file must be a PDF, JPEG, PNG, or WebP.",
           "kindRequired": "Choose an authority.",
-          "decreeNumberRequired": "The decree number is required.",
-          "decreeIssuedAtRequired": "The decree date is required.",
+          "grantReferenceRequired": "The reference number is required.",
+          "grantIssuedAtRequired": "The issue date is required.",
           "validFromRequired": "The start date is required.",
           "validityOrder": "The end date must be on or after the start date.",
-          "uploading": "Uploading letter...",
+          "uploading": "Uploading document...",
           "submitting": "Saving...",
           "submit": "Save",
           "error": "Unable to save the authority. Please try again.",
           "requiresMidwife": "Authorities can only be recorded for a midwife.",
-          "alreadyActive": "An authority of this kind is still active. Edit its validity or revoke it first."
+          "alreadyActive": "An authority of this kind is still active. Edit its validity or revoke it first.",
+          "grantKind": "Evidence type",
+          "grantKindPlaceholder": "Choose the evidence type",
+          "grantReferenceByKind": {
+            "DINAS_PENETAPAN": "Penetapan number",
+            "GOVERNMENT_PENUGASAN": "Assignment letter number",
+            "STR_ANNOTATION": "STR number"
+          },
+          "grantKindRequired": "Choose the evidence type.",
+          "trainingCertificateNumberRequired": "The training certificate number is required.",
+          "validUntilRequired": "The end date is required."
         },
         "revokeDialog": {
           "title": "Revoke authority",

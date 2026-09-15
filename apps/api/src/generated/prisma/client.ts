@@ -302,11 +302,17 @@ export type DoctorLicense = Prisma.DoctorLicenseModel
 export type DoctorLicenseExpiryNotice = Prisma.DoctorLicenseExpiryNoticeModel
 /**
  * Model DoctorAuthority
- * A midwife's delegated authority — *kewenangan* (P25-T02, Permenkes 28/2017
- * Pasal 23–26). Hangs off `DoctorProfile` like `DoctorLicense`, and only a
- * `MIDWIFE` profile may carry one (the service refuses the rest).
+ * A midwife's delegated authority — *kewenangan* (P25-T02, D-036). Hangs off
+ * `DoctorProfile` like `DoctorLicense`, and only a `MIDWIFE` profile may carry
+ * one (the service refuses the rest). The grant rests on PP 28/2024 Pasal 744
+ * and Permenkes 13/2025 Pasal 185–187, or on a training-added competence on
+ * the STR (PP 28/2024 Pasal 742(3)–(4)).
  * 
- * The decision letter is stored on the row (`decree_*` columns, as
+ * The training certificate and the end date are always required: training is
+ * the precondition of every grant (PP 28/2024 Pasal 744(4)) and the government
+ * sets its period (Pasal 744(8)), so nothing here is open-ended.
+ * 
+ * The evidence document is stored on the row (`grant_document_*` columns, as
  * `ManagedDocument` stores its payload) rather than as a `Document`:
  * `Document.ownerId` is a User FK and a clinician can exist with no account
  * (`NO_ACCOUNT`), so there is nobody for a `Document` row to belong to.

@@ -237,11 +237,11 @@
         },
         "doctorAuthorityExpiring": {
           "title": "Kewenangan bidan akan berakhir",
-          "body": "Kewenangan {kind} milik {doctorName} (SK {decreeNumber}) berakhir pada {validUntil}."
+          "body": "Kewenangan {kind} milik {doctorName} (No. {grantReference}) berakhir pada {validUntil}."
         },
         "doctorAuthorityExpired": {
           "title": "Kewenangan bidan telah berakhir",
-          "body": "Kewenangan {kind} milik {doctorName} (SK {decreeNumber}) berakhir pada {validUntil}."
+          "body": "Kewenangan {kind} milik {doctorName} (No. {grantReference}) telah berakhir pada {validUntil}."
         }
       },
       "profile": {

@@ -61,7 +61,7 @@ export class DoctorAuthorityController {
   @ApiEndpoint({
     summary: 'Grant a delegated authority',
     responseDescription:
-      'Records one authority against a midwife. Refused with 422 `DOCTOR_AUTHORITY_REQUIRES_MIDWIFE` for any other profession and with 409 `DOCTOR_AUTHORITY_ALREADY_ACTIVE` while a live authority of the same kind exists — renew by editing its dates, or revoke and grant again. `decreeStorageKey` must come from the upload-url route for this clinician.',
+      'Records one authority against a midwife. Refused with 422 `DOCTOR_AUTHORITY_REQUIRES_MIDWIFE` for any other profession and with 409 `DOCTOR_AUTHORITY_ALREADY_ACTIVE` while a live authority of the same kind exists — renew by editing its dates, or revoke and grant again. Every grant names its evidence (`grantKind`, `grantReference`, `grantIssuedAt`) and carries a training certificate and an end date (D-036). `grantDocumentStorageKey` must come from the upload-url route for this clinician.',
     responseExample: { data: DOCTOR_AUTHORITY_EXAMPLES.item, message: 'Authority granted' },
     requestType: CreateDoctorAuthorityDto,
     requestExample: DOCTOR_AUTHORITY_EXAMPLES.createRequest,
@@ -86,7 +86,7 @@ export class DoctorAuthorityController {
   @Post('upload-url')
   @Auth([{ action: 'write', subject: 'DoctorAuthority' }])
   @ApiEndpoint({
-    summary: 'Sign an upload of a decision letter',
+    summary: 'Sign an upload of a grant document',
     responseDescription:
       'A presigned PUT under `doctor-authorities/{doctorId}/`. Nothing is recorded until a create or update names the returned `storageKey`; the API then reads the object back from storage before trusting it.',
     responseExample: { data: DOCTOR_AUTHORITY_EXAMPLES.uploadUrl },
@@ -94,11 +94,13 @@ export class DoctorAuthorityController {
     requestExample: DOCTOR_AUTHORITY_EXAMPLES.uploadUrlRequest,
     notFoundDescription: 'Doctor not found.',
   })
-  async createDecreeUploadUrl(
+  async createGrantDocumentUploadUrl(
     @Param('doctorId', new ParseUUIDPipe()) doctorId: string,
     @Body() payload: CreateDoctorAuthorityUploadUrlDto,
   ) {
-    return { data: await this.doctorAuthorityService.createDecreeUploadUrl(doctorId, payload) };
+    return {
+      data: await this.doctorAuthorityService.createGrantDocumentUploadUrl(doctorId, payload),
+    };
   }
 
   @Patch(':id')
@@ -111,7 +113,7 @@ export class DoctorAuthorityController {
   @ApiEndpoint({
     summary: 'Edit a delegated authority',
     responseDescription:
-      'Changes numbers, dates or the letter. The kind is fixed at grant: changing what an authority *is* is a revoke and a fresh grant. `validUntil: null` makes it open-ended; `decreeStorageKey: null` detaches the letter.',
+      'Changes the evidence, the dates or the grant document. The kind is fixed at grant: changing what an authority *is* is a revoke and a fresh grant. The end date can move but cannot be cleared, because every grant is end-dated (D-036); `grantDocumentStorageKey: null` detaches the document.',
     responseExample: { data: DOCTOR_AUTHORITY_EXAMPLES.item, message: 'Authority updated' },
     requestType: UpdateDoctorAuthorityDto,
     requestExample: DOCTOR_AUTHORITY_EXAMPLES.updateRequest,
@@ -162,20 +164,20 @@ export class DoctorAuthorityController {
     };
   }
 
-  @Get(':id/decree/download')
+  @Get(':id/grant-document/download')
   @Auth([{ action: 'read', subject: 'DoctorAuthority' }])
   @ApiEndpoint({
-    summary: 'Sign a download of the decision letter',
+    summary: 'Sign a download of the grant document',
     responseDescription:
-      'A short-lived signed URL serving the letter as an attachment under its stored type.',
+      'A short-lived signed URL serving the grant document as an attachment under its stored type.',
     responseExample: { data: DOCTOR_AUTHORITY_EXAMPLES.download },
-    notFoundDescription: 'Doctor or authority not found, or no letter is on file.',
+    notFoundDescription: 'Doctor or authority not found, or no grant document is on file.',
   })
-  async getDecreeDownloadUrl(
+  async getGrantDocumentDownloadUrl(
     @Param('doctorId', new ParseUUIDPipe()) doctorId: string,
     @Param('id', new ParseUUIDPipe()) id: string,
   ) {
-    return { data: await this.doctorAuthorityService.getDecreeDownloadUrl(doctorId, id) };
+    return { data: await this.doctorAuthorityService.getGrantDocumentDownloadUrl(doctorId, id) };
   }
 
   private assertAuthenticated(currentUser?: CurrentUser): CurrentUser {

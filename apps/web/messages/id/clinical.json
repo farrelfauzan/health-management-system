@@ -777,21 +777,21 @@
       },
       "authorities": {
         "title": "Kewenangan Bidan",
-        "description": "Kewenangan tambahan berdasarkan surat keputusan dinas (Permenkes 28/2017 Pasal 23–26).",
+        "description": "Kewenangan tambahan berdasarkan penetapan dinas kesehatan, penugasan pemerintah, atau kompetensi yang dicatat di STR (PP 28/2024 Pasal 742–744).",
         "empty": "Belum ada kewenangan tambahan yang dicatat.",
         "loadError": "Kewenangan gagal dimuat.",
         "add": "Tambah kewenangan",
         "edit": "Ubah",
         "revoke": "Cabut",
-        "downloadDecree": "Unduh SK",
-        "downloadError": "SK gagal diunduh.",
-        "noDecree": "SK belum diunggah",
+        "downloadGrantDocument": "Unduh dokumen bukti",
+        "downloadError": "Dokumen bukti gagal diunduh.",
+        "noGrantDocument": "Dokumen bukti belum diunggah",
         "columns": {
           "kind": "Kewenangan",
-          "decree": "Nomor SK",
+          "grantReference": "Dasar kewenangan",
           "validity": "Masa berlaku",
           "status": "Status",
-          "decreeFile": "SK"
+          "grantDocumentFile": "Dokumen"
         },
         "kind": {
           "IUD_IMPLANT": "Pemasangan AKDR & implan",
@@ -800,6 +800,11 @@
           "INTEGRATED_ANC": "ANC terintegrasi",
           "NO_OTHER_WORKER": "Daerah tanpa tenaga kesehatan lain"
         },
+        "grantKind": {
+          "DINAS_PENETAPAN": "Penetapan Dinas Kesehatan",
+          "GOVERNMENT_PENUGASAN": "Surat penugasan pemerintah",
+          "STR_ANNOTATION": "Catatan kompetensi di STR"
+        },
         "status": {
           "ACTIVE": "Aktif",
           "EXPIRING_SOON": "Segera berakhir",
@@ -807,38 +812,47 @@
           "REVOKED": "Dicabut"
         },
         "validity": {
-          "range": "{from} – {until}",
-          "openEnded": "Sejak {from}, tanpa batas"
+          "range": "{from} – {until}"
         },
         "revokedOn": "Dicabut {date}: {reason}",
         "form": {
           "createTitle": "Tambah kewenangan",
           "editTitle": "Ubah kewenangan",
-          "description": "Catat kewenangan tambahan {name} sesuai surat keputusan dinas kesehatan.",
+          "description": "Catat kewenangan tambahan {name} beserta bukti pemberiannya.",
           "kind": "Jenis kewenangan",
           "kindPlaceholder": "Pilih kewenangan",
           "kindLocked": "Jenis tidak dapat diubah. Cabut kewenangan ini lalu catat yang baru.",
           "trainingCertificateNumber": "Nomor sertifikat pelatihan",
-          "decreeNumber": "Nomor SK",
-          "decreeIssuedAt": "Tanggal SK",
+          "grantReference": "Nomor bukti",
+          "grantIssuedAt": "Tanggal terbit",
           "validFrom": "Berlaku sejak",
           "validUntil": "Berlaku sampai",
-          "validUntilHint": "Kosongkan jika tanpa batas waktu.",
-          "decreeFile": "Berkas SK (PDF atau gambar)",
-          "decreeFileKeep": "Berkas SK saat ini dipertahankan jika tidak dipilih berkas baru.",
-          "decreeFileTooLarge": "Ukuran berkas maksimal 20 MB.",
-          "decreeFileType": "Berkas harus PDF, JPEG, PNG, atau WebP.",
+          "validUntilHint": "Isi sesuai masa berlaku yang ditetapkan pemerintah.",
+          "grantDocumentFile": "Dokumen bukti (PDF atau gambar)",
+          "grantDocumentFileKeep": "Dokumen bukti saat ini dipertahankan jika tidak dipilih berkas baru.",
+          "grantDocumentFileTooLarge": "Ukuran berkas maksimal 20 MB.",
+          "grantDocumentFileType": "Berkas harus PDF, JPEG, PNG, atau WebP.",
           "kindRequired": "Pilih jenis kewenangan.",
-          "decreeNumberRequired": "Nomor SK wajib diisi.",
-          "decreeIssuedAtRequired": "Tanggal SK wajib diisi.",
+          "grantReferenceRequired": "Nomor bukti wajib diisi.",
+          "grantIssuedAtRequired": "Tanggal terbit wajib diisi.",
           "validFromRequired": "Tanggal mulai berlaku wajib diisi.",
           "validityOrder": "Tanggal akhir harus sama atau setelah tanggal mulai.",
-          "uploading": "Mengunggah SK...",
+          "uploading": "Mengunggah dokumen bukti...",
           "submitting": "Menyimpan...",
           "submit": "Simpan",
           "error": "Kewenangan gagal disimpan. Silakan coba lagi.",
           "requiresMidwife": "Kewenangan hanya dapat dicatat untuk bidan.",
-          "alreadyActive": "Kewenangan jenis ini masih aktif. Ubah masa berlakunya atau cabut dulu."
+          "alreadyActive": "Kewenangan jenis ini masih aktif. Ubah masa berlakunya atau cabut dulu.",
+          "grantKind": "Jenis bukti kewenangan",
+          "grantKindPlaceholder": "Pilih jenis bukti",
+          "grantReferenceByKind": {
+            "DINAS_PENETAPAN": "Nomor penetapan",
+            "GOVERNMENT_PENUGASAN": "Nomor surat penugasan",
+            "STR_ANNOTATION": "Nomor STR"
+          },
+          "grantKindRequired": "Pilih jenis bukti kewenangan.",
+          "trainingCertificateNumberRequired": "Nomor sertifikat pelatihan wajib diisi.",
+          "validUntilRequired": "Tanggal akhir berlaku wajib diisi."
         },
         "revokeDialog": {
           "title": "Cabut kewenangan",

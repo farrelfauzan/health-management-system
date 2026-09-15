@@ -19,14 +19,15 @@ const AUTHORITY_SELECT = {
   id: true,
   doctorId: true,
   kind: true,
+  grantKind: true,
   trainingCertificateNumber: true,
-  decreeNumber: true,
-  decreeIssuedAt: true,
+  grantReference: true,
+  grantIssuedAt: true,
   validFrom: true,
   validUntil: true,
-  decreeStorageKey: true,
-  decreeMimeType: true,
-  decreeSizeBytes: true,
+  grantDocumentStorageKey: true,
+  grantDocumentMimeType: true,
+  grantDocumentSizeBytes: true,
   revokedAt: true,
   revokedById: true,
   revokeReason: true,
@@ -55,23 +56,25 @@ function rethrowAuthorityConflict(err: unknown): never {
   throw err;
 }
 
-function toDecreeColumns(decree: UpdateDoctorAuthorityRecordPayload['decree']): {
-  decreeStorageKey?: string | null;
-  decreeMimeType?: string | null;
-  decreeSizeBytes?: number | null;
+function toGrantDocumentColumns(
+  grantDocument: UpdateDoctorAuthorityRecordPayload['grantDocument'],
+): {
+  grantDocumentStorageKey?: string | null;
+  grantDocumentMimeType?: string | null;
+  grantDocumentSizeBytes?: number | null;
 } {
-  if (decree === undefined) {
+  if (grantDocument === undefined) {
     return {};
   }
   return {
-    decreeStorageKey: decree?.storageKey ?? null,
-    decreeMimeType: decree?.mimeType ?? null,
-    decreeSizeBytes: decree?.sizeBytes ?? null,
+    grantDocumentStorageKey: grantDocument?.storageKey ?? null,
+    grantDocumentMimeType: grantDocument?.mimeType ?? null,
+    grantDocumentSizeBytes: grantDocument?.sizeBytes ?? null,
   };
 }
 
 /**
- * Persistence for a midwife's delegated authorities (P25-T02). The one
+ * Persistence for a midwife's delegated authorities (P25-T02, D-036). The one
  * Prisma reader for `doctor_authorities`; every other module reaches these
  * rows through `DoctorAuthorityService`.
  */
@@ -116,8 +119,9 @@ export class DoctorAuthorityRepository {
   }
 
   /**
-   * Whether a live row of this kind covers `onDate`: `valid_from ≤ onDate`
-   * and `valid_until` null or `≥ onDate`, both inclusive.
+   * Whether a live row of this kind covers `onDate`: `valid_from ≤ onDate ≤
+   * valid_until`, both inclusive. Every grant is end-dated (D-036), so there
+   * is no open-ended branch.
    */
   async hasActiveAuthority(
     doctorId: string,
@@ -131,7 +135,7 @@ export class DoctorAuthorityRepository {
         revokedAt: null,
         deletedAt: null,
         validFrom: { lte: onDate },
-        OR: [{ validUntil: null }, { validUntil: { gte: onDate } }],
+        validUntil: { gte: onDate },
       },
     });
     return count > 0;
@@ -143,13 +147,14 @@ export class DoctorAuthorityRepository {
         data: {
           doctorId: payload.doctorId,
           kind: payload.kind,
+          grantKind: payload.grantKind,
           trainingCertificateNumber: payload.trainingCertificateNumber,
-          decreeNumber: payload.decreeNumber,
-          decreeIssuedAt: payload.decreeIssuedAt,
+          grantReference: payload.grantReference,
+          grantIssuedAt: payload.grantIssuedAt,
           validFrom: payload.validFrom,
           validUntil: payload.validUntil,
           createdById: payload.createdById,
-          ...toDecreeColumns(payload.decree),
+          ...toGrantDocumentColumns(payload.grantDocument),
         },
         select: AUTHORITY_SELECT,
       });
@@ -165,12 +170,13 @@ export class DoctorAuthorityRepository {
     return this.prisma.doctorAuthority.update({
       where: { id },
       data: {
+        grantKind: payload.grantKind,
         trainingCertificateNumber: payload.trainingCertificateNumber,
-        decreeNumber: payload.decreeNumber,
-        decreeIssuedAt: payload.decreeIssuedAt,
+        grantReference: payload.grantReference,
+        grantIssuedAt: payload.grantIssuedAt,
         validFrom: payload.validFrom,
         validUntil: payload.validUntil,
-        ...toDecreeColumns(payload.decree),
+        ...toGrantDocumentColumns(payload.grantDocument),
       },
       select: AUTHORITY_SELECT,
     });
@@ -193,23 +199,24 @@ export class DoctorAuthorityRepository {
 
   /**
    * Every live authority whose end date is on or before `throughDate`,
-   * soonest first, for the reminder sweep. Open-ended rows have nothing to
-   * reach and are excluded; so are revoked rows, soft-deleted rows and rows
-   * of retired clinicians — the list is of obligations the clinic still has.
+   * soonest first, for the reminder sweep. Every grant is end-dated (D-036);
+   * revoked rows, soft-deleted rows and rows of retired clinicians are
+   * excluded — the list is of obligations the clinic still has.
    */
   async listExpiringAuthorities(throughDate: Date): Promise<DoctorAuthorityExpiryRecord[]> {
     const rows = await this.prisma.doctorAuthority.findMany({
       where: {
         deletedAt: null,
         revokedAt: null,
-        validUntil: { not: null, lte: throughDate },
+        validUntil: { lte: throughDate },
         doctor: { deletedAt: null, isActive: true },
       },
       select: {
         id: true,
         doctorId: true,
         kind: true,
-        decreeNumber: true,
+        grantKind: true,
+        grantReference: true,
         validUntil: true,
         doctor: { select: { fullName: true } },
       },
@@ -220,9 +227,9 @@ export class DoctorAuthorityRepository {
       doctorId: row.doctorId,
       doctorName: row.doctor.fullName,
       kind: row.kind,
-      decreeNumber: row.decreeNumber,
-      // Narrowing what the `not: null` predicate already guarantees.
-      validUntil: row.validUntil as Date,
+      grantKind: row.grantKind,
+      grantReference: row.grantReference,
+      validUntil: row.validUntil,
     }));
   }
 

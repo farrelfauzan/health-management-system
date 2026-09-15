@@ -396,6 +396,15 @@ export const DoctorAuthorityKind = {
 export type DoctorAuthorityKind = (typeof DoctorAuthorityKind)[keyof typeof DoctorAuthorityKind]
 
 
+export const DoctorAuthorityGrantKind = {
+  DINAS_PENETAPAN: 'DINAS_PENETAPAN',
+  GOVERNMENT_PENUGASAN: 'GOVERNMENT_PENUGASAN',
+  STR_ANNOTATION: 'STR_ANNOTATION'
+} as const
+
+export type DoctorAuthorityGrantKind = (typeof DoctorAuthorityGrantKind)[keyof typeof DoctorAuthorityGrantKind]
+
+
 export const AppointmentStatus = {
   REQUESTED: 'REQUESTED',
   SCHEDULED: 'SCHEDULED',

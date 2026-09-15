@@ -24,8 +24,8 @@ import type {
   CreateDoctorAuthorityDto,
   CreateDoctorAuthorityUploadUrlDto,
   DoctorAuthorityControllerCreateAuthorityV1201,
-  DoctorAuthorityControllerCreateDecreeUploadUrlV1200,
-  DoctorAuthorityControllerGetDecreeDownloadUrlV1200,
+  DoctorAuthorityControllerCreateGrantDocumentUploadUrlV1200,
+  DoctorAuthorityControllerGetGrantDocumentDownloadUrlV1200,
   DoctorAuthorityControllerListAuthoritiesV1200,
   DoctorAuthorityControllerRevokeAuthorityV1200,
   DoctorAuthorityControllerUpdateAuthorityV1200,
@@ -247,16 +247,16 @@ export function useDoctorAuthorityControllerCreateAuthorityV1<TData = Awaited<Re
 
 
 /**
- * @summary Sign an upload of a decision letter
+ * @summary Sign an upload of a grant document
  */
-export const doctorAuthorityControllerCreateDecreeUploadUrlV1 = (
+export const doctorAuthorityControllerCreateGrantDocumentUploadUrlV1 = (
     doctorId: string,
     createDoctorAuthorityUploadUrlDto: CreateDoctorAuthorityUploadUrlDto,
  signal?: AbortSignal
 ) => {
 
 
-      return orvalAxiosMutator<DoctorAuthorityControllerCreateDecreeUploadUrlV1200>(
+      return orvalAxiosMutator<DoctorAuthorityControllerCreateGrantDocumentUploadUrlV1200>(
       {url: `/api/v1/doctors/${doctorId}/authorities/upload-url`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: createDoctorAuthorityUploadUrlDto, signal
@@ -267,7 +267,7 @@ export const doctorAuthorityControllerCreateDecreeUploadUrlV1 = (
 
 
 
-export const getDoctorAuthorityControllerCreateDecreeUploadUrlV1QueryKey = (doctorId: string,
+export const getDoctorAuthorityControllerCreateGrantDocumentUploadUrlV1QueryKey = (doctorId: string,
     createDoctorAuthorityUploadUrlDto?: CreateDoctorAuthorityUploadUrlDto,) => {
     return [
     'POST', `/api/v1/doctors/${doctorId}/authorities/upload-url`, createDoctorAuthorityUploadUrlDto
@@ -275,67 +275,67 @@ export const getDoctorAuthorityControllerCreateDecreeUploadUrlV1QueryKey = (doct
     }
 
 
-export const getDoctorAuthorityControllerCreateDecreeUploadUrlV1QueryOptions = <TData = Awaited<ReturnType<typeof doctorAuthorityControllerCreateDecreeUploadUrlV1>>, TError = unknown>(doctorId: string,
-    createDoctorAuthorityUploadUrlDto: CreateDoctorAuthorityUploadUrlDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof doctorAuthorityControllerCreateDecreeUploadUrlV1>>, TError, TData>>, }
+export const getDoctorAuthorityControllerCreateGrantDocumentUploadUrlV1QueryOptions = <TData = Awaited<ReturnType<typeof doctorAuthorityControllerCreateGrantDocumentUploadUrlV1>>, TError = unknown>(doctorId: string,
+    createDoctorAuthorityUploadUrlDto: CreateDoctorAuthorityUploadUrlDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof doctorAuthorityControllerCreateGrantDocumentUploadUrlV1>>, TError, TData>>, }
 ) => {
 
 const {query: queryOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getDoctorAuthorityControllerCreateDecreeUploadUrlV1QueryKey(doctorId,createDoctorAuthorityUploadUrlDto);
+  const queryKey =  queryOptions?.queryKey ?? getDoctorAuthorityControllerCreateGrantDocumentUploadUrlV1QueryKey(doctorId,createDoctorAuthorityUploadUrlDto);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof doctorAuthorityControllerCreateDecreeUploadUrlV1>>> = ({ signal }) => doctorAuthorityControllerCreateDecreeUploadUrlV1(doctorId,createDoctorAuthorityUploadUrlDto, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof doctorAuthorityControllerCreateGrantDocumentUploadUrlV1>>> = ({ signal }) => doctorAuthorityControllerCreateGrantDocumentUploadUrlV1(doctorId,createDoctorAuthorityUploadUrlDto, signal);
 
 
 
 
 
-   return  { queryKey, queryFn, enabled: doctorId !== null && doctorId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof doctorAuthorityControllerCreateDecreeUploadUrlV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: doctorId !== null && doctorId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof doctorAuthorityControllerCreateGrantDocumentUploadUrlV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type DoctorAuthorityControllerCreateDecreeUploadUrlV1QueryResult = NonNullable<Awaited<ReturnType<typeof doctorAuthorityControllerCreateDecreeUploadUrlV1>>>
-export type DoctorAuthorityControllerCreateDecreeUploadUrlV1QueryError = unknown
+export type DoctorAuthorityControllerCreateGrantDocumentUploadUrlV1QueryResult = NonNullable<Awaited<ReturnType<typeof doctorAuthorityControllerCreateGrantDocumentUploadUrlV1>>>
+export type DoctorAuthorityControllerCreateGrantDocumentUploadUrlV1QueryError = unknown
 
 
-export function useDoctorAuthorityControllerCreateDecreeUploadUrlV1<TData = Awaited<ReturnType<typeof doctorAuthorityControllerCreateDecreeUploadUrlV1>>, TError = unknown>(
+export function useDoctorAuthorityControllerCreateGrantDocumentUploadUrlV1<TData = Awaited<ReturnType<typeof doctorAuthorityControllerCreateGrantDocumentUploadUrlV1>>, TError = unknown>(
  doctorId: string,
-    createDoctorAuthorityUploadUrlDto: CreateDoctorAuthorityUploadUrlDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof doctorAuthorityControllerCreateDecreeUploadUrlV1>>, TError, TData>> & Pick<
+    createDoctorAuthorityUploadUrlDto: CreateDoctorAuthorityUploadUrlDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof doctorAuthorityControllerCreateGrantDocumentUploadUrlV1>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof doctorAuthorityControllerCreateDecreeUploadUrlV1>>,
+          Awaited<ReturnType<typeof doctorAuthorityControllerCreateGrantDocumentUploadUrlV1>>,
           TError,
-          Awaited<ReturnType<typeof doctorAuthorityControllerCreateDecreeUploadUrlV1>>
+          Awaited<ReturnType<typeof doctorAuthorityControllerCreateGrantDocumentUploadUrlV1>>
         > , 'initialData'
       >, }
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useDoctorAuthorityControllerCreateDecreeUploadUrlV1<TData = Awaited<ReturnType<typeof doctorAuthorityControllerCreateDecreeUploadUrlV1>>, TError = unknown>(
+export function useDoctorAuthorityControllerCreateGrantDocumentUploadUrlV1<TData = Awaited<ReturnType<typeof doctorAuthorityControllerCreateGrantDocumentUploadUrlV1>>, TError = unknown>(
  doctorId: string,
-    createDoctorAuthorityUploadUrlDto: CreateDoctorAuthorityUploadUrlDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof doctorAuthorityControllerCreateDecreeUploadUrlV1>>, TError, TData>> & Pick<
+    createDoctorAuthorityUploadUrlDto: CreateDoctorAuthorityUploadUrlDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof doctorAuthorityControllerCreateGrantDocumentUploadUrlV1>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof doctorAuthorityControllerCreateDecreeUploadUrlV1>>,
+          Awaited<ReturnType<typeof doctorAuthorityControllerCreateGrantDocumentUploadUrlV1>>,
           TError,
-          Awaited<ReturnType<typeof doctorAuthorityControllerCreateDecreeUploadUrlV1>>
+          Awaited<ReturnType<typeof doctorAuthorityControllerCreateGrantDocumentUploadUrlV1>>
         > , 'initialData'
       >, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useDoctorAuthorityControllerCreateDecreeUploadUrlV1<TData = Awaited<ReturnType<typeof doctorAuthorityControllerCreateDecreeUploadUrlV1>>, TError = unknown>(
+export function useDoctorAuthorityControllerCreateGrantDocumentUploadUrlV1<TData = Awaited<ReturnType<typeof doctorAuthorityControllerCreateGrantDocumentUploadUrlV1>>, TError = unknown>(
  doctorId: string,
-    createDoctorAuthorityUploadUrlDto: CreateDoctorAuthorityUploadUrlDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof doctorAuthorityControllerCreateDecreeUploadUrlV1>>, TError, TData>>, }
+    createDoctorAuthorityUploadUrlDto: CreateDoctorAuthorityUploadUrlDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof doctorAuthorityControllerCreateGrantDocumentUploadUrlV1>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
- * @summary Sign an upload of a decision letter
+ * @summary Sign an upload of a grant document
  */
 
-export function useDoctorAuthorityControllerCreateDecreeUploadUrlV1<TData = Awaited<ReturnType<typeof doctorAuthorityControllerCreateDecreeUploadUrlV1>>, TError = unknown>(
+export function useDoctorAuthorityControllerCreateGrantDocumentUploadUrlV1<TData = Awaited<ReturnType<typeof doctorAuthorityControllerCreateGrantDocumentUploadUrlV1>>, TError = unknown>(
  doctorId: string,
-    createDoctorAuthorityUploadUrlDto: CreateDoctorAuthorityUploadUrlDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof doctorAuthorityControllerCreateDecreeUploadUrlV1>>, TError, TData>>, }
+    createDoctorAuthorityUploadUrlDto: CreateDoctorAuthorityUploadUrlDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof doctorAuthorityControllerCreateGrantDocumentUploadUrlV1>>, TError, TData>>, }
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getDoctorAuthorityControllerCreateDecreeUploadUrlV1QueryOptions(doctorId,createDoctorAuthorityUploadUrlDto,options)
+  const queryOptions = getDoctorAuthorityControllerCreateGrantDocumentUploadUrlV1QueryOptions(doctorId,createDoctorAuthorityUploadUrlDto,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -564,17 +564,17 @@ export function useDoctorAuthorityControllerRevokeAuthorityV1<TData = Awaited<Re
 
 
 /**
- * @summary Sign a download of the decision letter
+ * @summary Sign a download of the grant document
  */
-export const doctorAuthorityControllerGetDecreeDownloadUrlV1 = (
+export const doctorAuthorityControllerGetGrantDocumentDownloadUrlV1 = (
     doctorId: string,
     id: string,
  signal?: AbortSignal
 ) => {
 
 
-      return orvalAxiosMutator<DoctorAuthorityControllerGetDecreeDownloadUrlV1200>(
-      {url: `/api/v1/doctors/${doctorId}/authorities/${id}/decree/download`, method: 'GET', signal
+      return orvalAxiosMutator<DoctorAuthorityControllerGetGrantDocumentDownloadUrlV1200>(
+      {url: `/api/v1/doctors/${doctorId}/authorities/${id}/grant-document/download`, method: 'GET', signal
     },
       );
     }
@@ -582,75 +582,75 @@ export const doctorAuthorityControllerGetDecreeDownloadUrlV1 = (
 
 
 
-export const getDoctorAuthorityControllerGetDecreeDownloadUrlV1QueryKey = (doctorId: string,
+export const getDoctorAuthorityControllerGetGrantDocumentDownloadUrlV1QueryKey = (doctorId: string,
     id: string,) => {
     return [
-    `/api/v1/doctors/${doctorId}/authorities/${id}/decree/download`
+    `/api/v1/doctors/${doctorId}/authorities/${id}/grant-document/download`
     ] as const;
     }
 
 
-export const getDoctorAuthorityControllerGetDecreeDownloadUrlV1QueryOptions = <TData = Awaited<ReturnType<typeof doctorAuthorityControllerGetDecreeDownloadUrlV1>>, TError = unknown>(doctorId: string,
-    id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof doctorAuthorityControllerGetDecreeDownloadUrlV1>>, TError, TData>>, }
+export const getDoctorAuthorityControllerGetGrantDocumentDownloadUrlV1QueryOptions = <TData = Awaited<ReturnType<typeof doctorAuthorityControllerGetGrantDocumentDownloadUrlV1>>, TError = unknown>(doctorId: string,
+    id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof doctorAuthorityControllerGetGrantDocumentDownloadUrlV1>>, TError, TData>>, }
 ) => {
 
 const {query: queryOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getDoctorAuthorityControllerGetDecreeDownloadUrlV1QueryKey(doctorId,id);
+  const queryKey =  queryOptions?.queryKey ?? getDoctorAuthorityControllerGetGrantDocumentDownloadUrlV1QueryKey(doctorId,id);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof doctorAuthorityControllerGetDecreeDownloadUrlV1>>> = ({ signal }) => doctorAuthorityControllerGetDecreeDownloadUrlV1(doctorId,id, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof doctorAuthorityControllerGetGrantDocumentDownloadUrlV1>>> = ({ signal }) => doctorAuthorityControllerGetGrantDocumentDownloadUrlV1(doctorId,id, signal);
 
 
 
 
 
-   return  { queryKey, queryFn, enabled: doctorId !== null && doctorId !== undefined && id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof doctorAuthorityControllerGetDecreeDownloadUrlV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: doctorId !== null && doctorId !== undefined && id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof doctorAuthorityControllerGetGrantDocumentDownloadUrlV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type DoctorAuthorityControllerGetDecreeDownloadUrlV1QueryResult = NonNullable<Awaited<ReturnType<typeof doctorAuthorityControllerGetDecreeDownloadUrlV1>>>
-export type DoctorAuthorityControllerGetDecreeDownloadUrlV1QueryError = unknown
+export type DoctorAuthorityControllerGetGrantDocumentDownloadUrlV1QueryResult = NonNullable<Awaited<ReturnType<typeof doctorAuthorityControllerGetGrantDocumentDownloadUrlV1>>>
+export type DoctorAuthorityControllerGetGrantDocumentDownloadUrlV1QueryError = unknown
 
 
-export function useDoctorAuthorityControllerGetDecreeDownloadUrlV1<TData = Awaited<ReturnType<typeof doctorAuthorityControllerGetDecreeDownloadUrlV1>>, TError = unknown>(
+export function useDoctorAuthorityControllerGetGrantDocumentDownloadUrlV1<TData = Awaited<ReturnType<typeof doctorAuthorityControllerGetGrantDocumentDownloadUrlV1>>, TError = unknown>(
  doctorId: string,
-    id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof doctorAuthorityControllerGetDecreeDownloadUrlV1>>, TError, TData>> & Pick<
+    id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof doctorAuthorityControllerGetGrantDocumentDownloadUrlV1>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof doctorAuthorityControllerGetDecreeDownloadUrlV1>>,
+          Awaited<ReturnType<typeof doctorAuthorityControllerGetGrantDocumentDownloadUrlV1>>,
           TError,
-          Awaited<ReturnType<typeof doctorAuthorityControllerGetDecreeDownloadUrlV1>>
+          Awaited<ReturnType<typeof doctorAuthorityControllerGetGrantDocumentDownloadUrlV1>>
         > , 'initialData'
       >, }
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useDoctorAuthorityControllerGetDecreeDownloadUrlV1<TData = Awaited<ReturnType<typeof doctorAuthorityControllerGetDecreeDownloadUrlV1>>, TError = unknown>(
+export function useDoctorAuthorityControllerGetGrantDocumentDownloadUrlV1<TData = Awaited<ReturnType<typeof doctorAuthorityControllerGetGrantDocumentDownloadUrlV1>>, TError = unknown>(
  doctorId: string,
-    id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof doctorAuthorityControllerGetDecreeDownloadUrlV1>>, TError, TData>> & Pick<
+    id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof doctorAuthorityControllerGetGrantDocumentDownloadUrlV1>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof doctorAuthorityControllerGetDecreeDownloadUrlV1>>,
+          Awaited<ReturnType<typeof doctorAuthorityControllerGetGrantDocumentDownloadUrlV1>>,
           TError,
-          Awaited<ReturnType<typeof doctorAuthorityControllerGetDecreeDownloadUrlV1>>
+          Awaited<ReturnType<typeof doctorAuthorityControllerGetGrantDocumentDownloadUrlV1>>
         > , 'initialData'
       >, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useDoctorAuthorityControllerGetDecreeDownloadUrlV1<TData = Awaited<ReturnType<typeof doctorAuthorityControllerGetDecreeDownloadUrlV1>>, TError = unknown>(
+export function useDoctorAuthorityControllerGetGrantDocumentDownloadUrlV1<TData = Awaited<ReturnType<typeof doctorAuthorityControllerGetGrantDocumentDownloadUrlV1>>, TError = unknown>(
  doctorId: string,
-    id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof doctorAuthorityControllerGetDecreeDownloadUrlV1>>, TError, TData>>, }
+    id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof doctorAuthorityControllerGetGrantDocumentDownloadUrlV1>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
- * @summary Sign a download of the decision letter
+ * @summary Sign a download of the grant document
  */
 
-export function useDoctorAuthorityControllerGetDecreeDownloadUrlV1<TData = Awaited<ReturnType<typeof doctorAuthorityControllerGetDecreeDownloadUrlV1>>, TError = unknown>(
+export function useDoctorAuthorityControllerGetGrantDocumentDownloadUrlV1<TData = Awaited<ReturnType<typeof doctorAuthorityControllerGetGrantDocumentDownloadUrlV1>>, TError = unknown>(
  doctorId: string,
-    id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof doctorAuthorityControllerGetDecreeDownloadUrlV1>>, TError, TData>>, }
+    id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof doctorAuthorityControllerGetGrantDocumentDownloadUrlV1>>, TError, TData>>, }
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getDoctorAuthorityControllerGetDecreeDownloadUrlV1QueryOptions(doctorId,id,options)
+  const queryOptions = getDoctorAuthorityControllerGetGrantDocumentDownloadUrlV1QueryOptions(doctorId,id,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

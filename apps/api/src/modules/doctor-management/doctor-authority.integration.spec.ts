@@ -66,14 +66,15 @@ describe('DoctorAuthority integration', () => {
     id: authorityId,
     doctorId,
     kind: 'IUD_IMPLANT',
-    trainingCertificateNumber: null,
-    decreeNumber: '440/123/2026',
-    decreeIssuedAt: new Date('2025-12-15T00:00:00.000Z'),
+    grantKind: 'DINAS_PENETAPAN',
+    grantReference: 'PENETAPAN-0001',
+    grantIssuedAt: new Date('2025-12-15T00:00:00.000Z'),
+    trainingCertificateNumber: 'CTU-0042',
     validFrom: new Date('2026-01-01T00:00:00.000Z'),
     validUntil: new Date('2027-12-31T00:00:00.000Z'),
-    decreeStorageKey: null,
-    decreeMimeType: null,
-    decreeSizeBytes: null,
+    grantDocumentStorageKey: null,
+    grantDocumentMimeType: null,
+    grantDocumentSizeBytes: null,
     revokedAt: null,
     revokedById: null,
     revokeReason: null,
@@ -85,8 +86,10 @@ describe('DoctorAuthority integration', () => {
 
   const createPayload = {
     kind: 'IUD_IMPLANT',
-    decreeNumber: '440/123/2026',
-    decreeIssuedAt: '2025-12-15',
+    grantKind: 'DINAS_PENETAPAN',
+    grantReference: 'PENETAPAN-0001',
+    grantIssuedAt: '2025-12-15',
+    trainingCertificateNumber: 'CTU-0042',
     validFrom: '2026-01-01',
     validUntil: '2027-12-31',
   };
@@ -180,9 +183,15 @@ describe('DoctorAuthority integration', () => {
 
     expect(response.status).toBe(200);
     expect(response.body.data[0]).toEqual(
-      expect.objectContaining({ id: authorityId, kind: 'IUD_IMPLANT', hasDecree: false }),
+      expect.objectContaining({
+        id: authorityId,
+        kind: 'IUD_IMPLANT',
+        grantKind: 'DINAS_PENETAPAN',
+        validUntil: '2027-12-31',
+        hasGrantDocument: false,
+      }),
     );
-    expect(response.body.data[0]).not.toHaveProperty('decreeStorageKey');
+    expect(response.body.data[0]).not.toHaveProperty('grantDocumentStorageKey');
   });
 
   it('grants with 201 and writes an audit row naming the actor', async () => {
@@ -199,7 +208,13 @@ describe('DoctorAuthority integration', () => {
       expect.objectContaining({ id: authorityId, status: expect.any(String) }),
     );
     expect(authorityRepositoryMock.create).toHaveBeenCalledWith(
-      expect.objectContaining({ doctorId, kind: 'IUD_IMPLANT', createdById: 'admin-user' }),
+      expect.objectContaining({
+        doctorId,
+        kind: 'IUD_IMPLANT',
+        grantKind: 'DINAS_PENETAPAN',
+        trainingCertificateNumber: 'CTU-0042',
+        createdById: 'admin-user',
+      }),
     );
     expect(auditRepositoryMock.createAuditLog).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -252,13 +267,66 @@ describe('DoctorAuthority integration', () => {
       .set('Authorization', `Bearer ${token}`)
       .send({
         ...createPayload,
-        decreeStorageKey:
+        grantDocumentStorageKey:
           'doctor-authorities/00000000-0000-4000-8000-000000000000/9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d.pdf',
       });
 
     expect(response.status).toBe(400);
     expect(objectStorageMock.headObject).not.toHaveBeenCalled();
     expect(authorityRepositoryMock.create).not.toHaveBeenCalled();
+  });
+
+  it.each(['validUntil', 'trainingCertificateNumber'])(
+    'refuses a grant without %s: every grant is bounded and trained (D-036)',
+    async (missingField: string) => {
+      const token = await buildToken('admin-user', 'admin@hms.local');
+      mockActorWithPermissions([writeGrant]);
+      const inputPayload: Record<string, string> = { ...createPayload };
+      delete inputPayload[missingField];
+
+      const response = await request(app.getHttpServer())
+        .post(basePath)
+        .set('Authorization', `Bearer ${token}`)
+        .send(inputPayload);
+
+      expect(response.status).toBe(400);
+      expect(authorityRepositoryMock.create).not.toHaveBeenCalled();
+    },
+  );
+
+  it('refuses to clear the end date on PATCH', async () => {
+    const token = await buildToken('admin-user', 'admin@hms.local');
+    mockActorWithPermissions([writeGrant]);
+
+    const response = await request(app.getHttpServer())
+      .patch(`${basePath}/${authorityId}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ validUntil: null });
+
+    expect(response.status).toBe(400);
+    expect(authorityRepositoryMock.update).not.toHaveBeenCalled();
+  });
+
+  it('signs a grant document download on the renamed route', async () => {
+    const token = await buildToken('admin-user', 'admin@hms.local');
+    mockActorWithPermissions([readGrant]);
+    authorityRepositoryMock.findById.mockResolvedValue({
+      ...authorityRecord,
+      grantDocumentStorageKey: `doctor-authorities/${doctorId}/9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d.pdf`,
+      grantDocumentMimeType: 'application/pdf',
+      grantDocumentSizeBytes: 1024,
+    });
+    objectStorageMock.getSignedUrl.mockResolvedValue({
+      url: 'https://storage.example.com/signed',
+      expiresAt: '2026-01-02T03:15:00.000Z',
+    });
+
+    const response = await request(app.getHttpServer())
+      .get(`${basePath}/${authorityId}/grant-document/download`)
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.data.url).toBe('https://storage.example.com/signed');
   });
 
   it('rejects a kind on PATCH: the update body is strict', async () => {

@@ -5,29 +5,31 @@
  * Health Management System API
  * OpenAPI spec version: 1.0.0
  */
+import type { CreateDoctorAuthorityDtoGrantKind } from './createDoctorAuthorityDtoGrantKind';
 import type { CreateDoctorAuthorityDtoKind } from './createDoctorAuthorityDtoKind';
 
 export interface CreateDoctorAuthorityDto {
   kind: CreateDoctorAuthorityDtoKind;
+  grantKind: CreateDoctorAuthorityDtoGrantKind;
   /**
      * @minLength 1
      * @maxLength 128
      */
-  trainingCertificateNumber?: string;
-  /**
-     * @minLength 1
-     * @maxLength 128
-     */
-  decreeNumber: string;
+  grantReference: string;
   /** @pattern ^\d{4}-\d{2}-\d{2}$ */
-  decreeIssuedAt: string;
+  grantIssuedAt: string;
+  /**
+     * @minLength 1
+     * @maxLength 128
+     */
+  trainingCertificateNumber: string;
   /** @pattern ^\d{4}-\d{2}-\d{2}$ */
   validFrom: string;
   /** @pattern ^\d{4}-\d{2}-\d{2}$ */
-  validUntil?: string;
+  validUntil: string;
   /**
      * @minLength 1
      * @maxLength 512
      */
-  decreeStorageKey?: string;
+  grantDocumentStorageKey?: string;
 }

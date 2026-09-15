@@ -1,5 +1,6 @@
 import type {
   ClinicianProfessionValue,
+  DoctorAuthorityGrantKindValue,
   DoctorAuthorityKindValue,
   DoctorEducationInput,
   DoctorLicenseTypeValue,
@@ -231,14 +232,15 @@ export type DoctorAuthorityRecord = {
   id: string;
   doctorId: string;
   kind: DoctorAuthorityKindValue;
-  trainingCertificateNumber: string | null;
-  decreeNumber: string;
-  decreeIssuedAt: Date;
+  grantKind: DoctorAuthorityGrantKindValue;
+  grantReference: string;
+  grantIssuedAt: Date;
+  trainingCertificateNumber: string;
   validFrom: Date;
-  validUntil: Date | null;
-  decreeStorageKey: string | null;
-  decreeMimeType: string | null;
-  decreeSizeBytes: number | null;
+  validUntil: Date;
+  grantDocumentStorageKey: string | null;
+  grantDocumentMimeType: string | null;
+  grantDocumentSizeBytes: number | null;
   revokedAt: Date | null;
   revokedById: string | null;
   revokeReason: string | null;
@@ -248,8 +250,8 @@ export type DoctorAuthorityRecord = {
   deletedAt: Date | null;
 };
 
-/** The stored decree file, verified against storage before it is recorded. */
-export type DoctorAuthorityDecreePayload = {
+/** The stored grant document, verified against storage before it is recorded. */
+export type DoctorAuthorityGrantDocumentPayload = {
   storageKey: string;
   mimeType: string;
   sizeBytes: number;
@@ -258,26 +260,29 @@ export type DoctorAuthorityDecreePayload = {
 export type CreateDoctorAuthorityRecordPayload = {
   doctorId: string;
   kind: DoctorAuthorityKindValue;
-  trainingCertificateNumber: string | null;
-  decreeNumber: string;
-  decreeIssuedAt: Date;
+  grantKind: DoctorAuthorityGrantKindValue;
+  grantReference: string;
+  grantIssuedAt: Date;
+  trainingCertificateNumber: string;
   validFrom: Date;
-  validUntil: Date | null;
-  decree: DoctorAuthorityDecreePayload | null;
+  validUntil: Date;
+  grantDocument: DoctorAuthorityGrantDocumentPayload | null;
   createdById: string;
 };
 
 /**
- * Only the fields the update route may touch; `kind` is absent by type. A
- * `decree` of `null` detaches the letter, `undefined` leaves it alone.
+ * Only the fields the update route may touch; `kind` is absent by type and
+ * `validUntil` cannot be null. A `grantDocument` of `null` detaches the
+ * document, `undefined` leaves it alone.
  */
 export type UpdateDoctorAuthorityRecordPayload = {
-  trainingCertificateNumber?: string | null;
-  decreeNumber?: string;
-  decreeIssuedAt?: Date;
+  grantKind?: DoctorAuthorityGrantKindValue;
+  grantReference?: string;
+  grantIssuedAt?: Date;
+  trainingCertificateNumber?: string;
   validFrom?: Date;
-  validUntil?: Date | null;
-  decree?: DoctorAuthorityDecreePayload | null;
+  validUntil?: Date;
+  grantDocument?: DoctorAuthorityGrantDocumentPayload | null;
 };
 
 export type RevokeDoctorAuthorityRecordPayload = {
@@ -299,14 +304,21 @@ export type HasActiveDoctorAuthorityParams = {
 
 /**
  * One authority row as the expiry sweep reads it, joined to its clinician for
- * the notification's copy. `validUntil` is never null: open-ended grants are
- * excluded by the query.
+ * the notification's copy.
  */
 export type DoctorAuthorityExpiryRecord = {
   authorityId: string;
   doctorId: string;
   doctorName: string;
   kind: DoctorAuthorityKindValue;
-  decreeNumber: string;
+  grantKind: DoctorAuthorityGrantKindValue;
+  grantReference: string;
   validUntil: Date;
+};
+
+/** A swept authority with its distance to `validUntil` and the threshold it crossed. */
+export type DoctorAuthorityExpiryCandidate = {
+  record: DoctorAuthorityExpiryRecord;
+  daysUntilExpiry: number;
+  thresholdDays: number;
 };

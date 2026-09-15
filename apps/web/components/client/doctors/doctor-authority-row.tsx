@@ -6,7 +6,7 @@ import { Button, Icon, TableCell, TableRow } from '@hms/ui';
 import { useFormatter, useTranslations } from 'next-intl';
 
 import { DoctorAuthorityStatusBadge } from '#components/client/doctors/doctor-authority-status-badge';
-import { doctorAuthorityControllerGetDecreeDownloadUrlV1 } from '#lib/api/generated/doctor-authorities/doctor-authorities';
+import { doctorAuthorityControllerGetGrantDocumentDownloadUrlV1 } from '#lib/api/generated/doctor-authorities/doctor-authorities';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { parseApiSuccess } from '#lib/api/response';
 
@@ -34,7 +34,10 @@ export function DoctorAuthorityRow({
     setIsDownloading(true);
     try {
       const response = parseApiSuccess<DoctorAuthorityDownloadView>(
-        await doctorAuthorityControllerGetDecreeDownloadUrlV1(authority.doctorId, authority.id),
+        await doctorAuthorityControllerGetGrantDocumentDownloadUrlV1(
+          authority.doctorId,
+          authority.id,
+        ),
         t('doctors.authorities.downloadError'),
       );
       window.open(response.data.url, '_blank', 'noopener,noreferrer');
@@ -51,16 +54,15 @@ export function DoctorAuthorityRow({
         <p className="text-sm font-medium text-slate-900">
           {t(`doctors.authorities.kind.${authority.kind}`)}
         </p>
-        <p className="font-mono text-xs text-slate-600">{authority.decreeNumber}</p>
+        <p className="text-xs text-slate-600">
+          {t(`doctors.authorities.grantKind.${authority.grantKind}`)} ·{' '}
+          <span className="font-mono">{authority.grantReference}</span>
+        </p>
         <p className="text-xs text-slate-500">
-          {authority.validUntil
-            ? t('doctors.authorities.validity.range', {
-                from: formatDate(authority.validFrom),
-                until: formatDate(authority.validUntil),
-              })
-            : t('doctors.authorities.validity.openEnded', {
-                from: formatDate(authority.validFrom),
-              })}
+          {t('doctors.authorities.validity.range', {
+            from: formatDate(authority.validFrom),
+            until: formatDate(authority.validUntil),
+          })}
         </p>
         {isRevoked && authority.revokedAt ? (
           <p className="text-xs text-slate-500">
@@ -74,7 +76,7 @@ export function DoctorAuthorityRow({
       <TableCell className="align-top">
         <div className="flex flex-col items-end gap-1.5">
           <DoctorAuthorityStatusBadge status={authority.status} />
-          {authority.hasDecree ? (
+          {authority.hasGrantDocument ? (
             <Button
               type="button"
               size="sm"
@@ -83,10 +85,12 @@ export function DoctorAuthorityRow({
               onClick={() => void handleDownload()}
             >
               <Icon name="download" size={16} />
-              {t('doctors.authorities.downloadDecree')}
+              {t('doctors.authorities.downloadGrantDocument')}
             </Button>
           ) : (
-            <span className="text-xs text-slate-400">{t('doctors.authorities.noDecree')}</span>
+            <span className="text-xs text-slate-400">
+              {t('doctors.authorities.noGrantDocument')}
+            </span>
           )}
           {canWrite && !isRevoked ? (
             <div className="flex gap-1">

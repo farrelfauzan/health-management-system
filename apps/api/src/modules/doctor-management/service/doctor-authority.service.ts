@@ -2,14 +2,14 @@ import {
   CreateDoctorAuthorityInput,
   CreateDoctorAuthorityUploadUrlInput,
   DOCTOR_AUTHORITY_ALREADY_ACTIVE_ERROR_CODE,
-  DOCTOR_AUTHORITY_DECREE_MAX_SIZE_BYTES,
-  DOCTOR_AUTHORITY_DECREE_MIME_TYPES,
+  DOCTOR_AUTHORITY_GRANT_DOCUMENT_MAX_SIZE_BYTES,
+  DOCTOR_AUTHORITY_GRANT_DOCUMENT_MIME_TYPES,
   DOCTOR_AUTHORITY_REQUIRES_MIDWIFE_ERROR_CODE,
   DoctorAuthority,
   DoctorAuthorityClinicianRecord,
-  DoctorAuthorityDecreePayload,
   DoctorAuthorityDownloadView,
-  DoctorAuthorityExpiryRecord,
+  DoctorAuthorityExpiryCandidate,
+  DoctorAuthorityGrantDocumentPayload,
   DoctorAuthorityRecord,
   DoctorAuthorityUploadUrlView,
   HasActiveDoctorAuthorityParams,
@@ -34,13 +34,13 @@ import { ObjectStorageService } from '../../../common/storage/object-storage.ser
 import { HeadObjectResult } from '../../../common/storage/storage.types';
 import { DoctorAuthorityConflictError } from '../repository/doctor-authority-conflict.error';
 import { DoctorAuthorityRepository } from '../repository/doctor-authority.repository';
-import { buildDoctorAuthorityDecreeKeyPrefix } from './build-doctor-authority-decree-key-prefix';
-import { isDoctorAuthorityDecreeStorageKey } from './is-doctor-authority-decree-storage-key';
+import { buildDoctorAuthorityGrantDocumentKeyPrefix } from './build-doctor-authority-grant-document-key-prefix';
+import { isDoctorAuthorityGrantDocumentStorageKey } from './is-doctor-authority-grant-document-storage-key';
 import { toDoctorAuthorityView } from './to-doctor-authority-view';
 
 const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
-const DECREE_FILE_EXTENSION_BY_MIME_TYPE: Readonly<Record<string, string>> = {
+const GRANT_DOCUMENT_FILE_EXTENSION_BY_MIME_TYPE: Readonly<Record<string, string>> = {
   'application/pdf': 'pdf',
   'image/jpeg': 'jpg',
   'image/png': 'png',
@@ -52,8 +52,9 @@ function parseDateOnly(value: string): Date {
 }
 
 /**
- * A midwife's delegated authorities — *kewenangan* (P25-T02, Permenkes
- * 28/2017 Pasal 23–26). This service is the record; P25-T03 enforces it by
+ * A midwife's delegated authorities — *kewenangan* (P25-T02). Shaped by
+ * D-036: the grant rests on PP 28/2024 Pasal 742–745 and Permenkes 13/2025
+ * Pasal 185–187, always with a training certificate and an end date. This service is the record; P25-T03 enforces it by
  * calling {@link hasActiveAuthority}, and other modules go through this
  * class, never the repository, so "active" is resolved by one rule in one
  * calendar — the clinic's.
@@ -74,8 +75,7 @@ export class DoctorAuthorityService {
   /**
    * Whether `doctorId` holds a live authority of `kind` covering `onDate`
    * (default: today in the clinic's time zone). Active means not revoked,
-   * not deleted, `validFrom ≤ onDate` and `validUntil` null or `≥ onDate`,
-   * both ends inclusive. The question P25-T03/T05/T14 ask.
+   * not deleted and `validFrom ≤ onDate ≤ validUntil`, both ends inclusive. The question P25-T03/T05/T14 ask.
    */
   async hasActiveAuthority(params: HasActiveDoctorAuthorityParams): Promise<boolean> {
     const onDate =
@@ -100,20 +100,21 @@ export class DoctorAuthorityService {
     if (await this.doctorAuthorityRepository.hasLiveAuthority(doctorId, input.kind)) {
       throw this.buildAlreadyActiveException();
     }
-    const decree =
-      input.decreeStorageKey === undefined
+    const grantDocument =
+      input.grantDocumentStorageKey === undefined
         ? null
-        : await this.readDecreeObject(doctorId, input.decreeStorageKey);
+        : await this.readGrantDocumentObject(doctorId, input.grantDocumentStorageKey);
     try {
       const record = await this.doctorAuthorityRepository.create({
         doctorId,
         kind: input.kind,
-        trainingCertificateNumber: input.trainingCertificateNumber ?? null,
-        decreeNumber: input.decreeNumber,
-        decreeIssuedAt: parseDateOnly(input.decreeIssuedAt),
+        grantKind: input.grantKind,
+        trainingCertificateNumber: input.trainingCertificateNumber,
+        grantReference: input.grantReference,
+        grantIssuedAt: parseDateOnly(input.grantIssuedAt),
         validFrom: parseDateOnly(input.validFrom),
-        validUntil: input.validUntil === undefined ? null : parseDateOnly(input.validUntil),
-        decree,
+        validUntil: parseDateOnly(input.validUntil),
+        grantDocument,
         createdById: actor.sub,
       });
       return toDoctorAuthorityView(record, this.resolveClinicToday());
@@ -125,7 +126,7 @@ export class DoctorAuthorityService {
     }
   }
 
-  /** Edits numbers, dates and the letter. `kind` is not on the input type, by design. */
+  /** Edits the evidence, the dates and the document. `kind` is not on the input type, by design. */
   async updateAuthority(
     doctorId: string,
     id: string,
@@ -136,7 +137,7 @@ export class DoctorAuthorityService {
     this.assertValidityOrder(existing, input);
     const payload = await this.toUpdatePayload(doctorId, existing, input);
     const record = await this.doctorAuthorityRepository.update(id, payload);
-    await this.discardReplacedDecree(existing, record);
+    await this.discardReplacedGrantDocument(existing, record);
     return toDoctorAuthorityView(record, this.resolveClinicToday());
   }
 
@@ -160,18 +161,18 @@ export class DoctorAuthorityService {
   }
 
   /**
-   * Signs one browser-direct upload of a decision letter under this
+   * Signs one browser-direct upload of a grant document under this
    * clinician's prefix. Nothing is persisted: the key is recorded only when a
    * create or update names it, and both prove it against the prefix first.
    */
-  async createDecreeUploadUrl(
+  async createGrantDocumentUploadUrl(
     doctorId: string,
     input: CreateDoctorAuthorityUploadUrlInput,
   ): Promise<DoctorAuthorityUploadUrlView> {
     await this.requireMidwife(doctorId);
     const storageKey = this.objectStorageService.generateObjectKey({
-      keyPrefix: buildDoctorAuthorityDecreeKeyPrefix(doctorId),
-      fileExtension: DECREE_FILE_EXTENSION_BY_MIME_TYPE[input.mimeType],
+      keyPrefix: buildDoctorAuthorityGrantDocumentKeyPrefix(doctorId),
+      fileExtension: GRANT_DOCUMENT_FILE_EXTENSION_BY_MIME_TYPE[input.mimeType],
     });
     const signedUpload = await this.objectStorageService.getSignedUploadUrl({
       key: storageKey,
@@ -186,29 +187,30 @@ export class DoctorAuthorityService {
     };
   }
 
-  async getDecreeDownloadUrl(doctorId: string, id: string): Promise<DoctorAuthorityDownloadView> {
+  async getGrantDocumentDownloadUrl(
+    doctorId: string,
+    id: string,
+  ): Promise<DoctorAuthorityDownloadView> {
     await this.requireClinician(doctorId);
     const record = await this.requireAuthority(doctorId, id);
-    if (record.decreeStorageKey === null || record.decreeMimeType === null) {
-      throw new NotFoundException('No decision letter is on file for this authority');
+    if (record.grantDocumentStorageKey === null || record.grantDocumentMimeType === null) {
+      throw new NotFoundException('No grant document is on file for this authority');
     }
     const signedUrl = await this.objectStorageService.getSignedUrl({
-      key: record.decreeStorageKey,
-      responseContentDisposition: `attachment; filename="decree-${record.id}.${DECREE_FILE_EXTENSION_BY_MIME_TYPE[record.decreeMimeType] ?? 'bin'}"`,
-      responseContentType: record.decreeMimeType,
+      key: record.grantDocumentStorageKey,
+      responseContentDisposition: `attachment; filename="grant-document-${record.id}.${GRANT_DOCUMENT_FILE_EXTENSION_BY_MIME_TYPE[record.grantDocumentMimeType] ?? 'bin'}"`,
+      responseContentType: record.grantDocumentMimeType,
     });
     return { url: signedUrl.url, expiresAt: signedUrl.expiresAt };
   }
 
   /**
-   * Every live, end-dated authority that has reached or passed
+   * Every live authority that has reached or passed
    * `thresholdDays` before its end, with the threshold, for the reminder job.
    */
   async findAuthoritiesAtThreshold(
     thresholdDays: number,
-  ): Promise<
-    Array<{ record: DoctorAuthorityExpiryRecord; daysUntilExpiry: number; thresholdDays: number }>
-  > {
+  ): Promise<DoctorAuthorityExpiryCandidate[]> {
     const today = this.resolveClinicToday();
     const records = await this.doctorAuthorityRepository.listExpiringAuthorities(
       new Date(today.getTime() + thresholdDays * MILLISECONDS_PER_DAY),
@@ -267,12 +269,8 @@ export class DoctorAuthorityService {
     const validFrom =
       input.validFrom === undefined ? existing.validFrom : parseDateOnly(input.validFrom);
     const validUntil =
-      input.validUntil === undefined
-        ? existing.validUntil
-        : input.validUntil === null
-          ? null
-          : parseDateOnly(input.validUntil);
-    if (validUntil !== null && validUntil.getTime() < validFrom.getTime()) {
+      input.validUntil === undefined ? existing.validUntil : parseDateOnly(input.validUntil);
+    if (validUntil.getTime() < validFrom.getTime()) {
       throw new BadRequestException('validUntil must be on or after validFrom');
     }
   }
@@ -283,33 +281,33 @@ export class DoctorAuthorityService {
     input: UpdateDoctorAuthorityInput,
   ): Promise<UpdateDoctorAuthorityRecordPayload> {
     return {
+      grantKind: input.grantKind,
       trainingCertificateNumber: input.trainingCertificateNumber,
-      decreeNumber: input.decreeNumber,
-      decreeIssuedAt:
-        input.decreeIssuedAt === undefined ? undefined : parseDateOnly(input.decreeIssuedAt),
+      grantReference: input.grantReference,
+      grantIssuedAt:
+        input.grantIssuedAt === undefined ? undefined : parseDateOnly(input.grantIssuedAt),
       validFrom: input.validFrom === undefined ? undefined : parseDateOnly(input.validFrom),
-      validUntil:
-        input.validUntil === undefined
-          ? undefined
-          : input.validUntil === null
-            ? null
-            : parseDateOnly(input.validUntil),
-      decree: await this.resolveDecreeChange(doctorId, existing, input.decreeStorageKey),
+      validUntil: input.validUntil === undefined ? undefined : parseDateOnly(input.validUntil),
+      grantDocument: await this.resolveGrantDocumentChange(
+        doctorId,
+        existing,
+        input.grantDocumentStorageKey,
+      ),
     };
   }
 
-  private async resolveDecreeChange(
+  private async resolveGrantDocumentChange(
     doctorId: string,
     existing: DoctorAuthorityRecord,
     storageKey: string | null | undefined,
-  ): Promise<DoctorAuthorityDecreePayload | null | undefined> {
-    if (storageKey === undefined || storageKey === existing.decreeStorageKey) {
+  ): Promise<DoctorAuthorityGrantDocumentPayload | null | undefined> {
+    if (storageKey === undefined || storageKey === existing.grantDocumentStorageKey) {
       return undefined;
     }
     if (storageKey === null) {
       return null;
     }
-    return this.readDecreeObject(doctorId, storageKey);
+    return this.readGrantDocumentObject(doctorId, storageKey);
   }
 
   /**
@@ -317,27 +315,30 @@ export class DoctorAuthorityService {
    * the object back from storage rather than believing the client about what
    * was uploaded — the same order `VaultDocumentService.confirmUpload` keeps.
    */
-  private async readDecreeObject(
+  private async readGrantDocumentObject(
     doctorId: string,
     storageKey: string,
-  ): Promise<DoctorAuthorityDecreePayload> {
-    if (!isDoctorAuthorityDecreeStorageKey(storageKey, doctorId)) {
+  ): Promise<DoctorAuthorityGrantDocumentPayload> {
+    if (!isDoctorAuthorityGrantDocumentStorageKey(storageKey, doctorId)) {
       throw new BadRequestException(
-        'Storage key was not issued for a decision letter of this clinician',
+        'Storage key was not issued for a grant document of this clinician',
       );
     }
-    const stored = await this.headDecreeObject(storageKey);
+    const stored = await this.headGrantDocumentObject(storageKey);
     const mimeType = stored.contentType?.split(';')[0]?.trim() ?? '';
-    if (!DOCTOR_AUTHORITY_DECREE_MIME_TYPES.some((allowed) => allowed === mimeType)) {
+    if (!DOCTOR_AUTHORITY_GRANT_DOCUMENT_MIME_TYPES.some((allowed) => allowed === mimeType)) {
       throw new BadRequestException('Uploaded file is not a PDF or an image');
     }
-    if (stored.sizeBytes <= 0 || stored.sizeBytes > DOCTOR_AUTHORITY_DECREE_MAX_SIZE_BYTES) {
+    if (
+      stored.sizeBytes <= 0 ||
+      stored.sizeBytes > DOCTOR_AUTHORITY_GRANT_DOCUMENT_MAX_SIZE_BYTES
+    ) {
       throw new BadRequestException('Uploaded file is empty or larger than the permitted size');
     }
     return { storageKey, mimeType, sizeBytes: stored.sizeBytes };
   }
 
-  private async headDecreeObject(storageKey: string): Promise<HeadObjectResult> {
+  private async headGrantDocumentObject(storageKey: string): Promise<HeadObjectResult> {
     try {
       return await this.objectStorageService.headObject({ key: storageKey });
     } catch (err) {
@@ -350,18 +351,21 @@ export class DoctorAuthorityService {
     }
   }
 
-  /** Best effort: a replaced or detached letter should not linger in the bucket. */
-  private async discardReplacedDecree(
+  /** Best effort: a replaced or detached grant document should not linger in the bucket. */
+  private async discardReplacedGrantDocument(
     before: DoctorAuthorityRecord,
     after: DoctorAuthorityRecord,
   ): Promise<void> {
-    if (before.decreeStorageKey === null || before.decreeStorageKey === after.decreeStorageKey) {
+    if (
+      before.grantDocumentStorageKey === null ||
+      before.grantDocumentStorageKey === after.grantDocumentStorageKey
+    ) {
       return;
     }
     try {
-      await this.objectStorageService.deleteObject({ key: before.decreeStorageKey });
+      await this.objectStorageService.deleteObject({ key: before.grantDocumentStorageKey });
     } catch {
-      this.logger.warn(buildSafeErrorLog('doctor_authority_decree_discard_failed'));
+      this.logger.warn(buildSafeErrorLog('doctor_authority_grant_document_discard_failed'));
     }
   }
 

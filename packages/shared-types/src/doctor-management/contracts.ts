@@ -1,6 +1,7 @@
 import type { DoctorCredentialValue } from '#doctor-credential-option/contracts';
 import type {
   ClinicianProfessionValue,
+  DoctorAuthorityGrantKindValue,
   DoctorAuthorityKindValue,
   DoctorInvitationStatusValue,
   DoctorLicenseTypeValue,
@@ -179,21 +180,23 @@ export type DoctorLicenseExpiryBucketsView = {
 export type DoctorAuthorityStatusValue = 'ACTIVE' | 'EXPIRING_SOON' | 'EXPIRED' | 'REVOKED';
 
 /**
- * One midwife authority (kewenangan) as the API returns it. Storage columns
- * are never exposed: `hasDecree` says whether a letter is on file, and the
- * download route signs a URL for it.
+ * One midwife authority (kewenangan) as the API returns it (D-036). Storage
+ * columns are never exposed: `hasGrantDocument` says whether the evidence
+ * document is on file, and the download route signs a URL for it.
  */
 export type DoctorAuthority = {
   id: string;
   doctorId: string;
   kind: DoctorAuthorityKindValue;
-  trainingCertificateNumber: string | null;
-  decreeNumber: string;
-  decreeIssuedAt: string;
+  grantKind: DoctorAuthorityGrantKindValue;
+  grantReference: string;
+  grantIssuedAt: string;
+  trainingCertificateNumber: string;
   validFrom: string;
-  validUntil: string | null;
-  hasDecree: boolean;
-  decreeMimeType: string | null;
+  /** Always set: the government sets the period, so no grant is open-ended. */
+  validUntil: string;
+  hasGrantDocument: boolean;
+  grantDocumentMimeType: string | null;
   status: DoctorAuthorityStatusValue;
   revokedAt: string | null;
   revokeReason: string | null;

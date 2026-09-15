@@ -6,6 +6,6 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type DoctorAuthorityControllerCreateDecreeUploadUrlV1200DataRequiredHeaders = {
+export type DoctorAuthorityControllerCreateGrantDocumentUploadUrlV1200DataRequiredHeaders = {
   'Content-Type': string;
 };
