@@ -879,7 +879,12 @@ export const PHASE_THREE_EXAMPLES = {
     item: registration,
     listItem: {
       ...registration,
-      patient: { id: patientId, mrn: patient.mrn, fullName: patient.fullName },
+      patient: {
+        id: patientId,
+        mrn: patient.mrn,
+        fullName: patient.fullName,
+        dateOfBirth: '1990-05-12',
+      },
       appointment: {
         id: appointmentId,
         scheduledAt: appointment.scheduledAt,

@@ -1,6 +1,8 @@
 import type { ClinicianProfessionValue } from '#doctor-management/schemas';
 import type {
+  ContraceptiveImplantActionValue,
   DiagnosisTypeValue,
+  EncounterChildVisitPurposeValue,
   EncounterPrognosisValue,
   EncounterStatusValue,
   ImmunizationRouteValue,
@@ -99,6 +101,8 @@ export type ProcedureResponse = {
   display: string;
   notes?: string;
   performedAt: string;
+  /** Set when the procedure inserted or removed a contraceptive implant (P25-T03). */
+  contraceptiveImplantAction?: ContraceptiveImplantActionValue;
   recordedById?: string;
   createdAt: string;
   updatedAt: string;
@@ -163,6 +167,11 @@ export type EncounterResponse = {
   assessment?: string;
   plan?: string;
   prognosis?: EncounterPrognosisValue;
+  /**
+   * Why a midwife saw a child under five (P25-T03). Absent for every other
+   * encounter — a doctor's, or one for an older patient.
+   */
+  childVisitPurpose?: EncounterChildVisitPurposeValue;
   createdById?: string;
   createdAt: string;
   updatedAt: string;

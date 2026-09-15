@@ -155,7 +155,8 @@ export const AuditAction = {
   BUG_REPORT_PUBLISH_FAILED: 'BUG_REPORT_PUBLISH_FAILED',
   DOCTOR_AUTHORITY_GRANTED: 'DOCTOR_AUTHORITY_GRANTED',
   DOCTOR_AUTHORITY_UPDATED: 'DOCTOR_AUTHORITY_UPDATED',
-  DOCTOR_AUTHORITY_REVOKED: 'DOCTOR_AUTHORITY_REVOKED'
+  DOCTOR_AUTHORITY_REVOKED: 'DOCTOR_AUTHORITY_REVOKED',
+  MIDWIFE_AUTHORITY_REFUSED: 'MIDWIFE_AUTHORITY_REFUSED'
 } as const
 
 export type AuditAction = (typeof AuditAction)[keyof typeof AuditAction]
@@ -307,6 +308,23 @@ export const EncounterPrognosis = {
 } as const
 
 export type EncounterPrognosis = (typeof EncounterPrognosis)[keyof typeof EncounterPrognosis]
+
+
+export const EncounterChildVisitPurpose = {
+  WELL_CHILD: 'WELL_CHILD',
+  NEONATAL_FIRST_AID: 'NEONATAL_FIRST_AID',
+  SICK_CHILD: 'SICK_CHILD'
+} as const
+
+export type EncounterChildVisitPurpose = (typeof EncounterChildVisitPurpose)[keyof typeof EncounterChildVisitPurpose]
+
+
+export const ContraceptiveImplantAction = {
+  INSERTION: 'INSERTION',
+  REMOVAL: 'REMOVAL'
+} as const
+
+export type ContraceptiveImplantAction = (typeof ContraceptiveImplantAction)[keyof typeof ContraceptiveImplantAction]
 
 
 export const ImmunizationRoute = {

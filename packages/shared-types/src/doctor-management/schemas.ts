@@ -440,6 +440,13 @@ export const DOCTOR_AUTHORITY_REQUIRES_MIDWIFE_ERROR_CODE = 'DOCTOR_AUTHORITY_RE
 export const DOCTOR_AUTHORITY_ALREADY_ACTIVE_ERROR_CODE = 'DOCTOR_AUTHORITY_ALREADY_ACTIVE';
 
 /**
+ * A midwife tried something that needs a delegated authority she does not
+ * hold on that day (P25-T03, 422, `details.kind` names it). The basis is PP
+ * 28/2024 Pasal 744 (D-036), not the revoked Permenkes 28/2017 Pasal 23.
+ */
+export const MIDWIFE_AUTHORITY_REQUIRED_ERROR_CODE = 'MIDWIFE_AUTHORITY_REQUIRED';
+
+/**
  * What a decision letter may be uploaded as. Narrower than storage's own list
  * on purpose — a surface narrows what storage accepts, never widens it — and
  * no text types, because a scanned letter is a PDF or a photograph.

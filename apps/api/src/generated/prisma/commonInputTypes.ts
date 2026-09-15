@@ -766,6 +766,13 @@ export type EnumEncounterPrognosisNullableFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumEncounterPrognosisNullableFilter<$PrismaModel> | $Enums.EncounterPrognosis | null
 }
 
+export type EnumEncounterChildVisitPurposeNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.EncounterChildVisitPurpose | Prisma.EnumEncounterChildVisitPurposeFieldRefInput<$PrismaModel> | null
+  in?: $Enums.EncounterChildVisitPurpose[] | Prisma.ListEnumEncounterChildVisitPurposeFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.EncounterChildVisitPurpose[] | Prisma.ListEnumEncounterChildVisitPurposeFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumEncounterChildVisitPurposeNullableFilter<$PrismaModel> | $Enums.EncounterChildVisitPurpose | null
+}
+
 export type EnumEncounterStatusWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.EncounterStatus | Prisma.EnumEncounterStatusFieldRefInput<$PrismaModel>
   in?: $Enums.EncounterStatus[] | Prisma.ListEnumEncounterStatusFieldRefInput<$PrismaModel>
@@ -784,6 +791,16 @@ export type EnumEncounterPrognosisNullableWithAggregatesFilter<$PrismaModel = ne
   _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
   _min?: Prisma.NestedEnumEncounterPrognosisNullableFilter<$PrismaModel>
   _max?: Prisma.NestedEnumEncounterPrognosisNullableFilter<$PrismaModel>
+}
+
+export type EnumEncounterChildVisitPurposeNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.EncounterChildVisitPurpose | Prisma.EnumEncounterChildVisitPurposeFieldRefInput<$PrismaModel> | null
+  in?: $Enums.EncounterChildVisitPurpose[] | Prisma.ListEnumEncounterChildVisitPurposeFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.EncounterChildVisitPurpose[] | Prisma.ListEnumEncounterChildVisitPurposeFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumEncounterChildVisitPurposeNullableWithAggregatesFilter<$PrismaModel> | $Enums.EncounterChildVisitPurpose | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumEncounterChildVisitPurposeNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumEncounterChildVisitPurposeNullableFilter<$PrismaModel>
 }
 
 export type DecimalNullableFilter<$PrismaModel = never> = {
@@ -828,6 +845,23 @@ export type EnumDiagnosisTypeWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumDiagnosisTypeFilter<$PrismaModel>
   _max?: Prisma.NestedEnumDiagnosisTypeFilter<$PrismaModel>
+}
+
+export type EnumContraceptiveImplantActionNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.ContraceptiveImplantAction | Prisma.EnumContraceptiveImplantActionFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ContraceptiveImplantAction[] | Prisma.ListEnumContraceptiveImplantActionFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ContraceptiveImplantAction[] | Prisma.ListEnumContraceptiveImplantActionFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumContraceptiveImplantActionNullableFilter<$PrismaModel> | $Enums.ContraceptiveImplantAction | null
+}
+
+export type EnumContraceptiveImplantActionNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ContraceptiveImplantAction | Prisma.EnumContraceptiveImplantActionFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ContraceptiveImplantAction[] | Prisma.ListEnumContraceptiveImplantActionFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ContraceptiveImplantAction[] | Prisma.ListEnumContraceptiveImplantActionFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumContraceptiveImplantActionNullableWithAggregatesFilter<$PrismaModel> | $Enums.ContraceptiveImplantAction | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumContraceptiveImplantActionNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumContraceptiveImplantActionNullableFilter<$PrismaModel>
 }
 
 export type EnumMedicationUnitNullableFilter<$PrismaModel = never> = {
@@ -2889,6 +2923,13 @@ export type NestedEnumEncounterPrognosisNullableFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumEncounterPrognosisNullableFilter<$PrismaModel> | $Enums.EncounterPrognosis | null
 }
 
+export type NestedEnumEncounterChildVisitPurposeNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.EncounterChildVisitPurpose | Prisma.EnumEncounterChildVisitPurposeFieldRefInput<$PrismaModel> | null
+  in?: $Enums.EncounterChildVisitPurpose[] | Prisma.ListEnumEncounterChildVisitPurposeFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.EncounterChildVisitPurpose[] | Prisma.ListEnumEncounterChildVisitPurposeFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumEncounterChildVisitPurposeNullableFilter<$PrismaModel> | $Enums.EncounterChildVisitPurpose | null
+}
+
 export type NestedEnumEncounterStatusWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.EncounterStatus | Prisma.EnumEncounterStatusFieldRefInput<$PrismaModel>
   in?: $Enums.EncounterStatus[] | Prisma.ListEnumEncounterStatusFieldRefInput<$PrismaModel>
@@ -2907,6 +2948,16 @@ export type NestedEnumEncounterPrognosisNullableWithAggregatesFilter<$PrismaMode
   _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
   _min?: Prisma.NestedEnumEncounterPrognosisNullableFilter<$PrismaModel>
   _max?: Prisma.NestedEnumEncounterPrognosisNullableFilter<$PrismaModel>
+}
+
+export type NestedEnumEncounterChildVisitPurposeNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.EncounterChildVisitPurpose | Prisma.EnumEncounterChildVisitPurposeFieldRefInput<$PrismaModel> | null
+  in?: $Enums.EncounterChildVisitPurpose[] | Prisma.ListEnumEncounterChildVisitPurposeFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.EncounterChildVisitPurpose[] | Prisma.ListEnumEncounterChildVisitPurposeFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumEncounterChildVisitPurposeNullableWithAggregatesFilter<$PrismaModel> | $Enums.EncounterChildVisitPurpose | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumEncounterChildVisitPurposeNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumEncounterChildVisitPurposeNullableFilter<$PrismaModel>
 }
 
 export type NestedDecimalNullableFilter<$PrismaModel = never> = {
@@ -2951,6 +3002,23 @@ export type NestedEnumDiagnosisTypeWithAggregatesFilter<$PrismaModel = never> = 
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumDiagnosisTypeFilter<$PrismaModel>
   _max?: Prisma.NestedEnumDiagnosisTypeFilter<$PrismaModel>
+}
+
+export type NestedEnumContraceptiveImplantActionNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.ContraceptiveImplantAction | Prisma.EnumContraceptiveImplantActionFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ContraceptiveImplantAction[] | Prisma.ListEnumContraceptiveImplantActionFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ContraceptiveImplantAction[] | Prisma.ListEnumContraceptiveImplantActionFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumContraceptiveImplantActionNullableFilter<$PrismaModel> | $Enums.ContraceptiveImplantAction | null
+}
+
+export type NestedEnumContraceptiveImplantActionNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ContraceptiveImplantAction | Prisma.EnumContraceptiveImplantActionFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ContraceptiveImplantAction[] | Prisma.ListEnumContraceptiveImplantActionFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ContraceptiveImplantAction[] | Prisma.ListEnumContraceptiveImplantActionFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumContraceptiveImplantActionNullableWithAggregatesFilter<$PrismaModel> | $Enums.ContraceptiveImplantAction | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumContraceptiveImplantActionNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumContraceptiveImplantActionNullableFilter<$PrismaModel>
 }
 
 export type NestedEnumMedicationUnitNullableFilter<$PrismaModel = never> = {
