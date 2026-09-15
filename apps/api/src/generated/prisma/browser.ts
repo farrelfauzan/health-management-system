@@ -279,6 +279,30 @@ export type DoctorLicense = Prisma.DoctorLicenseModel
  */
 export type DoctorLicenseExpiryNotice = Prisma.DoctorLicenseExpiryNoticeModel
 /**
+ * Model DoctorAuthority
+ * A midwife's delegated authority — *kewenangan* (P25-T02, Permenkes 28/2017
+ * Pasal 23–26). Hangs off `DoctorProfile` like `DoctorLicense`, and only a
+ * `MIDWIFE` profile may carry one (the service refuses the rest).
+ * 
+ * The decision letter is stored on the row (`decree_*` columns, as
+ * `ManagedDocument` stores its payload) rather than as a `Document`:
+ * `Document.ownerId` is a User FK and a clinician can exist with no account
+ * (`NO_ACCOUNT`), so there is nobody for a `Document` row to belong to.
+ * 
+ * One live authority per kind is a hand-written partial unique index on
+ * `(doctor_id, kind) WHERE revoked_at IS NULL AND deleted_at IS NULL` — see
+ * the migration. Prisma cannot express it, and the drift check cannot see
+ * it, so renewal edits the dates or revokes and re-grants.
+ */
+export type DoctorAuthority = Prisma.DoctorAuthorityModel
+/**
+ * Model DoctorAuthorityExpiryNotice
+ * Which expiry thresholds an authority has been announced at (P25-T02,
+ * FR-AUTH-05). Mirrors `DoctorLicenseExpiryNotice` and is deliberately not
+ * generic: the two sweeps have different audiences and different rows.
+ */
+export type DoctorAuthorityExpiryNotice = Prisma.DoctorAuthorityExpiryNoticeModel
+/**
  * Model DoctorSchedule
  * 
  */

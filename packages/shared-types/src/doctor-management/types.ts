@@ -1,5 +1,6 @@
 import type {
   ClinicianProfessionValue,
+  DoctorAuthorityKindValue,
   DoctorEducationInput,
   DoctorLicenseTypeValue,
 } from '#doctor-management/schemas';
@@ -206,4 +207,106 @@ export type ResolveMissingDoctorProfileFieldsParams = {
   profile: DoctorProfileCompletenessRecord | null;
   /** The schema whose required keys define "complete". Defaults to create-doctor. */
   schema?: { shape: Readonly<Record<string, CompletenessFieldSchema>> };
+};
+
+/**
+ * How far ahead of `validUntil` the clinic is told an authority lapses, in
+ * days (P25-T02, FR-AUTH-05). `0` is the day it lapses. Mirrors the licence
+ * thresholds deliberately rather than sharing them.
+ */
+export const DOCTOR_AUTHORITY_EXPIRY_THRESHOLD_DAYS = [60, 30, 0] as const;
+
+/** Inside this many days of `validUntil` the card shows "expiring soon". */
+export const DOCTOR_AUTHORITY_EXPIRING_SOON_DAYS = 60;
+
+/** The clinician an authority is granted to, as the repository reads it. */
+export type DoctorAuthorityClinicianRecord = {
+  id: string;
+  fullName: string;
+  profession: ClinicianProfessionValue;
+};
+
+/** One `doctor_authorities` row as the repository returns it. */
+export type DoctorAuthorityRecord = {
+  id: string;
+  doctorId: string;
+  kind: DoctorAuthorityKindValue;
+  trainingCertificateNumber: string | null;
+  decreeNumber: string;
+  decreeIssuedAt: Date;
+  validFrom: Date;
+  validUntil: Date | null;
+  decreeStorageKey: string | null;
+  decreeMimeType: string | null;
+  decreeSizeBytes: number | null;
+  revokedAt: Date | null;
+  revokedById: string | null;
+  revokeReason: string | null;
+  createdById: string;
+  createdAt: Date;
+  updatedAt: Date;
+  deletedAt: Date | null;
+};
+
+/** The stored decree file, verified against storage before it is recorded. */
+export type DoctorAuthorityDecreePayload = {
+  storageKey: string;
+  mimeType: string;
+  sizeBytes: number;
+};
+
+export type CreateDoctorAuthorityRecordPayload = {
+  doctorId: string;
+  kind: DoctorAuthorityKindValue;
+  trainingCertificateNumber: string | null;
+  decreeNumber: string;
+  decreeIssuedAt: Date;
+  validFrom: Date;
+  validUntil: Date | null;
+  decree: DoctorAuthorityDecreePayload | null;
+  createdById: string;
+};
+
+/**
+ * Only the fields the update route may touch; `kind` is absent by type. A
+ * `decree` of `null` detaches the letter, `undefined` leaves it alone.
+ */
+export type UpdateDoctorAuthorityRecordPayload = {
+  trainingCertificateNumber?: string | null;
+  decreeNumber?: string;
+  decreeIssuedAt?: Date;
+  validFrom?: Date;
+  validUntil?: Date | null;
+  decree?: DoctorAuthorityDecreePayload | null;
+};
+
+export type RevokeDoctorAuthorityRecordPayload = {
+  revokedById: string;
+  revokeReason: string;
+  revokedAt: Date;
+};
+
+/**
+ * The question P25-T03 asks before letting a midwife act (`hasActiveAuthority`).
+ * `onDate` is a YYYY-MM-DD clinic-local calendar date; omitted, the service
+ * resolves today in `CLINIC_TIMEZONE`.
+ */
+export type HasActiveDoctorAuthorityParams = {
+  doctorId: string;
+  kind: DoctorAuthorityKindValue;
+  onDate?: string;
+};
+
+/**
+ * One authority row as the expiry sweep reads it, joined to its clinician for
+ * the notification's copy. `validUntil` is never null: open-ended grants are
+ * excluded by the query.
+ */
+export type DoctorAuthorityExpiryRecord = {
+  authorityId: string;
+  doctorId: string;
+  doctorName: string;
+  kind: DoctorAuthorityKindValue;
+  decreeNumber: string;
+  validUntil: Date;
 };

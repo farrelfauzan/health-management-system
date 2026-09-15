@@ -1,6 +1,7 @@
 import type { DoctorCredentialValue } from '#doctor-credential-option/contracts';
 import type {
   ClinicianProfessionValue,
+  DoctorAuthorityKindValue,
   DoctorInvitationStatusValue,
   DoctorLicenseTypeValue,
 } from '#doctor-management/schemas';
@@ -169,4 +170,45 @@ export type DoctorLicenseExpiryBucketsView = {
   within30Days: DoctorLicenseExpiryRow[];
   within60Days: DoctorLicenseExpiryRow[];
   within90Days: DoctorLicenseExpiryRow[];
+};
+
+/**
+ * Lifecycle of one authority as the card renders it (P25-T02). Computed by
+ * the API against the clinic's calendar day so two readers never disagree.
+ */
+export type DoctorAuthorityStatusValue = 'ACTIVE' | 'EXPIRING_SOON' | 'EXPIRED' | 'REVOKED';
+
+/**
+ * One midwife authority (kewenangan) as the API returns it. Storage columns
+ * are never exposed: `hasDecree` says whether a letter is on file, and the
+ * download route signs a URL for it.
+ */
+export type DoctorAuthority = {
+  id: string;
+  doctorId: string;
+  kind: DoctorAuthorityKindValue;
+  trainingCertificateNumber: string | null;
+  decreeNumber: string;
+  decreeIssuedAt: string;
+  validFrom: string;
+  validUntil: string | null;
+  hasDecree: boolean;
+  decreeMimeType: string | null;
+  status: DoctorAuthorityStatusValue;
+  revokedAt: string | null;
+  revokeReason: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type DoctorAuthorityUploadUrlView = {
+  url: string;
+  storageKey: string;
+  expiresAt: string;
+  requiredHeaders: Readonly<Record<string, string>>;
+};
+
+export type DoctorAuthorityDownloadView = {
+  url: string;
+  expiresAt: string;
 };

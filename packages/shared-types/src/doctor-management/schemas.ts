@@ -414,3 +414,121 @@ export const updateDoctorRequestSchema = z.preprocess(
 );
 export type UpdateOwnDoctorProfileInput = z.infer<typeof updateOwnDoctorProfileSchema>;
 export type CompleteOwnDoctorProfileInput = z.infer<typeof completeOwnDoctorProfileSchema>;
+
+/**
+ * What a midwife may do beyond her own authority (P25-T02, Permenkes 28/2017
+ * Pasal 23–26): each value is one grant a district decision letter can make.
+ * Indonesian *kewenangan*; "authority" rather than "authorization" because the
+ * repo already uses the latter for RBAC.
+ */
+export const DOCTOR_AUTHORITY_KINDS = [
+  'IUD_IMPLANT',
+  'MTBS',
+  'PROGRAM_IMMUNIZATION',
+  'INTEGRATED_ANC',
+  'NO_OTHER_WORKER',
+] as const;
+
+export const doctorAuthorityKindSchema = z.enum(DOCTOR_AUTHORITY_KINDS);
+
+export type DoctorAuthorityKindValue = z.infer<typeof doctorAuthorityKindSchema>;
+
+/** The authority can only hang off a `MIDWIFE` profile (422). */
+export const DOCTOR_AUTHORITY_REQUIRES_MIDWIFE_ERROR_CODE = 'DOCTOR_AUTHORITY_REQUIRES_MIDWIFE';
+
+/** A live (unrevoked, undeleted) authority of that kind already exists (409). */
+export const DOCTOR_AUTHORITY_ALREADY_ACTIVE_ERROR_CODE = 'DOCTOR_AUTHORITY_ALREADY_ACTIVE';
+
+/**
+ * What a decision letter may be uploaded as. Narrower than storage's own list
+ * on purpose — a surface narrows what storage accepts, never widens it — and
+ * no text types, because a scanned letter is a PDF or a photograph.
+ */
+export const DOCTOR_AUTHORITY_DECREE_MIME_TYPES = [
+  'application/pdf',
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+] as const;
+
+export const doctorAuthorityDecreeMimeTypeSchema = z.enum(DOCTOR_AUTHORITY_DECREE_MIME_TYPES);
+
+export type DoctorAuthorityDecreeMimeTypeValue = z.infer<
+  typeof doctorAuthorityDecreeMimeTypeSchema
+>;
+
+export const DOCTOR_AUTHORITY_DECREE_MAX_SIZE_BYTES = 20 * 1024 * 1024;
+
+/** The object-key prefix every decree upload is minted under, per clinician. */
+export const DOCTOR_AUTHORITY_DECREE_KEY_ROOT = 'doctor-authorities';
+
+const decreeStorageKeySchema = z.string().trim().min(1).max(512);
+
+const authorityDocumentNumberSchema = z.string().trim().min(1).max(128);
+
+function hasValidityOrder(input: {
+  validFrom?: string | undefined;
+  validUntil?: string | null | undefined;
+}): boolean {
+  if (!input.validFrom || !input.validUntil) {
+    return true;
+  }
+  return input.validUntil >= input.validFrom;
+}
+
+export const createDoctorAuthoritySchema = z
+  .object({
+    kind: doctorAuthorityKindSchema,
+    trainingCertificateNumber: authorityDocumentNumberSchema.optional(),
+    decreeNumber: authorityDocumentNumberSchema,
+    decreeIssuedAt: licenseDateSchema,
+    validFrom: licenseDateSchema,
+    /** Omit for an open-ended grant. */
+    validUntil: licenseDateSchema.optional(),
+    /** A key minted by the upload-url route; the letter itself is optional. */
+    decreeStorageKey: decreeStorageKeySchema.optional(),
+  })
+  .refine(hasValidityOrder, {
+    message: 'validUntil must be on or after validFrom',
+    path: ['validUntil'],
+  });
+
+export type CreateDoctorAuthorityInput = z.infer<typeof createDoctorAuthoritySchema>;
+
+/**
+ * Edits numbers, dates and the letter — never `kind`. Changing what an
+ * authority *is* is a revoke and a fresh grant, so the audit trail keeps both.
+ * `validUntil: null` clears the end date; `decreeStorageKey: null` detaches
+ * the letter.
+ */
+export const updateDoctorAuthoritySchema = z
+  .object({
+    trainingCertificateNumber: authorityDocumentNumberSchema.nullable().optional(),
+    decreeNumber: authorityDocumentNumberSchema.optional(),
+    decreeIssuedAt: licenseDateSchema.optional(),
+    validFrom: licenseDateSchema.optional(),
+    validUntil: licenseDateSchema.nullable().optional(),
+    decreeStorageKey: decreeStorageKeySchema.nullable().optional(),
+  })
+  .strict()
+  .refine(hasValidityOrder, {
+    message: 'validUntil must be on or after validFrom',
+    path: ['validUntil'],
+  });
+
+export type UpdateDoctorAuthorityInput = z.infer<typeof updateDoctorAuthoritySchema>;
+
+export const revokeDoctorAuthoritySchema = z.object({
+  reason: z.string().trim().min(3).max(500),
+});
+
+export type RevokeDoctorAuthorityInput = z.infer<typeof revokeDoctorAuthoritySchema>;
+
+export const createDoctorAuthorityUploadUrlSchema = z.object({
+  mimeType: doctorAuthorityDecreeMimeTypeSchema,
+  sizeBytes: z.coerce.number().int().positive().max(DOCTOR_AUTHORITY_DECREE_MAX_SIZE_BYTES),
+});
+
+export type CreateDoctorAuthorityUploadUrlInput = z.infer<
+  typeof createDoctorAuthorityUploadUrlSchema
+>;

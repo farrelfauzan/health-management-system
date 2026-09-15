@@ -616,6 +616,23 @@ export type EnumDoctorLicenseTypeWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumDoctorLicenseTypeFilter<$PrismaModel>
 }
 
+export type EnumDoctorAuthorityKindFilter<$PrismaModel = never> = {
+  equals?: $Enums.DoctorAuthorityKind | Prisma.EnumDoctorAuthorityKindFieldRefInput<$PrismaModel>
+  in?: $Enums.DoctorAuthorityKind[] | Prisma.ListEnumDoctorAuthorityKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DoctorAuthorityKind[] | Prisma.ListEnumDoctorAuthorityKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDoctorAuthorityKindFilter<$PrismaModel> | $Enums.DoctorAuthorityKind
+}
+
+export type EnumDoctorAuthorityKindWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.DoctorAuthorityKind | Prisma.EnumDoctorAuthorityKindFieldRefInput<$PrismaModel>
+  in?: $Enums.DoctorAuthorityKind[] | Prisma.ListEnumDoctorAuthorityKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DoctorAuthorityKind[] | Prisma.ListEnumDoctorAuthorityKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDoctorAuthorityKindWithAggregatesFilter<$PrismaModel> | $Enums.DoctorAuthorityKind
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumDoctorAuthorityKindFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumDoctorAuthorityKindFilter<$PrismaModel>
+}
+
 export type EnumAppointmentSessionStatusFilter<$PrismaModel = never> = {
   equals?: $Enums.AppointmentSessionStatus | Prisma.EnumAppointmentSessionStatusFieldRefInput<$PrismaModel>
   in?: $Enums.AppointmentSessionStatus[] | Prisma.ListEnumAppointmentSessionStatusFieldRefInput<$PrismaModel>
@@ -2720,6 +2737,23 @@ export type NestedEnumDoctorLicenseTypeWithAggregatesFilter<$PrismaModel = never
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumDoctorLicenseTypeFilter<$PrismaModel>
   _max?: Prisma.NestedEnumDoctorLicenseTypeFilter<$PrismaModel>
+}
+
+export type NestedEnumDoctorAuthorityKindFilter<$PrismaModel = never> = {
+  equals?: $Enums.DoctorAuthorityKind | Prisma.EnumDoctorAuthorityKindFieldRefInput<$PrismaModel>
+  in?: $Enums.DoctorAuthorityKind[] | Prisma.ListEnumDoctorAuthorityKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DoctorAuthorityKind[] | Prisma.ListEnumDoctorAuthorityKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDoctorAuthorityKindFilter<$PrismaModel> | $Enums.DoctorAuthorityKind
+}
+
+export type NestedEnumDoctorAuthorityKindWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.DoctorAuthorityKind | Prisma.EnumDoctorAuthorityKindFieldRefInput<$PrismaModel>
+  in?: $Enums.DoctorAuthorityKind[] | Prisma.ListEnumDoctorAuthorityKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DoctorAuthorityKind[] | Prisma.ListEnumDoctorAuthorityKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDoctorAuthorityKindWithAggregatesFilter<$PrismaModel> | $Enums.DoctorAuthorityKind
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumDoctorAuthorityKindFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumDoctorAuthorityKindFilter<$PrismaModel>
 }
 
 export type NestedEnumAppointmentSessionStatusFilter<$PrismaModel = never> = {

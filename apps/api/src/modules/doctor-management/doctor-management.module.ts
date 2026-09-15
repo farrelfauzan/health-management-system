@@ -1,16 +1,21 @@
 import { Module, forwardRef } from '@nestjs/common';
 
+import { StorageModule } from '../../common/storage/storage.module';
 import { AdminManagementModule } from '../admin-management/admin-management.module';
 import { AuthModule } from '../auth/auth.module';
 import { NotificationModule } from '../notification/notification.module';
 import { UserInvitationModule } from '../user-invitation/user-invitation.module';
+import { DoctorAuthorityController } from './controller/doctor-authority.controller';
 import { DoctorCredentialOptionController } from './controller/doctor-credential-option.controller';
 import { DoctorLicenseExpiryController } from './controller/doctor-license-expiry.controller';
 import { DoctorManagementController } from './controller/doctor-management.controller';
 import { DoctorOwnProfileController } from './controller/doctor-own-profile.controller';
+import { DoctorAuthorityRepository } from './repository/doctor-authority.repository';
 import { DoctorCredentialOptionRepository } from './repository/doctor-credential-option.repository';
 import { DoctorLicenseExpiryRepository } from './repository/doctor-license-expiry.repository';
 import { DoctorManagementRepository } from './repository/doctor-management.repository';
+import { DoctorAuthorityExpiryWorker } from './service/doctor-authority-expiry.worker';
+import { DoctorAuthorityService } from './service/doctor-authority.service';
 import { DoctorCredentialOptionService } from './service/doctor-credential-option.service';
 import { DoctorLicenseExpiryService } from './service/doctor-license-expiry.service';
 import { DoctorLicenseExpiryWorker } from './service/doctor-license-expiry.worker';
@@ -28,11 +33,17 @@ import { DoctorProfileCompletionService } from './service/doctor-profile-complet
  * Exports `DoctorOwnProfileService` for the same reason (P20-T03): "which
  * doctor profile is the signed-in user's" is asked again by P21-T04, and it
  * must be answered by one rule rather than a second `ownerUserId` lookup.
+ *
+ * Exports `DoctorAuthorityService` (P25-T02) so enforcement (P25-T03) can ask
+ * `hasActiveAuthority` — by the service, never the repository, so "active" is
+ * one rule in the clinic's calendar. `StorageModule` is imported for the
+ * decision letter's presigned upload and download.
  */
 @Module({
   imports: [
     AuthModule,
     NotificationModule,
+    StorageModule,
     // `forwardRef` on both because P19-T15 closes a loop that already ran most
     // of the way round the application: `AdminManagementModule` reaches
     // `AppointmentManagementModule` through the document and channel modules,
@@ -49,6 +60,7 @@ import { DoctorProfileCompletionService } from './service/doctor-profile-complet
     DoctorOwnProfileController,
     DoctorLicenseExpiryController,
     DoctorCredentialOptionController,
+    DoctorAuthorityController,
   ],
   providers: [
     DoctorManagementRepository,
@@ -60,7 +72,10 @@ import { DoctorProfileCompletionService } from './service/doctor-profile-complet
     DoctorLicenseExpiryWorker,
     DoctorCredentialOptionRepository,
     DoctorCredentialOptionService,
+    DoctorAuthorityRepository,
+    DoctorAuthorityService,
+    DoctorAuthorityExpiryWorker,
   ],
-  exports: [DoctorLicenseExpiryService, DoctorOwnProfileService],
+  exports: [DoctorLicenseExpiryService, DoctorOwnProfileService, DoctorAuthorityService],
 })
 export class DoctorManagementModule {}
