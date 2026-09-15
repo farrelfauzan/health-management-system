@@ -285,26 +285,70 @@ export const immunizationSiteSchema = z.enum([
 ]);
 
 /**
- * One vaccination given during the visit (P10-T16).
+ * Why a dose was given, in SATUSEHAT's `immunization-reason` code system
+ * (P24-T12, FR-IM-03). The platform's codes carry a hyphen (`IM-Dasar`);
+ * the stored value folds it into an underscore, and the mapper restores it.
+ */
+export const IMMUNIZATION_REASONS = [
+  'IM_DASAR',
+  'IM_BADUTA',
+  'IM_SD',
+  'IM_WUS',
+  'IM_TAMBAHAN',
+  'IM_KHUSUS',
+  'IM_PILIHAN',
+] as const;
+
+export const immunizationReasonSchema = z.enum(IMMUNIZATION_REASONS);
+
+const NEW_DOSE_REQUIRED_MESSAGE =
+  'A dose given here needs its lot number, expiry date and dose number; tick isHistorical for a dose copied from a card';
+
+/**
+ * One vaccination recorded on the visit (P10-T16, P24-T12).
  *
  * `medicationId` names a row in the medication catalog flagged `isVaccine`:
  * vaccines are KFA products, so they live where the other products live and
- * the flag is what filters the picker. Lot, expiry and dose are optional
- * because a nurse recording a vaccination from a card may not have all three,
- * and a record with two of them is worth more than no record — the SATUSEHAT
- * mapper omits what is absent rather than inventing it.
+ * the flag is what filters the picker.
+ *
+ * A dose given here (`isHistorical` false) must carry its lot number, expiry
+ * date and dose number: SATUSEHAT refuses a primary-source Immunization
+ * without any of them (RuleNumber 10306, 10307, 10450), and one refused
+ * resource fails the whole visit. A dose copied from a card or KIA book is
+ * `isHistorical`, is reported as not primary-source, and needs none of the
+ * three — the platform accepts it without them, so nobody has to invent an
+ * expiry date to save what the book says. The reason is required either way
+ * (RuleNumber 10105).
  */
-export const addImmunizationSchema = z.object({
-  medicationId: z.string().uuid(),
-  occurredAt: z.string().datetime().optional(),
-  lotNumber: z.string().trim().min(1).max(MAX_CODE_LENGTH).optional(),
-  expirationDate: z.string().date().optional(),
-  doseNumber: z.number().int().min(1).max(20).optional(),
-  route: immunizationRouteSchema.optional(),
-  site: immunizationSiteSchema.optional(),
-  performedById: z.string().uuid().optional(),
-  notes: z.string().trim().min(1).max(MAX_NOTES_LENGTH).optional(),
-});
+export const addImmunizationSchema = z
+  .object({
+    medicationId: z.string().uuid(),
+    occurredAt: z.string().datetime().optional(),
+    lotNumber: z.string().trim().min(1).max(MAX_CODE_LENGTH).optional(),
+    expirationDate: z.string().date().optional(),
+    doseNumber: z.number().int().min(1).max(20).optional(),
+    route: immunizationRouteSchema.optional(),
+    site: immunizationSiteSchema.optional(),
+    performedById: z.string().uuid().optional(),
+    notes: z.string().trim().min(1).max(MAX_NOTES_LENGTH).optional(),
+    isHistorical: z.boolean().default(false),
+    reason: immunizationReasonSchema,
+  })
+  .superRefine((payload, context) => {
+    if (payload.isHistorical) {
+      return;
+    }
+    const missingFields = (['lotNumber', 'expirationDate', 'doseNumber'] as const).filter(
+      (field) => payload[field] === undefined,
+    );
+    for (const field of missingFields) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: NEW_DOSE_REQUIRED_MESSAGE,
+        path: [field],
+      });
+    }
+  });
 
 export const listEncountersQuerySchema = z
   .object({
@@ -350,6 +394,7 @@ export const upsertBpjsReferralSchema = z
 
 export type ImmunizationRouteValue = z.infer<typeof immunizationRouteSchema>;
 export type ImmunizationSiteValue = z.infer<typeof immunizationSiteSchema>;
+export type ImmunizationReasonValue = z.infer<typeof immunizationReasonSchema>;
 export type AddImmunizationInput = z.infer<typeof addImmunizationSchema>;
 
 export type OpenEncounterInput = z.infer<typeof openEncounterSchema>;

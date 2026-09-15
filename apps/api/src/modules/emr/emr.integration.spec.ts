@@ -9,6 +9,7 @@ import { PrismaService } from '../../common/prisma/prisma.service';
 import { AuthRepository } from '../auth/repository/auth.repository';
 import { DoctorAuthorityRepository } from '../doctor-management/repository/doctor-authority.repository';
 import { LabOrderRepository } from '../laboratory/repository/lab-order.repository';
+import { PharmacyFlowRepository } from '../pharmacy-flow/repository/pharmacy-flow.repository';
 import { Icd10CodeRepository } from '../terminology/repository/icd10-code.repository';
 import { EncounterRepository } from './repository/encounter.repository';
 
@@ -40,6 +41,14 @@ describe('EMR integration', () => {
     createProcedure: jest.fn(),
     findProcedureById: jest.fn(),
     softDeleteProcedure: jest.fn(),
+    createImmunization: jest.fn(),
+  };
+
+  // P24-T12. Recording a vaccination looks the vaccine up in the catalog, and
+  // `PrismaService` is stubbed wholesale below, so the pharmacy repository is
+  // overridden for the same reason the laboratory one is.
+  const pharmacyFlowRepositoryMock = {
+    findActiveVaccineById: jest.fn(),
   };
 
   // P25-T03. A midwife's procedures and under-five visits ask
@@ -77,6 +86,7 @@ describe('EMR integration', () => {
   const patientId = '38a3f0f1-51d3-4f68-9d54-1f6a1de1a002';
   const doctorId = '7c1f2f0a-2f4b-4d6a-9d0a-9c4e1f0b9c11';
   const icd10CodeId = 'ffffffff-ffff-4fff-8fff-ffffffffffff';
+  const vaccineId = '9a8b7c6d-5e4f-4a3b-8c2d-1e0f9a8b7c6d';
   const timestamp = new Date('2026-07-20T08:00:00.000Z');
 
   const encounterRecord = {
@@ -138,6 +148,8 @@ describe('EMR integration', () => {
       .useValue(doctorAuthorityRepositoryMock)
       .overrideProvider(LabOrderRepository)
       .useValue(labOrderRepositoryMock)
+      .overrideProvider(PharmacyFlowRepository)
+      .useValue(pharmacyFlowRepositoryMock)
       .overrideProvider(PrismaService)
       .useValue(prismaServiceMock)
       .compile();
@@ -461,6 +473,64 @@ describe('EMR integration', () => {
 
     expect(response.status).toBe(400);
     expect(encounterRepositoryMock.createDiagnosis).not.toHaveBeenCalled();
+  });
+
+  it('refuses a dose given here that has no lot number or expiry (P24-T12)', async () => {
+    // SATUSEHAT refuses a primary-source Immunization without either
+    // (RuleNumber 10306, 10307), and one refused resource fails the visit.
+    const token = await buildToken('admin-user', 'admin@hms.local');
+    mockActorWithPermissions([{ action: 'write', resource: 'Encounter', scope: 'ANY' }]);
+
+    const response = await request(app.getHttpServer())
+      .post(`/api/v1/v1/encounters/${encounterId}/immunizations`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ medicationId: vaccineId, reason: 'IM_DASAR', doseNumber: 1 });
+
+    expect(response.status).toBe(400);
+    expect(encounterRepositoryMock.createImmunization).not.toHaveBeenCalled();
+  });
+
+  it('records a historical dose copied from a KIA book without lot or expiry', async () => {
+    const token = await buildToken('admin-user', 'admin@hms.local');
+    mockActorWithPermissions([{ action: 'write', resource: 'Encounter', scope: 'ANY' }]);
+    pharmacyFlowRepositoryMock.findActiveVaccineById.mockResolvedValue({
+      id: vaccineId,
+      name: 'Vaksin DPT-HB-Hib',
+      kfaCode: '93023055',
+    });
+    encounterRepositoryMock.createImmunization.mockResolvedValue({
+      id: 'c4d5e6f7-a8b9-4c0d-8e1f-2a3b4c5d6e7f',
+      encounterId,
+      patientId,
+      medicationId: vaccineId,
+      medicationName: 'Vaksin DPT-HB-Hib',
+      kfaCode: '93023055',
+      occurredAt: timestamp,
+      lotNumber: null,
+      expirationDate: null,
+      doseNumber: 1,
+      route: null,
+      site: null,
+      performedById: doctorId,
+      performedByName: 'Dr. Budi Santoso',
+      notes: null,
+      isHistorical: true,
+      reason: 'IM_DASAR',
+      createdAt: timestamp,
+      updatedAt: timestamp,
+    });
+
+    const response = await request(app.getHttpServer())
+      .post(`/api/v1/v1/encounters/${encounterId}/immunizations`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ medicationId: vaccineId, isHistorical: true, reason: 'IM_DASAR', doseNumber: 1 });
+
+    expect(response.status).toBe(201);
+    expect(response.body.data.isHistorical).toBe(true);
+    expect(response.body.data.reason).toBe('IM_DASAR');
+    expect(encounterRepositoryMock.createImmunization).toHaveBeenCalledWith(
+      expect.objectContaining({ isHistorical: true, reason: 'IM_DASAR', performedById: doctorId }),
+    );
   });
 
   it('returns 409 when writing to a closed record', async () => {

@@ -107,6 +107,33 @@ function buildBundleData(overrides: Record<string, unknown> = {}) {
   };
 }
 
+/**
+ * A historical dose copied from a KIA book, reportable as it stands: coded,
+ * numbered, with a reason, and given by the attending doctor. Overrides take
+ * away what each case below needs missing.
+ */
+function buildImmunization(overrides: Record<string, unknown> = {}) {
+  return {
+    immunizationId: 'imm-1',
+    kfaCode: '93000123',
+    vaccineName: 'Vaksin DPT-HB-Hib',
+    occurredAt: new Date('2026-07-28T02:10:00.000Z'),
+    recordedAt: new Date('2026-07-28T02:11:00.000Z'),
+    lotNumber: null,
+    expirationDate: null,
+    doseNumber: 1,
+    route: null,
+    site: null,
+    notes: null,
+    isHistorical: true,
+    reason: 'IM_DASAR' as const,
+    performerId: null,
+    performerName: null,
+    performerIhsNumber: null,
+    ...overrides,
+  };
+}
+
 const labOrderId = '7b8c9d0e-1f2a-4b3c-8d4e-5f6a7b8c9d0e';
 const labSpecimenId = '2f3a4b5c-6d7e-4f8a-9b0c-1d2e3f4a5b6c';
 
@@ -632,12 +659,18 @@ describe('SatusehatSubmissionService', () => {
             kfaCode: '93000001',
             vaccineName: 'BCG',
             occurredAt: new Date('2026-07-28T02:05:00.000Z'),
+            recordedAt: new Date('2026-07-28T02:06:00.000Z'),
             lotNumber: null,
             expirationDate: null,
             doseNumber: 1,
             route: 'IM' as const,
             site: 'LEFT_ARM' as const,
             notes: null,
+            isHistorical: true,
+            reason: 'IM_DASAR' as const,
+            performerId: null,
+            performerName: null,
+            performerIhsNumber: null,
           },
         ],
       }),
@@ -908,12 +941,18 @@ describe('SatusehatSubmissionService', () => {
             kfaCode: '93000123',
             vaccineName: 'Vaksin DPT-HB-Hib',
             occurredAt: new Date('2026-07-28T02:10:00.000Z'),
+            recordedAt: new Date('2026-07-28T02:11:00.000Z'),
             lotNumber: 'LOT-DPT-2026-04',
             expirationDate: '2027-04-30',
             doseNumber: 3,
             route: 'IM' as const,
             site: 'LEFT_THIGH' as const,
             notes: null,
+            isHistorical: false,
+            reason: 'IM_DASAR' as const,
+            performerId: doctorId,
+            performerName: 'dr. Sari Wulandari',
+            performerIhsNumber: 'N10000001',
           },
         ],
       }),
@@ -945,30 +984,12 @@ describe('SatusehatSubmissionService', () => {
         diagnoses: [],
         latestVitalSigns: null,
         immunizations: [
-          {
-            immunizationId: 'imm-coded',
-            kfaCode: '93000123',
-            vaccineName: 'Vaksin DPT-HB-Hib',
-            occurredAt: new Date('2026-07-28T02:10:00.000Z'),
-            lotNumber: null,
-            expirationDate: null,
-            doseNumber: null,
-            route: null,
-            site: null,
-            notes: null,
-          },
-          {
+          buildImmunization({ immunizationId: 'imm-coded' }),
+          buildImmunization({
             immunizationId: 'imm-uncoded',
             kfaCode: null,
             vaccineName: 'Vaksin lokal tanpa KFA',
-            occurredAt: new Date('2026-07-28T02:12:00.000Z'),
-            lotNumber: null,
-            expirationDate: null,
-            doseNumber: null,
-            route: null,
-            site: null,
-            notes: null,
-          },
+          }),
         ],
       }),
     );
@@ -989,6 +1010,163 @@ describe('SatusehatSubmissionService', () => {
       expect.stringContaining('skipped 1 vaccination(s) whose vaccine has no KFA code'),
     );
     warnSpy.mockRestore();
+  });
+
+  it('leaves out a legacy dose with no dose number or reason, naming each gap on the resource list', async () => {
+    // The platform refuses an Immunization without protocolApplied or
+    // reasonCode (P24-T12), and one refused resource fails the whole visit.
+    submissionRepositoryMock.findBundleData.mockResolvedValue(
+      buildBundleData({
+        diagnoses: [],
+        latestVitalSigns: null,
+        immunizations: [
+          buildImmunization({ immunizationId: 'imm-no-dose', doseNumber: null }),
+          buildImmunization({ immunizationId: 'imm-no-reason', reason: null }),
+          buildImmunization({ immunizationId: 'imm-complete' }),
+        ],
+      }),
+    );
+    httpClientMock.sendRequest.mockResolvedValue({ entry: [] });
+    const service = buildService();
+
+    await service.processSubmission(buildSubmission());
+
+    const bundle = (httpClientMock.sendRequest.mock.calls[0]?.[0] as {
+      body: SatusehatFhirTransactionBundle;
+    }).body;
+    expect(bundle.entry.filter((entry) => entry.request.url === 'Immunization')).toHaveLength(1);
+    const saved = submissionRepositoryMock.saveSubmissionResources.mock.calls[0]?.[0] as {
+      resources: readonly { resourceType: string; outcome: string; skipReason: string | null }[];
+    };
+    expect(saved.resources.filter((row) => row.outcome === 'SKIPPED')).toEqual([
+      expect.objectContaining({
+        resourceType: 'Immunization',
+        skipReason: 'IMMUNIZATION_DOSE_NUMBER_MISSING',
+      }),
+      expect.objectContaining({
+        resourceType: 'Immunization',
+        skipReason: 'IMMUNIZATION_REASON_MISSING',
+      }),
+    ]);
+  });
+
+  it('names the clinician on the row as performer, falling back to the attending doctor only when nobody is named', async () => {
+    submissionRepositoryMock.findBundleData.mockResolvedValue(
+      buildBundleData({
+        diagnoses: [],
+        latestVitalSigns: null,
+        immunizations: [
+          buildImmunization({
+            immunizationId: 'imm-midwife',
+            performerId: 'midwife-1',
+            performerName: 'Bd. Rina Kusuma',
+            performerIhsNumber: 'N20000002',
+          }),
+          buildImmunization({ immunizationId: 'imm-unnamed', performerId: null }),
+          // The doctor's own row keeps a null copy of the number the encounter
+          // just resolved; the encounter's copy wins.
+          buildImmunization({
+            immunizationId: 'imm-doctor',
+            performerId: doctorId,
+            performerIhsNumber: null,
+          }),
+        ],
+      }),
+    );
+    httpClientMock.sendRequest.mockResolvedValue({ entry: [] });
+    const service = buildService();
+
+    await service.processSubmission(buildSubmission());
+
+    const bundle = (httpClientMock.sendRequest.mock.calls[0]?.[0] as {
+      body: SatusehatFhirTransactionBundle;
+    }).body;
+    const performers = bundle.entry
+      .filter((entry) => entry.request.url === 'Immunization')
+      .map(
+        (entry) =>
+          (entry.resource as { performer: Array<{ actor: { reference: string } }> }).performer[0]
+            ?.actor.reference,
+      );
+    expect(performers).toEqual([
+      'Practitioner/N20000002',
+      'Practitioner/N10000001',
+      'Practitioner/N10000001',
+    ]);
+  });
+
+  it('skips a dose whose performer has no practitioner id rather than reporting it under the doctor', async () => {
+    submissionRepositoryMock.findBundleData.mockResolvedValue(
+      buildBundleData({
+        diagnoses: [],
+        latestVitalSigns: null,
+        immunizations: [
+          buildImmunization({
+            immunizationId: 'imm-unlinked',
+            performerId: 'midwife-2',
+            performerName: 'Bd. Sari',
+            performerIhsNumber: null,
+          }),
+        ],
+      }),
+    );
+    httpClientMock.sendRequest.mockResolvedValue({ entry: [] });
+    const service = buildService();
+    const warnSpy = jest.spyOn(
+      (service as unknown as { logger: { warn: (message: string) => void } }).logger,
+      'warn',
+    );
+
+    await service.processSubmission(buildSubmission());
+
+    const bundle = (httpClientMock.sendRequest.mock.calls[0]?.[0] as {
+      body: SatusehatFhirTransactionBundle;
+    }).body;
+    expect(bundle.entry.filter((entry) => entry.request.url === 'Immunization')).toHaveLength(0);
+    const saved = submissionRepositoryMock.saveSubmissionResources.mock.calls[0]?.[0] as {
+      resources: readonly { resourceType: string; outcome: string; skipReason: string | null }[];
+    };
+    expect(saved.resources.filter((row) => row.outcome === 'SKIPPED')).toEqual([
+      expect.objectContaining({
+        resourceType: 'Immunization',
+        skipReason: 'IMMUNIZATION_PERFORMER_UNLINKED',
+      }),
+    ]);
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining('whose performer has no SATUSEHAT practitioner id'),
+    );
+    warnSpy.mockRestore();
+  });
+
+  it('keeps the KFA code and rule number of a vaccine the terminology refused on the failed row', async () => {
+    // RuleNumber 10103 (P24-T12): nothing here can know in advance which KFA
+    // products the vaccine terminology accepts, so the platform's own verdict
+    // — which names the code — is what the operator gets to act on.
+    submissionRepositoryMock.findBundleData.mockResolvedValue(
+      buildBundleData({
+        diagnoses: [],
+        latestVitalSigns: null,
+        immunizations: [buildImmunization({ kfaCode: '93026440' })],
+      }),
+    );
+    httpClientMock.sendRequest.mockRejectedValue(
+      new SatusehatError(
+        'SATUSEHAT_REQUEST_REJECTED',
+        "SATUSEHAT rejected the request (HTTP 400): Code not found: '93026440' in system http://sys-ids.kemkes.go.id/kfa (RuleNumber: 10103)",
+        400,
+      ),
+    );
+    const service = buildService();
+
+    await service.processSubmission(buildSubmission());
+
+    expect(submissionRepositoryMock.markFailed).toHaveBeenCalledWith(
+      expect.objectContaining({
+        lastError: expect.stringContaining("Code not found: '93026440'"),
+      }),
+    );
+    const failure = submissionRepositoryMock.markFailed.mock.calls[0]?.[0] as { lastError: string };
+    expect(failure.lastError).toContain('RuleNumber: 10103');
   });
 
   it('appends the Composition last, after every resource it references', async () => {

@@ -349,6 +349,19 @@ export const ImmunizationSite = {
 export type ImmunizationSite = (typeof ImmunizationSite)[keyof typeof ImmunizationSite]
 
 
+export const ImmunizationReason = {
+  IM_DASAR: 'IM_DASAR',
+  IM_BADUTA: 'IM_BADUTA',
+  IM_SD: 'IM_SD',
+  IM_WUS: 'IM_WUS',
+  IM_TAMBAHAN: 'IM_TAMBAHAN',
+  IM_KHUSUS: 'IM_KHUSUS',
+  IM_PILIHAN: 'IM_PILIHAN'
+} as const
+
+export type ImmunizationReason = (typeof ImmunizationReason)[keyof typeof ImmunizationReason]
+
+
 export const AllergySeverity = {
   MILD: 'MILD',
   MODERATE: 'MODERATE',
@@ -539,7 +552,10 @@ export const SatusehatResourceSkipReason = {
   NO_ICD9CM_CODE: 'NO_ICD9CM_CODE',
   NO_LOINC_CODE: 'NO_LOINC_CODE',
   NO_VERIFIED_RESULT: 'NO_VERIFIED_RESULT',
-  UNCODED_COMPOUND_COMPONENT: 'UNCODED_COMPOUND_COMPONENT'
+  UNCODED_COMPOUND_COMPONENT: 'UNCODED_COMPOUND_COMPONENT',
+  IMMUNIZATION_DOSE_NUMBER_MISSING: 'IMMUNIZATION_DOSE_NUMBER_MISSING',
+  IMMUNIZATION_REASON_MISSING: 'IMMUNIZATION_REASON_MISSING',
+  IMMUNIZATION_PERFORMER_UNLINKED: 'IMMUNIZATION_PERFORMER_UNLINKED'
 } as const
 
 export type SatusehatResourceSkipReason = (typeof SatusehatResourceSkipReason)[keyof typeof SatusehatResourceSkipReason]

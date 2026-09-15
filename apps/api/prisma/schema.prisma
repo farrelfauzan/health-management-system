@@ -515,6 +515,23 @@ enum ImmunizationSite {
   @@map("immunization_site")
 }
 
+/// Why the dose was given, as SATUSEHAT's `immunization-reason` code system
+/// names it (P24-T12, FR-IM-03): `reasonCode` is mandatory on every
+/// Immunization the platform accepts (RuleNumber 10105), and the code list is
+/// the platform's, so the values are its codes with the hyphen folded into an
+/// underscore. The mapper restores the hyphen; nothing else reads the code.
+enum ImmunizationReason {
+  IM_DASAR
+  IM_BADUTA
+  IM_SD
+  IM_WUS
+  IM_TAMBAHAN
+  IM_KHUSUS
+  IM_PILIHAN
+
+  @@map("immunization_reason")
+}
+
 enum AllergySeverity {
   MILD
   MODERATE
@@ -733,6 +750,15 @@ enum SatusehatResourceSkipReason {
   NO_LOINC_CODE
   NO_VERIFIED_RESULT
   UNCODED_COMPOUND_COMPONENT
+  /// An Immunization the platform would refuse for want of a mandatory
+  /// element (P24-T12): `protocolApplied` needs a dose number (RuleNumber
+  /// 10450), `reasonCode` a reason (10105). Rows recorded before the form
+  /// required them are left out and named here rather than failing the visit.
+  IMMUNIZATION_DOSE_NUMBER_MISSING
+  IMMUNIZATION_REASON_MISSING
+  /// The clinician who gave the dose is not the attending doctor and has no
+  /// SATUSEHAT practitioner id, so the performer cannot be named truthfully.
+  IMMUNIZATION_PERFORMER_UNLINKED
 
   @@map("satusehat_resource_skip_reason")
 }
@@ -5743,6 +5769,13 @@ model Immunization {
   site                    ImmunizationSite?
   performedById           String?            @map("performed_by_id") @db.Uuid
   notes                   String?
+  /// A dose copied from a card or KIA book rather than given here (P24-T12,
+  /// FR-IM-02). Reported with `primarySource: false` and an entering
+  /// performer, and without the lot and expiry a new dose must carry.
+  isHistorical            Boolean            @default(false) @map("is_historical")
+  /// Nullable only for rows recorded before the form required it; the bundle
+  /// skips such a row with `IMMUNIZATION_REASON_MISSING` rather than inventing one.
+  reason                  ImmunizationReason?
   /// IHS id returned by SATUSEHAT on first successful submission. Non-null
   /// means reported.
   satusehatImmunizationId String?            @map("satusehat_immunization_id")

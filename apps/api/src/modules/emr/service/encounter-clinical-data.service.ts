@@ -229,6 +229,10 @@ export class EncounterClinicalDataService {
    * KFA product. A vaccine without a KFA code is still recorded — the clinic
    * gave it, and the local history is the point — it is simply skipped in the
    * bundle and named in the gap log.
+   *
+   * Which fields a dose must carry depends on whether it was given here or
+   * copied from a card (P24-T12); the shared schema enforces that split, so
+   * by the time the payload arrives it is already a shape SATUSEHAT accepts.
    */
   async addImmunization(
     encounterId: string,
@@ -255,6 +259,8 @@ export class EncounterClinicalDataService {
       // performer nobody named is worth less than the obvious one.
       performedById: payload.performedById ?? encounter.doctorId,
       notes: payload.notes,
+      isHistorical: payload.isHistorical,
+      reason: payload.reason,
     });
 
     return this.encounterMapper.toImmunizationResponse(created);

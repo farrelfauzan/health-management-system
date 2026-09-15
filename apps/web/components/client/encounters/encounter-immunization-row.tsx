@@ -42,6 +42,8 @@ export function EncounterImmunizationRow({
   }
 
   const details = [
+    immunization.isHistorical ? t('encounters.immunization.historicalBadge') : null,
+    immunization.reason ? t(`encounters.immunization.reasons.${immunization.reason}`) : null,
     immunization.doseNumber
       ? t('encounters.immunization.dose', { number: immunization.doseNumber })
       : null,

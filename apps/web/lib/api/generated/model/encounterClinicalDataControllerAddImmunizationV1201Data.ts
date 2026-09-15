@@ -21,6 +21,8 @@ export type EncounterClinicalDataControllerAddImmunizationV1201Data = {
   site: string;
   performedById: string;
   performedByName: string;
+  isHistorical: boolean;
+  reason: string;
   createdAt: string;
   updatedAt: string;
 };
