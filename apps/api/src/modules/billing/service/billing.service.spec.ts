@@ -75,10 +75,20 @@ describe('BillingService', () => {
   const procedureTariffId = '8c1d2f69-5a7b-4a7f-8e21-3b0d4a5c6e7f';
   const timestamp = new Date('2026-07-28T03:00:00.000Z');
 
+  const generalSpecialtyId = '1d0a5f2c-3e4b-4c5d-8e6f-7a8b9c0d1e2f';
+  const midwiferySpecialtyId = '2e1b6a3d-4f5c-4d6e-9f70-8b9c0d1e2f30';
+
   const finishedEncounter = {
     id: encounterId,
     status: 'FINISHED' as const,
     patientId,
+    clinician: {
+      id: 'doctor-1',
+      fullName: 'dr. Budi Santoso',
+      specialtyId: generalSpecialtyId,
+      specialtyName: 'Umum',
+      profession: 'DOCTOR' as const,
+    },
     procedures: [
       { id: 'procedure-1', code: '99.21', display: 'Injection of antibiotic' },
       { id: 'procedure-2', code: '99.21', display: 'Injection of antibiotic' },
@@ -92,10 +102,24 @@ describe('BillingService', () => {
     name: 'Konsultasi Dokter Umum',
     category: 'CONSULTATION' as const,
     icd9cmCode: null,
+    specialtyId: null,
+    specialty: null,
+    profession: null,
     price: 50000,
     isActive: true,
     createdAt: timestamp,
     updatedAt: timestamp,
+  };
+
+  const midwiferyConsultationTariff = {
+    ...consultationTariff,
+    id: '3f2c7b4e-5a6d-4e7f-8081-9c0d1e2f3041',
+    code: 'KONSULTASI-BIDAN',
+    name: 'Pemeriksaan Bidan',
+    specialtyId: midwiferySpecialtyId,
+    specialty: { id: midwiferySpecialtyId, name: 'Kebidanan' },
+    profession: 'MIDWIFE' as const,
+    price: 30000,
   };
 
   const procedureTariff = {
@@ -236,25 +260,25 @@ describe('BillingService', () => {
         status: 'COMPLETED',
       });
 
-      await expect(service.generateLabOnlyInvoice(inputPayload, cashierUser)).rejects.toBeInstanceOf(
-        ConflictException,
-      );
+      await expect(
+        service.generateLabOnlyInvoice(inputPayload, cashierUser),
+      ).rejects.toBeInstanceOf(ConflictException);
     });
 
     it('refuses a second live invoice for the same visit', async () => {
       billingRepositoryMock.findLiveInvoiceByRegistrationId.mockResolvedValue({ id: 'invoice-1' });
 
-      await expect(service.generateLabOnlyInvoice(inputPayload, cashierUser)).rejects.toBeInstanceOf(
-        ConflictException,
-      );
+      await expect(
+        service.generateLabOnlyInvoice(inputPayload, cashierUser),
+      ).rejects.toBeInstanceOf(ConflictException);
     });
 
     it('refuses a visit with nothing on it to bill', async () => {
       billingRepositoryMock.findLabItemsForBilling.mockResolvedValue([]);
 
-      await expect(service.generateLabOnlyInvoice(inputPayload, cashierUser)).rejects.toBeInstanceOf(
-        ConflictException,
-      );
+      await expect(
+        service.generateLabOnlyInvoice(inputPayload, cashierUser),
+      ).rejects.toBeInstanceOf(ConflictException);
     });
   });
 
@@ -341,6 +365,9 @@ describe('BillingService', () => {
           category: 'OTHER' as const,
           icd9cmCode: null,
           roomClass: null,
+          specialtyId: null,
+          specialty: null,
+          profession: null,
           price: 5000,
           isActive: true,
           createdAt: timestamp,
@@ -571,15 +598,83 @@ describe('BillingService', () => {
       );
     });
 
-    it('requires an explicit choice when several consultation tariffs are active', async () => {
+    it('bills the consultation tariff written for the clinician who held the visit', async () => {
+      billingRepositoryMock.findEncounterForBilling.mockResolvedValue({
+        ...finishedEncounter,
+        clinician: {
+          id: 'midwife-1',
+          fullName: 'Bd. Sri Lestari',
+          specialtyId: midwiferySpecialtyId,
+          specialtyName: 'Kebidanan',
+          profession: 'MIDWIFE' as const,
+        },
+      });
+      serviceTariffRepositoryMock.findActiveConsultationTariffs.mockResolvedValue([
+        consultationTariff,
+        midwiferyConsultationTariff,
+      ]);
+
+      await service.generateInvoice(inputPayload, cashierUser);
+
+      expect(billingRepositoryMock.createInvoiceWithItems.mock.calls[0][0].items).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            itemType: 'CONSULTATION',
+            serviceTariffId: midwiferyConsultationTariff.id,
+            unitPrice: 30000,
+          }),
+        ]),
+      );
+    });
+
+    it('falls back to the untagged clinic-wide fee when no tariff names the poli', async () => {
+      serviceTariffRepositoryMock.findActiveConsultationTariffs.mockResolvedValue([
+        consultationTariff,
+        midwiferyConsultationTariff,
+      ]);
+
+      await service.generateInvoice(inputPayload, cashierUser);
+
+      expect(billingRepositoryMock.createInvoiceWithItems.mock.calls[0][0].items).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            itemType: 'CONSULTATION',
+            serviceTariffId: consultationTariffId,
+            unitPrice: 50000,
+          }),
+        ]),
+      );
+    });
+
+    it('reports a gap instead of guessing when two untagged tariffs both claim the visit', async () => {
       serviceTariffRepositoryMock.findActiveConsultationTariffs.mockResolvedValue([
         consultationTariff,
         { ...consultationTariff, id: 'other-tariff', code: 'KONSULTASI-GIGI' },
       ]);
 
-      await expect(service.generateInvoice(inputPayload, cashierUser)).rejects.toBeInstanceOf(
-        BadRequestException,
+      const result = await service.generateInvoice(inputPayload, cashierUser);
+
+      expect(result.gaps).toEqual([
+        expect.objectContaining({ reason: 'AMBIGUOUS_CONSULTATION_TARIFF' }),
+      ]);
+      expect(billingRepositoryMock.createInvoiceWithItems.mock.calls[0][0].items).not.toEqual(
+        expect.arrayContaining([expect.objectContaining({ itemType: 'CONSULTATION' })]),
       );
+    });
+
+    it('names the poli in the gap when nothing prices the visit', async () => {
+      serviceTariffRepositoryMock.findActiveConsultationTariffs.mockResolvedValue([
+        midwiferyConsultationTariff,
+      ]);
+
+      const result = await service.generateInvoice(inputPayload, cashierUser);
+
+      expect(result.gaps).toEqual([
+        expect.objectContaining({
+          reason: 'NO_CONSULTATION_TARIFF',
+          description: 'No active consultation tariff prices doctor consultations in Umum',
+        }),
+      ]);
     });
 
     it('rejects a consultationTariffId that is not an active consultation tariff', async () => {

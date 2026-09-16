@@ -10571,7 +10571,8 @@ paths:
             type: string
       responses:
         "200":
-          description: The filtered, paginated price list.
+          description: The filtered, paginated price list. Consultation rows carry the
+            poli and profession they price.
           content:
             application/json:
               schema:
@@ -10680,7 +10681,9 @@ paths:
                   price: 35000
       responses:
         "201":
-          description: The price-list row was created.
+          description: The price-list row was created. A CONSULTATION row may name the
+            poli and profession it prices; leaving both out makes it the
+            clinic-wide consultation fee, of which there is at most one.
           content:
             application/json:
               schema:
@@ -11071,8 +11074,11 @@ paths:
       responses:
         "201":
           description: "A DRAFT invoice auto-collected from the visit: consultation fee,
-            tariffed procedures, dispensed medications. Whatever could not be
-            priced is listed in meta.gaps."
+            tariffed procedures, dispensed medications. The consultation fee is
+            resolved from the clinician who held the encounter — the tariff
+            written for their poli and profession, falling back to the
+            clinic-wide one — and consultationTariffId overrides that choice.
+            Whatever could not be priced is listed in meta.gaps."
           content:
             application/json:
               schema:
@@ -50509,6 +50515,14 @@ components:
         roomClassId:
           type: string
           format: uuid
+        specialtyId:
+          type: string
+          format: uuid
+        profession:
+          type: string
+          enum:
+            - DOCTOR
+            - MIDWIFE
         price:
           type: number
           minimum: 0
@@ -50546,6 +50560,16 @@ components:
         roomClassId:
           type: string
           format: uuid
+        specialtyId:
+          type: string
+          format: uuid
+          nullable: true
+        profession:
+          type: string
+          enum:
+            - DOCTOR
+            - MIDWIFE
+          nullable: true
         price:
           type: number
           minimum: 0

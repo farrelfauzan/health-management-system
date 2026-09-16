@@ -6,6 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { UpdateServiceTariffDtoCategory } from './updateServiceTariffDtoCategory';
+import type { UpdateServiceTariffDtoProfession } from './updateServiceTariffDtoProfession';
 
 export interface UpdateServiceTariffDto {
   /**
@@ -21,6 +22,10 @@ export interface UpdateServiceTariffDto {
      */
   icd9cmCode?: string | null;
   roomClassId?: string;
+  /** @nullable */
+  specialtyId?: string | null;
+  /** @nullable */
+  profession?: UpdateServiceTariffDtoProfession;
   /**
      * @minimum 0
      * @maximum 9999999999.99

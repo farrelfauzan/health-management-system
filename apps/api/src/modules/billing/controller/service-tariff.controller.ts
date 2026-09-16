@@ -31,7 +31,8 @@ export class ServiceTariffController {
   @Auth([{ action: 'read', subject: 'ServiceTariff' }])
   @ApiEndpoint({
     summary: 'List service tariffs',
-    responseDescription: 'The filtered, paginated price list.',
+    responseDescription:
+      'The filtered, paginated price list. Consultation rows carry the poli and profession they price.',
     responseExample: {
       data: [BILLING_EXAMPLES.serviceTariff.listItem],
       meta: BILLING_EXAMPLES.paginationMeta,
@@ -51,7 +52,8 @@ export class ServiceTariffController {
   @Auth([{ action: 'write', subject: 'ServiceTariff' }])
   @ApiEndpoint({
     summary: 'Create a service tariff',
-    responseDescription: 'The price-list row was created.',
+    responseDescription:
+      'The price-list row was created. A CONSULTATION row may name the poli and profession it prices; leaving both out makes it the clinic-wide consultation fee, of which there is at most one.',
     responseExample: {
       data: BILLING_EXAMPLES.serviceTariff.listItem,
       message: 'Service tariff created',

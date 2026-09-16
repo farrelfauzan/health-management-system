@@ -7,7 +7,9 @@ import type { InvoiceGenerationGapReason } from '@hms/shared-types';
  */
 export const INVOICE_GENERATION_GAP_MESSAGES: Record<InvoiceGenerationGapReason, string> = {
   NO_CONSULTATION_TARIFF:
-    'No active consultation tariff — add one under Tariffs, then regenerate to bill the consultation.',
+    'No consultation tariff prices this clinician’s poli, and the clinic has no clinic-wide fee either. Add one under Tariffs and regenerate.',
+  AMBIGUOUS_CONSULTATION_TARIFF:
+    'Two consultation tariffs claim this visit equally, so neither was billed rather than charging the wrong one. Give one of them a poli under Tariffs, then regenerate.',
   NO_TARIFF_FOR_PROCEDURE:
     'This procedure has no matching tariff. Add a tariff with its ICD-9-CM code and regenerate, or add the tariff line by hand from the draft invoice.',
   UNPRICED_MEDICATION:

@@ -45,7 +45,7 @@ function buildInvoice(): InvoiceDetail {
     status: 'DRAFT',
     totalAmount: 50000,
     items: [],
-  clinicalRequests: [],
+    clinicalRequests: [],
     createdAt: '2026-09-05T02:00:00.000Z',
     updatedAt: '2026-09-05T02:00:00.000Z',
   };

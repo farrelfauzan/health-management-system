@@ -142,7 +142,9 @@ export class CashierReportService {
     return created;
   }
 
-  private toMethodLines(byMethod: Map<PaymentMethodValue, MutableTotals>): CashierReportMethodLine[] {
+  private toMethodLines(
+    byMethod: Map<PaymentMethodValue, MutableTotals>,
+  ): CashierReportMethodLine[] {
     return [...byMethod.entries()]
       .map(([method, totals]) => ({
         method,

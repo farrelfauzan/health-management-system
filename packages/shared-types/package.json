@@ -48,6 +48,7 @@
     "#registration-flow/types": "./src/registration-flow/types.ts",
     "#registration-flow/resolve-checkin-window": "./src/registration-flow/resolve-checkin-window.ts",
     "#billing/accommodation-nights": "./src/billing/accommodation-nights.ts",
+    "#billing/resolve-consultation-tariff": "./src/billing/resolve-consultation-tariff.ts",
     "#billing/schemas": "./src/billing/schemas.ts",
     "#billing/contracts": "./src/billing/contracts.ts",
     "#billing/types": "./src/billing/types.ts",

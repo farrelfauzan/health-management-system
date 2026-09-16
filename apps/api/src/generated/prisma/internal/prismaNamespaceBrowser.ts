@@ -990,6 +990,8 @@ export const ServiceTariffScalarFieldEnum = {
   category: 'category',
   icd9cmCode: 'icd9cmCode',
   roomClassId: 'roomClassId',
+  specialtyId: 'specialtyId',
+  profession: 'profession',
   price: 'price',
   isActive: 'isActive',
   createdAt: 'createdAt',

@@ -5,8 +5,18 @@ import type {
   PaymentMethodValue,
   ServiceTariffCategoryValue,
 } from '#billing/schemas';
+import type { ClinicianProfessionValue } from '#doctor-management/schemas';
 import type { EncounterStatusValue } from '#emr/schemas';
 import type { RoomClassSummaryRecord } from '#room-management/types';
+
+/**
+ * The poli named by a consultation tariff, carried on the record so a price
+ * list can be read without a second lookup per row.
+ */
+export type ConsultationSpecialtySummaryRecord = {
+  id: string;
+  name: string;
+};
 
 /**
  * A price-list row. `price` is rupiah; Decimal columns surface as numbers —
@@ -21,6 +31,14 @@ export type ServiceTariffRecord = {
   icd9cmCode: string | null;
   /** Set exactly for ACCOMMODATION rows, which price a ward class (IMP-15). */
   roomClass: RoomClassSummaryRecord | null;
+  /**
+   * Who a CONSULTATION row prices (P26-T01). Null on either side means "any",
+   * so a row with neither set is the clinic-wide consultation fee. Always null
+   * on every other category.
+   */
+  specialtyId: string | null;
+  specialty: ConsultationSpecialtySummaryRecord | null;
+  profession: ClinicianProfessionValue | null;
   price: number;
   isActive: boolean;
   createdAt: Date;
@@ -107,7 +125,23 @@ export type CreateServiceTariffRecordPayload = {
   category: ServiceTariffCategoryValue;
   icd9cmCode?: string;
   roomClassId?: string;
+  specialtyId?: string;
+  profession?: ClinicianProfessionValue;
   price: number;
+  isActive: boolean;
+};
+
+/**
+ * A tariff's audience as the service checks it — the state the row will be in
+ * once a create or a patch lands, which is what the clinic-wide-fee and
+ * category rules are decided against. `undefined` means the row names nothing
+ * there, not that the caller left it alone; the service resolves that
+ * difference before building one of these.
+ */
+export type ServiceTariffAudienceState = {
+  category: ServiceTariffCategoryValue;
+  specialtyId?: string;
+  profession?: ClinicianProfessionValue;
   isActive: boolean;
 };
 
@@ -117,6 +151,8 @@ export type UpdateServiceTariffRecordPayload = {
   category?: ServiceTariffCategoryValue;
   roomClassId?: string;
   icd9cmCode?: string | null;
+  specialtyId?: string | null;
+  profession?: ClinicianProfessionValue | null;
   price?: number;
   isActive?: boolean;
 };
@@ -162,6 +198,18 @@ export type BillingSourceEncounterRecord = {
   patientId: string;
   /** The visit, which is how the bill finds the tests ordered on it (P18-T10). */
   registrationId: string;
+  /**
+   * The clinician who held the encounter, which is what the consultation fee
+   * is resolved from (P26-T01) — their poli and whether they are a dokter or
+   * a bidan.
+   */
+  clinician: {
+    id: string;
+    fullName: string;
+    specialtyId: string;
+    specialtyName: string;
+    profession: ClinicianProfessionValue;
+  };
   procedures: Array<{ id: string; code: string; display: string }>;
   /**
    * Vaccinations given on the visit (P10-T16). Priced from a `ServiceTariff`

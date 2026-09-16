@@ -286,6 +286,17 @@
       "editTariff": "Ubah Tarif",
       "newTariff": "Tarif Baru",
       "saveTariff": "Simpan Tarif",
+      "consultationAudience": {
+        "description": "Tarif konsultasi ini berlaku untuk siapa. Saat tagihan dibuat, sistem mencocokkannya dengan klinisi yang menangani kunjungan. Biarkan keduanya \u201csemua\u201d untuk menjadikannya tarif klinik \u2014 hanya boleh ada satu.",
+        "poli": "Poli",
+        "anyPoli": "Semua poli (tarif klinik)",
+        "profession": "Profesi",
+        "anyProfession": "Semua klinisi",
+        "professions": {
+          "DOCTOR": "Dokter",
+          "MIDWIFE": "Bidan"
+        }
+      },
       "labels": {
         "settled": "Diselesaikan",
         "voidPlaceholder": "Alasan pembatalan tagihan",

@@ -57,6 +57,7 @@ export * from '#registration-flow/types';
 export * from '#registration-flow/resolve-checkin-window';
 export * from '#billing/schemas';
 export * from '#billing/accommodation-nights';
+export * from '#billing/resolve-consultation-tariff';
 export * from '#billing/contracts';
 export * from '#billing/types';
 export * from '#document-templates/template-variables';
