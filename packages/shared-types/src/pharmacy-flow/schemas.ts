@@ -1,3 +1,4 @@
+import { moneyAmountSchema } from '#billing/schemas';
 import { chargeModeSchema, fulfilmentSiteSchema } from '#laboratory/schemas';
 import { z } from 'zod';
 
@@ -185,20 +186,29 @@ export const medicationFormSchema = z.string().trim().min(1).max(100);
 export const medicationStrengthSchema = z.string().trim().min(1).max(100);
 export const medicationReorderLevelSchema = z.number().int().min(0).max(1000000);
 
-export const createMedicationSchema = z.object({
-  code: medicationCodeSchema,
-  kfaCode: kfaCodeSchema.optional(),
-  name: medicationNameSchema,
-  form: medicationFormSchema.optional(),
-  strength: medicationStrengthSchema.optional(),
-  unit: medicationUnitSchema.optional(),
-  category: medicationCategorySchema.optional(),
-  reorderLevel: medicationReorderLevelSchema.optional().default(0),
-  /** P10-T16. Whether this row is a vaccine, which is what filters the immunisation picker. */
-  isVaccine: z.boolean().optional(),
-  /** P24-T04. Whether a midwife may prescribe this item. */
-  isMidwifePrescribable: z.boolean().optional(),
-}).strict();
+export const createMedicationSchema = z
+  .object({
+    code: medicationCodeSchema,
+    kfaCode: kfaCodeSchema.optional(),
+    name: medicationNameSchema,
+    form: medicationFormSchema.optional(),
+    strength: medicationStrengthSchema.optional(),
+    unit: medicationUnitSchema.optional(),
+    category: medicationCategorySchema.optional(),
+    reorderLevel: medicationReorderLevelSchema.optional().default(0),
+    /** P10-T16. Whether this row is a vaccine, which is what filters the immunisation picker. */
+    isVaccine: z.boolean().optional(),
+    /** P24-T04. Whether a midwife may prescribe this item. */
+    isMidwifePrescribable: z.boolean().optional(),
+    /**
+     * Selling price per `unit`, in rupiah. Optional because a catalog row can
+     * exist before the clinic has priced it — invoice generation then reports
+     * the dispensed item as an `UNPRICED_MEDICATION` gap rather than billing it
+     * free. Same money rules as a tariff: non-negative, two decimals at most.
+     */
+    unitPrice: moneyAmountSchema.optional(),
+  })
+  .strict();
 
 export const updateMedicationSchema = z
   .object({
@@ -212,6 +222,8 @@ export const updateMedicationSchema = z
     reorderLevel: medicationReorderLevelSchema.optional(),
     isVaccine: z.boolean().optional(),
     isMidwifePrescribable: z.boolean().optional(),
+    /** `null` un-prices the item, so its next dispense is a gap again. */
+    unitPrice: moneyAmountSchema.nullable().optional(),
   })
   .strict()
   .refine((payload) => Object.values(payload).some((value) => value !== undefined), {
@@ -227,13 +239,7 @@ export const listPrescriptionsQuerySchema = z.object({
   encounterId: z.string().uuid().optional(),
 });
 
-export const compoundPreparationSchema = z.enum([
-  'PUYER',
-  'KAPSUL',
-  'SIRUP',
-  'SALEP',
-  'OTHER',
-]);
+export const compoundPreparationSchema = z.enum(['PUYER', 'KAPSUL', 'SIRUP', 'SALEP', 'OTHER']);
 
 export const prescriptionItemComponentSchema = z.object({
   medicationId: z.string().uuid(),
@@ -364,13 +370,10 @@ export const dispenseItemInputSchema = z
     prescriptionItemId: z.string().uuid().optional(),
     quantity: z.number().int().min(1).max(10000),
   })
-  .refine(
-    (item) => Boolean(item.medicationId) !== Boolean(item.prescriptionItemId),
-    {
-      path: ['medicationId'],
-      message: 'Name either a medication or a compound prescription line, not both',
-    },
-  );
+  .refine((item) => Boolean(item.medicationId) !== Boolean(item.prescriptionItemId), {
+    path: ['medicationId'],
+    message: 'Name either a medication or a compound prescription line, not both',
+  });
 
 export const createDispenseSchema = z
   .object({

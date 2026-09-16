@@ -115,6 +115,7 @@ export class PharmacyFlowService {
         reorderLevel: payload.reorderLevel,
         isVaccine: payload.isVaccine,
         isMidwifePrescribable: payload.isMidwifePrescribable,
+        unitPrice: payload.unitPrice,
       }),
     );
 
@@ -573,16 +574,14 @@ export class PharmacyFlowService {
     item: { medicationId?: string; prescriptionItemId?: string },
   ): string | null {
     if (item.prescriptionItemId) {
-      return (
-        prescription.items.find((line) => line.id === item.prescriptionItemId)?.id ?? null
-      );
+      return prescription.items.find((line) => line.id === item.prescriptionItemId)?.id ?? null;
     }
-    return (
-      prescription.items.find((line) => line.medicationId === item.medicationId)?.id ?? null
-    );
+    return prescription.items.find((line) => line.medicationId === item.medicationId)?.id ?? null;
   }
 
-  private calculateRemainingQuantities(prescription: PrescriptionDetailRecord): Map<string, number> {
+  private calculateRemainingQuantities(
+    prescription: PrescriptionDetailRecord,
+  ): Map<string, number> {
     const remainingByLine = new Map<string, number>(
       prescription.items.map((item) => [item.id, item.quantity]),
     );
@@ -703,6 +702,7 @@ export class PharmacyFlowService {
       needsReorder: medication.stockQty <= medication.reorderLevel,
       isVaccine: medication.isVaccine,
       isMidwifePrescribable: medication.isMidwifePrescribable,
+      unitPrice: medication.unitPrice ?? undefined,
       createdAt: medication.createdAt.toISOString(),
       updatedAt: medication.updatedAt.toISOString(),
     };
