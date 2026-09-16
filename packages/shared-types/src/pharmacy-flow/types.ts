@@ -62,6 +62,8 @@ export type MedicationRecord = {
   reorderLevel: number;
   isVaccine: boolean;
   isMidwifePrescribable: boolean;
+  /** Rupiah per `unit`; null until the clinic prices the item. */
+  unitPrice: number | null;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -97,6 +99,7 @@ export type CreateMedicationRecordPayload = {
   reorderLevel: number;
   isVaccine?: boolean;
   isMidwifePrescribable?: boolean;
+  unitPrice?: number;
 };
 
 export type UpdateMedicationRecordPayload = {
@@ -110,6 +113,7 @@ export type UpdateMedicationRecordPayload = {
   reorderLevel?: number;
   isVaccine?: boolean;
   isMidwifePrescribable?: boolean;
+  unitPrice?: number | null;
 };
 
 export type MedicationStockRecord = {

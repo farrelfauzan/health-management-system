@@ -126,7 +126,6 @@ const DISPENSE_DETAIL_INCLUDE = {
   },
 } satisfies Prisma.DispenseRecordInclude;
 
-
 /**
  * Component quantities are `Decimal` in Postgres — half a tablet is the point
  * of a puyer — and no Prisma type leaves this layer, which is the rule the
@@ -346,6 +345,7 @@ export class PharmacyFlowRepository {
           reorderLevel: payload.reorderLevel,
           isVaccine: payload.isVaccine ?? false,
           isMidwifePrescribable: payload.isMidwifePrescribable ?? false,
+          unitPrice: payload.unitPrice ?? null,
         },
         include: STOCK_RELATION_INCLUDE,
       })
@@ -372,6 +372,7 @@ export class PharmacyFlowRepository {
           ...(payload.isMidwifePrescribable !== undefined
             ? { isMidwifePrescribable: payload.isMidwifePrescribable }
             : {}),
+          ...(payload.unitPrice !== undefined ? { unitPrice: payload.unitPrice } : {}),
         },
         include: this.availableStockInclude(inventoryDate),
       })
@@ -503,7 +504,9 @@ export class PharmacyFlowRepository {
     });
   }
 
-  async findActiveDoctorByOwnerUserId(ownerUserId: string): Promise<PrescribingClinicianRecord | null> {
+  async findActiveDoctorByOwnerUserId(
+    ownerUserId: string,
+  ): Promise<PrescribingClinicianRecord | null> {
     return this.prisma.findFirstActive(this.prisma.doctorProfile, {
       where: {
         ownerUserId,
@@ -745,7 +748,10 @@ export class PharmacyFlowRepository {
       },
     });
 
-    if (!prescription || (prescription.status !== 'ISSUED' && prescription.status !== 'PARTIALLY_DISPENSED')) {
+    if (
+      !prescription ||
+      (prescription.status !== 'ISSUED' && prescription.status !== 'PARTIALLY_DISPENSED')
+    ) {
       throw new ConflictException('Prescription is not in a dispensable state');
     }
 
@@ -782,10 +788,7 @@ export class PharmacyFlowRepository {
       }
     }
 
-    const compoundComponents = new Map<
-      string,
-      Array<{ medicationId: string; quantity: number }>
-    >();
+    const compoundComponents = new Map<string, Array<{ medicationId: string; quantity: number }>>();
     for (const line of prescription.items) {
       if (!line.isCompound) {
         continue;
@@ -799,13 +802,11 @@ export class PharmacyFlowRepository {
       );
     }
 
-    const hasRemainingQuantity = [...prescribedByLine.entries()].some(
-      ([lineId, prescribedQty]) => {
-        const alreadyDispensedQty = dispensedByLine.get(lineId) ?? 0;
-        const dispensingQty = dispensingByLine.get(lineId) ?? 0;
-        return prescribedQty - alreadyDispensedQty - dispensingQty > 0;
-      },
-    );
+    const hasRemainingQuantity = [...prescribedByLine.entries()].some(([lineId, prescribedQty]) => {
+      const alreadyDispensedQty = dispensedByLine.get(lineId) ?? 0;
+      const dispensingQty = dispensingByLine.get(lineId) ?? 0;
+      return prescribedQty - alreadyDispensedQty - dispensingQty > 0;
+    });
     return { hasRemainingQuantity, compoundComponents };
   }
 
@@ -817,9 +818,7 @@ export class PharmacyFlowRepository {
     if (item.prescriptionItemId) {
       return item.prescriptionItemId;
     }
-    return (
-      prescriptionItems.find((line) => line.medicationId === item.medicationId)?.id ?? null
-    );
+    return prescriptionItems.find((line) => line.medicationId === item.medicationId)?.id ?? null;
   }
 
   /** The prescription line a requested dispense item claims to fulfil. */
@@ -828,13 +827,9 @@ export class PharmacyFlowRepository {
     prescriptionItems: Array<{ id: string; medicationId: string | null }>,
   ): string | null {
     if (item.prescriptionItemId) {
-      return (
-        prescriptionItems.find((line) => line.id === item.prescriptionItemId)?.id ?? null
-      );
+      return prescriptionItems.find((line) => line.id === item.prescriptionItemId)?.id ?? null;
     }
-    return (
-      prescriptionItems.find((line) => line.medicationId === item.medicationId)?.id ?? null
-    );
+    return prescriptionItems.find((line) => line.medicationId === item.medicationId)?.id ?? null;
   }
 
   /**
@@ -853,16 +848,21 @@ export class PharmacyFlowRepository {
    */
   private async allocateStockFefo(
     tx: PrismaTransactionClient,
-    dispenseItems: Array<{ id: string; medicationId: string | null; prescriptionItemId: string | null }>,
+    dispenseItems: Array<{
+      id: string;
+      medicationId: string | null;
+      prescriptionItemId: string | null;
+    }>,
     requestedItems: CreateDispenseRecordPayload['items'],
     clinicToday: Date,
-    compoundComponents: ReadonlyMap<string, ReadonlyArray<{ medicationId: string; quantity: number }>>,
+    compoundComponents: ReadonlyMap<
+      string,
+      ReadonlyArray<{ medicationId: string; quantity: number }>
+    >,
   ): Promise<void> {
     const demands = this.buildStockDemands(dispenseItems, requestedItems, compoundComponents);
     for (const demand of demands) {
-      const receipts = await tx.$queryRaw<
-        Array<{ id: string; remainingQuantity: number }>
-      >`
+      const receipts = await tx.$queryRaw<Array<{ id: string; remainingQuantity: number }>>`
         SELECT r.id, r."remaining_quantity" AS "remainingQuantity"
         FROM "medication_stock_receipts" r
         WHERE r."medication_id" = ${demand.medicationId}::uuid
@@ -872,7 +872,11 @@ export class PharmacyFlowRepository {
         FOR UPDATE OF r
       `;
       let unallocated = demand.quantity;
-      const allocations: Array<{ dispenseItemId: string; stockReceiptId: string; quantity: number }> = [];
+      const allocations: Array<{
+        dispenseItemId: string;
+        stockReceiptId: string;
+        quantity: number;
+      }> = [];
       for (const receipt of receipts) {
         if (unallocated === 0) break;
         const quantity = Math.min(unallocated, receipt.remainingQuantity);
@@ -903,9 +907,16 @@ export class PharmacyFlowRepository {
    * order, which is what the concurrency spec pins.
    */
   private buildStockDemands(
-    dispenseItems: Array<{ id: string; medicationId: string | null; prescriptionItemId: string | null }>,
+    dispenseItems: Array<{
+      id: string;
+      medicationId: string | null;
+      prescriptionItemId: string | null;
+    }>,
     requestedItems: CreateDispenseRecordPayload['items'],
-    compoundComponents: ReadonlyMap<string, ReadonlyArray<{ medicationId: string; quantity: number }>>,
+    compoundComponents: ReadonlyMap<
+      string,
+      ReadonlyArray<{ medicationId: string; quantity: number }>
+    >,
   ): Array<{ dispenseItemId: string; medicationId: string; quantity: number }> {
     const demands: Array<{ dispenseItemId: string; medicationId: string; quantity: number }> = [];
     for (const requestItem of requestedItems) {
@@ -940,14 +951,22 @@ export class PharmacyFlowRepository {
     return demands.sort((left, right) => left.medicationId.localeCompare(right.medicationId));
   }
 
+  /**
+   * `unitPrice` leaves as a number here, like a tariff's price does, so no
+   * Prisma `Decimal` escapes the repository.
+   */
   private withComputedStock<
     T extends {
+      unitPrice: Prisma.Decimal | null;
       stockReceipts: Array<{ remainingQuantity: number; expiryDate: Date | null }>;
     },
-  >(medication: T): Omit<T, 'stockReceipts'> & { stockQty: number } {
-    const { stockReceipts, ...record } = medication;
+  >(
+    medication: T,
+  ): Omit<T, 'stockReceipts' | 'unitPrice'> & { stockQty: number; unitPrice: number | null } {
+    const { stockReceipts, unitPrice, ...record } = medication;
     return {
       ...record,
+      unitPrice: unitPrice === null ? null : Number(unitPrice),
       stockQty: stockReceipts.reduce((sum, receipt) => sum + receipt.remainingQuantity, 0),
     };
   }

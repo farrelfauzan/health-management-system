@@ -75,6 +75,9 @@ export function MedicationFormDialog({
     medication?.category ?? 'OBAT_BEBAS',
   );
   const [reorderLevel, setReorderLevel] = useState(String(medication?.reorderLevel ?? 0));
+  const [unitPrice, setUnitPrice] = useState(
+    medication?.unitPrice === undefined ? '' : String(medication.unitPrice),
+  );
   const [isVaccine, setIsVaccine] = useState<boolean>(medication?.isVaccine ?? false);
   const [isMidwifePrescribable, setIsMidwifePrescribable] = useState<boolean>(
     medication?.isMidwifePrescribable ?? false,
@@ -95,6 +98,15 @@ export function MedicationFormDialog({
       setError(t('requiredFields'));
       return;
     }
+    // Blank is a real answer — "not priced yet" — and billing reports such an
+    // item as a gap rather than charging it at zero. An edit sends null so a
+    // price can be withdrawn, not just changed.
+    const trimmedUnitPrice = unitPrice.trim();
+    const parsedUnitPrice = trimmedUnitPrice.length === 0 ? null : Number(trimmedUnitPrice);
+    if (parsedUnitPrice !== null && (!Number.isFinite(parsedUnitPrice) || parsedUnitPrice < 0)) {
+      setError(t('unitPriceInvalid'));
+      return;
+    }
 
     const payload = {
       code: code.trim(),
@@ -107,6 +119,7 @@ export function MedicationFormDialog({
       reorderLevel: level,
       isVaccine,
       isMidwifePrescribable,
+      unitPrice: parsedUnitPrice ?? (medication ? null : undefined),
     } satisfies CreateMedicationDto | UpdateMedicationDto;
 
     try {
@@ -249,6 +262,19 @@ export function MedicationFormDialog({
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+            <div className="space-y-1.5 sm:col-span-2">
+              <FormLabel htmlFor="medication-unit-price">{t('unitPrice')}</FormLabel>
+              <Input
+                id="medication-unit-price"
+                inputMode="decimal"
+                aria-describedby="medication-unit-price-description"
+                value={unitPrice}
+                onChange={(event) => setUnitPrice(event.target.value)}
+              />
+              <FieldDescription id="medication-unit-price-description">
+                {t('unitPriceDescription')}
+              </FieldDescription>
             </div>
             <div className="space-y-1.5 sm:col-span-2">
               <FormLabel htmlFor="medication-reorder-level">{t('reorderLevel')}</FormLabel>

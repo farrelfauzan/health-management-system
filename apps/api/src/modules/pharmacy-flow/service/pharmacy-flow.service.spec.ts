@@ -278,7 +278,10 @@ describe('PharmacyFlowService', () => {
       allocations: [{ quantity: 15 }],
     });
     repositoryMock.listStockReceipts.mockResolvedValue({
-      items: [], total: 0, page: 1, limit: 10,
+      items: [],
+      total: 0,
+      page: 1,
+      limit: 10,
     });
     repositoryMock.getInventorySummary.mockResolvedValue([
       {
@@ -381,6 +384,30 @@ describe('PharmacyFlowService', () => {
       expect(actualResult.kfaCode).toBe('93000001');
     });
 
+    it('prices a medication and returns the price as rupiah', async () => {
+      mockPermissions([{ action: 'create', resource: 'Medication', scope: 'ANY' }]);
+      repositoryMock.createMedication.mockResolvedValue({ ...medicationRecord, unitPrice: 2500 });
+
+      const actualResult = await service.createMedication(
+        { ...createInput, unitPrice: 2500 },
+        currentUser,
+      );
+
+      expect(repositoryMock.createMedication).toHaveBeenCalledWith(
+        expect.objectContaining({ unitPrice: 2500 }),
+      );
+      expect(actualResult.unitPrice).toBe(2500);
+    });
+
+    it('leaves an unpriced medication without a price rather than zero', async () => {
+      mockPermissions([{ action: 'create', resource: 'Medication', scope: 'ANY' }]);
+      repositoryMock.createMedication.mockResolvedValue({ ...medicationRecord, unitPrice: null });
+
+      const actualResult = await service.createMedication(createInput, currentUser);
+
+      expect(actualResult.unitPrice).toBeUndefined();
+    });
+
     it('rejects a duplicate catalog code', async () => {
       mockPermissions([{ action: 'create', resource: 'Medication', scope: 'ANY' }]);
       repositoryMock.findMedicationByCode.mockResolvedValue({ id: otherMedicationId });
@@ -440,10 +467,14 @@ describe('PharmacyFlowService', () => {
         currentUser,
       );
 
-      expect(repositoryMock.updateMedication).toHaveBeenCalledWith(medicationId, {
-        category: 'OBAT_BEBAS',
-        reorderLevel: 50,
-      }, expect.any(Date));
+      expect(repositoryMock.updateMedication).toHaveBeenCalledWith(
+        medicationId,
+        {
+          category: 'OBAT_BEBAS',
+          reorderLevel: 50,
+        },
+        expect.any(Date),
+      );
       expect(actualResult.id).toBe(medicationId);
     });
 
@@ -476,9 +507,13 @@ describe('PharmacyFlowService', () => {
       await service.updateMedication(medicationId, { kfaCode: null }, currentUser);
 
       expect(repositoryMock.findMedicationByKfaCode).not.toHaveBeenCalled();
-      expect(repositoryMock.updateMedication).toHaveBeenCalledWith(medicationId, {
-        kfaCode: null,
-      }, expect.any(Date));
+      expect(repositoryMock.updateMedication).toHaveBeenCalledWith(
+        medicationId,
+        {
+          kfaCode: null,
+        },
+        expect.any(Date),
+      );
     });
   });
 
@@ -639,7 +674,12 @@ describe('PharmacyFlowService', () => {
         profession: 'MIDWIFE',
       });
       repositoryMock.findActiveMedicationsByIds.mockResolvedValue([
-        { id: medicationId, code: 'FE-0001', name: 'Tablet Tambah Darah', isMidwifePrescribable: true },
+        {
+          id: medicationId,
+          code: 'FE-0001',
+          name: 'Tablet Tambah Darah',
+          isMidwifePrescribable: true,
+        },
       ]);
 
       await service.createPrescription(createPayload, currentUser);

@@ -324,19 +324,18 @@ describe('Billing patient journey (end to end)', () => {
     });
 
     it('stocks a medication the pharmacy can dispense', async () => {
+      // Priced through the catalog API, the way a pharmacist does it — the
+      // invoice below bills this exact number, so the price survives the
+      // Decimal column and comes back as rupiah.
       const medication = await asStaff('post', '/api/v1/medications').send({
         code: `E2EJ${RUN_SUFFIX}`,
         name: 'Paracetamol 500 mg (e2e)',
         reorderLevel: 5,
+        unitPrice: MEDICATION_UNIT_PRICE,
       });
       expect(medication.status).toBe(201);
+      expect(medication.body.data.unitPrice).toBe(MEDICATION_UNIT_PRICE);
       medicationId = medication.body.data.id;
-      // The catalog API carries no selling price yet (the column is nullable
-      // because the MVP catalog predates billing); the invoice line needs one.
-      await prisma.medication.update({
-        where: { id: medicationId },
-        data: { unitPrice: MEDICATION_UNIT_PRICE },
-      });
 
       const receipt = await asStaff('post', '/api/v1/inventory/receipts').send({
         medicationId,

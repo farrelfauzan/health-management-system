@@ -99,6 +99,11 @@ export type MedicationResponse = {
   needsReorder: boolean;
   isVaccine: boolean;
   isMidwifePrescribable: boolean;
+  /**
+   * Selling price per `unit`, in rupiah. Absent until the clinic prices the
+   * item; a dispensed unpriced item is reported as a billing gap.
+   */
+  unitPrice?: number;
   createdAt: string;
   updatedAt: string;
 };

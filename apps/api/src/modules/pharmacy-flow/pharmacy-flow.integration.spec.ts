@@ -262,7 +262,10 @@ describe('PharmacyFlow integration', () => {
       allocations: [],
     });
     pharmacyRepositoryMock.listStockReceipts.mockResolvedValue({
-      items: [], total: 0, page: 1, limit: 10,
+      items: [],
+      total: 0,
+      page: 1,
+      limit: 10,
     });
     pharmacyRepositoryMock.getInventorySummary.mockResolvedValue([]);
     pharmacyRepositoryMock.getExpiryReport.mockResolvedValue([]);
@@ -439,6 +442,44 @@ describe('PharmacyFlow integration', () => {
       expect(response.body.message).toBe('Medication updated');
     });
 
+    it('withdraws a price when the update sends null', async () => {
+      const token = await buildToken('pharmacist-user', 'pharmacist@hms.local');
+      mockActorWithPermissions([{ action: 'update', resource: 'Medication', scope: 'ANY' }]);
+      pharmacyRepositoryMock.findMedicationById.mockResolvedValue(medicationRecord);
+      pharmacyRepositoryMock.updateMedication.mockResolvedValue({
+        ...medicationRecord,
+        unitPrice: null,
+      });
+
+      const response = await request(app.getHttpServer())
+        .patch(`/api/v1/v1/medications/${medicationId}`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ unitPrice: null });
+
+      expect(response.status).toBe(200);
+      expect(pharmacyRepositoryMock.updateMedication).toHaveBeenCalledWith(
+        medicationId,
+        { unitPrice: null },
+        expect.any(Date),
+      );
+    });
+
+    it.each([
+      ['a negative price', -1],
+      ['more than two decimals', 1500.125],
+    ])('returns 400 for %s', async (_label, inputUnitPrice) => {
+      const token = await buildToken('pharmacist-user', 'pharmacist@hms.local');
+      mockActorWithPermissions([{ action: 'update', resource: 'Medication', scope: 'ANY' }]);
+
+      const response = await request(app.getHttpServer())
+        .patch(`/api/v1/v1/medications/${medicationId}`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ unitPrice: inputUnitPrice });
+
+      expect(response.status).toBe(400);
+      expect(pharmacyRepositoryMock.updateMedication).not.toHaveBeenCalled();
+    });
+
     it('returns 400 for an empty update payload', async () => {
       const token = await buildToken('pharmacist-user', 'pharmacist@hms.local');
       mockActorWithPermissions([{ action: 'update', resource: 'Medication', scope: 'ANY' }]);
@@ -509,10 +550,10 @@ describe('PharmacyFlow integration', () => {
         .set('Authorization', `Bearer ${token}`);
 
       expect(response.status).toBe(200);
-      expect(pharmacyRepositoryMock.listPrescriptions).toHaveBeenCalledWith(
-        expect.any(Object),
-        { userId: 'doctor-user', scope: 'OWN' },
-      );
+      expect(pharmacyRepositoryMock.listPrescriptions).toHaveBeenCalledWith(expect.any(Object), {
+        userId: 'doctor-user',
+        scope: 'OWN',
+      });
     });
 
     it('returns 400 for an invalid status filter', async () => {

@@ -52252,6 +52252,12 @@ components:
           type: boolean
         isMidwifePrescribable:
           type: boolean
+        unitPrice:
+          type: number
+          minimum: 0
+          exclusiveMinimum: false
+          maximum: 9999999999.99
+          exclusiveMaximum: false
       required:
         - code
         - name
@@ -52325,6 +52331,13 @@ components:
           type: boolean
         isMidwifePrescribable:
           type: boolean
+        unitPrice:
+          type: number
+          minimum: 0
+          exclusiveMinimum: false
+          maximum: 9999999999.99
+          exclusiveMaximum: false
+          nullable: true
     CreatePrescriptionDto:
       type: object
       properties:

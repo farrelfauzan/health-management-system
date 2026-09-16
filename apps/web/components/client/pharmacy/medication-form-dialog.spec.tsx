@@ -6,7 +6,12 @@ import { NextIntlClientProvider } from 'next-intl';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { MedicationFormDialog } from './medication-form-dialog';
-import { medicationControllerSearchKfaProductsV1 } from '#lib/api/generated/pharmacy-flow/pharmacy-flow';
+import type { MedicationResponse } from '@hms/shared-types';
+import {
+  medicationControllerCreateMedicationV1,
+  medicationControllerSearchKfaProductsV1,
+  medicationControllerUpdateMedicationV1,
+} from '#lib/api/generated/pharmacy-flow/pharmacy-flow';
 import clinicalMessages from '../../../messages/en/clinical.json';
 import pharmacyMessages from '../../../messages/en/pharmacy-inventory.json';
 
@@ -31,6 +36,28 @@ vi.mock('#lib/api/generated/pharmacy-flow/pharmacy-flow', () => ({
 }));
 
 const kfaSearchMock = vi.mocked(medicationControllerSearchKfaProductsV1);
+const createRequestMock = vi.mocked(medicationControllerCreateMedicationV1);
+const updateRequestMock = vi.mocked(medicationControllerUpdateMedicationV1);
+
+const PRICED_MEDICATION: MedicationResponse = {
+  id: 'e1790b08-3130-4edd-bddb-f524680d820f',
+  code: 'MED-MCG-200',
+  name: 'Microgest 200 mg',
+  unit: 'TABLET',
+  category: 'OBAT_KERAS',
+  stockQty: 30,
+  reorderLevel: 0,
+  needsReorder: false,
+  isVaccine: false,
+  isMidwifePrescribable: false,
+  unitPrice: 2500,
+  createdAt: '2026-09-16T02:00:00.000Z',
+  updatedAt: '2026-09-16T02:00:00.000Z',
+};
+
+function buildEnvelope<TData>(data: TData) {
+  return { status: 200, headers: {}, data: { data } };
+}
 
 function buildKfaResponse() {
   return {
@@ -58,12 +85,7 @@ describe('MedicationFormDialog KFA lookup', () => {
   it('fills the KFA code from the product a pharmacist picks', async () => {
     kfaSearchMock.mockResolvedValue(buildKfaResponse() as never);
     render(
-      <MedicationFormDialog
-        open
-        onOpenChange={() => {}}
-        medication={null}
-        onSaved={() => {}}
-      />,
+      <MedicationFormDialog open onOpenChange={() => {}} medication={null} onSaved={() => {}} />,
     );
 
     await userEvent.type(screen.getByLabelText('Search the KFA dictionary'), 'paracetamol');
@@ -78,12 +100,7 @@ describe('MedicationFormDialog KFA lookup', () => {
 
   it('does not spend an upstream call on a term below the minimum length', async () => {
     render(
-      <MedicationFormDialog
-        open
-        onOpenChange={() => {}}
-        medication={null}
-        onSaved={() => {}}
-      />,
+      <MedicationFormDialog open onOpenChange={() => {}} medication={null} onSaved={() => {}} />,
     );
 
     await userEvent.type(screen.getByLabelText('Search the KFA dictionary'), 'pa');
@@ -91,5 +108,66 @@ describe('MedicationFormDialog KFA lookup', () => {
     await waitFor(() => {
       expect(kfaSearchMock).not.toHaveBeenCalled();
     });
+  });
+});
+
+describe('MedicationFormDialog selling price', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    createRequestMock.mockResolvedValue(buildEnvelope(PRICED_MEDICATION) as never);
+    updateRequestMock.mockResolvedValue(buildEnvelope(PRICED_MEDICATION) as never);
+  });
+
+  it('sends the price a pharmacist types', async () => {
+    render(
+      <MedicationFormDialog open onOpenChange={() => {}} medication={null} onSaved={() => {}} />,
+    );
+
+    await userEvent.type(screen.getByLabelText(/^Medication code/), 'MED-MCG-200');
+    await userEvent.type(screen.getByLabelText(/^Medication name/), 'Microgest 200 mg');
+    await userEvent.type(screen.getByLabelText('Selling price per unit (Rp)'), '2500');
+    await userEvent.click(screen.getByRole('button', { name: 'Save medication' }));
+
+    await waitFor(() =>
+      expect(createRequestMock).toHaveBeenCalledWith(expect.objectContaining({ unitPrice: 2500 })),
+    );
+  });
+
+  it('withdraws a price when the field is cleared on edit', async () => {
+    render(
+      <MedicationFormDialog
+        open
+        onOpenChange={() => {}}
+        medication={PRICED_MEDICATION}
+        onSaved={() => {}}
+      />,
+    );
+
+    expect(screen.getByLabelText('Selling price per unit (Rp)')).toHaveValue('2500');
+    await userEvent.clear(screen.getByLabelText('Selling price per unit (Rp)'));
+    await userEvent.click(screen.getByRole('button', { name: 'Save medication' }));
+
+    await waitFor(() =>
+      expect(updateRequestMock).toHaveBeenCalledWith(
+        PRICED_MEDICATION.id,
+        expect.objectContaining({ unitPrice: null }),
+      ),
+    );
+  });
+
+  it('refuses a price that is not a rupiah amount', async () => {
+    render(
+      <MedicationFormDialog open onOpenChange={() => {}} medication={null} onSaved={() => {}} />,
+    );
+
+    await userEvent.type(screen.getByLabelText(/^Medication code/), 'MED-MCG-200');
+    await userEvent.type(screen.getByLabelText(/^Medication name/), 'Microgest 200 mg');
+    await userEvent.type(screen.getByLabelText('Selling price per unit (Rp)'), 'abc');
+    await userEvent.click(screen.getByRole('button', { name: 'Save medication' }));
+
+    expect(
+      await screen.findByText('Enter the price in rupiah, or leave it blank.'),
+    ).toBeInTheDocument();
+    expect(createRequestMock).not.toHaveBeenCalled();
   });
 });

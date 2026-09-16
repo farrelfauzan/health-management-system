@@ -48,4 +48,10 @@ export interface UpdateMedicationDto {
   reorderLevel?: number;
   isVaccine?: boolean;
   isMidwifePrescribable?: boolean;
+  /**
+     * @minimum 0
+     * @maximum 9999999999.99
+     * @nullable
+     */
+  unitPrice?: number | null;
 }
