@@ -662,6 +662,42 @@ describe('BillingService', () => {
       );
     });
 
+    it('bills a consultation once when the doctor also coded it as a procedure', async () => {
+      // A tariff mapped to 89.07 before that mapping was forbidden: the
+      // resolver bills it as the consultation fee, and the procedure
+      // collector would find it again through the coded 89.07.
+      const mappedConsultationTariff = { ...midwiferyConsultationTariff, icd9cmCode: '89.07' };
+      billingRepositoryMock.findEncounterForBilling.mockResolvedValue({
+        ...finishedEncounter,
+        clinician: {
+          id: 'midwife-1',
+          fullName: 'Bd. Sri Lestari',
+          specialtyId: midwiferySpecialtyId,
+          specialtyName: 'Kebidanan',
+          profession: 'MIDWIFE' as const,
+        },
+        procedures: [
+          { id: 'procedure-1', code: '89.07', display: 'Consultation, described as comprehensive' },
+        ],
+      });
+      serviceTariffRepositoryMock.findActiveConsultationTariffs.mockResolvedValue([
+        mappedConsultationTariff,
+      ]);
+      serviceTariffRepositoryMock.findActiveTariffsByIcd9cmCodes.mockResolvedValue([
+        mappedConsultationTariff,
+      ]);
+
+      const actualResult = await service.generateInvoice(inputPayload, cashierUser);
+
+      const actualLines =
+        billingRepositoryMock.createInvoiceWithItems.mock.calls[0][0].items.filter(
+          (item: { serviceTariffId?: string }) =>
+            item.serviceTariffId === mappedConsultationTariff.id,
+        );
+      expect(actualLines).toEqual([expect.objectContaining({ itemType: 'CONSULTATION' })]);
+      expect(actualResult.gaps).toEqual([]);
+    });
+
     it('names the poli in the gap when nothing prices the visit', async () => {
       serviceTariffRepositoryMock.findActiveConsultationTariffs.mockResolvedValue([
         midwiferyConsultationTariff,

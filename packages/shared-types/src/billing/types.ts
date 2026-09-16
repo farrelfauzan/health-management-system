@@ -132,16 +132,18 @@ export type CreateServiceTariffRecordPayload = {
 };
 
 /**
- * A tariff's audience as the service checks it — the state the row will be in
- * once a create or a patch lands, which is what the clinic-wide-fee and
- * category rules are decided against. `undefined` means the row names nothing
- * there, not that the caller left it alone; the service resolves that
- * difference before building one of these.
+ * A tariff's category-dependent fields as the service checks them — the state
+ * the row will be in once a create or a patch lands, which is what the
+ * clinic-wide-fee and category rules are decided against. `undefined` means
+ * the row carries nothing there, not that the caller left it alone; the
+ * service resolves that difference before building one of these.
  */
-export type ServiceTariffAudienceState = {
+export type ServiceTariffCategoryState = {
   category: ServiceTariffCategoryValue;
   specialtyId?: string;
   profession?: ClinicianProfessionValue;
+  /** Never set on a CONSULTATION row: that would bill the visit twice. */
+  icd9cmCode?: string;
   isActive: boolean;
 };
 

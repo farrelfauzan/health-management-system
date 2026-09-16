@@ -471,10 +471,19 @@ export class BillingService {
     if (consultation.gap) {
       gaps.push(consultation.gap);
     }
-    const procedures = await this.collectProcedureItems(encounter);
+    // A tariff already on the bill is not billed again by a later collector.
+    // The consultation fee and a coded procedure can resolve to the same row —
+    // that is what a CONSULTATION tariff mapped to an ICD-9-CM code did before
+    // the mapping was forbidden — and the patient would pay twice for one
+    // consultation. Rows that predate the constraint still exist, so the rule
+    // is enforced here too and not only at the boundary.
+    const billedTariffIds = new Set(
+      items.map((item) => item.serviceTariffId).filter((id): id is string => id !== undefined),
+    );
+    const procedures = await this.collectProcedureItems(encounter, billedTariffIds);
     items.push(...procedures.items);
     gaps.push(...procedures.gaps);
-    const immunizations = await this.collectImmunizationItems(encounter);
+    const immunizations = await this.collectImmunizationItems(encounter, billedTariffIds);
     items.push(...immunizations.items);
     gaps.push(...immunizations.gaps);
     const lab = this.collectLabItems(labItems);
@@ -554,6 +563,7 @@ export class BillingService {
    */
   private async collectProcedureItems(
     encounter: BillingSourceEncounterRecord,
+    billedTariffIds: ReadonlySet<string>,
   ): Promise<CollectedItems> {
     const items: CreateInvoiceItemPayload[] = [];
     const gaps: InvoiceGenerationGap[] = [];
@@ -579,6 +589,12 @@ export class BillingService {
         });
         continue;
       }
+      if (billedTariffIds.has(tariff.id)) {
+        // The bill already carries this tariff — as the consultation fee — so
+        // the procedure is charged, not skipped, and reporting a gap would be
+        // a lie about money that was billed.
+        continue;
+      }
       items.push(this.buildTariffItem(tariff, 'PROCEDURE', grouped.quantity));
     }
     return { items, gaps };
@@ -596,6 +612,7 @@ export class BillingService {
    */
   private async collectImmunizationItems(
     encounter: BillingSourceEncounterRecord,
+    billedTariffIds: ReadonlySet<string>,
   ): Promise<CollectedItems> {
     const items: CreateInvoiceItemPayload[] = [];
     const gaps: InvoiceGenerationGap[] = [];
@@ -623,6 +640,9 @@ export class BillingService {
           code,
           description: grouped.display,
         });
+        continue;
+      }
+      if (billedTariffIds.has(tariff.id)) {
         continue;
       }
       items.push(this.buildTariffItem(tariff, 'PROCEDURE', grouped.quantity));

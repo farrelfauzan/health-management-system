@@ -129,6 +129,27 @@ const billingCalendarDateSchema = z
     );
   }, 'Date must be a valid calendar date');
 
+const CONSULTATION_PROCEDURE_CODE_MESSAGE =
+  'A CONSULTATION tariff is priced by its poli and profession, not by an ICD-9-CM code';
+
+/**
+ * A consultation fee never carries a procedure code. Generation would then
+ * reach the same row twice — once as the visit's consultation fee, once as the
+ * coded procedure it maps to — and bill one conversation as two lines.
+ *
+ * As with the audience rules, an update that leaves `category` alone passes
+ * here and is re-checked against the stored row by the service.
+ */
+function hasNoProcedureCodeOnConsultation(payload: {
+  category?: ServiceTariffCategoryValue;
+  icd9cmCode?: string | null;
+}): boolean {
+  if ((payload.icd9cmCode ?? null) === null) {
+    return true;
+  }
+  return payload.category !== 'CONSULTATION';
+}
+
 const CONSULTATION_AUDIENCE_MESSAGE =
   'specialtyId and profession describe who a CONSULTATION tariff prices and are not allowed on other categories';
 
@@ -187,6 +208,10 @@ export const createServiceTariffSchema = z
   .refine(isConsultationAudienceAllowed, {
     message: CONSULTATION_AUDIENCE_MESSAGE,
     path: ['specialtyId'],
+  })
+  .refine(hasNoProcedureCodeOnConsultation, {
+    message: CONSULTATION_PROCEDURE_CODE_MESSAGE,
+    path: ['icd9cmCode'],
   });
 
 /**
@@ -211,6 +236,10 @@ export const updateServiceTariffSchema = z
   .refine(isConsultationAudienceAllowed, {
     message: CONSULTATION_AUDIENCE_MESSAGE,
     path: ['specialtyId'],
+  })
+  .refine(hasNoProcedureCodeOnConsultation, {
+    message: CONSULTATION_PROCEDURE_CODE_MESSAGE,
+    path: ['icd9cmCode'],
   });
 
 export const listServiceTariffsQuerySchema = z.object({

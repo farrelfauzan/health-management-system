@@ -2857,6 +2857,9 @@ model ServiceTariff {
   category    ServiceTariffCategory
   /// ICD-9-CM procedure code this tariff prices, when the action is coded.
   /// Unique so auto-collection resolves at most one tariff per procedure.
+  /// Forbidden on CONSULTATION rows by a CHECK: those are priced by the poli
+  /// and profession below, and a row reachable by both collectors bills the
+  /// same visit twice.
   icd9cmCode  String?               @unique @map("icd9cm_code")
   /// The ward class this row prices, for ACCOMMODATION tariffs (IMP-15).
   /// A CHECK in the migration makes it required for that category and

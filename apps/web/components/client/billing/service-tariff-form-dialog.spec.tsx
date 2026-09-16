@@ -94,6 +94,21 @@ describe('ServiceTariffFormDialog', () => {
     );
   });
 
+  it('drops a legacy ICD-9-CM code when a consultation tariff is saved', async () => {
+    const user = userEvent.setup();
+    renderDialog({ ...CONSULTATION_TARIFF, icd9cmCode: '89.07' });
+
+    expect(screen.queryByLabelText('ICD-9-CM Code')).not.toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Save Tariff' }));
+
+    await waitFor(() =>
+      expect(updateRequestMock).toHaveBeenCalledWith(
+        CONSULTATION_TARIFF.id,
+        expect.objectContaining({ category: 'CONSULTATION', icd9cmCode: null }),
+      ),
+    );
+  });
+
   it('clears the audience when the tariff stops being a consultation', async () => {
     const user = userEvent.setup();
     renderDialog(CONSULTATION_TARIFF);

@@ -183,6 +183,48 @@ describe('ServiceTariffService', () => {
     });
   });
 
+  it('refuses an ICD-9-CM code on a consultation tariff', async () => {
+    serviceTariffRepositoryMock.findServiceTariffById.mockResolvedValue(tariffRecord);
+
+    await expect(
+      service.updateServiceTariff(tariffId, { icd9cmCode: '89.07' } as UpdateServiceTariffDto),
+    ).rejects.toBeInstanceOf(BadRequestException);
+    expect(serviceTariffRepositoryMock.updateServiceTariff).not.toHaveBeenCalled();
+  });
+
+  it('refuses to turn a mapped procedure tariff into a consultation without clearing its code', async () => {
+    serviceTariffRepositoryMock.findServiceTariffById.mockResolvedValue({
+      ...tariffRecord,
+      category: 'PROCEDURE',
+      icd9cmCode: '89.07',
+    });
+
+    await expect(
+      service.updateServiceTariff(tariffId, {
+        category: 'CONSULTATION',
+        specialtyId: midwiferySpecialtyId,
+      } as UpdateServiceTariffDto),
+    ).rejects.toBeInstanceOf(BadRequestException);
+    expect(serviceTariffRepositoryMock.updateServiceTariff).not.toHaveBeenCalled();
+  });
+
+  it('lets a consultation tariff drop a legacy ICD-9-CM code', async () => {
+    serviceTariffRepositoryMock.findServiceTariffById.mockResolvedValue({
+      ...tariffRecord,
+      icd9cmCode: '89.07',
+      specialtyId: midwiferySpecialtyId,
+      specialty: { id: midwiferySpecialtyId, name: 'Kebidanan' },
+    });
+    serviceTariffRepositoryMock.updateServiceTariff.mockResolvedValue(tariffRecord);
+
+    await service.updateServiceTariff(tariffId, { icd9cmCode: null } as UpdateServiceTariffDto);
+
+    expect(serviceTariffRepositoryMock.updateServiceTariff).toHaveBeenCalledWith({
+      id: tariffId,
+      icd9cmCode: null,
+    });
+  });
+
   it('returns 404 when updating an unknown tariff', async () => {
     serviceTariffRepositoryMock.findServiceTariffById.mockResolvedValue(null);
 
