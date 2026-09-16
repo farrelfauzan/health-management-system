@@ -521,6 +521,26 @@ describe('Billing integration', () => {
     );
   });
 
+  it('refuses an ICD-9-CM code on a consultation tariff', async () => {
+    const token = await buildToken('admin-user', 'admin@hms.local');
+    mockActorWithPermissions([{ action: 'write', resource: 'ServiceTariff', scope: 'ANY' }]);
+
+    const response = await request(app.getHttpServer())
+      .post('/api/v1/v1/service-tariffs')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        code: 'KONSULTASI-OBGYN',
+        name: 'Konsultasi Dokter Kandungan',
+        category: 'CONSULTATION',
+        specialtyId: midwiferySpecialtyId,
+        icd9cmCode: '89.07',
+        price: 350000,
+      });
+
+    expect(response.status).toBe(400);
+    expect(serviceTariffRepositoryMock.createServiceTariff).not.toHaveBeenCalled();
+  });
+
   it('refuses a poli on a tariff that prices something other than a consultation', async () => {
     const token = await buildToken('admin-user', 'admin@hms.local');
     mockActorWithPermissions([{ action: 'write', resource: 'ServiceTariff', scope: 'ANY' }]);

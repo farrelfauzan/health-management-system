@@ -1,5 +1,5 @@
 import {
-  ServiceTariffAudienceState,
+  ServiceTariffCategoryState,
   ServiceTariffRecord,
   ServiceTariffResponse,
   ServiceTariffsListMeta,
@@ -54,6 +54,7 @@ export class ServiceTariffService {
       category: payload.category,
       specialtyId: payload.specialtyId,
       profession: payload.profession,
+      icd9cmCode: payload.icd9cmCode,
       isActive: payload.isActive,
     });
     try {
@@ -83,8 +84,9 @@ export class ServiceTariffService {
     if (!existing) {
       throw new NotFoundException('Service tariff not found');
     }
-    const merged = this.mergeAudience(existing, payload);
+    const merged = this.mergeCategoryFields(existing, payload);
     this.assertAudienceMatchesCategory(merged);
+    this.assertProcedureCodeMatchesCategory(merged);
     await this.assertFallbackConsultationIsFree(merged, id);
 
     try {
@@ -119,12 +121,16 @@ export class ServiceTariffService {
    * field alone keeps the stored one, which is the only way to tell an
    * audience being cleared (`null`) from one being left untouched.
    */
-  private mergeAudience(
+  private mergeCategoryFields(
     existing: ServiceTariffRecord,
     payload: UpdateServiceTariffDto,
-  ): ServiceTariffAudienceState {
+  ): ServiceTariffCategoryState {
     return {
       category: payload.category ?? existing.category,
+      icd9cmCode:
+        payload.icd9cmCode === undefined
+          ? (existing.icd9cmCode ?? undefined)
+          : (payload.icd9cmCode ?? undefined),
       specialtyId:
         payload.specialtyId === undefined
           ? (existing.specialtyId ?? undefined)
@@ -142,11 +148,26 @@ export class ServiceTariffService {
    * restating the category has nothing to compare it against until the stored
    * row is read.
    */
-  private assertAudienceMatchesCategory(merged: ServiceTariffAudienceState): void {
+  private assertAudienceMatchesCategory(merged: ServiceTariffCategoryState): void {
     const namesAudience = merged.specialtyId !== undefined || merged.profession !== undefined;
     if (namesAudience && merged.category !== 'CONSULTATION') {
       throw new BadRequestException(
         'Only CONSULTATION tariffs name a poli or profession; clear them before changing category',
+      );
+    }
+  }
+
+  /**
+   * A consultation is priced by its audience, never by a coded action. Left
+   * alone, one row would be found twice by generation — as the visit's
+   * consultation fee and again as the procedure its ICD-9-CM code maps to —
+   * and the patient would be billed twice for one conversation. Refused here
+   * as well as by a CHECK, so the caller is told which field to clear.
+   */
+  private assertProcedureCodeMatchesCategory(merged: ServiceTariffCategoryState): void {
+    if (merged.category === 'CONSULTATION' && merged.icd9cmCode !== undefined) {
+      throw new BadRequestException(
+        'A CONSULTATION tariff is priced by its poli and profession, not by an ICD-9-CM code; clear the code first',
       );
     }
   }
@@ -160,7 +181,7 @@ export class ServiceTariffService {
    * would fail to build on the clinics already carrying several of them.
    */
   private async assertFallbackConsultationIsFree(
-    candidate: ServiceTariffAudienceState,
+    candidate: ServiceTariffCategoryState,
     excludeTariffId?: string,
   ): Promise<void> {
     const isFallback =

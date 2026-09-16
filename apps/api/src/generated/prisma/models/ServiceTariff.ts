@@ -1409,6 +1409,9 @@ export type $ServiceTariffPayload<ExtArgs extends runtime.Types.Extensions.Inter
     /**
      * ICD-9-CM procedure code this tariff prices, when the action is coded.
      * Unique so auto-collection resolves at most one tariff per procedure.
+     * Forbidden on CONSULTATION rows by a CHECK: those are priced by the poli
+     * and profession below, and a row reachable by both collectors bills the
+     * same visit twice.
      */
     icd9cmCode: string | null
     /**

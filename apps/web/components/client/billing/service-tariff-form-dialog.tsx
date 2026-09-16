@@ -115,12 +115,18 @@ export function ServiceTariffFormDialog({
     const isConsultation = category === 'CONSULTATION';
     const selectedSpecialtyId = isConsultation && specialtyId.length > 0 ? specialtyId : null;
     const selectedProfession = isConsultation && profession !== '' ? profession : null;
+    // A consultation carries no procedure code: generation would find the same
+    // tariff twice — as the visit's fee and as the coded procedure — and bill
+    // one consultation as two lines. The field is hidden for the category, and
+    // an edit that moves a mapped tariff into it clears the code rather than
+    // leaving one the API now refuses.
+    const selectedIcd9cm = isConsultation || trimmedIcd9cm.length === 0 ? null : trimmedIcd9cm;
 
     const payload = isEditing
       ? ({
           name: trimmedName,
           category,
-          icd9cmCode: trimmedIcd9cm.length > 0 ? trimmedIcd9cm : null,
+          icd9cmCode: selectedIcd9cm,
           specialtyId: selectedSpecialtyId,
           profession: selectedProfession,
           price: parsedPrice,
@@ -133,7 +139,7 @@ export function ServiceTariffFormDialog({
           category,
           price: parsedPrice,
           isActive,
-          ...(trimmedIcd9cm.length > 0 ? { icd9cmCode: trimmedIcd9cm } : {}),
+          ...(selectedIcd9cm !== null ? { icd9cmCode: selectedIcd9cm } : {}),
           ...(isAccommodation ? { roomClassId } : {}),
           ...(selectedSpecialtyId !== null ? { specialtyId: selectedSpecialtyId } : {}),
           ...(selectedProfession !== null ? { profession: selectedProfession } : {}),
@@ -229,20 +235,22 @@ export function ServiceTariffFormDialog({
                   </SelectContent>
                 </Select>
               </div>
-              <div>
-                <Label
-                  htmlFor="tariff-icd9cm"
-                  className="mb-1.5 font-heading text-xs text-slate-600"
-                >
-                  ICD-9-CM Code
-                </Label>
-                <Input
-                  id="tariff-icd9cm"
-                  placeholder={t('billing.labels.procedureLink')}
-                  value={icd9cmCode}
-                  onChange={(event) => setIcd9cmCode(event.target.value)}
-                />
-              </div>
+              {category === 'CONSULTATION' ? null : (
+                <div>
+                  <Label
+                    htmlFor="tariff-icd9cm"
+                    className="mb-1.5 font-heading text-xs text-slate-600"
+                  >
+                    ICD-9-CM Code
+                  </Label>
+                  <Input
+                    id="tariff-icd9cm"
+                    placeholder={t('billing.labels.procedureLink')}
+                    value={icd9cmCode}
+                    onChange={(event) => setIcd9cmCode(event.target.value)}
+                  />
+                </div>
+              )}
             </div>
             {category === 'ACCOMMODATION' ? (
               <RoomClassSelect
