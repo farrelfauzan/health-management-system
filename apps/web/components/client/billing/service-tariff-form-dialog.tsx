@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   SERVICE_TARIFF_CATEGORIES,
+  type ClinicianProfessionValue,
   type CreateServiceTariffInput,
   type ServiceTariffCategoryValue,
   type ServiceTariffResponse,
@@ -28,6 +29,7 @@ import {
 } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { ConsultationAudienceFields } from '#components/client/billing/consultation-audience-fields';
 import { RoomClassSelect } from '#components/client/rooms/room-class-select';
 import { InlineNotice } from '#components/client/shared/inline-notice';
 import {
@@ -60,6 +62,10 @@ export function ServiceTariffFormDialog({
   );
   const [icd9cmCode, setIcd9cmCode] = useState<string>(tariff?.icd9cmCode ?? '');
   const [roomClassId, setRoomClassId] = useState<string>(tariff?.roomClassId ?? '');
+  const [specialtyId, setSpecialtyId] = useState<string>(tariff?.specialtyId ?? '');
+  const [profession, setProfession] = useState<ClinicianProfessionValue | ''>(
+    tariff?.profession ?? '',
+  );
   const [price, setPrice] = useState<string>(tariff ? String(tariff.price) : '');
   const [isActive, setIsActive] = useState<boolean>(tariff?.isActive ?? true);
   const [actionError, setActionError] = useState<string | null>(null);
@@ -102,11 +108,21 @@ export function ServiceTariffFormDialog({
       return;
     }
 
+    // Only a consultation names an audience, and an update clears it with an
+    // explicit null — leaving the field out would keep whatever the row had,
+    // which is how a tariff moved to another category keeps a poli nothing
+    // reads.
+    const isConsultation = category === 'CONSULTATION';
+    const selectedSpecialtyId = isConsultation && specialtyId.length > 0 ? specialtyId : null;
+    const selectedProfession = isConsultation && profession !== '' ? profession : null;
+
     const payload = isEditing
       ? ({
           name: trimmedName,
           category,
           icd9cmCode: trimmedIcd9cm.length > 0 ? trimmedIcd9cm : null,
+          specialtyId: selectedSpecialtyId,
+          profession: selectedProfession,
           price: parsedPrice,
           isActive,
           ...(isAccommodation ? { roomClassId } : {}),
@@ -119,6 +135,8 @@ export function ServiceTariffFormDialog({
           isActive,
           ...(trimmedIcd9cm.length > 0 ? { icd9cmCode: trimmedIcd9cm } : {}),
           ...(isAccommodation ? { roomClassId } : {}),
+          ...(selectedSpecialtyId !== null ? { specialtyId: selectedSpecialtyId } : {}),
+          ...(selectedProfession !== null ? { profession: selectedProfession } : {}),
         } satisfies CreateServiceTariffInput);
 
     try {
@@ -148,10 +166,7 @@ export function ServiceTariffFormDialog({
             {actionError ? <InlineNotice tone="error">{actionError}</InlineNotice> : null}
             <div className="grid gap-3 sm:grid-cols-2">
               <div>
-                <Label
-                  htmlFor="tariff-code"
-                  className="mb-1.5 font-heading text-xs text-slate-600"
-                >
+                <Label htmlFor="tariff-code" className="mb-1.5 font-heading text-xs text-slate-600">
                   Code
                 </Label>
                 <Input
@@ -181,10 +196,7 @@ export function ServiceTariffFormDialog({
               </div>
             </div>
             <div>
-              <Label
-                htmlFor="tariff-name"
-                className="mb-1.5 font-heading text-xs text-slate-600"
-              >
+              <Label htmlFor="tariff-name" className="mb-1.5 font-heading text-xs text-slate-600">
                 Name
               </Label>
               <Input
@@ -237,6 +249,14 @@ export function ServiceTariffFormDialog({
                 id="tariff-room-class"
                 value={roomClassId}
                 onChange={setRoomClassId}
+              />
+            ) : null}
+            {category === 'CONSULTATION' ? (
+              <ConsultationAudienceFields
+                specialtyId={specialtyId}
+                profession={profession}
+                onSpecialtyChange={setSpecialtyId}
+                onProfessionChange={setProfession}
               />
             ) : null}
             <Label className="flex items-center gap-2 text-sm text-slate-700 font-normal">

@@ -1756,6 +1756,7 @@ model Specialty {
   doctors           DoctorProfile[]
   registrations     Registration[]
   poliQueueCounters PoliQueueCounter[]
+  serviceTariffs    ServiceTariff[]
 
   @@index([deletedAt])
   @@index([isActive])
@@ -2862,6 +2863,16 @@ model ServiceTariff {
   /// forbidden for every other, and a partial unique index allows one live
   /// tariff per class — a bed cannot have two prices at once.
   roomClassId String?               @map("room_class_id") @db.Uuid
+  /// The poli (`Specialty`) whose consultations this row prices, for
+  /// CONSULTATION tariffs (P26-T01). Null means the row is the clinic-wide
+  /// fallback — what a visit is charged when no poli-specific price exists.
+  /// A CHECK in the migration forbids it outside CONSULTATION, and a partial
+  /// unique index allows one live tariff per audience.
+  specialtyId String?               @map("specialty_id") @db.Uuid
+  /// The clinician profession this row prices, for CONSULTATION tariffs. Null
+  /// means "any clinician", so a bidan and a dokter sharing a poli can still
+  /// be priced apart without giving every poli two rows.
+  profession  ClinicianProfession?
   /// Rupiah. CHECK in the migration rejects negative prices.
   price       Decimal               @db.Decimal(12, 2)
   isActive    Boolean               @default(true) @map("is_active")
@@ -2870,6 +2881,7 @@ model ServiceTariff {
   deletedAt   DateTime?             @map("deleted_at")
 
   roomClass    RoomClass?    @relation(fields: [roomClassId], references: [id], onDelete: Restrict)
+  specialty    Specialty?    @relation(fields: [specialtyId], references: [id], onDelete: Restrict)
   invoiceItems InvoiceItem[]
   labTests     LabTest[]
   labPanels    LabPanel[]
@@ -2877,6 +2889,7 @@ model ServiceTariff {
   @@index([category])
   @@index([isActive])
   @@index([roomClassId])
+  @@index([specialtyId])
   @@index([deletedAt])
   @@map("service_tariffs")
 }

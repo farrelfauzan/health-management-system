@@ -124,9 +124,7 @@ export class AccommodationBillingService {
     const gaps: InvoiceGenerationGap[] = [];
 
     for (const tally of tallies) {
-      const tariff = tariffs.find(
-        (candidate) => candidate.roomClass?.id === tally.roomClass.id,
-      );
+      const tariff = tariffs.find((candidate) => candidate.roomClass?.id === tally.roomClass.id);
       // The class's own name, as the clinic writes it — so a clinic that
       // renamed "Kelas 1" sees that name on the bill rather than a label this
       // service kept a private copy of.

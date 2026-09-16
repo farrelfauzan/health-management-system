@@ -1,4 +1,4 @@
-import { ConflictException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, NotFoundException } from '@nestjs/common';
 
 import { CreateServiceTariffDto } from '../dto/create-service-tariff.dto';
 import { ListServiceTariffsQueryDto } from '../dto/list-service-tariffs-query.dto';
@@ -14,6 +14,7 @@ describe('ServiceTariffService', () => {
     findServiceTariffById: jest.fn(),
     createServiceTariff: jest.fn(),
     updateServiceTariff: jest.fn(),
+    findActiveConsultationTariffs: jest.fn(),
   };
 
   const service = new ServiceTariffService(
@@ -30,14 +31,20 @@ describe('ServiceTariffService', () => {
     name: 'Konsultasi Dokter Umum',
     category: 'CONSULTATION' as const,
     icd9cmCode: null,
+    specialtyId: null,
+    specialty: null,
+    profession: null,
     price: 50000,
     isActive: true,
     createdAt: timestamp,
     updatedAt: timestamp,
   };
 
+  const midwiferySpecialtyId = '2e1b6a3d-4f5c-4d6e-9f70-8b9c0d1e2f30';
+
   beforeEach(() => {
     jest.clearAllMocks();
+    serviceTariffRepositoryMock.findActiveConsultationTariffs.mockResolvedValue([]);
   });
 
   it('lists tariffs with pagination meta', async () => {
@@ -105,6 +112,75 @@ describe('ServiceTariffService', () => {
       price: 60000,
     });
     expect(actualResult.price).toBe(60000);
+  });
+
+  it('refuses a second clinic-wide consultation fee, naming the one that holds it', async () => {
+    serviceTariffRepositoryMock.findActiveConsultationTariffs.mockResolvedValue([tariffRecord]);
+
+    await expect(
+      service.createServiceTariff({
+        code: 'KONSULTASI-LAIN',
+        name: 'Konsultasi Lain',
+        category: 'CONSULTATION',
+        price: 70000,
+        isActive: true,
+      } as CreateServiceTariffDto),
+    ).rejects.toBeInstanceOf(ConflictException);
+    expect(serviceTariffRepositoryMock.createServiceTariff).not.toHaveBeenCalled();
+  });
+
+  it('accepts a second consultation tariff once it names a poli', async () => {
+    serviceTariffRepositoryMock.findActiveConsultationTariffs.mockResolvedValue([tariffRecord]);
+    serviceTariffRepositoryMock.createServiceTariff.mockResolvedValue(tariffRecord);
+
+    await service.createServiceTariff({
+      code: 'KONSULTASI-BIDAN',
+      name: 'Pemeriksaan Bidan',
+      category: 'CONSULTATION',
+      specialtyId: midwiferySpecialtyId,
+      profession: 'MIDWIFE',
+      price: 30000,
+      isActive: true,
+    } as CreateServiceTariffDto);
+
+    expect(serviceTariffRepositoryMock.createServiceTariff).toHaveBeenCalledWith(
+      expect.objectContaining({ specialtyId: midwiferySpecialtyId, profession: 'MIDWIFE' }),
+    );
+  });
+
+  it('refuses to move a tariff that names a poli out of CONSULTATION', async () => {
+    serviceTariffRepositoryMock.findServiceTariffById.mockResolvedValue({
+      ...tariffRecord,
+      specialtyId: midwiferySpecialtyId,
+      specialty: { id: midwiferySpecialtyId, name: 'Kebidanan' },
+      profession: 'MIDWIFE',
+    });
+
+    await expect(
+      service.updateServiceTariff(tariffId, { category: 'OTHER' } as UpdateServiceTariffDto),
+    ).rejects.toBeInstanceOf(BadRequestException);
+    expect(serviceTariffRepositoryMock.updateServiceTariff).not.toHaveBeenCalled();
+  });
+
+  it('clears a poli when the update sends null', async () => {
+    serviceTariffRepositoryMock.findServiceTariffById.mockResolvedValue({
+      ...tariffRecord,
+      specialtyId: midwiferySpecialtyId,
+      specialty: { id: midwiferySpecialtyId, name: 'Kebidanan' },
+      profession: 'MIDWIFE',
+    });
+    serviceTariffRepositoryMock.updateServiceTariff.mockResolvedValue(tariffRecord);
+
+    await service.updateServiceTariff(tariffId, {
+      specialtyId: null,
+      profession: null,
+    } as UpdateServiceTariffDto);
+
+    expect(serviceTariffRepositoryMock.updateServiceTariff).toHaveBeenCalledWith({
+      id: tariffId,
+      specialtyId: null,
+      profession: null,
+    });
   });
 
   it('returns 404 when updating an unknown tariff', async () => {

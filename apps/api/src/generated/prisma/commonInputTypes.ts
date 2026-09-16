@@ -1051,6 +1051,13 @@ export type EnumServiceTariffCategoryFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumServiceTariffCategoryFilter<$PrismaModel> | $Enums.ServiceTariffCategory
 }
 
+export type EnumClinicianProfessionNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.ClinicianProfession | Prisma.EnumClinicianProfessionFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ClinicianProfession[] | Prisma.ListEnumClinicianProfessionFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ClinicianProfession[] | Prisma.ListEnumClinicianProfessionFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumClinicianProfessionNullableFilter<$PrismaModel> | $Enums.ClinicianProfession | null
+}
+
 export type EnumServiceTariffCategoryWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.ServiceTariffCategory | Prisma.EnumServiceTariffCategoryFieldRefInput<$PrismaModel>
   in?: $Enums.ServiceTariffCategory[] | Prisma.ListEnumServiceTariffCategoryFieldRefInput<$PrismaModel>
@@ -1059,6 +1066,16 @@ export type EnumServiceTariffCategoryWithAggregatesFilter<$PrismaModel = never> 
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumServiceTariffCategoryFilter<$PrismaModel>
   _max?: Prisma.NestedEnumServiceTariffCategoryFilter<$PrismaModel>
+}
+
+export type EnumClinicianProfessionNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ClinicianProfession | Prisma.EnumClinicianProfessionFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ClinicianProfession[] | Prisma.ListEnumClinicianProfessionFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ClinicianProfession[] | Prisma.ListEnumClinicianProfessionFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumClinicianProfessionNullableWithAggregatesFilter<$PrismaModel> | $Enums.ClinicianProfession | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumClinicianProfessionNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumClinicianProfessionNullableFilter<$PrismaModel>
 }
 
 export type EnumInvoiceStatusFilter<$PrismaModel = never> = {
@@ -3259,6 +3276,13 @@ export type NestedEnumServiceTariffCategoryFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumServiceTariffCategoryFilter<$PrismaModel> | $Enums.ServiceTariffCategory
 }
 
+export type NestedEnumClinicianProfessionNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.ClinicianProfession | Prisma.EnumClinicianProfessionFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ClinicianProfession[] | Prisma.ListEnumClinicianProfessionFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ClinicianProfession[] | Prisma.ListEnumClinicianProfessionFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumClinicianProfessionNullableFilter<$PrismaModel> | $Enums.ClinicianProfession | null
+}
+
 export type NestedEnumServiceTariffCategoryWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.ServiceTariffCategory | Prisma.EnumServiceTariffCategoryFieldRefInput<$PrismaModel>
   in?: $Enums.ServiceTariffCategory[] | Prisma.ListEnumServiceTariffCategoryFieldRefInput<$PrismaModel>
@@ -3267,6 +3291,16 @@ export type NestedEnumServiceTariffCategoryWithAggregatesFilter<$PrismaModel = n
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumServiceTariffCategoryFilter<$PrismaModel>
   _max?: Prisma.NestedEnumServiceTariffCategoryFilter<$PrismaModel>
+}
+
+export type NestedEnumClinicianProfessionNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ClinicianProfession | Prisma.EnumClinicianProfessionFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ClinicianProfession[] | Prisma.ListEnumClinicianProfessionFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ClinicianProfession[] | Prisma.ListEnumClinicianProfessionFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumClinicianProfessionNullableWithAggregatesFilter<$PrismaModel> | $Enums.ClinicianProfession | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumClinicianProfessionNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumClinicianProfessionNullableFilter<$PrismaModel>
 }
 
 export type NestedEnumInvoiceStatusFilter<$PrismaModel = never> = {

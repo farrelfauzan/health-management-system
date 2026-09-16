@@ -153,7 +153,9 @@ describe('InvoiceDocumentService', () => {
     documentTemplateServiceMock.findVersionById.mockResolvedValue(null);
     pdfRendererMock.render.mockResolvedValue(pdfBytes);
     objectStorageMock.generateObjectKey.mockReturnValue('invoices/documents/generated-key.pdf');
-    objectStorageMock.uploadObject.mockResolvedValue({ key: 'invoices/documents/generated-key.pdf' });
+    objectStorageMock.uploadObject.mockResolvedValue({
+      key: 'invoices/documents/generated-key.pdf',
+    });
     objectStorageMock.deleteObject.mockResolvedValue({ key: 'x', deleted: true });
     repositoryMock.completeRender.mockResolvedValue(true);
   });
@@ -282,7 +284,12 @@ describe('InvoiceDocumentService', () => {
       ),
     );
     repositoryMock.findDocumentById.mockResolvedValue(
-      buildDocumentRecord({ status: 'READY', hasVoidWatermark: true, storageKey: 'k', checksum: 'c' }),
+      buildDocumentRecord({
+        status: 'READY',
+        hasVoidWatermark: true,
+        storageKey: 'k',
+        checksum: 'c',
+      }),
     );
 
     await service.requestRender('invoice-1');
@@ -297,7 +304,7 @@ describe('InvoiceDocumentService', () => {
     expect(renderedHtml).toContain('wrong patient');
   });
 
-  it('adopts the concurrent winner\'s row instead of failing on the unique index', async () => {
+  it("adopts the concurrent winner's row instead of failing on the unique index", async () => {
     repositoryMock.findRenderContext.mockResolvedValue(buildContext());
     repositoryMock.findLatestDocument.mockResolvedValue(null);
     repositoryMock.createDocument.mockRejectedValue({ code: 'P2002' });
@@ -324,7 +331,11 @@ describe('InvoiceDocumentService', () => {
   it('mints an attachment download with the compact invoice-number filename', async () => {
     repositoryMock.findRenderContext.mockResolvedValue(buildContext());
     repositoryMock.findLatestDocument.mockResolvedValue(
-      buildDocumentRecord({ status: 'READY', storageKey: 'invoices/documents/k.pdf', checksum: 'c' }),
+      buildDocumentRecord({
+        status: 'READY',
+        storageKey: 'invoices/documents/k.pdf',
+        checksum: 'c',
+      }),
     );
     objectStorageMock.getSignedUrl.mockResolvedValue({
       url: 'https://signed.example/k.pdf',

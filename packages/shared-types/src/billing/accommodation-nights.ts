@@ -1,4 +1,7 @@
-import { getCalendarDateInTimeZone, getStartOfCalendarDateInTimeZone } from '#registration-flow/schemas';
+import {
+  getCalendarDateInTimeZone,
+  getStartOfCalendarDateInTimeZone,
+} from '#registration-flow/schemas';
 import type { RoomClassSummaryRecord } from '#room-management/types';
 
 /** One closed stretch of a stay in one bed, as IMP-11 records it. */
@@ -65,10 +68,10 @@ export function tallyAccommodationNights(params: {
     }
 
     const tally = nightsByClassId.get(interval.roomClass.id);
-    nightsByClassId.set(
-      interval.roomClass.id,
-      { roomClass: interval.roomClass, nights: (tally?.nights ?? 0) + 1 },
-    );
+    nightsByClassId.set(interval.roomClass.id, {
+      roomClass: interval.roomClass,
+      nights: (tally?.nights ?? 0) + 1,
+    });
   }
 
   return [...nightsByClassId.values()];

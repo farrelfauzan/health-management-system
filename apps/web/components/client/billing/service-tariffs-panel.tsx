@@ -28,9 +28,7 @@ export function ServiceTariffsPanel() {
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between gap-3">
-        <p className="text-sm text-slate-500">
-          The price list the invoice generator draws from.
-        </p>
+        <p className="text-sm text-slate-500">The price list the invoice generator draws from.</p>
         {canManage ? (
           <Button
             type="button"

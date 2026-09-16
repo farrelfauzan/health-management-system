@@ -59,10 +59,7 @@ export function VoidInvoiceForm({ invoiceId, onVoided, onCancel }: VoidInvoiceFo
       </p>
       {actionError ? <InlineNotice tone="error">{actionError}</InlineNotice> : null}
       <div>
-        <Label
-          htmlFor="void-reason"
-          className="mb-1.5 font-heading text-xs text-slate-600"
-        >
+        <Label htmlFor="void-reason" className="mb-1.5 font-heading text-xs text-slate-600">
           Reason
         </Label>
         <Textarea

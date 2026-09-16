@@ -70,6 +70,8 @@ describe('Billing integration', () => {
   const encounterId = 'e1d2c3b4-a596-4877-b8a9-c0d1e2f3a4b5';
   const patientId = 'f5e4d3c2-b1a0-4918-a7b6-c5d4e3f2a1b0';
   const tariffId = '7b0c1e58-4f6a-4f6e-9d10-2a9c3f4b5d6e';
+  const midwiferySpecialtyId = '2e1b6a3d-4f5c-4d6e-9f70-8b9c0d1e2f30';
+  const generalSpecialtyId = '1d0a5f2c-3e4b-4c5d-8e6f-7a8b9c0d1e2f';
   const timestamp = new Date('2026-07-28T03:00:00.000Z');
 
   const patientRecord = {
@@ -124,6 +126,9 @@ describe('Billing integration', () => {
     name: 'Konsultasi Dokter Umum',
     category: 'CONSULTATION' as const,
     icd9cmCode: null,
+    specialtyId: null,
+    specialty: null,
+    profession: null,
     price: 50000,
     isActive: true,
     createdAt: timestamp,
@@ -230,6 +235,13 @@ describe('Billing integration', () => {
       id: encounterId,
       status: 'FINISHED',
       patientId,
+      clinician: {
+        id: 'doctor-1',
+        fullName: 'dr. Budi Santoso',
+        specialtyId: generalSpecialtyId,
+        specialtyName: 'Umum',
+        profession: 'DOCTOR',
+      },
       procedures: [],
       immunizations: [],
     });
@@ -359,6 +371,9 @@ describe('Billing integration', () => {
   it('creates a service tariff for a permitted user', async () => {
     const token = await buildToken('admin-user', 'admin@hms.local');
     mockActorWithPermissions([{ action: 'write', resource: 'ServiceTariff', scope: 'ANY' }]);
+    // The clinic-wide consultation fee is unique among active tariffs, so this
+    // create only succeeds while no untagged consultation row holds the slot.
+    serviceTariffRepositoryMock.findActiveConsultationTariffs.mockResolvedValue([]);
     serviceTariffRepositoryMock.createServiceTariff.mockResolvedValue(tariffRecord);
 
     const response = await request(app.getHttpServer())
@@ -470,6 +485,61 @@ describe('Billing integration', () => {
 
     expect(response.status).toBe(403);
   });
+  it('accepts a consultation tariff that names the poli and profession it prices', async () => {
+    const token = await buildToken('admin-user', 'admin@hms.local');
+    mockActorWithPermissions([{ action: 'write', resource: 'ServiceTariff', scope: 'ANY' }]);
+    serviceTariffRepositoryMock.findActiveConsultationTariffs.mockResolvedValue([]);
+    serviceTariffRepositoryMock.createServiceTariff.mockResolvedValue({
+      ...tariffRecord,
+      code: 'KONSULTASI-BIDAN',
+      name: 'Pemeriksaan Bidan',
+      specialtyId: midwiferySpecialtyId,
+      specialty: { id: midwiferySpecialtyId, name: 'Kebidanan' },
+      profession: 'MIDWIFE',
+      price: 30000,
+    });
+
+    const response = await request(app.getHttpServer())
+      .post('/api/v1/v1/service-tariffs')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        code: 'KONSULTASI-BIDAN',
+        name: 'Pemeriksaan Bidan',
+        category: 'CONSULTATION',
+        specialtyId: midwiferySpecialtyId,
+        profession: 'MIDWIFE',
+        price: 30000,
+      });
+
+    expect(response.status).toBe(201);
+    expect(response.body.data).toEqual(
+      expect.objectContaining({
+        specialtyId: midwiferySpecialtyId,
+        specialty: { id: midwiferySpecialtyId, name: 'Kebidanan' },
+        profession: 'MIDWIFE',
+      }),
+    );
+  });
+
+  it('refuses a poli on a tariff that prices something other than a consultation', async () => {
+    const token = await buildToken('admin-user', 'admin@hms.local');
+    mockActorWithPermissions([{ action: 'write', resource: 'ServiceTariff', scope: 'ANY' }]);
+
+    const response = await request(app.getHttpServer())
+      .post('/api/v1/v1/service-tariffs')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        code: 'LAB-DARAH-RUTIN',
+        name: 'Darah Rutin',
+        category: 'LAB',
+        specialtyId: midwiferySpecialtyId,
+        price: 90000,
+      });
+
+    expect(response.status).toBe(400);
+    expect(serviceTariffRepositoryMock.createServiceTariff).not.toHaveBeenCalled();
+  });
+
   it('adds a tariff that has no ICD-9-CM mapping to a draft invoice', async () => {
     const token = await buildToken('admin-user', 'admin@hms.local');
     mockActorWithPermissions([{ action: 'write', resource: 'Invoice', scope: 'ANY' }]);

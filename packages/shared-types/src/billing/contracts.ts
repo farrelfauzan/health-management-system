@@ -1,3 +1,4 @@
+import type { ClinicianProfessionValue } from '#doctor-management/schemas';
 import type { RoomClassSummary } from '#room-management/contracts';
 import type {
   InvoiceDocumentStatusValue,
@@ -8,6 +9,12 @@ import type {
 } from '#billing/schemas';
 import type { TemplateVariableWarning } from '#billing/types';
 
+/** The poli a consultation tariff prices, named for the price-list table. */
+export type ConsultationSpecialtySummary = {
+  id: string;
+  name: string;
+};
+
 export type ServiceTariffResponse = {
   id: string;
   code: string;
@@ -17,6 +24,14 @@ export type ServiceTariffResponse = {
   /** Present exactly on ACCOMMODATION rows, which price a ward class. */
   roomClassId?: string;
   roomClass?: RoomClassSummary;
+  /**
+   * Who a CONSULTATION row prices. Absent on both sides means the row is the
+   * clinic-wide consultation fee, charged whenever no poli-specific price
+   * claims the visit.
+   */
+  specialtyId?: string;
+  specialty?: ConsultationSpecialtySummary;
+  profession?: ClinicianProfessionValue;
   price: number;
   isActive: boolean;
   createdAt: string;
@@ -134,6 +149,12 @@ export type InvoicesListMeta = {
 
 export type InvoiceGenerationGapReason =
   | 'NO_CONSULTATION_TARIFF'
+  /**
+   * Several consultation tariffs claim the visit equally well, so none was
+   * billed. Only legacy untagged rows can reach this: assigning a poli to one
+   * of them settles it.
+   */
+  | 'AMBIGUOUS_CONSULTATION_TARIFF'
   | 'NO_TARIFF_FOR_PROCEDURE'
   | 'UNPRICED_MEDICATION'
   | 'NO_ACCOMMODATION_TARIFF'

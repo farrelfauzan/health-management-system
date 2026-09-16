@@ -26,6 +26,19 @@ export const BILLING_EXAMPLES = {
       icd9cmCode: '99.21',
       price: 35000,
     },
+    /**
+     * A consultation priced for one poli. `specialtyId` and `profession` are
+     * what generation matches the visit's clinician against; a row that names
+     * neither is the clinic-wide fee.
+     */
+    createConsultationRequest: {
+      code: 'KONSULTASI-BIDAN',
+      name: 'Pemeriksaan Bidan',
+      category: 'CONSULTATION',
+      specialtyId: '2e1b6a3d-4f5c-4d6e-9f70-8b9c0d1e2f30',
+      profession: 'MIDWIFE',
+      price: 30000,
+    },
     updateRequest: {
       price: 40000,
       isActive: true,

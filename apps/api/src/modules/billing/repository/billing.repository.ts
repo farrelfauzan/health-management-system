@@ -69,6 +69,15 @@ export class BillingRepository {
         status: true,
         patientId: true,
         registrationId: true,
+        doctor: {
+          select: {
+            id: true,
+            fullName: true,
+            specialtyId: true,
+            profession: true,
+            specialty: { select: { name: true } },
+          },
+        },
         procedures: {
           where: { deletedAt: null },
           select: { id: true, code: true, display: true },
@@ -84,8 +93,16 @@ export class BillingRepository {
     if (!encounter) {
       return null;
     }
+    const { doctor, ...rest } = encounter;
     return {
-      ...encounter,
+      ...rest,
+      clinician: {
+        id: doctor.id,
+        fullName: doctor.fullName,
+        specialtyId: doctor.specialtyId,
+        specialtyName: doctor.specialty.name,
+        profession: doctor.profession,
+      },
       immunizations: encounter.immunizations.map((immunization) => ({
         id: immunization.id,
         medicationCode: immunization.medication.code,

@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { clinicianProfessionSchema } from '#doctor-management/schemas';
 import { indonesianPhoneNumberSchema } from '#shared/phone-number-schema';
 
 /**
@@ -128,6 +129,32 @@ const billingCalendarDateSchema = z
     );
   }, 'Date must be a valid calendar date');
 
+const CONSULTATION_AUDIENCE_MESSAGE =
+  'specialtyId and profession describe who a CONSULTATION tariff prices and are not allowed on other categories';
+
+/**
+ * A consultation tariff names the audience it prices — a poli, a profession,
+ * or both — and no other category may. Mirrors the CHECK constraint behind it:
+ * a lab tariff carrying a poli is a field that means something on one row and
+ * nothing on the next, which is how the two start disagreeing.
+ *
+ * An update that leaves `category` alone is accepted here and re-checked
+ * against the stored row by the service, which is the only place that knows
+ * what the row's category actually is.
+ */
+function isConsultationAudienceAllowed(payload: {
+  category?: ServiceTariffCategoryValue;
+  specialtyId?: string | null;
+  profession?: string | null;
+}): boolean {
+  const namesAudience =
+    (payload.specialtyId ?? null) !== null || (payload.profession ?? null) !== null;
+  if (!namesAudience) {
+    return true;
+  }
+  return payload.category === undefined || payload.category === 'CONSULTATION';
+}
+
 /**
  * `roomClassId` is required for ACCOMMODATION and refused for everything else,
  * mirroring the CHECK constraint in the migration. A field that means
@@ -145,6 +172,8 @@ export const createServiceTariffSchema = z
     category: serviceTariffCategorySchema,
     icd9cmCode: z.string().trim().min(1).max(MAX_ICD9CM_CODE_LENGTH).optional(),
     roomClassId: z.string().uuid().optional(),
+    specialtyId: z.string().uuid().optional(),
+    profession: clinicianProfessionSchema.optional(),
     price: moneyAmountSchema,
     isActive: z.boolean().default(true),
   })
@@ -154,7 +183,11 @@ export const createServiceTariffSchema = z
       message: 'roomClassId is required for ACCOMMODATION tariffs and not allowed for others',
       path: ['roomClassId'],
     },
-  );
+  )
+  .refine(isConsultationAudienceAllowed, {
+    message: CONSULTATION_AUDIENCE_MESSAGE,
+    path: ['specialtyId'],
+  });
 
 /**
  * `code` is immutable — it is the identifier invoice items snapshot their
@@ -167,11 +200,17 @@ export const updateServiceTariffSchema = z
     category: serviceTariffCategorySchema.optional(),
     icd9cmCode: z.string().trim().min(1).max(MAX_ICD9CM_CODE_LENGTH).nullable().optional(),
     roomClassId: z.string().uuid().optional(),
+    specialtyId: z.string().uuid().nullable().optional(),
+    profession: clinicianProfessionSchema.nullable().optional(),
     price: moneyAmountSchema.optional(),
     isActive: z.boolean().optional(),
   })
   .refine((payload) => Object.keys(payload).length > 0, {
     message: 'At least one field must be provided',
+  })
+  .refine(isConsultationAudienceAllowed, {
+    message: CONSULTATION_AUDIENCE_MESSAGE,
+    path: ['specialtyId'],
   });
 
 export const listServiceTariffsQuerySchema = z.object({
@@ -186,11 +225,6 @@ export const listServiceTariffsQuerySchema = z.object({
 });
 
 /**
- * `consultationTariffId` is only needed when more than one active CONSULTATION
- * tariff exists — with a single one the server picks it, and with none the
- * consultation line is skipped and reported as a gap.
- */
-/**
  * Billing a visit that had no consultation (P18-T10). No consultation tariff to
  * name: there was no consultation to charge for.
  */
@@ -198,6 +232,12 @@ export const generateLabOnlyInvoiceSchema = z.object({
   registrationId: z.string().uuid(),
 });
 
+/**
+ * `consultationTariffId` overrides the fee the server would resolve on its own
+ * from the clinician who held the encounter — their poli and profession. It is
+ * never required: an unresolvable fee is a reported gap, so a cashier is never
+ * blocked from drafting the rest of a bill.
+ */
 export const generateInvoiceSchema = z.object({
   encounterId: z.string().uuid(),
   consultationTariffId: z.string().uuid().optional(),
@@ -258,9 +298,7 @@ export const cashierDailyReportQuerySchema = z.object({
 export type CreateServiceTariffInput = z.infer<typeof createServiceTariffSchema>;
 export type UpdateServiceTariffInput = z.infer<typeof updateServiceTariffSchema>;
 export type ListServiceTariffsQueryInput = z.infer<typeof listServiceTariffsQuerySchema>;
-export type GenerateLabOnlyInvoiceInput = z.infer<
-  typeof generateLabOnlyInvoiceSchema
->;
+export type GenerateLabOnlyInvoiceInput = z.infer<typeof generateLabOnlyInvoiceSchema>;
 export type GenerateInvoiceInput = z.infer<typeof generateInvoiceSchema>;
 export type AddInvoiceItemInput = z.infer<typeof addInvoiceItemSchema>;
 export type RecordPaymentInput = z.infer<typeof recordPaymentSchema>;

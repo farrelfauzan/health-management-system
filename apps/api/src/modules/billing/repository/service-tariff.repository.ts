@@ -14,6 +14,7 @@ const UNIQUE_VIOLATION_CODE = 'P2002';
 
 const SERVICE_TARIFF_INCLUDE = {
   roomClass: { select: { id: true, code: true, name: true } },
+  specialty: { select: { id: true, name: true } },
 } satisfies Prisma.ServiceTariffInclude;
 
 const SERVICE_TARIFF_ORDER_BY = [
@@ -28,6 +29,9 @@ type ServiceTariffRow = {
   category: ServiceTariffRecord['category'];
   icd9cmCode: string | null;
   roomClass: ServiceTariffRecord['roomClass'];
+  specialtyId: string | null;
+  specialty: ServiceTariffRecord['specialty'];
+  profession: ServiceTariffRecord['profession'];
   price: unknown;
   isActive: boolean;
   createdAt: Date;
@@ -74,6 +78,12 @@ export class ServiceTariffRepository {
     return row ? this.toServiceTariffRecord(row) : null;
   }
 
+  /**
+   * The consultation price list, unfiltered by audience: which row prices a
+   * given visit is a ranking the domain resolver does, not a `where` clause.
+   * Four separate queries walking the fallback chain would be four round trips
+   * to read a list a clinic keeps under a dozen rows long.
+   */
   async findActiveConsultationTariffs(): Promise<ServiceTariffRecord[]> {
     const rows = await this.prisma.findManyActive(this.prisma.serviceTariff, {
       where: { category: 'CONSULTATION' as const, isActive: true },
@@ -139,6 +149,8 @@ export class ServiceTariffRepository {
           category: payload.category,
           icd9cmCode: payload.icd9cmCode,
           roomClassId: payload.roomClassId,
+          specialtyId: payload.specialtyId,
+          profession: payload.profession,
           price: payload.price,
           isActive: payload.isActive,
         },
@@ -179,17 +191,26 @@ export class ServiceTariffRepository {
   }
 
   private mapUniqueViolation(err: unknown): unknown {
-    if (
-      err instanceof Prisma.PrismaClientKnownRequestError &&
-      err.code === UNIQUE_VIOLATION_CODE
-    ) {
+    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === UNIQUE_VIOLATION_CODE) {
       const target = err.meta?.target;
       const targets = Array.isArray(target) ? target.map(String) : [String(target)];
-      return new TariffIdentifierConflictError(
-        targets.some((column) => column.includes('icd9cm')) ? 'icd9cmCode' : 'code',
-      );
+      return new TariffIdentifierConflictError(this.resolveConflictField(targets));
     }
     return err;
+  }
+
+  /**
+   * Which identifier collided. The consultation audience index is named rather
+   * than matched on a column, because it is an expression index — its target
+   * comes back as the index name, not as `specialty_id`.
+   */
+  private resolveConflictField(
+    targets: string[],
+  ): ConstructorParameters<typeof TariffIdentifierConflictError>[0] {
+    if (targets.some((target) => target.includes('consultation_audience'))) {
+      return 'consultationAudience';
+    }
+    return targets.some((column) => column.includes('icd9cm')) ? 'icd9cmCode' : 'code';
   }
 
   /** `Decimal` price becomes a number here so no Prisma type escapes the repository. */
@@ -201,6 +222,9 @@ export class ServiceTariffRepository {
       category: row.category,
       icd9cmCode: row.icd9cmCode,
       roomClass: row.roomClass,
+      specialtyId: row.specialtyId,
+      specialty: row.specialty,
+      profession: row.profession,
       price: Number(row.price),
       isActive: row.isActive,
       createdAt: row.createdAt,

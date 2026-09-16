@@ -286,6 +286,17 @@
       "editTariff": "Edit Tariff",
       "newTariff": "New Tariff",
       "saveTariff": "Save Tariff",
+      "consultationAudience": {
+        "description": "Who this consultation fee prices. Generation matches it against the clinician who held the visit. Leave both on \u201cany\u201d to make this the clinic-wide fee \u2014 there can be only one.",
+        "poli": "Poli",
+        "anyPoli": "Any poli (clinic-wide)",
+        "profession": "Profession",
+        "anyProfession": "Any clinician",
+        "professions": {
+          "DOCTOR": "Doctor",
+          "MIDWIFE": "Midwife"
+        }
+      },
       "labels": {
         "settled": "Settled",
         "voidPlaceholder": "Why this invoice is being voided",

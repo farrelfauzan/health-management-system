@@ -83,10 +83,7 @@ export function RecordPaymentForm({ invoice, onRecorded }: RecordPaymentFormProp
       {actionError ? <InlineNotice tone="error">{actionError}</InlineNotice> : null}
       <div className="grid gap-3 sm:grid-cols-2">
         <div>
-          <Label
-            htmlFor="payment-method"
-            className="mb-1.5 font-heading text-xs text-slate-600"
-          >
+          <Label htmlFor="payment-method" className="mb-1.5 font-heading text-xs text-slate-600">
             Method
           </Label>
           <Select value={method} onValueChange={(value) => setMethod(value as PaymentMethodValue)}>
@@ -103,10 +100,7 @@ export function RecordPaymentForm({ invoice, onRecorded }: RecordPaymentFormProp
           </Select>
         </div>
         <div>
-          <Label
-            htmlFor="payment-amount"
-            className="mb-1.5 font-heading text-xs text-slate-600"
-          >
+          <Label htmlFor="payment-amount" className="mb-1.5 font-heading text-xs text-slate-600">
             Amount Taken
           </Label>
           <Input
@@ -125,10 +119,7 @@ export function RecordPaymentForm({ invoice, onRecorded }: RecordPaymentFormProp
         </div>
       </div>
       <div>
-        <Label
-          htmlFor="payment-reference"
-          className="mb-1.5 font-heading text-xs text-slate-600"
-        >
+        <Label htmlFor="payment-reference" className="mb-1.5 font-heading text-xs text-slate-600">
           Reference Number
         </Label>
         <Input
@@ -139,10 +130,7 @@ export function RecordPaymentForm({ invoice, onRecorded }: RecordPaymentFormProp
         />
       </div>
       <div>
-        <Label
-          htmlFor="payment-notes"
-          className="mb-1.5 font-heading text-xs text-slate-600"
-        >
+        <Label htmlFor="payment-notes" className="mb-1.5 font-heading text-xs text-slate-600">
           Notes
         </Label>
         <Textarea

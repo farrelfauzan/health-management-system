@@ -79,7 +79,7 @@ export class InvoiceController {
   @ApiEndpoint({
     summary: 'Generate an invoice from a finished encounter',
     responseDescription:
-      'A DRAFT invoice auto-collected from the visit: consultation fee, tariffed procedures, dispensed medications. Whatever could not be priced is listed in meta.gaps.',
+      'A DRAFT invoice auto-collected from the visit: consultation fee, tariffed procedures, dispensed medications. The consultation fee is resolved from the clinician who held the encounter — the tariff written for their poli and profession, falling back to the clinic-wide one — and consultationTariffId overrides that choice. Whatever could not be priced is listed in meta.gaps.',
     responseExample: {
       data: {
         ...BILLING_EXAMPLES.invoice.listItem,

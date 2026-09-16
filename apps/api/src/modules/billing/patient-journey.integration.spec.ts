@@ -296,11 +296,16 @@ describe('Billing patient journey (end to end)', () => {
   });
 
   describe('the clinic prices its services', () => {
+    // The consultation tariff names this journey's poli. The seeded clinic-wide
+    // fee already holds the untagged slot, and a poli-specific row is what
+    // generation is meant to reach for anyway — the doctor below practises in
+    // this specialty, so the bill should quote this price and not the seeded one.
     it('creates a consultation tariff and a procedure tariff mapped to an ICD-9-CM code', async () => {
       const consultation = await asStaff('post', '/api/v1/service-tariffs').send({
         code: `E2EJ-KONSUL-${RUN_SUFFIX}`,
         name: 'Konsultasi dokter umum (e2e)',
         category: 'CONSULTATION',
+        specialtyId,
         price: CONSULTATION_PRICE,
       });
       const procedure = await asStaff('post', '/api/v1/service-tariffs').send({

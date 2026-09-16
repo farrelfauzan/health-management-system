@@ -16,6 +16,7 @@ import {
   InvoicesListMeta,
   InvoiceItemTypeValue,
   InvoiceStatusValue,
+  resolveConsultationTariff,
   ServiceTariffCategoryValue,
   ServiceTariffRecord,
 } from '@hms/shared-types';
@@ -38,6 +39,7 @@ import { VoidInvoiceDto } from '../dto/void-invoice.dto';
 import { BillingRepository } from '../repository/billing.repository';
 import { ServiceTariffRepository } from '../repository/service-tariff.repository';
 import { BillingMapper } from './billing.mapper';
+import { describeConsultationAudience } from './describe-consultation-audience';
 import { InvoiceDocumentService } from './invoice-document.service';
 
 const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
@@ -462,7 +464,7 @@ export class BillingService {
     const { encounter, dispensedItems, labItems, consultationTariffId } = params;
     const items: CreateInvoiceItemPayload[] = [];
     const gaps: InvoiceGenerationGap[] = [];
-    const consultation = await this.resolveConsultationSelection(consultationTariffId);
+    const consultation = await this.resolveConsultationSelection(encounter, consultationTariffId);
     if (consultation.item) {
       items.push(consultation.item);
     }
@@ -488,12 +490,22 @@ export class BillingService {
   }
 
   /**
-   * With one active CONSULTATION tariff the server picks it; with several the
-   * caller must name one, and with none the fee is skipped and reported as a
-   * gap — a clinic that has not priced consultations yet can still bill the
-   * rest of the visit.
+   * The consultation fee follows the visit: it is resolved from the clinician
+   * who held the encounter — their poli and whether they are a dokter or a
+   * bidan — against the tariffs the clinic wrote for that audience, falling
+   * back to its untagged clinic-wide price. A caller may still name a tariff
+   * outright, which is how a desk bills a consultation the price list does not
+   * describe.
+   *
+   * Nothing here throws. An unpriced or ambiguous consultation is a reported
+   * gap, so the rest of the bill is still drafted and the missing line can be
+   * added by hand — the older behaviour refused the whole invoice over a price
+   * list the cashier could not fix from that screen.
    */
-  private async resolveConsultationSelection(consultationTariffId?: string): Promise<{
+  private async resolveConsultationSelection(
+    encounter: BillingSourceEncounterRecord,
+    consultationTariffId?: string,
+  ): Promise<{
     item?: CreateInvoiceItemPayload;
     gap?: InvoiceGenerationGap;
   }> {
@@ -506,21 +518,33 @@ export class BillingService {
       };
     }
     const activeTariffs = await this.serviceTariffRepository.findActiveConsultationTariffs();
-    if (activeTariffs.length === 0) {
+    const audience = describeConsultationAudience(encounter.clinician);
+    const selection = resolveConsultationTariff({
+      candidates: activeTariffs,
+      audience: {
+        specialtyId: encounter.clinician.specialtyId,
+        profession: encounter.clinician.profession,
+      },
+    });
+    if (selection.outcome === 'MATCHED') {
+      return { item: this.buildTariffItem(selection.tariff, 'CONSULTATION') };
+    }
+    if (selection.outcome === 'AMBIGUOUS') {
       return {
         gap: {
-          reason: 'NO_CONSULTATION_TARIFF',
-          description: 'No active consultation tariff is configured',
+          reason: 'AMBIGUOUS_CONSULTATION_TARIFF',
+          description: `${selection.tariffs
+            .map((tariff) => tariff.code)
+            .join(', ')} all price ${audience}`,
         },
       };
     }
-    if (activeTariffs.length > 1) {
-      throw new BadRequestException(
-        'Multiple active consultation tariffs exist; specify consultationTariffId',
-      );
-    }
-    const [tariff] = activeTariffs;
-    return { item: tariff ? this.buildTariffItem(tariff, 'CONSULTATION') : undefined };
+    return {
+      gap: {
+        reason: 'NO_CONSULTATION_TARIFF',
+        description: `No active consultation tariff prices ${audience}`,
+      },
+    };
   }
 
   /**

@@ -26,7 +26,9 @@ export function ClinicalRequestRow({ request }: ClinicalRequestRowProps) {
           {request.kind === 'LAB_ORDER'
             ? t('billing.clinicalRequests.labOrder')
             : t('billing.clinicalRequests.prescription')}
-          {request.reference ? <span className="font-mono text-xs"> {request.reference}</span> : null}
+          {request.reference ? (
+            <span className="font-mono text-xs"> {request.reference}</span>
+          ) : null}
         </p>
         <p className="text-xs text-slate-500">
           {request.description}
@@ -36,9 +38,7 @@ export function ClinicalRequestRow({ request }: ClinicalRequestRowProps) {
       <div className="shrink-0 text-right">
         <p
           className={
-            isBilled
-              ? 'text-sm font-medium text-slate-900'
-              : 'text-sm font-medium text-slate-500'
+            isBilled ? 'text-sm font-medium text-slate-900' : 'text-sm font-medium text-slate-500'
           }
         >
           {isBilled ? money(request.billedAmount) : t('billing.clinicalRequests.notOnThisBill')}
