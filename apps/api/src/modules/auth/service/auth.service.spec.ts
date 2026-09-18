@@ -39,6 +39,11 @@ describe('AuthService', () => {
     revokeAllUserRefreshTokens: jest.fn(),
     // P20-T02. No doctor profile by default, which is the invited-doctor case.
     findDoctorProfileCompleteness: jest.fn().mockResolvedValue(null),
+    // No profile names this account by default either, so the shell falls back
+    // to the email address exactly as it did before the field existed.
+    findSessionIdentity: jest
+      .fn()
+      .mockResolvedValue({ displayName: null, clinicianProfession: null }),
   } as unknown as AuthRepository;
   const jwtService = new JwtService();
   const configService = new ConfigService({

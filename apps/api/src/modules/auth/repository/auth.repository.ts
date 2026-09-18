@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
 
-import { ConsumeRefreshTokenResult, RefreshTokenRecordPayload } from '@hms/shared-types';
+import {
+  ConsumeRefreshTokenResult,
+  RefreshTokenRecordPayload,
+  SessionIdentity,
+} from '@hms/shared-types';
 
 import { PrismaService } from '../../../common/prisma/prisma.service';
 
@@ -93,6 +97,41 @@ export class AuthRepository {
         deletedAt: true,
       },
     });
+  }
+
+  /**
+   * What this account's own records say about the person signing in — the name
+   * to greet them by, and the kind of clinician they are — or nulls when no
+   * record says anything.
+   *
+   * Two reads rather than a relation on the user lookups, and sequential
+   * rather than parallel, for the reason spelled out on
+   * {@link findDoctorProfileCompleteness}: a sibling relation there let two
+   * concurrent refreshes overlap inside `consumeRefreshToken` and read as
+   * token reuse. The doctor profile is asked first because a clinician who is
+   * also a patient is greeted in the role they signed in to work in, and the
+   * patient side takes the oldest owned record — a guardian may own their
+   * children's records too, and the account holder's own is the one created
+   * with the account. A retired profile is skipped on both sides; a name on a
+   * soft-deleted record is a name the clinic has stopped standing behind.
+   */
+  async findSessionIdentity(userId: string): Promise<SessionIdentity> {
+    const doctorProfile = await this.prisma.doctorProfile.findUnique({
+      where: { ownerUserId: userId },
+      select: { fullName: true, profession: true, deletedAt: true },
+    });
+    if (doctorProfile && !doctorProfile.deletedAt) {
+      return {
+        displayName: doctorProfile.fullName,
+        clinicianProfession: doctorProfile.profession,
+      };
+    }
+    const patientProfile = await this.prisma.patientProfile.findFirst({
+      where: { ownerUserId: userId, deletedAt: null },
+      orderBy: { createdAt: 'asc' },
+      select: { fullName: true },
+    });
+    return { displayName: patientProfile?.fullName ?? null, clinicianProfession: null };
   }
 
   async createRefreshToken(payload: RefreshTokenRecordPayload): Promise<void> {

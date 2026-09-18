@@ -44,8 +44,51 @@ describe('resolveShellProfile', () => {
     });
   });
 
+  it("prefers the name on the person's own record over their email address", () => {
+    const actualProfile = resolveShellProfile({
+      email: 'bidan.sari@clinic.local',
+      name: 'Siti Nurhaliza binti Abdullah',
+      roles: ['MIDWIFE'],
+      clinicianProfession: 'MIDWIFE',
+    });
+
+    expect(actualProfile).toEqual({
+      displayName: 'Siti Nurhaliza binti Abdullah',
+      isFallbackName: false,
+      roleLabel: 'Midwife',
+      roleKey: 'midwife',
+      email: 'bidan.sari@clinic.local',
+    });
+  });
+
+  it('keeps the email fallback for an account no record names', () => {
+    const actualProfile = resolveShellProfile({
+      email: 'front.desk@clinic.local',
+      roles: ['ADMIN'],
+    });
+
+    expect(actualProfile.displayName).toBe('Front Desk');
+  });
+
+  it('labels a clinician by the profession on their profile, not by their role code', () => {
+    // An administrator correcting a profession does not re-grant roles, so a
+    // doctor whose account still holds MIDWIFE must still read as a doctor.
+    const actualProfile = resolveShellProfile({
+      email: 'olivia@clinic.local',
+      name: 'Olivia Kirana',
+      roles: ['MIDWIFE'],
+      clinicianProfession: 'DOCTOR',
+    });
+
+    expect(actualProfile.roleKey).toBe('doctor');
+    expect(actualProfile.roleLabel).toBe('Doctor');
+  });
+
   it('labels a midwife session as a midwife (P24-T03)', () => {
-    const actualProfile = resolveShellProfile({ email: 'bidan.sari@clinic.local', roles: ['MIDWIFE'] });
+    const actualProfile = resolveShellProfile({
+      email: 'bidan.sari@clinic.local',
+      roles: ['MIDWIFE'],
+    });
 
     expect(actualProfile.roleKey).toBe('midwife');
   });

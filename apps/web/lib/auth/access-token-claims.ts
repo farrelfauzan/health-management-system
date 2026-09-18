@@ -30,6 +30,30 @@ export type AccessTokenClaims = {
    * screen. Rendering input only.
    */
   isProfileIncomplete?: boolean;
+  /**
+   * The signed-in person's own name, as their doctor or patient record spells
+   * it. Carried by the session-hint cookie only — the access token is a signed
+   * credential the API validates, and a greeting has no business inside one.
+   *
+   * Absent for an account no clinical record names (a receptionist, an
+   * administrator) and for every hint written before this field existed; the
+   * shell falls back to the local part of the email address, exactly as it did
+   * before. Rendering input only.
+   */
+  name?: string;
+  /**
+   * Which kind of clinician the signed-in person's own profile says they are
+   * (`DOCTOR` or `MIDWIFE`), absent for everyone with no clinician profile.
+   * Carried by the session-hint cookie only.
+   *
+   * The shell labels a clinician from this rather than from their role code,
+   * because the two answer different questions: the role is what the API lets
+   * them do, the profession is what the clinic recorded them as. A profession
+   * corrected on the profile does not re-grant roles — that stays an
+   * administrator's deliberate act — so a doctor whose account still holds
+   * MIDWIFE was being greeted as "Bidan". Rendering input only.
+   */
+  clinicianProfession?: 'DOCTOR' | 'MIDWIFE';
 };
 
 export function decodeAccessTokenClaims(token: string): AccessTokenClaims | null {

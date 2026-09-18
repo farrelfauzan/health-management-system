@@ -11,6 +11,8 @@ type SessionHint = {
   disabledFeatures?: string[];
   offboardedUntil?: string;
   profileIncomplete?: boolean;
+  name?: string;
+  profession?: string;
   exp?: number;
 };
 
@@ -71,12 +73,27 @@ export function decodeSessionHint(hint: string | undefined): AccessTokenClaims |
     // every other role, every hint written by an older API — reads as
     // complete, the same fail-open reading as the fields above.
     const isProfileIncomplete = parsed.profileIncomplete === true;
+    // The person's own name, when the API found a record that carries one.
+    // Absent for an account with no profile and for every hint written before
+    // this field existed, and the right reading of that is "we have no better
+    // name than the email address" — which is the shell's existing fallback.
+    const name = typeof parsed.name === 'string' && parsed.name !== '' ? parsed.name : undefined;
+    // Likewise the clinician profession, and only the two the product knows:
+    // anything else — an older hint, a non-clinician, a value from a future
+    // API this build cannot label — reads as "no profession", and the shell
+    // falls back to the role code exactly as it did before.
+    const clinicianProfession =
+      parsed.profession === 'DOCTOR' || parsed.profession === 'MIDWIFE'
+        ? parsed.profession
+        : undefined;
     return {
       roles: parsed.roles,
       permissions,
       disabledFeatures,
       ...(offboardedUntil === undefined ? {} : { offboardedUntil }),
       ...(isProfileIncomplete ? { isProfileIncomplete: true } : {}),
+      ...(name === undefined ? {} : { name }),
+      ...(clinicianProfession === undefined ? {} : { clinicianProfession }),
       exp: parsed.exp,
     };
   } catch {
