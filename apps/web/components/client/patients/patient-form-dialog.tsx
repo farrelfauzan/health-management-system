@@ -105,6 +105,12 @@ export function PatientFormDialog({
   // message that belongs to the third of four selects inside it.
   const [addressErrors, setAddressErrors] = useState<PatientAddressFieldErrors>({});
   const doctorsQuery = useActiveDoctors(open && !isEditMode);
+  // Nobody is born tomorrow, and the API refuses a future date of birth anyway
+  // (`isDateNotFuture`), so the calendar stops here instead of offering years
+  // the form will reject. `en-CA` is the locale that formats as `yyyy-MM-dd`,
+  // and it reads the local day rather than the UTC one — which in Jakarta are
+  // different days until 07:00.
+  const today = new Date().toLocaleDateString('en-CA');
   /**
    * Runs on both submit paths — the valid one and the blocked one — so a
    * missing region chain is reported on the first press of Save, not only once
@@ -378,6 +384,7 @@ export function PatientFormDialog({
                     id={field.name}
                     value={field.state.value}
                     placeholder={t('patients.form.selectBirthDate')}
+                    maxValue={today}
                     onValueChange={field.handleChange}
                     onBlur={field.handleBlur}
                     aria-invalid={field.state.meta.errors.length > 0}
