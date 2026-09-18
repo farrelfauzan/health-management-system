@@ -32,6 +32,8 @@ describe('setSessionHintCookie', () => {
       disabledFeatures: ['ai-chatbot', 'billing'],
       offboardingDeadline: null,
       isProfileIncomplete: false,
+      displayName: null,
+      clinicianProfession: null,
       expiresAt,
     });
 
@@ -47,6 +49,8 @@ describe('setSessionHintCookie', () => {
       disabledFeatures: [],
       offboardingDeadline: null,
       isProfileIncomplete: false,
+      displayName: null,
+      clinicianProfession: null,
       expiresAt,
     });
 
@@ -64,6 +68,8 @@ describe('setSessionHintCookie', () => {
       disabledFeatures: ['billing'],
       offboardingDeadline: null,
       isProfileIncomplete: false,
+      displayName: null,
+      clinicianProfession: null,
       expiresAt,
     });
 
@@ -84,6 +90,8 @@ describe('setSessionHintCookie', () => {
       disabledFeatures: [],
       offboardingDeadline: null,
       isProfileIncomplete: false,
+      displayName: null,
+      clinicianProfession: null,
       expiresAt,
     });
 
@@ -115,6 +123,8 @@ describe('setSessionHintCookie', () => {
       disabledFeatures: [],
       offboardingDeadline: null,
       isProfileIncomplete: false,
+      displayName: null,
+      clinicianProfession: null,
       expiresAt,
     });
 
@@ -134,6 +144,8 @@ describe('setSessionHintCookie', () => {
       disabledFeatures: [],
       offboardingDeadline: new Date('2026-10-04T00:00:00.000Z'),
       isProfileIncomplete: false,
+      displayName: null,
+      clinicianProfession: null,
       expiresAt,
     });
     setSessionHintCookie(response, {
@@ -142,6 +154,8 @@ describe('setSessionHintCookie', () => {
       disabledFeatures: [],
       offboardingDeadline: null,
       isProfileIncomplete: false,
+      displayName: null,
+      clinicianProfession: null,
       expiresAt,
     });
 
@@ -161,6 +175,8 @@ describe('setSessionHintCookie', () => {
       disabledFeatures: [],
       offboardingDeadline: null,
       isProfileIncomplete: true,
+      displayName: null,
+      clinicianProfession: null,
       expiresAt,
     });
     setSessionHintCookie(response, {
@@ -169,10 +185,73 @@ describe('setSessionHintCookie', () => {
       disabledFeatures: [],
       offboardingDeadline: null,
       isProfileIncomplete: false,
+      displayName: null,
+      clinicianProfession: null,
       expiresAt,
     });
 
     expect(decodePayload(captured[0]!.value).profileIncomplete).toBe(true);
     expect(decodePayload(captured[1]!.value)).not.toHaveProperty('profileIncomplete');
+  });
+
+  it("carries the holder's name, and omits it for an account no record names", () => {
+    // The shell greets people by the name on their own record; without this
+    // field it falls back to the local part of their email address, which is
+    // also what a hint written before the field existed must keep doing.
+    const { response, captured } = buildResponse();
+
+    setSessionHintCookie(response, {
+      roles: ['DOCTOR'],
+      permissions: ['portal.doctor-access:any'],
+      disabledFeatures: [],
+      offboardingDeadline: null,
+      isProfileIncomplete: false,
+      displayName: 'dr. Siti Nurhaliza, Sp.OG',
+      clinicianProfession: 'DOCTOR',
+      expiresAt,
+    });
+    setSessionHintCookie(response, {
+      roles: ['ADMIN'],
+      permissions: ['portal.admin-access:any'],
+      disabledFeatures: [],
+      offboardingDeadline: null,
+      isProfileIncomplete: false,
+      displayName: null,
+      clinicianProfession: null,
+      expiresAt,
+    });
+
+    expect(decodePayload(captured[0]!.value).name).toBe('dr. Siti Nurhaliza, Sp.OG');
+    expect(decodePayload(captured[1]!.value)).not.toHaveProperty('name');
+  });
+  it('labels a clinician by their profession, not by the role they were invited into', () => {
+    // The two drift apart on purpose: correcting a profession on the profile
+    // is not a role grant, so a doctor whose account still holds MIDWIFE must
+    // still read as a doctor in the shell.
+    const { response, captured } = buildResponse();
+
+    setSessionHintCookie(response, {
+      roles: ['MIDWIFE'],
+      permissions: ['portal.doctor-access:any'],
+      disabledFeatures: [],
+      offboardingDeadline: null,
+      isProfileIncomplete: false,
+      displayName: 'Olivia Kirana',
+      clinicianProfession: 'DOCTOR',
+      expiresAt,
+    });
+    setSessionHintCookie(response, {
+      roles: ['ADMIN'],
+      permissions: ['portal.admin-access:any'],
+      disabledFeatures: [],
+      offboardingDeadline: null,
+      isProfileIncomplete: false,
+      displayName: null,
+      clinicianProfession: null,
+      expiresAt,
+    });
+
+    expect(decodePayload(captured[0]!.value).profession).toBe('DOCTOR');
+    expect(decodePayload(captured[1]!.value)).not.toHaveProperty('profession');
   });
 });

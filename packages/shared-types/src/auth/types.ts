@@ -1,4 +1,5 @@
 import type { AuthTokens, LoginStatus } from '#auth/contracts';
+import type { ClinicianProfessionValue } from '#doctor-management/schemas';
 
 export type JwtPayload = {
   sub: string;
@@ -124,7 +125,41 @@ export type IssuedSession = {
    * authorisation.
    */
   isProfileIncomplete: boolean;
+  /**
+   * The person's own name, as their clinical record spells it, or null when
+   * no record carries one — a receptionist or an administrator has an account
+   * and no profile. Feeds the session-hint cookie so the shell can greet
+   * someone by name instead of by the local part of their email address; like
+   * the fields above it is a rendering input and never authorisation, which
+   * is exactly why it rides in the hint rather than in the signed token.
+   */
+  displayName: string | null;
+  /**
+   * Which kind of clinician this person's own profile says they are, or null
+   * when they have no clinician profile. Feeds the session-hint cookie so the
+   * shell can label them the way their record does.
+   *
+   * It is a separate fact from the role codes above and deliberately so: the
+   * role decides what the API lets them do, the profession is what the clinic
+   * recorded them as, and changing one has never changed the other. Reading
+   * the label off `roles` instead put "Bidan" under the name of a clinician
+   * whose profile said DOCTOR, because the profession had been corrected on
+   * the profile and role assignment is an administrator's separate, deliberate
+   * act. Rendering input only, like everything else in the hint.
+   */
+  clinicianProfession: ClinicianProfessionValue | null;
   sessionExpiresAt: Date;
+};
+
+/**
+ * What a session knows about the person behind it beyond their credentials:
+ * the name to greet them by and the kind of clinician their own profile says
+ * they are. Both come from their clinical record, both are rendering inputs,
+ * and both are null for an account no such record names.
+ */
+export type SessionIdentity = {
+  displayName: string | null;
+  clinicianProfession: ClinicianProfessionValue | null;
 };
 
 export type ConsumeRefreshTokenResult = {

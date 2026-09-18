@@ -25,12 +25,12 @@ const SESSION_HINT_COOKIE_PATH = '/';
  * session to the login screen.
  *
  * What makes this safe is what it is *not*. It carries roles, the disabled
- * feature keys, and an expiry — no signature anybody checks, no bearer value,
- * no identifier
- * the API will accept. Presenting it to the API achieves exactly nothing;
- * every route still demands the access token, and `PermissionsGuard` still
- * re-reads permissions from the database on every request. It is a rendering
- * hint, and a forged one costs an attacker a wrong-looking sidebar.
+ * feature keys, the holder's own name and profession, and an expiry — no signature anybody
+ * checks, no bearer value, no identifier the API will accept. Presenting it to
+ * the API achieves exactly nothing; every route still demands the access
+ * token, and `PermissionsGuard` still re-reads permissions from the database
+ * on every request. It is a rendering hint, and a forged one costs an
+ * attacker a wrong-looking sidebar.
  *
  * It is deliberately *not* `httpOnly`: the whole point is that both the Next
  * server and the browser can read it. That exposes no more than the
@@ -72,6 +72,33 @@ export function setSessionHintCookie(
      * a database read; the API refuses nothing on its account.
      */
     isProfileIncomplete: boolean;
+    /**
+     * The person's own name as their clinical record spells it, or null when
+     * no record carries one — a receptionist has an account and no profile.
+     * Written as `name` only when there is one, so the web tier keeps its
+     * existing derive-from-the-email-address fallback for everyone else and
+     * for every hint written by an older API.
+     *
+     * It belongs here rather than in the access token for the same reason the
+     * feature keys do: the token is a signed credential the API validates,
+     * and a greeting is presentation. It is also the cheaper place — the
+     * token is already close enough to the browser's 4096-byte cookie limit
+     * that the full permission set had to be moved out of it.
+     */
+    displayName: string | null;
+    /**
+     * Which kind of clinician the person's own profile says they are, or null
+     * when they have no clinician profile. Written as `profession` only when
+     * there is one, so an older hint and a non-clinician's both carry nothing.
+     *
+     * The shell labels a clinician from this rather than from their role code
+     * on purpose. The two are separate facts — the role decides what the API
+     * permits, the profession is what the clinic recorded — and correcting a
+     * profession on the profile does not, and should not, silently re-grant
+     * roles. Before this field the label came off the role and a doctor whose
+     * profile had been corrected from MIDWIFE was still greeted as "Bidan".
+     */
+    clinicianProfession: string | null;
     expiresAt: Date;
   },
 ): void {
@@ -93,6 +120,8 @@ export function setSessionHintCookie(
         ? {}
         : { offboardedUntil: hint.offboardingDeadline.toISOString().slice(0, 10) }),
       ...(hint.isProfileIncomplete ? { profileIncomplete: true } : {}),
+      ...(hint.displayName ? { name: hint.displayName } : {}),
+      ...(hint.clinicianProfession ? { profession: hint.clinicianProfession } : {}),
       exp: Math.floor(hint.expiresAt.getTime() / 1000),
     }),
   ).toString('base64url');

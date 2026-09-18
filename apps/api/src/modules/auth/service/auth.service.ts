@@ -16,6 +16,7 @@ import {
   resolveMissingDoctorProfileFields,
   resolveOffboardingDeadline,
   isClinicianRoleCode,
+  SessionIdentity,
 } from '@hms/shared-types';
 
 import { AuditService } from '../../../common/audit/audit.service';
@@ -181,6 +182,7 @@ export class AuthService {
         AuditAction.USER_LOGIN,
         this.resolveOffboardingDeadline(user),
         await this.isProfileIncomplete(user),
+        await this.authRepository.findSessionIdentity(user.id),
       ),
       enrolmentRequired: requirement.isPrivileged && this.mfaEnforcement.isEnforceable,
       enrolmentDeadline: requirement.graceUntil,
@@ -252,6 +254,7 @@ export class AuthService {
       AuditAction.USER_LOGIN,
       this.resolveOffboardingDeadline(user),
       await this.isProfileIncomplete(user),
+      await this.authRepository.findSessionIdentity(user.id),
     );
   }
 
@@ -261,6 +264,7 @@ export class AuthService {
     auditAction: AuditAction,
     offboardingDeadline: Date | null,
     isProfileIncomplete: boolean,
+    identity: SessionIdentity,
   ): Promise<IssuedSession> {
     const accessToken = await this.issueAccessToken(claims);
     const issuedRefreshToken = this.issueRefreshToken({
@@ -290,6 +294,8 @@ export class AuthService {
       permissions: claims.permissions,
       offboardingDeadline,
       isProfileIncomplete,
+      displayName: identity.displayName,
+      clinicianProfession: identity.clinicianProfession,
       sessionExpiresAt: issuedRefreshToken.record.expiresAt,
     };
   }
@@ -391,6 +397,11 @@ export class AuthService {
       // Read only here, after the token is consumed, so it never widens the
       // race `consumeRefreshToken` has to serialise.
       isProfileIncomplete: await this.isProfileIncomplete(user),
+      // Re-read here too, so renaming a profile — or correcting its profession
+      // — reaches the shell at the next refresh instead of waiting for the
+      // next sign-in. Sequential and after the token is consumed, like the
+      // read above, for the same reason.
+      ...(await this.authRepository.findSessionIdentity(user.id)),
       sessionExpiresAt: nextToken.record.expiresAt,
     };
   }

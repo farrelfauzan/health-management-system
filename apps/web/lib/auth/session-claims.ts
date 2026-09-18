@@ -60,6 +60,14 @@ export function resolveSessionClaims({
       // And the profile-completion flag (P20-T02), for the same reason: a
       // fresh token would otherwise let an incomplete doctor past the gate.
       ...(hintClaims?.isProfileIncomplete ? { isProfileIncomplete: true } : {}),
+      // And the display name, for the same reason once more: the token carries
+      // the email address and never the person's name, so without this merge
+      // every fresh session would be greeted by the local part of its address.
+      ...(hintClaims?.name === undefined ? {} : { name: hintClaims.name }),
+      // And the clinician profession, which the token likewise never carries.
+      ...(hintClaims?.clinicianProfession === undefined
+        ? {}
+        : { clinicianProfession: hintClaims.clinicianProfession }),
     };
   }
   return isAccessTokenExpired(hintClaims) ? null : hintClaims;

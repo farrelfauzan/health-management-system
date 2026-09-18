@@ -106,6 +106,8 @@ export class AuthController {
       permissions: session.permissions,
       offboardingDeadline: session.offboardingDeadline,
       isProfileIncomplete: session.isProfileIncomplete,
+      displayName: session.displayName,
+      clinicianProfession: session.clinicianProfession,
       disabledFeatures: await this.resolveDisabledFeatures(),
       expiresAt: session.sessionExpiresAt,
     });
@@ -153,6 +155,8 @@ export class AuthController {
       permissions: session.permissions,
       offboardingDeadline: session.offboardingDeadline,
       isProfileIncomplete: session.isProfileIncomplete,
+      displayName: session.displayName,
+      clinicianProfession: session.clinicianProfession,
       disabledFeatures: await this.resolveDisabledFeatures(),
       expiresAt: session.sessionExpiresAt,
     });
@@ -343,6 +347,8 @@ export class AuthController {
       permissions: session.permissions,
       offboardingDeadline: session.offboardingDeadline,
       isProfileIncomplete: session.isProfileIncomplete,
+      displayName: session.displayName,
+      clinicianProfession: session.clinicianProfession,
       disabledFeatures: await this.resolveDisabledFeatures(),
       expiresAt: session.sessionExpiresAt,
     });
@@ -383,6 +389,8 @@ export class AuthController {
       permissions: session.permissions,
       offboardingDeadline: session.offboardingDeadline,
       isProfileIncomplete: session.isProfileIncomplete,
+      displayName: session.displayName,
+      clinicianProfession: session.clinicianProfession,
       disabledFeatures: await this.resolveDisabledFeatures(),
       expiresAt: session.sessionExpiresAt,
     });
