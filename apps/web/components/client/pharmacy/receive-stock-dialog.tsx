@@ -165,7 +165,7 @@ export function ReceiveStockDialog({
                   {t('quantityDescription')}
                 </FieldDescription>
               </div>
-              <div className="space-y-1.5">
+              <div className="space-y-1.5 sm:col-span-2">
                 <FormLabel htmlFor="receive-stock-received-at">{t('receivedAt')}</FormLabel>
                 <LocalizedDateTimePicker
                   id="receive-stock-received-at"

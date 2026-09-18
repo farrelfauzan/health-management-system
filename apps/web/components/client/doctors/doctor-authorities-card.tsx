@@ -10,8 +10,6 @@ import {
   CardHeader,
   CardTitle,
   Icon,
-  Table,
-  TableBody,
   useAbility,
 } from '@hms/ui';
 import { useTranslations } from 'next-intl';
@@ -32,6 +30,10 @@ type DoctorAuthoritiesCardProps = {
  * a MIDWIFE profile and only for a viewer who may `read DoctorAuthority`;
  * the query itself stays disabled otherwise, so a doctor's page never asks.
  * Visibility only — the API's permission guard is the boundary.
+ *
+ * The card sits in the detail page's 22rem side column on wide screens and
+ * full width below `xl`, so its layout follows the card's own width (container
+ * query `authorities`) rather than the viewport.
  */
 export function DoctorAuthoritiesCard({
   doctorId,
@@ -52,14 +54,23 @@ export function DoctorAuthoritiesCard({
   }
 
   return (
-    <Card className="rounded-xl border-slate-200 shadow-none" data-testid="doctor-authorities-card">
-      <CardHeader className="flex flex-row items-start justify-between gap-3">
-        <div className="space-y-1">
+    <Card
+      className="@container/authorities rounded-xl border-slate-200 shadow-none"
+      data-testid="doctor-authorities-card"
+    >
+      <CardHeader className="flex flex-col gap-3 @md/authorities:flex-row @md/authorities:items-start @md/authorities:justify-between">
+        <div className="min-w-0 space-y-1">
           <CardTitle className="font-heading text-base">{t('doctors.authorities.title')}</CardTitle>
           <CardDescription>{t('doctors.authorities.description')}</CardDescription>
         </div>
         {canWrite ? (
-          <Button type="button" size="sm" variant="outline" onClick={() => setIsCreateOpen(true)}>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            className="shrink-0 self-start"
+            onClick={() => setIsCreateOpen(true)}
+          >
             <Icon name="add" size={16} />
             {t('doctors.authorities.add')}
           </Button>
@@ -69,21 +80,17 @@ export function DoctorAuthoritiesCard({
         {authoritiesQuery.isError ? (
           <p className="text-sm text-danger">{t('doctors.authorities.loadError')}</p>
         ) : authoritiesQuery.authorities.length > 0 ? (
-          <div className="overflow-x-auto">
-            <Table>
-              <TableBody>
-                {authoritiesQuery.authorities.map((authority) => (
-                  <DoctorAuthorityRow
-                    key={authority.id}
-                    authority={authority}
-                    canWrite={canWrite}
-                    onEdit={setEditing}
-                    onRevoke={setRevoking}
-                  />
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+          <ul className="space-y-2">
+            {authoritiesQuery.authorities.map((authority) => (
+              <DoctorAuthorityRow
+                key={authority.id}
+                authority={authority}
+                canWrite={canWrite}
+                onEdit={setEditing}
+                onRevoke={setRevoking}
+              />
+            ))}
+          </ul>
         ) : authoritiesQuery.isPending ? null : (
           <p className="rounded-lg bg-slate-50 px-3 py-4 text-center text-sm text-slate-500">
             {t('doctors.authorities.empty')}
