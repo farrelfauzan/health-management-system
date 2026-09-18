@@ -334,7 +334,7 @@ const registration = {
   updatedAt: timestamp,
   // Today's practice hours for this registration's doctor (P19-T16). The queue
   // row prints them and greys out Check in when they are absent.
-  todaySession: { start: '14:00', end: '17:00', opensAt: '13:00', closesAt: '17:00' },
+  todaySession: { start: '14:00', end: '17:00', opensAt: '09:00', closesAt: '17:00' },
 };
 // Synthetic KFA code: structurally valid (numeric) but not a real Kemenkes
 // catalog entry.

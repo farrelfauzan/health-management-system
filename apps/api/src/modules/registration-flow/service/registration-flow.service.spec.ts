@@ -866,8 +866,9 @@ describe('RegistrationFlowService', () => {
     it('checks in within the early-arrival grace', async () => {
       mockPermissions(checkInPermissions);
       repositoryMock.findRegistrationDetailById.mockResolvedValue(sessionRegistrationRecord);
-      // 13:30 Jakarta, half an hour into the default 60-minute grace.
-      freezeClinicClock('2026-07-18T06:30:00.000Z');
+      // 09:30 Jakarta, half an hour into the default five-hour grace: the desk
+      // is taking vitals long before the doctor's 14:00 session.
+      freezeClinicClock('2026-07-18T02:30:00.000Z');
 
       await service.updateRegistration(registrationId, { status: 'CHECKED_IN' }, currentUser);
 
@@ -877,8 +878,8 @@ describe('RegistrationFlowService', () => {
     it('refuses a check-in before the grace opens and quotes the opening time', async () => {
       mockPermissions(checkInPermissions);
       repositoryMock.findRegistrationDetailById.mockResolvedValue(sessionRegistrationRecord);
-      // 12:30 Jakarta, half an hour before check-in opens at 13:00.
-      freezeClinicClock('2026-07-18T05:30:00.000Z');
+      // 08:30 Jakarta, half an hour before check-in opens at 09:00.
+      freezeClinicClock('2026-07-18T01:30:00.000Z');
 
       const actualError = await service
         .updateRegistration(registrationId, { status: 'CHECKED_IN' }, currentUser)
@@ -888,10 +889,10 @@ describe('RegistrationFlowService', () => {
       expect((actualError as ConflictException).getResponse()).toEqual(
         expect.objectContaining({
           code: 'REGISTRATION_OUTSIDE_SESSION',
-          message: 'dr. Ayu practises 14:00-17:00 today; check-in opens at 13:00',
+          message: 'dr. Ayu practises 14:00-17:00 today; check-in opens at 09:00',
           errors: expect.objectContaining({
             reason: 'BEFORE_OPENING',
-            opensAt: '13:00',
+            opensAt: '09:00',
             sessionStart: '14:00',
             sessionEnd: '17:00',
           }),
@@ -1010,7 +1011,7 @@ describe('RegistrationFlowService', () => {
     it('forbids force without the override permission', async () => {
       mockPermissions(checkInPermissions);
       repositoryMock.findRegistrationDetailById.mockResolvedValue(sessionRegistrationRecord);
-      freezeClinicClock('2026-07-18T05:30:00.000Z');
+      freezeClinicClock('2026-07-18T01:30:00.000Z');
 
       await expect(
         service.updateRegistration(
@@ -1028,7 +1029,7 @@ describe('RegistrationFlowService', () => {
         { action: 'checkin-override', resource: 'Registration', scope: 'ANY' },
       ]);
       repositoryMock.findRegistrationDetailById.mockResolvedValue(sessionRegistrationRecord);
-      freezeClinicClock('2026-07-18T05:30:00.000Z');
+      freezeClinicClock('2026-07-18T01:30:00.000Z');
 
       await service.updateRegistration(
         registrationId,
@@ -1077,7 +1078,7 @@ describe('RegistrationFlowService', () => {
       expect(actualRegistration.todaySession).toEqual({
         start: '14:00',
         end: '17:00',
-        opensAt: '13:00',
+        opensAt: '09:00',
         closesAt: '17:00',
       });
     });

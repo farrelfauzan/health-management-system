@@ -216,7 +216,7 @@ describe('Registration check-in session window integration', () => {
     expect(response.body.data.todaySession).toEqual({
       start: '14:00',
       end: '17:00',
-      opensAt: '13:00',
+      opensAt: '09:00',
       closesAt: '17:00',
     });
   });
@@ -224,21 +224,21 @@ describe('Registration check-in session window integration', () => {
   it('refuses a check-in before the grace opens and names the opening time', async () => {
     const token = await buildToken('desk-user', 'desk@hms.local');
     mockActorWithPermissions(DESK_PERMISSIONS);
-    // 12:30 Asia/Jakarta, half an hour before check-in opens.
-    freezeClinicClock('2026-07-18T05:30:00.000Z');
+    // 08:30 Asia/Jakarta, half an hour before check-in opens.
+    freezeClinicClock('2026-07-18T01:30:00.000Z');
 
     const response = await checkIn(token, { status: 'CHECKED_IN' });
 
     expect(response.status).toBe(409);
     expect(response.body.error.code).toBe('REGISTRATION_OUTSIDE_SESSION');
-    expect(response.body.error.message).toContain('check-in opens at 13:00');
+    expect(response.body.error.message).toContain('check-in opens at 09:00');
     expect(response.body.error.details).toEqual(
       expect.objectContaining({
         doctorName: 'dr. Ayu',
         reason: 'BEFORE_OPENING',
         sessionStart: '14:00',
         sessionEnd: '17:00',
-        opensAt: '13:00',
+        opensAt: '09:00',
       }),
     );
     expect(registrationRepositoryMock.updateRegistration).not.toHaveBeenCalled();
@@ -275,7 +275,7 @@ describe('Registration check-in session window integration', () => {
   it('forbids force from a caller without the override permission', async () => {
     const token = await buildToken('desk-user', 'desk@hms.local');
     mockActorWithPermissions(DESK_PERMISSIONS);
-    freezeClinicClock('2026-07-18T05:30:00.000Z');
+    freezeClinicClock('2026-07-18T01:30:00.000Z');
 
     const response = await checkIn(token, { status: 'CHECKED_IN', force: true });
 
@@ -286,7 +286,7 @@ describe('Registration check-in session window integration', () => {
   it('lets an override-holder force the check-in, and audits it', async () => {
     const token = await buildToken('desk-user', 'desk@hms.local');
     mockActorWithPermissions(OVERRIDE_PERMISSIONS);
-    freezeClinicClock('2026-07-18T05:30:00.000Z');
+    freezeClinicClock('2026-07-18T01:30:00.000Z');
 
     const response = await checkIn(token, { status: 'CHECKED_IN', force: true });
 

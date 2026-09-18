@@ -45,12 +45,21 @@ import { CurrentPrivacyNoticeEvidenceRequiredError } from '../../../common/priva
 const REGISTRABLE_APPOINTMENT_STATUSES = ['SCHEDULED', 'CONFIRMED'] as const;
 const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 /**
- * How early a patient may arrive and still be checked in (P19-T16). An hour,
- * because that is roughly when people turn up for an afternoon session and a
- * desk that refuses them has to either lie about the status or leave them
- * standing. Nothing on the far side: a session that has ended has ended.
+ * How early a patient may arrive and still be checked in (P19-T16). Five
+ * hours, because the desk work that has to happen before the doctor arrives —
+ * weight, height, blood pressure, the rest of the vitals — is done outside the
+ * consulting room, and an encounter can only be opened once the registration
+ * is CHECKED_IN. An hour of grace meant the desk either sat on those numbers
+ * or checked the patient in against the rule.
  */
-const DEFAULT_CHECKIN_GRACE_MINUTES = 60;
+const DEFAULT_CHECKIN_EARLY_GRACE_MINUTES = 300;
+/**
+ * How long after an approved exact-time request check-in stays open. Unchanged
+ * at an hour, and deliberately not widened alongside the early grace: arriving
+ * early is preparation, arriving five hours late is a different appointment.
+ * Sessions get none of this — a session that has ended has ended.
+ */
+const DEFAULT_CHECKIN_LATE_GRACE_MINUTES = 60;
 const AUDIT_RESOURCE_REGISTRATION = 'Registration';
 
 function parseRegistrationDateOnly(value: string): Date {
@@ -63,14 +72,14 @@ function formatCalendarDate(value: Date): string {
 }
 
 /**
- * Reads `REGISTRATION_CHECKIN_GRACE_MINUTES`. A missing, non-numeric or
- * negative value falls back to the default rather than failing startup: the
- * grace is a comfort setting, and a clinic whose API refuses to boot over a
- * typo in it is worse off than one running the hour everybody expected.
+ * Reads one of the grace settings. A missing, non-numeric or negative value
+ * falls back to the default rather than failing startup: the grace is a
+ * comfort setting, and a clinic whose API refuses to boot over a typo in it is
+ * worse off than one running the hours everybody expected.
  */
-function resolveGraceMinutes(configuredValue: string | undefined): number {
+function resolveGraceMinutes(configuredValue: string | undefined, fallback: number): number {
   const parsed = Number(configuredValue);
-  return Number.isFinite(parsed) && parsed >= 0 ? parsed : DEFAULT_CHECKIN_GRACE_MINUTES;
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : fallback;
 }
 
 /**
@@ -102,7 +111,8 @@ function toCheckInWindowContract(
 @Injectable()
 export class RegistrationFlowService {
   private readonly clinicTimeZone: string;
-  private readonly checkInGraceMinutes: number;
+  private readonly checkInEarlyGraceMinutes: number;
+  private readonly checkInLateGraceMinutes: number;
 
   constructor(
     private readonly registrationFlowRepository: RegistrationFlowRepository,
@@ -112,8 +122,13 @@ export class RegistrationFlowService {
     configService: ConfigService,
   ) {
     this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
-    this.checkInGraceMinutes = resolveGraceMinutes(
+    this.checkInEarlyGraceMinutes = resolveGraceMinutes(
       configService.get<string>('REGISTRATION_CHECKIN_GRACE_MINUTES'),
+      DEFAULT_CHECKIN_EARLY_GRACE_MINUTES,
+    );
+    this.checkInLateGraceMinutes = resolveGraceMinutes(
+      configService.get<string>('REGISTRATION_CHECKIN_LATE_GRACE_MINUTES'),
+      DEFAULT_CHECKIN_LATE_GRACE_MINUTES,
     );
   }
 
@@ -514,7 +529,8 @@ export class RegistrationFlowService {
       windows: this.buildRegistrationWindows(registration, doctorWindows),
       now,
       timeZone: this.clinicTimeZone,
-      graceMinutes: this.checkInGraceMinutes,
+      earlyGraceMinutes: this.checkInEarlyGraceMinutes,
+      lateGraceMinutes: this.checkInLateGraceMinutes,
     });
   }
 
@@ -543,7 +559,8 @@ export class RegistrationFlowService {
         windows: this.buildRegistrationWindows(registration, doctorWindows),
         now,
         timeZone: this.clinicTimeZone,
-        graceMinutes: this.checkInGraceMinutes,
+        earlyGraceMinutes: this.checkInEarlyGraceMinutes,
+        lateGraceMinutes: this.checkInLateGraceMinutes,
       });
       return this.toRegistrationListItem(registration, toCheckInWindowContract(decision));
     });
