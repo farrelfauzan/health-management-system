@@ -18,9 +18,9 @@ export type CheckInPracticeWindow = {
   endTime: string;
   /**
    * An approval-gated special request names one exact instant rather than a
-   * stretch, so the early-arrival grace applies on both sides of it. A session
-   * gets grace before it opens and none after it ends: someone arriving an
-   * hour after the doctor went home is not in that queue.
+   * stretch, so it also gets a late grace after that instant. A session gets
+   * the early grace only: someone arriving after the doctor went home is not
+   * in that queue.
    */
   kind: 'SESSION' | 'SPECIAL_REQUEST';
 };
@@ -32,8 +32,19 @@ export type ResolveCheckInWindowParams = {
   windows: readonly CheckInPracticeWindow[];
   now: Date;
   timeZone: string;
-  /** How early a patient may check in before a window opens. */
-  graceMinutes: number;
+  /**
+   * How early a patient may check in before a window opens. Wide on purpose:
+   * height, weight and the rest of the vitals are taken at the desk, outside
+   * the consulting room, well before the doctor arrives, and the encounter
+   * that holds those numbers can only be opened once the patient is checked
+   * in.
+   */
+  earlyGraceMinutes: number;
+  /**
+   * How late an approved exact-time request may still be checked in. Applies
+   * to `SPECIAL_REQUEST` windows only — a session closes when it ends.
+   */
+  lateGraceMinutes: number;
 };
 
 /**
@@ -48,7 +59,7 @@ export type CheckInWindowDecision = {
   /** Absent only when the doctor holds no window on the clinic day at all. */
   sessionStart?: string;
   sessionEnd?: string;
-  /** `sessionStart` minus the grace: when the desk may start checking people in. */
+  /** `sessionStart` minus the early grace: when the desk may start checking people in. */
   opensAt?: string;
   /** When check-in stops. Equal to `sessionEnd` except for a special request. */
   closesAt?: string;
@@ -67,6 +78,13 @@ type ResolvedWindow = {
   closesAtMs: number;
 };
 
+type ResolveWindowParams = {
+  window: CheckInPracticeWindow;
+  timeZone: string;
+  earlyGraceMinutes: number;
+  lateGraceMinutes: number;
+};
+
 /**
  * Decides whether `now` falls inside one of the doctor's practice windows for
  * the clinic day it lands on, and names the window it compared against.
@@ -77,12 +95,12 @@ type ResolvedWindow = {
  * without a database.
  */
 export function resolveCheckInWindow(params: ResolveCheckInWindowParams): CheckInWindowDecision {
-  const { windows, now, timeZone, graceMinutes } = params;
+  const { windows, now, timeZone, earlyGraceMinutes, lateGraceMinutes } = params;
   const today = getCalendarDateInTimeZone(now, timeZone);
   const nowMs = now.getTime();
   const resolved = windows
     .filter((window) => window.date === today)
-    .map((window) => resolveWindow(window, timeZone, graceMinutes))
+    .map((window) => resolveWindow({ window, timeZone, earlyGraceMinutes, lateGraceMinutes }))
     .sort((left, right) => left.opensAtMs - right.opensAtMs);
   const lastWindow = resolved[resolved.length - 1];
   if (!lastWindow) {
@@ -100,22 +118,20 @@ export function resolveCheckInWindow(params: ResolveCheckInWindowParams): CheckI
     : buildDecision(lastWindow, false, 'AFTER_END');
 }
 
-function resolveWindow(
-  window: CheckInPracticeWindow,
-  timeZone: string,
-  graceMinutes: number,
-): ResolvedWindow {
+function resolveWindow(params: ResolveWindowParams): ResolvedWindow {
+  const { window, timeZone, earlyGraceMinutes, lateGraceMinutes } = params;
   const isSpecialRequest = window.kind === 'SPECIAL_REQUEST';
   const startMs = toInstantMs(window.date, window.startTime, timeZone);
   const endMs = toInstantMs(window.date, window.endTime, timeZone);
-  const graceMs = graceMinutes * MILLISECONDS_PER_MINUTE;
+  const earlyGraceMs = earlyGraceMinutes * MILLISECONDS_PER_MINUTE;
+  const lateGraceMs = lateGraceMinutes * MILLISECONDS_PER_MINUTE;
   return {
     startTime: window.startTime,
     endTime: window.endTime,
-    opensAt: shiftClockTime(window.startTime, -graceMinutes),
-    closesAt: isSpecialRequest ? shiftClockTime(window.endTime, graceMinutes) : window.endTime,
-    opensAtMs: startMs - graceMs,
-    closesAtMs: isSpecialRequest ? endMs + graceMs : endMs,
+    opensAt: shiftClockTime(window.startTime, -earlyGraceMinutes),
+    closesAt: isSpecialRequest ? shiftClockTime(window.endTime, lateGraceMinutes) : window.endTime,
+    opensAtMs: startMs - earlyGraceMs,
+    closesAtMs: isSpecialRequest ? endMs + lateGraceMs : endMs,
   };
 }
 

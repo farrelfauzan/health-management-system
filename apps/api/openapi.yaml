@@ -28645,7 +28645,7 @@ paths:
                       todaySession:
                         start: 14:00
                         end: 17:00
-                        opensAt: 13:00
+                        opensAt: 09:00
                         closesAt: 17:00
                       patient:
                         id: 11111111-1111-4111-8111-111111111111
@@ -28799,7 +28799,7 @@ paths:
                     todaySession:
                       start: 14:00
                       end: 17:00
-                      opensAt: 13:00
+                      opensAt: 09:00
                       closesAt: 17:00
                   message: Registration created
         "400":
@@ -29152,7 +29152,7 @@ paths:
                     todaySession:
                       start: 14:00
                       end: 17:00
-                      opensAt: 13:00
+                      opensAt: 09:00
                       closesAt: 17:00
         "401":
           description: Authentication is required.
@@ -29304,7 +29304,7 @@ paths:
                     todaySession:
                       start: 14:00
                       end: 17:00
-                      opensAt: 13:00
+                      opensAt: 09:00
                       closesAt: 17:00
                     checkedInAt: 2026-07-20T08:00:00.000Z
                   message: Registration updated

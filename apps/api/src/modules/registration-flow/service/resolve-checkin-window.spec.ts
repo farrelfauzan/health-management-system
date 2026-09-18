@@ -2,7 +2,8 @@ import { CheckInPracticeWindow, resolveCheckInWindow } from '@hms/shared-types';
 
 describe('resolveCheckInWindow', () => {
   const timeZone = 'Asia/Jakarta';
-  const graceMinutes = 60;
+  const earlyGraceMinutes = 300;
+  const lateGraceMinutes = 60;
 
   const afternoonSession: CheckInPracticeWindow = {
     date: '2026-07-18',
@@ -16,7 +17,8 @@ describe('resolveCheckInWindow', () => {
       windows,
       now: new Date(instant),
       timeZone,
-      graceMinutes,
+      earlyGraceMinutes,
+      lateGraceMinutes,
     });
   }
 
@@ -29,22 +31,32 @@ describe('resolveCheckInWindow', () => {
       reason: 'INSIDE',
       sessionStart: '14:00',
       sessionEnd: '17:00',
-      opensAt: '13:00',
+      opensAt: '09:00',
       closesAt: '17:00',
     });
   });
 
   it('allows a check-in exactly when the grace opens', () => {
-    // 13:00 Asia/Jakarta, the first minute of the hour of grace.
-    expect(decideAt('2026-07-18T06:00:00.000Z').allowed).toBe(true);
+    // 09:00 Asia/Jakarta, the first minute of the five hours of grace.
+    expect(decideAt('2026-07-18T02:00:00.000Z').allowed).toBe(true);
+  });
+
+  /**
+   * The point of the five hours: the desk weighs and measures the patient
+   * outside the consulting room hours before the doctor arrives, and the
+   * encounter holding those numbers needs the registration checked in first.
+   */
+  it('allows a check-in four hours before the session for vitals', () => {
+    // 10:00 Asia/Jakarta against a 14:00 session.
+    expect(decideAt('2026-07-18T03:00:00.000Z').allowed).toBe(true);
   });
 
   it('refuses a check-in one minute before the grace opens', () => {
-    const actualDecision = decideAt('2026-07-18T05:59:00.000Z');
+    const actualDecision = decideAt('2026-07-18T01:59:00.000Z');
 
     expect(actualDecision.allowed).toBe(false);
     expect(actualDecision.reason).toBe('BEFORE_OPENING');
-    expect(actualDecision.opensAt).toBe('13:00');
+    expect(actualDecision.opensAt).toBe('09:00');
   });
 
   it('allows a check-in in the closing minute and refuses the next', () => {
@@ -73,9 +85,9 @@ describe('resolveCheckInWindow', () => {
     };
 
     expect(decideAt('2026-07-18T01:30:00.000Z', [morningSession]).allowed).toBe(true);
-    // 17:30 UTC on the 17th is 00:30 on the 18th in Jakarta: the right day,
-    // and far too early.
-    expect(decideAt('2026-07-17T17:30:00.000Z', [morningSession]).reason).toBe('BEFORE_OPENING');
+    // 17:10 UTC on the 17th is 00:10 on the 18th in Jakarta: the right day,
+    // and still before the 03:00 opening.
+    expect(decideAt('2026-07-17T17:10:00.000Z', [morningSession]).reason).toBe('BEFORE_OPENING');
     // 16:30 UTC on the 17th is still the 17th in Jakarta, a day with no window.
     expect(decideAt('2026-07-17T16:30:00.000Z', [morningSession]).reason).toBe('NO_SESSION');
   });
@@ -103,14 +115,14 @@ describe('resolveCheckInWindow', () => {
       kind: 'SESSION',
     };
 
-    // 11:30 Jakarta: the afternoon session is next, not the evening one.
-    const actualDecision = decideAt('2026-07-18T04:30:00.000Z', [eveningSession, afternoonSession]);
+    // 08:30 Jakarta: the afternoon session is next, not the evening one.
+    const actualDecision = decideAt('2026-07-18T01:30:00.000Z', [eveningSession, afternoonSession]);
 
     expect(actualDecision.reason).toBe('BEFORE_OPENING');
     expect(actualDecision.sessionStart).toBe('14:00');
   });
 
-  it('gives an exact-time special request grace on both sides', () => {
+  it('gives an exact-time special request the early grace and an hour after', () => {
     const approvedTime: CheckInPracticeWindow = {
       date: '2026-07-18',
       startTime: '09:00',
@@ -120,9 +132,12 @@ describe('resolveCheckInWindow', () => {
 
     // 09:45 Jakarta, three quarters of an hour late.
     expect(decideAt('2026-07-18T02:45:00.000Z', [approvedTime]).allowed).toBe(true);
-    // 10:01, past the hour of grace.
+    // 10:01, past the hour of late grace — the wider early grace does not
+    // stretch the far side of an approved instant.
     expect(decideAt('2026-07-18T03:01:00.000Z', [approvedTime]).reason).toBe('AFTER_END');
     expect(decideAt('2026-07-18T02:45:00.000Z', [approvedTime]).closesAt).toBe('10:00');
+    // 05:30 Jakarta, inside the five hours before the approved instant.
+    expect(decideAt('2026-07-17T22:30:00.000Z', [approvedTime]).allowed).toBe(true);
   });
 
   it('clamps an opening time the grace would push past midnight', () => {
@@ -142,7 +157,8 @@ describe('resolveCheckInWindow', () => {
       // 13:59 Jakarta.
       now: new Date('2026-07-18T06:59:00.000Z'),
       timeZone,
-      graceMinutes: 0,
+      earlyGraceMinutes: 0,
+      lateGraceMinutes: 0,
     });
 
     expect(actualDecision.reason).toBe('BEFORE_OPENING');
