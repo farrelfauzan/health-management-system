@@ -100,6 +100,9 @@ const GATED_CONTROLLERS: Readonly<Record<string, FeatureKey>> = {
   LabResultController: 'laboratory',
   PatientLabResultController: 'laboratory',
   LaboratorySettingsController: 'laboratory',
+  // P27-T02. The tax profile goes with the tax feature; a clinic without it
+  // has no tax page and no tax endpoints.
+  TaxSettingsController: 'taxes',
 };
 
 /**

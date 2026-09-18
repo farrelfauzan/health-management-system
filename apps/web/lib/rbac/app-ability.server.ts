@@ -108,6 +108,10 @@ const SUBJECT_BY_RESOURCE: Record<string, AppSubject> = {
   'lab-specimen': 'LabSpecimen',
   'lab-result': 'LabResult',
   'lab-settings': 'LaboratorySettings',
+  // P27-T02. Hyphenated single segment: `tax-settings.write:any` → resource
+  // `tax-settings`, action `write`. Without this row the Pajak card and page
+  // never render for anyone.
+  'tax-settings': 'TaxSettings',
   invoice: 'Invoice',
   payment: 'Payment',
   'chat.session': 'ChatSession',

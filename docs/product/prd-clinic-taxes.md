@@ -2,12 +2,12 @@
 
 Billing · P27 · Draft 19 Sep 2026 · Research and scope for P27-T01 (SJ-242).
 
-| | |
-|---|---|
-| Phase | P27 — Clinic Taxes (Development Board SJ-242..253; T01–T05 and T12 in Sprint 30) |
-| Decision | `docs/post-mvp/decisions.md` **D-038** — cite it with the file; D-numbers collide across the two decision files |
-| Regulatory basis | UU PPN Pasal 16B as amended by UU 7/2021 (HPP); PP 49/2022 Pasal 10–11, 29; PMK 131/2024, PMK 11/2025; PP 55/2022 as amended by **PP 20/2026**; PP 58/2023 and PMK 168/2023; PMK 141/2015; PMK 81/2024; UU KUP Pasal 7; UU 10/2020 (bea meterai) |
-| Not a tax opinion | This document states what the product does and why. It is not tax advice; §6 lists what a tax consultant must confirm |
+|                   |                                                                                                                                                                                                                                                  |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Phase             | P27 — Clinic Taxes (Development Board SJ-242..253; T01–T05 and T12 in Sprint 30)                                                                                                                                                                 |
+| Decision          | `docs/post-mvp/decisions.md` **D-038** — cite it with the file; D-numbers collide across the two decision files                                                                                                                                  |
+| Regulatory basis  | UU PPN Pasal 16B as amended by UU 7/2021 (HPP); PP 49/2022 Pasal 10–11, 29; PMK 131/2024, PMK 11/2025; PP 55/2022 as amended by **PP 20/2026**; PP 58/2023 and PMK 168/2023; PMK 141/2015; PMK 81/2024; UU KUP Pasal 7; UU 10/2020 (bea meterai) |
+| Not a tax opinion | This document states what the product does and why. It is not tax advice; §6 lists what a tax consultant must confirm                                                                                                                            |
 
 ## 1. Summary
 
@@ -27,11 +27,11 @@ The product **drafts and exports; it never files**. Coretax offers no filing API
 
 ### 2.1 PPN on medical services — exempt, not out of scope
 
-- Since UU HPP, medical services are a *jasa kena pajak* that receives the **exemption facility** (UU PPN Pasal 16B; PP 49/2022 Pasal 10 huruf a and Pasal 11). They are not "non-JKP" any more.
-- PP 49/2022 Pasal 11 ayat (3)–(4) covers services by doctors, dentists, specialists, midwives, nurses, psychiatrists and *ahli kesehatan*, and facility services of a *klinik kesehatan*, FKTP, FKTL, *laboratorium kesehatan* and hospitals. Ayat (5) covers non-health-worker providers such as paramedics and psychologists.
+- Since UU HPP, medical services are a _jasa kena pajak_ that receives the **exemption facility** (UU PPN Pasal 16B; PP 49/2022 Pasal 10 huruf a and Pasal 11). They are not "non-JKP" any more.
+- PP 49/2022 Pasal 11 ayat (3)–(4) covers services by doctors, dentists, specialists, midwives, nurses, psychiatrists and _ahli kesehatan_, and facility services of a _klinik kesehatan_, FKTP, FKTL, _laboratorium kesehatan_ and hospitals. Ayat (5) covers non-health-worker providers such as paramedics and psychologists.
 - **Not covered:** beauty and aesthetic clinic services (Kring Pajak, reported by DDTC in August 2023); outpatient medicines (§2.2); ancillary income such as rent or administrative fees, which are not named in Pasal 11 (our inference, not a ruling). Canteen food and parking fall under local PBJT instead (UU 1/2022).
 - **Consequence for a PKP.** An exempt supply is still a delivery. A clinic registered as PKP issues a faktur with **transaction code 08** for exempt services, and the related input VAT is **not creditable** (PP 49/2022 Pasal 29(1)). A clinic that also sells taxable medicines apportions its input VAT.
-- **PKP threshold.** Turnover above **Rp4.8 billion** a year obliges registration **even when every rupiah is exempt** (DDTC konsultasi). Below it the clinic is a *pengusaha kecil* and must not charge PPN.
+- **PKP threshold.** Turnover above **Rp4.8 billion** a year obliges registration **even when every rupiah is exempt** (DDTC konsultasi). Below it the clinic is a _pengusaha kecil_ and must not charge PPN.
 
 ### 2.2 PPN on medicines
 
@@ -40,15 +40,15 @@ The product **drafts and exports; it never files**. Coretax offers no filing API
 - **Outpatient medicines are taxable** (Kring Pajak, DDTC May 2024).
 - A DJP extension article (pajak.go.id node 114461) says medicines given to **inpatient and emergency** patients are not subject to PPN because the pharmacy is part of the facility. It cites no regulation — see §6.
 - Programme vaccines are exempt under PP 49/2022 (e.g. the national polio immunisation week).
-- A retail patient may receive a faktur without buyer identity (*digunggung*), per PMK 81/2024.
+- A retail patient may receive a faktur without buyer identity (_digunggung_), per PMK 81/2024.
 
 ### 2.3 PPh final 0.5% (PP 55/2022 as amended by PP 20/2026)
 
 - **PP 20/2026** was signed and took effect on **22 April 2026** (LN 2026 No. 43).
 - Individuals and PT perorangan may use 0.5% **without a time limit** (the old Pasal 59 limits are deleted). Koperasi keep a four-tax-year limit.
 - **CV, firma and ordinary PT are no longer eligible.** A badan already on the scheme finishes the period it started under (Pasal II). Under PP 55/2022 that period was three tax years for a PT and four for a CV, firma or koperasi.
-- The Rp4.8 billion threshold now aggregates business and *pekerjaan bebas* revenue, domestic and foreign, together with the spouse's. Individuals keep the **Rp500 juta** yearly non-taxable omzet (PP 55/2022 Pasal 60(2)).
-- **A doctor's own practice is excluded** (Pasal 56(4) huruf a: *tenaga ahli yang melakukan pekerjaan bebas … dokter … dan tenaga ahli sejenis lainnya*). Whether a bidan or perawat falls under *sejenis* is unconfirmed — see §6.
+- The Rp4.8 billion threshold now aggregates business and _pekerjaan bebas_ revenue, domestic and foreign, together with the spouse's. Individuals keep the **Rp500 juta** yearly non-taxable omzet (PP 55/2022 Pasal 60(2)).
+- **A doctor's own practice is excluded** (Pasal 56(4) huruf a: _tenaga ahli yang melakukan pekerjaan bebas … dokter … dan tenaga ahli sejenis lainnya_). Whether a bidan or perawat falls under _sejenis_ is unconfirmed — see §6.
 - Payment: KAP **411128**, KJS **420**, by the 15th of the following month. A validated NTPN counts as the report.
 
 ### 2.4 PPh 21 on clinicians
@@ -94,20 +94,20 @@ Kledo and Accurate export sales invoices as Coretax faktur XML. No Indonesian cl
 
 ## 4. Tickets
 
-| Ticket | Board | Scope | Points | Sprint |
-|---|---|---|---|---|
-| P27-T01 | SJ-242 | This PRD and D-038 | 2 | 30 |
-| P27-T02 | SJ-243 | Clinic tax profile, "Pajak" settings page, NPWP 16 / NITKU validation | 5 | 30 |
-| P27-T03 | SJ-244 | Tax codes with effective-dated rates, category defaults, bulk assignment across every tariff and medication | 8 | 30 |
-| P27-T04 | SJ-245 | Tax on invoices, frozen at issue | 8 | 30 |
-| P27-T05 | SJ-246 | Monthly report drafts: PP 55 omzet, PPN output | 5 | 30 |
-| P27-T12 | SJ-253 | PDF export of a report draft | 3 | 30 |
-| P27-T06 | SJ-247 | Clinician fee sharing (jasa medis) | 5 | Backlog |
-| P27-T07 | SJ-248 | PPh 21 bukan pegawai and the BP21 draft | 5 | Backlog |
-| P27-T08 | SJ-249 | Coretax XML: BP21 | 5 | Backlog |
-| P27-T09 | SJ-250 | Coretax XML: Faktur Keluaran | 5 | Backlog |
-| P27-T10 | SJ-251 | Tax calendar, Rp4.8 bn monitor, PP 55 end-year warning | 3 | Backlog |
-| P27-T11 | SJ-252 | Spike: vendor bills and PPh 23 / 4(2) | 2 | Backlog |
+| Ticket  | Board  | Scope                                                                                                       | Points | Sprint  |
+| ------- | ------ | ----------------------------------------------------------------------------------------------------------- | ------ | ------- |
+| P27-T01 | SJ-242 | This PRD and D-038                                                                                          | 2      | 30      |
+| P27-T02 | SJ-243 | Clinic tax profile, "Pajak" settings page, NPWP 16 / NITKU validation                                       | 5      | 30      |
+| P27-T03 | SJ-244 | Tax codes with effective-dated rates, category defaults, bulk assignment across every tariff and medication | 8      | 30      |
+| P27-T04 | SJ-245 | Tax on invoices, frozen at issue                                                                            | 8      | 30      |
+| P27-T05 | SJ-246 | Monthly report drafts: PP 55 omzet, PPN output                                                              | 5      | 30      |
+| P27-T12 | SJ-253 | PDF export of a report draft                                                                                | 3      | 30      |
+| P27-T06 | SJ-247 | Clinician fee sharing (jasa medis)                                                                          | 5      | Backlog |
+| P27-T07 | SJ-248 | PPh 21 bukan pegawai and the BP21 draft                                                                     | 5      | Backlog |
+| P27-T08 | SJ-249 | Coretax XML: BP21                                                                                           | 5      | Backlog |
+| P27-T09 | SJ-250 | Coretax XML: Faktur Keluaran                                                                                | 5      | Backlog |
+| P27-T10 | SJ-251 | Tax calendar, Rp4.8 bn monitor, PP 55 end-year warning                                                      | 3      | Backlog |
+| P27-T11 | SJ-252 | Spike: vendor bills and PPh 23 / 4(2)                                                                       | 2      | Backlog |
 
 The phase is **P27**, not P26: `P26-T01` already names the consultation-tariff-by-poli work in code (`schema.prisma`, D-037) although it never reached the board.
 

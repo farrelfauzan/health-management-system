@@ -28,7 +28,11 @@ export type FeatureKey =
   // clinic tells us something is broken — so it has no nav entry of its own and
   // is seeded on. The key exists so a deployment that must not send text to our
   // triage vendor can switch the whole path off in one place.
-  | 'bug-reporting';
+  | 'bug-reporting'
+  // P27-T02: clinic taxes — the tax profile now, tax codes, invoice tax and
+  // the monthly report drafts as P27 lands. Needs `billing`: every tax number
+  // is computed from an invoice.
+  | 'taxes';
 
 /**
  * One optional product feature, as both the API and the web app know it.

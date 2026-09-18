@@ -3,6 +3,7 @@ import type { AppAbility, AppAction, AppSubject } from '@hms/ui';
 export type SettingsHubCardKey =
   | 'clinicProfile'
   | 'serviceTariffs'
+  | 'taxes'
   | 'laboratory'
   | 'doctorCredentials'
   | 'documentTemplates'
@@ -48,6 +49,14 @@ export const SETTINGS_HUB_CARDS: readonly SettingsHubCard[] = [
     href: '/admin/billing?tab=tariffs',
     icon: 'sell',
     abilities: [{ action: 'write', subject: 'ServiceTariff' }],
+  },
+  {
+    // P27-T02. Beside the price list it taxes: the tax profile now, the tax
+    // codes on every tariff in P27-T03.
+    key: 'taxes',
+    href: '/admin/settings/taxes',
+    icon: 'receipt_long',
+    abilities: [{ action: 'write', subject: 'TaxSettings' }],
   },
   {
     key: 'laboratory',

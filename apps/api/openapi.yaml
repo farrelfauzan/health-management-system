@@ -44681,6 +44681,206 @@ paths:
         - bearer: []
       summary: Render a laboratory report version again
       tags: *a61
+  /api/v1/tax/settings:
+    get:
+      operationId: TaxSettingsController_getTaxSettings_v1
+      parameters: []
+      responses:
+        "200":
+          description: "A clinic that has never saved it reads the defaults: general
+            regime, not PKP, tax-inclusive prices, no taxpayer type. The NPWP is
+            the clinic profile's, shown here with `npwpStatus` so a 15-digit
+            identifier from before Coretax is visible; `pp55LastEligibleYear` is
+            computed from PP 55/2022 as amended by PP 20/2026."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      taxpayerType:
+                        type: string
+                      incomeTaxRegime:
+                        type: string
+                      pp55StartYear:
+                        type: integer
+                      isPkp:
+                        type: boolean
+                      nitku:
+                        type: string
+                      pricesIncludeTax:
+                        type: boolean
+                      npwp:
+                        type: string
+                      npwpStatus:
+                        type: string
+                      updatedById:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - taxpayerType
+                      - incomeTaxRegime
+                      - pp55StartYear
+                      - isPkp
+                      - nitku
+                      - pricesIncludeTax
+                      - npwp
+                      - npwpStatus
+                      - updatedById
+                      - updatedAt
+                required:
+                  - data
+                example:
+                  data:
+                    taxpayerType: PT_PERORANGAN
+                    incomeTaxRegime: PP55_FINAL
+                    pp55StartYear: 2025
+                    isPkp: false
+                    nitku: "0012345678901000000000"
+                    pricesIncludeTax: true
+                    npwp: "0012345678901000"
+                    npwpStatus: VALID
+                    updatedById: 0b8e3c1a-5d2f-4a6b-9c7e-1f2a3b4c5d6e
+                    updatedAt: 2026-09-19T03:00:00.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Read the clinic's tax profile
+      tags: &a62
+        - Tax Settings
+    patch:
+      operationId: TaxSettingsController_updateTaxSettings_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateTaxSettingsDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  taxpayerType: PT_PERORANGAN
+                  incomeTaxRegime: PP55_FINAL
+                  pp55StartYear: 2025
+      responses:
+        "200":
+          description: "Names any subset of fields; the rest stay as they were. Judged on
+            the merged result: `TAX_PP55_NOT_ELIGIBLE` when the legal form
+            cannot hold the 0.5% regime (a yayasan, a PT or CV starting after
+            2026, a period that has ended), `TAX_PKP_SINCE_REQUIRED` for a PKP
+            without a registration date, `TAX_NITKU_NPWP_MISMATCH` when the
+            NITKU does not begin with the clinic's 16-digit NPWP. Every change
+            is audited as `TAX_SETTINGS_UPDATED` with old and new values."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      taxpayerType:
+                        type: string
+                      incomeTaxRegime:
+                        type: string
+                      pp55StartYear:
+                        type: integer
+                      isPkp:
+                        type: boolean
+                      nitku:
+                        type: string
+                      pricesIncludeTax:
+                        type: boolean
+                      npwp:
+                        type: string
+                      npwpStatus:
+                        type: string
+                      updatedById:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - taxpayerType
+                      - incomeTaxRegime
+                      - pp55StartYear
+                      - isPkp
+                      - nitku
+                      - pricesIncludeTax
+                      - npwp
+                      - npwpStatus
+                      - updatedById
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    taxpayerType: PT_PERORANGAN
+                    incomeTaxRegime: PP55_FINAL
+                    pp55StartYear: 2025
+                    isPkp: false
+                    nitku: "0012345678901000000000"
+                    pricesIncludeTax: true
+                    npwp: "0012345678901000"
+                    npwpStatus: VALID
+                    updatedById: 0b8e3c1a-5d2f-4a6b-9c7e-1f2a3b4c5d6e
+                    updatedAt: 2026-09-19T03:00:00.000Z
+                  message: Tax settings updated
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Change the clinic's tax profile
+      tags: *a62
   /api/v1/satusehat/patients/{patientId}/link:
     post:
       operationId: SatusehatLinkController_linkPatient_v1
@@ -44750,7 +44950,7 @@ paths:
       security:
         - bearer: []
       summary: Link a patient to their SATUSEHAT IHS number
-      tags: &a62
+      tags: &a63
         - SATUSEHAT
   /api/v1/satusehat/doctors/{doctorId}/link:
     post:
@@ -44821,7 +45021,7 @@ paths:
       security:
         - bearer: []
       summary: Link a doctor to their SATUSEHAT IHS practitioner number
-      tags: *a62
+      tags: *a63
   /api/v1/satusehat/doctors/{doctorId}/link-by-ihs/preview:
     post:
       operationId: SatusehatLinkController_previewDoctorIhsLink_v1
@@ -44929,7 +45129,7 @@ paths:
       security:
         - bearer: []
       summary: Preview linking a doctor to a hand-typed SATUSEHAT IHS number
-      tags: *a62
+      tags: *a63
   /api/v1/satusehat/doctors/{doctorId}/link-by-ihs:
     post:
       operationId: SatusehatLinkController_linkDoctorByIhs_v1
@@ -45024,7 +45224,7 @@ paths:
       security:
         - bearer: []
       summary: Link a doctor to a hand-typed SATUSEHAT IHS number after confirmation
-      tags: *a62
+      tags: *a63
   /api/v1/satusehat/environment:
     get:
       operationId: SatusehatSubmissionController_getEnvironment_v1
@@ -45083,7 +45283,7 @@ paths:
       security:
         - bearer: []
       summary: Which SATUSEHAT environment this deployment reports to
-      tags: &a63
+      tags: &a64
         - SATUSEHAT
   /api/v1/satusehat/submissions:
     get:
@@ -45267,7 +45467,7 @@ paths:
       security:
         - bearer: []
       summary: List SATUSEHAT submission outbox entries
-      tags: *a63
+      tags: *a64
   /api/v1/satusehat/submissions/{id}:
     get:
       operationId: SatusehatSubmissionController_getSubmissionDetail_v1
@@ -45435,7 +45635,7 @@ paths:
       security:
         - bearer: []
       summary: One SATUSEHAT submission and what it sent
-      tags: *a63
+      tags: *a64
   /api/v1/satusehat/submissions/{id}/check:
     post:
       operationId: SatusehatSubmissionController_checkSubmission_v1
@@ -45539,7 +45739,7 @@ paths:
       security:
         - bearer: []
       summary: Check with SATUSEHAT whether it still holds what we sent
-      tags: *a63
+      tags: *a64
   /api/v1/satusehat/submissions/{id}/retry:
     post:
       operationId: SatusehatSubmissionController_retrySubmission_v1
@@ -45660,7 +45860,7 @@ paths:
       security:
         - bearer: []
       summary: Retry a failed SATUSEHAT submission
-      tags: *a63
+      tags: *a64
   /api/v1/satusehat/encounters/{encounterId}/record-comparison:
     get:
       operationId: SatusehatRecordController_compareEncounterRecord_v1
@@ -45934,7 +46134,7 @@ paths:
       security:
         - bearer: []
       summary: The clinic's SATUSEHAT Location tree
-      tags: &a64
+      tags: &a65
         - SATUSEHAT
   /api/v1/satusehat/locations/register:
     post:
@@ -46049,7 +46249,7 @@ paths:
       security:
         - bearer: []
       summary: Register clinic rows as SATUSEHAT Locations, or push their changes
-      tags: *a64
+      tags: *a65
   /api/v1/bpjs/config:
     get:
       operationId: BpjsPcareConfigController_getConfig_v1
@@ -46163,7 +46363,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS PCare bridging configuration
-      tags: &a65
+      tags: &a66
         - BPJS PCare
     put:
       operationId: BpjsPcareConfigController_upsertConfig_v1
@@ -46301,7 +46501,7 @@ paths:
       security:
         - bearer: []
       summary: Create or replace the BPJS PCare bridging configuration
-      tags: *a65
+      tags: *a66
     delete:
       operationId: BpjsPcareConfigController_deleteConfig_v1
       parameters: []
@@ -46360,7 +46560,7 @@ paths:
       security:
         - bearer: []
       summary: Delete the BPJS PCare bridging configuration
-      tags: *a65
+      tags: *a66
   /api/v1/bpjs/config/test-connection:
     post:
       operationId: BpjsPcareConfigController_testConnection_v1
@@ -46426,7 +46626,7 @@ paths:
       security:
         - bearer: []
       summary: Test the stored BPJS PCare credentials
-      tags: *a65
+      tags: *a66
   /api/v1/bpjs/reference/sync:
     post:
       operationId: BpjsReferenceController_syncCatalogs_v1
@@ -46514,7 +46714,7 @@ paths:
       security:
         - bearer: []
       summary: Sync the enumerable BPJS PCare reference catalogs
-      tags: &a66
+      tags: &a67
         - BPJS PCare
   /api/v1/bpjs/reference/status:
     get:
@@ -46581,7 +46781,7 @@ paths:
       security:
         - bearer: []
       summary: Read per-catalog BPJS reference sync status
-      tags: *a66
+      tags: *a67
   /api/v1/bpjs/reference/{catalog}:
     get:
       operationId: BpjsReferenceController_searchCatalog_v1
@@ -46675,7 +46875,7 @@ paths:
       security:
         - bearer: []
       summary: Search a synced BPJS reference catalog locally
-      tags: *a66
+      tags: *a67
   /api/v1/bpjs/reference/{catalog}/search:
     post:
       operationId: BpjsReferenceController_searchCatalogRemote_v1
@@ -46781,7 +46981,7 @@ paths:
       security:
         - bearer: []
       summary: Search a keyword-only BPJS catalog live and cache the results
-      tags: *a66
+      tags: *a67
   /api/v1/bpjs/mappings:
     get:
       operationId: BpjsMappingController_getOverview_v1
@@ -46869,7 +47069,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS mapping overview
-      tags: &a67
+      tags: &a68
         - BPJS PCare
   /api/v1/bpjs/mappings/doctors/{doctorId}:
     put:
@@ -46963,7 +47163,7 @@ paths:
       security:
         - bearer: []
       summary: Set or clear a doctor’s BPJS kdDokter mapping
-      tags: *a67
+      tags: *a68
   /api/v1/bpjs/mappings/specialties/{specialtyId}:
     put:
       operationId: BpjsMappingController_setSpecialtyMapping_v1
@@ -47052,7 +47252,7 @@ paths:
       security:
         - bearer: []
       summary: Set or clear a specialty’s BPJS kdPoli mapping
-      tags: *a67
+      tags: *a68
   /api/v1/bpjs/mappings/medications/{medicationId}:
     put:
       operationId: BpjsMappingController_setMedicationMapping_v1
@@ -47146,7 +47346,7 @@ paths:
       security:
         - bearer: []
       summary: Link or unlink a medication’s DPHO code
-      tags: *a67
+      tags: *a68
   /api/v1/bpjs/eligibility/patients/{patientId}/check:
     post:
       operationId: BpjsEligibilityController_checkEligibility_v1
@@ -47446,7 +47646,7 @@ paths:
       security:
         - bearer: []
       summary: List BPJS PCare submission outbox entries
-      tags: &a68
+      tags: &a69
         - BPJS PCare
   /api/v1/bpjs/submissions/{id}/retry:
     post:
@@ -47555,7 +47755,7 @@ paths:
       security:
         - bearer: []
       summary: Retry a failed BPJS PCare submission
-      tags: *a68
+      tags: *a69
   /api/v1/bpjs/reports/monthly:
     get:
       operationId: BpjsReportController_getMonthlyReport_v1
@@ -47802,7 +48002,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS Antrean Online bridging configuration
-      tags: &a69
+      tags: &a70
         - BPJS Antrean
     put:
       operationId: BpjsAntreanConfigController_upsertConfig_v1
@@ -47943,7 +48143,7 @@ paths:
       security:
         - bearer: []
       summary: Create or replace the BPJS Antrean Online bridging configuration
-      tags: *a69
+      tags: *a70
     delete:
       operationId: BpjsAntreanConfigController_deleteConfig_v1
       parameters: []
@@ -48002,7 +48202,7 @@ paths:
       security:
         - bearer: []
       summary: Delete the BPJS Antrean Online bridging configuration
-      tags: *a69
+      tags: *a70
   /api/v1/bpjs/antrean/config/test-connection:
     post:
       operationId: BpjsAntreanConfigController_testConnection_v1
@@ -48068,7 +48268,7 @@ paths:
       security:
         - bearer: []
       summary: Test the stored BPJS Antrean credentials
-      tags: *a69
+      tags: *a70
   /api/v1/bpjs/antrean/inbound-readiness:
     get:
       operationId: BpjsAntreanConfigController_getInboundReadiness_v1
@@ -48138,7 +48338,7 @@ paths:
       security:
         - bearer: []
       summary: Report whether the inbound Antrean web services can serve BPJS
-      tags: *a69
+      tags: *a70
   /api/v1/bpjs/antrean/hfis-reconciliation:
     get:
       operationId: BpjsAntreanConfigController_getHfisReconciliation_v1
@@ -48240,7 +48440,7 @@ paths:
       security:
         - bearer: []
       summary: Compare HFIS against HMS and report the disagreements
-      tags: *a69
+      tags: *a70
   /api/v1/admin/features:
     get:
       operationId: FeatureAdminController_getEntitlements_v1
@@ -48319,7 +48519,7 @@ paths:
       security:
         - bearer: []
       summary: List every feature and whether this client has it
-      tags: &a70
+      tags: &a71
         - Feature Entitlements
   /api/v1/admin/features/{key}:
     put:
@@ -48436,7 +48636,7 @@ paths:
       security:
         - bearer: []
       summary: Switch a feature on or off for this client
-      tags: *a70
+      tags: *a71
   /api/v1/features/availability:
     get:
       operationId: FeatureAvailabilityController_getAvailability_v1
@@ -48559,7 +48759,7 @@ paths:
       security:
         - bearer: []
       summary: List active roles
-      tags: &a71
+      tags: &a72
         - RBAC
     post:
       operationId: RbacController_createRole_v1
@@ -48646,7 +48846,7 @@ paths:
       security:
         - bearer: []
       summary: Create a custom role
-      tags: *a71
+      tags: *a72
   /api/v1/rbac/permissions:
     get:
       operationId: RbacController_getPermissionCatalog_v1
@@ -48726,7 +48926,7 @@ paths:
       security:
         - bearer: []
       summary: List the permission catalog
-      tags: *a71
+      tags: *a72
   /api/v1/rbac/roles/{id}:
     get:
       operationId: RbacController_getRoleById_v1
@@ -48845,7 +49045,7 @@ paths:
       security:
         - bearer: []
       summary: Get a role with its permissions and member count
-      tags: *a71
+      tags: *a72
     patch:
       operationId: RbacController_updateRole_v1
       parameters:
@@ -48944,7 +49144,7 @@ paths:
       security:
         - bearer: []
       summary: Update a role name or description
-      tags: *a71
+      tags: *a72
     delete:
       operationId: RbacController_deleteRole_v1
       parameters:
@@ -49020,7 +49220,7 @@ paths:
       security:
         - bearer: []
       summary: Soft-delete a role
-      tags: *a71
+      tags: *a72
   /api/v1/rbac/roles/{id}/permissions:
     put:
       operationId: RbacController_setRolePermissions_v1
@@ -49166,7 +49366,7 @@ paths:
       security:
         - bearer: []
       summary: Replace the permission set attached to a role
-      tags: *a71
+      tags: *a72
   /api/v1/rbac/assign-role:
     post:
       operationId: RbacController_assignRole_v1
@@ -49258,7 +49458,7 @@ paths:
       security:
         - bearer: []
       summary: Assign a role to a user
-      tags: *a71
+      tags: *a72
   /api/v1/rbac/unassign-role:
     post:
       operationId: RbacController_unassignRole_v1
@@ -49350,7 +49550,7 @@ paths:
       security:
         - bearer: []
       summary: Unassign a role from a user
-      tags: *a71
+      tags: *a72
   /api/v1/health:
     get:
       operationId: HealthController_getHealth_v1
@@ -53593,6 +53793,42 @@ components:
         technicianMayVerify:
           type: boolean
         singleOperator:
+          type: boolean
+    UpdateTaxSettingsDto:
+      type: object
+      properties:
+        taxpayerType:
+          type: string
+          enum:
+            - INDIVIDUAL
+            - PT_PERORANGAN
+            - PT
+            - CV
+            - KOPERASI
+            - YAYASAN
+          nullable: true
+        incomeTaxRegime:
+          type: string
+          enum:
+            - PP55_FINAL
+            - GENERAL
+        pp55StartYear:
+          type: integer
+          minimum: 2018
+          exclusiveMinimum: false
+          maximum: 2100
+          exclusiveMaximum: false
+          nullable: true
+        isPkp:
+          type: boolean
+        pkpSince:
+          type: string
+          pattern: ^\d{4}-\d{2}-\d{2}$
+          nullable: true
+        nitku:
+          type: string
+          nullable: true
+        pricesIncludeTax:
           type: boolean
     LinkDoctorByIhsDto:
       type: object

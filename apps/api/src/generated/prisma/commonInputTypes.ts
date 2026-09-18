@@ -1044,6 +1044,40 @@ export type EnumDispenseStatusWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumDispenseStatusFilter<$PrismaModel>
 }
 
+export type EnumTaxpayerTypeNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.TaxpayerType | Prisma.EnumTaxpayerTypeFieldRefInput<$PrismaModel> | null
+  in?: $Enums.TaxpayerType[] | Prisma.ListEnumTaxpayerTypeFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.TaxpayerType[] | Prisma.ListEnumTaxpayerTypeFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumTaxpayerTypeNullableFilter<$PrismaModel> | $Enums.TaxpayerType | null
+}
+
+export type EnumIncomeTaxRegimeFilter<$PrismaModel = never> = {
+  equals?: $Enums.IncomeTaxRegime | Prisma.EnumIncomeTaxRegimeFieldRefInput<$PrismaModel>
+  in?: $Enums.IncomeTaxRegime[] | Prisma.ListEnumIncomeTaxRegimeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.IncomeTaxRegime[] | Prisma.ListEnumIncomeTaxRegimeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumIncomeTaxRegimeFilter<$PrismaModel> | $Enums.IncomeTaxRegime
+}
+
+export type EnumTaxpayerTypeNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.TaxpayerType | Prisma.EnumTaxpayerTypeFieldRefInput<$PrismaModel> | null
+  in?: $Enums.TaxpayerType[] | Prisma.ListEnumTaxpayerTypeFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.TaxpayerType[] | Prisma.ListEnumTaxpayerTypeFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumTaxpayerTypeNullableWithAggregatesFilter<$PrismaModel> | $Enums.TaxpayerType | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumTaxpayerTypeNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumTaxpayerTypeNullableFilter<$PrismaModel>
+}
+
+export type EnumIncomeTaxRegimeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.IncomeTaxRegime | Prisma.EnumIncomeTaxRegimeFieldRefInput<$PrismaModel>
+  in?: $Enums.IncomeTaxRegime[] | Prisma.ListEnumIncomeTaxRegimeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.IncomeTaxRegime[] | Prisma.ListEnumIncomeTaxRegimeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumIncomeTaxRegimeWithAggregatesFilter<$PrismaModel> | $Enums.IncomeTaxRegime
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumIncomeTaxRegimeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumIncomeTaxRegimeFilter<$PrismaModel>
+}
+
 export type EnumServiceTariffCategoryFilter<$PrismaModel = never> = {
   equals?: $Enums.ServiceTariffCategory | Prisma.EnumServiceTariffCategoryFieldRefInput<$PrismaModel>
   in?: $Enums.ServiceTariffCategory[] | Prisma.ListEnumServiceTariffCategoryFieldRefInput<$PrismaModel>
@@ -3267,6 +3301,40 @@ export type NestedEnumDispenseStatusWithAggregatesFilter<$PrismaModel = never> =
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumDispenseStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumDispenseStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumTaxpayerTypeNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.TaxpayerType | Prisma.EnumTaxpayerTypeFieldRefInput<$PrismaModel> | null
+  in?: $Enums.TaxpayerType[] | Prisma.ListEnumTaxpayerTypeFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.TaxpayerType[] | Prisma.ListEnumTaxpayerTypeFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumTaxpayerTypeNullableFilter<$PrismaModel> | $Enums.TaxpayerType | null
+}
+
+export type NestedEnumIncomeTaxRegimeFilter<$PrismaModel = never> = {
+  equals?: $Enums.IncomeTaxRegime | Prisma.EnumIncomeTaxRegimeFieldRefInput<$PrismaModel>
+  in?: $Enums.IncomeTaxRegime[] | Prisma.ListEnumIncomeTaxRegimeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.IncomeTaxRegime[] | Prisma.ListEnumIncomeTaxRegimeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumIncomeTaxRegimeFilter<$PrismaModel> | $Enums.IncomeTaxRegime
+}
+
+export type NestedEnumTaxpayerTypeNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.TaxpayerType | Prisma.EnumTaxpayerTypeFieldRefInput<$PrismaModel> | null
+  in?: $Enums.TaxpayerType[] | Prisma.ListEnumTaxpayerTypeFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.TaxpayerType[] | Prisma.ListEnumTaxpayerTypeFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumTaxpayerTypeNullableWithAggregatesFilter<$PrismaModel> | $Enums.TaxpayerType | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumTaxpayerTypeNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumTaxpayerTypeNullableFilter<$PrismaModel>
+}
+
+export type NestedEnumIncomeTaxRegimeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.IncomeTaxRegime | Prisma.EnumIncomeTaxRegimeFieldRefInput<$PrismaModel>
+  in?: $Enums.IncomeTaxRegime[] | Prisma.ListEnumIncomeTaxRegimeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.IncomeTaxRegime[] | Prisma.ListEnumIncomeTaxRegimeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumIncomeTaxRegimeWithAggregatesFilter<$PrismaModel> | $Enums.IncomeTaxRegime
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumIncomeTaxRegimeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumIncomeTaxRegimeFilter<$PrismaModel>
 }
 
 export type NestedEnumServiceTariffCategoryFilter<$PrismaModel = never> = {

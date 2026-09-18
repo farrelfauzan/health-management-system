@@ -581,6 +581,15 @@ export type DispenseItemStockAllocation = Prisma.DispenseItemStockAllocationMode
  */
 export type ClinicProfile = Prisma.ClinicProfileModel
 /**
+ * Model TaxSettings
+ * Who the clinic is as a taxpayer (P27-T02, `docs/post-mvp/decisions.md`
+ * D-038). One row, kept a singleton by the same partial unique index as
+ * `laboratory_settings`; an absent row reads as the defaults below. The NPWP
+ * is not here: `ClinicProfile.taxId` owns it and this row's NITKU must start
+ * with it.
+ */
+export type TaxSettings = Prisma.TaxSettingsModel
+/**
  * Model ServiceTariff
  * Price-list row for services the clinic charges — consultation fees and
  * clinical actions (tindakan). Reference data like the terminology catalogs:

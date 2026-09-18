@@ -201,6 +201,46 @@ describe('ClinicProfileService', () => {
       );
     });
 
+    it('refuses a new NPWP that is not 16 digits (P27-T02)', async () => {
+      clinicProfileRepositoryMock.findProfile.mockResolvedValue(buildRecord({ taxId: null }));
+
+      const actual = service.updateProfile({ taxId: '01.234.567.8-901.000' }, actor);
+
+      await expect(actual).rejects.toMatchObject({
+        response: { code: 'CLINIC_NPWP_INVALID' },
+      });
+      expect(clinicProfileRepositoryMock.updateProfile).not.toHaveBeenCalled();
+    });
+
+    it('stores a new 16-digit NPWP as digits only', async () => {
+      clinicProfileRepositoryMock.findProfile.mockResolvedValue(buildRecord({ taxId: null }));
+      clinicProfileRepositoryMock.updateProfile.mockResolvedValue(buildRecord());
+
+      await service.updateProfile({ taxId: '0012.3456.7890.1000' }, actor);
+
+      expect(clinicProfileRepositoryMock.updateProfile).toHaveBeenCalledWith(
+        'f0e1d2c3-4b5a-4988-9776-655443322110',
+        { taxId: '0012345678901000' },
+      );
+    });
+
+    it('keeps a stored 15-digit NPWP when the form sends it back with another change', async () => {
+      // The form resends every field; the old identifier must not block the
+      // phone number being fixed (D-038 R8).
+      clinicProfileRepositoryMock.findProfile.mockResolvedValue(buildRecord());
+      clinicProfileRepositoryMock.updateProfile.mockResolvedValue(buildRecord());
+
+      await service.updateProfile(
+        { taxId: '01.234.567.8-901.000', phoneNumber: '(022) 7654321' },
+        actor,
+      );
+
+      expect(clinicProfileRepositoryMock.updateProfile).toHaveBeenCalledWith(
+        'f0e1d2c3-4b5a-4988-9776-655443322110',
+        { phoneNumber: '(022) 7654321' },
+      );
+    });
+
     it('audits which fields changed and never their values', async () => {
       clinicProfileRepositoryMock.findProfile.mockResolvedValue(buildRecord());
       clinicProfileRepositoryMock.updateProfile.mockResolvedValue(buildRecord());

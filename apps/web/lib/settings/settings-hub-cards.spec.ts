@@ -37,6 +37,14 @@ describe('resolveVisibleSettingsHubCards', () => {
     expect(resolveKeys([{ action: 'write', subject: 'LabTest' }])).toEqual(['laboratory']);
   });
 
+  it('opens the tax card on the tax-settings write key only', () => {
+    expect(resolveKeys([{ action: 'write', subject: 'TaxSettings' }])).toEqual(['taxes']);
+    expect(resolveKeys([{ action: 'read', subject: 'TaxSettings' }])).toEqual([]);
+    expect(
+      resolveKeys([{ action: 'write', subject: 'TaxSettings' }], ['/admin/settings/taxes']),
+    ).toEqual([]);
+  });
+
   it('opens the doctor credential catalog for whoever may edit a doctor', () => {
     expect(resolveKeys([{ action: 'update', subject: 'Doctor' }])).toEqual(['doctorCredentials']);
     expect(resolveKeys([{ action: 'read', subject: 'Doctor' }])).toEqual([]);

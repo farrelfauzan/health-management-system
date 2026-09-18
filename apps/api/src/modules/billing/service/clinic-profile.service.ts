@@ -4,12 +4,14 @@ import {
   CLINIC_LOGO_MAX_EDGE_PIXELS,
   CLINIC_LOGO_MAX_UPLOAD_SIZE_BYTES,
   CLINIC_LOGO_STORED_MIME_TYPE,
+  CLINIC_NPWP_INVALID_ERROR_CODE,
   ClinicLogoUploadUrlView,
   ClinicProfileRecord,
   ClinicProfileView,
   CreateClinicLogoUploadUrlInput,
   SaveClinicProfileData,
   UpdateClinicProfileInput,
+  resolveTaxIdChange,
 } from '@hms/shared-types';
 
 import { AuditService } from '../../../common/audit/audit.service';
@@ -81,6 +83,16 @@ export class ClinicProfileService {
     return name === '' ? DEFAULT_CLINIC_LABEL : name;
   }
 
+  /**
+   * The NPWP as stored, for the tax profile (P27-T02) — which shows it and
+   * checks the NITKU against it but does not own it. `null` before the profile
+   * exists. Cheap on purpose, like `getClinicName`: no signed logo URL.
+   */
+  async getTaxId(): Promise<string | null> {
+    const record = await this.clinicProfileRepository.findProfile();
+    return record?.taxId ?? null;
+  }
+
   async getProfile(): Promise<ClinicProfileView> {
     const record = await this.clinicProfileRepository.findProfile();
     if (record === null) {
@@ -126,8 +138,11 @@ export class ClinicProfileService {
     if (existing === null && input.name === undefined) {
       throw new BadRequestException('name is required when the clinic profile is first created');
     }
+    // Before the logo too: a refused NPWP must not leave a re-encoded logo
+    // behind that no row will ever point at.
+    const profileFields = this.toProfileFields(input, existing);
     const logoChange = await this.resolveLogoChange(input, actor);
-    const data: SaveClinicProfileData = { ...this.toProfileFields(input), ...logoChange };
+    const data: SaveClinicProfileData = { ...profileFields, ...logoChange };
     const saved = await this.saveProfile(existing, data);
     // After the write, not before: a logo deleted first and a write that then
     // failed would leave the profile pointing at bytes that no longer exist.
@@ -279,7 +294,10 @@ export class ClinicProfileService {
     }
   }
 
-  private toProfileFields(input: UpdateClinicProfileInput): SaveClinicProfileData {
+  private toProfileFields(
+    input: UpdateClinicProfileInput,
+    existing: ClinicProfileRecord | null,
+  ): SaveClinicProfileData {
     const fields: SaveClinicProfileData = {};
     if (input.name !== undefined) {
       fields.name = input.name;
@@ -299,9 +317,7 @@ export class ClinicProfileService {
     if (input.licenseNumber !== undefined) {
       fields.licenseNumber = input.licenseNumber;
     }
-    if (input.taxId !== undefined) {
-      fields.taxId = input.taxId;
-    }
+    Object.assign(fields, this.resolveTaxIdField(input.taxId, existing?.taxId ?? null));
     // The schema only lets the coordinates through as a pair (P24-T05).
     if (input.latitude !== undefined) {
       fields.latitude = input.latitude;
@@ -310,6 +326,30 @@ export class ClinicProfileService {
       fields.longitude = input.longitude;
     }
     return fields;
+  }
+
+  /**
+   * The NPWP rule of P27-T02 (D-038): a new value must be the 16 digits
+   * Coretax uses, while the value already stored — however punctuated, even
+   * 15 digits — passes untouched, because the form resends every field and an
+   * old identifier must never block an unrelated edit.
+   */
+  private resolveTaxIdField(
+    requested: string | null | undefined,
+    stored: string | null,
+  ): SaveClinicProfileData {
+    const change = resolveTaxIdChange({ requested, stored });
+    if (change.kind === 'invalid') {
+      throw new BadRequestException({
+        code: CLINIC_NPWP_INVALID_ERROR_CODE,
+        message: change.reason,
+        errors: { taxId: change.reason },
+      });
+    }
+    if (change.kind === 'cleared') {
+      return { taxId: null };
+    }
+    return change.kind === 'set' ? { taxId: change.value } : {};
   }
 
   private async toViewWithSignedLogo(record: ClinicProfileRecord): Promise<ClinicProfileView> {

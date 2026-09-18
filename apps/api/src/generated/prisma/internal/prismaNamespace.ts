@@ -431,6 +431,7 @@ export const ModelName = {
   MedicationStockReceipt: 'MedicationStockReceipt',
   DispenseItemStockAllocation: 'DispenseItemStockAllocation',
   ClinicProfile: 'ClinicProfile',
+  TaxSettings: 'TaxSettings',
   ServiceTariff: 'ServiceTariff',
   InvoiceCounter: 'InvoiceCounter',
   Invoice: 'Invoice',
@@ -514,7 +515,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientDeliveryConsent" | "documentDelivery" | "documentDeliveryLink" | "patientAllergy" | "doctorCredentialOption" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorLicenseExpiryNotice" | "doctorAuthority" | "doctorAuthorityExpiryNotice" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "midwifeFormularyItem" | "prescription" | "prescriptionMedication" | "prescriptionItemComponent" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "satusehatSubmissionResource" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "vaultDocumentExpiryNotice" | "vaultDocumentShare" | "userOffboardingNotice" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit" | "documentType" | "documentTypeApprover" | "managedDocument" | "documentApprovalRequest" | "documentApprovalApprover" | "documentApprovalDecision" | "labTest" | "labReferenceRange" | "labPanel" | "labPanelMember" | "labOrderCounter" | "labOrder" | "labOrderItem" | "labSpecimenCounter" | "labSpecimen" | "labResult" | "laboratorySettings" | "labReport" | "immunization" | "province" | "regency" | "district" | "village" | "bugReport" | "bugReportCounter"
+    modelProps: "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientDeliveryConsent" | "documentDelivery" | "documentDeliveryLink" | "patientAllergy" | "doctorCredentialOption" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorLicenseExpiryNotice" | "doctorAuthority" | "doctorAuthorityExpiryNotice" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "midwifeFormularyItem" | "prescription" | "prescriptionMedication" | "prescriptionItemComponent" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "taxSettings" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "satusehatSubmissionResource" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "vaultDocumentExpiryNotice" | "vaultDocumentShare" | "userOffboardingNotice" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit" | "documentType" | "documentTypeApprover" | "managedDocument" | "documentApprovalRequest" | "documentApprovalApprover" | "documentApprovalDecision" | "labTest" | "labReferenceRange" | "labPanel" | "labPanelMember" | "labOrderCounter" | "labOrder" | "labOrderItem" | "labSpecimenCounter" | "labSpecimen" | "labResult" | "laboratorySettings" | "labReport" | "immunization" | "province" | "regency" | "district" | "village" | "bugReport" | "bugReportCounter"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -3993,6 +3994,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.ClinicProfileCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.ClinicProfileCountAggregateOutputType> | number
+        }
+      }
+    }
+    TaxSettings: {
+      payload: Prisma.$TaxSettingsPayload<ExtArgs>
+      fields: Prisma.TaxSettingsFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.TaxSettingsFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaxSettingsPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.TaxSettingsFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaxSettingsPayload>
+        }
+        findFirst: {
+          args: Prisma.TaxSettingsFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaxSettingsPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.TaxSettingsFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaxSettingsPayload>
+        }
+        findMany: {
+          args: Prisma.TaxSettingsFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaxSettingsPayload>[]
+        }
+        create: {
+          args: Prisma.TaxSettingsCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaxSettingsPayload>
+        }
+        createMany: {
+          args: Prisma.TaxSettingsCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.TaxSettingsCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaxSettingsPayload>[]
+        }
+        delete: {
+          args: Prisma.TaxSettingsDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaxSettingsPayload>
+        }
+        update: {
+          args: Prisma.TaxSettingsUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaxSettingsPayload>
+        }
+        deleteMany: {
+          args: Prisma.TaxSettingsDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.TaxSettingsUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TaxSettingsUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaxSettingsPayload>[]
+        }
+        upsert: {
+          args: Prisma.TaxSettingsUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaxSettingsPayload>
+        }
+        aggregate: {
+          args: Prisma.TaxSettingsAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTaxSettings>
+        }
+        groupBy: {
+          args: Prisma.TaxSettingsGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TaxSettingsGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.TaxSettingsCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TaxSettingsCountAggregateOutputType> | number
         }
       }
     }
@@ -9866,6 +9941,24 @@ export const ClinicProfileScalarFieldEnum = {
 export type ClinicProfileScalarFieldEnum = (typeof ClinicProfileScalarFieldEnum)[keyof typeof ClinicProfileScalarFieldEnum]
 
 
+export const TaxSettingsScalarFieldEnum = {
+  id: 'id',
+  facilityId: 'facilityId',
+  taxpayerType: 'taxpayerType',
+  incomeTaxRegime: 'incomeTaxRegime',
+  pp55StartYear: 'pp55StartYear',
+  isPkp: 'isPkp',
+  pkpSince: 'pkpSince',
+  nitku: 'nitku',
+  pricesIncludeTax: 'pricesIncludeTax',
+  updatedById: 'updatedById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TaxSettingsScalarFieldEnum = (typeof TaxSettingsScalarFieldEnum)[keyof typeof TaxSettingsScalarFieldEnum]
+
+
 export const ServiceTariffScalarFieldEnum = {
   id: 'id',
   code: 'code',
@@ -11728,6 +11821,34 @@ export type ListEnumDispenseStatusFieldRefInput<$PrismaModel> = FieldRefInputTyp
 
 
 /**
+ * Reference to a field of type 'TaxpayerType'
+ */
+export type EnumTaxpayerTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TaxpayerType'>
+    
+
+
+/**
+ * Reference to a field of type 'TaxpayerType[]'
+ */
+export type ListEnumTaxpayerTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TaxpayerType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'IncomeTaxRegime'
+ */
+export type EnumIncomeTaxRegimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'IncomeTaxRegime'>
+    
+
+
+/**
+ * Reference to a field of type 'IncomeTaxRegime[]'
+ */
+export type ListEnumIncomeTaxRegimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'IncomeTaxRegime[]'>
+    
+
+
+/**
  * Reference to a field of type 'ServiceTariffCategory'
  */
 export type EnumServiceTariffCategoryFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ServiceTariffCategory'>
@@ -12737,6 +12858,7 @@ export type GlobalOmitConfig = {
   medicationStockReceipt?: Prisma.MedicationStockReceiptOmit
   dispenseItemStockAllocation?: Prisma.DispenseItemStockAllocationOmit
   clinicProfile?: Prisma.ClinicProfileOmit
+  taxSettings?: Prisma.TaxSettingsOmit
   serviceTariff?: Prisma.ServiceTariffOmit
   invoiceCounter?: Prisma.InvoiceCounterOmit
   invoice?: Prisma.InvoiceOmit

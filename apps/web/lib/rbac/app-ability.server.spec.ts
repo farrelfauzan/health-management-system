@@ -43,6 +43,17 @@ describe('resolveAppAbilityRules integration permissions', () => {
     expect(ability.can('read', 'DoctorLicenseExpiry')).toBe(false);
   });
 
+  it('maps the tax-settings keys to the TaxSettings subject', () => {
+    // P27-T02. Without the resource row the Pajak card and page never render.
+    const ability = buildAppAbility(
+      resolveAppAbilityRules({ permissions: ['tax-settings.read:any', 'tax-settings.write:any'] }),
+    );
+
+    expect(ability.can('read', 'TaxSettings')).toBe(true);
+    expect(ability.can('write', 'TaxSettings')).toBe(true);
+    expect(ability.can('write', 'ClinicProfile')).toBe(false);
+  });
+
   it('maps pharmacy inventory permissions independently from medication catalog permissions', () => {
     const ability = buildAppAbility(
       resolveAppAbilityRules({

@@ -40,6 +40,7 @@ import { ManagedDocumentModule } from './modules/managed-document/managed-docume
 import { FeatureEntitlementModule } from './modules/feature-entitlement/feature-entitlement.module';
 import { BillingModule } from './modules/billing/billing.module';
 import { LaboratoryModule } from './modules/laboratory/laboratory.module';
+import { TaxesModule } from './modules/taxes/taxes.module';
 import { EmrModule } from './modules/emr/emr.module';
 import { HealthModule } from './modules/health/health.module';
 import { OrganizationStructureModule } from './modules/organization-structure/organization-structure.module';
@@ -100,6 +101,7 @@ import { UserInvitationModule } from './modules/user-invitation/user-invitation.
     PharmacyFlowModule,
     BillingModule,
     LaboratoryModule,
+    TaxesModule,
     SatusehatIntegrationModule,
     BpjsPcareIntegrationModule,
     BpjsAntreanIntegrationModule,

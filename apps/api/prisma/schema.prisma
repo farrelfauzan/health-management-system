@@ -337,6 +337,11 @@ enum AuditAction {
   /// active delegated authority of the kind it needs (P25-T03). Written
   /// explicitly before the 422, because the interceptor never logs a 4xx.
   MIDWIFE_AUTHORITY_REFUSED
+  /// The clinic's tax profile changed (P27-T02): taxpayer type, PP 55 regime,
+  /// PKP status, NITKU or pricing mode. Carries each changed field's old and
+  /// new value — every later tax computation reads this row, and a report is
+  /// only explainable against the profile that was in force.
+  TAX_SETTINGS_UPDATED
 }
 
 enum BpjsSubmissionType {
@@ -1041,6 +1046,7 @@ model User {
   verifiedLabResults        LabResult[]                @relation("LabResultVerifiedBy")
   requestedLabReports       LabReport[]                @relation("LabReportRequestedBy")
   updatedLaboratorySettings LaboratorySettings[]       @relation("LaboratorySettingsUpdatedBy")
+  updatedTaxSettings        TaxSettings[]              @relation("TaxSettingsUpdatedBy")
   grantedDoctorAuthorities  DoctorAuthority[]          @relation("DoctorAuthorityCreatedBy")
   revokedDoctorAuthorities  DoctorAuthority[]          @relation("DoctorAuthorityRevokedBy")
 
@@ -2817,8 +2823,9 @@ model ClinicProfile {
   /// Izin operasional klinik — the operating licence a receipt is expected to
   /// carry in Indonesia.
   licenseNumber  String?  @map("license_number")
-  /// NPWP. Stored as written; HMS neither validates nor formats it, because a
-  /// receipt reproduces what the clinic was issued.
+  /// NPWP. A new or changed value must be the 16 digits Coretax uses and is
+  /// stored as digits only (P27-T02, D-038). A 15-digit value written before
+  /// that rule is kept and flagged, never rejected on an unrelated save.
   taxId          String?  @map("tax_id")
   /// Server-minted object key for the re-encoded logo, or null. The bytes
   /// behind it are always this service's own re-encode, never what the
@@ -2840,6 +2847,58 @@ model ClinicProfile {
   updatedAt      DateTime @updatedAt @map("updated_at")
 
   @@map("clinic_profiles")
+}
+
+/// The clinic's legal form as a taxpayer (P27-T02). It decides which
+/// income-tax regime PP 55/2022, as amended by PP 20/2026, allows.
+enum TaxpayerType {
+  INDIVIDUAL
+  PT_PERORANGAN
+  PT
+  CV
+  KOPERASI
+  YAYASAN
+
+  @@map("taxpayer_type")
+}
+
+/// `PP55_FINAL` is the 0.5% final tax on gross turnover; `GENERAL` is the
+/// ordinary Pasal 17 / 31E regime.
+enum IncomeTaxRegime {
+  PP55_FINAL
+  GENERAL
+
+  @@map("income_tax_regime")
+}
+
+/// Who the clinic is as a taxpayer (P27-T02, `docs/post-mvp/decisions.md`
+/// D-038). One row, kept a singleton by the same partial unique index as
+/// `laboratory_settings`; an absent row reads as the defaults below. The NPWP
+/// is not here: `ClinicProfile.taxId` owns it and this row's NITKU must start
+/// with it.
+model TaxSettings {
+  id               String           @id @default(uuid()) @db.Uuid
+  facilityId       String?          @unique @map("facility_id") @db.Uuid
+  /// Null until an administrator says; nothing guesses a legal form.
+  taxpayerType     TaxpayerType?    @map("taxpayer_type")
+  incomeTaxRegime  IncomeTaxRegime  @default(GENERAL) @map("income_tax_regime")
+  /// The first tax year on the 0.5% rate. A badan's time limit counts from it;
+  /// always null under the general regime.
+  pp55StartYear    Int?             @map("pp55_start_year")
+  /// Pengusaha Kena Pajak. Off: the clinic never charges PPN (D-038).
+  isPkp            Boolean          @default(false) @map("is_pkp")
+  pkpSince         DateTime?        @map("pkp_since") @db.Date
+  /// 22 digits: the NPWP plus a six-digit place-of-business suffix.
+  nitku            String?          @db.VarChar(22)
+  /// Patient prices include PPN (the default) or have it added on top.
+  pricesIncludeTax Boolean          @default(true) @map("prices_include_tax")
+  updatedById      String?          @map("updated_by_id") @db.Uuid
+  createdAt        DateTime         @default(now()) @map("created_at")
+  updatedAt        DateTime         @updatedAt @map("updated_at")
+
+  updatedBy User? @relation("TaxSettingsUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
+
+  @@map("tax_settings")
 }
 
 /// Price-list row for services the clinic charges — consultation fees and
