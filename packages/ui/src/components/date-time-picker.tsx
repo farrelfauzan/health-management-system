@@ -27,6 +27,8 @@ type DateTimePickerProps = {
   id?: string;
   disabled?: boolean;
   minValue?: string;
+  /** Latest selectable day, `yyyy-MM-dd`, passed through to the date half. */
+  maxValue?: string;
   defaultTime?: string;
   className?: string;
   labels?: DateTimePickerLabels;
@@ -62,6 +64,7 @@ export function DateTimePicker({
   id,
   disabled = false,
   minValue,
+  maxValue,
   defaultTime = '00:00',
   className,
   labels = DEFAULT_DATE_TIME_PICKER_LABELS,
@@ -84,7 +87,17 @@ export function DateTimePicker({
     }
   }
   return (
-    <div className={cn('flex gap-2', className)}>
+    // Side by side needs about 20rem. Below that — a form column on a phone, or
+    // half a two-column dialog — the two sit on their own rows instead of
+    // squeezing the date until it reads "16 Sep 20". The breakpoint follows
+    // this component's own width, because the viewport says nothing about how
+    // much room the field was given.
+    <div
+      className={cn(
+        '@container/date-time flex flex-col gap-2 @xs/date-time:flex-row @xs/date-time:items-start',
+        className,
+      )}
+    >
       <DatePicker
         id={id}
         value={date}
@@ -92,9 +105,10 @@ export function DateTimePicker({
         placeholder={labels.datePlaceholder}
         disabled={disabled}
         minValue={minValue}
+        maxValue={maxValue}
         aria-invalid={ariaInvalid}
         aria-describedby={ariaDescribedBy}
-        className="min-w-0 flex-1"
+        className="w-full min-w-0 @xs/date-time:flex-1"
       />
       <TimePicker
         value={shownTime}
@@ -104,7 +118,7 @@ export function DateTimePicker({
         disabled={disabled}
         aria-invalid={ariaInvalid}
         aria-describedby={ariaDescribedBy}
-        className="w-32 shrink-0"
+        className="w-full @xs/date-time:w-32 @xs/date-time:shrink-0"
       />
     </div>
   );

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import type { DoctorAuthority, DoctorAuthorityDownloadView } from '@hms/shared-types';
-import { Button, Icon, TableCell, TableRow } from '@hms/ui';
+import { Button, Icon } from '@hms/ui';
 import { useFormatter, useTranslations } from 'next-intl';
 
 import { DoctorAuthorityStatusBadge } from '#components/client/doctors/doctor-authority-status-badge';
@@ -17,6 +17,11 @@ type DoctorAuthorityRowProps = {
   onRevoke: (authority: DoctorAuthority) => void;
 };
 
+/**
+ * One authority inside `DoctorAuthoritiesCard`. Stacks details over actions in
+ * a narrow card and puts the actions on the right once the `authorities`
+ * container is at least `md` wide.
+ */
 export function DoctorAuthorityRow({
   authority,
   canWrite,
@@ -49,12 +54,15 @@ export function DoctorAuthorityRow({
   }
 
   return (
-    <TableRow data-testid={`doctor-authority-${authority.kind}`}>
-      <TableCell className="align-top whitespace-normal">
+    <li
+      className="flex flex-col gap-2 rounded-lg border border-slate-200 px-3 py-2 @md/authorities:flex-row @md/authorities:items-start @md/authorities:justify-between @md/authorities:gap-3"
+      data-testid={`doctor-authority-${authority.kind}`}
+    >
+      <div className="min-w-0 space-y-0.5">
         <p className="text-sm font-medium text-slate-900">
           {t(`doctors.authorities.kind.${authority.kind}`)}
         </p>
-        <p className="text-xs text-slate-600">
+        <p className="text-xs break-words text-slate-600">
           {t(`doctors.authorities.grantKind.${authority.grantKind}`)} ·{' '}
           <span className="font-mono">{authority.grantReference}</span>
         </p>
@@ -65,45 +73,42 @@ export function DoctorAuthorityRow({
           })}
         </p>
         {isRevoked && authority.revokedAt ? (
-          <p className="text-xs text-slate-500">
+          <p className="text-xs break-words text-slate-500">
             {t('doctors.authorities.revokedOn', {
               date: format.dateTime(new Date(authority.revokedAt), { dateStyle: 'medium' }),
               reason: authority.revokeReason ?? '—',
             })}
           </p>
         ) : null}
-      </TableCell>
-      <TableCell className="align-top">
-        <div className="flex flex-col items-end gap-1.5">
-          <DoctorAuthorityStatusBadge status={authority.status} />
-          {authority.hasGrantDocument ? (
-            <Button
-              type="button"
-              size="sm"
-              variant="ghost"
-              disabled={isDownloading}
-              onClick={() => void handleDownload()}
-            >
-              <Icon name="download" size={16} />
-              {t('doctors.authorities.downloadGrantDocument')}
+      </div>
+      <div className="flex flex-wrap items-center gap-1.5 @md/authorities:shrink-0 @md/authorities:flex-col @md/authorities:items-end">
+        <DoctorAuthorityStatusBadge status={authority.status} />
+        {authority.hasGrantDocument ? (
+          <Button
+            type="button"
+            size="sm"
+            variant="ghost"
+            className="-ml-2 @md/authorities:ml-0"
+            disabled={isDownloading}
+            onClick={() => void handleDownload()}
+          >
+            <Icon name="download" size={16} />
+            {t('doctors.authorities.downloadGrantDocument')}
+          </Button>
+        ) : (
+          <span className="text-xs text-slate-400">{t('doctors.authorities.noGrantDocument')}</span>
+        )}
+        {canWrite && !isRevoked ? (
+          <div className="flex gap-1">
+            <Button type="button" size="sm" variant="outline" onClick={() => onEdit(authority)}>
+              {t('doctors.authorities.edit')}
             </Button>
-          ) : (
-            <span className="text-xs text-slate-400">
-              {t('doctors.authorities.noGrantDocument')}
-            </span>
-          )}
-          {canWrite && !isRevoked ? (
-            <div className="flex gap-1">
-              <Button type="button" size="sm" variant="outline" onClick={() => onEdit(authority)}>
-                {t('doctors.authorities.edit')}
-              </Button>
-              <Button type="button" size="sm" variant="outline" onClick={() => onRevoke(authority)}>
-                {t('doctors.authorities.revoke')}
-              </Button>
-            </div>
-          ) : null}
-        </div>
-      </TableCell>
-    </TableRow>
+            <Button type="button" size="sm" variant="outline" onClick={() => onRevoke(authority)}>
+              {t('doctors.authorities.revoke')}
+            </Button>
+          </div>
+        ) : null}
+      </div>
+    </li>
   );
 }
