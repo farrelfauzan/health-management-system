@@ -11,6 +11,8 @@ type DoctorEducationsFieldProps = {
   onAdd: () => void;
   onChange: (key: string, changes: Partial<EducationRow>) => void;
   onRemove: (key: string) => void;
+  /** Passed to each row's catalog hint; see `CredentialCatalogHint`. */
+  isSelfService?: boolean;
 };
 
 export function DoctorEducationsField({
@@ -18,6 +20,7 @@ export function DoctorEducationsField({
   onAdd,
   onChange,
   onRemove,
+  isSelfService = false,
 }: DoctorEducationsFieldProps) {
   const t = useTranslations('clinical');
   return (
@@ -40,6 +43,7 @@ export function DoctorEducationsField({
               index={index}
               onChange={onChange}
               onRemove={onRemove}
+              isSelfService={isSelfService}
             />
           ))}
         </div>

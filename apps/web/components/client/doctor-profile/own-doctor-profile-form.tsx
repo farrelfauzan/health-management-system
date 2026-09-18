@@ -199,7 +199,7 @@ export function OwnDoctorProfileForm({ doctor }: OwnDoctorProfileFormProps) {
                     legacyValue={legacyTitle}
                     onChange={(code) => field.handleChange(code)}
                   />
-                  <CredentialCatalogHint legacyValue={legacyTitle} />
+                  <CredentialCatalogHint legacyValue={legacyTitle} isSelfService />
                 </div>
               )}
             </form.Field>
@@ -214,7 +214,7 @@ export function OwnDoctorProfileForm({ doctor }: OwnDoctorProfileFormProps) {
                     values={field.state.value}
                     onChange={(codes) => field.handleChange(codes)}
                   />
-                  <CredentialCatalogHint legacyValue={legacyDegrees || undefined} />
+                  <CredentialCatalogHint legacyValue={legacyDegrees || undefined} isSelfService />
                 </div>
               )}
             </form.Field>
@@ -226,6 +226,7 @@ export function OwnDoctorProfileForm({ doctor }: OwnDoctorProfileFormProps) {
               onAdd={addEducationRow}
               onChange={updateEducationRow}
               onRemove={(key) => setEducationRows((rows) => rows.filter((row) => row.key !== key))}
+              isSelfService
             />
           </div>
 

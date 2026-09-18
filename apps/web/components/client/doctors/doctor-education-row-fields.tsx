@@ -13,6 +13,7 @@ type DoctorEducationRowFieldsProps = {
   index: number;
   onChange: (key: string, changes: Partial<EducationRow>) => void;
   onRemove: (key: string) => void;
+  isSelfService?: boolean;
 };
 
 export function DoctorEducationRowFields({
@@ -20,6 +21,7 @@ export function DoctorEducationRowFields({
   index,
   onChange,
   onRemove,
+  isSelfService = false,
 }: DoctorEducationRowFieldsProps) {
   const t = useTranslations('clinical');
   return (
@@ -82,7 +84,10 @@ export function DoctorEducationRowFields({
             value={row.fieldOfStudy}
             onChange={(code) => onChange(row.key, { fieldOfStudy: code })}
           />
-          <CredentialCatalogHint legacyValue={row.legacyFieldOfStudy || undefined} />
+          <CredentialCatalogHint
+            legacyValue={row.legacyFieldOfStudy || undefined}
+            isSelfService={isSelfService}
+          />
         </div>
         <div className="space-y-1.5">
           <FormLabel

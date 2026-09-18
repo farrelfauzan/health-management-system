@@ -656,7 +656,8 @@
         "noField": "Tanpa bidang studi",
         "legacyValue": "Tersimpan: {value}",
         "legacyNotice": "Tersimpan sebagai teks bebas: {value}. Pilih penggantinya dari daftar.",
-        "manageLink": "Pilihan belum ada? Tambahkan di Pengaturan."
+        "manageLink": "Pilihan belum ada? Tambahkan di Pengaturan.",
+        "askAdministrator": "Pilihan belum ada? Minta administrator menambahkannya."
       },
       "scheduleFields": {
         "day": "Hari untuk entri {index}",
@@ -1146,6 +1147,7 @@
         "vaccine": "Vaksin",
         "vaccinePlaceholder": "Pilih vaksin",
         "noVaccines": "Belum ada item katalog yang ditandai sebagai vaksin. Tandai dulu di katalog obat.",
+        "noVaccinesAskAdministrator": "Belum ada item katalog yang ditandai sebagai vaksin. Minta administrator atau apoteker menandainya di katalog obat.",
         "lotNumber": "Nomor batch",
         "expirationDate": "Kedaluwarsa",
         "doseNumber": "Dosis ke-",

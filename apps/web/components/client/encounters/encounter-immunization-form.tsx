@@ -17,6 +17,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  useAbility,
 } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
@@ -55,6 +56,7 @@ export function EncounterImmunizationForm({ encounterId }: EncounterImmunization
   const [site, setSite] = useState<string>(UNSPECIFIED_IMMUNIZATION_OPTION);
   const [actionError, setActionError] = useState<string | null>(null);
   const vaccineQuery = useVaccineCatalog();
+  const canFlagVaccines = useAbility().can('update', 'Medication');
   const addMutation = useMutation({
     mutationFn: (payload: AddImmunizationInput) =>
       encounterClinicalDataControllerAddImmunizationV1(encounterId, payload),
@@ -116,8 +118,13 @@ export function EncounterImmunizationForm({ encounterId }: EncounterImmunization
       </Select>
       {!vaccineQuery.isPending && vaccineQuery.vaccines.length === 0 ? (
         // Not an error: a clinic that has not flagged any catalog row as a
-        // vaccine simply cannot record one yet, and the fix is in the catalog.
-        <p className="text-xs text-slate-500">{t('encounters.immunization.noVaccines')}</p>
+        // vaccine simply cannot record one yet, and the fix is in the catalog —
+        // which the doctors and midwives filling this form can only read.
+        <p className="text-xs text-slate-500">
+          {canFlagVaccines
+            ? t('encounters.immunization.noVaccines')
+            : t('encounters.immunization.noVaccinesAskAdministrator')}
+        </p>
       ) : null}
       <Select value={reason} onValueChange={setReason}>
         <SelectTrigger aria-label={t('encounters.immunization.reason')}>
