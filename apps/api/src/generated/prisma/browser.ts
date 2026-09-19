@@ -589,6 +589,14 @@ export type TaxCodeRate = Prisma.TaxCodeRateModel
  */
 export type TaxCategoryDefault = Prisma.TaxCategoryDefaultModel
 /**
+ * Model TaxReportDraft
+ * A month's tax figures, prepared for the clinic to pay and file in Coretax
+ * itself (P27-T05, D-038: the product drafts, never files). A DRAFT is
+ * recomputed at will; a FINALIZED row is a frozen snapshot and is never
+ * rewritten — later changes to the books are shown beside it, not merged in.
+ */
+export type TaxReportDraft = Prisma.TaxReportDraftModel
+/**
  * Model ServiceTariff
  * Price-list row for services the clinic charges — consultation fees and
  * clinical actions (tindakan). Reference data like the terminology catalogs:

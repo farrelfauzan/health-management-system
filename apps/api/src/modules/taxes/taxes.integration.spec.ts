@@ -13,6 +13,7 @@ import { FeatureAvailabilityCacheService } from '../feature-entitlement/service/
 import { TaxAssignmentRepository } from '../tax-core/repository/tax-assignment.repository';
 import { TaxCodeRepository } from '../tax-core/repository/tax-code.repository';
 import { TaxSettingsRepository } from '../tax-core/repository/tax-settings.repository';
+import { TaxReportRepository } from './repository/tax-report.repository';
 
 const TAX_SETTINGS_PATH = '/api/v1/v1/tax/settings';
 const TAX_CODES_PATH = '/api/v1/v1/tax/codes';
@@ -60,6 +61,17 @@ describe('Tax settings integration', () => {
     findExistingTargetIds: jest.fn(),
     assignTaxCode: jest.fn(),
   };
+  const taxReportRepositoryMock = {
+    findPaymentsPaidBetween: jest.fn(),
+    sumPaymentsPaidBetween: jest.fn(),
+    findIssuedInvoiceLinesBetween: jest.fn(),
+    listReportsForYear: jest.fn(),
+    findReportById: jest.fn(),
+    findReportByPeriodAndKind: jest.fn(),
+    createReport: jest.fn(),
+    updateReportComputation: jest.fn(),
+    finalizeReport: jest.fn(),
+  };
   const featureAvailabilityCacheMock = {
     isEnabled: jest.fn<Promise<boolean>, [string]>(async () => true),
   };
@@ -90,6 +102,8 @@ describe('Tax settings integration', () => {
       .useValue(authRepositoryMock)
       .overrideProvider(TaxSettingsRepository)
       .useValue(taxSettingsRepositoryMock)
+      .overrideProvider(TaxReportRepository)
+      .useValue(taxReportRepositoryMock)
       .overrideProvider(TaxCodeRepository)
       .useValue(taxCodeRepositoryMock)
       .overrideProvider(TaxAssignmentRepository)
@@ -401,6 +415,116 @@ describe('Tax settings integration', () => {
 
       const response = await request(app.getHttpServer())
         .get(TAX_CODES_PATH)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.status).toBe(403);
+    });
+  });
+
+  describe('monthly tax report drafts (P27-T05)', () => {
+    const REPORTS_PATH = '/api/v1/v1/tax/reports';
+    const REPORT_PERMISSIONS = [
+      { action: 'read', resource: 'TaxReport', scope: 'ANY' as const },
+      { action: 'write', resource: 'TaxReport', scope: 'ANY' as const },
+    ];
+    const pp55Settings = {
+      taxpayerType: 'INDIVIDUAL',
+      incomeTaxRegime: 'PP55_FINAL',
+      pp55StartYear: 2025,
+      isPkp: false,
+      pkpSince: null,
+      nitku: null,
+      updatedById: null,
+      updatedAt: null,
+    };
+
+    beforeEach(() => {
+      taxSettingsRepositoryMock.findTaxSettings.mockResolvedValue(pp55Settings);
+      taxReportRepositoryMock.findPaymentsPaidBetween.mockResolvedValue([
+        {
+          paymentId: 'pay-1',
+          invoiceNumber: 'INV/20260210/0001',
+          paidAt: new Date('2026-02-10T03:00:00.000Z'),
+          method: 'CASH',
+          amount: 400000000,
+        },
+      ]);
+      taxReportRepositoryMock.sumPaymentsPaidBetween.mockResolvedValue(300000000);
+      taxReportRepositoryMock.findReportByPeriodAndKind.mockResolvedValue(null);
+      taxReportRepositoryMock.createReport.mockImplementation(async (payload) => ({
+        id: '9e8d7c6b-5a4f-4e3d-8c2b-1a0f9e8d7c6b',
+        period: payload.period,
+        kind: payload.kind,
+        status: 'DRAFT',
+        summary: payload.summary,
+        lines: payload.lines,
+        generatedAt: new Date('2026-03-02T00:00:00.000Z'),
+        generatedById: 'actor-user',
+        finalizedAt: null,
+        finalizedById: null,
+      }));
+    });
+
+    it('drafts a PP 55 month and exports it as CSV whose totals match', async () => {
+      const token = await buildToken('admin-user', 'admin@hms.local');
+      mockActorWithPermissions('ADMIN', REPORT_PERMISSIONS);
+
+      const created = await request(app.getHttpServer())
+        .post(REPORTS_PATH)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ period: '2026-02', kind: 'PP55_OMZET' });
+      taxReportRepositoryMock.findReportById.mockResolvedValue(
+        await taxReportRepositoryMock.createReport.mock.results[0]?.value,
+      );
+      const exported = await request(app.getHttpServer())
+        .get(`${REPORTS_PATH}/${created.body.data.id}/export`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(created.status).toBe(201);
+      expect(created.body.data.summary.totals).toEqual({
+        grossOmzet: 400000000,
+        taxableOmzet: 200000000,
+        taxDue: 1000000,
+      });
+      expect(exported.status).toBe(200);
+      expect(exported.headers['content-type']).toContain('text/csv');
+      expect(exported.text).toContain('PPh final terutang,1000000');
+    });
+
+    it('refuses a PPN draft for a clinic that is not PKP', async () => {
+      const token = await buildToken('admin-user', 'admin@hms.local');
+      mockActorWithPermissions('ADMIN', REPORT_PERMISSIONS);
+
+      const response = await request(app.getHttpServer())
+        .post(REPORTS_PATH)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ period: '2026-02', kind: 'PPN_OUTPUT' });
+
+      expect(response.status).toBe(409);
+      expect(response.body.error.code).toBe('TAX_REPORT_NOT_APPLICABLE');
+    });
+
+    it('lists the year with the kinds the tax profile calls for', async () => {
+      const token = await buildToken('admin-user', 'admin@hms.local');
+      mockActorWithPermissions('ADMIN', REPORT_PERMISSIONS);
+      taxReportRepositoryMock.listReportsForYear.mockResolvedValue([]);
+
+      const response = await request(app.getHttpServer())
+        .get(REPORTS_PATH)
+        .query({ year: 2026 })
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.meta).toEqual({ year: 2026, applicableKinds: ['PP55_OMZET'] });
+    });
+
+    it('refuses the report routes without the tax-report permission', async () => {
+      const token = await buildToken('admin-user', 'admin@hms.local');
+      mockActorWithPermissions('ADMIN', TAX_CODE_PERMISSIONS);
+
+      const response = await request(app.getHttpServer())
+        .get(REPORTS_PATH)
+        .query({ year: 2026 })
         .set('Authorization', `Bearer ${token}`);
 
       expect(response.status).toBe(403);

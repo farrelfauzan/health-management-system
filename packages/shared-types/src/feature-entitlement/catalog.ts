@@ -151,7 +151,7 @@ export const FEATURE_CATALOG: readonly FeatureCatalogEntry[] = [
     key: 'taxes',
     name: 'Taxes',
     description: 'Tax profile, tax codes on tariffs, tax on invoices and monthly tax report drafts.',
-    navHrefs: ['/admin/settings/taxes'],
+    navHrefs: ['/admin/settings/taxes', '/admin/taxes'],
   },
 ];
 

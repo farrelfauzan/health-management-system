@@ -157,7 +157,11 @@
     "#taxes/resolve-tax-rate": "./src/taxes/resolve-tax-rate.ts",
     "#taxes/to-tax-default-target": "./src/taxes/to-tax-default-target.ts",
     "#taxes/is-faktur-code-allowed": "./src/taxes/is-faktur-code-allowed.ts",
-    "#taxes/compute-line-tax": "./src/taxes/compute-line-tax.ts"
+    "#taxes/compute-line-tax": "./src/taxes/compute-line-tax.ts",
+    "#taxes/compute-pp55-monthly-tax": "./src/taxes/compute-pp55-monthly-tax.ts",
+    "#taxes/resolve-tax-report-due-dates": "./src/taxes/resolve-tax-report-due-dates.ts",
+    "#taxes/summarize-ppn-output": "./src/taxes/summarize-ppn-output.ts",
+    "#taxes/diff-tax-report-totals": "./src/taxes/diff-tax-report-totals.ts"
   },
   "main": "./dist/index.cjs",
   "types": "./src/index.ts",

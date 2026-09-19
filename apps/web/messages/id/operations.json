@@ -2211,6 +2211,90 @@
           "taxCode": "Kode pajak",
           "source": "Sumber"
         }
+      },
+      "reports": {
+        "title": "Laporan pajak bulanan",
+        "description": "Draft pajak yang disetor dan dilaporkan klinik setiap bulan, dihitung dari pembayaran dan invoice yang terbit. Buat draft per bulan, hitung ulang selama bulan berjalan, lalu finalkan setelah bulan berakhir.",
+        "draftBanner": "Draft — bukan pelaporan resmi. Setor dan laporkan melalui Coretax DJP.",
+        "loadError": "Laporan pajak tidak dapat dimuat.",
+        "saveError": "Laporan tidak dapat disimpan.",
+        "exportError": "Laporan tidak dapat diekspor.",
+        "notApplicable": "Profil pajak belum memerlukan laporan bulanan: atur skema PP 55 atau status PKP di Pengaturan › Pajak.",
+        "previousYear": "Tahun sebelumnya",
+        "nextYear": "Tahun berikutnya",
+        "create": "Buat draft",
+        "back": "Semua laporan pajak",
+        "recompute": "Hitung ulang",
+        "finalize": "Finalkan",
+        "exportCsv": "Ekspor CSV",
+        "recomputed": "Laporan dihitung ulang",
+        "finalized": "Laporan difinalkan",
+        "kind": {
+          "PP55_OMZET": "PPh final PP 55 (0,5% omzet)",
+          "PPN_OUTPUT": "PPN keluaran"
+        },
+        "status": {
+          "NONE": "Belum dibuat",
+          "DRAFT": "Draft",
+          "FINALIZED": "Final",
+          "OUT_OF_DATE": "Tidak sesuai"
+        },
+        "outOfDateFinalized": "Pembukuan berubah setelah laporan ini difinalkan. Angka di bawah adalah angka saat difinalkan; lakukan pembetulan bila perlu.",
+        "outOfDateDraft": "Pembukuan berubah sejak draft ini dihitung. Hitung ulang sebelum menyetor.",
+        "difference": "{field}: {stored} di laporan, {live} di pembukuan sekarang",
+        "totals": {
+          "grossOmzet": "Omzet bruto",
+          "taxableOmzet": "Omzet kena pajak",
+          "taxDue": "PPh final terutang",
+          "taxableAmount": "Harga jual",
+          "taxBase": "DPP",
+          "taxAmount": "PPN"
+        },
+        "pp55": {
+          "grossOmzet": "Omzet bruto (pembayaran diterima)",
+          "yearToDateOmzetBefore": "Omzet sebelumnya tahun ini",
+          "nonTaxableAllowanceUsed": "Omzet tidak kena pajak terpakai (orang pribadi, Rp500 juta setahun)",
+          "taxableOmzet": "Omzet kena pajak",
+          "rate": "Tarif",
+          "billingCode": "Kode billing (KAP-KJS)",
+          "paymentDueDate": "Batas setor",
+          "taxDue": "PPh final terutang",
+          "paymentCount": "{count} pembayaran"
+        },
+        "ppn": {
+          "fakturCode": "Kode faktur",
+          "invoiceCount": "Invoice",
+          "taxableAmount": "Harga jual",
+          "taxBase": "DPP",
+          "taxAmount": "PPN",
+          "total": "Total",
+          "dueDate": "Setor dan lapor paling lambat {date}",
+          "digunggung": "Pasien eceran: faktur digunggung",
+          "legacy": "{count} baris ({amount}) ditagih sebelum modul pajak aktif dan tidak punya kode pajak; tidak masuk total."
+        },
+        "lines": {
+          "empty": "Tidak ada data di bulan ini.",
+          "invoiceNumber": "Invoice",
+          "paidAt": "Dibayar",
+          "method": "Metode",
+          "amount": "Jumlah",
+          "issuedAt": "Terbit",
+          "fakturCode": "Kode faktur",
+          "taxableAmount": "Harga jual",
+          "taxBase": "DPP",
+          "taxAmount": "PPN",
+          "code": {
+            "LEGACY": "Tanpa kode",
+            "NOT_OBJECT": "Bukan objek"
+          }
+        },
+        "errors": {
+          "TAX_REPORT_NOT_APPLICABLE": "Profil pajak tidak memerlukan laporan ini. Periksa Pengaturan › Pajak.",
+          "TAX_REPORT_EXISTS": "Bulan ini sudah punya laporan.",
+          "TAX_REPORT_FINALIZED": "Laporan ini sudah final dan disimpan sesuai yang dilaporkan.",
+          "TAX_REPORT_PERIOD_OPEN": "Bulan ini belum berakhir; finalkan setelah bulan selesai.",
+          "TAX_REPORT_PERIOD_IN_FUTURE": "Bulan itu belum dimulai."
+        }
       }
     }
   },

@@ -348,6 +348,9 @@ enum AuditAction {
   /// Tariffs or medications were given a tax code, or returned to their
   /// category default (P27-T03). Carries the ids and the code, never prices.
   TAX_ASSIGNMENT_CHANGED
+  /// A monthly tax report draft was finalized (P27-T05): the figures the
+  /// clinic pays and files from are frozen from here on.
+  TAX_REPORT_FINALIZED
 }
 
 enum BpjsSubmissionType {
@@ -1055,6 +1058,8 @@ model User {
   updatedTaxSettings        TaxSettings[]              @relation("TaxSettingsUpdatedBy")
   createdTaxCodeRates        TaxCodeRate[]              @relation("TaxCodeRateCreatedBy")
   updatedTaxCategoryDefaults TaxCategoryDefault[]       @relation("TaxCategoryDefaultUpdatedBy")
+  generatedTaxReports        TaxReportDraft[]           @relation("TaxReportGeneratedBy")
+  finalizedTaxReports        TaxReportDraft[]           @relation("TaxReportFinalizedBy")
   grantedDoctorAuthorities  DoctorAuthority[]          @relation("DoctorAuthorityCreatedBy")
   revokedDoctorAuthorities  DoctorAuthority[]          @relation("DoctorAuthorityRevokedBy")
 
@@ -2997,6 +3002,49 @@ model TaxCategoryDefault {
 
   @@index([taxCodeId])
   @@map("tax_category_defaults")
+}
+
+/// The monthly drafts P27-T05 prepares.
+enum TaxReportKind {
+  PP55_OMZET
+  PPN_OUTPUT
+
+  @@map("tax_report_kind")
+}
+
+enum TaxReportStatus {
+  DRAFT
+  FINALIZED
+
+  @@map("tax_report_status")
+}
+
+/// A month's tax figures, prepared for the clinic to pay and file in Coretax
+/// itself (P27-T05, D-038: the product drafts, never files). A DRAFT is
+/// recomputed at will; a FINALIZED row is a frozen snapshot and is never
+/// rewritten — later changes to the books are shown beside it, not merged in.
+model TaxReportDraft {
+  id            String          @id @default(uuid()) @db.Uuid
+  /// `YYYY-MM` in the clinic's timezone.
+  period        String          @db.Char(7)
+  kind          TaxReportKind
+  status        TaxReportStatus @default(DRAFT)
+  /// Totals and the figures behind them; the shape is `TaxReportSummary`.
+  summary       Json
+  /// The payments or invoices the totals came from; `TaxReportLine[]`.
+  lines         Json
+  generatedAt   DateTime        @map("generated_at")
+  generatedById String?         @map("generated_by_id") @db.Uuid
+  finalizedAt   DateTime?       @map("finalized_at")
+  finalizedById String?         @map("finalized_by_id") @db.Uuid
+  createdAt     DateTime        @default(now()) @map("created_at")
+  updatedAt     DateTime        @updatedAt @map("updated_at")
+
+  generatedBy User? @relation("TaxReportGeneratedBy", fields: [generatedById], references: [id], onDelete: SetNull)
+  finalizedBy User? @relation("TaxReportFinalizedBy", fields: [finalizedById], references: [id], onDelete: SetNull)
+
+  @@unique([period, kind])
+  @@map("tax_report_drafts")
 }
 
 /// Price-list row for services the clinic charges — consultation fees and

@@ -126,6 +126,10 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     -- on each tariff and medication. Administrators only.
     ('tax-code.read:any', 'TaxCode', 'read', 'ANY', 'Read tax codes and the tax code on each tariff and medication'),
     ('tax-code.write:any', 'TaxCode', 'write', 'ANY', 'Change tax codes, rates, defaults and assignments'),
+    -- P27-T05. The monthly tax report drafts (PP 55 omzet, PPN keluaran):
+    -- read and export, and create, recompute and finalize. Administrators only.
+    ('tax-report.read:any', 'TaxReport', 'read', 'ANY', 'Read and export monthly tax report drafts'),
+    ('tax-report.write:any', 'TaxReport', 'write', 'ANY', 'Create, recompute and finalize monthly tax report drafts'),
     ('portal.patient-access:own', 'Portal', 'patient-access', 'OWN', 'Access the patient portal'),
     ('role.assign:any', 'Role', 'assign', 'ANY', 'Assign roles to users'),
     ('role.read:any', 'Role', 'read', 'ANY', 'Read role catalog'),
@@ -570,6 +574,8 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('ADMIN', 'tax-settings.write:any'),
     ('ADMIN', 'tax-code.read:any'),
     ('ADMIN', 'tax-code.write:any'),
+    ('ADMIN', 'tax-report.read:any'),
+    ('ADMIN', 'tax-report.write:any'),
     ('ADMIN', 'invoice.read:any'),
     ('ADMIN', 'invoice.write:any'),
     ('ADMIN', 'invoice.deliver:any'),

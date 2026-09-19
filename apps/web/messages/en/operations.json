@@ -2211,6 +2211,90 @@
           "taxCode": "Tax code",
           "source": "Source"
         }
+      },
+      "reports": {
+        "title": "Monthly tax reports",
+        "description": "Drafts of what the clinic pays and reports each month, computed from payments and issued invoices. Create a month's draft, recompute it while the month is open, and finalize it once the month is over.",
+        "draftBanner": "Draft — not an official filing. Pay and report through Coretax DJP.",
+        "loadError": "The tax reports could not be loaded.",
+        "saveError": "The report could not be saved.",
+        "exportError": "The report could not be exported.",
+        "notApplicable": "The tax profile calls for no monthly report yet: set the PP 55 regime or PKP status under Settings › Taxes.",
+        "previousYear": "Previous year",
+        "nextYear": "Next year",
+        "create": "Create draft",
+        "back": "All tax reports",
+        "recompute": "Recompute",
+        "finalize": "Finalize",
+        "exportCsv": "Export CSV",
+        "recomputed": "Report recomputed",
+        "finalized": "Report finalized",
+        "kind": {
+          "PP55_OMZET": "PPh final PP 55 (0.5% of turnover)",
+          "PPN_OUTPUT": "Output VAT (PPN keluaran)"
+        },
+        "status": {
+          "NONE": "Not drafted",
+          "DRAFT": "Draft",
+          "FINALIZED": "Final",
+          "OUT_OF_DATE": "Out of date"
+        },
+        "outOfDateFinalized": "The books changed after this report was finalized. The figures below are as finalized; amend your filing if needed.",
+        "outOfDateDraft": "The books changed since this draft was computed. Recompute it before paying.",
+        "difference": "{field}: {stored} in the report, {live} in the books now",
+        "totals": {
+          "grossOmzet": "Gross turnover",
+          "taxableOmzet": "Taxable turnover",
+          "taxDue": "PPh final due",
+          "taxableAmount": "Selling price",
+          "taxBase": "DPP",
+          "taxAmount": "PPN"
+        },
+        "pp55": {
+          "grossOmzet": "Gross turnover (payments received)",
+          "yearToDateOmzetBefore": "Turnover earlier this year",
+          "nonTaxableAllowanceUsed": "Non-taxable turnover used (individuals, Rp500 million a year)",
+          "taxableOmzet": "Taxable turnover",
+          "rate": "Rate",
+          "billingCode": "Billing code (KAP-KJS)",
+          "paymentDueDate": "Pay by",
+          "taxDue": "PPh final due",
+          "paymentCount": "{count} payments"
+        },
+        "ppn": {
+          "fakturCode": "Faktur code",
+          "invoiceCount": "Invoices",
+          "taxableAmount": "Selling price",
+          "taxBase": "DPP",
+          "taxAmount": "PPN",
+          "total": "Total",
+          "dueDate": "Pay and report by {date}",
+          "digunggung": "Retail patients: faktur digunggung",
+          "legacy": "{count} lines ({amount}) were billed before the tax module and carry no tax code; they are left out of the totals."
+        },
+        "lines": {
+          "empty": "Nothing in this month.",
+          "invoiceNumber": "Invoice",
+          "paidAt": "Paid",
+          "method": "Method",
+          "amount": "Amount",
+          "issuedAt": "Issued",
+          "fakturCode": "Faktur code",
+          "taxableAmount": "Selling price",
+          "taxBase": "DPP",
+          "taxAmount": "PPN",
+          "code": {
+            "LEGACY": "No code",
+            "NOT_OBJECT": "Not an object"
+          }
+        },
+        "errors": {
+          "TAX_REPORT_NOT_APPLICABLE": "The tax profile does not call for this report. Check Settings › Taxes.",
+          "TAX_REPORT_EXISTS": "This month already has a report.",
+          "TAX_REPORT_FINALIZED": "This report is finalized and kept as filed.",
+          "TAX_REPORT_PERIOD_OPEN": "The month has not ended yet; finalize it once it is over.",
+          "TAX_REPORT_PERIOD_IN_FUTURE": "That month has not started yet."
+        }
       }
     }
   },

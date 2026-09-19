@@ -18,6 +18,7 @@ export type ShellNavigationKey =
   | 'admissions'
   | 'pharmacy'
   | 'billing'
+  | 'taxes'
   | 'laboratory'
   | 'documents'
   | 'advanced'
@@ -151,6 +152,16 @@ export const ADMIN_NAV_SECTIONS: AdminNavSection[] = [
           { action: 'read', subject: 'ServiceTariff' },
           { action: 'read', subject: 'DocumentTemplate' },
         ],
+      },
+      {
+        // P27-T05. The monthly tax report drafts: what the clinic pays and
+        // files in Coretax. Hidden with the `taxes` entitlement (catalog
+        // navHrefs) and without the report read key.
+        href: '/admin/taxes',
+        label: 'Taxes',
+        labelKey: 'taxes',
+        icon: 'account_balance',
+        ability: { action: 'read', subject: 'TaxReport' },
       },
       {
         // P18-T08. The worklist is the laboratory's front door; the catalog

@@ -108,6 +108,8 @@ export type AppSubject =
   // P27-T03. Tax codes, their rates and defaults, and the code on each tariff
   // and medication.
   | 'TaxCode'
+  // P27-T05. Monthly tax report drafts.
+  | 'TaxReport'
   | 'Invoice'
   | 'Payment'
   | 'ChatSession'
