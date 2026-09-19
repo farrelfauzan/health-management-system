@@ -52,6 +52,15 @@ describe('resolveAppAbilityRules integration permissions', () => {
     expect(ability.can('read', 'TaxSettings')).toBe(true);
     expect(ability.can('write', 'TaxSettings')).toBe(true);
     expect(ability.can('write', 'ClinicProfile')).toBe(false);
+    expect(ability.can('read', 'TaxCode')).toBe(false);
+  });
+
+  it('maps the tax-code keys to the TaxCode subject', () => {
+    // P27-T03. Without the resource row the Kode pajak and Tarif & obat tabs never render.
+    const ability = buildAppAbility(resolveAppAbilityRules({ permissions: ['tax-code.read:any'] }));
+
+    expect(ability.can('read', 'TaxCode')).toBe(true);
+    expect(ability.can('write', 'TaxCode')).toBe(false);
   });
 
   it('maps pharmacy inventory permissions independently from medication catalog permissions', () => {

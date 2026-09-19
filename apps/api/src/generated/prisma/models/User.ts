@@ -280,6 +280,8 @@ export type UserWhereInput = {
   requestedLabReports?: Prisma.LabReportListRelationFilter
   updatedLaboratorySettings?: Prisma.LaboratorySettingsListRelationFilter
   updatedTaxSettings?: Prisma.TaxSettingsListRelationFilter
+  createdTaxCodeRates?: Prisma.TaxCodeRateListRelationFilter
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultListRelationFilter
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityListRelationFilter
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityListRelationFilter
 }
@@ -353,6 +355,8 @@ export type UserOrderByWithRelationInput = {
   requestedLabReports?: Prisma.LabReportOrderByRelationAggregateInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsOrderByRelationAggregateInput
   updatedTaxSettings?: Prisma.TaxSettingsOrderByRelationAggregateInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateOrderByRelationAggregateInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultOrderByRelationAggregateInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityOrderByRelationAggregateInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityOrderByRelationAggregateInput
 }
@@ -429,6 +433,8 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   requestedLabReports?: Prisma.LabReportListRelationFilter
   updatedLaboratorySettings?: Prisma.LaboratorySettingsListRelationFilter
   updatedTaxSettings?: Prisma.TaxSettingsListRelationFilter
+  createdTaxCodeRates?: Prisma.TaxCodeRateListRelationFilter
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultListRelationFilter
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityListRelationFilter
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityListRelationFilter
 }, "id" | "email">
@@ -533,6 +539,8 @@ export type UserCreateInput = {
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -605,6 +613,8 @@ export type UserUncheckedCreateInput = {
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -677,6 +687,8 @@ export type UserUpdateInput = {
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -749,6 +761,8 @@ export type UserUncheckedUpdateInput = {
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -1236,6 +1250,38 @@ export type UserUpdateOneWithoutUpdatedTaxSettingsNestedInput = {
   delete?: Prisma.UserWhereInput | boolean
   connect?: Prisma.UserWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutUpdatedTaxSettingsInput, Prisma.UserUpdateWithoutUpdatedTaxSettingsInput>, Prisma.UserUncheckedUpdateWithoutUpdatedTaxSettingsInput>
+}
+
+export type UserCreateNestedOneWithoutCreatedTaxCodeRatesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCreatedTaxCodeRatesInput, Prisma.UserUncheckedCreateWithoutCreatedTaxCodeRatesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCreatedTaxCodeRatesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutCreatedTaxCodeRatesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCreatedTaxCodeRatesInput, Prisma.UserUncheckedCreateWithoutCreatedTaxCodeRatesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCreatedTaxCodeRatesInput
+  upsert?: Prisma.UserUpsertWithoutCreatedTaxCodeRatesInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCreatedTaxCodeRatesInput, Prisma.UserUpdateWithoutCreatedTaxCodeRatesInput>, Prisma.UserUncheckedUpdateWithoutCreatedTaxCodeRatesInput>
+}
+
+export type UserCreateNestedOneWithoutUpdatedTaxCategoryDefaultsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutUpdatedTaxCategoryDefaultsInput, Prisma.UserUncheckedCreateWithoutUpdatedTaxCategoryDefaultsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutUpdatedTaxCategoryDefaultsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutUpdatedTaxCategoryDefaultsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutUpdatedTaxCategoryDefaultsInput, Prisma.UserUncheckedCreateWithoutUpdatedTaxCategoryDefaultsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutUpdatedTaxCategoryDefaultsInput
+  upsert?: Prisma.UserUpsertWithoutUpdatedTaxCategoryDefaultsInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutUpdatedTaxCategoryDefaultsInput, Prisma.UserUpdateWithoutUpdatedTaxCategoryDefaultsInput>, Prisma.UserUncheckedUpdateWithoutUpdatedTaxCategoryDefaultsInput>
 }
 
 export type UserCreateNestedOneWithoutVoidedInvoicesInput = {
@@ -1873,6 +1919,8 @@ export type UserCreateWithoutRefreshTokensInput = {
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -1944,6 +1992,8 @@ export type UserUncheckedCreateWithoutRefreshTokensInput = {
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -2031,6 +2081,8 @@ export type UserUpdateWithoutRefreshTokensInput = {
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -2102,6 +2154,8 @@ export type UserUncheckedUpdateWithoutRefreshTokensInput = {
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -2173,6 +2227,8 @@ export type UserCreateWithoutSentInvitationsInput = {
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -2244,6 +2300,8 @@ export type UserUncheckedCreateWithoutSentInvitationsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -2331,6 +2389,8 @@ export type UserUpdateWithoutSentInvitationsInput = {
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -2402,6 +2462,8 @@ export type UserUncheckedUpdateWithoutSentInvitationsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -2473,6 +2535,8 @@ export type UserCreateWithoutMfaCredentialInput = {
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -2544,6 +2608,8 @@ export type UserUncheckedCreateWithoutMfaCredentialInput = {
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -2631,6 +2697,8 @@ export type UserUpdateWithoutMfaCredentialInput = {
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -2702,6 +2770,8 @@ export type UserUncheckedUpdateWithoutMfaCredentialInput = {
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -2773,6 +2843,8 @@ export type UserCreateWithoutMfaRecoveryCodesInput = {
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -2844,6 +2916,8 @@ export type UserUncheckedCreateWithoutMfaRecoveryCodesInput = {
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -2931,6 +3005,8 @@ export type UserUpdateWithoutMfaRecoveryCodesInput = {
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -3002,6 +3078,8 @@ export type UserUncheckedUpdateWithoutMfaRecoveryCodesInput = {
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -3073,6 +3151,8 @@ export type UserCreateWithoutUpdatedFeatureEntitlementsInput = {
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -3144,6 +3224,8 @@ export type UserUncheckedCreateWithoutUpdatedFeatureEntitlementsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -3231,6 +3313,8 @@ export type UserUpdateWithoutUpdatedFeatureEntitlementsInput = {
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -3302,6 +3386,8 @@ export type UserUncheckedUpdateWithoutUpdatedFeatureEntitlementsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -3373,6 +3459,8 @@ export type UserCreateWithoutPatientProfilesInput = {
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -3444,6 +3532,8 @@ export type UserUncheckedCreateWithoutPatientProfilesInput = {
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -3531,6 +3621,8 @@ export type UserUpdateWithoutPatientProfilesInput = {
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -3602,6 +3694,8 @@ export type UserUncheckedUpdateWithoutPatientProfilesInput = {
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -3673,6 +3767,8 @@ export type UserCreateWithoutPrivacyNoticeRecordsInput = {
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -3744,6 +3840,8 @@ export type UserUncheckedCreateWithoutPrivacyNoticeRecordsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -3831,6 +3929,8 @@ export type UserUpdateWithoutPrivacyNoticeRecordsInput = {
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -3902,6 +4002,8 @@ export type UserUncheckedUpdateWithoutPrivacyNoticeRecordsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -3973,6 +4075,8 @@ export type UserCreateWithoutGrantedDeliveryConsentsInput = {
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -4044,6 +4148,8 @@ export type UserUncheckedCreateWithoutGrantedDeliveryConsentsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -4131,6 +4237,8 @@ export type UserUpdateWithoutGrantedDeliveryConsentsInput = {
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -4202,6 +4310,8 @@ export type UserUncheckedUpdateWithoutGrantedDeliveryConsentsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -4273,6 +4383,8 @@ export type UserCreateWithoutRequestedDeliveriesInput = {
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -4344,6 +4456,8 @@ export type UserUncheckedCreateWithoutRequestedDeliveriesInput = {
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -4431,6 +4545,8 @@ export type UserUpdateWithoutRequestedDeliveriesInput = {
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -4502,6 +4618,8 @@ export type UserUncheckedUpdateWithoutRequestedDeliveriesInput = {
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -4573,6 +4691,8 @@ export type UserCreateWithoutDoctorProfileInput = {
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -4644,6 +4764,8 @@ export type UserUncheckedCreateWithoutDoctorProfileInput = {
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -4731,6 +4853,8 @@ export type UserUpdateWithoutDoctorProfileInput = {
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -4802,6 +4926,8 @@ export type UserUncheckedUpdateWithoutDoctorProfileInput = {
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -4874,6 +5000,8 @@ export type UserCreateWithoutGrantedDoctorAuthoritiesInput = {
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
 
@@ -4945,6 +5073,8 @@ export type UserUncheckedCreateWithoutGrantedDoctorAuthoritiesInput = {
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
 
@@ -5021,6 +5151,8 @@ export type UserCreateWithoutRevokedDoctorAuthoritiesInput = {
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
 }
 
@@ -5092,6 +5224,8 @@ export type UserUncheckedCreateWithoutRevokedDoctorAuthoritiesInput = {
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
@@ -5179,6 +5313,8 @@ export type UserUpdateWithoutGrantedDoctorAuthoritiesInput = {
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
 
@@ -5250,6 +5386,8 @@ export type UserUncheckedUpdateWithoutGrantedDoctorAuthoritiesInput = {
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
 
@@ -5332,6 +5470,8 @@ export type UserUpdateWithoutRevokedDoctorAuthoritiesInput = {
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
 }
 
@@ -5403,6 +5543,8 @@ export type UserUncheckedUpdateWithoutRevokedDoctorAuthoritiesInput = {
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
@@ -5473,6 +5615,8 @@ export type UserCreateWithoutAssignedDoctorPatientsInput = {
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -5544,6 +5688,8 @@ export type UserUncheckedCreateWithoutAssignedDoctorPatientsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -5620,6 +5766,8 @@ export type UserCreateWithoutUnassignedDoctorPatientsInput = {
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -5691,6 +5839,8 @@ export type UserUncheckedCreateWithoutUnassignedDoctorPatientsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -5778,6 +5928,8 @@ export type UserUpdateWithoutAssignedDoctorPatientsInput = {
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -5849,6 +6001,8 @@ export type UserUncheckedUpdateWithoutAssignedDoctorPatientsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -5931,6 +6085,8 @@ export type UserUpdateWithoutUnassignedDoctorPatientsInput = {
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -6002,6 +6158,8 @@ export type UserUncheckedUpdateWithoutUnassignedDoctorPatientsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -6073,6 +6231,8 @@ export type UserCreateWithoutDoctorPatientActivitiesInput = {
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -6144,6 +6304,8 @@ export type UserUncheckedCreateWithoutDoctorPatientActivitiesInput = {
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -6231,6 +6393,8 @@ export type UserUpdateWithoutDoctorPatientActivitiesInput = {
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -6302,6 +6466,8 @@ export type UserUncheckedUpdateWithoutDoctorPatientActivitiesInput = {
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -6373,6 +6539,8 @@ export type UserCreateWithoutCreatedAppointmentsInput = {
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -6444,6 +6612,8 @@ export type UserUncheckedCreateWithoutCreatedAppointmentsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -6531,6 +6701,8 @@ export type UserUpdateWithoutCreatedAppointmentsInput = {
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -6602,6 +6774,8 @@ export type UserUncheckedUpdateWithoutCreatedAppointmentsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -6673,6 +6847,8 @@ export type UserCreateWithoutCreatedRegistrationsInput = {
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -6744,6 +6920,8 @@ export type UserUncheckedCreateWithoutCreatedRegistrationsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -6831,6 +7009,8 @@ export type UserUpdateWithoutCreatedRegistrationsInput = {
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -6902,6 +7082,8 @@ export type UserUncheckedUpdateWithoutCreatedRegistrationsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -6973,6 +7155,8 @@ export type UserCreateWithoutCreatedEncountersInput = {
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -7044,6 +7228,8 @@ export type UserUncheckedCreateWithoutCreatedEncountersInput = {
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -7131,6 +7317,8 @@ export type UserUpdateWithoutCreatedEncountersInput = {
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -7202,6 +7390,8 @@ export type UserUncheckedUpdateWithoutCreatedEncountersInput = {
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -7273,6 +7463,8 @@ export type UserCreateWithoutRecordedVitalSignsInput = {
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -7344,6 +7536,8 @@ export type UserUncheckedCreateWithoutRecordedVitalSignsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -7431,6 +7625,8 @@ export type UserUpdateWithoutRecordedVitalSignsInput = {
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -7502,6 +7698,8 @@ export type UserUncheckedUpdateWithoutRecordedVitalSignsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -7573,6 +7771,8 @@ export type UserCreateWithoutRecordedDiagnosesInput = {
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -7644,6 +7844,8 @@ export type UserUncheckedCreateWithoutRecordedDiagnosesInput = {
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -7731,6 +7933,8 @@ export type UserUpdateWithoutRecordedDiagnosesInput = {
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -7802,6 +8006,8 @@ export type UserUncheckedUpdateWithoutRecordedDiagnosesInput = {
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -7873,6 +8079,8 @@ export type UserCreateWithoutRecordedProceduresInput = {
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -7944,6 +8152,8 @@ export type UserUncheckedCreateWithoutRecordedProceduresInput = {
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -8031,6 +8241,8 @@ export type UserUpdateWithoutRecordedProceduresInput = {
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -8102,6 +8314,8 @@ export type UserUncheckedUpdateWithoutRecordedProceduresInput = {
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -8173,6 +8387,8 @@ export type UserCreateWithoutDispensedByRecordsInput = {
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -8244,6 +8460,8 @@ export type UserUncheckedCreateWithoutDispensedByRecordsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -8331,6 +8549,8 @@ export type UserUpdateWithoutDispensedByRecordsInput = {
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -8402,6 +8622,8 @@ export type UserUncheckedUpdateWithoutDispensedByRecordsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -8473,6 +8695,8 @@ export type UserCreateWithoutMedicationStockReceiptsInput = {
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -8544,6 +8768,8 @@ export type UserUncheckedCreateWithoutMedicationStockReceiptsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -8631,6 +8857,8 @@ export type UserUpdateWithoutMedicationStockReceiptsInput = {
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -8702,6 +8930,8 @@ export type UserUncheckedUpdateWithoutMedicationStockReceiptsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -8773,6 +9003,8 @@ export type UserCreateWithoutUpdatedTaxSettingsInput = {
   verifiedLabResults?: Prisma.LabResultCreateNestedManyWithoutVerifiedByInput
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -8844,6 +9076,8 @@ export type UserUncheckedCreateWithoutUpdatedTaxSettingsInput = {
   verifiedLabResults?: Prisma.LabResultUncheckedCreateNestedManyWithoutVerifiedByInput
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -8931,6 +9165,8 @@ export type UserUpdateWithoutUpdatedTaxSettingsInput = {
   verifiedLabResults?: Prisma.LabResultUpdateManyWithoutVerifiedByNestedInput
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -9002,6 +9238,624 @@ export type UserUncheckedUpdateWithoutUpdatedTaxSettingsInput = {
   verifiedLabResults?: Prisma.LabResultUncheckedUpdateManyWithoutVerifiedByNestedInput
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
+  grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
+  revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
+}
+
+export type UserCreateWithoutCreatedTaxCodeRatesInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  isActive?: boolean
+  isSystem?: boolean
+  offboardedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitCreateNestedOneWithoutMembersInput
+  roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
+  assignedRoles?: Prisma.UserRoleCreateNestedManyWithoutAssignedByInput
+  unassignedRoles?: Prisma.UserRoleCreateNestedManyWithoutUnassignedByInput
+  patientProfiles?: Prisma.PatientProfileCreateNestedManyWithoutOwnerUserInput
+  doctorProfile?: Prisma.DoctorProfileCreateNestedOneWithoutOwnerUserInput
+  assignedDoctorPatients?: Prisma.DoctorPatientCreateNestedManyWithoutAssignedByInput
+  unassignedDoctorPatients?: Prisma.DoctorPatientCreateNestedManyWithoutUnassignedByInput
+  doctorPatientActivities?: Prisma.DoctorPatientActivityCreateNestedManyWithoutActorInput
+  createdAppointments?: Prisma.AppointmentCreateNestedManyWithoutCreatedByInput
+  createdRegistrations?: Prisma.RegistrationCreateNestedManyWithoutCreatedByInput
+  createdEncounters?: Prisma.EncounterCreateNestedManyWithoutCreatedByInput
+  recordedVitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutRecordedByInput
+  recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
+  recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
+  recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
+  medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
+  createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
+  voidedInvoices?: Prisma.InvoiceCreateNestedManyWithoutVoidedByInput
+  receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
+  refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeCreateNestedManyWithoutUserInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
+  chatSessions?: Prisma.ChatSessionCreateNestedManyWithoutOwnerUserInput
+  chatMessages?: Prisma.ChatMessageCreateNestedManyWithoutAuthorUserInput
+  createdAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutCreatedByInput
+  updatedAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutUpdatedByInput
+  uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
+  ownedDocuments?: Prisma.DocumentCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentCreateNestedManyWithoutReleasedByInput
+  blockedConversations?: Prisma.ConversationCreateNestedManyWithoutBlockedByInput
+  conversationMessages?: Prisma.ConversationMessageCreateNestedManyWithoutAuthorInput
+  updatedFeatureEntitlements?: Prisma.FeatureEntitlementCreateNestedManyWithoutUpdatedByInput
+  createdAdmissions?: Prisma.AdmissionCreateNestedManyWithoutCreatedByInput
+  createdBedAssignments?: Prisma.BedAssignmentCreateNestedManyWithoutCreatedByInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
+  sentInvitations?: Prisma.UserInvitationCreateNestedManyWithoutInvitedByInput
+  createdDocumentTemplates?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  publishedTemplateVersions?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutPublishedByInput
+  receivedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGranteeInput
+  grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
+  offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
+  grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
+  defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
+  filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
+  draftedManagedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutDraftedByInput
+  submittedApprovalRequests?: Prisma.DocumentApprovalRequestCreateNestedManyWithoutSubmittedByInput
+  namedApprovalRounds?: Prisma.DocumentApprovalApproverCreateNestedManyWithoutApproverInput
+  approvalDecisions?: Prisma.DocumentApprovalDecisionCreateNestedManyWithoutApproverInput
+  collectedLabSpecimens?: Prisma.LabSpecimenCreateNestedManyWithoutCollectedByInput
+  enteredLabResults?: Prisma.LabResultCreateNestedManyWithoutEnteredByInput
+  verifiedLabResults?: Prisma.LabResultCreateNestedManyWithoutVerifiedByInput
+  requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
+  updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
+  updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
+  grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
+  revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
+}
+
+export type UserUncheckedCreateWithoutCreatedTaxCodeRatesInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  isActive?: boolean
+  isSystem?: boolean
+  offboardedAt?: Date | string | null
+  organizationUnitId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  roles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUserInput
+  assignedRoles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutAssignedByInput
+  unassignedRoles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUnassignedByInput
+  patientProfiles?: Prisma.PatientProfileUncheckedCreateNestedManyWithoutOwnerUserInput
+  doctorProfile?: Prisma.DoctorProfileUncheckedCreateNestedOneWithoutOwnerUserInput
+  assignedDoctorPatients?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutAssignedByInput
+  unassignedDoctorPatients?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutUnassignedByInput
+  doctorPatientActivities?: Prisma.DoctorPatientActivityUncheckedCreateNestedManyWithoutActorInput
+  createdAppointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutCreatedByInput
+  createdRegistrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutCreatedByInput
+  createdEncounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutCreatedByInput
+  recordedVitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
+  medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
+  createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  voidedInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutVoidedByInput
+  receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
+  refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
+  chatSessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutOwnerUserInput
+  chatMessages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutAuthorUserInput
+  createdAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutUpdatedByInput
+  uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
+  ownedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutReleasedByInput
+  blockedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutBlockedByInput
+  conversationMessages?: Prisma.ConversationMessageUncheckedCreateNestedManyWithoutAuthorInput
+  updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdAdmissions?: Prisma.AdmissionUncheckedCreateNestedManyWithoutCreatedByInput
+  createdBedAssignments?: Prisma.BedAssignmentUncheckedCreateNestedManyWithoutCreatedByInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
+  sentInvitations?: Prisma.UserInvitationUncheckedCreateNestedManyWithoutInvitedByInput
+  createdDocumentTemplates?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  publishedTemplateVersions?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutPublishedByInput
+  receivedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGranteeInput
+  grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
+  offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
+  grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
+  defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
+  filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
+  draftedManagedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutDraftedByInput
+  submittedApprovalRequests?: Prisma.DocumentApprovalRequestUncheckedCreateNestedManyWithoutSubmittedByInput
+  namedApprovalRounds?: Prisma.DocumentApprovalApproverUncheckedCreateNestedManyWithoutApproverInput
+  approvalDecisions?: Prisma.DocumentApprovalDecisionUncheckedCreateNestedManyWithoutApproverInput
+  collectedLabSpecimens?: Prisma.LabSpecimenUncheckedCreateNestedManyWithoutCollectedByInput
+  enteredLabResults?: Prisma.LabResultUncheckedCreateNestedManyWithoutEnteredByInput
+  verifiedLabResults?: Prisma.LabResultUncheckedCreateNestedManyWithoutVerifiedByInput
+  requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
+  updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
+  grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
+  revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
+}
+
+export type UserCreateOrConnectWithoutCreatedTaxCodeRatesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutCreatedTaxCodeRatesInput, Prisma.UserUncheckedCreateWithoutCreatedTaxCodeRatesInput>
+}
+
+export type UserUpsertWithoutCreatedTaxCodeRatesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutCreatedTaxCodeRatesInput, Prisma.UserUncheckedUpdateWithoutCreatedTaxCodeRatesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutCreatedTaxCodeRatesInput, Prisma.UserUncheckedCreateWithoutCreatedTaxCodeRatesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutCreatedTaxCodeRatesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutCreatedTaxCodeRatesInput, Prisma.UserUncheckedUpdateWithoutCreatedTaxCodeRatesInput>
+}
+
+export type UserUpdateWithoutCreatedTaxCodeRatesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  offboardedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitUpdateOneWithoutMembersNestedInput
+  roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
+  assignedRoles?: Prisma.UserRoleUpdateManyWithoutAssignedByNestedInput
+  unassignedRoles?: Prisma.UserRoleUpdateManyWithoutUnassignedByNestedInput
+  patientProfiles?: Prisma.PatientProfileUpdateManyWithoutOwnerUserNestedInput
+  doctorProfile?: Prisma.DoctorProfileUpdateOneWithoutOwnerUserNestedInput
+  assignedDoctorPatients?: Prisma.DoctorPatientUpdateManyWithoutAssignedByNestedInput
+  unassignedDoctorPatients?: Prisma.DoctorPatientUpdateManyWithoutUnassignedByNestedInput
+  doctorPatientActivities?: Prisma.DoctorPatientActivityUpdateManyWithoutActorNestedInput
+  createdAppointments?: Prisma.AppointmentUpdateManyWithoutCreatedByNestedInput
+  createdRegistrations?: Prisma.RegistrationUpdateManyWithoutCreatedByNestedInput
+  createdEncounters?: Prisma.EncounterUpdateManyWithoutCreatedByNestedInput
+  recordedVitalSigns?: Prisma.VitalSignsUpdateManyWithoutRecordedByNestedInput
+  recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
+  recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
+  recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
+  medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
+  createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
+  voidedInvoices?: Prisma.InvoiceUpdateManyWithoutVoidedByNestedInput
+  receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
+  refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUpdateManyWithoutUserNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
+  chatSessions?: Prisma.ChatSessionUpdateManyWithoutOwnerUserNestedInput
+  chatMessages?: Prisma.ChatMessageUpdateManyWithoutAuthorUserNestedInput
+  createdAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutCreatedByNestedInput
+  updatedAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutUpdatedByNestedInput
+  uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
+  ownedDocuments?: Prisma.DocumentUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUpdateManyWithoutReleasedByNestedInput
+  blockedConversations?: Prisma.ConversationUpdateManyWithoutBlockedByNestedInput
+  conversationMessages?: Prisma.ConversationMessageUpdateManyWithoutAuthorNestedInput
+  updatedFeatureEntitlements?: Prisma.FeatureEntitlementUpdateManyWithoutUpdatedByNestedInput
+  createdAdmissions?: Prisma.AdmissionUpdateManyWithoutCreatedByNestedInput
+  createdBedAssignments?: Prisma.BedAssignmentUpdateManyWithoutCreatedByNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
+  sentInvitations?: Prisma.UserInvitationUpdateManyWithoutInvitedByNestedInput
+  createdDocumentTemplates?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  publishedTemplateVersions?: Prisma.DocumentTemplateVersionUpdateManyWithoutPublishedByNestedInput
+  receivedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGranteeNestedInput
+  grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
+  offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
+  grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
+  defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
+  filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
+  draftedManagedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutDraftedByNestedInput
+  submittedApprovalRequests?: Prisma.DocumentApprovalRequestUpdateManyWithoutSubmittedByNestedInput
+  namedApprovalRounds?: Prisma.DocumentApprovalApproverUpdateManyWithoutApproverNestedInput
+  approvalDecisions?: Prisma.DocumentApprovalDecisionUpdateManyWithoutApproverNestedInput
+  collectedLabSpecimens?: Prisma.LabSpecimenUpdateManyWithoutCollectedByNestedInput
+  enteredLabResults?: Prisma.LabResultUpdateManyWithoutEnteredByNestedInput
+  verifiedLabResults?: Prisma.LabResultUpdateManyWithoutVerifiedByNestedInput
+  requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
+  updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
+  updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
+  grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
+  revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutCreatedTaxCodeRatesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  offboardedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organizationUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  roles?: Prisma.UserRoleUncheckedUpdateManyWithoutUserNestedInput
+  assignedRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutAssignedByNestedInput
+  unassignedRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutUnassignedByNestedInput
+  patientProfiles?: Prisma.PatientProfileUncheckedUpdateManyWithoutOwnerUserNestedInput
+  doctorProfile?: Prisma.DoctorProfileUncheckedUpdateOneWithoutOwnerUserNestedInput
+  assignedDoctorPatients?: Prisma.DoctorPatientUncheckedUpdateManyWithoutAssignedByNestedInput
+  unassignedDoctorPatients?: Prisma.DoctorPatientUncheckedUpdateManyWithoutUnassignedByNestedInput
+  doctorPatientActivities?: Prisma.DoctorPatientActivityUncheckedUpdateManyWithoutActorNestedInput
+  createdAppointments?: Prisma.AppointmentUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdRegistrations?: Prisma.RegistrationUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdEncounters?: Prisma.EncounterUncheckedUpdateManyWithoutCreatedByNestedInput
+  recordedVitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
+  medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
+  createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  voidedInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutVoidedByNestedInput
+  receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
+  refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
+  chatSessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutOwnerUserNestedInput
+  chatMessages?: Prisma.ChatMessageUncheckedUpdateManyWithoutAuthorUserNestedInput
+  createdAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutUpdatedByNestedInput
+  uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
+  ownedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutReleasedByNestedInput
+  blockedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutBlockedByNestedInput
+  conversationMessages?: Prisma.ConversationMessageUncheckedUpdateManyWithoutAuthorNestedInput
+  updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdAdmissions?: Prisma.AdmissionUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdBedAssignments?: Prisma.BedAssignmentUncheckedUpdateManyWithoutCreatedByNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
+  sentInvitations?: Prisma.UserInvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+  createdDocumentTemplates?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  publishedTemplateVersions?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutPublishedByNestedInput
+  receivedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGranteeNestedInput
+  grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
+  offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
+  grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
+  defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
+  filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
+  draftedManagedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutDraftedByNestedInput
+  submittedApprovalRequests?: Prisma.DocumentApprovalRequestUncheckedUpdateManyWithoutSubmittedByNestedInput
+  namedApprovalRounds?: Prisma.DocumentApprovalApproverUncheckedUpdateManyWithoutApproverNestedInput
+  approvalDecisions?: Prisma.DocumentApprovalDecisionUncheckedUpdateManyWithoutApproverNestedInput
+  collectedLabSpecimens?: Prisma.LabSpecimenUncheckedUpdateManyWithoutCollectedByNestedInput
+  enteredLabResults?: Prisma.LabResultUncheckedUpdateManyWithoutEnteredByNestedInput
+  verifiedLabResults?: Prisma.LabResultUncheckedUpdateManyWithoutVerifiedByNestedInput
+  requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
+  updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
+  grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
+  revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
+}
+
+export type UserCreateWithoutUpdatedTaxCategoryDefaultsInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  isActive?: boolean
+  isSystem?: boolean
+  offboardedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitCreateNestedOneWithoutMembersInput
+  roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
+  assignedRoles?: Prisma.UserRoleCreateNestedManyWithoutAssignedByInput
+  unassignedRoles?: Prisma.UserRoleCreateNestedManyWithoutUnassignedByInput
+  patientProfiles?: Prisma.PatientProfileCreateNestedManyWithoutOwnerUserInput
+  doctorProfile?: Prisma.DoctorProfileCreateNestedOneWithoutOwnerUserInput
+  assignedDoctorPatients?: Prisma.DoctorPatientCreateNestedManyWithoutAssignedByInput
+  unassignedDoctorPatients?: Prisma.DoctorPatientCreateNestedManyWithoutUnassignedByInput
+  doctorPatientActivities?: Prisma.DoctorPatientActivityCreateNestedManyWithoutActorInput
+  createdAppointments?: Prisma.AppointmentCreateNestedManyWithoutCreatedByInput
+  createdRegistrations?: Prisma.RegistrationCreateNestedManyWithoutCreatedByInput
+  createdEncounters?: Prisma.EncounterCreateNestedManyWithoutCreatedByInput
+  recordedVitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutRecordedByInput
+  recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
+  recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
+  recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
+  medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
+  createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
+  voidedInvoices?: Prisma.InvoiceCreateNestedManyWithoutVoidedByInput
+  receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
+  refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeCreateNestedManyWithoutUserInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
+  chatSessions?: Prisma.ChatSessionCreateNestedManyWithoutOwnerUserInput
+  chatMessages?: Prisma.ChatMessageCreateNestedManyWithoutAuthorUserInput
+  createdAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutCreatedByInput
+  updatedAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutUpdatedByInput
+  uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
+  ownedDocuments?: Prisma.DocumentCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentCreateNestedManyWithoutReleasedByInput
+  blockedConversations?: Prisma.ConversationCreateNestedManyWithoutBlockedByInput
+  conversationMessages?: Prisma.ConversationMessageCreateNestedManyWithoutAuthorInput
+  updatedFeatureEntitlements?: Prisma.FeatureEntitlementCreateNestedManyWithoutUpdatedByInput
+  createdAdmissions?: Prisma.AdmissionCreateNestedManyWithoutCreatedByInput
+  createdBedAssignments?: Prisma.BedAssignmentCreateNestedManyWithoutCreatedByInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
+  sentInvitations?: Prisma.UserInvitationCreateNestedManyWithoutInvitedByInput
+  createdDocumentTemplates?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  publishedTemplateVersions?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutPublishedByInput
+  receivedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGranteeInput
+  grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
+  offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
+  grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
+  defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
+  filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
+  draftedManagedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutDraftedByInput
+  submittedApprovalRequests?: Prisma.DocumentApprovalRequestCreateNestedManyWithoutSubmittedByInput
+  namedApprovalRounds?: Prisma.DocumentApprovalApproverCreateNestedManyWithoutApproverInput
+  approvalDecisions?: Prisma.DocumentApprovalDecisionCreateNestedManyWithoutApproverInput
+  collectedLabSpecimens?: Prisma.LabSpecimenCreateNestedManyWithoutCollectedByInput
+  enteredLabResults?: Prisma.LabResultCreateNestedManyWithoutEnteredByInput
+  verifiedLabResults?: Prisma.LabResultCreateNestedManyWithoutVerifiedByInput
+  requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
+  updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
+  updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
+  revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
+}
+
+export type UserUncheckedCreateWithoutUpdatedTaxCategoryDefaultsInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  isActive?: boolean
+  isSystem?: boolean
+  offboardedAt?: Date | string | null
+  organizationUnitId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  roles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUserInput
+  assignedRoles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutAssignedByInput
+  unassignedRoles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUnassignedByInput
+  patientProfiles?: Prisma.PatientProfileUncheckedCreateNestedManyWithoutOwnerUserInput
+  doctorProfile?: Prisma.DoctorProfileUncheckedCreateNestedOneWithoutOwnerUserInput
+  assignedDoctorPatients?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutAssignedByInput
+  unassignedDoctorPatients?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutUnassignedByInput
+  doctorPatientActivities?: Prisma.DoctorPatientActivityUncheckedCreateNestedManyWithoutActorInput
+  createdAppointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutCreatedByInput
+  createdRegistrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutCreatedByInput
+  createdEncounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutCreatedByInput
+  recordedVitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
+  medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
+  createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  voidedInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutVoidedByInput
+  receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
+  refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
+  chatSessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutOwnerUserInput
+  chatMessages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutAuthorUserInput
+  createdAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutUpdatedByInput
+  uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
+  ownedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutReleasedByInput
+  blockedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutBlockedByInput
+  conversationMessages?: Prisma.ConversationMessageUncheckedCreateNestedManyWithoutAuthorInput
+  updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdAdmissions?: Prisma.AdmissionUncheckedCreateNestedManyWithoutCreatedByInput
+  createdBedAssignments?: Prisma.BedAssignmentUncheckedCreateNestedManyWithoutCreatedByInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
+  sentInvitations?: Prisma.UserInvitationUncheckedCreateNestedManyWithoutInvitedByInput
+  createdDocumentTemplates?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  publishedTemplateVersions?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutPublishedByInput
+  receivedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGranteeInput
+  grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
+  offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
+  grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
+  defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
+  filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
+  draftedManagedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutDraftedByInput
+  submittedApprovalRequests?: Prisma.DocumentApprovalRequestUncheckedCreateNestedManyWithoutSubmittedByInput
+  namedApprovalRounds?: Prisma.DocumentApprovalApproverUncheckedCreateNestedManyWithoutApproverInput
+  approvalDecisions?: Prisma.DocumentApprovalDecisionUncheckedCreateNestedManyWithoutApproverInput
+  collectedLabSpecimens?: Prisma.LabSpecimenUncheckedCreateNestedManyWithoutCollectedByInput
+  enteredLabResults?: Prisma.LabResultUncheckedCreateNestedManyWithoutEnteredByInput
+  verifiedLabResults?: Prisma.LabResultUncheckedCreateNestedManyWithoutVerifiedByInput
+  requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
+  updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
+  revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
+}
+
+export type UserCreateOrConnectWithoutUpdatedTaxCategoryDefaultsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutUpdatedTaxCategoryDefaultsInput, Prisma.UserUncheckedCreateWithoutUpdatedTaxCategoryDefaultsInput>
+}
+
+export type UserUpsertWithoutUpdatedTaxCategoryDefaultsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutUpdatedTaxCategoryDefaultsInput, Prisma.UserUncheckedUpdateWithoutUpdatedTaxCategoryDefaultsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutUpdatedTaxCategoryDefaultsInput, Prisma.UserUncheckedCreateWithoutUpdatedTaxCategoryDefaultsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutUpdatedTaxCategoryDefaultsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutUpdatedTaxCategoryDefaultsInput, Prisma.UserUncheckedUpdateWithoutUpdatedTaxCategoryDefaultsInput>
+}
+
+export type UserUpdateWithoutUpdatedTaxCategoryDefaultsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  offboardedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitUpdateOneWithoutMembersNestedInput
+  roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
+  assignedRoles?: Prisma.UserRoleUpdateManyWithoutAssignedByNestedInput
+  unassignedRoles?: Prisma.UserRoleUpdateManyWithoutUnassignedByNestedInput
+  patientProfiles?: Prisma.PatientProfileUpdateManyWithoutOwnerUserNestedInput
+  doctorProfile?: Prisma.DoctorProfileUpdateOneWithoutOwnerUserNestedInput
+  assignedDoctorPatients?: Prisma.DoctorPatientUpdateManyWithoutAssignedByNestedInput
+  unassignedDoctorPatients?: Prisma.DoctorPatientUpdateManyWithoutUnassignedByNestedInput
+  doctorPatientActivities?: Prisma.DoctorPatientActivityUpdateManyWithoutActorNestedInput
+  createdAppointments?: Prisma.AppointmentUpdateManyWithoutCreatedByNestedInput
+  createdRegistrations?: Prisma.RegistrationUpdateManyWithoutCreatedByNestedInput
+  createdEncounters?: Prisma.EncounterUpdateManyWithoutCreatedByNestedInput
+  recordedVitalSigns?: Prisma.VitalSignsUpdateManyWithoutRecordedByNestedInput
+  recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
+  recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
+  recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
+  medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
+  createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
+  voidedInvoices?: Prisma.InvoiceUpdateManyWithoutVoidedByNestedInput
+  receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
+  refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUpdateManyWithoutUserNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
+  chatSessions?: Prisma.ChatSessionUpdateManyWithoutOwnerUserNestedInput
+  chatMessages?: Prisma.ChatMessageUpdateManyWithoutAuthorUserNestedInput
+  createdAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutCreatedByNestedInput
+  updatedAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutUpdatedByNestedInput
+  uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
+  ownedDocuments?: Prisma.DocumentUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUpdateManyWithoutReleasedByNestedInput
+  blockedConversations?: Prisma.ConversationUpdateManyWithoutBlockedByNestedInput
+  conversationMessages?: Prisma.ConversationMessageUpdateManyWithoutAuthorNestedInput
+  updatedFeatureEntitlements?: Prisma.FeatureEntitlementUpdateManyWithoutUpdatedByNestedInput
+  createdAdmissions?: Prisma.AdmissionUpdateManyWithoutCreatedByNestedInput
+  createdBedAssignments?: Prisma.BedAssignmentUpdateManyWithoutCreatedByNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
+  sentInvitations?: Prisma.UserInvitationUpdateManyWithoutInvitedByNestedInput
+  createdDocumentTemplates?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  publishedTemplateVersions?: Prisma.DocumentTemplateVersionUpdateManyWithoutPublishedByNestedInput
+  receivedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGranteeNestedInput
+  grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
+  offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
+  grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
+  defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
+  filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
+  draftedManagedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutDraftedByNestedInput
+  submittedApprovalRequests?: Prisma.DocumentApprovalRequestUpdateManyWithoutSubmittedByNestedInput
+  namedApprovalRounds?: Prisma.DocumentApprovalApproverUpdateManyWithoutApproverNestedInput
+  approvalDecisions?: Prisma.DocumentApprovalDecisionUpdateManyWithoutApproverNestedInput
+  collectedLabSpecimens?: Prisma.LabSpecimenUpdateManyWithoutCollectedByNestedInput
+  enteredLabResults?: Prisma.LabResultUpdateManyWithoutEnteredByNestedInput
+  verifiedLabResults?: Prisma.LabResultUpdateManyWithoutVerifiedByNestedInput
+  requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
+  updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
+  updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
+  revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutUpdatedTaxCategoryDefaultsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  offboardedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organizationUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  roles?: Prisma.UserRoleUncheckedUpdateManyWithoutUserNestedInput
+  assignedRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutAssignedByNestedInput
+  unassignedRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutUnassignedByNestedInput
+  patientProfiles?: Prisma.PatientProfileUncheckedUpdateManyWithoutOwnerUserNestedInput
+  doctorProfile?: Prisma.DoctorProfileUncheckedUpdateOneWithoutOwnerUserNestedInput
+  assignedDoctorPatients?: Prisma.DoctorPatientUncheckedUpdateManyWithoutAssignedByNestedInput
+  unassignedDoctorPatients?: Prisma.DoctorPatientUncheckedUpdateManyWithoutUnassignedByNestedInput
+  doctorPatientActivities?: Prisma.DoctorPatientActivityUncheckedUpdateManyWithoutActorNestedInput
+  createdAppointments?: Prisma.AppointmentUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdRegistrations?: Prisma.RegistrationUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdEncounters?: Prisma.EncounterUncheckedUpdateManyWithoutCreatedByNestedInput
+  recordedVitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
+  medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
+  createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  voidedInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutVoidedByNestedInput
+  receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
+  refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
+  chatSessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutOwnerUserNestedInput
+  chatMessages?: Prisma.ChatMessageUncheckedUpdateManyWithoutAuthorUserNestedInput
+  createdAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutUpdatedByNestedInput
+  uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
+  ownedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutReleasedByNestedInput
+  blockedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutBlockedByNestedInput
+  conversationMessages?: Prisma.ConversationMessageUncheckedUpdateManyWithoutAuthorNestedInput
+  updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdAdmissions?: Prisma.AdmissionUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdBedAssignments?: Prisma.BedAssignmentUncheckedUpdateManyWithoutCreatedByNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
+  sentInvitations?: Prisma.UserInvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+  createdDocumentTemplates?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  publishedTemplateVersions?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutPublishedByNestedInput
+  receivedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGranteeNestedInput
+  grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
+  offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
+  grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
+  defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
+  filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
+  draftedManagedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutDraftedByNestedInput
+  submittedApprovalRequests?: Prisma.DocumentApprovalRequestUncheckedUpdateManyWithoutSubmittedByNestedInput
+  namedApprovalRounds?: Prisma.DocumentApprovalApproverUncheckedUpdateManyWithoutApproverNestedInput
+  approvalDecisions?: Prisma.DocumentApprovalDecisionUncheckedUpdateManyWithoutApproverNestedInput
+  collectedLabSpecimens?: Prisma.LabSpecimenUncheckedUpdateManyWithoutCollectedByNestedInput
+  enteredLabResults?: Prisma.LabResultUncheckedUpdateManyWithoutEnteredByNestedInput
+  verifiedLabResults?: Prisma.LabResultUncheckedUpdateManyWithoutVerifiedByNestedInput
+  requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
+  updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -9073,6 +9927,8 @@ export type UserCreateWithoutVoidedInvoicesInput = {
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -9144,6 +10000,8 @@ export type UserUncheckedCreateWithoutVoidedInvoicesInput = {
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -9220,6 +10078,8 @@ export type UserCreateWithoutCreatedInvoicesInput = {
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -9291,6 +10151,8 @@ export type UserUncheckedCreateWithoutCreatedInvoicesInput = {
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -9378,6 +10240,8 @@ export type UserUpdateWithoutVoidedInvoicesInput = {
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -9449,6 +10313,8 @@ export type UserUncheckedUpdateWithoutVoidedInvoicesInput = {
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -9531,6 +10397,8 @@ export type UserUpdateWithoutCreatedInvoicesInput = {
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -9602,6 +10470,8 @@ export type UserUncheckedUpdateWithoutCreatedInvoicesInput = {
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -9673,6 +10543,8 @@ export type UserCreateWithoutReceivedPaymentsInput = {
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -9744,6 +10616,8 @@ export type UserUncheckedCreateWithoutReceivedPaymentsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -9831,6 +10705,8 @@ export type UserUpdateWithoutReceivedPaymentsInput = {
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -9902,6 +10778,8 @@ export type UserUncheckedUpdateWithoutReceivedPaymentsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -9973,6 +10851,8 @@ export type UserCreateWithoutCreatedDocumentTemplatesInput = {
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -10044,6 +10924,8 @@ export type UserUncheckedCreateWithoutCreatedDocumentTemplatesInput = {
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -10131,6 +11013,8 @@ export type UserUpdateWithoutCreatedDocumentTemplatesInput = {
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -10202,6 +11086,8 @@ export type UserUncheckedUpdateWithoutCreatedDocumentTemplatesInput = {
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -10273,6 +11159,8 @@ export type UserCreateWithoutPublishedTemplateVersionsInput = {
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -10344,6 +11232,8 @@ export type UserUncheckedCreateWithoutPublishedTemplateVersionsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -10431,6 +11321,8 @@ export type UserUpdateWithoutPublishedTemplateVersionsInput = {
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -10502,6 +11394,8 @@ export type UserUncheckedUpdateWithoutPublishedTemplateVersionsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -10573,6 +11467,8 @@ export type UserCreateWithoutRolesInput = {
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -10644,6 +11540,8 @@ export type UserUncheckedCreateWithoutRolesInput = {
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -10720,6 +11618,8 @@ export type UserCreateWithoutAssignedRolesInput = {
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -10791,6 +11691,8 @@ export type UserUncheckedCreateWithoutAssignedRolesInput = {
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -10867,6 +11769,8 @@ export type UserCreateWithoutUnassignedRolesInput = {
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -10938,6 +11842,8 @@ export type UserUncheckedCreateWithoutUnassignedRolesInput = {
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -11025,6 +11931,8 @@ export type UserUpdateWithoutRolesInput = {
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -11096,6 +12004,8 @@ export type UserUncheckedUpdateWithoutRolesInput = {
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -11178,6 +12088,8 @@ export type UserUpdateWithoutAssignedRolesInput = {
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -11249,6 +12161,8 @@ export type UserUncheckedUpdateWithoutAssignedRolesInput = {
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -11331,6 +12245,8 @@ export type UserUpdateWithoutUnassignedRolesInput = {
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -11402,6 +12318,8 @@ export type UserUncheckedUpdateWithoutUnassignedRolesInput = {
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -11473,6 +12391,8 @@ export type UserCreateWithoutRecordedBpjsReferralsInput = {
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -11544,6 +12464,8 @@ export type UserUncheckedCreateWithoutRecordedBpjsReferralsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -11631,6 +12553,8 @@ export type UserUpdateWithoutRecordedBpjsReferralsInput = {
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -11702,6 +12626,8 @@ export type UserUncheckedUpdateWithoutRecordedBpjsReferralsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -11773,6 +12699,8 @@ export type UserCreateWithoutCreatedAiProviderConfigsInput = {
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -11844,6 +12772,8 @@ export type UserUncheckedCreateWithoutCreatedAiProviderConfigsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -11920,6 +12850,8 @@ export type UserCreateWithoutUpdatedAiProviderConfigsInput = {
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -11991,6 +12923,8 @@ export type UserUncheckedCreateWithoutUpdatedAiProviderConfigsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -12078,6 +13012,8 @@ export type UserUpdateWithoutCreatedAiProviderConfigsInput = {
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -12149,6 +13085,8 @@ export type UserUncheckedUpdateWithoutCreatedAiProviderConfigsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -12231,6 +13169,8 @@ export type UserUpdateWithoutUpdatedAiProviderConfigsInput = {
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -12302,6 +13242,8 @@ export type UserUncheckedUpdateWithoutUpdatedAiProviderConfigsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -12373,6 +13315,8 @@ export type UserCreateWithoutChatSessionsInput = {
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -12444,6 +13388,8 @@ export type UserUncheckedCreateWithoutChatSessionsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -12531,6 +13477,8 @@ export type UserUpdateWithoutChatSessionsInput = {
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -12602,6 +13550,8 @@ export type UserUncheckedUpdateWithoutChatSessionsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -12673,6 +13623,8 @@ export type UserCreateWithoutChatMessagesInput = {
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -12744,6 +13696,8 @@ export type UserUncheckedCreateWithoutChatMessagesInput = {
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -12831,6 +13785,8 @@ export type UserUpdateWithoutChatMessagesInput = {
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -12902,6 +13858,8 @@ export type UserUncheckedUpdateWithoutChatMessagesInput = {
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -12973,6 +13931,8 @@ export type UserCreateWithoutUploadedDocumentsInput = {
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -13044,6 +14004,8 @@ export type UserUncheckedCreateWithoutUploadedDocumentsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -13120,6 +14082,8 @@ export type UserCreateWithoutOwnedDocumentsInput = {
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -13191,6 +14155,8 @@ export type UserUncheckedCreateWithoutOwnedDocumentsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -13267,6 +14233,8 @@ export type UserCreateWithoutReleasedDocumentsInput = {
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -13338,6 +14306,8 @@ export type UserUncheckedCreateWithoutReleasedDocumentsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -13425,6 +14395,8 @@ export type UserUpdateWithoutUploadedDocumentsInput = {
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -13496,6 +14468,8 @@ export type UserUncheckedUpdateWithoutUploadedDocumentsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -13578,6 +14552,8 @@ export type UserUpdateWithoutOwnedDocumentsInput = {
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -13649,6 +14625,8 @@ export type UserUncheckedUpdateWithoutOwnedDocumentsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -13731,6 +14709,8 @@ export type UserUpdateWithoutReleasedDocumentsInput = {
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -13802,6 +14782,8 @@ export type UserUncheckedUpdateWithoutReleasedDocumentsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -13873,6 +14855,8 @@ export type UserCreateWithoutReceivedVaultSharesInput = {
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -13944,6 +14928,8 @@ export type UserUncheckedCreateWithoutReceivedVaultSharesInput = {
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -14020,6 +15006,8 @@ export type UserCreateWithoutGrantedVaultSharesInput = {
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -14091,6 +15079,8 @@ export type UserUncheckedCreateWithoutGrantedVaultSharesInput = {
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -14178,6 +15168,8 @@ export type UserUpdateWithoutReceivedVaultSharesInput = {
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -14249,6 +15241,8 @@ export type UserUncheckedUpdateWithoutReceivedVaultSharesInput = {
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -14331,6 +15325,8 @@ export type UserUpdateWithoutGrantedVaultSharesInput = {
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -14402,6 +15398,8 @@ export type UserUncheckedUpdateWithoutGrantedVaultSharesInput = {
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -14473,6 +15471,8 @@ export type UserCreateWithoutOffboardingNoticesInput = {
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -14544,6 +15544,8 @@ export type UserUncheckedCreateWithoutOffboardingNoticesInput = {
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -14631,6 +15633,8 @@ export type UserUpdateWithoutOffboardingNoticesInput = {
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -14702,6 +15706,8 @@ export type UserUncheckedUpdateWithoutOffboardingNoticesInput = {
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -14773,6 +15779,8 @@ export type UserCreateWithoutBlockedConversationsInput = {
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -14844,6 +15852,8 @@ export type UserUncheckedCreateWithoutBlockedConversationsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -14931,6 +15941,8 @@ export type UserUpdateWithoutBlockedConversationsInput = {
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -15002,6 +16014,8 @@ export type UserUncheckedUpdateWithoutBlockedConversationsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -15073,6 +16087,8 @@ export type UserCreateWithoutConversationMessagesInput = {
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -15144,6 +16160,8 @@ export type UserUncheckedCreateWithoutConversationMessagesInput = {
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -15231,6 +16249,8 @@ export type UserUpdateWithoutConversationMessagesInput = {
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -15302,6 +16322,8 @@ export type UserUncheckedUpdateWithoutConversationMessagesInput = {
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -15373,6 +16395,8 @@ export type UserCreateWithoutCreatedAdmissionsInput = {
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -15444,6 +16468,8 @@ export type UserUncheckedCreateWithoutCreatedAdmissionsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -15531,6 +16557,8 @@ export type UserUpdateWithoutCreatedAdmissionsInput = {
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -15602,6 +16630,8 @@ export type UserUncheckedUpdateWithoutCreatedAdmissionsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -15673,6 +16703,8 @@ export type UserCreateWithoutCreatedBedAssignmentsInput = {
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -15744,6 +16776,8 @@ export type UserUncheckedCreateWithoutCreatedBedAssignmentsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -15831,6 +16865,8 @@ export type UserUpdateWithoutCreatedBedAssignmentsInput = {
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -15902,6 +16938,8 @@ export type UserUncheckedUpdateWithoutCreatedBedAssignmentsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -15973,6 +17011,8 @@ export type UserCreateWithoutNotificationsInput = {
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -16044,6 +17084,8 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -16131,6 +17173,8 @@ export type UserUpdateWithoutNotificationsInput = {
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -16202,6 +17246,8 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -16273,6 +17319,8 @@ export type UserCreateWithoutOrganizationUnitInput = {
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -16344,6 +17392,8 @@ export type UserUncheckedCreateWithoutOrganizationUnitInput = {
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -16457,6 +17507,8 @@ export type UserCreateWithoutDefaultApproverForTypesInput = {
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -16528,6 +17580,8 @@ export type UserUncheckedCreateWithoutDefaultApproverForTypesInput = {
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -16615,6 +17669,8 @@ export type UserUpdateWithoutDefaultApproverForTypesInput = {
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -16686,6 +17742,8 @@ export type UserUncheckedUpdateWithoutDefaultApproverForTypesInput = {
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -16757,6 +17815,8 @@ export type UserCreateWithoutDraftedManagedDocumentsInput = {
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -16828,6 +17888,8 @@ export type UserUncheckedCreateWithoutDraftedManagedDocumentsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -16915,6 +17977,8 @@ export type UserUpdateWithoutDraftedManagedDocumentsInput = {
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -16986,6 +18050,8 @@ export type UserUncheckedUpdateWithoutDraftedManagedDocumentsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -17057,6 +18123,8 @@ export type UserCreateWithoutSubmittedApprovalRequestsInput = {
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -17128,6 +18196,8 @@ export type UserUncheckedCreateWithoutSubmittedApprovalRequestsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -17215,6 +18285,8 @@ export type UserUpdateWithoutSubmittedApprovalRequestsInput = {
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -17286,6 +18358,8 @@ export type UserUncheckedUpdateWithoutSubmittedApprovalRequestsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -17357,6 +18431,8 @@ export type UserCreateWithoutNamedApprovalRoundsInput = {
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -17428,6 +18504,8 @@ export type UserUncheckedCreateWithoutNamedApprovalRoundsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -17515,6 +18593,8 @@ export type UserUpdateWithoutNamedApprovalRoundsInput = {
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -17586,6 +18666,8 @@ export type UserUncheckedUpdateWithoutNamedApprovalRoundsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -17657,6 +18739,8 @@ export type UserCreateWithoutApprovalDecisionsInput = {
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -17728,6 +18812,8 @@ export type UserUncheckedCreateWithoutApprovalDecisionsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -17815,6 +18901,8 @@ export type UserUpdateWithoutApprovalDecisionsInput = {
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -17886,6 +18974,8 @@ export type UserUncheckedUpdateWithoutApprovalDecisionsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -17957,6 +19047,8 @@ export type UserCreateWithoutCollectedLabSpecimensInput = {
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -18028,6 +19120,8 @@ export type UserUncheckedCreateWithoutCollectedLabSpecimensInput = {
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -18115,6 +19209,8 @@ export type UserUpdateWithoutCollectedLabSpecimensInput = {
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -18186,6 +19282,8 @@ export type UserUncheckedUpdateWithoutCollectedLabSpecimensInput = {
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -18257,6 +19355,8 @@ export type UserCreateWithoutEnteredLabResultsInput = {
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -18328,6 +19428,8 @@ export type UserUncheckedCreateWithoutEnteredLabResultsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -18404,6 +19506,8 @@ export type UserCreateWithoutVerifiedLabResultsInput = {
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -18475,6 +19579,8 @@ export type UserUncheckedCreateWithoutVerifiedLabResultsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -18562,6 +19668,8 @@ export type UserUpdateWithoutEnteredLabResultsInput = {
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -18633,6 +19741,8 @@ export type UserUncheckedUpdateWithoutEnteredLabResultsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -18715,6 +19825,8 @@ export type UserUpdateWithoutVerifiedLabResultsInput = {
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -18786,6 +19898,8 @@ export type UserUncheckedUpdateWithoutVerifiedLabResultsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -18857,6 +19971,8 @@ export type UserCreateWithoutUpdatedLaboratorySettingsInput = {
   verifiedLabResults?: Prisma.LabResultCreateNestedManyWithoutVerifiedByInput
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -18928,6 +20044,8 @@ export type UserUncheckedCreateWithoutUpdatedLaboratorySettingsInput = {
   verifiedLabResults?: Prisma.LabResultUncheckedCreateNestedManyWithoutVerifiedByInput
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -19015,6 +20133,8 @@ export type UserUpdateWithoutUpdatedLaboratorySettingsInput = {
   verifiedLabResults?: Prisma.LabResultUpdateManyWithoutVerifiedByNestedInput
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -19086,6 +20206,8 @@ export type UserUncheckedUpdateWithoutUpdatedLaboratorySettingsInput = {
   verifiedLabResults?: Prisma.LabResultUncheckedUpdateManyWithoutVerifiedByNestedInput
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -19157,6 +20279,8 @@ export type UserCreateWithoutRequestedLabReportsInput = {
   verifiedLabResults?: Prisma.LabResultCreateNestedManyWithoutVerifiedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -19228,6 +20352,8 @@ export type UserUncheckedCreateWithoutRequestedLabReportsInput = {
   verifiedLabResults?: Prisma.LabResultUncheckedCreateNestedManyWithoutVerifiedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -19315,6 +20441,8 @@ export type UserUpdateWithoutRequestedLabReportsInput = {
   verifiedLabResults?: Prisma.LabResultUpdateManyWithoutVerifiedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -19386,6 +20514,8 @@ export type UserUncheckedUpdateWithoutRequestedLabReportsInput = {
   verifiedLabResults?: Prisma.LabResultUncheckedUpdateManyWithoutVerifiedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -19457,6 +20587,8 @@ export type UserCreateWithoutFiledBugReportsInput = {
   requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
 }
@@ -19528,6 +20660,8 @@ export type UserUncheckedCreateWithoutFiledBugReportsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
 }
@@ -19615,6 +20749,8 @@ export type UserUpdateWithoutFiledBugReportsInput = {
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -19686,6 +20822,8 @@ export type UserUncheckedUpdateWithoutFiledBugReportsInput = {
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -19769,6 +20907,8 @@ export type UserUpdateWithoutOrganizationUnitInput = {
   requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
 }
@@ -19840,6 +20980,8 @@ export type UserUncheckedUpdateWithoutOrganizationUnitInput = {
   requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
   updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
   grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
 }
@@ -19917,6 +21059,8 @@ export type UserCountOutputType = {
   requestedLabReports: number
   updatedLaboratorySettings: number
   updatedTaxSettings: number
+  createdTaxCodeRates: number
+  updatedTaxCategoryDefaults: number
   grantedDoctorAuthorities: number
   revokedDoctorAuthorities: number
 }
@@ -19977,6 +21121,8 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   requestedLabReports?: boolean | UserCountOutputTypeCountRequestedLabReportsArgs
   updatedLaboratorySettings?: boolean | UserCountOutputTypeCountUpdatedLaboratorySettingsArgs
   updatedTaxSettings?: boolean | UserCountOutputTypeCountUpdatedTaxSettingsArgs
+  createdTaxCodeRates?: boolean | UserCountOutputTypeCountCreatedTaxCodeRatesArgs
+  updatedTaxCategoryDefaults?: boolean | UserCountOutputTypeCountUpdatedTaxCategoryDefaultsArgs
   grantedDoctorAuthorities?: boolean | UserCountOutputTypeCountGrantedDoctorAuthoritiesArgs
   revokedDoctorAuthorities?: boolean | UserCountOutputTypeCountRevokedDoctorAuthoritiesArgs
 }
@@ -20379,6 +21525,20 @@ export type UserCountOutputTypeCountUpdatedTaxSettingsArgs<ExtArgs extends runti
 /**
  * UserCountOutputType without action
  */
+export type UserCountOutputTypeCountCreatedTaxCodeRatesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TaxCodeRateWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountUpdatedTaxCategoryDefaultsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TaxCategoryDefaultWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
 export type UserCountOutputTypeCountGrantedDoctorAuthoritiesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.DoctorAuthorityWhereInput
 }
@@ -20460,6 +21620,8 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   requestedLabReports?: boolean | Prisma.User$requestedLabReportsArgs<ExtArgs>
   updatedLaboratorySettings?: boolean | Prisma.User$updatedLaboratorySettingsArgs<ExtArgs>
   updatedTaxSettings?: boolean | Prisma.User$updatedTaxSettingsArgs<ExtArgs>
+  createdTaxCodeRates?: boolean | Prisma.User$createdTaxCodeRatesArgs<ExtArgs>
+  updatedTaxCategoryDefaults?: boolean | Prisma.User$updatedTaxCategoryDefaultsArgs<ExtArgs>
   grantedDoctorAuthorities?: boolean | Prisma.User$grantedDoctorAuthoritiesArgs<ExtArgs>
   revokedDoctorAuthorities?: boolean | Prisma.User$revokedDoctorAuthoritiesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
@@ -20566,6 +21728,8 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   requestedLabReports?: boolean | Prisma.User$requestedLabReportsArgs<ExtArgs>
   updatedLaboratorySettings?: boolean | Prisma.User$updatedLaboratorySettingsArgs<ExtArgs>
   updatedTaxSettings?: boolean | Prisma.User$updatedTaxSettingsArgs<ExtArgs>
+  createdTaxCodeRates?: boolean | Prisma.User$createdTaxCodeRatesArgs<ExtArgs>
+  updatedTaxCategoryDefaults?: boolean | Prisma.User$updatedTaxCategoryDefaultsArgs<ExtArgs>
   grantedDoctorAuthorities?: boolean | Prisma.User$grantedDoctorAuthoritiesArgs<ExtArgs>
   revokedDoctorAuthorities?: boolean | Prisma.User$revokedDoctorAuthoritiesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
@@ -20638,6 +21802,8 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     requestedLabReports: Prisma.$LabReportPayload<ExtArgs>[]
     updatedLaboratorySettings: Prisma.$LaboratorySettingsPayload<ExtArgs>[]
     updatedTaxSettings: Prisma.$TaxSettingsPayload<ExtArgs>[]
+    createdTaxCodeRates: Prisma.$TaxCodeRatePayload<ExtArgs>[]
+    updatedTaxCategoryDefaults: Prisma.$TaxCategoryDefaultPayload<ExtArgs>[]
     grantedDoctorAuthorities: Prisma.$DoctorAuthorityPayload<ExtArgs>[]
     revokedDoctorAuthorities: Prisma.$DoctorAuthorityPayload<ExtArgs>[]
   }
@@ -21130,6 +22296,8 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   requestedLabReports<T extends Prisma.User$requestedLabReportsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$requestedLabReportsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LabReportPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   updatedLaboratorySettings<T extends Prisma.User$updatedLaboratorySettingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$updatedLaboratorySettingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LaboratorySettingsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   updatedTaxSettings<T extends Prisma.User$updatedTaxSettingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$updatedTaxSettingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaxSettingsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  createdTaxCodeRates<T extends Prisma.User$createdTaxCodeRatesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$createdTaxCodeRatesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaxCodeRatePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  updatedTaxCategoryDefaults<T extends Prisma.User$updatedTaxCategoryDefaultsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$updatedTaxCategoryDefaultsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaxCategoryDefaultPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   grantedDoctorAuthorities<T extends Prisma.User$grantedDoctorAuthoritiesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$grantedDoctorAuthoritiesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DoctorAuthorityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   revokedDoctorAuthorities<T extends Prisma.User$revokedDoctorAuthoritiesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$revokedDoctorAuthoritiesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DoctorAuthorityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
@@ -22946,6 +24114,54 @@ export type User$updatedTaxSettingsArgs<ExtArgs extends runtime.Types.Extensions
   take?: number
   skip?: number
   distinct?: Prisma.TaxSettingsScalarFieldEnum | Prisma.TaxSettingsScalarFieldEnum[]
+}
+
+/**
+ * User.createdTaxCodeRates
+ */
+export type User$createdTaxCodeRatesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TaxCodeRate
+   */
+  select?: Prisma.TaxCodeRateSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TaxCodeRate
+   */
+  omit?: Prisma.TaxCodeRateOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TaxCodeRateInclude<ExtArgs> | null
+  where?: Prisma.TaxCodeRateWhereInput
+  orderBy?: Prisma.TaxCodeRateOrderByWithRelationInput | Prisma.TaxCodeRateOrderByWithRelationInput[]
+  cursor?: Prisma.TaxCodeRateWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TaxCodeRateScalarFieldEnum | Prisma.TaxCodeRateScalarFieldEnum[]
+}
+
+/**
+ * User.updatedTaxCategoryDefaults
+ */
+export type User$updatedTaxCategoryDefaultsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TaxCategoryDefault
+   */
+  select?: Prisma.TaxCategoryDefaultSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TaxCategoryDefault
+   */
+  omit?: Prisma.TaxCategoryDefaultOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TaxCategoryDefaultInclude<ExtArgs> | null
+  where?: Prisma.TaxCategoryDefaultWhereInput
+  orderBy?: Prisma.TaxCategoryDefaultOrderByWithRelationInput | Prisma.TaxCategoryDefaultOrderByWithRelationInput[]
+  cursor?: Prisma.TaxCategoryDefaultWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TaxCategoryDefaultScalarFieldEnum | Prisma.TaxCategoryDefaultScalarFieldEnum[]
 }
 
 /**

@@ -99,6 +99,9 @@ export const ModelName = {
   DispenseItemStockAllocation: 'DispenseItemStockAllocation',
   ClinicProfile: 'ClinicProfile',
   TaxSettings: 'TaxSettings',
+  TaxCode: 'TaxCode',
+  TaxCodeRate: 'TaxCodeRate',
+  TaxCategoryDefault: 'TaxCategoryDefault',
   ServiceTariff: 'ServiceTariff',
   InvoiceCounter: 'InvoiceCounter',
   Invoice: 'Invoice',
@@ -829,6 +832,7 @@ export const MedicationScalarFieldEnum = {
   unitPrice: 'unitPrice',
   isVaccine: 'isVaccine',
   isMidwifePrescribable: 'isMidwifePrescribable',
+  taxCodeId: 'taxCodeId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   deletedAt: 'deletedAt'
@@ -1001,6 +1005,48 @@ export const TaxSettingsScalarFieldEnum = {
 export type TaxSettingsScalarFieldEnum = (typeof TaxSettingsScalarFieldEnum)[keyof typeof TaxSettingsScalarFieldEnum]
 
 
+export const TaxCodeScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  name: 'name',
+  ppnTreatment: 'ppnTreatment',
+  fakturTransactionCode: 'fakturTransactionCode',
+  invoiceNote: 'invoiceNote',
+  isSystem: 'isSystem',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TaxCodeScalarFieldEnum = (typeof TaxCodeScalarFieldEnum)[keyof typeof TaxCodeScalarFieldEnum]
+
+
+export const TaxCodeRateScalarFieldEnum = {
+  id: 'id',
+  taxCodeId: 'taxCodeId',
+  ratePercent: 'ratePercent',
+  dppNumerator: 'dppNumerator',
+  dppDenominator: 'dppDenominator',
+  effectiveFrom: 'effectiveFrom',
+  createdById: 'createdById',
+  createdAt: 'createdAt'
+} as const
+
+export type TaxCodeRateScalarFieldEnum = (typeof TaxCodeRateScalarFieldEnum)[keyof typeof TaxCodeRateScalarFieldEnum]
+
+
+export const TaxCategoryDefaultScalarFieldEnum = {
+  id: 'id',
+  target: 'target',
+  taxCodeId: 'taxCodeId',
+  updatedById: 'updatedById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TaxCategoryDefaultScalarFieldEnum = (typeof TaxCategoryDefaultScalarFieldEnum)[keyof typeof TaxCategoryDefaultScalarFieldEnum]
+
+
 export const ServiceTariffScalarFieldEnum = {
   id: 'id',
   code: 'code',
@@ -1012,6 +1058,7 @@ export const ServiceTariffScalarFieldEnum = {
   profession: 'profession',
   price: 'price',
   isActive: 'isActive',
+  taxCodeId: 'taxCodeId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   deletedAt: 'deletedAt'

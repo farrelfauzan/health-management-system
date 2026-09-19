@@ -568,6 +568,27 @@ export type ClinicProfile = Prisma.ClinicProfileModel
  */
 export type TaxSettings = Prisma.TaxSettingsModel
 /**
+ * Model TaxCode
+ * A tax treatment a tariff or medication can carry (P27-T03). The rate lives
+ * in `tax_code_rates`, effective-dated, so a PMK changing it is a new row and
+ * never an edit (D-038). System codes are seeded and keep their treatment and
+ * faktur code; a clinic may add its own.
+ */
+export type TaxCode = Prisma.TaxCodeModel
+/**
+ * Model TaxCodeRate
+ * One rate of a tax code, in force from `effectiveFrom` until the next row's
+ * date. Append-only: history is what lets an invoice issued in 2026 be
+ * recomputed with the 2026 rate years later.
+ */
+export type TaxCodeRate = Prisma.TaxCodeRateModel
+/**
+ * Model TaxCategoryDefault
+ * The code a tariff category, or every medication, is taxed under when the
+ * item names none of its own (P27-T03). One row per target.
+ */
+export type TaxCategoryDefault = Prisma.TaxCategoryDefaultModel
+/**
  * Model ServiceTariff
  * Price-list row for services the clinic charges — consultation fees and
  * clinical actions (tindakan). Reference data like the terminology catalogs:

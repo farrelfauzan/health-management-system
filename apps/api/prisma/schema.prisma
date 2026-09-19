@@ -342,6 +342,12 @@ enum AuditAction {
   /// new value — every later tax computation reads this row, and a report is
   /// only explainable against the profile that was in force.
   TAX_SETTINGS_UPDATED
+  /// A tax code was created, edited, (de)activated or given a new rate, or a
+  /// category default was moved (P27-T03).
+  TAX_CODE_CHANGED
+  /// Tariffs or medications were given a tax code, or returned to their
+  /// category default (P27-T03). Carries the ids and the code, never prices.
+  TAX_ASSIGNMENT_CHANGED
 }
 
 enum BpjsSubmissionType {
@@ -1047,6 +1053,8 @@ model User {
   requestedLabReports       LabReport[]                @relation("LabReportRequestedBy")
   updatedLaboratorySettings LaboratorySettings[]       @relation("LaboratorySettingsUpdatedBy")
   updatedTaxSettings        TaxSettings[]              @relation("TaxSettingsUpdatedBy")
+  createdTaxCodeRates        TaxCodeRate[]              @relation("TaxCodeRateCreatedBy")
+  updatedTaxCategoryDefaults TaxCategoryDefault[]       @relation("TaxCategoryDefaultUpdatedBy")
   grantedDoctorAuthorities  DoctorAuthority[]          @relation("DoctorAuthorityCreatedBy")
   revokedDoctorAuthorities  DoctorAuthority[]          @relation("DoctorAuthorityRevokedBy")
 
@@ -2547,6 +2555,9 @@ model Medication {
   /// default and never seeded: Permenkes 28/2017 limits a bidan to her own
   /// authorities, and which catalog items fall inside them is the clinic's call.
   isMidwifePrescribable Boolean @default(false) @map("is_midwife_prescribable")
+  /// This medication's own tax code (P27-T03). Null means it follows the
+  /// medication default in `tax_category_defaults`.
+  taxCodeId             String?             @map("tax_code_id") @db.Uuid
   createdAt    DateTime            @default(now()) @map("created_at")
   updatedAt    DateTime            @updatedAt @map("updated_at")
   deletedAt    DateTime?           @map("deleted_at")
@@ -2557,11 +2568,13 @@ model Medication {
   stockReceipts      MedicationStockReceipt[]
   invoiceItems       InvoiceItem[]
   immunizations      Immunization[]
+  taxCode            TaxCode?                    @relation(fields: [taxCodeId], references: [id], onDelete: Restrict)
 
   @@index([name])
   @@index([category])
   @@index([isVaccine])
   @@index([reorderLevel])
+  @@index([taxCodeId])
   @@index([deletedAt])
   @@map("medications")
 }
@@ -2899,6 +2912,93 @@ model TaxSettings {
   @@map("tax_settings")
 }
 
+/// How PPN treats what a tax code covers (P27-T03, D-038).
+enum PpnTreatment {
+  EXEMPT_MEDICAL
+  STANDARD
+  EXEMPT_OTHER
+  NOT_OBJECT
+
+  @@map("ppn_treatment")
+}
+
+/// What a category default is keyed by: each tariff category, plus medications.
+enum TaxDefaultTarget {
+  CONSULTATION
+  PROCEDURE
+  ACCOMMODATION
+  LAB
+  OTHER
+  MEDICATION
+
+  @@map("tax_default_target")
+}
+
+/// A tax treatment a tariff or medication can carry (P27-T03). The rate lives
+/// in `tax_code_rates`, effective-dated, so a PMK changing it is a new row and
+/// never an edit (D-038). System codes are seeded and keep their treatment and
+/// faktur code; a clinic may add its own.
+model TaxCode {
+  id                    String       @id @default(uuid()) @db.Uuid
+  code                  String       @unique @db.VarChar(40)
+  name                  String       @db.VarChar(120)
+  ppnTreatment          PpnTreatment @map("ppn_treatment")
+  /// Coretax faktur transaction code: 08 for exempt, 01 or 04 for standard,
+  /// null when the code is not a PPN object. CHECK keeps it matched.
+  fakturTransactionCode String?      @map("faktur_transaction_code") @db.VarChar(2)
+  invoiceNote           String?      @map("invoice_note") @db.VarChar(200)
+  isSystem              Boolean      @default(false) @map("is_system")
+  isActive              Boolean      @default(true) @map("is_active")
+  createdAt             DateTime     @default(now()) @map("created_at")
+  updatedAt             DateTime     @updatedAt @map("updated_at")
+
+  rates            TaxCodeRate[]
+  categoryDefaults TaxCategoryDefault[]
+  serviceTariffs   ServiceTariff[]
+  medications      Medication[]
+
+  @@map("tax_codes")
+}
+
+/// One rate of a tax code, in force from `effectiveFrom` until the next row's
+/// date. Append-only: history is what lets an invoice issued in 2026 be
+/// recomputed with the 2026 rate years later.
+model TaxCodeRate {
+  id             String   @id @default(uuid()) @db.Uuid
+  taxCodeId      String   @map("tax_code_id") @db.Uuid
+  /// `ratePercent × dppNumerator / dppDenominator` is the effective rate:
+  /// 12 × 11/12 under PMK 131/2024.
+  ratePercent    Decimal  @map("rate_percent") @db.Decimal(5, 2)
+  dppNumerator   Int      @map("dpp_numerator")
+  dppDenominator Int      @map("dpp_denominator")
+  effectiveFrom  DateTime @map("effective_from") @db.Date
+  createdById    String?  @map("created_by_id") @db.Uuid
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  taxCode   TaxCode @relation(fields: [taxCodeId], references: [id], onDelete: Restrict)
+  createdBy User?   @relation("TaxCodeRateCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+
+  @@unique([taxCodeId, effectiveFrom])
+  @@map("tax_code_rates")
+}
+
+/// The code a tariff category, or every medication, is taxed under when the
+/// item names none of its own (P27-T03). One row per target.
+model TaxCategoryDefault {
+  id          String           @id @default(uuid()) @db.Uuid
+  target      TaxDefaultTarget @unique
+  taxCodeId   String           @map("tax_code_id") @db.Uuid
+  updatedById String?          @map("updated_by_id") @db.Uuid
+  createdAt   DateTime         @default(now()) @map("created_at")
+  updatedAt   DateTime         @updatedAt @map("updated_at")
+
+  taxCode   TaxCode @relation(fields: [taxCodeId], references: [id], onDelete: Restrict)
+  updatedBy User?   @relation("TaxCategoryDefaultUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
+
+  @@index([taxCodeId])
+  @@map("tax_category_defaults")
+}
+
 /// Price-list row for services the clinic charges — consultation fees and
 /// clinical actions (tindakan). Reference data like the terminology catalogs:
 /// rows are deactivated, never deleted, because invoice items snapshot the
@@ -2936,12 +3036,16 @@ model ServiceTariff {
   /// Rupiah. CHECK in the migration rejects negative prices.
   price       Decimal               @db.Decimal(12, 2)
   isActive    Boolean               @default(true) @map("is_active")
+  /// This tariff's own tax code (P27-T03). Null means it follows the default
+  /// for its category in `tax_category_defaults`.
+  taxCodeId   String?               @map("tax_code_id") @db.Uuid
   createdAt   DateTime              @default(now()) @map("created_at")
   updatedAt   DateTime              @updatedAt @map("updated_at")
   deletedAt   DateTime?             @map("deleted_at")
 
   roomClass    RoomClass?    @relation(fields: [roomClassId], references: [id], onDelete: Restrict)
   specialty    Specialty?    @relation(fields: [specialtyId], references: [id], onDelete: Restrict)
+  taxCode      TaxCode?      @relation(fields: [taxCodeId], references: [id], onDelete: Restrict)
   invoiceItems InvoiceItem[]
   labTests     LabTest[]
   labPanels    LabPanel[]
@@ -2950,6 +3054,7 @@ model ServiceTariff {
   @@index([isActive])
   @@index([roomClassId])
   @@index([specialtyId])
+  @@index([taxCodeId])
   @@index([deletedAt])
   @@map("service_tariffs")
 }

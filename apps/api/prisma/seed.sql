@@ -122,6 +122,10 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     -- NITKU and pricing mode. Administrators only; no clinical role reads it.
     ('tax-settings.read:any', 'TaxSettings', 'read', 'ANY', 'Read the clinic tax profile'),
     ('tax-settings.write:any', 'TaxSettings', 'write', 'ANY', 'Change the clinic tax profile'),
+    -- P27-T03. Tax codes, their rates, the category defaults and the tax code
+    -- on each tariff and medication. Administrators only.
+    ('tax-code.read:any', 'TaxCode', 'read', 'ANY', 'Read tax codes and the tax code on each tariff and medication'),
+    ('tax-code.write:any', 'TaxCode', 'write', 'ANY', 'Change tax codes, rates, defaults and assignments'),
     ('portal.patient-access:own', 'Portal', 'patient-access', 'OWN', 'Access the patient portal'),
     ('role.assign:any', 'Role', 'assign', 'ANY', 'Assign roles to users'),
     ('role.read:any', 'Role', 'read', 'ANY', 'Read role catalog'),
@@ -564,6 +568,8 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('ADMIN', 'lab-settings.write:any'),
     ('ADMIN', 'tax-settings.read:any'),
     ('ADMIN', 'tax-settings.write:any'),
+    ('ADMIN', 'tax-code.read:any'),
+    ('ADMIN', 'tax-code.write:any'),
     ('ADMIN', 'invoice.read:any'),
     ('ADMIN', 'invoice.write:any'),
     ('ADMIN', 'invoice.deliver:any'),
@@ -2005,6 +2011,106 @@ SELECT
   NOW()
 FROM seed_service_tariffs
 ON CONFLICT ("code") DO NOTHING;
+
+-- P27-T03 (SJ-244, D-038). The system tax codes, their first rates and the
+-- category defaults. Baseline, not demo data: without them every tariff and
+-- medication resolves to no tax code. Codes are upserted on name and note only
+-- — treatment and faktur code are what a system code is, and never change
+-- here. Rates and defaults use DO NOTHING: a reseed must not undo a rate the
+-- clinic added or a default it moved.
+WITH seed_tax_codes(code, name, ppn_treatment, faktur_transaction_code, invoice_note) AS (
+  VALUES
+    ('JASA-MEDIS', 'Jasa pelayanan kesehatan medis', 'EXEMPT_MEDICAL', '08', 'PPN dibebaskan (PP 49/2022 Pasal 11)'),
+    ('BARANG-PPN', 'Barang kena pajak (obat, alat kesehatan)', 'STANDARD', '04', NULL),
+    ('JASA-NONMEDIS-PPN', 'Jasa non-medis kena pajak (estetika, administrasi, sewa)', 'STANDARD', '04', NULL),
+    ('BEBAS-PROGRAM', 'Dibebaskan untuk program pemerintah (mis. vaksin program)', 'EXEMPT_OTHER', '08', 'PPN dibebaskan (PP 49/2022)'),
+    ('NON-OBJEK', 'Bukan objek PPN', 'NOT_OBJECT', NULL, NULL)
+)
+INSERT INTO "tax_codes" (
+  "id",
+  "code",
+  "name",
+  "ppn_treatment",
+  "faktur_transaction_code",
+  "invoice_note",
+  "is_system",
+  "is_active",
+  "created_at",
+  "updated_at"
+)
+SELECT
+  md5('tax_code:' || code)::uuid,
+  code,
+  name,
+  ppn_treatment::"ppn_treatment",
+  faktur_transaction_code,
+  invoice_note,
+  TRUE,
+  TRUE,
+  NOW(),
+  NOW()
+FROM seed_tax_codes
+ON CONFLICT ("code") DO UPDATE
+SET
+  "name" = EXCLUDED."name",
+  "invoice_note" = EXCLUDED."invoice_note",
+  "is_system" = TRUE,
+  "updated_at" = NOW();
+
+-- 12% x 11/12 (DPP nilai lain) from 1 January 2025, PMK 131/2024 as
+-- consolidated by PMK 11/2025: an effective 11% on non-luxury goods and services.
+WITH seed_tax_code_rates(code, rate_percent, dpp_numerator, dpp_denominator, effective_from) AS (
+  VALUES
+    ('BARANG-PPN', 12.00, 11, 12, DATE '2025-01-01'),
+    ('JASA-NONMEDIS-PPN', 12.00, 11, 12, DATE '2025-01-01')
+)
+INSERT INTO "tax_code_rates" (
+  "id",
+  "tax_code_id",
+  "rate_percent",
+  "dpp_numerator",
+  "dpp_denominator",
+  "effective_from",
+  "created_at"
+)
+SELECT
+  md5('tax_code_rate:' || code || ':' || effective_from::text)::uuid,
+  md5('tax_code:' || code)::uuid,
+  rate_percent,
+  dpp_numerator,
+  dpp_denominator,
+  effective_from,
+  NOW()
+FROM seed_tax_code_rates
+ON CONFLICT ("tax_code_id", "effective_from") DO NOTHING;
+
+-- Every tariff category is a medical service until the clinic says otherwise;
+-- medications are taxable goods. A clinic with aesthetic or administrative
+-- tariffs moves those to JASA-NONMEDIS-PPN one by one or in bulk.
+WITH seed_tax_category_defaults(target, code) AS (
+  VALUES
+    ('CONSULTATION', 'JASA-MEDIS'),
+    ('PROCEDURE', 'JASA-MEDIS'),
+    ('ACCOMMODATION', 'JASA-MEDIS'),
+    ('LAB', 'JASA-MEDIS'),
+    ('OTHER', 'JASA-MEDIS'),
+    ('MEDICATION', 'BARANG-PPN')
+)
+INSERT INTO "tax_category_defaults" (
+  "id",
+  "target",
+  "tax_code_id",
+  "created_at",
+  "updated_at"
+)
+SELECT
+  md5('tax_category_default:' || target)::uuid,
+  target::"tax_default_target",
+  md5('tax_code:' || code)::uuid,
+  NOW(),
+  NOW()
+FROM seed_tax_category_defaults
+ON CONFLICT ("target") DO NOTHING;
 
 -- P16-T39. The nine system document types (§7.5.2.3). Baseline, not demo
 -- data: code binds to `behavior` — issuing an INVOICE_TEMPLATE publishes a

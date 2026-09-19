@@ -50,6 +50,7 @@ export type MedicationMinAggregateOutputType = {
   unitPrice: runtime.Decimal | null
   isVaccine: boolean | null
   isMidwifePrescribable: boolean | null
+  taxCodeId: string | null
   createdAt: Date | null
   updatedAt: Date | null
   deletedAt: Date | null
@@ -69,6 +70,7 @@ export type MedicationMaxAggregateOutputType = {
   unitPrice: runtime.Decimal | null
   isVaccine: boolean | null
   isMidwifePrescribable: boolean | null
+  taxCodeId: string | null
   createdAt: Date | null
   updatedAt: Date | null
   deletedAt: Date | null
@@ -88,6 +90,7 @@ export type MedicationCountAggregateOutputType = {
   unitPrice: number
   isVaccine: number
   isMidwifePrescribable: number
+  taxCodeId: number
   createdAt: number
   updatedAt: number
   deletedAt: number
@@ -119,6 +122,7 @@ export type MedicationMinAggregateInputType = {
   unitPrice?: true
   isVaccine?: true
   isMidwifePrescribable?: true
+  taxCodeId?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -138,6 +142,7 @@ export type MedicationMaxAggregateInputType = {
   unitPrice?: true
   isVaccine?: true
   isMidwifePrescribable?: true
+  taxCodeId?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -157,6 +162,7 @@ export type MedicationCountAggregateInputType = {
   unitPrice?: true
   isVaccine?: true
   isMidwifePrescribable?: true
+  taxCodeId?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -263,6 +269,7 @@ export type MedicationGroupByOutputType = {
   unitPrice: runtime.Decimal | null
   isVaccine: boolean
   isMidwifePrescribable: boolean
+  taxCodeId: string | null
   createdAt: Date
   updatedAt: Date
   deletedAt: Date | null
@@ -305,6 +312,7 @@ export type MedicationWhereInput = {
   unitPrice?: Prisma.DecimalNullableFilter<"Medication"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isVaccine?: Prisma.BoolFilter<"Medication"> | boolean
   isMidwifePrescribable?: Prisma.BoolFilter<"Medication"> | boolean
+  taxCodeId?: Prisma.UuidNullableFilter<"Medication"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Medication"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Medication"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"Medication"> | Date | string | null
@@ -314,6 +322,7 @@ export type MedicationWhereInput = {
   stockReceipts?: Prisma.MedicationStockReceiptListRelationFilter
   invoiceItems?: Prisma.InvoiceItemListRelationFilter
   immunizations?: Prisma.ImmunizationListRelationFilter
+  taxCode?: Prisma.XOR<Prisma.TaxCodeNullableScalarRelationFilter, Prisma.TaxCodeWhereInput> | null
 }
 
 export type MedicationOrderByWithRelationInput = {
@@ -330,6 +339,7 @@ export type MedicationOrderByWithRelationInput = {
   unitPrice?: Prisma.SortOrderInput | Prisma.SortOrder
   isVaccine?: Prisma.SortOrder
   isMidwifePrescribable?: Prisma.SortOrder
+  taxCodeId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -339,6 +349,7 @@ export type MedicationOrderByWithRelationInput = {
   stockReceipts?: Prisma.MedicationStockReceiptOrderByRelationAggregateInput
   invoiceItems?: Prisma.InvoiceItemOrderByRelationAggregateInput
   immunizations?: Prisma.ImmunizationOrderByRelationAggregateInput
+  taxCode?: Prisma.TaxCodeOrderByWithRelationInput
 }
 
 export type MedicationWhereUniqueInput = Prisma.AtLeast<{
@@ -358,6 +369,7 @@ export type MedicationWhereUniqueInput = Prisma.AtLeast<{
   unitPrice?: Prisma.DecimalNullableFilter<"Medication"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isVaccine?: Prisma.BoolFilter<"Medication"> | boolean
   isMidwifePrescribable?: Prisma.BoolFilter<"Medication"> | boolean
+  taxCodeId?: Prisma.UuidNullableFilter<"Medication"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Medication"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Medication"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"Medication"> | Date | string | null
@@ -367,6 +379,7 @@ export type MedicationWhereUniqueInput = Prisma.AtLeast<{
   stockReceipts?: Prisma.MedicationStockReceiptListRelationFilter
   invoiceItems?: Prisma.InvoiceItemListRelationFilter
   immunizations?: Prisma.ImmunizationListRelationFilter
+  taxCode?: Prisma.XOR<Prisma.TaxCodeNullableScalarRelationFilter, Prisma.TaxCodeWhereInput> | null
 }, "id" | "code" | "kfaCode" | "dphoCode">
 
 export type MedicationOrderByWithAggregationInput = {
@@ -383,6 +396,7 @@ export type MedicationOrderByWithAggregationInput = {
   unitPrice?: Prisma.SortOrderInput | Prisma.SortOrder
   isVaccine?: Prisma.SortOrder
   isMidwifePrescribable?: Prisma.SortOrder
+  taxCodeId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -410,6 +424,7 @@ export type MedicationScalarWhereWithAggregatesInput = {
   unitPrice?: Prisma.DecimalNullableWithAggregatesFilter<"Medication"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isVaccine?: Prisma.BoolWithAggregatesFilter<"Medication"> | boolean
   isMidwifePrescribable?: Prisma.BoolWithAggregatesFilter<"Medication"> | boolean
+  taxCodeId?: Prisma.UuidNullableWithAggregatesFilter<"Medication"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Medication"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Medication"> | Date | string
   deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Medication"> | Date | string | null
@@ -438,6 +453,7 @@ export type MedicationCreateInput = {
   stockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutMedicationInput
   invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutMedicationInput
   immunizations?: Prisma.ImmunizationCreateNestedManyWithoutMedicationInput
+  taxCode?: Prisma.TaxCodeCreateNestedOneWithoutMedicationsInput
 }
 
 export type MedicationUncheckedCreateInput = {
@@ -454,6 +470,7 @@ export type MedicationUncheckedCreateInput = {
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isVaccine?: boolean
   isMidwifePrescribable?: boolean
+  taxCodeId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -488,6 +505,7 @@ export type MedicationUpdateInput = {
   stockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutMedicationNestedInput
   invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutMedicationNestedInput
   immunizations?: Prisma.ImmunizationUpdateManyWithoutMedicationNestedInput
+  taxCode?: Prisma.TaxCodeUpdateOneWithoutMedicationsNestedInput
 }
 
 export type MedicationUncheckedUpdateInput = {
@@ -504,6 +522,7 @@ export type MedicationUncheckedUpdateInput = {
   unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isVaccine?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  taxCodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -529,6 +548,7 @@ export type MedicationCreateManyInput = {
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isVaccine?: boolean
   isMidwifePrescribable?: boolean
+  taxCodeId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -567,6 +587,7 @@ export type MedicationUncheckedUpdateManyInput = {
   unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isVaccine?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  taxCodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -586,6 +607,7 @@ export type MedicationCountOrderByAggregateInput = {
   unitPrice?: Prisma.SortOrder
   isVaccine?: Prisma.SortOrder
   isMidwifePrescribable?: Prisma.SortOrder
+  taxCodeId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -610,6 +632,7 @@ export type MedicationMaxOrderByAggregateInput = {
   unitPrice?: Prisma.SortOrder
   isVaccine?: Prisma.SortOrder
   isMidwifePrescribable?: Prisma.SortOrder
+  taxCodeId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -629,6 +652,7 @@ export type MedicationMinOrderByAggregateInput = {
   unitPrice?: Prisma.SortOrder
   isVaccine?: Prisma.SortOrder
   isMidwifePrescribable?: Prisma.SortOrder
+  taxCodeId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -647,6 +671,16 @@ export type MedicationNullableScalarRelationFilter = {
 export type MedicationScalarRelationFilter = {
   is?: Prisma.MedicationWhereInput
   isNot?: Prisma.MedicationWhereInput
+}
+
+export type MedicationListRelationFilter = {
+  every?: Prisma.MedicationWhereInput
+  some?: Prisma.MedicationWhereInput
+  none?: Prisma.MedicationWhereInput
+}
+
+export type MedicationOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
 }
 
 export type NullableEnumMedicationUnitFieldUpdateOperationsInput = {
@@ -717,6 +751,48 @@ export type MedicationUpdateOneRequiredWithoutStockReceiptsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.MedicationUpdateToOneWithWhereWithoutStockReceiptsInput, Prisma.MedicationUpdateWithoutStockReceiptsInput>, Prisma.MedicationUncheckedUpdateWithoutStockReceiptsInput>
 }
 
+export type MedicationCreateNestedManyWithoutTaxCodeInput = {
+  create?: Prisma.XOR<Prisma.MedicationCreateWithoutTaxCodeInput, Prisma.MedicationUncheckedCreateWithoutTaxCodeInput> | Prisma.MedicationCreateWithoutTaxCodeInput[] | Prisma.MedicationUncheckedCreateWithoutTaxCodeInput[]
+  connectOrCreate?: Prisma.MedicationCreateOrConnectWithoutTaxCodeInput | Prisma.MedicationCreateOrConnectWithoutTaxCodeInput[]
+  createMany?: Prisma.MedicationCreateManyTaxCodeInputEnvelope
+  connect?: Prisma.MedicationWhereUniqueInput | Prisma.MedicationWhereUniqueInput[]
+}
+
+export type MedicationUncheckedCreateNestedManyWithoutTaxCodeInput = {
+  create?: Prisma.XOR<Prisma.MedicationCreateWithoutTaxCodeInput, Prisma.MedicationUncheckedCreateWithoutTaxCodeInput> | Prisma.MedicationCreateWithoutTaxCodeInput[] | Prisma.MedicationUncheckedCreateWithoutTaxCodeInput[]
+  connectOrCreate?: Prisma.MedicationCreateOrConnectWithoutTaxCodeInput | Prisma.MedicationCreateOrConnectWithoutTaxCodeInput[]
+  createMany?: Prisma.MedicationCreateManyTaxCodeInputEnvelope
+  connect?: Prisma.MedicationWhereUniqueInput | Prisma.MedicationWhereUniqueInput[]
+}
+
+export type MedicationUpdateManyWithoutTaxCodeNestedInput = {
+  create?: Prisma.XOR<Prisma.MedicationCreateWithoutTaxCodeInput, Prisma.MedicationUncheckedCreateWithoutTaxCodeInput> | Prisma.MedicationCreateWithoutTaxCodeInput[] | Prisma.MedicationUncheckedCreateWithoutTaxCodeInput[]
+  connectOrCreate?: Prisma.MedicationCreateOrConnectWithoutTaxCodeInput | Prisma.MedicationCreateOrConnectWithoutTaxCodeInput[]
+  upsert?: Prisma.MedicationUpsertWithWhereUniqueWithoutTaxCodeInput | Prisma.MedicationUpsertWithWhereUniqueWithoutTaxCodeInput[]
+  createMany?: Prisma.MedicationCreateManyTaxCodeInputEnvelope
+  set?: Prisma.MedicationWhereUniqueInput | Prisma.MedicationWhereUniqueInput[]
+  disconnect?: Prisma.MedicationWhereUniqueInput | Prisma.MedicationWhereUniqueInput[]
+  delete?: Prisma.MedicationWhereUniqueInput | Prisma.MedicationWhereUniqueInput[]
+  connect?: Prisma.MedicationWhereUniqueInput | Prisma.MedicationWhereUniqueInput[]
+  update?: Prisma.MedicationUpdateWithWhereUniqueWithoutTaxCodeInput | Prisma.MedicationUpdateWithWhereUniqueWithoutTaxCodeInput[]
+  updateMany?: Prisma.MedicationUpdateManyWithWhereWithoutTaxCodeInput | Prisma.MedicationUpdateManyWithWhereWithoutTaxCodeInput[]
+  deleteMany?: Prisma.MedicationScalarWhereInput | Prisma.MedicationScalarWhereInput[]
+}
+
+export type MedicationUncheckedUpdateManyWithoutTaxCodeNestedInput = {
+  create?: Prisma.XOR<Prisma.MedicationCreateWithoutTaxCodeInput, Prisma.MedicationUncheckedCreateWithoutTaxCodeInput> | Prisma.MedicationCreateWithoutTaxCodeInput[] | Prisma.MedicationUncheckedCreateWithoutTaxCodeInput[]
+  connectOrCreate?: Prisma.MedicationCreateOrConnectWithoutTaxCodeInput | Prisma.MedicationCreateOrConnectWithoutTaxCodeInput[]
+  upsert?: Prisma.MedicationUpsertWithWhereUniqueWithoutTaxCodeInput | Prisma.MedicationUpsertWithWhereUniqueWithoutTaxCodeInput[]
+  createMany?: Prisma.MedicationCreateManyTaxCodeInputEnvelope
+  set?: Prisma.MedicationWhereUniqueInput | Prisma.MedicationWhereUniqueInput[]
+  disconnect?: Prisma.MedicationWhereUniqueInput | Prisma.MedicationWhereUniqueInput[]
+  delete?: Prisma.MedicationWhereUniqueInput | Prisma.MedicationWhereUniqueInput[]
+  connect?: Prisma.MedicationWhereUniqueInput | Prisma.MedicationWhereUniqueInput[]
+  update?: Prisma.MedicationUpdateWithWhereUniqueWithoutTaxCodeInput | Prisma.MedicationUpdateWithWhereUniqueWithoutTaxCodeInput[]
+  updateMany?: Prisma.MedicationUpdateManyWithWhereWithoutTaxCodeInput | Prisma.MedicationUpdateManyWithWhereWithoutTaxCodeInput[]
+  deleteMany?: Prisma.MedicationScalarWhereInput | Prisma.MedicationScalarWhereInput[]
+}
+
 export type MedicationCreateNestedOneWithoutInvoiceItemsInput = {
   create?: Prisma.XOR<Prisma.MedicationCreateWithoutInvoiceItemsInput, Prisma.MedicationUncheckedCreateWithoutInvoiceItemsInput>
   connectOrCreate?: Prisma.MedicationCreateOrConnectWithoutInvoiceItemsInput
@@ -769,6 +845,7 @@ export type MedicationCreateWithoutPrescriptionItemsInput = {
   stockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutMedicationInput
   invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutMedicationInput
   immunizations?: Prisma.ImmunizationCreateNestedManyWithoutMedicationInput
+  taxCode?: Prisma.TaxCodeCreateNestedOneWithoutMedicationsInput
 }
 
 export type MedicationUncheckedCreateWithoutPrescriptionItemsInput = {
@@ -785,6 +862,7 @@ export type MedicationUncheckedCreateWithoutPrescriptionItemsInput = {
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isVaccine?: boolean
   isMidwifePrescribable?: boolean
+  taxCodeId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -833,6 +911,7 @@ export type MedicationUpdateWithoutPrescriptionItemsInput = {
   stockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutMedicationNestedInput
   invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutMedicationNestedInput
   immunizations?: Prisma.ImmunizationUpdateManyWithoutMedicationNestedInput
+  taxCode?: Prisma.TaxCodeUpdateOneWithoutMedicationsNestedInput
 }
 
 export type MedicationUncheckedUpdateWithoutPrescriptionItemsInput = {
@@ -849,6 +928,7 @@ export type MedicationUncheckedUpdateWithoutPrescriptionItemsInput = {
   unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isVaccine?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  taxCodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -881,6 +961,7 @@ export type MedicationCreateWithoutCompoundComponentsInput = {
   stockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutMedicationInput
   invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutMedicationInput
   immunizations?: Prisma.ImmunizationCreateNestedManyWithoutMedicationInput
+  taxCode?: Prisma.TaxCodeCreateNestedOneWithoutMedicationsInput
 }
 
 export type MedicationUncheckedCreateWithoutCompoundComponentsInput = {
@@ -897,6 +978,7 @@ export type MedicationUncheckedCreateWithoutCompoundComponentsInput = {
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isVaccine?: boolean
   isMidwifePrescribable?: boolean
+  taxCodeId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -945,6 +1027,7 @@ export type MedicationUpdateWithoutCompoundComponentsInput = {
   stockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutMedicationNestedInput
   invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutMedicationNestedInput
   immunizations?: Prisma.ImmunizationUpdateManyWithoutMedicationNestedInput
+  taxCode?: Prisma.TaxCodeUpdateOneWithoutMedicationsNestedInput
 }
 
 export type MedicationUncheckedUpdateWithoutCompoundComponentsInput = {
@@ -961,6 +1044,7 @@ export type MedicationUncheckedUpdateWithoutCompoundComponentsInput = {
   unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isVaccine?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  taxCodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -993,6 +1077,7 @@ export type MedicationCreateWithoutDispenseItemsInput = {
   stockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutMedicationInput
   invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutMedicationInput
   immunizations?: Prisma.ImmunizationCreateNestedManyWithoutMedicationInput
+  taxCode?: Prisma.TaxCodeCreateNestedOneWithoutMedicationsInput
 }
 
 export type MedicationUncheckedCreateWithoutDispenseItemsInput = {
@@ -1009,6 +1094,7 @@ export type MedicationUncheckedCreateWithoutDispenseItemsInput = {
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isVaccine?: boolean
   isMidwifePrescribable?: boolean
+  taxCodeId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1057,6 +1143,7 @@ export type MedicationUpdateWithoutDispenseItemsInput = {
   stockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutMedicationNestedInput
   invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutMedicationNestedInput
   immunizations?: Prisma.ImmunizationUpdateManyWithoutMedicationNestedInput
+  taxCode?: Prisma.TaxCodeUpdateOneWithoutMedicationsNestedInput
 }
 
 export type MedicationUncheckedUpdateWithoutDispenseItemsInput = {
@@ -1073,6 +1160,7 @@ export type MedicationUncheckedUpdateWithoutDispenseItemsInput = {
   unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isVaccine?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  taxCodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1105,6 +1193,7 @@ export type MedicationCreateWithoutStockReceiptsInput = {
   dispenseItems?: Prisma.DispenseItemCreateNestedManyWithoutMedicationInput
   invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutMedicationInput
   immunizations?: Prisma.ImmunizationCreateNestedManyWithoutMedicationInput
+  taxCode?: Prisma.TaxCodeCreateNestedOneWithoutMedicationsInput
 }
 
 export type MedicationUncheckedCreateWithoutStockReceiptsInput = {
@@ -1121,6 +1210,7 @@ export type MedicationUncheckedCreateWithoutStockReceiptsInput = {
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isVaccine?: boolean
   isMidwifePrescribable?: boolean
+  taxCodeId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1169,6 +1259,7 @@ export type MedicationUpdateWithoutStockReceiptsInput = {
   dispenseItems?: Prisma.DispenseItemUpdateManyWithoutMedicationNestedInput
   invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutMedicationNestedInput
   immunizations?: Prisma.ImmunizationUpdateManyWithoutMedicationNestedInput
+  taxCode?: Prisma.TaxCodeUpdateOneWithoutMedicationsNestedInput
 }
 
 export type MedicationUncheckedUpdateWithoutStockReceiptsInput = {
@@ -1185,6 +1276,7 @@ export type MedicationUncheckedUpdateWithoutStockReceiptsInput = {
   unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isVaccine?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  taxCodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1193,6 +1285,105 @@ export type MedicationUncheckedUpdateWithoutStockReceiptsInput = {
   dispenseItems?: Prisma.DispenseItemUncheckedUpdateManyWithoutMedicationNestedInput
   invoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutMedicationNestedInput
   immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutMedicationNestedInput
+}
+
+export type MedicationCreateWithoutTaxCodeInput = {
+  id?: string
+  code: string
+  kfaCode?: string | null
+  dphoCode?: string | null
+  name: string
+  form?: string | null
+  strength?: string | null
+  unit?: $Enums.MedicationUnit | null
+  category?: $Enums.MedicationCategory | null
+  reorderLevel?: number
+  unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isVaccine?: boolean
+  isMidwifePrescribable?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  prescriptionItems?: Prisma.PrescriptionMedicationCreateNestedManyWithoutMedicationInput
+  compoundComponents?: Prisma.PrescriptionItemComponentCreateNestedManyWithoutMedicationInput
+  dispenseItems?: Prisma.DispenseItemCreateNestedManyWithoutMedicationInput
+  stockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutMedicationInput
+  invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutMedicationInput
+  immunizations?: Prisma.ImmunizationCreateNestedManyWithoutMedicationInput
+}
+
+export type MedicationUncheckedCreateWithoutTaxCodeInput = {
+  id?: string
+  code: string
+  kfaCode?: string | null
+  dphoCode?: string | null
+  name: string
+  form?: string | null
+  strength?: string | null
+  unit?: $Enums.MedicationUnit | null
+  category?: $Enums.MedicationCategory | null
+  reorderLevel?: number
+  unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isVaccine?: boolean
+  isMidwifePrescribable?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  prescriptionItems?: Prisma.PrescriptionMedicationUncheckedCreateNestedManyWithoutMedicationInput
+  compoundComponents?: Prisma.PrescriptionItemComponentUncheckedCreateNestedManyWithoutMedicationInput
+  dispenseItems?: Prisma.DispenseItemUncheckedCreateNestedManyWithoutMedicationInput
+  stockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutMedicationInput
+  invoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutMedicationInput
+  immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutMedicationInput
+}
+
+export type MedicationCreateOrConnectWithoutTaxCodeInput = {
+  where: Prisma.MedicationWhereUniqueInput
+  create: Prisma.XOR<Prisma.MedicationCreateWithoutTaxCodeInput, Prisma.MedicationUncheckedCreateWithoutTaxCodeInput>
+}
+
+export type MedicationCreateManyTaxCodeInputEnvelope = {
+  data: Prisma.MedicationCreateManyTaxCodeInput | Prisma.MedicationCreateManyTaxCodeInput[]
+  skipDuplicates?: boolean
+}
+
+export type MedicationUpsertWithWhereUniqueWithoutTaxCodeInput = {
+  where: Prisma.MedicationWhereUniqueInput
+  update: Prisma.XOR<Prisma.MedicationUpdateWithoutTaxCodeInput, Prisma.MedicationUncheckedUpdateWithoutTaxCodeInput>
+  create: Prisma.XOR<Prisma.MedicationCreateWithoutTaxCodeInput, Prisma.MedicationUncheckedCreateWithoutTaxCodeInput>
+}
+
+export type MedicationUpdateWithWhereUniqueWithoutTaxCodeInput = {
+  where: Prisma.MedicationWhereUniqueInput
+  data: Prisma.XOR<Prisma.MedicationUpdateWithoutTaxCodeInput, Prisma.MedicationUncheckedUpdateWithoutTaxCodeInput>
+}
+
+export type MedicationUpdateManyWithWhereWithoutTaxCodeInput = {
+  where: Prisma.MedicationScalarWhereInput
+  data: Prisma.XOR<Prisma.MedicationUpdateManyMutationInput, Prisma.MedicationUncheckedUpdateManyWithoutTaxCodeInput>
+}
+
+export type MedicationScalarWhereInput = {
+  AND?: Prisma.MedicationScalarWhereInput | Prisma.MedicationScalarWhereInput[]
+  OR?: Prisma.MedicationScalarWhereInput[]
+  NOT?: Prisma.MedicationScalarWhereInput | Prisma.MedicationScalarWhereInput[]
+  id?: Prisma.UuidFilter<"Medication"> | string
+  code?: Prisma.StringFilter<"Medication"> | string
+  kfaCode?: Prisma.StringNullableFilter<"Medication"> | string | null
+  dphoCode?: Prisma.StringNullableFilter<"Medication"> | string | null
+  name?: Prisma.StringFilter<"Medication"> | string
+  form?: Prisma.StringNullableFilter<"Medication"> | string | null
+  strength?: Prisma.StringNullableFilter<"Medication"> | string | null
+  unit?: Prisma.EnumMedicationUnitNullableFilter<"Medication"> | $Enums.MedicationUnit | null
+  category?: Prisma.EnumMedicationCategoryNullableFilter<"Medication"> | $Enums.MedicationCategory | null
+  reorderLevel?: Prisma.IntFilter<"Medication"> | number
+  unitPrice?: Prisma.DecimalNullableFilter<"Medication"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isVaccine?: Prisma.BoolFilter<"Medication"> | boolean
+  isMidwifePrescribable?: Prisma.BoolFilter<"Medication"> | boolean
+  taxCodeId?: Prisma.UuidNullableFilter<"Medication"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"Medication"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Medication"> | Date | string
+  deletedAt?: Prisma.DateTimeNullableFilter<"Medication"> | Date | string | null
 }
 
 export type MedicationCreateWithoutInvoiceItemsInput = {
@@ -1217,6 +1408,7 @@ export type MedicationCreateWithoutInvoiceItemsInput = {
   dispenseItems?: Prisma.DispenseItemCreateNestedManyWithoutMedicationInput
   stockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutMedicationInput
   immunizations?: Prisma.ImmunizationCreateNestedManyWithoutMedicationInput
+  taxCode?: Prisma.TaxCodeCreateNestedOneWithoutMedicationsInput
 }
 
 export type MedicationUncheckedCreateWithoutInvoiceItemsInput = {
@@ -1233,6 +1425,7 @@ export type MedicationUncheckedCreateWithoutInvoiceItemsInput = {
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isVaccine?: boolean
   isMidwifePrescribable?: boolean
+  taxCodeId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1281,6 +1474,7 @@ export type MedicationUpdateWithoutInvoiceItemsInput = {
   dispenseItems?: Prisma.DispenseItemUpdateManyWithoutMedicationNestedInput
   stockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutMedicationNestedInput
   immunizations?: Prisma.ImmunizationUpdateManyWithoutMedicationNestedInput
+  taxCode?: Prisma.TaxCodeUpdateOneWithoutMedicationsNestedInput
 }
 
 export type MedicationUncheckedUpdateWithoutInvoiceItemsInput = {
@@ -1297,6 +1491,7 @@ export type MedicationUncheckedUpdateWithoutInvoiceItemsInput = {
   unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isVaccine?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  taxCodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1329,6 +1524,7 @@ export type MedicationCreateWithoutImmunizationsInput = {
   dispenseItems?: Prisma.DispenseItemCreateNestedManyWithoutMedicationInput
   stockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutMedicationInput
   invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutMedicationInput
+  taxCode?: Prisma.TaxCodeCreateNestedOneWithoutMedicationsInput
 }
 
 export type MedicationUncheckedCreateWithoutImmunizationsInput = {
@@ -1345,6 +1541,7 @@ export type MedicationUncheckedCreateWithoutImmunizationsInput = {
   unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isVaccine?: boolean
   isMidwifePrescribable?: boolean
+  taxCodeId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1393,9 +1590,79 @@ export type MedicationUpdateWithoutImmunizationsInput = {
   dispenseItems?: Prisma.DispenseItemUpdateManyWithoutMedicationNestedInput
   stockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutMedicationNestedInput
   invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutMedicationNestedInput
+  taxCode?: Prisma.TaxCodeUpdateOneWithoutMedicationsNestedInput
 }
 
 export type MedicationUncheckedUpdateWithoutImmunizationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  kfaCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dphoCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  form?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  strength?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unit?: Prisma.NullableEnumMedicationUnitFieldUpdateOperationsInput | $Enums.MedicationUnit | null
+  category?: Prisma.NullableEnumMedicationCategoryFieldUpdateOperationsInput | $Enums.MedicationCategory | null
+  reorderLevel?: Prisma.IntFieldUpdateOperationsInput | number
+  unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isVaccine?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  taxCodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  prescriptionItems?: Prisma.PrescriptionMedicationUncheckedUpdateManyWithoutMedicationNestedInput
+  compoundComponents?: Prisma.PrescriptionItemComponentUncheckedUpdateManyWithoutMedicationNestedInput
+  dispenseItems?: Prisma.DispenseItemUncheckedUpdateManyWithoutMedicationNestedInput
+  stockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutMedicationNestedInput
+  invoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutMedicationNestedInput
+}
+
+export type MedicationCreateManyTaxCodeInput = {
+  id?: string
+  code: string
+  kfaCode?: string | null
+  dphoCode?: string | null
+  name: string
+  form?: string | null
+  strength?: string | null
+  unit?: $Enums.MedicationUnit | null
+  category?: $Enums.MedicationCategory | null
+  reorderLevel?: number
+  unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isVaccine?: boolean
+  isMidwifePrescribable?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+}
+
+export type MedicationUpdateWithoutTaxCodeInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  kfaCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dphoCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  form?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  strength?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unit?: Prisma.NullableEnumMedicationUnitFieldUpdateOperationsInput | $Enums.MedicationUnit | null
+  category?: Prisma.NullableEnumMedicationCategoryFieldUpdateOperationsInput | $Enums.MedicationCategory | null
+  reorderLevel?: Prisma.IntFieldUpdateOperationsInput | number
+  unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isVaccine?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  prescriptionItems?: Prisma.PrescriptionMedicationUpdateManyWithoutMedicationNestedInput
+  compoundComponents?: Prisma.PrescriptionItemComponentUpdateManyWithoutMedicationNestedInput
+  dispenseItems?: Prisma.DispenseItemUpdateManyWithoutMedicationNestedInput
+  stockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutMedicationNestedInput
+  invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutMedicationNestedInput
+  immunizations?: Prisma.ImmunizationUpdateManyWithoutMedicationNestedInput
+}
+
+export type MedicationUncheckedUpdateWithoutTaxCodeInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   kfaCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1417,6 +1684,26 @@ export type MedicationUncheckedUpdateWithoutImmunizationsInput = {
   dispenseItems?: Prisma.DispenseItemUncheckedUpdateManyWithoutMedicationNestedInput
   stockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutMedicationNestedInput
   invoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutMedicationNestedInput
+  immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutMedicationNestedInput
+}
+
+export type MedicationUncheckedUpdateManyWithoutTaxCodeInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  kfaCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dphoCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  form?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  strength?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unit?: Prisma.NullableEnumMedicationUnitFieldUpdateOperationsInput | $Enums.MedicationUnit | null
+  category?: Prisma.NullableEnumMedicationCategoryFieldUpdateOperationsInput | $Enums.MedicationCategory | null
+  reorderLevel?: Prisma.IntFieldUpdateOperationsInput | number
+  unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isVaccine?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 
@@ -1509,6 +1796,7 @@ export type MedicationSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   unitPrice?: boolean
   isVaccine?: boolean
   isMidwifePrescribable?: boolean
+  taxCodeId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
@@ -1518,6 +1806,7 @@ export type MedicationSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   stockReceipts?: boolean | Prisma.Medication$stockReceiptsArgs<ExtArgs>
   invoiceItems?: boolean | Prisma.Medication$invoiceItemsArgs<ExtArgs>
   immunizations?: boolean | Prisma.Medication$immunizationsArgs<ExtArgs>
+  taxCode?: boolean | Prisma.Medication$taxCodeArgs<ExtArgs>
   _count?: boolean | Prisma.MedicationCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["medication"]>
 
@@ -1535,9 +1824,11 @@ export type MedicationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   unitPrice?: boolean
   isVaccine?: boolean
   isMidwifePrescribable?: boolean
+  taxCodeId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
+  taxCode?: boolean | Prisma.Medication$taxCodeArgs<ExtArgs>
 }, ExtArgs["result"]["medication"]>
 
 export type MedicationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1554,9 +1845,11 @@ export type MedicationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   unitPrice?: boolean
   isVaccine?: boolean
   isMidwifePrescribable?: boolean
+  taxCodeId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
+  taxCode?: boolean | Prisma.Medication$taxCodeArgs<ExtArgs>
 }, ExtArgs["result"]["medication"]>
 
 export type MedicationSelectScalar = {
@@ -1573,12 +1866,13 @@ export type MedicationSelectScalar = {
   unitPrice?: boolean
   isVaccine?: boolean
   isMidwifePrescribable?: boolean
+  taxCodeId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
 }
 
-export type MedicationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "kfaCode" | "dphoCode" | "name" | "form" | "strength" | "unit" | "category" | "reorderLevel" | "unitPrice" | "isVaccine" | "isMidwifePrescribable" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["medication"]>
+export type MedicationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "kfaCode" | "dphoCode" | "name" | "form" | "strength" | "unit" | "category" | "reorderLevel" | "unitPrice" | "isVaccine" | "isMidwifePrescribable" | "taxCodeId" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["medication"]>
 export type MedicationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   prescriptionItems?: boolean | Prisma.Medication$prescriptionItemsArgs<ExtArgs>
   compoundComponents?: boolean | Prisma.Medication$compoundComponentsArgs<ExtArgs>
@@ -1586,10 +1880,15 @@ export type MedicationInclude<ExtArgs extends runtime.Types.Extensions.InternalA
   stockReceipts?: boolean | Prisma.Medication$stockReceiptsArgs<ExtArgs>
   invoiceItems?: boolean | Prisma.Medication$invoiceItemsArgs<ExtArgs>
   immunizations?: boolean | Prisma.Medication$immunizationsArgs<ExtArgs>
+  taxCode?: boolean | Prisma.Medication$taxCodeArgs<ExtArgs>
   _count?: boolean | Prisma.MedicationCountOutputTypeDefaultArgs<ExtArgs>
 }
-export type MedicationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
-export type MedicationIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type MedicationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  taxCode?: boolean | Prisma.Medication$taxCodeArgs<ExtArgs>
+}
+export type MedicationIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  taxCode?: boolean | Prisma.Medication$taxCodeArgs<ExtArgs>
+}
 
 export type $MedicationPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Medication"
@@ -1600,6 +1899,7 @@ export type $MedicationPayload<ExtArgs extends runtime.Types.Extensions.Internal
     stockReceipts: Prisma.$MedicationStockReceiptPayload<ExtArgs>[]
     invoiceItems: Prisma.$InvoiceItemPayload<ExtArgs>[]
     immunizations: Prisma.$ImmunizationPayload<ExtArgs>[]
+    taxCode: Prisma.$TaxCodePayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1636,6 +1936,11 @@ export type $MedicationPayload<ExtArgs extends runtime.Types.Extensions.Internal
      * authorities, and which catalog items fall inside them is the clinic's call.
      */
     isMidwifePrescribable: boolean
+    /**
+     * This medication's own tax code (P27-T03). Null means it follows the
+     * medication default in `tax_category_defaults`.
+     */
+    taxCodeId: string | null
     createdAt: Date
     updatedAt: Date
     deletedAt: Date | null
@@ -2039,6 +2344,7 @@ export interface Prisma__MedicationClient<T, Null = never, ExtArgs extends runti
   stockReceipts<T extends Prisma.Medication$stockReceiptsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Medication$stockReceiptsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MedicationStockReceiptPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   invoiceItems<T extends Prisma.Medication$invoiceItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Medication$invoiceItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvoiceItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   immunizations<T extends Prisma.Medication$immunizationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Medication$immunizationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ImmunizationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  taxCode<T extends Prisma.Medication$taxCodeArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Medication$taxCodeArgs<ExtArgs>>): Prisma.Prisma__TaxCodeClient<runtime.Types.Result.GetResult<Prisma.$TaxCodePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2081,6 +2387,7 @@ export interface MedicationFieldRefs {
   readonly unitPrice: Prisma.FieldRef<"Medication", 'Decimal'>
   readonly isVaccine: Prisma.FieldRef<"Medication", 'Boolean'>
   readonly isMidwifePrescribable: Prisma.FieldRef<"Medication", 'Boolean'>
+  readonly taxCodeId: Prisma.FieldRef<"Medication", 'String'>
   readonly createdAt: Prisma.FieldRef<"Medication", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Medication", 'DateTime'>
   readonly deletedAt: Prisma.FieldRef<"Medication", 'DateTime'>
@@ -2338,6 +2645,10 @@ export type MedicationCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Exte
    */
   data: Prisma.MedicationCreateManyInput | Prisma.MedicationCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MedicationIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -2408,6 +2719,10 @@ export type MedicationUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Exte
    * Limit how many Medications to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MedicationIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -2618,6 +2933,25 @@ export type Medication$immunizationsArgs<ExtArgs extends runtime.Types.Extension
   take?: number
   skip?: number
   distinct?: Prisma.ImmunizationScalarFieldEnum | Prisma.ImmunizationScalarFieldEnum[]
+}
+
+/**
+ * Medication.taxCode
+ */
+export type Medication$taxCodeArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TaxCode
+   */
+  select?: Prisma.TaxCodeSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TaxCode
+   */
+  omit?: Prisma.TaxCodeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TaxCodeInclude<ExtArgs> | null
+  where?: Prisma.TaxCodeWhereInput
 }
 
 /**
