@@ -1,7 +1,9 @@
 import {
   BulkAssignTaxCodePayload,
+  FindTaxCodeOverridesParams,
   TaxAssignmentKindValue,
   TaxAssignmentTargetRecord,
+  TaxCodeOverrides,
 } from '@hms/shared-types';
 import { Injectable } from '@nestjs/common';
 
@@ -60,6 +62,39 @@ export class TaxAssignmentRepository {
     ];
   }
 
+  /**
+   * The named tariffs or medicines, deactivated ones included — an
+   * administrator browsing the price list sees those too (P27-T04).
+   */
+  async findAssignmentTargets(
+    kind: TaxAssignmentKindValue,
+    ids: string[],
+  ): Promise<TaxAssignmentTargetRecord[]> {
+    if (kind === 'SERVICE_TARIFF') {
+      const rows = await this.prisma.serviceTariff.findMany({
+        where: { id: { in: ids }, deletedAt: null },
+        select: { id: true, code: true, name: true, category: true, price: true, taxCodeId: true },
+      });
+      return rows.map((row) => ({ kind, ...row, price: Number(row.price) }));
+    }
+    const rows = await this.prisma.medication.findMany({
+      where: { id: { in: ids }, deletedAt: null },
+      select: {
+        id: true,
+        code: true,
+        name: true,
+        category: true,
+        unitPrice: true,
+        taxCodeId: true,
+      },
+    });
+    return rows.map(({ unitPrice, ...row }) => ({
+      kind,
+      ...row,
+      price: unitPrice === null ? null : Number(unitPrice),
+    }));
+  }
+
   /** The ids of one kind that exist and are not deleted. */
   async findExistingTargetIds(kind: TaxAssignmentKindValue, ids: string[]): Promise<string[]> {
     const where = { id: { in: ids }, deletedAt: null };
@@ -68,6 +103,31 @@ export class TaxAssignmentRepository {
         ? await this.prisma.serviceTariff.findMany({ where, select: { id: true } })
         : await this.prisma.medication.findMany({ where, select: { id: true } });
     return rows.map((row) => row.id);
+  }
+
+  /**
+   * The code each named tariff and medication carries of its own, for taxing
+   * invoice lines (P27-T04). Items without an override are simply absent, and
+   * a deleted row still answers — an invoice line may outlive its tariff.
+   */
+  async findTaxCodeOverrides(params: FindTaxCodeOverridesParams): Promise<TaxCodeOverrides> {
+    const [tariffs, medications] = await Promise.all([
+      params.serviceTariffIds.length === 0
+        ? []
+        : this.prisma.serviceTariff.findMany({
+            where: { id: { in: params.serviceTariffIds }, taxCodeId: { not: null } },
+            select: { id: true, taxCodeId: true },
+          }),
+      params.medicationIds.length === 0
+        ? []
+        : this.prisma.medication.findMany({
+            where: { id: { in: params.medicationIds }, taxCodeId: { not: null } },
+            select: { id: true, taxCodeId: true },
+          }),
+    ]);
+    const toMap = (rows: Array<{ id: string; taxCodeId: string | null }>): Map<string, string> =>
+      new Map(rows.flatMap((row) => (row.taxCodeId ? [[row.id, row.taxCodeId] as const] : [])));
+    return { byServiceTariffId: toMap(tariffs), byMedicationId: toMap(medications) };
   }
 
   /** One transaction across both tables, so a bulk apply lands whole or not at all. */

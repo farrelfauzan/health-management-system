@@ -98,6 +98,18 @@
       "pageOf": "Halaman {page} dari {total}",
       "previousPage": "Halaman sebelumnya",
       "nextPage": "Halaman berikutnya"
+    },
+    "taxBreakdown": {
+      "price": "Harga (termasuk PPN)",
+      "priceBeforeTax": "Sebelum PPN",
+      "taxAmount": "PPN",
+      "status": {
+        "EXEMPT": "Dibebaskan",
+        "NOT_PKP": "Bukan PKP",
+        "UNRESOLVED": "Belum ada kode pajak",
+        "UNPRICED": "Belum ada harga",
+        "TAXED": "Kena PPN"
+      }
     }
   }
 }

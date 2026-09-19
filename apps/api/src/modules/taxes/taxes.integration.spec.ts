@@ -10,9 +10,9 @@ import { PrismaService } from '../../common/prisma/prisma.service';
 import { AuthRepository } from '../auth/repository/auth.repository';
 import { ClinicProfileRepository } from '../billing/repository/clinic-profile.repository';
 import { FeatureAvailabilityCacheService } from '../feature-entitlement/service/feature-availability-cache.service';
-import { TaxAssignmentRepository } from './repository/tax-assignment.repository';
-import { TaxCodeRepository } from './repository/tax-code.repository';
-import { TaxSettingsRepository } from './repository/tax-settings.repository';
+import { TaxAssignmentRepository } from '../tax-core/repository/tax-assignment.repository';
+import { TaxCodeRepository } from '../tax-core/repository/tax-code.repository';
+import { TaxSettingsRepository } from '../tax-core/repository/tax-settings.repository';
 
 const TAX_SETTINGS_PATH = '/api/v1/v1/tax/settings';
 const TAX_CODES_PATH = '/api/v1/v1/tax/codes';
@@ -54,6 +54,8 @@ describe('Tax settings integration', () => {
     saveCategoryDefaults: jest.fn(),
   };
   const taxAssignmentRepositoryMock = {
+    findAssignmentTargets: jest.fn(),
+    findTaxCodeOverrides: jest.fn(),
     listActiveAssignmentTargets: jest.fn(),
     findExistingTargetIds: jest.fn(),
     assignTaxCode: jest.fn(),
@@ -337,6 +339,60 @@ describe('Tax settings integration', () => {
 
       expect(response.status).toBe(200);
       expect(response.body.data).toEqual({ updatedCount: 1 });
+    });
+
+    it('breaks a medicine price into before-PPN and PPN for a PKP clinic (P27-T04)', async () => {
+      const token = await buildToken('admin-user', 'admin@hms.local');
+      mockActorWithPermissions('ADMIN', TAX_CODE_PERMISSIONS);
+      taxSettingsRepositoryMock.findTaxSettings.mockResolvedValue({
+        taxpayerType: 'PT',
+        incomeTaxRegime: 'GENERAL',
+        pp55StartYear: null,
+        isPkp: true,
+        pkpSince: '2025-01-02',
+        nitku: null,
+        updatedById: null,
+        updatedAt: null,
+      });
+      const medicineId = '8c6f5e4d-3a2b-4f1e-8d9c-b8a7f6e5d4c3';
+      taxAssignmentRepositoryMock.findAssignmentTargets.mockResolvedValue([
+        {
+          kind: 'MEDICATION',
+          id: medicineId,
+          code: 'AMOX',
+          name: 'Amoxicillin',
+          category: 'OBAT_KERAS',
+          price: 111000,
+          taxCodeId: null,
+        },
+      ]);
+
+      const response = await request(app.getHttpServer())
+        .get('/api/v1/v1/tax/price-breakdowns')
+        .query({ kind: 'MEDICATION', ids: medicineId })
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.data).toEqual([
+        expect.objectContaining({
+          status: 'TAXED',
+          price: 111000,
+          priceBeforeTax: 100000,
+          taxAmount: 11000,
+        }),
+      ]);
+    });
+
+    it('refuses a breakdown request whose ids are not uuids', async () => {
+      const token = await buildToken('admin-user', 'admin@hms.local');
+      mockActorWithPermissions('ADMIN', TAX_CODE_PERMISSIONS);
+
+      const response = await request(app.getHttpServer())
+        .get('/api/v1/v1/tax/price-breakdowns')
+        .query({ kind: 'MEDICATION', ids: 'not-a-uuid' })
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.status).toBe(400);
     });
 
     it('refuses the tax code routes to a caller holding only the tax-settings keys', async () => {

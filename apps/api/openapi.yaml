@@ -45945,6 +45945,101 @@ paths:
         - bearer: []
       summary: Assign a tax code to many tariffs and medications
       tags: *a65
+  /api/v1/tax/price-breakdowns:
+    get:
+      operationId: TaxPriceBreakdownController_listPriceBreakdowns_v1
+      parameters:
+        - name: kind
+          required: true
+          in: query
+          schema:
+            type: string
+            enum:
+              - SERVICE_TARIFF
+              - MEDICATION
+        - name: ids
+          required: true
+          in: query
+          x-nestjs_zod-empty-type: true
+          schema: {}
+      responses:
+        "200":
+          description: 'One row per named item that exists, at the rate in force today:
+            `TAXED` with the price before PPN and the PPN inside the price,
+            `EXEMPT`, `NOT_PKP` (the clinic charges no PPN), `UNRESOLVED` (no
+            code or rate) or `UNPRICED`. Prices are always tax-inclusive, so
+            `price` is what the patient pays. For clinic staff only — the
+            patient receipt shows one price and "Harga sudah termasuk PPN".'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        kind:
+                          type: string
+                        id:
+                          type: string
+                        status:
+                          type: string
+                        taxCode:
+                          type: string
+                        ppnTreatment:
+                          type: string
+                        price:
+                          type: integer
+                        priceBeforeTax:
+                          type: integer
+                        taxAmount:
+                          type: integer
+                      required:
+                        - kind
+                        - id
+                        - status
+                        - taxCode
+                        - ppnTreatment
+                        - price
+                        - priceBeforeTax
+                        - taxAmount
+                required:
+                  - data
+                example:
+                  data:
+                    - kind: MEDICATION
+                      id: 8c6f5e4d-3a2b-4f1e-8d9c-b8a7f6e5d4c3
+                      status: TAXED
+                      taxCode: BARANG-PPN
+                      ppnTreatment: STANDARD
+                      price: 111000
+                      priceBeforeTax: 100000
+                      taxAmount: 11000
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Split tariff or medicine prices into before-PPN and PPN
+      tags:
+        - Tax Codes
   /api/v1/satusehat/patients/{patientId}/link:
     post:
       operationId: SatusehatLinkController_linkPatient_v1

@@ -127,6 +127,10 @@ export class DocumentTemplatePreviewService {
       watermark: { isVoid: false, reason: null, voidedByName: null },
       itemColumns: template.settings.itemsColumns,
       showMateraiArea: shouldShowMateraiArea(fixture.invoice.totalAmount, this.materaiThresholdIdr),
+      // P27-T04: shown in every preview, like the materai area above, so an
+      // author sees where the note lands; a real receipt prints it only when
+      // the invoice carries PPN.
+      showTaxNote: true,
     });
     const bytes = await this.pdfRendererService.render(
       html,

@@ -31,6 +31,7 @@ import {
 import { useFormatter, useLocale, useTranslations } from 'next-intl';
 
 import { ExpiryReportTable } from '#components/client/pharmacy/expiry-report-table';
+import { TaxPriceBreakdownCells } from '#components/client/taxes/tax-price-breakdown-cells';
 import { InventoryStatCards } from '#components/client/pharmacy/inventory-stat-cards';
 import { MedicationFormDialog } from '#components/client/pharmacy/medication-form-dialog';
 import { MidwifeFormularyApplyDialog } from '#components/client/pharmacy/midwife-formulary-apply-dialog';
@@ -51,7 +52,9 @@ import type { MedicationControllerListMedicationsV1Params } from '#lib/api/gener
 import { useApiQuery } from '#lib/api/use-api-query';
 import { parseExpiryReportItems } from '#lib/pharmacy/expiry-report';
 import { useMedicationStock } from '#lib/pharmacy/use-medication-stock';
+import { formatRupiah } from '#lib/billing/format-rupiah';
 import { formatStatusLabel } from '#lib/shared/status-label';
+import { useTaxPriceBreakdowns } from '#lib/taxes/use-tax-price-breakdowns';
 
 const PAGE_SIZE = 10;
 const EXPIRY_DAYS = 30;
@@ -64,6 +67,7 @@ export function InventoryPanel() {
   const canCreateMedication = ability.can('create', 'Medication');
   const canUpdateMedication = ability.can('update', 'Medication');
   const canReceiveStock = ability.can('write', 'Inventory');
+  const tBreakdown = useTranslations('shared.taxBreakdown');
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const deferredSearch = useDeferredValue(search.trim());
@@ -102,6 +106,14 @@ export function InventoryPanel() {
     errorMessage: t('inventoryLoadError'),
   });
   const medications = medicationsQuery.data ?? [];
+  // P27-T04: admins see each medicine's price split into before-PPN and PPN.
+  // The columns appear only once the breakdown answers, so a clinic without
+  // the tax module, and every non-admin, sees the list as before.
+  const { breakdownById } = useTaxPriceBreakdowns({
+    kind: 'MEDICATION',
+    ids: medications.map((medication) => medication.id),
+    enabled: ability.can('read', 'TaxCode'),
+  });
   const meta = medicationsQuery.meta as MedicationsListMeta | undefined;
   const expiryItems = parseExpiryReportItems(expiryQuery.data?.items ?? []);
 
@@ -213,6 +225,13 @@ export function InventoryPanel() {
                     <TableHead>{t('category')}</TableHead>
                     <TableHead>{t('stock')}</TableHead>
                     <TableHead>{t('reorderLevel')}</TableHead>
+                    {breakdownById ? (
+                      <>
+                        <TableHead>{tBreakdown('price')}</TableHead>
+                        <TableHead>{tBreakdown('priceBeforeTax')}</TableHead>
+                        <TableHead>{tBreakdown('taxAmount')}</TableHead>
+                      </>
+                    ) : null}
                     <TableHead>{t('actions')}</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -237,6 +256,16 @@ export function InventoryPanel() {
                         {format.number(medication.stockQty)}
                       </TableCell>
                       <TableCell>{format.number(medication.reorderLevel)}</TableCell>
+                      {breakdownById ? (
+                        <>
+                          <TableCell>
+                            {medication.unitPrice === undefined
+                              ? '—'
+                              : formatRupiah(medication.unitPrice)}
+                          </TableCell>
+                          <TaxPriceBreakdownCells breakdown={breakdownById.get(medication.id)} />
+                        </>
+                      ) : null}
                       <TableCell>
                         <div className="flex gap-1">
                           {canUpdateMedication ? (

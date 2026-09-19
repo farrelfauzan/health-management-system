@@ -562,7 +562,8 @@
           "COVERED": "Covered by a payer, not charged here",
           "NOT_BILLED": "Meant to be charged here, but no line was produced"
         }
-      }
+      },
+      "taxCodeUnresolved": "Some lines have no tax code or rate, so a PKP clinic cannot issue this bill yet. Set them under Settings › Taxes › Tariffs & medicines, then issue again."
     },
     "integrations": {
       "title": "Integrations",

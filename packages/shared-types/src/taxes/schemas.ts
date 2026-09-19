@@ -132,6 +132,8 @@ export const TAX_CODE_FAKTUR_MISMATCH_ERROR_CODE = 'TAX_CODE_FAKTUR_MISMATCH';
 export const TAX_RATE_NOT_AFTER_LATEST_ERROR_CODE = 'TAX_RATE_NOT_AFTER_LATEST';
 export const TAX_RATE_NOT_APPLICABLE_ERROR_CODE = 'TAX_RATE_NOT_APPLICABLE';
 export const TAX_ASSIGNMENT_TARGET_NOT_FOUND_ERROR_CODE = 'TAX_ASSIGNMENT_TARGET_NOT_FOUND';
+/** P27-T04: an invoice line with no tax code, or a taxed code with no rate yet. */
+export const TAX_CODE_UNRESOLVED_ERROR_CODE = 'TAX_CODE_UNRESOLVED';
 
 export const MAX_TAX_ASSIGNMENT_BATCH_SIZE = 500;
 
@@ -258,7 +260,44 @@ export const listTaxAssignmentsQuerySchema = z.object({
   search: z.string().trim().min(1).max(100).optional(),
 });
 
+/** Most rows a tariff or medicine list page shows at once. */
+export const MAX_TAX_PRICE_BREAKDOWN_IDS = 100;
+
+/**
+ * The before/after-PPN breakdown of the tariffs or medicines on one list page
+ * (P27-T04), for administrators. `ids` is a comma-separated list, so a page of
+ * rows is one GET.
+ */
+export const listTaxPriceBreakdownsQuerySchema = z.object({
+  kind: taxAssignmentKindSchema,
+  ids: z
+    .string()
+    .transform((value) => [
+      ...new Set(
+        value
+          .split(',')
+          .map((id) => id.trim())
+          .filter(Boolean),
+      ),
+    ])
+    .pipe(z.array(z.string().uuid()).min(1).max(MAX_TAX_PRICE_BREAKDOWN_IDS)),
+});
+
+/**
+ * What a breakdown row can say: taxed with figures, exempt, not taxed because
+ * the clinic is not PKP, no code or rate yet, or no price to break down.
+ */
+export const taxPriceBreakdownStatusSchema = z.enum([
+  'TAXED',
+  'EXEMPT',
+  'NOT_PKP',
+  'UNRESOLVED',
+  'UNPRICED',
+]);
+
 export type PpnTreatmentValue = z.infer<typeof ppnTreatmentSchema>;
+export type ListTaxPriceBreakdownsQuery = z.infer<typeof listTaxPriceBreakdownsQuerySchema>;
+export type TaxPriceBreakdownStatusValue = z.infer<typeof taxPriceBreakdownStatusSchema>;
 export type FakturTransactionCodeValue = z.infer<typeof fakturTransactionCodeSchema>;
 export type TaxDefaultTargetValue = z.infer<typeof taxDefaultTargetSchema>;
 export type TaxAssignmentKindValue = z.infer<typeof taxAssignmentKindSchema>;

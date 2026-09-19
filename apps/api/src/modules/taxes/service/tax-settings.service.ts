@@ -19,27 +19,12 @@ import { ConfigService } from '@nestjs/config';
 import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
 import { ClinicProfileService } from '../../billing/service/clinic-profile.service';
-import { TaxSettingsRepository } from '../repository/tax-settings.repository';
+import { TaxSettingsRepository } from '../../tax-core/repository/tax-settings.repository';
+import { TaxProfileService } from '../../tax-core/service/tax-profile.service';
 
 const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 const TAX_SETTINGS_AUDIT_RESOURCE = 'tax-settings';
 const CALENDAR_YEAR_LENGTH = 4;
-
-/**
- * What a clinic that has never opened the tax page is: on the general regime,
- * not PKP, with no legal form guessed (D-038). Prices are always tax-inclusive,
- * so there is nothing to choose there (P27-T04).
- */
-const DEFAULT_TAX_SETTINGS: TaxSettingsRecord = {
-  taxpayerType: null,
-  incomeTaxRegime: 'GENERAL',
-  pp55StartYear: null,
-  isPkp: false,
-  pkpSince: null,
-  nitku: null,
-  updatedById: null,
-  updatedAt: null,
-};
 
 /** The columns an audit row compares, in the order an administrator reads them. */
 const AUDITED_FIELDS = [
@@ -66,6 +51,7 @@ export class TaxSettingsService {
 
   constructor(
     private readonly taxSettingsRepository: TaxSettingsRepository,
+    private readonly taxProfileService: TaxProfileService,
     private readonly clinicProfileService: ClinicProfileService,
     private readonly auditService: AuditService,
     configService: ConfigService,
@@ -74,8 +60,7 @@ export class TaxSettingsService {
   }
 
   async getTaxSettings(): Promise<TaxSettingsRecord> {
-    const record = await this.taxSettingsRepository.findTaxSettings();
-    return record ?? DEFAULT_TAX_SETTINGS;
+    return this.taxProfileService.getTaxSettings();
   }
 
   async getTaxSettingsView(): Promise<TaxSettingsView> {

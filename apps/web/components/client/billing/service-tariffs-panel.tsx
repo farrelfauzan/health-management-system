@@ -9,6 +9,7 @@ import { ServiceTariffsTable } from '#components/client/billing/service-tariffs-
 import { NumberedPagination } from '#components/client/shared/numbered-pagination';
 import { INVOICES_PAGE_SIZE } from '#lib/billing/search-params';
 import { useServiceTariffsList } from '#lib/billing/use-service-tariffs-list';
+import { useTaxPriceBreakdowns } from '#lib/taxes/use-tax-price-breakdowns';
 
 type TariffDialogState = {
   isOpen: boolean;
@@ -24,6 +25,14 @@ export function ServiceTariffsPanel() {
   });
   const tariffsQuery = useServiceTariffsList({ page, limit: INVOICES_PAGE_SIZE });
   const canManage = ability.can('write', 'ServiceTariff');
+  // P27-T04: admins see the price split into before-PPN and PPN; the columns
+  // only appear once the breakdown answers, so a clinic without the tax
+  // module never sees them.
+  const { breakdownById } = useTaxPriceBreakdowns({
+    kind: 'SERVICE_TARIFF',
+    ids: tariffsQuery.tariffs.map((tariff) => tariff.id),
+    enabled: ability.can('read', 'TaxCode'),
+  });
 
   return (
     <div className="space-y-5">
@@ -49,6 +58,7 @@ export function ServiceTariffsPanel() {
             isPending={tariffsQuery.isPending}
             isError={tariffsQuery.isError}
             canManage={canManage}
+            breakdownById={breakdownById}
             onEdit={(tariff) => setDialogState({ isOpen: true, tariff })}
           />
           <NumberedPagination

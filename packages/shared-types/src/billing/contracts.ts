@@ -1,3 +1,4 @@
+import type { PpnTreatmentValue } from '#taxes/schemas';
 import type { ClinicianProfessionValue } from '#doctor-management/schemas';
 import type { RoomClassSummary } from '#room-management/contracts';
 import type {
@@ -61,6 +62,13 @@ export type InvoiceItemResponse = {
   quantity: number;
   unitPrice: number;
   amount: number;
+  /**
+   * The tax snapshot (P27-T04), for staff screens only: the patient document
+   * shows one tax-inclusive price and a note, never these figures.
+   */
+  taxCode?: string;
+  ppnTreatment?: PpnTreatmentValue;
+  taxAmount: number;
 };
 
 export type PaymentResponse = {
@@ -100,6 +108,8 @@ export type InvoiceListItem = {
 
 export type InvoiceDetail = Omit<InvoiceListItem, 'itemCount'> & {
   items: InvoiceItemResponse[];
+  /** The PPN inside `totalAmount` (P27-T04); zero for a clinic that is not PKP. */
+  taxAmount: number;
   payment?: PaymentResponse;
   voidReason?: string;
   voidedById?: string;

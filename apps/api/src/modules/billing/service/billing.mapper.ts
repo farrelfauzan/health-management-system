@@ -82,6 +82,7 @@ export class BillingMapper {
       },
       status: record.status,
       totalAmount: record.totalAmount,
+      taxAmount: record.taxAmount,
       issuedAt: record.issuedAt?.toISOString(),
       voidedAt: record.voidedAt?.toISOString(),
       voidReason: record.voidReason ?? undefined,
@@ -106,6 +107,9 @@ export class BillingMapper {
       quantity: record.quantity,
       unitPrice: record.unitPrice,
       amount: record.amount,
+      taxCode: record.taxCode ?? undefined,
+      ppnTreatment: record.ppnTreatment ?? undefined,
+      taxAmount: record.taxAmount,
     };
   }
 

@@ -1,3 +1,5 @@
+import type { PpnTreatmentValue } from '#taxes/schemas';
+import type { InvoiceLineTax } from '#taxes/types';
 import type {
   InvoiceDocumentStatusValue,
   InvoiceItemTypeValue,
@@ -63,6 +65,14 @@ export type InvoiceItemRecord = {
   quantity: number;
   unitPrice: number;
   amount: number;
+  /** The tax snapshot (P27-T04); `taxCode` is null before the tax module. */
+  taxCode: string | null;
+  ppnTreatment: PpnTreatmentValue | null;
+  fakturTransactionCode: string | null;
+  taxableAmount: number | null;
+  taxBase: number | null;
+  taxRatePercent: number | null;
+  taxAmount: number;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -80,6 +90,8 @@ export type InvoiceRecord = {
   patientId: string;
   status: InvoiceStatusValue;
   totalAmount: number;
+  /** The PPN inside `totalAmount` (P27-T04). */
+  taxAmount: number;
   issuedAt: Date | null;
   voidedAt: Date | null;
   voidReason: string | null;
@@ -260,6 +272,8 @@ export type CreateInvoiceItemPayload = {
   quantity: number;
   unitPrice: number;
   amount: number;
+  /** The line's tax, when the tax module computed one (P27-T04). */
+  tax?: InvoiceLineTax;
 };
 
 export type CreateInvoiceRecordPayload = {
@@ -272,7 +286,20 @@ export type CreateInvoiceRecordPayload = {
   createdById: string;
   invoiceDate: Date;
   totalAmount: number;
+  /** The PPN inside the total, the sum of the lines' tax (P27-T04). */
+  taxAmount?: number;
   items: CreateInvoiceItemPayload[];
+};
+
+/**
+ * DRAFT → ISSUED with the tax recomputed for the issue date (P27-T04): every
+ * line's snapshot and the invoice's PPN commit with the status change.
+ */
+export type IssueInvoiceRecordPayload = {
+  id: string;
+  issuedAt: Date;
+  lineTaxes: Array<{ itemId: string; tax: InvoiceLineTax }>;
+  taxAmount: number;
 };
 
 /** The walk-in visit being billed, and the patient who owes for it. */
@@ -634,4 +661,15 @@ export type InvoiceDeliverySubjectRecord = {
     phoneNumber: string;
     email: string | null;
   };
+};
+
+/** The tax columns an invoice line is written with (P27-T04); empty keeps the defaults. */
+export type InvoiceItemTaxColumns = {
+  taxCode?: string | null;
+  ppnTreatment?: PpnTreatmentValue | null;
+  fakturTransactionCode?: string | null;
+  taxableAmount?: number | null;
+  taxBase?: number | null;
+  taxRatePercent?: number | null;
+  taxAmount?: number;
 };

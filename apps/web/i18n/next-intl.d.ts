@@ -18,6 +18,7 @@ type SharedMessages = {
     form: typeof idSharedMessages.shared.form;
     password: typeof idSharedMessages.shared.password;
     documentPreview: typeof idSharedMessages.shared.documentPreview;
+    taxBreakdown: typeof idSharedMessages.shared.taxBreakdown;
   };
 };
 

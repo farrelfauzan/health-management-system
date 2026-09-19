@@ -5,7 +5,8 @@ import { ConfigService } from '@nestjs/config';
 import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
 import { ClinicProfileService } from '../../billing/service/clinic-profile.service';
-import { TaxSettingsRepository } from '../repository/tax-settings.repository';
+import { TaxSettingsRepository } from '../../tax-core/repository/tax-settings.repository';
+import { TaxProfileService } from '../../tax-core/service/tax-profile.service';
 import { TaxSettingsService } from './tax-settings.service';
 
 const VALID_NPWP = '0012345678901000';
@@ -18,6 +19,7 @@ describe('TaxSettingsService', () => {
 
   const service = new TaxSettingsService(
     taxSettingsRepositoryMock as unknown as TaxSettingsRepository,
+    new TaxProfileService(taxSettingsRepositoryMock as unknown as TaxSettingsRepository),
     clinicProfileServiceMock as unknown as ClinicProfileService,
     auditServiceMock as unknown as AuditService,
     configServiceMock as unknown as ConfigService,

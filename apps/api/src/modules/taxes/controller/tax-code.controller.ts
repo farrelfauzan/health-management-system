@@ -20,7 +20,7 @@ import { TAXES_EXAMPLES } from '../../../common/openapi/taxes-examples';
 import { CreateTaxCodeRateDto } from '../dto/create-tax-code-rate.dto';
 import { CreateTaxCodeDto } from '../dto/create-tax-code.dto';
 import { UpdateTaxCodeDto } from '../dto/update-tax-code.dto';
-import { TaxCodeService } from '../service/tax-code.service';
+import { TaxCodeService } from '../../tax-core/service/tax-code.service';
 
 /**
  * Tax codes and their effective-dated rates (P27-T03, `docs/post-mvp/decisions.md`

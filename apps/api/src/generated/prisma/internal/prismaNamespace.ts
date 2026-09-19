@@ -10264,6 +10264,7 @@ export const InvoiceScalarFieldEnum = {
   patientId: 'patientId',
   status: 'status',
   totalAmount: 'totalAmount',
+  taxAmount: 'taxAmount',
   issuedAt: 'issuedAt',
   voidedAt: 'voidedAt',
   voidReason: 'voidReason',
@@ -10289,6 +10290,13 @@ export const InvoiceItemScalarFieldEnum = {
   quantity: 'quantity',
   unitPrice: 'unitPrice',
   amount: 'amount',
+  taxCode: 'taxCode',
+  ppnTreatment: 'ppnTreatment',
+  fakturTransactionCode: 'fakturTransactionCode',
+  taxableAmount: 'taxableAmount',
+  taxBase: 'taxBase',
+  taxRatePercent: 'taxRatePercent',
+  taxAmount: 'taxAmount',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

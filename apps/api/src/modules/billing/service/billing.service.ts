@@ -19,6 +19,9 @@ import {
   resolveConsultationTariff,
   ServiceTariffCategoryValue,
   ServiceTariffRecord,
+  TAX_CODE_UNRESOLVED_ERROR_CODE,
+  InvoiceItemRecord,
+  InvoiceLineTaxesResult,
 } from '@hms/shared-types';
 import {
   BadRequestException,
@@ -36,6 +39,7 @@ import { GenerateLabOnlyInvoiceDto } from '../dto/generate-lab-only-invoice.dto'
 import { ListInvoicesQueryDto } from '../dto/list-invoices-query.dto';
 import { RecordPaymentDto } from '../dto/record-payment.dto';
 import { VoidInvoiceDto } from '../dto/void-invoice.dto';
+import { InvoiceTaxService } from '../../tax-core/service/invoice-tax.service';
 import { BillingRepository } from '../repository/billing.repository';
 import { ServiceTariffRepository } from '../repository/service-tariff.repository';
 import { BillingMapper } from './billing.mapper';
@@ -99,6 +103,7 @@ export class BillingService {
     private readonly billingMapper: BillingMapper,
     private readonly auditService: AuditService,
     private readonly invoiceDocumentService: InvoiceDocumentService,
+    private readonly invoiceTaxService: InvoiceTaxService,
     configService: ConfigService,
   ) {
     this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
@@ -121,13 +126,15 @@ export class BillingService {
       consultationTariffId: payload.consultationTariffId,
     });
     const totalCents = collected.items.reduce((sum, item) => sum + toCents(item.amount), 0);
+    const taxed = await this.computeDraftTaxes(collected.items);
     const created = await this.billingRepository.createInvoiceWithItems({
       encounterId: encounter.id,
       patientId: encounter.patientId,
       createdById: currentUser.sub,
       invoiceDate: this.resolveClinicToday(),
       totalAmount: toRupiah(totalCents),
-      items: collected.items,
+      taxAmount: taxed.taxAmount,
+      items: taxed.items,
     });
 
     return { invoice: await this.toInvoiceDetail(created), gaps: collected.gaps };
@@ -170,13 +177,15 @@ export class BillingService {
       throw new ConflictException('This visit has no laboratory tests to bill');
     }
     const totalCents = collected.items.reduce((sum, item) => sum + toCents(item.amount), 0);
+    const taxed = await this.computeDraftTaxes(collected.items);
     const created = await this.billingRepository.createInvoiceWithItems({
       registrationId: visit.id,
       patientId: visit.patientId,
       createdById: currentUser.sub,
       invoiceDate: this.resolveClinicToday(),
       totalAmount: toRupiah(totalCents),
-      items: collected.items,
+      taxAmount: taxed.taxAmount,
+      items: taxed.items,
     });
 
     return { invoice: await this.toInvoiceDetail(created), gaps: collected.gaps };
@@ -213,11 +222,31 @@ export class BillingService {
     return this.toInvoiceDetail(detail);
   }
 
-  /** DRAFT → ISSUED: the document handed to the patient. From here it is corrected by voiding, never edited. */
+  /**
+   * DRAFT → ISSUED: the document handed to the patient. From here it is
+   * corrected by voiding, never edited. The tax is recomputed for the issue
+   * date and frozen with it (P27-T04, D-038): the rate a draft was priced at
+   * yesterday is not the rule, the rate on the day it is issued is. For a PKP
+   * clinic a line no tax code resolves for refuses the issue rather than going
+   * out with the wrong PPN; a clinic that is not PKP charges none, so the bill
+   * issues and the line is left without a code for the report to flag.
+   */
   async issueInvoice(id: string): Promise<InvoiceDetail> {
-    const invoice = await this.findInvoiceOrThrow(id);
+    const invoice = await this.findInvoiceDetailOrThrow(id);
     this.assertAllowedStatusTransition(invoice.status, 'ISSUED');
-    const issued = await this.billingRepository.issueInvoice(id, new Date());
+    const taxed = await this.invoiceTaxService.computeLineTaxes({
+      lines: invoice.items,
+      onDate: this.resolveClinicDate(),
+    });
+    if (taxed.isPkp) {
+      this.assertTaxResolved(taxed.lines);
+    }
+    const issued = await this.billingRepository.issueInvoice({
+      id,
+      issuedAt: new Date(),
+      lineTaxes: taxed.lines.map((line) => ({ itemId: line.id, tax: line.tax })),
+      taxAmount: taxed.taxAmount,
+    });
     // FR-E1-09: issuing snapshots the render — the template version and the
     // resolved values are pinned now, so the document a re-render produces
     // next year is the one issued today. Best-effort by contract: a snapshot
@@ -311,7 +340,11 @@ export class BillingService {
       ITEM_TYPE_BY_TARIFF_CATEGORY[tariff.category],
       payload.quantity,
     );
-    const updated = await this.billingRepository.addInvoiceItem({ invoiceId: invoice.id, item });
+    const [taxedItem] = (await this.computeDraftTaxes([item])).items;
+    const updated = await this.billingRepository.addInvoiceItem({
+      invoiceId: invoice.id,
+      item: taxedItem ?? item,
+    });
     await this.auditService.record({
       action: 'INVOICE_ITEM_ADDED',
       resource: 'Invoice',
@@ -954,6 +987,36 @@ export class BillingService {
   }
 
   private resolveClinicToday(): Date {
-    return parseBillingDateOnly(getCalendarDateInTimeZone(new Date(), this.clinicTimeZone));
+    return parseBillingDateOnly(this.resolveClinicDate());
+  }
+
+  private resolveClinicDate(): string {
+    return getCalendarDateInTimeZone(new Date(), this.clinicTimeZone);
+  }
+
+  /**
+   * The tax a draft shows while it is edited (P27-T04). Informational until
+   * issue, which recomputes every line for its own date.
+   */
+  private async computeDraftTaxes(
+    items: CreateInvoiceItemPayload[],
+  ): Promise<{ items: CreateInvoiceItemPayload[]; taxAmount: number }> {
+    const taxed = await this.invoiceTaxService.computeLineTaxes({
+      lines: items,
+      onDate: this.resolveClinicDate(),
+    });
+    return { items: taxed.lines, taxAmount: taxed.taxAmount };
+  }
+
+  private assertTaxResolved(lines: InvoiceLineTaxesResult<InvoiceItemRecord>['lines']): void {
+    const unresolved = lines.filter((line) => !line.tax.isResolved);
+    if (unresolved.length === 0) {
+      return;
+    }
+    throw new ConflictException({
+      code: TAX_CODE_UNRESOLVED_ERROR_CODE,
+      message: `${unresolved.length} line(s) have no tax code or rate: ${unresolved.map((line) => line.description).join(', ')}. Set them under Pengaturan › Pajak before issuing.`,
+      errors: { items: unresolved.map((line) => ({ id: line.id, description: line.description })) },
+    });
   }
 }

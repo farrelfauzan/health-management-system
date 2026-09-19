@@ -95,4 +95,16 @@ export const TAXES_EXAMPLES = {
     },
     bulkResult: { updatedCount: 1 },
   },
+  priceBreakdowns: {
+    row: {
+      kind: 'MEDICATION',
+      id: '8c6f5e4d-3a2b-4f1e-8d9c-b8a7f6e5d4c3',
+      status: 'TAXED',
+      taxCode: 'BARANG-PPN',
+      ppnTreatment: 'STANDARD',
+      price: 111000,
+      priceBeforeTax: 100000,
+      taxAmount: 11000,
+    },
+  },
 } as const;

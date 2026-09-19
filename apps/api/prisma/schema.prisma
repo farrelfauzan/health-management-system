@@ -3107,6 +3107,9 @@ model Invoice {
   patientId      String        @map("patient_id") @db.Uuid
   status         InvoiceStatus @default(DRAFT)
   totalAmount    Decimal       @default(0) @map("total_amount") @db.Decimal(12, 2)
+  /// The PPN inside `totalAmount` (P27-T04): the sum of the lines' `taxAmount`.
+  /// Prices are tax-inclusive, so it never adds to the total; frozen at issue.
+  taxAmount      Decimal       @default(0) @map("tax_amount") @db.Decimal(12, 2)
   issuedAt       DateTime?     @map("issued_at")
   voidedAt       DateTime?     @map("voided_at")
   voidReason     String?       @map("void_reason")
@@ -3169,6 +3172,18 @@ model InvoiceItem {
   /// Always `quantity * unitPrice`, enforced by a CHECK in the migration —
   /// stored anyway because the row is a financial snapshot, not a view.
   amount             Decimal         @db.Decimal(12, 2)
+  /// The tax snapshot (P27-T04, D-038): the code this line was taxed under and
+  /// what it came to, computed while DRAFT and frozen at issue. Null code on a
+  /// line billed before the tax module, or with the module off.
+  taxCode            String?         @map("tax_code") @db.VarChar(40)
+  ppnTreatment       PpnTreatment?   @map("ppn_treatment")
+  fakturTransactionCode String?      @map("faktur_transaction_code") @db.VarChar(2)
+  /// Price before PPN; the DPP (nilai lain for faktur code 04) is `taxBase`.
+  taxableAmount      Decimal?        @map("taxable_amount") @db.Decimal(12, 2)
+  taxBase            Decimal?        @map("tax_base") @db.Decimal(12, 2)
+  taxRatePercent     Decimal?        @map("tax_rate_percent") @db.Decimal(5, 2)
+  /// The PPN inside `amount`. Never added on top: prices are tax-inclusive.
+  taxAmount          Decimal         @default(0) @map("tax_amount") @db.Decimal(12, 2)
   createdAt          DateTime        @default(now()) @map("created_at")
   updatedAt          DateTime        @updatedAt @map("updated_at")
 

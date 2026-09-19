@@ -11,6 +11,7 @@ import {
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
+import { InvoiceTaxService } from '../../tax-core/service/invoice-tax.service';
 import { BillingRepository } from '../repository/billing.repository';
 import { ServiceTariffRepository } from '../repository/service-tariff.repository';
 
@@ -41,6 +42,7 @@ export class AccommodationBillingService {
   constructor(
     private readonly billingRepository: BillingRepository,
     private readonly serviceTariffRepository: ServiceTariffRepository,
+    private readonly invoiceTaxService: InvoiceTaxService,
     configService: ConfigService,
   ) {
     this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
@@ -78,13 +80,20 @@ export class AccommodationBillingService {
       (sum, item) => sum + Math.round(item.amount * CENTS_PER_RUPIAH_UNIT),
       0,
     );
+    // Ward nights are a medical service by default; the tax module decides
+    // (P27-T04), and issue recomputes it for the issue date.
+    const taxed = await this.invoiceTaxService.computeLineTaxes({
+      lines: items,
+      onDate: getCalendarDateInTimeZone(new Date(), this.clinicTimeZone),
+    });
     const invoice = await this.billingRepository.createInvoiceWithItems({
       admissionId: admission.id,
       patientId: admission.patientId,
       createdById,
       invoiceDate: this.resolveClinicToday(),
       totalAmount: totalCents / CENTS_PER_RUPIAH_UNIT,
-      items,
+      taxAmount: taxed.taxAmount,
+      items: taxed.lines,
     });
 
     this.logger.log(
