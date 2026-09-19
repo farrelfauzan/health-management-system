@@ -235,6 +235,7 @@ export type TaxReportDraftWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"TaxReportDraft"> | Date | string
   generatedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   finalizedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  document?: Prisma.XOR<Prisma.TaxReportDocumentNullableScalarRelationFilter, Prisma.TaxReportDocumentWhereInput> | null
 }
 
 export type TaxReportDraftOrderByWithRelationInput = {
@@ -252,6 +253,7 @@ export type TaxReportDraftOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   generatedBy?: Prisma.UserOrderByWithRelationInput
   finalizedBy?: Prisma.UserOrderByWithRelationInput
+  document?: Prisma.TaxReportDocumentOrderByWithRelationInput
 }
 
 export type TaxReportDraftWhereUniqueInput = Prisma.AtLeast<{
@@ -273,6 +275,7 @@ export type TaxReportDraftWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"TaxReportDraft"> | Date | string
   generatedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   finalizedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  document?: Prisma.XOR<Prisma.TaxReportDocumentNullableScalarRelationFilter, Prisma.TaxReportDocumentWhereInput> | null
 }, "id" | "period_kind">
 
 export type TaxReportDraftOrderByWithAggregationInput = {
@@ -324,6 +327,7 @@ export type TaxReportDraftCreateInput = {
   updatedAt?: Date | string
   generatedBy?: Prisma.UserCreateNestedOneWithoutGeneratedTaxReportsInput
   finalizedBy?: Prisma.UserCreateNestedOneWithoutFinalizedTaxReportsInput
+  document?: Prisma.TaxReportDocumentCreateNestedOneWithoutReportInput
 }
 
 export type TaxReportDraftUncheckedCreateInput = {
@@ -339,6 +343,7 @@ export type TaxReportDraftUncheckedCreateInput = {
   finalizedById?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  document?: Prisma.TaxReportDocumentUncheckedCreateNestedOneWithoutReportInput
 }
 
 export type TaxReportDraftUpdateInput = {
@@ -354,6 +359,7 @@ export type TaxReportDraftUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   generatedBy?: Prisma.UserUpdateOneWithoutGeneratedTaxReportsNestedInput
   finalizedBy?: Prisma.UserUpdateOneWithoutFinalizedTaxReportsNestedInput
+  document?: Prisma.TaxReportDocumentUpdateOneWithoutReportNestedInput
 }
 
 export type TaxReportDraftUncheckedUpdateInput = {
@@ -369,6 +375,7 @@ export type TaxReportDraftUncheckedUpdateInput = {
   finalizedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  document?: Prisma.TaxReportDocumentUncheckedUpdateOneWithoutReportNestedInput
 }
 
 export type TaxReportDraftCreateManyInput = {
@@ -470,6 +477,11 @@ export type TaxReportDraftMinOrderByAggregateInput = {
   updatedAt?: Prisma.SortOrder
 }
 
+export type TaxReportDraftScalarRelationFilter = {
+  is?: Prisma.TaxReportDraftWhereInput
+  isNot?: Prisma.TaxReportDraftWhereInput
+}
+
 export type TaxReportDraftCreateNestedManyWithoutGeneratedByInput = {
   create?: Prisma.XOR<Prisma.TaxReportDraftCreateWithoutGeneratedByInput, Prisma.TaxReportDraftUncheckedCreateWithoutGeneratedByInput> | Prisma.TaxReportDraftCreateWithoutGeneratedByInput[] | Prisma.TaxReportDraftUncheckedCreateWithoutGeneratedByInput[]
   connectOrCreate?: Prisma.TaxReportDraftCreateOrConnectWithoutGeneratedByInput | Prisma.TaxReportDraftCreateOrConnectWithoutGeneratedByInput[]
@@ -562,6 +574,20 @@ export type EnumTaxReportStatusFieldUpdateOperationsInput = {
   set?: $Enums.TaxReportStatus
 }
 
+export type TaxReportDraftCreateNestedOneWithoutDocumentInput = {
+  create?: Prisma.XOR<Prisma.TaxReportDraftCreateWithoutDocumentInput, Prisma.TaxReportDraftUncheckedCreateWithoutDocumentInput>
+  connectOrCreate?: Prisma.TaxReportDraftCreateOrConnectWithoutDocumentInput
+  connect?: Prisma.TaxReportDraftWhereUniqueInput
+}
+
+export type TaxReportDraftUpdateOneRequiredWithoutDocumentNestedInput = {
+  create?: Prisma.XOR<Prisma.TaxReportDraftCreateWithoutDocumentInput, Prisma.TaxReportDraftUncheckedCreateWithoutDocumentInput>
+  connectOrCreate?: Prisma.TaxReportDraftCreateOrConnectWithoutDocumentInput
+  upsert?: Prisma.TaxReportDraftUpsertWithoutDocumentInput
+  connect?: Prisma.TaxReportDraftWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.TaxReportDraftUpdateToOneWithWhereWithoutDocumentInput, Prisma.TaxReportDraftUpdateWithoutDocumentInput>, Prisma.TaxReportDraftUncheckedUpdateWithoutDocumentInput>
+}
+
 export type TaxReportDraftCreateWithoutGeneratedByInput = {
   id?: string
   period: string
@@ -574,6 +600,7 @@ export type TaxReportDraftCreateWithoutGeneratedByInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   finalizedBy?: Prisma.UserCreateNestedOneWithoutFinalizedTaxReportsInput
+  document?: Prisma.TaxReportDocumentCreateNestedOneWithoutReportInput
 }
 
 export type TaxReportDraftUncheckedCreateWithoutGeneratedByInput = {
@@ -588,6 +615,7 @@ export type TaxReportDraftUncheckedCreateWithoutGeneratedByInput = {
   finalizedById?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  document?: Prisma.TaxReportDocumentUncheckedCreateNestedOneWithoutReportInput
 }
 
 export type TaxReportDraftCreateOrConnectWithoutGeneratedByInput = {
@@ -612,6 +640,7 @@ export type TaxReportDraftCreateWithoutFinalizedByInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   generatedBy?: Prisma.UserCreateNestedOneWithoutGeneratedTaxReportsInput
+  document?: Prisma.TaxReportDocumentCreateNestedOneWithoutReportInput
 }
 
 export type TaxReportDraftUncheckedCreateWithoutFinalizedByInput = {
@@ -626,6 +655,7 @@ export type TaxReportDraftUncheckedCreateWithoutFinalizedByInput = {
   finalizedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  document?: Prisma.TaxReportDocumentUncheckedCreateNestedOneWithoutReportInput
 }
 
 export type TaxReportDraftCreateOrConnectWithoutFinalizedByInput = {
@@ -688,6 +718,82 @@ export type TaxReportDraftUpdateManyWithWhereWithoutFinalizedByInput = {
   data: Prisma.XOR<Prisma.TaxReportDraftUpdateManyMutationInput, Prisma.TaxReportDraftUncheckedUpdateManyWithoutFinalizedByInput>
 }
 
+export type TaxReportDraftCreateWithoutDocumentInput = {
+  id?: string
+  period: string
+  kind: $Enums.TaxReportKind
+  status?: $Enums.TaxReportStatus
+  summary: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  lines: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  generatedAt: Date | string
+  finalizedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  generatedBy?: Prisma.UserCreateNestedOneWithoutGeneratedTaxReportsInput
+  finalizedBy?: Prisma.UserCreateNestedOneWithoutFinalizedTaxReportsInput
+}
+
+export type TaxReportDraftUncheckedCreateWithoutDocumentInput = {
+  id?: string
+  period: string
+  kind: $Enums.TaxReportKind
+  status?: $Enums.TaxReportStatus
+  summary: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  lines: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  generatedAt: Date | string
+  generatedById?: string | null
+  finalizedAt?: Date | string | null
+  finalizedById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type TaxReportDraftCreateOrConnectWithoutDocumentInput = {
+  where: Prisma.TaxReportDraftWhereUniqueInput
+  create: Prisma.XOR<Prisma.TaxReportDraftCreateWithoutDocumentInput, Prisma.TaxReportDraftUncheckedCreateWithoutDocumentInput>
+}
+
+export type TaxReportDraftUpsertWithoutDocumentInput = {
+  update: Prisma.XOR<Prisma.TaxReportDraftUpdateWithoutDocumentInput, Prisma.TaxReportDraftUncheckedUpdateWithoutDocumentInput>
+  create: Prisma.XOR<Prisma.TaxReportDraftCreateWithoutDocumentInput, Prisma.TaxReportDraftUncheckedCreateWithoutDocumentInput>
+  where?: Prisma.TaxReportDraftWhereInput
+}
+
+export type TaxReportDraftUpdateToOneWithWhereWithoutDocumentInput = {
+  where?: Prisma.TaxReportDraftWhereInput
+  data: Prisma.XOR<Prisma.TaxReportDraftUpdateWithoutDocumentInput, Prisma.TaxReportDraftUncheckedUpdateWithoutDocumentInput>
+}
+
+export type TaxReportDraftUpdateWithoutDocumentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  period?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.EnumTaxReportKindFieldUpdateOperationsInput | $Enums.TaxReportKind
+  status?: Prisma.EnumTaxReportStatusFieldUpdateOperationsInput | $Enums.TaxReportStatus
+  summary?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  lines?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  generatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  finalizedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  generatedBy?: Prisma.UserUpdateOneWithoutGeneratedTaxReportsNestedInput
+  finalizedBy?: Prisma.UserUpdateOneWithoutFinalizedTaxReportsNestedInput
+}
+
+export type TaxReportDraftUncheckedUpdateWithoutDocumentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  period?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.EnumTaxReportKindFieldUpdateOperationsInput | $Enums.TaxReportKind
+  status?: Prisma.EnumTaxReportStatusFieldUpdateOperationsInput | $Enums.TaxReportStatus
+  summary?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  lines?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  generatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  generatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  finalizedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  finalizedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type TaxReportDraftCreateManyGeneratedByInput = {
   id?: string
   period: string
@@ -728,6 +834,7 @@ export type TaxReportDraftUpdateWithoutGeneratedByInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   finalizedBy?: Prisma.UserUpdateOneWithoutFinalizedTaxReportsNestedInput
+  document?: Prisma.TaxReportDocumentUpdateOneWithoutReportNestedInput
 }
 
 export type TaxReportDraftUncheckedUpdateWithoutGeneratedByInput = {
@@ -742,6 +849,7 @@ export type TaxReportDraftUncheckedUpdateWithoutGeneratedByInput = {
   finalizedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  document?: Prisma.TaxReportDocumentUncheckedUpdateOneWithoutReportNestedInput
 }
 
 export type TaxReportDraftUncheckedUpdateManyWithoutGeneratedByInput = {
@@ -770,6 +878,7 @@ export type TaxReportDraftUpdateWithoutFinalizedByInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   generatedBy?: Prisma.UserUpdateOneWithoutGeneratedTaxReportsNestedInput
+  document?: Prisma.TaxReportDocumentUpdateOneWithoutReportNestedInput
 }
 
 export type TaxReportDraftUncheckedUpdateWithoutFinalizedByInput = {
@@ -784,6 +893,7 @@ export type TaxReportDraftUncheckedUpdateWithoutFinalizedByInput = {
   finalizedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  document?: Prisma.TaxReportDocumentUncheckedUpdateOneWithoutReportNestedInput
 }
 
 export type TaxReportDraftUncheckedUpdateManyWithoutFinalizedByInput = {
@@ -817,6 +927,7 @@ export type TaxReportDraftSelect<ExtArgs extends runtime.Types.Extensions.Intern
   updatedAt?: boolean
   generatedBy?: boolean | Prisma.TaxReportDraft$generatedByArgs<ExtArgs>
   finalizedBy?: boolean | Prisma.TaxReportDraft$finalizedByArgs<ExtArgs>
+  document?: boolean | Prisma.TaxReportDraft$documentArgs<ExtArgs>
 }, ExtArgs["result"]["taxReportDraft"]>
 
 export type TaxReportDraftSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -872,6 +983,7 @@ export type TaxReportDraftOmit<ExtArgs extends runtime.Types.Extensions.Internal
 export type TaxReportDraftInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   generatedBy?: boolean | Prisma.TaxReportDraft$generatedByArgs<ExtArgs>
   finalizedBy?: boolean | Prisma.TaxReportDraft$finalizedByArgs<ExtArgs>
+  document?: boolean | Prisma.TaxReportDraft$documentArgs<ExtArgs>
 }
 export type TaxReportDraftIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   generatedBy?: boolean | Prisma.TaxReportDraft$generatedByArgs<ExtArgs>
@@ -887,6 +999,7 @@ export type $TaxReportDraftPayload<ExtArgs extends runtime.Types.Extensions.Inte
   objects: {
     generatedBy: Prisma.$UserPayload<ExtArgs> | null
     finalizedBy: Prisma.$UserPayload<ExtArgs> | null
+    document: Prisma.$TaxReportDocumentPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1306,6 +1419,7 @@ export interface Prisma__TaxReportDraftClient<T, Null = never, ExtArgs extends r
   readonly [Symbol.toStringTag]: "PrismaPromise"
   generatedBy<T extends Prisma.TaxReportDraft$generatedByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TaxReportDraft$generatedByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   finalizedBy<T extends Prisma.TaxReportDraft$finalizedByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TaxReportDraft$finalizedByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  document<T extends Prisma.TaxReportDraft$documentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TaxReportDraft$documentArgs<ExtArgs>>): Prisma.Prisma__TaxReportDocumentClient<runtime.Types.Result.GetResult<Prisma.$TaxReportDocumentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1783,6 +1897,25 @@ export type TaxReportDraft$finalizedByArgs<ExtArgs extends runtime.Types.Extensi
    */
   include?: Prisma.UserInclude<ExtArgs> | null
   where?: Prisma.UserWhereInput
+}
+
+/**
+ * TaxReportDraft.document
+ */
+export type TaxReportDraft$documentArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TaxReportDocument
+   */
+  select?: Prisma.TaxReportDocumentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TaxReportDocument
+   */
+  omit?: Prisma.TaxReportDocumentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TaxReportDocumentInclude<ExtArgs> | null
+  where?: Prisma.TaxReportDocumentWhereInput
 }
 
 /**

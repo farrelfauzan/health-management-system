@@ -1531,6 +1531,8 @@ export * from './taxPriceBreakdownControllerListPriceBreakdownsV1Kind';
 export * from './taxPriceBreakdownControllerListPriceBreakdownsV1Params';
 export * from './taxPriceBreakdownControllerListPriceBreakdownsV1200';
 export * from './taxPriceBreakdownControllerListPriceBreakdownsV1200DataItem';
+export * from './taxReportControllerCreatePdfDownloadUrlV1200';
+export * from './taxReportControllerCreatePdfDownloadUrlV1200Data';
 export * from './taxReportControllerCreateReportV1201';
 export * from './taxReportControllerCreateReportV1201Data';
 export * from './taxReportControllerCreateReportV1201DataLinesItem';

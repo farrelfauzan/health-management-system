@@ -6,7 +6,9 @@ import request from 'supertest';
 
 import { AppModule } from '../../app.module';
 import { AuditService } from '../../common/audit/audit.service';
+import { PdfRendererService } from '../../common/pdf/pdf-renderer.service';
 import { PrismaService } from '../../common/prisma/prisma.service';
+import { ObjectStorageService } from '../../common/storage/object-storage.service';
 import { AuthRepository } from '../auth/repository/auth.repository';
 import { ClinicProfileRepository } from '../billing/repository/clinic-profile.repository';
 import { FeatureAvailabilityCacheService } from '../feature-entitlement/service/feature-availability-cache.service';
@@ -14,6 +16,7 @@ import { TaxAssignmentRepository } from '../tax-core/repository/tax-assignment.r
 import { TaxCodeRepository } from '../tax-core/repository/tax-code.repository';
 import { TaxSettingsRepository } from '../tax-core/repository/tax-settings.repository';
 import { TaxReportRepository } from './repository/tax-report.repository';
+import { TaxReportDocumentRepository } from './repository/tax-report-document.repository';
 
 const TAX_SETTINGS_PATH = '/api/v1/v1/tax/settings';
 const TAX_CODES_PATH = '/api/v1/v1/tax/codes';
@@ -71,6 +74,22 @@ describe('Tax settings integration', () => {
     createReport: jest.fn(),
     updateReportComputation: jest.fn(),
     finalizeReport: jest.fn(),
+    findReportActorNames: jest.fn(),
+  };
+  const taxReportDocumentRepositoryMock = {
+    findDocumentByReportId: jest.fn(),
+    saveReadyDocument: jest.fn(),
+    saveFailedDocument: jest.fn(),
+  };
+  const pdfRendererMock = { render: jest.fn() };
+  const objectStorageMock = {
+    generateObjectKey: jest.fn(),
+    uploadObject: jest.fn(),
+    getObject: jest.fn(),
+    getSignedUrl: jest.fn(),
+    deleteObject: jest.fn(),
+    getSignedUploadUrl: jest.fn(),
+    headObject: jest.fn(),
   };
   const featureAvailabilityCacheMock = {
     isEnabled: jest.fn<Promise<boolean>, [string]>(async () => true),
@@ -104,6 +123,12 @@ describe('Tax settings integration', () => {
       .useValue(taxSettingsRepositoryMock)
       .overrideProvider(TaxReportRepository)
       .useValue(taxReportRepositoryMock)
+      .overrideProvider(TaxReportDocumentRepository)
+      .useValue(taxReportDocumentRepositoryMock)
+      .overrideProvider(PdfRendererService)
+      .useValue(pdfRendererMock)
+      .overrideProvider(ObjectStorageService)
+      .useValue(objectStorageMock)
       .overrideProvider(TaxCodeRepository)
       .useValue(taxCodeRepositoryMock)
       .overrideProvider(TaxAssignmentRepository)
@@ -528,6 +553,162 @@ describe('Tax settings integration', () => {
         .set('Authorization', `Bearer ${token}`);
 
       expect(response.status).toBe(403);
+    });
+  });
+  describe('monthly tax report PDF (P27-T12)', () => {
+    const REPORTS_PATH = '/api/v1/v1/tax/reports';
+    const REPORT_ID = '9e8d7c6b-5a4f-4e3d-8c2b-1a0f9e8d7c6b';
+    const READ_PERMISSION = [{ action: 'read', resource: 'TaxReport', scope: 'ANY' as const }];
+    const storedObjects = new Map<string, Buffer>();
+    let storedDocument: Record<string, unknown> | null = null;
+
+    function buildReport(status: 'DRAFT' | 'FINALIZED'): Record<string, unknown> {
+      return {
+        id: REPORT_ID,
+        period: '2026-02',
+        kind: 'PP55_OMZET',
+        status,
+        summary: {
+          kind: 'PP55_OMZET',
+          taxpayerType: 'INDIVIDUAL',
+          ratePercent: 0.5,
+          paymentCount: 1,
+          yearToDateOmzetBefore: 300000000,
+          nonTaxableAllowanceUsed: 200000000,
+          totals: { grossOmzet: 400000000, taxableOmzet: 200000000, taxDue: 1000000 },
+          taxAccountCode: '411128',
+          depositTypeCode: '420',
+          paymentDueDate: '2026-03-15',
+          reportingDueDate: '2026-03-15',
+        },
+        lines: [],
+        generatedAt: new Date('2026-03-02T00:00:00.000Z'),
+        generatedById: 'actor-user',
+        finalizedAt: status === 'FINALIZED' ? new Date('2026-03-02T00:00:00.000Z') : null,
+        finalizedById: status === 'FINALIZED' ? 'actor-user' : null,
+      };
+    }
+
+    function requestPdf(token: string): request.Test {
+      return request(app.getHttpServer())
+        .post(`${REPORTS_PATH}/${REPORT_ID}/pdf`)
+        .set('Authorization', `Bearer ${token}`)
+        .buffer(true)
+        .parse((response, callback) => {
+          const chunks: Buffer[] = [];
+          response.on('data', (chunk: Buffer) => chunks.push(chunk));
+          response.on('end', () => callback(null, Buffer.concat(chunks)));
+        });
+    }
+
+    beforeEach(() => {
+      storedObjects.clear();
+      storedDocument = null;
+      let renderCount = 0;
+      pdfRendererMock.render.mockImplementation(async () => {
+        renderCount += 1;
+        return new Uint8Array(Buffer.from(`%PDF-1.7 render ${renderCount}`));
+      });
+      objectStorageMock.generateObjectKey.mockReturnValue('tax-report/document/stored.pdf');
+      objectStorageMock.uploadObject.mockImplementation(async ({ key, body }) => {
+        storedObjects.set(key, body);
+        return { key };
+      });
+      objectStorageMock.getObject.mockImplementation(async ({ key }) => ({
+        body: storedObjects.get(key),
+        contentType: 'application/pdf',
+      }));
+      objectStorageMock.getSignedUrl.mockResolvedValue({
+        url: 'https://storage.example/signed',
+        expiresAt: '2026-03-02T01:00:00.000Z',
+      });
+      taxReportDocumentRepositoryMock.findDocumentByReportId.mockImplementation(
+        async () => storedDocument,
+      );
+      taxReportDocumentRepositoryMock.saveReadyDocument.mockImplementation(async (payload) => {
+        storedDocument = { id: 'doc-1', status: 'READY', failureReason: null, ...payload };
+        return true;
+      });
+      taxReportRepositoryMock.findReportActorNames.mockResolvedValue({
+        generatedByName: 'admin@hms.local',
+        finalizedByName: 'admin@hms.local',
+      });
+      clinicProfileRepositoryMock.findProfile.mockResolvedValue(null);
+    });
+
+    it('streams a DRAFT with its watermark and the summary totals, unstored, audited once', async () => {
+      const token = await buildToken('admin-user', 'admin@hms.local');
+      mockActorWithPermissions('ADMIN', READ_PERMISSION);
+      taxReportRepositoryMock.findReportById.mockResolvedValue(buildReport('DRAFT'));
+
+      const response = await requestPdf(token);
+
+      expect(response.status).toBe(200);
+      expect(response.headers['content-type']).toContain('application/pdf');
+      expect(response.headers['content-disposition']).toContain(
+        'pajak-pp55-omzet-2026-02-draft.pdf',
+      );
+      expect((response.body as Buffer).toString()).toBe('%PDF-1.7 render 1');
+      const html = pdfRendererMock.render.mock.calls[0][0] as string;
+      expect(html).toContain('class="watermark"');
+      expect(html).toContain('Rp 1.000.000');
+      expect(objectStorageMock.uploadObject).not.toHaveBeenCalled();
+      expect(auditServiceMock.record).toHaveBeenCalledTimes(1);
+      expect(auditServiceMock.record).toHaveBeenCalledWith(
+        expect.objectContaining({ action: 'EXPORT', resource: 'tax-report' }),
+      );
+    });
+
+    it('renders a finalized report once and serves the same bytes after the books change', async () => {
+      const token = await buildToken('admin-user', 'admin@hms.local');
+      mockActorWithPermissions('ADMIN', READ_PERMISSION);
+      taxReportRepositoryMock.findReportById.mockResolvedValue(buildReport('FINALIZED'));
+
+      const first = await requestPdf(token);
+      // The books change after finalizing (an invoice voided): the stored file does not.
+      taxReportRepositoryMock.findPaymentsPaidBetween.mockResolvedValue([]);
+      const second = await requestPdf(token);
+      const link = await request(app.getHttpServer())
+        .get(`${REPORTS_PATH}/${REPORT_ID}/pdf/download-url`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect([first.status, second.status, link.status]).toEqual([200, 200, 200]);
+      expect((second.body as Buffer).equals(first.body as Buffer)).toBe(true);
+      expect(pdfRendererMock.render).toHaveBeenCalledTimes(1);
+      expect(link.body.data).toEqual({
+        url: 'https://storage.example/signed',
+        fileName: 'pajak-pp55-omzet-2026-02.pdf',
+        expiresAt: '2026-03-02T01:00:00.000Z',
+      });
+      expect(auditServiceMock.record).toHaveBeenCalledTimes(3);
+    });
+
+    it('refuses a link for a DRAFT', async () => {
+      const token = await buildToken('admin-user', 'admin@hms.local');
+      mockActorWithPermissions('ADMIN', READ_PERMISSION);
+      taxReportRepositoryMock.findReportById.mockResolvedValue(buildReport('DRAFT'));
+
+      const response = await request(app.getHttpServer())
+        .get(`${REPORTS_PATH}/${REPORT_ID}/pdf/download-url`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.status).toBe(409);
+      expect(response.body.error.code).toBe('TAX_REPORT_NOT_FINALIZED');
+    });
+
+    it('refuses both PDF routes without tax-report.read:any and audits nothing', async () => {
+      const token = await buildToken('doctor-user', 'doctor@hms.local');
+      mockActorWithPermissions('DOCTOR', []);
+      taxReportRepositoryMock.findReportById.mockResolvedValue(buildReport('FINALIZED'));
+
+      const pdf = await requestPdf(token);
+      const link = await request(app.getHttpServer())
+        .get(`${REPORTS_PATH}/${REPORT_ID}/pdf/download-url`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect([pdf.status, link.status]).toEqual([403, 403]);
+      expect(pdfRendererMock.render).not.toHaveBeenCalled();
+      expect(auditServiceMock.record).not.toHaveBeenCalled();
     });
   });
 });

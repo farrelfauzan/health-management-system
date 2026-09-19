@@ -156,3 +156,10 @@ export type TaxReportsListMeta = {
   year: number;
   applicableKinds: TaxReportKindValue[];
 };
+
+/** A signed link to a finalized report's stored PDF (P27-T12). */
+export type TaxReportPdfDownloadView = {
+  url: string;
+  fileName: string;
+  expiresAt: string;
+};

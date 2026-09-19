@@ -341,8 +341,19 @@ export const TAX_REPORT_EXISTS_ERROR_CODE = 'TAX_REPORT_EXISTS';
 export const TAX_REPORT_FINALIZED_ERROR_CODE = 'TAX_REPORT_FINALIZED';
 export const TAX_REPORT_PERIOD_OPEN_ERROR_CODE = 'TAX_REPORT_PERIOD_OPEN';
 export const TAX_REPORT_PERIOD_IN_FUTURE_ERROR_CODE = 'TAX_REPORT_PERIOD_IN_FUTURE';
+/** P27-T12: only a finalized report has a stored PDF to hand out a link to. */
+export const TAX_REPORT_NOT_FINALIZED_ERROR_CODE = 'TAX_REPORT_NOT_FINALIZED';
+/** P27-T12: the PDF renderer or the bucket failed; the request can be retried. */
+export const TAX_REPORT_PDF_UNAVAILABLE_ERROR_CODE = 'TAX_REPORT_PDF_UNAVAILABLE';
+
+/**
+ * A finalized report's stored PDF (P27-T12). READY is served as is, forever;
+ * FAILED is rendered again on the next request.
+ */
+export const taxReportDocumentStatusSchema = z.enum(['READY', 'FAILED']);
 
 export type TaxReportKindValue = z.infer<typeof taxReportKindSchema>;
 export type TaxReportStatusValue = z.infer<typeof taxReportStatusSchema>;
+export type TaxReportDocumentStatusValue = z.infer<typeof taxReportDocumentStatusSchema>;
 export type CreateTaxReportInput = z.infer<typeof createTaxReportSchema>;
 export type ListTaxReportsQuery = z.infer<typeof listTaxReportsQuerySchema>;

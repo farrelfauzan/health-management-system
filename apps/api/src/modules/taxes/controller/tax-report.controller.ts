@@ -21,6 +21,7 @@ import { ApiEndpoint } from '../../../common/openapi/api-endpoint.decorator';
 import { TAXES_EXAMPLES } from '../../../common/openapi/taxes-examples';
 import { CreateTaxReportDto } from '../dto/create-tax-report.dto';
 import { ListTaxReportsQueryDto } from '../dto/list-tax-reports-query.dto';
+import { TaxReportPdfService } from '../service/tax-report-pdf.service';
 import { TaxReportService } from '../service/tax-report.service';
 
 /**
@@ -32,7 +33,10 @@ import { TaxReportService } from '../service/tax-report.service';
 @RequireFeature('taxes')
 @Controller({ version: '1', path: 'tax/reports' })
 export class TaxReportController {
-  constructor(private readonly taxReportService: TaxReportService) {}
+  constructor(
+    private readonly taxReportService: TaxReportService,
+    private readonly taxReportPdfService: TaxReportPdfService,
+  ) {}
 
   @Get()
   @Auth([{ action: 'read', subject: 'TaxReport' }])
@@ -145,6 +149,51 @@ export class TaxReportController {
     response.setHeader('Content-Type', 'text/csv; charset=utf-8');
     response.setHeader('Content-Disposition', `attachment; filename="${exported.fileName}"`);
     response.end(exported.csv);
+  }
+
+  @Post(':id/pdf')
+  @HttpCode(200)
+  @Auth([{ action: 'read', subject: 'TaxReport' }])
+  // Plain Swagger decorators: this route answers with the PDF itself.
+  @ApiOperation({
+    summary: 'Download one monthly tax report as PDF',
+    description:
+      'P27-T12. A DRAFT is rendered on every request with a DRAFT watermark and is never stored. A FINALIZED report is rendered once and stored; every later download is the same file. Audited as an export. 503 `TAX_REPORT_PDF_UNAVAILABLE` when the renderer or storage fails; a failed render is retried on the next request.',
+  })
+  @ApiProduces('application/pdf')
+  @ApiOkResponse({
+    description: 'The report as an A4 PDF.',
+    schema: { type: 'string', format: 'binary' },
+  })
+  async renderPdf(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Res() response: BinaryResponseWriter,
+    @AuthUser() currentUser?: CurrentUser,
+  ) {
+    const pdf = await this.taxReportPdfService.renderPdf(id, this.assertAuthenticated(currentUser));
+    response.setHeader('Content-Type', 'application/pdf');
+    response.setHeader('Content-Disposition', `attachment; filename="${pdf.fileName}"`);
+    response.end(Buffer.from(pdf.bytes));
+  }
+
+  @Get(':id/pdf/download-url')
+  @Auth([{ action: 'read', subject: 'TaxReport' }])
+  @ApiEndpoint({
+    summary: "A signed link to a finalized report's PDF",
+    responseDescription:
+      'P27-T12. Renders and stores the PDF on first use, then always links the same file. 409 `TAX_REPORT_NOT_FINALIZED` for a DRAFT, whose PDF is never stored. Audited as an export.',
+    responseExample: { data: TAXES_EXAMPLES.taxReports.pdfDownload },
+  })
+  async createPdfDownloadUrl(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @AuthUser() currentUser?: CurrentUser,
+  ) {
+    return {
+      data: await this.taxReportPdfService.createPdfDownloadUrl(
+        id,
+        this.assertAuthenticated(currentUser),
+      ),
+    };
   }
 
   private assertAuthenticated(currentUser?: CurrentUser): CurrentUser {

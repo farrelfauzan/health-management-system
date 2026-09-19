@@ -2219,6 +2219,7 @@
         "loadError": "The tax reports could not be loaded.",
         "saveError": "The report could not be saved.",
         "exportError": "The report could not be exported.",
+        "pdfError": "The PDF could not be produced. Try again shortly.",
         "notApplicable": "The tax profile calls for no monthly report yet: set the PP 55 regime or PKP status under Settings › Taxes.",
         "previousYear": "Previous year",
         "nextYear": "Next year",
@@ -2227,6 +2228,7 @@
         "recompute": "Recompute",
         "finalize": "Finalize",
         "exportCsv": "Export CSV",
+        "downloadPdf": "Download PDF",
         "recomputed": "Report recomputed",
         "finalized": "Report finalized",
         "kind": {
@@ -2293,7 +2295,8 @@
           "TAX_REPORT_EXISTS": "This month already has a report.",
           "TAX_REPORT_FINALIZED": "This report is finalized and kept as filed.",
           "TAX_REPORT_PERIOD_OPEN": "The month has not ended yet; finalize it once it is over.",
-          "TAX_REPORT_PERIOD_IN_FUTURE": "That month has not started yet."
+          "TAX_REPORT_PERIOD_IN_FUTURE": "That month has not started yet.",
+          "TAX_REPORT_PDF_UNAVAILABLE": "The PDF service is unavailable right now. Try again shortly."
         }
       }
     }

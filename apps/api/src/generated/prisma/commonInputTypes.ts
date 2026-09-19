@@ -1197,6 +1197,23 @@ export type JsonWithAggregatesFilterBase<$PrismaModel = never> = {
   _max?: Prisma.NestedJsonFilter<$PrismaModel>
 }
 
+export type EnumTaxReportDocumentStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.TaxReportDocumentStatus | Prisma.EnumTaxReportDocumentStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.TaxReportDocumentStatus[] | Prisma.ListEnumTaxReportDocumentStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.TaxReportDocumentStatus[] | Prisma.ListEnumTaxReportDocumentStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumTaxReportDocumentStatusFilter<$PrismaModel> | $Enums.TaxReportDocumentStatus
+}
+
+export type EnumTaxReportDocumentStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.TaxReportDocumentStatus | Prisma.EnumTaxReportDocumentStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.TaxReportDocumentStatus[] | Prisma.ListEnumTaxReportDocumentStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.TaxReportDocumentStatus[] | Prisma.ListEnumTaxReportDocumentStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumTaxReportDocumentStatusWithAggregatesFilter<$PrismaModel> | $Enums.TaxReportDocumentStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumTaxReportDocumentStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumTaxReportDocumentStatusFilter<$PrismaModel>
+}
+
 export type EnumServiceTariffCategoryFilter<$PrismaModel = never> = {
   equals?: $Enums.ServiceTariffCategory | Prisma.EnumServiceTariffCategoryFieldRefInput<$PrismaModel>
   in?: $Enums.ServiceTariffCategory[] | Prisma.ListEnumServiceTariffCategoryFieldRefInput<$PrismaModel>
@@ -3512,6 +3529,23 @@ export type NestedJsonFilterBase<$PrismaModel = never> = {
   gt?: runtime.InputJsonValue | Prisma.JsonFieldRefInput<$PrismaModel>
   gte?: runtime.InputJsonValue | Prisma.JsonFieldRefInput<$PrismaModel>
   not?: runtime.InputJsonValue | Prisma.JsonFieldRefInput<$PrismaModel> | Prisma.JsonNullValueFilter
+}
+
+export type NestedEnumTaxReportDocumentStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.TaxReportDocumentStatus | Prisma.EnumTaxReportDocumentStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.TaxReportDocumentStatus[] | Prisma.ListEnumTaxReportDocumentStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.TaxReportDocumentStatus[] | Prisma.ListEnumTaxReportDocumentStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumTaxReportDocumentStatusFilter<$PrismaModel> | $Enums.TaxReportDocumentStatus
+}
+
+export type NestedEnumTaxReportDocumentStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.TaxReportDocumentStatus | Prisma.EnumTaxReportDocumentStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.TaxReportDocumentStatus[] | Prisma.ListEnumTaxReportDocumentStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.TaxReportDocumentStatus[] | Prisma.ListEnumTaxReportDocumentStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumTaxReportDocumentStatusWithAggregatesFilter<$PrismaModel> | $Enums.TaxReportDocumentStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumTaxReportDocumentStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumTaxReportDocumentStatusFilter<$PrismaModel>
 }
 
 export type NestedEnumServiceTariffCategoryFilter<$PrismaModel = never> = {

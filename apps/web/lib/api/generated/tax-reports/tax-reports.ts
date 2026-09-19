@@ -22,6 +22,7 @@ import type {
 
 import type {
   CreateTaxReportDto,
+  TaxReportControllerCreatePdfDownloadUrlV1200,
   TaxReportControllerCreateReportV1201,
   TaxReportControllerFinalizeReportV1200,
   TaxReportControllerGetReportV1200,
@@ -594,6 +595,192 @@ export function useTaxReportControllerExportReportV1<TData = Awaited<ReturnType<
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getTaxReportControllerExportReportV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * P27-T12. A DRAFT is rendered on every request with a DRAFT watermark and is never stored. A FINALIZED report is rendered once and stored; every later download is the same file. Audited as an export. 503 `TAX_REPORT_PDF_UNAVAILABLE` when the renderer or storage fails; a failed render is retried on the next request.
+ * @summary Download one monthly tax report as PDF
+ */
+export const taxReportControllerRenderPdfV1 = (
+    id: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<Blob>(
+      {url: `/api/v1/tax/reports/${id}/pdf`, method: 'POST',
+        responseType: 'blob', signal
+    },
+      );
+    }
+
+
+
+
+export const getTaxReportControllerRenderPdfV1QueryKey = (id: string,) => {
+    return [
+    'POST', `/api/v1/tax/reports/${id}/pdf`
+    ] as const;
+    }
+
+
+export const getTaxReportControllerRenderPdfV1QueryOptions = <TData = Awaited<ReturnType<typeof taxReportControllerRenderPdfV1>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taxReportControllerRenderPdfV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getTaxReportControllerRenderPdfV1QueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof taxReportControllerRenderPdfV1>>> = ({ signal }) => taxReportControllerRenderPdfV1(id, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof taxReportControllerRenderPdfV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type TaxReportControllerRenderPdfV1QueryResult = NonNullable<Awaited<ReturnType<typeof taxReportControllerRenderPdfV1>>>
+export type TaxReportControllerRenderPdfV1QueryError = unknown
+
+
+export function useTaxReportControllerRenderPdfV1<TData = Awaited<ReturnType<typeof taxReportControllerRenderPdfV1>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof taxReportControllerRenderPdfV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof taxReportControllerRenderPdfV1>>,
+          TError,
+          Awaited<ReturnType<typeof taxReportControllerRenderPdfV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useTaxReportControllerRenderPdfV1<TData = Awaited<ReturnType<typeof taxReportControllerRenderPdfV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taxReportControllerRenderPdfV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof taxReportControllerRenderPdfV1>>,
+          TError,
+          Awaited<ReturnType<typeof taxReportControllerRenderPdfV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useTaxReportControllerRenderPdfV1<TData = Awaited<ReturnType<typeof taxReportControllerRenderPdfV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taxReportControllerRenderPdfV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Download one monthly tax report as PDF
+ */
+
+export function useTaxReportControllerRenderPdfV1<TData = Awaited<ReturnType<typeof taxReportControllerRenderPdfV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taxReportControllerRenderPdfV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getTaxReportControllerRenderPdfV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary A signed link to a finalized report's PDF
+ */
+export const taxReportControllerCreatePdfDownloadUrlV1 = (
+    id: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<TaxReportControllerCreatePdfDownloadUrlV1200>(
+      {url: `/api/v1/tax/reports/${id}/pdf/download-url`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getTaxReportControllerCreatePdfDownloadUrlV1QueryKey = (id: string,) => {
+    return [
+    `/api/v1/tax/reports/${id}/pdf/download-url`
+    ] as const;
+    }
+
+
+export const getTaxReportControllerCreatePdfDownloadUrlV1QueryOptions = <TData = Awaited<ReturnType<typeof taxReportControllerCreatePdfDownloadUrlV1>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taxReportControllerCreatePdfDownloadUrlV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getTaxReportControllerCreatePdfDownloadUrlV1QueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof taxReportControllerCreatePdfDownloadUrlV1>>> = ({ signal }) => taxReportControllerCreatePdfDownloadUrlV1(id, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof taxReportControllerCreatePdfDownloadUrlV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type TaxReportControllerCreatePdfDownloadUrlV1QueryResult = NonNullable<Awaited<ReturnType<typeof taxReportControllerCreatePdfDownloadUrlV1>>>
+export type TaxReportControllerCreatePdfDownloadUrlV1QueryError = unknown
+
+
+export function useTaxReportControllerCreatePdfDownloadUrlV1<TData = Awaited<ReturnType<typeof taxReportControllerCreatePdfDownloadUrlV1>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof taxReportControllerCreatePdfDownloadUrlV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof taxReportControllerCreatePdfDownloadUrlV1>>,
+          TError,
+          Awaited<ReturnType<typeof taxReportControllerCreatePdfDownloadUrlV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useTaxReportControllerCreatePdfDownloadUrlV1<TData = Awaited<ReturnType<typeof taxReportControllerCreatePdfDownloadUrlV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taxReportControllerCreatePdfDownloadUrlV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof taxReportControllerCreatePdfDownloadUrlV1>>,
+          TError,
+          Awaited<ReturnType<typeof taxReportControllerCreatePdfDownloadUrlV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useTaxReportControllerCreatePdfDownloadUrlV1<TData = Awaited<ReturnType<typeof taxReportControllerCreatePdfDownloadUrlV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taxReportControllerCreatePdfDownloadUrlV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary A signed link to a finalized report's PDF
+ */
+
+export function useTaxReportControllerCreatePdfDownloadUrlV1<TData = Awaited<ReturnType<typeof taxReportControllerCreatePdfDownloadUrlV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taxReportControllerCreatePdfDownloadUrlV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getTaxReportControllerCreatePdfDownloadUrlV1QueryOptions(id,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

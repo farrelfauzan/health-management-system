@@ -3,6 +3,7 @@ import {
   Pp55SourcePayment,
   PpnOutputSourceLine,
   SaveTaxReportPayload,
+  TaxReportActorNames,
   TaxReportKindValue,
   TaxReportLine,
   TaxReportPeriodRange,
@@ -14,6 +15,10 @@ import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from '../../../common/prisma/prisma.service';
 import { Prisma, TaxReportDraft } from '../../../generated/prisma/client';
+
+const ACTOR_NAME_SELECT = {
+  select: { email: true, doctorProfile: { select: { fullName: true } } },
+} as const;
 
 /**
  * Persistence for the monthly tax report drafts, and the two reads they are
@@ -109,6 +114,22 @@ export class TaxReportRepository {
     return row ? this.toRecord(row) : null;
   }
 
+  /**
+   * Who drafted and who finalized the report, as the PDF footer names them
+   * (P27-T12): the doctor profile's name when there is one, else the email —
+   * the same rule the invoice footer uses.
+   */
+  async findReportActorNames(id: string): Promise<TaxReportActorNames> {
+    const row = await this.prisma.taxReportDraft.findUnique({
+      where: { id },
+      select: { generatedBy: ACTOR_NAME_SELECT, finalizedBy: ACTOR_NAME_SELECT },
+    });
+    return {
+      generatedByName: toActorName(row?.generatedBy ?? null),
+      finalizedByName: toActorName(row?.finalizedBy ?? null),
+    };
+  }
+
   async findReportByPeriodAndKind(
     period: string,
     kind: TaxReportKindValue,
@@ -183,4 +204,10 @@ export class TaxReportRepository {
 
 function toJson(value: TaxReportSummary | TaxReportLine[]): Prisma.InputJsonValue {
   return value as unknown as Prisma.InputJsonValue;
+}
+
+function toActorName(
+  user: { email: string; doctorProfile: { fullName: string } | null } | null,
+): string | null {
+  return user === null ? null : (user.doctorProfile?.fullName ?? user.email);
 }

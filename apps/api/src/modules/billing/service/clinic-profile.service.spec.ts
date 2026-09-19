@@ -132,6 +132,42 @@ describe('ClinicProfileService', () => {
     });
   });
 
+  describe('getLetterhead (P27-T12)', () => {
+    it('inlines the stored logo as a data URI for the network-less renderer', async () => {
+      clinicProfileRepositoryMock.findProfile.mockResolvedValue(
+        buildRecord({ logoStorageKey: STORED_KEY, logoMimeType: 'image/png' }),
+      );
+      objectStorageServiceMock.getObject.mockResolvedValue({
+        body: Buffer.from('logo'),
+        contentType: 'image/png',
+      });
+
+      const actual = await service.getLetterhead();
+
+      expect(actual).toEqual({
+        name: 'Klinik Sehat Bersama',
+        legalName: 'PT Sehat Bersama Indonesia',
+        address: 'Jl. Merdeka No. 12, Bandung',
+        taxId: '01.234.567.8-901.000',
+        logoDataUri: `data:image/png;base64,${Buffer.from('logo').toString('base64')}`,
+      });
+    });
+
+    it('prints without the logo when it cannot be read, and under the product label when unset', async () => {
+      clinicProfileRepositoryMock.findProfile.mockResolvedValueOnce(
+        buildRecord({ logoStorageKey: STORED_KEY }),
+      );
+      objectStorageServiceMock.getObject.mockRejectedValueOnce(new Error('NoSuchKey'));
+      clinicProfileRepositoryMock.findProfile.mockResolvedValueOnce(null);
+
+      const withBrokenLogo = await service.getLetterhead();
+      const unconfigured = await service.getLetterhead();
+
+      expect(withBrokenLogo.logoDataUri).toBeNull();
+      expect(unconfigured).toMatchObject({ name: 'Saling Jaga', taxId: null, logoDataUri: null });
+    });
+  });
+
   describe('createLogoUploadUrl', () => {
     it('signs a staged upload without touching the profile', async () => {
       objectStorageServiceMock.generateObjectKey.mockReturnValue(STAGED_KEY);

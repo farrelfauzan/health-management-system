@@ -106,6 +106,11 @@ export const TAXES_EXAMPLES = {
     },
     listMeta: { year: 2026, applicableKinds: ['PP55_OMZET'] },
     createRequest: { period: '2026-08', kind: 'PP55_OMZET' },
+    pdfDownload: {
+      url: 'https://storage.example/tax-report/document/5b7c9d1e-2f3a-4b5c-8d6e-7f8091a2b3c4.pdf?X-Amz-Signature=example',
+      fileName: 'pajak-pp55-omzet-2026-08.pdf',
+      expiresAt: '2026-09-19T08:15:00.000Z',
+    },
     view: {
       id: '9e8d7c6b-5a4f-4e3d-8c2b-1a0f9e8d7c6b',
       period: '2026-08',

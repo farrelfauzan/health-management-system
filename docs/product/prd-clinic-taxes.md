@@ -131,6 +131,10 @@ The phase is **P27**, not P26: `P26-T01` already names the consultation-tariff-b
   - **PPN** reads the issue-time snapshot of invoices issued in the month, excluding VOID, grouped by faktur code. Every buyer is a retail patient, so the output is *digunggung*. Lines without a tax code (billed before T04) are counted apart and never guessed. It is due at the end of the next month.
   - **Lifecycle:** a DRAFT recomputes at will. **Finalize is allowed only after the month ends**, and it recomputes and freezes in one step. A finalized report is never rewritten; every read compares it with the books and lists each total that changed, so the grid shows "Tidak sesuai".
   - **CSV export:** each report exports as CSV, and every CSV value is escaped against formula injection. Finalize and export are audited.
+- R16. **PDF export** (P27-T12) is a built-in A4 layout, with no template editor. It prints the letterhead (logo, name, legal name, address, NPWP, NITKU), the title, the kind's summary and lines, and a footer on every page: "Dokumen kerja — bukan SPT", who calculated and who finalized it, and page x/y.
+  - **DRAFT:** rendered on every request with a diagonal DRAFT watermark and the print time. It is never stored.
+  - **FINALIZED:** rendered once, stored as `TaxReportDocument`, and served as that same file from then on (`POST /tax/reports/:id/pdf` streams it, `GET …/pdf/download-url` signs a link to it). A FAILED render is retried on the next request. A later change to the books shows on the report page, never in the PDF.
+  - **Audit and extensibility:** every download is one EXPORT audit row. Each report kind is one entry in `TAX_REPORT_PDF_LAYOUTS`, so PPh 21 (P27-T07) adds one.
 - R12. **Tax codes are assigned on the Pajak page, not on the tariff and medicine forms** (P27-T03). The bulk screen covers one item as well as many, and P27-T04 adds the before/after-PPN columns to the tariff and medicine lists.
 
 ## 6. Questions for a tax consultant
