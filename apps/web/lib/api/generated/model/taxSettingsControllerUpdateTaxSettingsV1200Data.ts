@@ -12,7 +12,6 @@ export type TaxSettingsControllerUpdateTaxSettingsV1200Data = {
   pp55StartYear: number;
   isPkp: boolean;
   nitku: string;
-  pricesIncludeTax: boolean;
   npwp: string;
   npwpStatus: string;
   updatedById: string;

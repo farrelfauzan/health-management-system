@@ -110,7 +110,6 @@ describe('Tax settings integration', () => {
     expect(response.body.data).toEqual({
       incomeTaxRegime: 'GENERAL',
       isPkp: false,
-      pricesIncludeTax: true,
       npwp: '0012345678901000',
       npwpStatus: 'VALID',
     });

@@ -115,7 +115,7 @@ The phase is **P27**, not P26: `P26-T01` already names the consultation-tariff-b
 
 - R1. **Rates are data.** A tax code carries effective-dated rates; a new PMK is a new rate row, not a deploy. An invoice uses the rate in force on its issue date in the clinic's timezone.
 - R2. **A non-PKP clinic never charges PPN.** Lines still record their treatment, so the day the clinic registers, history is already classified.
-- R3. **Prices are tax-inclusive by default.** A clinic quotes the patient one number; exclusive pricing is a setting.
+- R3. **Prices are always tax-inclusive** (product owner, 2026-09-19). The patient sees one price per line and, only when the invoice carries PPN, the note "Harga sudah termasuk PPN" — no subtotal, DPP or PPN rows. The before/after-PPN breakdown is for administrators, on the tariff and medicine price lists (P27-T04). There is no "PPN on top" setting.
 - R4. **Issued means frozen.** Changing a setting, a code or a rate never rewrites an ISSUED, PAID or VOID invoice.
 - R5. **PP 55 eligibility follows PP 20/2026.** Individuals and PT perorangan: no end year. Koperasi: start year + 3. PT: start year + 2, and CV: start year + 3, as a transition only, for a start year no later than 2026. Yayasan: never eligible. The tax profile refuses a regime the entity type cannot hold.
 - R6. **PP 55 omzet is cash-basis** — payments received in the month — until the consultant says otherwise (§6).

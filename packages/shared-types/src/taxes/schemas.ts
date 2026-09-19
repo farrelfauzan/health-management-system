@@ -75,7 +75,6 @@ export const updateTaxSettingsSchema = z
     isPkp: z.boolean().optional(),
     pkpSince: calendarDateSchema.nullable().optional(),
     nitku: nitkuSchema.nullable().optional(),
-    pricesIncludeTax: z.boolean().optional(),
   })
   .refine((input) => Object.values(input).some((value) => value !== undefined), {
     message: 'At least one field must be provided',

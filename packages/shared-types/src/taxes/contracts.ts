@@ -13,7 +13,6 @@ export type TaxSettingsView = {
   isPkp: boolean;
   pkpSince?: string;
   nitku?: string;
-  pricesIncludeTax: boolean;
   npwp?: string;
   npwpStatus: NpwpStatusValue;
   updatedById?: string;

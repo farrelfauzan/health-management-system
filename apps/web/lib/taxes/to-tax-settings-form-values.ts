@@ -11,6 +11,5 @@ export function toTaxSettingsFormValues(settings: TaxSettingsView): TaxSettingsF
     isPkp: settings.isPkp,
     pkpSince: settings.pkpSince ?? '',
     nitku: settings.nitku ?? '',
-    pricesIncludeTax: settings.pricesIncludeTax,
   };
 }

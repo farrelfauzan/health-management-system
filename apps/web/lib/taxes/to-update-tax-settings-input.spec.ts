@@ -10,17 +10,16 @@ const initial: TaxSettingsFormValues = {
   isPkp: false,
   pkpSince: '',
   nitku: '',
-  pricesIncludeTax: true,
 };
 
 describe('toUpdateTaxSettingsInput', () => {
   it('names only what changed, so an untouched PP 55 regime is not re-judged', () => {
     const actual = toUpdateTaxSettingsInput({
-      values: { ...initial, pricesIncludeTax: false },
+      values: { ...initial, nitku: '0012345678901000000000' },
       initial,
     });
 
-    expect(actual).toEqual({ pricesIncludeTax: false });
+    expect(actual).toEqual({ nitku: '0012345678901000000000' });
   });
 
   it('turns blanks into null and a start year into a number', () => {

@@ -44688,10 +44688,11 @@ paths:
       responses:
         "200":
           description: "A clinic that has never saved it reads the defaults: general
-            regime, not PKP, tax-inclusive prices, no taxpayer type. The NPWP is
-            the clinic profile's, shown here with `npwpStatus` so a 15-digit
-            identifier from before Coretax is visible; `pp55LastEligibleYear` is
-            computed from PP 55/2022 as amended by PP 20/2026."
+            regime, not PKP, no taxpayer type. Prices are always tax-inclusive,
+            so there is no pricing-mode field. The NPWP is the clinic profile's,
+            shown here with `npwpStatus` so a 15-digit identifier from before
+            Coretax is visible; `pp55LastEligibleYear` is computed from PP
+            55/2022 as amended by PP 20/2026."
           content:
             application/json:
               schema:
@@ -44710,8 +44711,6 @@ paths:
                         type: boolean
                       nitku:
                         type: string
-                      pricesIncludeTax:
-                        type: boolean
                       npwp:
                         type: string
                       npwpStatus:
@@ -44726,7 +44725,6 @@ paths:
                       - pp55StartYear
                       - isPkp
                       - nitku
-                      - pricesIncludeTax
                       - npwp
                       - npwpStatus
                       - updatedById
@@ -44740,7 +44738,6 @@ paths:
                     pp55StartYear: 2025
                     isPkp: false
                     nitku: "0012345678901000000000"
-                    pricesIncludeTax: true
                     npwp: "0012345678901000"
                     npwpStatus: VALID
                     updatedById: 0b8e3c1a-5d2f-4a6b-9c7e-1f2a3b4c5d6e
@@ -44811,8 +44808,6 @@ paths:
                         type: boolean
                       nitku:
                         type: string
-                      pricesIncludeTax:
-                        type: boolean
                       npwp:
                         type: string
                       npwpStatus:
@@ -44827,7 +44822,6 @@ paths:
                       - pp55StartYear
                       - isPkp
                       - nitku
-                      - pricesIncludeTax
                       - npwp
                       - npwpStatus
                       - updatedById
@@ -44844,7 +44838,6 @@ paths:
                     pp55StartYear: 2025
                     isPkp: false
                     nitku: "0012345678901000000000"
-                    pricesIncludeTax: true
                     npwp: "0012345678901000"
                     npwpStatus: VALID
                     updatedById: 0b8e3c1a-5d2f-4a6b-9c7e-1f2a3b4c5d6e
@@ -53828,8 +53821,6 @@ components:
         nitku:
           type: string
           nullable: true
-        pricesIncludeTax:
-          type: boolean
     LinkDoctorByIhsDto:
       type: object
       properties:

@@ -47,7 +47,6 @@ export type TaxSettingsMinAggregateOutputType = {
   isPkp: boolean | null
   pkpSince: Date | null
   nitku: string | null
-  pricesIncludeTax: boolean | null
   updatedById: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -62,7 +61,6 @@ export type TaxSettingsMaxAggregateOutputType = {
   isPkp: boolean | null
   pkpSince: Date | null
   nitku: string | null
-  pricesIncludeTax: boolean | null
   updatedById: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -77,7 +75,6 @@ export type TaxSettingsCountAggregateOutputType = {
   isPkp: number
   pkpSince: number
   nitku: number
-  pricesIncludeTax: number
   updatedById: number
   createdAt: number
   updatedAt: number
@@ -102,7 +99,6 @@ export type TaxSettingsMinAggregateInputType = {
   isPkp?: true
   pkpSince?: true
   nitku?: true
-  pricesIncludeTax?: true
   updatedById?: true
   createdAt?: true
   updatedAt?: true
@@ -117,7 +113,6 @@ export type TaxSettingsMaxAggregateInputType = {
   isPkp?: true
   pkpSince?: true
   nitku?: true
-  pricesIncludeTax?: true
   updatedById?: true
   createdAt?: true
   updatedAt?: true
@@ -132,7 +127,6 @@ export type TaxSettingsCountAggregateInputType = {
   isPkp?: true
   pkpSince?: true
   nitku?: true
-  pricesIncludeTax?: true
   updatedById?: true
   createdAt?: true
   updatedAt?: true
@@ -234,7 +228,6 @@ export type TaxSettingsGroupByOutputType = {
   isPkp: boolean
   pkpSince: Date | null
   nitku: string | null
-  pricesIncludeTax: boolean
   updatedById: string | null
   createdAt: Date
   updatedAt: Date
@@ -272,7 +265,6 @@ export type TaxSettingsWhereInput = {
   isPkp?: Prisma.BoolFilter<"TaxSettings"> | boolean
   pkpSince?: Prisma.DateTimeNullableFilter<"TaxSettings"> | Date | string | null
   nitku?: Prisma.StringNullableFilter<"TaxSettings"> | string | null
-  pricesIncludeTax?: Prisma.BoolFilter<"TaxSettings"> | boolean
   updatedById?: Prisma.UuidNullableFilter<"TaxSettings"> | string | null
   createdAt?: Prisma.DateTimeFilter<"TaxSettings"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"TaxSettings"> | Date | string
@@ -288,7 +280,6 @@ export type TaxSettingsOrderByWithRelationInput = {
   isPkp?: Prisma.SortOrder
   pkpSince?: Prisma.SortOrderInput | Prisma.SortOrder
   nitku?: Prisma.SortOrderInput | Prisma.SortOrder
-  pricesIncludeTax?: Prisma.SortOrder
   updatedById?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -307,7 +298,6 @@ export type TaxSettingsWhereUniqueInput = Prisma.AtLeast<{
   isPkp?: Prisma.BoolFilter<"TaxSettings"> | boolean
   pkpSince?: Prisma.DateTimeNullableFilter<"TaxSettings"> | Date | string | null
   nitku?: Prisma.StringNullableFilter<"TaxSettings"> | string | null
-  pricesIncludeTax?: Prisma.BoolFilter<"TaxSettings"> | boolean
   updatedById?: Prisma.UuidNullableFilter<"TaxSettings"> | string | null
   createdAt?: Prisma.DateTimeFilter<"TaxSettings"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"TaxSettings"> | Date | string
@@ -323,7 +313,6 @@ export type TaxSettingsOrderByWithAggregationInput = {
   isPkp?: Prisma.SortOrder
   pkpSince?: Prisma.SortOrderInput | Prisma.SortOrder
   nitku?: Prisma.SortOrderInput | Prisma.SortOrder
-  pricesIncludeTax?: Prisma.SortOrder
   updatedById?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -346,7 +335,6 @@ export type TaxSettingsScalarWhereWithAggregatesInput = {
   isPkp?: Prisma.BoolWithAggregatesFilter<"TaxSettings"> | boolean
   pkpSince?: Prisma.DateTimeNullableWithAggregatesFilter<"TaxSettings"> | Date | string | null
   nitku?: Prisma.StringNullableWithAggregatesFilter<"TaxSettings"> | string | null
-  pricesIncludeTax?: Prisma.BoolWithAggregatesFilter<"TaxSettings"> | boolean
   updatedById?: Prisma.UuidNullableWithAggregatesFilter<"TaxSettings"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"TaxSettings"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"TaxSettings"> | Date | string
@@ -361,7 +349,6 @@ export type TaxSettingsCreateInput = {
   isPkp?: boolean
   pkpSince?: Date | string | null
   nitku?: string | null
-  pricesIncludeTax?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   updatedBy?: Prisma.UserCreateNestedOneWithoutUpdatedTaxSettingsInput
@@ -376,7 +363,6 @@ export type TaxSettingsUncheckedCreateInput = {
   isPkp?: boolean
   pkpSince?: Date | string | null
   nitku?: string | null
-  pricesIncludeTax?: boolean
   updatedById?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -391,7 +377,6 @@ export type TaxSettingsUpdateInput = {
   isPkp?: Prisma.BoolFieldUpdateOperationsInput | boolean
   pkpSince?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   nitku?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  pricesIncludeTax?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedBy?: Prisma.UserUpdateOneWithoutUpdatedTaxSettingsNestedInput
@@ -406,7 +391,6 @@ export type TaxSettingsUncheckedUpdateInput = {
   isPkp?: Prisma.BoolFieldUpdateOperationsInput | boolean
   pkpSince?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   nitku?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  pricesIncludeTax?: Prisma.BoolFieldUpdateOperationsInput | boolean
   updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -421,7 +405,6 @@ export type TaxSettingsCreateManyInput = {
   isPkp?: boolean
   pkpSince?: Date | string | null
   nitku?: string | null
-  pricesIncludeTax?: boolean
   updatedById?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -436,7 +419,6 @@ export type TaxSettingsUpdateManyMutationInput = {
   isPkp?: Prisma.BoolFieldUpdateOperationsInput | boolean
   pkpSince?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   nitku?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  pricesIncludeTax?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -450,7 +432,6 @@ export type TaxSettingsUncheckedUpdateManyInput = {
   isPkp?: Prisma.BoolFieldUpdateOperationsInput | boolean
   pkpSince?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   nitku?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  pricesIncludeTax?: Prisma.BoolFieldUpdateOperationsInput | boolean
   updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -475,7 +456,6 @@ export type TaxSettingsCountOrderByAggregateInput = {
   isPkp?: Prisma.SortOrder
   pkpSince?: Prisma.SortOrder
   nitku?: Prisma.SortOrder
-  pricesIncludeTax?: Prisma.SortOrder
   updatedById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -494,7 +474,6 @@ export type TaxSettingsMaxOrderByAggregateInput = {
   isPkp?: Prisma.SortOrder
   pkpSince?: Prisma.SortOrder
   nitku?: Prisma.SortOrder
-  pricesIncludeTax?: Prisma.SortOrder
   updatedById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -509,7 +488,6 @@ export type TaxSettingsMinOrderByAggregateInput = {
   isPkp?: Prisma.SortOrder
   pkpSince?: Prisma.SortOrder
   nitku?: Prisma.SortOrder
-  pricesIncludeTax?: Prisma.SortOrder
   updatedById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -578,7 +556,6 @@ export type TaxSettingsCreateWithoutUpdatedByInput = {
   isPkp?: boolean
   pkpSince?: Date | string | null
   nitku?: string | null
-  pricesIncludeTax?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -592,7 +569,6 @@ export type TaxSettingsUncheckedCreateWithoutUpdatedByInput = {
   isPkp?: boolean
   pkpSince?: Date | string | null
   nitku?: string | null
-  pricesIncludeTax?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -635,7 +611,6 @@ export type TaxSettingsScalarWhereInput = {
   isPkp?: Prisma.BoolFilter<"TaxSettings"> | boolean
   pkpSince?: Prisma.DateTimeNullableFilter<"TaxSettings"> | Date | string | null
   nitku?: Prisma.StringNullableFilter<"TaxSettings"> | string | null
-  pricesIncludeTax?: Prisma.BoolFilter<"TaxSettings"> | boolean
   updatedById?: Prisma.UuidNullableFilter<"TaxSettings"> | string | null
   createdAt?: Prisma.DateTimeFilter<"TaxSettings"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"TaxSettings"> | Date | string
@@ -650,7 +625,6 @@ export type TaxSettingsCreateManyUpdatedByInput = {
   isPkp?: boolean
   pkpSince?: Date | string | null
   nitku?: string | null
-  pricesIncludeTax?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -664,7 +638,6 @@ export type TaxSettingsUpdateWithoutUpdatedByInput = {
   isPkp?: Prisma.BoolFieldUpdateOperationsInput | boolean
   pkpSince?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   nitku?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  pricesIncludeTax?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -678,7 +651,6 @@ export type TaxSettingsUncheckedUpdateWithoutUpdatedByInput = {
   isPkp?: Prisma.BoolFieldUpdateOperationsInput | boolean
   pkpSince?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   nitku?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  pricesIncludeTax?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -692,7 +664,6 @@ export type TaxSettingsUncheckedUpdateManyWithoutUpdatedByInput = {
   isPkp?: Prisma.BoolFieldUpdateOperationsInput | boolean
   pkpSince?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   nitku?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  pricesIncludeTax?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -708,7 +679,6 @@ export type TaxSettingsSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   isPkp?: boolean
   pkpSince?: boolean
   nitku?: boolean
-  pricesIncludeTax?: boolean
   updatedById?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -724,7 +694,6 @@ export type TaxSettingsSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   isPkp?: boolean
   pkpSince?: boolean
   nitku?: boolean
-  pricesIncludeTax?: boolean
   updatedById?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -740,7 +709,6 @@ export type TaxSettingsSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   isPkp?: boolean
   pkpSince?: boolean
   nitku?: boolean
-  pricesIncludeTax?: boolean
   updatedById?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -756,13 +724,12 @@ export type TaxSettingsSelectScalar = {
   isPkp?: boolean
   pkpSince?: boolean
   nitku?: boolean
-  pricesIncludeTax?: boolean
   updatedById?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type TaxSettingsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "facilityId" | "taxpayerType" | "incomeTaxRegime" | "pp55StartYear" | "isPkp" | "pkpSince" | "nitku" | "pricesIncludeTax" | "updatedById" | "createdAt" | "updatedAt", ExtArgs["result"]["taxSettings"]>
+export type TaxSettingsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "facilityId" | "taxpayerType" | "incomeTaxRegime" | "pp55StartYear" | "isPkp" | "pkpSince" | "nitku" | "updatedById" | "createdAt" | "updatedAt", ExtArgs["result"]["taxSettings"]>
 export type TaxSettingsInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   updatedBy?: boolean | Prisma.TaxSettings$updatedByArgs<ExtArgs>
 }
@@ -800,10 +767,6 @@ export type $TaxSettingsPayload<ExtArgs extends runtime.Types.Extensions.Interna
      * 22 digits: the NPWP plus a six-digit place-of-business suffix.
      */
     nitku: string | null
-    /**
-     * Patient prices include PPN (the default) or have it added on top.
-     */
-    pricesIncludeTax: boolean
     updatedById: string | null
     createdAt: Date
     updatedAt: Date
@@ -1239,7 +1202,6 @@ export interface TaxSettingsFieldRefs {
   readonly isPkp: Prisma.FieldRef<"TaxSettings", 'Boolean'>
   readonly pkpSince: Prisma.FieldRef<"TaxSettings", 'DateTime'>
   readonly nitku: Prisma.FieldRef<"TaxSettings", 'String'>
-  readonly pricesIncludeTax: Prisma.FieldRef<"TaxSettings", 'Boolean'>
   readonly updatedById: Prisma.FieldRef<"TaxSettings", 'String'>
   readonly createdAt: Prisma.FieldRef<"TaxSettings", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"TaxSettings", 'DateTime'>

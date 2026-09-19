@@ -13,7 +13,6 @@ export type TaxSettingsRecord = {
   /** Calendar date, `YYYY-MM-DD`. */
   pkpSince: string | null;
   nitku: string | null;
-  pricesIncludeTax: boolean;
   updatedById: string | null;
   updatedAt: Date | null;
 };
@@ -26,7 +25,6 @@ export type SaveTaxSettingsPayload = {
   isPkp: boolean;
   pkpSince: string | null;
   nitku: string | null;
-  pricesIncludeTax: boolean;
   updatedById: string;
 };
 

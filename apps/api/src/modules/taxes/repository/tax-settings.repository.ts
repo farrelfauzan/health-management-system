@@ -38,7 +38,6 @@ export class TaxSettingsRepository {
       isPkp: payload.isPkp,
       pkpSince: payload.pkpSince === null ? null : new Date(`${payload.pkpSince}T00:00:00.000Z`),
       nitku: payload.nitku,
-      pricesIncludeTax: payload.pricesIncludeTax,
       updatedById: payload.updatedById,
     };
     const row = existing
@@ -57,7 +56,6 @@ export class TaxSettingsRepository {
       // first ten characters, whatever the server's timezone.
       pkpSince: row.pkpSince ? row.pkpSince.toISOString().slice(0, 10) : null,
       nitku: row.nitku,
-      pricesIncludeTax: row.pricesIncludeTax,
       updatedById: row.updatedById,
       updatedAt: row.updatedAt,
     };

@@ -14,8 +14,9 @@ CREATE TYPE "income_tax_regime" AS ENUM ('PP55_FINAL', 'GENERAL');
 
 -- CreateTable
 -- Modelled on laboratory_settings: one row, an actor and a timestamp, and no
--- row at all reads as the defaults (general regime, not PKP, tax-inclusive
--- prices). The NPWP stays on clinic_profiles, which owns it.
+-- row at all reads as the defaults (general regime, not PKP). Prices are
+-- always tax-inclusive, so there is no column for it (P27-T04). The NPWP stays
+-- on clinic_profiles, which owns it.
 CREATE TABLE "tax_settings" (
     "id" UUID NOT NULL,
     "facility_id" UUID,
@@ -25,7 +26,6 @@ CREATE TABLE "tax_settings" (
     "is_pkp" BOOLEAN NOT NULL DEFAULT false,
     "pkp_since" DATE,
     "nitku" VARCHAR(22),
-    "prices_include_tax" BOOLEAN NOT NULL DEFAULT true,
     "updated_by_id" UUID,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,

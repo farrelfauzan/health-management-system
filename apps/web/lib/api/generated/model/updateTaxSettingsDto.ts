@@ -26,5 +26,4 @@ export interface UpdateTaxSettingsDto {
   pkpSince?: string | null;
   /** @nullable */
   nitku?: string | null;
-  pricesIncludeTax?: boolean;
 }

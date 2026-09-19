@@ -28,7 +28,7 @@ export class TaxSettingsController {
   @ApiEndpoint({
     summary: "Read the clinic's tax profile",
     responseDescription:
-      "A clinic that has never saved it reads the defaults: general regime, not PKP, tax-inclusive prices, no taxpayer type. The NPWP is the clinic profile's, shown here with `npwpStatus` so a 15-digit identifier from before Coretax is visible; `pp55LastEligibleYear` is computed from PP 55/2022 as amended by PP 20/2026.",
+      "A clinic that has never saved it reads the defaults: general regime, not PKP, no taxpayer type. Prices are always tax-inclusive, so there is no pricing-mode field. The NPWP is the clinic profile's, shown here with `npwpStatus` so a 15-digit identifier from before Coretax is visible; `pp55LastEligibleYear` is computed from PP 55/2022 as amended by PP 20/2026.",
     responseExample: { data: TAXES_EXAMPLES.taxSettings.view },
   })
   async getTaxSettings() {

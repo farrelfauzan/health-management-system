@@ -10,7 +10,6 @@ export const TAXES_EXAMPLES = {
       pp55StartYear: 2025,
       isPkp: false,
       nitku: '0012345678901000000000',
-      pricesIncludeTax: true,
       npwp: '0012345678901000',
       npwpStatus: 'VALID',
       updatedById: adminUserId,

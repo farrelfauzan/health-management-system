@@ -16,8 +16,10 @@ type TaxPpnFieldsProps = {
 const FIELD_ID_PREFIX = 'tax-ppn';
 
 /**
- * PKP status, NITKU and pricing mode (P27-T02). A clinic that is not PKP never
- * charges PPN (D-038), which the PKP description says in so many words.
+ * PKP status and NITKU (P27-T02). A clinic that is not PKP never charges PPN
+ * (D-038), which the PKP description says in so many words. Prices are always
+ * tax-inclusive (P27-T04), so there is no pricing-mode switch — only a line
+ * saying so.
  */
 export function TaxPpnFields({ values, disabled, onChange }: TaxPpnFieldsProps) {
   const t = useTranslations('operations.taxes.settings');
@@ -80,20 +82,7 @@ export function TaxPpnFields({ values, disabled, onChange }: TaxPpnFieldsProps) 
           </FieldDescription>
         </div>
       </div>
-      <div className="space-y-1.5 rounded-lg border border-slate-200 p-3">
-        <Label className="flex cursor-pointer items-start gap-2.5 font-normal">
-          <Checkbox
-            checked={values.pricesIncludeTax}
-            disabled={disabled}
-            onCheckedChange={(checked) => onChange({ pricesIncludeTax: checked === true })}
-            className="mt-0.5"
-          />
-          <span className="text-sm font-medium text-slate-900">{t('ppn.pricesIncludeTax')}</span>
-        </Label>
-        <p className="pl-7 text-xs text-slate-500">
-          {values.pricesIncludeTax ? t('ppn.pricesIncludeTaxOn') : t('ppn.pricesIncludeTaxOff')}
-        </p>
-      </div>
+      <p className="text-xs text-slate-500">{t('ppn.pricesIncludeTaxNote')}</p>
     </fieldset>
   );
 }

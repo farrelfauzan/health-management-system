@@ -11,5 +11,4 @@ export type TaxSettingsFormValues = {
   isPkp: boolean;
   pkpSince: string;
   nitku: string;
-  pricesIncludeTax: boolean;
 };

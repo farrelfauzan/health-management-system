@@ -37,6 +37,5 @@ function toWireValues(values: TaxSettingsFormValues): Required<UpdateTaxSettings
     isPkp: values.isPkp,
     pkpSince: values.isPkp && values.pkpSince !== '' ? values.pkpSince : null,
     nitku: nitku === '' ? null : nitku,
-    pricesIncludeTax: values.pricesIncludeTax,
   };
 }

@@ -2890,8 +2890,6 @@ model TaxSettings {
   pkpSince         DateTime?        @map("pkp_since") @db.Date
   /// 22 digits: the NPWP plus a six-digit place-of-business suffix.
   nitku            String?          @db.VarChar(22)
-  /// Patient prices include PPN (the default) or have it added on top.
-  pricesIncludeTax Boolean          @default(true) @map("prices_include_tax")
   updatedById      String?          @map("updated_by_id") @db.Uuid
   createdAt        DateTime         @default(now()) @map("created_at")
   updatedAt        DateTime         @updatedAt @map("updated_at")

@@ -19,7 +19,6 @@ const { TaxSettingsForm } = await import('./tax-settings-form');
 const DEFAULT_SETTINGS: TaxSettingsView = {
   incomeTaxRegime: 'GENERAL',
   isPkp: false,
-  pricesIncludeTax: true,
   npwp: '0012345678901000',
   npwpStatus: 'VALID',
 };
@@ -61,11 +60,15 @@ describe('TaxSettingsForm (P27-T02, D-038)', () => {
     updateTaxSettingsMock.mockResolvedValue({ data: DEFAULT_SETTINGS });
     renderForm();
 
-    fireEvent.click(screen.getByRole('checkbox', { name: 'Harga sudah termasuk PPN' }));
+    fireEvent.change(screen.getByLabelText('NITKU'), {
+      target: { value: '0012345678901000000000' },
+    });
     fireEvent.click(screen.getByRole('button', { name: 'Simpan profil pajak' }));
 
     await waitFor(() => expect(updateTaxSettingsMock).toHaveBeenCalledTimes(1));
-    expect(updateTaxSettingsMock.mock.calls[0]?.[0]).toEqual({ pricesIncludeTax: false });
+    expect(updateTaxSettingsMock.mock.calls[0]?.[0]).toEqual({
+      nitku: '0012345678901000000000',
+    });
   });
 
   it('asks for the registration date once the clinic is marked PKP', () => {
@@ -80,7 +83,9 @@ describe('TaxSettingsForm (P27-T02, D-038)', () => {
     updateTaxSettingsMock.mockRejectedValue(buildApiError('TAX_PP55_NOT_ELIGIBLE'));
     renderForm();
 
-    fireEvent.click(screen.getByRole('checkbox', { name: 'Harga sudah termasuk PPN' }));
+    fireEvent.change(screen.getByLabelText('NITKU'), {
+      target: { value: '0012345678901000000000' },
+    });
     fireEvent.click(screen.getByRole('button', { name: 'Simpan profil pajak' }));
 
     expect(

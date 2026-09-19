@@ -33,7 +33,6 @@ describe('TaxSettingsService', () => {
       isPkp: false,
       pkpSince: null,
       nitku: null,
-      pricesIncludeTax: true,
       updatedById: null,
       updatedAt: null,
       ...overrides,
@@ -78,7 +77,6 @@ describe('TaxSettingsService', () => {
     expect(actual).toEqual({
       incomeTaxRegime: 'GENERAL',
       isPkp: false,
-      pricesIncludeTax: true,
       npwp: '01.234.567.8-901.000',
       npwpStatus: 'LEGACY_15_DIGIT',
     });
@@ -107,9 +105,9 @@ describe('TaxSettingsService', () => {
       buildRecord({ taxpayerType: 'PT', incomeTaxRegime: 'PP55_FINAL', pp55StartYear: 2022 }),
     );
 
-    const actual = await service.updateTaxSettings({ pricesIncludeTax: false }, actor);
+    const actual = await service.updateTaxSettings({ isPkp: true, pkpSince: '2026-09-01' }, actor);
 
-    expect(actual.pricesIncludeTax).toBe(false);
+    expect(actual.isPkp).toBe(true);
   });
 
   it('clears the start year when the clinic leaves PP 55', async () => {
@@ -177,7 +175,7 @@ describe('TaxSettingsService', () => {
   });
 
   it('writes no audit row when nothing changed', async () => {
-    await service.updateTaxSettings({ pricesIncludeTax: true }, actor);
+    await service.updateTaxSettings({ isPkp: false }, actor);
 
     expect(auditServiceMock.record).not.toHaveBeenCalled();
   });

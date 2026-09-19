@@ -2070,9 +2070,7 @@
           "pkpSince": "PKP sejak",
           "nitku": "NITKU",
           "nitkuHint": "22 digit: NPWP 16 digit diikuti kode tempat usaha (000000 untuk kantor pusat).",
-          "pricesIncludeTax": "Harga sudah termasuk PPN",
-          "pricesIncludeTaxOn": "Harga pada tarif adalah yang dibayar pasien; PPN dihitung di dalamnya.",
-          "pricesIncludeTaxOff": "PPN ditambahkan di atas harga tarif."
+          "pricesIncludeTaxNote": "Semua harga tarif dan obat sudah termasuk PPN. Pasien melihat satu harga per baris dan catatan \"Harga sudah termasuk PPN\" pada kuitansi bila ada PPN; rincian harga sebelum dan sesudah PPN hanya ditampilkan untuk admin di daftar tarif dan harga obat."
         },
         "errors": {
           "TAX_PP55_NOT_ELIGIBLE": "Jenis wajib pajak ini tidak dapat memakai PP 55 dengan tahun mulai tersebut. Orang pribadi dan PT perorangan tanpa batas waktu; PT atau CV hanya boleh menyelesaikan masa yang dimulai paling lambat 2026; yayasan tidak memenuhi syarat.",

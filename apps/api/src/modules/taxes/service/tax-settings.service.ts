@@ -27,7 +27,8 @@ const CALENDAR_YEAR_LENGTH = 4;
 
 /**
  * What a clinic that has never opened the tax page is: on the general regime,
- * not PKP, quoting tax-inclusive prices, with no legal form guessed (D-038).
+ * not PKP, with no legal form guessed (D-038). Prices are always tax-inclusive,
+ * so there is nothing to choose there (P27-T04).
  */
 const DEFAULT_TAX_SETTINGS: TaxSettingsRecord = {
   taxpayerType: null,
@@ -36,7 +37,6 @@ const DEFAULT_TAX_SETTINGS: TaxSettingsRecord = {
   isPkp: false,
   pkpSince: null,
   nitku: null,
-  pricesIncludeTax: true,
   updatedById: null,
   updatedAt: null,
 };
@@ -49,7 +49,6 @@ const AUDITED_FIELDS = [
   'isPkp',
   'pkpSince',
   'nitku',
-  'pricesIncludeTax',
 ] as const satisfies ReadonlyArray<keyof TaxSettingsRecord>;
 
 /**
@@ -123,7 +122,6 @@ export class TaxSettingsService {
       isPkp,
       pkpSince: isPkp ? pkpSince : null,
       nitku: input.nitku === undefined ? previous.nitku : input.nitku,
-      pricesIncludeTax: input.pricesIncludeTax ?? previous.pricesIncludeTax,
       updatedById,
     };
   }
@@ -235,7 +233,6 @@ export class TaxSettingsService {
       isPkp: record.isPkp,
       pkpSince: record.pkpSince ?? undefined,
       nitku: record.nitku ?? undefined,
-      pricesIncludeTax: record.pricesIncludeTax,
       npwp: taxId ?? undefined,
       npwpStatus: resolveNpwpStatus(taxId),
       updatedById: record.updatedById ?? undefined,

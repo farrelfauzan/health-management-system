@@ -9950,7 +9950,6 @@ export const TaxSettingsScalarFieldEnum = {
   isPkp: 'isPkp',
   pkpSince: 'pkpSince',
   nitku: 'nitku',
-  pricesIncludeTax: 'pricesIncludeTax',
   updatedById: 'updatedById',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
