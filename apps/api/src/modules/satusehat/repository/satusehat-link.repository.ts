@@ -1,5 +1,6 @@
 import {
   DoctorSatusehatLinkTarget,
+  NewbornSatusehatLinkContext,
   PatientSatusehatLinkTarget,
   SaveDoctorIhsNumberPayload,
   SavePatientIhsNumberPayload,
@@ -39,6 +40,55 @@ export class SatusehatLinkRepository {
       id: row.id,
       nik: this.decryptOptional(row.nikCiphertext),
       hasSatusehatPatientId: row.satusehatPatientIdCiphertext !== null,
+    };
+  }
+
+  /**
+   * The baby and the mother she is identified by (P24-T11), or null when this
+   * patient is not a newborn at all — which is what sends the caller back to
+   * the ordinary NIK path.
+   */
+  async findNewbornLinkContext(patientId: string): Promise<NewbornSatusehatLinkContext | null> {
+    const row = await this.prisma.findFirstActive(this.prisma.patientProfile, {
+      where: { id: patientId },
+      select: {
+        fullName: true,
+        sex: true,
+        dateOfBirth: true,
+        birthOrder: true,
+        address: true,
+        provinceCode: true,
+        regencyCode: true,
+        districtCode: true,
+        villageCode: true,
+        rtRw: true,
+        postalCode: true,
+        regency: { select: { name: true } },
+        mother: { select: { id: true, nikCiphertext: true } },
+      },
+    });
+    if (!row || row.mother === null || row.birthOrder === null) {
+      return null;
+    }
+    return {
+      fullName: row.fullName,
+      sex: row.sex,
+      dateOfBirth: row.dateOfBirth,
+      birthOrder: row.birthOrder,
+      address:
+        row.address === null
+          ? null
+          : {
+              street: row.address,
+              provinceCode: row.provinceCode,
+              regencyCode: row.regencyCode,
+              regencyName: row.regency?.name ?? null,
+              districtCode: row.districtCode,
+              villageCode: row.villageCode,
+              rtRw: row.rtRw,
+              postalCode: row.postalCode,
+            },
+      mother: { id: row.mother.id, nik: this.decryptOptional(row.mother.nikCiphertext) },
     };
   }
 

@@ -101,6 +101,14 @@ export type CachedSatusehatToken = {
 export type SatusehatSearchBundleEntry = {
   readonly resource?: {
     readonly id?: unknown;
+    /**
+     * Read only on the newborn search (P24-T11): a mother's NIK identifies
+     * every one of her children, so the birth date and birth order are what
+     * tell one from another. `unknown` like `id`, because this is a response
+     * the platform shapes, not one we do.
+     */
+    readonly birthDate?: unknown;
+    readonly multipleBirthInteger?: unknown;
   };
 };
 

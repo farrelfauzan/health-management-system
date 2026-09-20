@@ -22,6 +22,8 @@ import {
   SatusehatFhirComposition,
   SatusehatFhirCompositionSection,
   SatusehatFhirEncounterHospitalization,
+  SatusehatFhirNewbornPatient,
+  SatusehatNewbornPatientMapInput,
   SatusehatFhirEncounterLocation,
   SatusehatFhirCoding,
   SatusehatFhirCondition,
@@ -223,6 +225,12 @@ const CONDITION_CLINICAL_SYSTEM = 'http://terminology.hl7.org/CodeSystem/conditi
 const CONDITION_CATEGORY_SYSTEM = 'http://terminology.hl7.org/CodeSystem/condition-category';
 const DIAGNOSIS_ROLE_SYSTEM = 'http://terminology.hl7.org/CodeSystem/diagnosis-role';
 const OBSERVATION_CATEGORY_SYSTEM = 'http://terminology.hl7.org/CodeSystem/observation-category';
+/**
+ * How SATUSEHAT holds a baby who has no NIK yet: under her mother's
+ * (P24-T11). `https`, unlike most of the Kemenkes systems here — the master
+ * patient index page spells this one that way.
+ */
+const NIK_IBU_IDENTIFIER_SYSTEM = 'https://fhir.kemkes.go.id/id/nik-ibu';
 const KFA_SYSTEM = 'http://sys-ids.kemkes.go.id/kfa';
 const MEDICATION_IDENTIFIER_SYSTEM_PREFIX = 'http://sys-ids.kemkes.go.id/medication';
 const PRESCRIPTION_IDENTIFIER_SYSTEM_PREFIX = 'http://sys-ids.kemkes.go.id/prescription';
@@ -313,6 +321,28 @@ export class SatusehatFhirMapper {
       ...this.buildHospitalization(input),
       ...this.buildEncounterDiagnosis(input),
       serviceProvider: { reference: `Organization/${organizationId}` },
+    };
+  }
+
+  /**
+   * A newborn as the master patient index receives her (P24-T11, FR-NB-03).
+   *
+   * Identified by her mother's NIK, because she has none of her own for weeks
+   * — that is the whole reason this resource is posted rather than resolved.
+   * Her address is her mother's, which the caller has already read off the
+   * mother's record; a baby who was not given one goes out without the
+   * element rather than with an empty one.
+   */
+  mapNewbornToPatient(input: SatusehatNewbornPatientMapInput): SatusehatFhirNewbornPatient {
+    return {
+      resourceType: 'Patient',
+      active: true,
+      identifier: [{ system: NIK_IBU_IDENTIFIER_SYSTEM, use: 'official', value: input.motherNik }],
+      name: [{ use: 'official', text: input.fullName }],
+      gender: input.sex === 'FEMALE' ? 'female' : 'male',
+      birthDate: input.birthDate,
+      multipleBirthInteger: input.multipleBirthInteger,
+      ...(input.address ? { address: [this.mapPatientAddress(input.address)] } : {}),
     };
   }
 

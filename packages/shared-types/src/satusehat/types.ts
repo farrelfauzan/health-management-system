@@ -33,6 +33,34 @@ export type DoctorSatusehatLinkTarget = {
   satusehatPractitionerId: string | null;
 };
 
+/**
+ * A newborn and the mother she is identified by (P24-T11). Null `nik` on the
+ * mother is a gap the clinic can close at the counter, which is why the
+ * failure it causes says so rather than repeating the generic "patient has no
+ * NIK" that sent nobody anywhere.
+ *
+ * The NIK is decrypted by the repository, like every other one here, purely so
+ * the lookup can be sent; it never reaches a response, a log or an audit row.
+ */
+export type NewbornSatusehatLinkContext = {
+  fullName: string;
+  sex: 'MALE' | 'FEMALE';
+  dateOfBirth: Date;
+  birthOrder: number;
+  /** The mother's address, already on the baby's record (P24-T10). */
+  address: {
+    street: string;
+    provinceCode: string | null;
+    regencyCode: string | null;
+    regencyName: string | null;
+    districtCode: string | null;
+    villageCode: string | null;
+    rtRw: string | null;
+    postalCode: string | null;
+  } | null;
+  mother: { id: string; nik: string | null };
+};
+
 export type SavePatientIhsNumberPayload = {
   patientId: string;
   ihsNumber: string;
@@ -681,6 +709,33 @@ export type SatusehatLocationRegistrationCheckInput = {
 export type SatusehatLocationRegistrationBlocker = {
   reason: SatusehatLocationBlockReasonValue;
   message: string;
+};
+
+/**
+ * What tells one of a mother's children from another on the SATUSEHAT master
+ * patient index (P24-T11). A `nik-ibu` search returns every sibling, so both
+ * fields must agree before an entry is claimed as this baby.
+ */
+export type SatusehatNewbornSearchCriteria = {
+  /** `YYYY-MM-DD`, as FHIR writes a birth date. */
+  birthDate: string;
+  /**
+   * Her birth order, which travels as `Patient.multipleBirthInteger`. A single
+   * birth is expected to be `1`; the published page says `0` "can" be used and
+   * staging has never been observable, so the value we send is the value we
+   * search by and the two can never disagree (PRD §13.2, STILL UNVERIFIED).
+   */
+  multipleBirthInteger: number;
+};
+
+/**
+ * Everything the newborn Patient create sends (P24-T11, FR-NB-03). The
+ * mother's NIK is the identifier; the baby has none of her own for weeks.
+ */
+export type SatusehatNewbornPatientInput = SatusehatNewbornSearchCriteria & {
+  motherNik: string;
+  fullName: string;
+  sex: 'MALE' | 'FEMALE';
 };
 
 /** Where the root site Location id comes from (FR-LOC-02). */

@@ -1,3 +1,4 @@
+import { SATUSEHAT_SANDBOX_FIXTURES } from '../../modules/satusehat/fixtures/satusehat-sandbox-fixtures';
 import { SatusehatAmbiguousMatchError } from './satusehat-ambiguous-match.error';
 import { SatusehatHttpClient } from './satusehat-http.client';
 import { SatusehatMasterDataClient } from './satusehat-master-data.client';
@@ -44,6 +45,100 @@ describe('SatusehatMasterDataClient', () => {
       method: 'GET',
       path: '/Practitioner',
       query: { identifier: 'https://fhir.kemkes.go.id/id/nik|3204120101900001' },
+    });
+  });
+
+  describe("a newborn under her mother's NIK (P24-T11)", () => {
+    const criteria = { birthDate: '2026-09-20', multipleBirthInteger: 2 };
+
+    it('searches the nik-ibu system and picks the baby out of her siblings', async () => {
+      mockSendRequest.mockResolvedValue(SATUSEHAT_SANDBOX_FIXTURES.nikIbuSearchBundle);
+
+      const actualIhsNumber = await client.findNewbornIhsNumberByMotherNik(
+        '3201015205900001',
+        criteria,
+      );
+
+      expect(actualIhsNumber).toBe('P-newborn-2026');
+      expect(mockSendRequest).toHaveBeenCalledWith({
+        method: 'GET',
+        path: '/Patient',
+        query: { identifier: 'https://fhir.kemkes.go.id/id/nik-ibu|3201015205900001' },
+      });
+    });
+
+    it('treats several children as a family, never as an ambiguous match', async () => {
+      mockSendRequest.mockResolvedValue(SATUSEHAT_SANDBOX_FIXTURES.nikIbuSearchBundle);
+
+      await expect(
+        client.findNewbornIhsNumberByMotherNik('3201015205900001', {
+          birthDate: '2027-01-01',
+          multipleBirthInteger: 3,
+        }),
+      ).resolves.toBeNull();
+    });
+
+    it('returns null for a mother whose children are not on the index yet', async () => {
+      mockSendRequest.mockResolvedValue(SATUSEHAT_SANDBOX_FIXTURES.nikIbuEmptySearchBundle);
+
+      await expect(
+        client.findNewbornIhsNumberByMotherNik('3201015205900001', criteria),
+      ).resolves.toBeNull();
+    });
+
+    it('posts the newborn and returns the id the platform assigned', async () => {
+      mockSendRequest.mockResolvedValue(SATUSEHAT_SANDBOX_FIXTURES.newbornCreateResponse);
+      const inputResource = {
+        resourceType: 'Patient' as const,
+        active: true as const,
+        identifier: [
+          {
+            system: 'https://fhir.kemkes.go.id/id/nik-ibu',
+            use: 'official' as const,
+            value: '3201015205900001',
+          },
+        ],
+        name: [{ use: 'official' as const, text: 'Bayi Ny. Siti Aminah' }],
+        gender: 'female' as const,
+        birthDate: '2026-09-20',
+        multipleBirthInteger: 2,
+      };
+
+      const actualIhsNumber = await client.createNewbornPatient(inputResource);
+
+      expect(actualIhsNumber).toBe('P-newborn-created');
+      expect(mockSendRequest).toHaveBeenCalledWith({
+        method: 'POST',
+        path: '/Patient',
+        body: inputResource,
+      });
+    });
+
+    it('lets an upstream failure through, so a birth is retried and not parked', async () => {
+      // 5xx becomes SATUSEHAT_UNAVAILABLE in the HTTP client, which the worker
+      // retries. Staging answers a create with 500 (spike §2), so this must
+      // never be wrapped as a data error here.
+      mockSendRequest.mockRejectedValue(
+        new SatusehatError('SATUSEHAT_UNAVAILABLE', 'SATUSEHAT is unavailable'),
+      );
+
+      await expect(
+        client.createNewbornPatient({
+          resourceType: 'Patient',
+          active: true,
+          identifier: [
+            {
+              system: 'https://fhir.kemkes.go.id/id/nik-ibu',
+              use: 'official',
+              value: '3201015205900001',
+            },
+          ],
+          name: [{ use: 'official', text: 'Bayi Ny. Siti Aminah' }],
+          gender: 'female',
+          birthDate: '2026-09-20',
+          multipleBirthInteger: 2,
+        }),
+      ).rejects.toBeInstanceOf(SatusehatError);
     });
   });
 

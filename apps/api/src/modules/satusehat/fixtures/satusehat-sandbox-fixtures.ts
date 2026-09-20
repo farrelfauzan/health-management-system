@@ -127,6 +127,58 @@ export const SATUSEHAT_SANDBOX_FIXTURES = {
       },
     ],
   },
+  /**
+   * The `nik-ibu` search and create (P24-T11), **hand-built from the master
+   * patient index documentation rather than recorded**: staging has no female
+   * test mother, so the call has never been observable there (spike §2). The
+   * shapes follow the published page; every NIK here is synthetic, and the
+   * repository is public, so no real one may ever replace them.
+   *
+   * The search deliberately returns two of one mother's children, because
+   * that is what a `nik-ibu` search does — telling siblings apart is the whole
+   * job of the selection this exercises.
+   */
+  nikIbuSearchBundle: {
+    resourceType: 'Bundle',
+    type: 'searchset',
+    total: 2,
+    entry: [
+      {
+        fullUrl: 'https://api-satusehat-stg.dto.kemkes.go.id/fhir-r4/v1/Patient/P-sibling-2019',
+        resource: {
+          resourceType: 'Patient',
+          id: 'P-sibling-2019',
+          gender: 'male',
+          birthDate: '2019-04-01',
+          multipleBirthInteger: 1,
+        },
+      },
+      {
+        fullUrl: 'https://api-satusehat-stg.dto.kemkes.go.id/fhir-r4/v1/Patient/P-newborn-2026',
+        resource: {
+          resourceType: 'Patient',
+          id: 'P-newborn-2026',
+          gender: 'female',
+          birthDate: '2026-09-20',
+          multipleBirthInteger: 2,
+        },
+      },
+    ],
+  },
+  /** The same search for a mother whose children are not on the index yet. */
+  nikIbuEmptySearchBundle: {
+    resourceType: 'Bundle',
+    type: 'searchset',
+    total: 0,
+  },
+  /** What a create answers with: the resource, carrying its assigned id. */
+  newbornCreateResponse: {
+    resourceType: 'Patient',
+    id: 'P-newborn-created',
+    gender: 'female',
+    birthDate: '2026-09-20',
+    multipleBirthInteger: 2,
+  },
   operationOutcomeServerError: {
     resourceType: 'OperationOutcome',
     issue: [

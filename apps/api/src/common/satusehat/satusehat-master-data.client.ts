@@ -1,13 +1,17 @@
-import { SatusehatPractitionerSummary } from '@hms/shared-types';
+import { SatusehatNewbornSearchCriteria, SatusehatPractitionerSummary } from '@hms/shared-types';
 import { Injectable } from '@nestjs/common';
 
 import { readPractitionerSummary } from './read-practitioner-summary';
+import { SatusehatFhirNewbornPatient } from './satusehat-fhir.types';
+import { selectNewbornPatientEntry } from './select-newborn-patient-entry';
 import { SatusehatAmbiguousMatchError } from './satusehat-ambiguous-match.error';
 import { SatusehatHttpClient } from './satusehat-http.client';
 import { SatusehatError } from './satusehat.error';
 import { SatusehatSearchBundle } from './satusehat.types';
 
 const NIK_IDENTIFIER_SYSTEM = 'https://fhir.kemkes.go.id/id/nik';
+/** How a baby with no NIK of her own is held: under her mother's (P24-T11). */
+const NIK_IBU_IDENTIFIER_SYSTEM = 'https://fhir.kemkes.go.id/id/nik-ibu';
 /** HTTP status the platform answers for an id it does not hold (P21-T01). */
 const NOT_FOUND_STATUS = 404;
 
@@ -25,6 +29,57 @@ export class SatusehatMasterDataClient {
   /** Resolves a patient IHS number by NIK; null when the MPI has no match. */
   async findPatientIhsNumberByNik(nik: string): Promise<string | null> {
     return this.findIhsNumberByNik('/Patient', nik);
+  }
+
+  /**
+   * Finds a baby who has no NIK of her own, under her mother's (P24-T11,
+   * FR-NB-03).
+   *
+   * A mother's NIK identifies every one of her children, so this search is
+   * expected to return siblings — the birth date and birth order are what
+   * pick one out, and `selectNewbornPatientEntry` refuses to guess between
+   * them. Null means the platform does not hold her yet, which is the
+   * caller's signal to create her.
+   *
+   * Unlike the NIK search, more than one entry is **not** ambiguous here: it
+   * is a family. The mother's NIK never leaves this method.
+   */
+  async findNewbornIhsNumberByMotherNik(
+    motherNik: string,
+    criteria: SatusehatNewbornSearchCriteria,
+  ): Promise<string | null> {
+    const bundle = await this.httpClient.sendRequest<SatusehatSearchBundle>({
+      method: 'GET',
+      path: '/Patient',
+      query: { identifier: `${NIK_IBU_IDENTIFIER_SYSTEM}|${motherNik}` },
+    });
+    return selectNewbornPatientEntry(bundle, criteria);
+  }
+
+  /**
+   * Creates the baby on the master patient index and returns the IHS number
+   * it assigned (P24-T11, FR-NB-04).
+   *
+   * Upstream failures are deliberately left to propagate as they come: the
+   * platform answers a create with 500 on staging, and the HTTP client maps
+   * every 5xx to `SATUSEHAT_UNAVAILABLE`, which the submission worker retries.
+   * Wrapping it as a data error here would park a reportable birth as FAILED
+   * over an outage.
+   */
+  async createNewbornPatient(resource: SatusehatFhirNewbornPatient): Promise<string> {
+    const created = await this.httpClient.sendRequest<{ id?: unknown }>({
+      method: 'POST',
+      path: '/Patient',
+      body: resource,
+    });
+    const ihsNumber = created?.id;
+    if (typeof ihsNumber !== 'string' || ihsNumber === '') {
+      throw new SatusehatError(
+        'SATUSEHAT_UNAVAILABLE',
+        'SATUSEHAT created a patient without returning its id',
+      );
+    }
+    return ihsNumber;
   }
 
   /** Resolves a practitioner IHS number by NIK; null when the index has no match. */

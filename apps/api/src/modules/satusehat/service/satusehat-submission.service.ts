@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 
 import {
+  NewbornSatusehatLinkContext,
   resolveSatusehatServiceClassCode,
   SatusehatLocationFallbackReasonValue,
   SatusehatSubmissionAdmission,
@@ -1505,6 +1506,12 @@ export class SatusehatSubmissionService {
     }
     const target = await this.linkRepository.findPatientLinkTarget(bundleData.patientId);
     if (!target || target.nik === null) {
+      // A baby has no NIK for weeks, and that is not a gap in her record:
+      // SATUSEHAT holds her under her mother's until she has one (P24-T11).
+      const newborn = await this.linkRepository.findNewbornLinkContext(bundleData.patientId);
+      if (newborn !== null) {
+        return this.resolveNewbornIhsNumber(bundleData.patientId, newborn);
+      }
       throw new SatusehatSubmissionDataError(
         'Patient has no NIK on record, so the IHS number cannot be resolved',
       );
@@ -1525,6 +1532,83 @@ export class SatusehatSubmissionService {
       metadata: { lookup: 'NIK', trigger: 'SUBMISSION_WORKER' },
     });
     return ihsNumber;
+  }
+
+  /**
+   * The baby's IHS number, found under her mother's NIK or created there
+   * (P24-T11, FR-NB-03 / FR-NB-04).
+   *
+   * Three failures, each saying what to do about it. A mother with no NIK on
+   * record is a counter gap. A mother the platform does not hold is a
+   * registration gap upstream — checked before the create, because a POST
+   * under an unknown `nik-ibu` is refused anyway and a named refusal beats a
+   * 400 nobody can read. Neither reuses the generic "patient has no NIK",
+   * which would send a bidan looking for a NIK the baby is not supposed to
+   * have.
+   *
+   * The search may legitimately return siblings, so the birth date and birth
+   * order pick her out; the same birth order is then sent on the create, so
+   * the next submission's search finds exactly what this one wrote.
+   */
+  private async resolveNewbornIhsNumber(
+    patientId: string,
+    newborn: NewbornSatusehatLinkContext,
+  ): Promise<string> {
+    const motherNik = newborn.mother.nik;
+    if (motherNik === null) {
+      throw new SatusehatSubmissionDataError('NIK ibu belum tercatat');
+    }
+    const criteria = {
+      birthDate: this.toDateOnly(newborn.dateOfBirth),
+      multipleBirthInteger: newborn.birthOrder,
+    };
+    const matched = await this.masterDataClient.findNewbornIhsNumberByMotherNik(
+      motherNik,
+      criteria,
+    );
+    if (matched !== null) {
+      await this.saveNewbornIhsNumber(patientId, matched, 'SATUSEHAT_PATIENT_LINKED');
+      return matched;
+    }
+    const motherIhsNumber = await this.masterDataClient.findPatientIhsNumberByNik(motherNik);
+    if (motherIhsNumber === null) {
+      throw new SatusehatSubmissionDataError('Ibu tidak ditemukan di SATUSEHAT');
+    }
+    const created = await this.masterDataClient.createNewbornPatient(
+      this.fhirMapper.mapNewbornToPatient({
+        motherNik,
+        fullName: newborn.fullName,
+        sex: newborn.sex,
+        ...criteria,
+        ...(newborn.address ? { address: newborn.address } : {}),
+      }),
+    );
+    await this.saveNewbornIhsNumber(patientId, created, 'SATUSEHAT_PATIENT_CREATED');
+    return created;
+  }
+
+  /**
+   * Stores the link and records how it was made. Never a NIK — neither the
+   * baby's (she has none) nor her mother's, which is the whole reason this
+   * path exists and exactly the value an audit trail must not carry.
+   */
+  private async saveNewbornIhsNumber(
+    patientId: string,
+    ihsNumber: string,
+    action: 'SATUSEHAT_PATIENT_LINKED' | 'SATUSEHAT_PATIENT_CREATED',
+  ): Promise<void> {
+    await this.linkRepository.savePatientIhsNumber({ patientId, ihsNumber });
+    await this.auditService.record({
+      action,
+      resource: 'PatientProfile',
+      resourceId: patientId,
+      actorUserId: null,
+      metadata: { lookup: 'NIK_IBU', trigger: 'SUBMISSION_WORKER' },
+    });
+  }
+
+  private toDateOnly(value: Date): string {
+    return value.toISOString().slice(0, 10);
   }
 
   private async resolvePractitionerIhsNumber(bundleData: {

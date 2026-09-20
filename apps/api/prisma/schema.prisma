@@ -90,6 +90,10 @@ enum AuditAction {
   /// A NIK changed, so the SATUSEHAT link derived from it was cleared without
   /// anyone asking (D-035). Never carries the NIK — only that it changed.
   SATUSEHAT_LINK_CLEARED
+  /// A newborn with no NIK was created on the SATUSEHAT master patient index
+  /// under her mother's NIK (P24-T11, FR-NB-03). Never carries either NIK —
+  /// only that the record was created and how it was identified.
+  SATUSEHAT_PATIENT_CREATED
   /// A row was registered as a SATUSEHAT Location, by POST or by adopting the
   /// one an identifier search found (P24-T06). Carries the kind and the id.
   SATUSEHAT_LOCATION_REGISTERED
