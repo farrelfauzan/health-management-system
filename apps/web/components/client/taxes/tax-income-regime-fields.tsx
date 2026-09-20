@@ -11,11 +11,15 @@ import { Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } 
 import { useTranslations } from 'next-intl';
 
 import { FieldDescription } from '#components/client/shared/field-description';
+import { FieldError } from '#components/client/shared/field-error';
+import { toFieldErrors } from '#lib/forms/to-field-errors';
 import { FormLabel } from '#components/client/shared/form-label';
 import type { TaxSettingsFormValues } from '#lib/taxes/tax-settings-form-values';
 
 type TaxIncomeRegimeFieldsProps = {
   values: TaxSettingsFormValues;
+  /** Refusals the API named per field, shown under the input that caused them. */
+  errors: Record<string, string>;
   disabled: boolean;
   onChange: (change: Partial<TaxSettingsFormValues>) => void;
 };
@@ -27,7 +31,12 @@ const FIELD_ID_PREFIX = 'tax-income-regime';
  * PP 20/2026 as the administrator types, with the same rule the API applies on
  * save; the preview informs, the API decides.
  */
-export function TaxIncomeRegimeFields({ values, disabled, onChange }: TaxIncomeRegimeFieldsProps) {
+export function TaxIncomeRegimeFields({
+  values,
+  errors,
+  disabled,
+  onChange,
+}: TaxIncomeRegimeFieldsProps) {
   const t = useTranslations('operations.taxes.settings');
   const isPp55 = values.incomeTaxRegime === 'PP55_FINAL';
   const startYear = Number.parseInt(values.pp55StartYear, 10);
@@ -60,7 +69,11 @@ export function TaxIncomeRegimeFields({ values, disabled, onChange }: TaxIncomeR
             disabled={disabled}
             onValueChange={(value) => onChange({ taxpayerType: value as TaxpayerTypeValue })}
           >
-            <SelectTrigger id={`${FIELD_ID_PREFIX}-type`} className="w-full">
+            <SelectTrigger
+              id={`${FIELD_ID_PREFIX}-type`}
+              className="w-full"
+              aria-invalid={errors.taxpayerType !== undefined}
+            >
               <SelectValue placeholder={t('incomeTax.taxpayerTypePlaceholder')} />
             </SelectTrigger>
             <SelectContent>
@@ -71,6 +84,7 @@ export function TaxIncomeRegimeFields({ values, disabled, onChange }: TaxIncomeR
               ))}
             </SelectContent>
           </Select>
+          <FieldError errors={toFieldErrors(errors.taxpayerType)} />
         </div>
         <div className="space-y-1.5">
           <FormLabel
@@ -84,7 +98,11 @@ export function TaxIncomeRegimeFields({ values, disabled, onChange }: TaxIncomeR
             disabled={disabled}
             onValueChange={(value) => onChange({ incomeTaxRegime: value as IncomeTaxRegimeValue })}
           >
-            <SelectTrigger id={`${FIELD_ID_PREFIX}-regime`} className="w-full">
+            <SelectTrigger
+              id={`${FIELD_ID_PREFIX}-regime`}
+              className="w-full"
+              aria-invalid={errors.incomeTaxRegime !== undefined}
+            >
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -111,8 +129,10 @@ export function TaxIncomeRegimeFields({ values, disabled, onChange }: TaxIncomeR
             value={values.pp55StartYear}
             disabled={disabled}
             aria-describedby={`${FIELD_ID_PREFIX}-eligibility`}
+            aria-invalid={errors.pp55StartYear !== undefined}
             onChange={(event) => onChange({ pp55StartYear: event.target.value })}
           />
+          <FieldError errors={toFieldErrors(errors.pp55StartYear)} />
           <FieldDescription id={`${FIELD_ID_PREFIX}-eligibility`}>
             {eligibilityText}
           </FieldDescription>

@@ -12,6 +12,17 @@ export type ApiError = {
   };
 };
 
+/**
+ * One field's refusal inside an error envelope's `details`. The validation
+ * pipe lists these per failed field, while the envelope's own message stays
+ * the generic "Validation failed" — so these are what a reader needs to see.
+ */
+export type ApiErrorFieldIssue = {
+  /** Dotted path of the field, e.g. `nitku` or `items.0.quantity`; empty when the rule spans the payload. */
+  path: string;
+  message: string;
+};
+
 export * from '#shared/phone-number';
 export * from '#shared/phone-number-schema';
 export * from '#shared/format-phone-number';

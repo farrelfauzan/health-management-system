@@ -34,6 +34,17 @@ function buildApiError(code: string): AxiosError {
   });
 }
 
+function buildValidationError(details: unknown, code = 'BAD_REQUEST'): AxiosError {
+  const headers = new AxiosHeaders();
+  return new AxiosError('Bad Request', '400', { headers }, undefined, {
+    status: 400,
+    statusText: 'Bad Request',
+    headers,
+    config: { headers },
+    data: { error: { code, message: 'Validation failed', details } },
+  });
+}
+
 function renderForm(settings: TaxSettingsView = DEFAULT_SETTINGS): void {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   render(
@@ -91,6 +102,59 @@ describe('TaxSettingsForm (P27-T02, D-038)', () => {
     expect(
       await screen.findByText(/tidak dapat memakai PP 55 dengan tahun mulai tersebut/),
     ).toBeInTheDocument();
+  });
+
+  it('shows a rejected NITKU under the NITKU box, not as a bare "validation failed"', async () => {
+    updateTaxSettingsMock.mockRejectedValue(
+      buildValidationError([
+        { code: 'custom', message: 'NITKU must be 22 digits', path: ['nitku'] },
+      ]),
+    );
+    renderForm();
+
+    fireEvent.change(screen.getByLabelText('NITKU'), { target: { value: '001234567890100000' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Simpan profil pajak' }));
+
+    expect(await screen.findByText('NITKU must be 22 digits')).toBeInTheDocument();
+    expect(screen.getByLabelText('NITKU')).toHaveAttribute('aria-invalid', 'true');
+    expect(screen.queryByText('Validation failed')).not.toBeInTheDocument();
+  });
+
+  it('prefers its own wording for a refusal it knows, still under that field', async () => {
+    updateTaxSettingsMock.mockRejectedValue(
+      buildValidationError(
+        { nitku: "The first 16 digits of the NITKU must be the clinic's NPWP" },
+        'TAX_NITKU_NPWP_MISMATCH',
+      ),
+    );
+    renderForm();
+
+    fireEvent.change(screen.getByLabelText('NITKU'), {
+      target: { value: '9912345678901000000000' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Simpan profil pajak' }));
+
+    expect(await screen.findByText(/NITKU harus diawali NPWP 16 digit klinik/)).toBeInTheDocument();
+  });
+
+  it('clears a field refusal as soon as that field is edited again', async () => {
+    updateTaxSettingsMock.mockRejectedValue(
+      buildValidationError([
+        { code: 'custom', message: 'NITKU must be 22 digits', path: ['nitku'] },
+      ]),
+    );
+    renderForm();
+
+    fireEvent.change(screen.getByLabelText('NITKU'), { target: { value: '001234567890100000' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Simpan profil pajak' }));
+    expect(await screen.findByText('NITKU must be 22 digits')).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText('NITKU'), {
+      target: { value: '0012345678901000000000' },
+    });
+
+    await waitFor(() =>
+      expect(screen.queryByText('NITKU must be 22 digits')).not.toBeInTheDocument(),
+    );
   });
 
   it('shows the start year and its last eligible year for a PT on PP 55', () => {

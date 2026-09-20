@@ -1,5 +1,7 @@
 import type { ApiError, ApiSuccess } from '@hms/shared-types';
 
+import { resolveApiErrorIssues } from '#lib/api/resolve-api-error-issues';
+
 type HttpResponse = {
   status: number;
   data: unknown;
@@ -39,6 +41,13 @@ export function tryParseApiSuccess<T>(
 function parseApiErrorMessage(payload: unknown, fallback: string): string {
   if (typeof payload !== 'object' || payload === null) {
     return fallback;
+  }
+
+  // Per-field rules first: they say what to fix, where the envelope's own
+  // message for a validation refusal only says that something is wrong.
+  const issueMessages = [...new Set(resolveApiErrorIssues(payload).map((issue) => issue.message))];
+  if (issueMessages.length > 0) {
+    return issueMessages.join('; ');
   }
 
   const apiError = payload as Partial<ApiError> & { message?: string };
