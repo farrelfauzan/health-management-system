@@ -8,6 +8,7 @@ import { AppModule } from '../../app.module';
 import { AuditService } from '../../common/audit/audit.service';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { AuthRepository } from '../auth/repository/auth.repository';
+import { InvoiceTaxService } from '../tax-core/service/invoice-tax.service';
 import { BillingRepository } from './repository/billing.repository';
 import { ServiceTariffRepository } from './repository/service-tariff.repository';
 
@@ -167,6 +168,29 @@ describe('Billing integration', () => {
       .useValue(serviceTariffRepositoryMock)
       .overrideProvider(AuditService)
       .useValue(auditServiceMock)
+      // P27-T04: invoice tax is its own collaborator; this suite is about the
+      // invoice lifecycle, so lines pass through untaxed rather than widening
+      // the Prisma stub with every tax read.
+      .overrideProvider(InvoiceTaxService)
+      .useValue({
+        computeLineTaxes: async ({ lines }: { lines: Array<Record<string, unknown>> }) => ({
+          lines: lines.map((line) => ({
+            ...line,
+            tax: {
+              taxCode: null,
+              ppnTreatment: null,
+              fakturTransactionCode: null,
+              taxableAmount: null,
+              taxBase: null,
+              taxRatePercent: null,
+              taxAmount: 0,
+              isResolved: true,
+            },
+          })),
+          taxAmount: 0,
+          isPkp: false,
+        }),
+      })
       .overrideProvider(PrismaService)
       .useValue(prismaServiceMock)
       .compile();

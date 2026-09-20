@@ -98,6 +98,18 @@
       "pageOf": "Page {page} of {total}",
       "previousPage": "Previous page",
       "nextPage": "Next page"
+    },
+    "taxBreakdown": {
+      "price": "Price (incl. PPN)",
+      "priceBeforeTax": "Before PPN",
+      "taxAmount": "PPN",
+      "status": {
+        "EXEMPT": "Exempt",
+        "NOT_PKP": "Not PKP",
+        "UNRESOLVED": "No tax code",
+        "UNPRICED": "No price",
+        "TAXED": "Taxed"
+      }
     }
   }
 }

@@ -108,6 +108,8 @@ const GATED_CONTROLLERS: Readonly<Record<string, FeatureKey>> = {
   TaxCodeController: 'taxes',
   TaxCategoryDefaultController: 'taxes',
   TaxAssignmentController: 'taxes',
+  // P27-T04. The admin price breakdown goes with the tax module.
+  TaxPriceBreakdownController: 'taxes',
 };
 
 /**

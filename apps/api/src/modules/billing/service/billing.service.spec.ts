@@ -1,8 +1,9 @@
-import type { BillingLabItemRecord, ServiceTariffRecord } from '@hms/shared-types';
+import type { BillingLabItemRecord, InvoiceLineTax, ServiceTariffRecord } from '@hms/shared-types';
 import { BadRequestException, ConflictException, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 import { AuditService } from '../../../common/audit/audit.service';
+import { InvoiceTaxService } from '../../tax-core/service/invoice-tax.service';
 import { AddInvoiceItemDto } from '../dto/add-invoice-item.dto';
 import { GenerateInvoiceDto } from '../dto/generate-invoice.dto';
 import { GenerateLabOnlyInvoiceDto } from '../dto/generate-lab-only-invoice.dto';
@@ -58,12 +59,28 @@ describe('BillingService', () => {
     snapshotOnIssue: jest.fn().mockResolvedValue(undefined),
   };
 
+  /** The tax module off: every line untaxed and resolved, as before P27-T04. */
+  const untaxedLine: InvoiceLineTax = {
+    taxCode: null,
+    ppnTreatment: null,
+    fakturTransactionCode: null,
+    taxableAmount: null,
+    taxBase: null,
+    taxRatePercent: null,
+    taxAmount: 0,
+    isResolved: true,
+  };
+  const invoiceTaxServiceMock = {
+    computeLineTaxes: jest.fn(),
+  };
+
   const service = new BillingService(
     billingRepositoryMock as unknown as BillingRepository,
     serviceTariffRepositoryMock as unknown as ServiceTariffRepository,
     new BillingMapper(),
     auditServiceMock as unknown as AuditService,
     invoiceDocumentServiceMock as unknown as InvoiceDocumentService,
+    invoiceTaxServiceMock as unknown as InvoiceTaxService,
     configServiceMock as unknown as ConfigService,
   );
 
@@ -198,6 +215,13 @@ describe('BillingService', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    invoiceTaxServiceMock.computeLineTaxes.mockImplementation(
+      async ({ lines }: { lines: Array<Record<string, unknown>> }) => ({
+        lines: lines.map((line) => ({ ...line, tax: untaxedLine })),
+        taxAmount: 0,
+        isPkp: false,
+      }),
+    );
     billingRepositoryMock.findEncounterForBilling.mockResolvedValue(finishedEncounter);
     billingRepositoryMock.findLiveInvoiceByEncounterId.mockResolvedValue(null);
     billingRepositoryMock.findDispensedItemsByEncounterId.mockResolvedValue([]);
@@ -726,10 +750,8 @@ describe('BillingService', () => {
   });
 
   describe('issueInvoice', () => {
-    it('issues a DRAFT invoice', async () => {
-      billingRepositoryMock.findInvoiceWithRelationsById.mockResolvedValue(
-        invoiceWithRelationsRecord,
-      );
+    it('issues a DRAFT invoice with the tax recomputed for the issue date', async () => {
+      billingRepositoryMock.findInvoiceDetailById.mockResolvedValue(invoiceDetailRecord);
       billingRepositoryMock.issueInvoice.mockResolvedValue({
         ...invoiceDetailRecord,
         status: 'ISSUED',
@@ -739,11 +761,77 @@ describe('BillingService', () => {
       const actualResult = await service.issueInvoice(invoiceId);
 
       expect(actualResult.status).toBe('ISSUED');
+      expect(billingRepositoryMock.issueInvoice).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: invoiceId,
+          taxAmount: 0,
+          lineTaxes: [],
+        }),
+      );
+    });
+
+    it('refuses to issue while a line has no tax code (P27-T04)', async () => {
+      billingRepositoryMock.findInvoiceDetailById.mockResolvedValue({
+        ...invoiceDetailRecord,
+        items: [
+          {
+            id: 'item-lab',
+            invoiceId,
+            itemType: 'LAB',
+            serviceTariffId: null,
+            medicationId: null,
+            labOrderId: null,
+            prescriptionItemId: null,
+            description: 'Darah Rutin',
+            quantity: 1,
+            unitPrice: 80000,
+            amount: 80000,
+            taxCode: null,
+            ppnTreatment: null,
+            fakturTransactionCode: null,
+            taxableAmount: null,
+            taxBase: null,
+            taxRatePercent: null,
+            taxAmount: 0,
+            createdAt: timestamp,
+            updatedAt: timestamp,
+          },
+        ],
+      });
+      invoiceTaxServiceMock.computeLineTaxes.mockImplementationOnce(
+        async ({ lines }: { lines: Array<Record<string, unknown>> }) => ({
+          lines: lines.map((line) => ({ ...line, tax: { ...untaxedLine, isResolved: false } })),
+          taxAmount: 0,
+          isPkp: true,
+        }),
+      );
+
+      await expect(service.issueInvoice(invoiceId)).rejects.toMatchObject({
+        response: { code: 'TAX_CODE_UNRESOLVED' },
+      });
+      expect(billingRepositoryMock.issueInvoice).not.toHaveBeenCalled();
+    });
+
+    it('issues with an unresolved line when the clinic is not PKP (no PPN is at stake)', async () => {
+      billingRepositoryMock.findInvoiceDetailById.mockResolvedValue(invoiceDetailRecord);
+      billingRepositoryMock.issueInvoice.mockResolvedValue({
+        ...invoiceDetailRecord,
+        status: 'ISSUED',
+      });
+      invoiceTaxServiceMock.computeLineTaxes.mockImplementationOnce(async () => ({
+        lines: [],
+        taxAmount: 0,
+        isPkp: false,
+      }));
+
+      const actual = await service.issueInvoice(invoiceId);
+
+      expect(actual.status).toBe('ISSUED');
     });
 
     it('rejects issuing an already issued invoice', async () => {
-      billingRepositoryMock.findInvoiceWithRelationsById.mockResolvedValue({
-        ...invoiceWithRelationsRecord,
+      billingRepositoryMock.findInvoiceDetailById.mockResolvedValue({
+        ...invoiceDetailRecord,
         status: 'ISSUED',
       });
 
@@ -751,7 +839,7 @@ describe('BillingService', () => {
     });
 
     it('returns 404 for an unknown invoice', async () => {
-      billingRepositoryMock.findInvoiceWithRelationsById.mockResolvedValue(null);
+      billingRepositoryMock.findInvoiceDetailById.mockResolvedValue(null);
 
       await expect(service.issueInvoice(invoiceId)).rejects.toBeInstanceOf(NotFoundException);
     });
@@ -889,6 +977,7 @@ describe('BillingService', () => {
           quantity: 2,
           unitPrice: 75000,
           amount: 150000,
+          tax: untaxedLine,
         },
       });
       expect(actualResult.totalAmount).toBe(invoiceDetailRecord.totalAmount + 150000);

@@ -40,10 +40,12 @@ export type AggregateInvoice = {
 
 export type InvoiceAvgAggregateOutputType = {
   totalAmount: runtime.Decimal | null
+  taxAmount: runtime.Decimal | null
 }
 
 export type InvoiceSumAggregateOutputType = {
   totalAmount: runtime.Decimal | null
+  taxAmount: runtime.Decimal | null
 }
 
 export type InvoiceMinAggregateOutputType = {
@@ -55,6 +57,7 @@ export type InvoiceMinAggregateOutputType = {
   patientId: string | null
   status: $Enums.InvoiceStatus | null
   totalAmount: runtime.Decimal | null
+  taxAmount: runtime.Decimal | null
   issuedAt: Date | null
   voidedAt: Date | null
   voidReason: string | null
@@ -74,6 +77,7 @@ export type InvoiceMaxAggregateOutputType = {
   patientId: string | null
   status: $Enums.InvoiceStatus | null
   totalAmount: runtime.Decimal | null
+  taxAmount: runtime.Decimal | null
   issuedAt: Date | null
   voidedAt: Date | null
   voidReason: string | null
@@ -93,6 +97,7 @@ export type InvoiceCountAggregateOutputType = {
   patientId: number
   status: number
   totalAmount: number
+  taxAmount: number
   issuedAt: number
   voidedAt: number
   voidReason: number
@@ -107,10 +112,12 @@ export type InvoiceCountAggregateOutputType = {
 
 export type InvoiceAvgAggregateInputType = {
   totalAmount?: true
+  taxAmount?: true
 }
 
 export type InvoiceSumAggregateInputType = {
   totalAmount?: true
+  taxAmount?: true
 }
 
 export type InvoiceMinAggregateInputType = {
@@ -122,6 +129,7 @@ export type InvoiceMinAggregateInputType = {
   patientId?: true
   status?: true
   totalAmount?: true
+  taxAmount?: true
   issuedAt?: true
   voidedAt?: true
   voidReason?: true
@@ -141,6 +149,7 @@ export type InvoiceMaxAggregateInputType = {
   patientId?: true
   status?: true
   totalAmount?: true
+  taxAmount?: true
   issuedAt?: true
   voidedAt?: true
   voidReason?: true
@@ -160,6 +169,7 @@ export type InvoiceCountAggregateInputType = {
   patientId?: true
   status?: true
   totalAmount?: true
+  taxAmount?: true
   issuedAt?: true
   voidedAt?: true
   voidReason?: true
@@ -266,6 +276,7 @@ export type InvoiceGroupByOutputType = {
   patientId: string
   status: $Enums.InvoiceStatus
   totalAmount: runtime.Decimal
+  taxAmount: runtime.Decimal
   issuedAt: Date | null
   voidedAt: Date | null
   voidReason: string | null
@@ -308,6 +319,7 @@ export type InvoiceWhereInput = {
   patientId?: Prisma.UuidFilter<"Invoice"> | string
   status?: Prisma.EnumInvoiceStatusFilter<"Invoice"> | $Enums.InvoiceStatus
   totalAmount?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Prisma.DateTimeNullableFilter<"Invoice"> | Date | string | null
   voidedAt?: Prisma.DateTimeNullableFilter<"Invoice"> | Date | string | null
   voidReason?: Prisma.StringNullableFilter<"Invoice"> | string | null
@@ -338,6 +350,7 @@ export type InvoiceOrderByWithRelationInput = {
   patientId?: Prisma.SortOrder
   status?: Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
+  taxAmount?: Prisma.SortOrder
   issuedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   voidedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   voidReason?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -371,6 +384,7 @@ export type InvoiceWhereUniqueInput = Prisma.AtLeast<{
   patientId?: Prisma.UuidFilter<"Invoice"> | string
   status?: Prisma.EnumInvoiceStatusFilter<"Invoice"> | $Enums.InvoiceStatus
   totalAmount?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Prisma.DateTimeNullableFilter<"Invoice"> | Date | string | null
   voidedAt?: Prisma.DateTimeNullableFilter<"Invoice"> | Date | string | null
   voidReason?: Prisma.StringNullableFilter<"Invoice"> | string | null
@@ -401,6 +415,7 @@ export type InvoiceOrderByWithAggregationInput = {
   patientId?: Prisma.SortOrder
   status?: Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
+  taxAmount?: Prisma.SortOrder
   issuedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   voidedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   voidReason?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -428,6 +443,7 @@ export type InvoiceScalarWhereWithAggregatesInput = {
   patientId?: Prisma.UuidWithAggregatesFilter<"Invoice"> | string
   status?: Prisma.EnumInvoiceStatusWithAggregatesFilter<"Invoice"> | $Enums.InvoiceStatus
   totalAmount?: Prisma.DecimalWithAggregatesFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalWithAggregatesFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Invoice"> | Date | string | null
   voidedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Invoice"> | Date | string | null
   voidReason?: Prisma.StringNullableWithAggregatesFilter<"Invoice"> | string | null
@@ -443,6 +459,7 @@ export type InvoiceCreateInput = {
   invoiceNumber: string
   status?: $Enums.InvoiceStatus
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Date | string | null
   voidedAt?: Date | string | null
   voidReason?: string | null
@@ -471,6 +488,7 @@ export type InvoiceUncheckedCreateInput = {
   patientId: string
   status?: $Enums.InvoiceStatus
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Date | string | null
   voidedAt?: Date | string | null
   voidReason?: string | null
@@ -491,6 +509,7 @@ export type InvoiceUpdateInput = {
   invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -519,6 +538,7 @@ export type InvoiceUncheckedUpdateInput = {
   patientId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -543,6 +563,7 @@ export type InvoiceCreateManyInput = {
   patientId: string
   status?: $Enums.InvoiceStatus
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Date | string | null
   voidedAt?: Date | string | null
   voidReason?: string | null
@@ -558,6 +579,7 @@ export type InvoiceUpdateManyMutationInput = {
   invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -575,6 +597,7 @@ export type InvoiceUncheckedUpdateManyInput = {
   patientId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -609,6 +632,7 @@ export type InvoiceCountOrderByAggregateInput = {
   patientId?: Prisma.SortOrder
   status?: Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
+  taxAmount?: Prisma.SortOrder
   issuedAt?: Prisma.SortOrder
   voidedAt?: Prisma.SortOrder
   voidReason?: Prisma.SortOrder
@@ -621,6 +645,7 @@ export type InvoiceCountOrderByAggregateInput = {
 
 export type InvoiceAvgOrderByAggregateInput = {
   totalAmount?: Prisma.SortOrder
+  taxAmount?: Prisma.SortOrder
 }
 
 export type InvoiceMaxOrderByAggregateInput = {
@@ -632,6 +657,7 @@ export type InvoiceMaxOrderByAggregateInput = {
   patientId?: Prisma.SortOrder
   status?: Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
+  taxAmount?: Prisma.SortOrder
   issuedAt?: Prisma.SortOrder
   voidedAt?: Prisma.SortOrder
   voidReason?: Prisma.SortOrder
@@ -651,6 +677,7 @@ export type InvoiceMinOrderByAggregateInput = {
   patientId?: Prisma.SortOrder
   status?: Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
+  taxAmount?: Prisma.SortOrder
   issuedAt?: Prisma.SortOrder
   voidedAt?: Prisma.SortOrder
   voidReason?: Prisma.SortOrder
@@ -663,6 +690,7 @@ export type InvoiceMinOrderByAggregateInput = {
 
 export type InvoiceSumOrderByAggregateInput = {
   totalAmount?: Prisma.SortOrder
+  taxAmount?: Prisma.SortOrder
 }
 
 export type InvoiceScalarRelationFilter = {
@@ -1005,6 +1033,7 @@ export type InvoiceCreateWithoutCreatedByInput = {
   invoiceNumber: string
   status?: $Enums.InvoiceStatus
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Date | string | null
   voidedAt?: Date | string | null
   voidReason?: string | null
@@ -1032,6 +1061,7 @@ export type InvoiceUncheckedCreateWithoutCreatedByInput = {
   patientId: string
   status?: $Enums.InvoiceStatus
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Date | string | null
   voidedAt?: Date | string | null
   voidReason?: string | null
@@ -1061,6 +1091,7 @@ export type InvoiceCreateWithoutVoidedByInput = {
   invoiceNumber: string
   status?: $Enums.InvoiceStatus
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Date | string | null
   voidedAt?: Date | string | null
   voidReason?: string | null
@@ -1088,6 +1119,7 @@ export type InvoiceUncheckedCreateWithoutVoidedByInput = {
   patientId: string
   status?: $Enums.InvoiceStatus
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Date | string | null
   voidedAt?: Date | string | null
   voidReason?: string | null
@@ -1140,6 +1172,7 @@ export type InvoiceScalarWhereInput = {
   patientId?: Prisma.UuidFilter<"Invoice"> | string
   status?: Prisma.EnumInvoiceStatusFilter<"Invoice"> | $Enums.InvoiceStatus
   totalAmount?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Prisma.DateTimeNullableFilter<"Invoice"> | Date | string | null
   voidedAt?: Prisma.DateTimeNullableFilter<"Invoice"> | Date | string | null
   voidReason?: Prisma.StringNullableFilter<"Invoice"> | string | null
@@ -1171,6 +1204,7 @@ export type InvoiceCreateWithoutPatientInput = {
   invoiceNumber: string
   status?: $Enums.InvoiceStatus
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Date | string | null
   voidedAt?: Date | string | null
   voidReason?: string | null
@@ -1197,6 +1231,7 @@ export type InvoiceUncheckedCreateWithoutPatientInput = {
   registrationId?: string | null
   status?: $Enums.InvoiceStatus
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Date | string | null
   voidedAt?: Date | string | null
   voidReason?: string | null
@@ -1243,6 +1278,7 @@ export type InvoiceCreateWithoutDeliveriesInput = {
   invoiceNumber: string
   status?: $Enums.InvoiceStatus
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Date | string | null
   voidedAt?: Date | string | null
   voidReason?: string | null
@@ -1270,6 +1306,7 @@ export type InvoiceUncheckedCreateWithoutDeliveriesInput = {
   patientId: string
   status?: $Enums.InvoiceStatus
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Date | string | null
   voidedAt?: Date | string | null
   voidReason?: string | null
@@ -1305,6 +1342,7 @@ export type InvoiceUpdateWithoutDeliveriesInput = {
   invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1332,6 +1370,7 @@ export type InvoiceUncheckedUpdateWithoutDeliveriesInput = {
   patientId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1351,6 +1390,7 @@ export type InvoiceCreateWithoutRegistrationInput = {
   invoiceNumber: string
   status?: $Enums.InvoiceStatus
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Date | string | null
   voidedAt?: Date | string | null
   voidReason?: string | null
@@ -1377,6 +1417,7 @@ export type InvoiceUncheckedCreateWithoutRegistrationInput = {
   patientId: string
   status?: $Enums.InvoiceStatus
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Date | string | null
   voidedAt?: Date | string | null
   voidReason?: string | null
@@ -1423,6 +1464,7 @@ export type InvoiceCreateWithoutEncounterInput = {
   invoiceNumber: string
   status?: $Enums.InvoiceStatus
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Date | string | null
   voidedAt?: Date | string | null
   voidReason?: string | null
@@ -1449,6 +1491,7 @@ export type InvoiceUncheckedCreateWithoutEncounterInput = {
   patientId: string
   status?: $Enums.InvoiceStatus
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Date | string | null
   voidedAt?: Date | string | null
   voidReason?: string | null
@@ -1495,6 +1538,7 @@ export type InvoiceCreateWithoutItemsInput = {
   invoiceNumber: string
   status?: $Enums.InvoiceStatus
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Date | string | null
   voidedAt?: Date | string | null
   voidReason?: string | null
@@ -1522,6 +1566,7 @@ export type InvoiceUncheckedCreateWithoutItemsInput = {
   patientId: string
   status?: $Enums.InvoiceStatus
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Date | string | null
   voidedAt?: Date | string | null
   voidReason?: string | null
@@ -1557,6 +1602,7 @@ export type InvoiceUpdateWithoutItemsInput = {
   invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1584,6 +1630,7 @@ export type InvoiceUncheckedUpdateWithoutItemsInput = {
   patientId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1603,6 +1650,7 @@ export type InvoiceCreateWithoutPaymentInput = {
   invoiceNumber: string
   status?: $Enums.InvoiceStatus
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Date | string | null
   voidedAt?: Date | string | null
   voidReason?: string | null
@@ -1630,6 +1678,7 @@ export type InvoiceUncheckedCreateWithoutPaymentInput = {
   patientId: string
   status?: $Enums.InvoiceStatus
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Date | string | null
   voidedAt?: Date | string | null
   voidReason?: string | null
@@ -1665,6 +1714,7 @@ export type InvoiceUpdateWithoutPaymentInput = {
   invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1692,6 +1742,7 @@ export type InvoiceUncheckedUpdateWithoutPaymentInput = {
   patientId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1711,6 +1762,7 @@ export type InvoiceCreateWithoutDocumentsInput = {
   invoiceNumber: string
   status?: $Enums.InvoiceStatus
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Date | string | null
   voidedAt?: Date | string | null
   voidReason?: string | null
@@ -1738,6 +1790,7 @@ export type InvoiceUncheckedCreateWithoutDocumentsInput = {
   patientId: string
   status?: $Enums.InvoiceStatus
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Date | string | null
   voidedAt?: Date | string | null
   voidReason?: string | null
@@ -1773,6 +1826,7 @@ export type InvoiceUpdateWithoutDocumentsInput = {
   invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1800,6 +1854,7 @@ export type InvoiceUncheckedUpdateWithoutDocumentsInput = {
   patientId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1819,6 +1874,7 @@ export type InvoiceCreateWithoutAdmissionInput = {
   invoiceNumber: string
   status?: $Enums.InvoiceStatus
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Date | string | null
   voidedAt?: Date | string | null
   voidReason?: string | null
@@ -1845,6 +1901,7 @@ export type InvoiceUncheckedCreateWithoutAdmissionInput = {
   patientId: string
   status?: $Enums.InvoiceStatus
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Date | string | null
   voidedAt?: Date | string | null
   voidReason?: string | null
@@ -1891,6 +1948,7 @@ export type InvoiceCreateWithoutManagedDocumentsInput = {
   invoiceNumber: string
   status?: $Enums.InvoiceStatus
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Date | string | null
   voidedAt?: Date | string | null
   voidReason?: string | null
@@ -1918,6 +1976,7 @@ export type InvoiceUncheckedCreateWithoutManagedDocumentsInput = {
   patientId: string
   status?: $Enums.InvoiceStatus
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Date | string | null
   voidedAt?: Date | string | null
   voidReason?: string | null
@@ -1953,6 +2012,7 @@ export type InvoiceUpdateWithoutManagedDocumentsInput = {
   invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1980,6 +2040,7 @@ export type InvoiceUncheckedUpdateWithoutManagedDocumentsInput = {
   patientId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2003,6 +2064,7 @@ export type InvoiceCreateManyCreatedByInput = {
   patientId: string
   status?: $Enums.InvoiceStatus
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Date | string | null
   voidedAt?: Date | string | null
   voidReason?: string | null
@@ -2021,6 +2083,7 @@ export type InvoiceCreateManyVoidedByInput = {
   patientId: string
   status?: $Enums.InvoiceStatus
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Date | string | null
   voidedAt?: Date | string | null
   voidReason?: string | null
@@ -2035,6 +2098,7 @@ export type InvoiceUpdateWithoutCreatedByInput = {
   invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2062,6 +2126,7 @@ export type InvoiceUncheckedUpdateWithoutCreatedByInput = {
   patientId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2085,6 +2150,7 @@ export type InvoiceUncheckedUpdateManyWithoutCreatedByInput = {
   patientId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2099,6 +2165,7 @@ export type InvoiceUpdateWithoutVoidedByInput = {
   invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2126,6 +2193,7 @@ export type InvoiceUncheckedUpdateWithoutVoidedByInput = {
   patientId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2149,6 +2217,7 @@ export type InvoiceUncheckedUpdateManyWithoutVoidedByInput = {
   patientId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2166,6 +2235,7 @@ export type InvoiceCreateManyPatientInput = {
   registrationId?: string | null
   status?: $Enums.InvoiceStatus
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Date | string | null
   voidedAt?: Date | string | null
   voidReason?: string | null
@@ -2181,6 +2251,7 @@ export type InvoiceUpdateWithoutPatientInput = {
   invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2207,6 +2278,7 @@ export type InvoiceUncheckedUpdateWithoutPatientInput = {
   registrationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2230,6 +2302,7 @@ export type InvoiceUncheckedUpdateManyWithoutPatientInput = {
   registrationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2248,6 +2321,7 @@ export type InvoiceCreateManyRegistrationInput = {
   patientId: string
   status?: $Enums.InvoiceStatus
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Date | string | null
   voidedAt?: Date | string | null
   voidReason?: string | null
@@ -2263,6 +2337,7 @@ export type InvoiceUpdateWithoutRegistrationInput = {
   invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2289,6 +2364,7 @@ export type InvoiceUncheckedUpdateWithoutRegistrationInput = {
   patientId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2312,6 +2388,7 @@ export type InvoiceUncheckedUpdateManyWithoutRegistrationInput = {
   patientId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2330,6 +2407,7 @@ export type InvoiceCreateManyEncounterInput = {
   patientId: string
   status?: $Enums.InvoiceStatus
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Date | string | null
   voidedAt?: Date | string | null
   voidReason?: string | null
@@ -2345,6 +2423,7 @@ export type InvoiceUpdateWithoutEncounterInput = {
   invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2371,6 +2450,7 @@ export type InvoiceUncheckedUpdateWithoutEncounterInput = {
   patientId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2394,6 +2474,7 @@ export type InvoiceUncheckedUpdateManyWithoutEncounterInput = {
   patientId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2412,6 +2493,7 @@ export type InvoiceCreateManyAdmissionInput = {
   patientId: string
   status?: $Enums.InvoiceStatus
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Date | string | null
   voidedAt?: Date | string | null
   voidReason?: string | null
@@ -2427,6 +2509,7 @@ export type InvoiceUpdateWithoutAdmissionInput = {
   invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2453,6 +2536,7 @@ export type InvoiceUncheckedUpdateWithoutAdmissionInput = {
   patientId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2476,6 +2560,7 @@ export type InvoiceUncheckedUpdateManyWithoutAdmissionInput = {
   patientId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2553,6 +2638,7 @@ export type InvoiceSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   patientId?: boolean
   status?: boolean
   totalAmount?: boolean
+  taxAmount?: boolean
   issuedAt?: boolean
   voidedAt?: boolean
   voidReason?: boolean
@@ -2584,6 +2670,7 @@ export type InvoiceSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   patientId?: boolean
   status?: boolean
   totalAmount?: boolean
+  taxAmount?: boolean
   issuedAt?: boolean
   voidedAt?: boolean
   voidReason?: boolean
@@ -2609,6 +2696,7 @@ export type InvoiceSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   patientId?: boolean
   status?: boolean
   totalAmount?: boolean
+  taxAmount?: boolean
   issuedAt?: boolean
   voidedAt?: boolean
   voidReason?: boolean
@@ -2634,6 +2722,7 @@ export type InvoiceSelectScalar = {
   patientId?: boolean
   status?: boolean
   totalAmount?: boolean
+  taxAmount?: boolean
   issuedAt?: boolean
   voidedAt?: boolean
   voidReason?: boolean
@@ -2644,7 +2733,7 @@ export type InvoiceSelectScalar = {
   deletedAt?: boolean
 }
 
-export type InvoiceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "invoiceNumber" | "encounterId" | "admissionId" | "registrationId" | "patientId" | "status" | "totalAmount" | "issuedAt" | "voidedAt" | "voidReason" | "voidedById" | "createdById" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["invoice"]>
+export type InvoiceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "invoiceNumber" | "encounterId" | "admissionId" | "registrationId" | "patientId" | "status" | "totalAmount" | "taxAmount" | "issuedAt" | "voidedAt" | "voidReason" | "voidedById" | "createdById" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["invoice"]>
 export type InvoiceInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   encounter?: boolean | Prisma.Invoice$encounterArgs<ExtArgs>
   admission?: boolean | Prisma.Invoice$admissionArgs<ExtArgs>
@@ -2718,6 +2807,11 @@ export type $InvoicePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     patientId: string
     status: $Enums.InvoiceStatus
     totalAmount: runtime.Decimal
+    /**
+     * The PPN inside `totalAmount` (P27-T04): the sum of the lines' `taxAmount`.
+     * Prices are tax-inclusive, so it never adds to the total; frozen at issue.
+     */
+    taxAmount: runtime.Decimal
     issuedAt: Date | null
     voidedAt: Date | null
     voidReason: string | null
@@ -3168,6 +3262,7 @@ export interface InvoiceFieldRefs {
   readonly patientId: Prisma.FieldRef<"Invoice", 'String'>
   readonly status: Prisma.FieldRef<"Invoice", 'InvoiceStatus'>
   readonly totalAmount: Prisma.FieldRef<"Invoice", 'Decimal'>
+  readonly taxAmount: Prisma.FieldRef<"Invoice", 'Decimal'>
   readonly issuedAt: Prisma.FieldRef<"Invoice", 'DateTime'>
   readonly voidedAt: Prisma.FieldRef<"Invoice", 'DateTime'>
   readonly voidReason: Prisma.FieldRef<"Invoice", 'String'>

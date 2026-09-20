@@ -32,6 +32,7 @@ import { INVOICE_DOCUMENT_STORAGE_KEY_PREFIX } from './invoice-document-storage-
 import { resolveMateraiThresholdIdr } from './materai-threshold';
 import { resolveInvoiceVariables } from './resolve-invoice-variables';
 import { shouldShowMateraiArea } from './should-show-materai-area';
+import { shouldShowTaxInclusiveNote } from './should-show-tax-inclusive-note';
 
 const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 
@@ -281,6 +282,7 @@ export class InvoiceDocumentService {
           context.invoice.totalAmount,
           this.materaiThresholdIdr,
         ),
+        showTaxNote: shouldShowTaxInclusiveNote(context.invoice.taxAmount),
         watermark: {
           isVoid: document.hasVoidWatermark,
           reason: context.invoice.voidReason,

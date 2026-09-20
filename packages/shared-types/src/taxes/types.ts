@@ -1,3 +1,4 @@
+import type { InvoiceItemTypeValue } from '#billing/schemas';
 import type {
   CreateTaxCodeRateInput,
   FakturTransactionCodeValue,
@@ -196,4 +197,82 @@ export type RecordTaxCodeChangeParams = {
 /** An item with its code resolved, before the list is filtered and paged. */
 export type ResolvedTaxAssignmentTarget = TaxAssignmentTargetRecord & {
   effective: EffectiveTaxCode;
+};
+
+/** What an invoice line needs to be taxed (P27-T04): where it came from and what it costs. */
+export type InvoiceLineTaxInput = {
+  itemType: InvoiceItemTypeValue;
+  serviceTariffId?: string | null;
+  medicationId?: string | null;
+  amount: number;
+};
+
+/**
+ * The tax snapshot of one invoice line (P27-T04). `taxableAmount` is the price
+ * before PPN, `taxBase` the DPP (DPP nilai lain for faktur code 04), and
+ * `taxAmount` the PPN inside `amount` — prices are always tax-inclusive.
+ * `isResolved` is false when no code or no rate applies; issue refuses those.
+ */
+export type InvoiceLineTax = {
+  taxCode: string | null;
+  ppnTreatment: PpnTreatmentValue | null;
+  fakturTransactionCode: FakturTransactionCodeValue | null;
+  taxableAmount: number | null;
+  taxBase: number | null;
+  taxRatePercent: number | null;
+  taxAmount: number;
+  isResolved: boolean;
+};
+
+export type ComputeLineTaxParams = {
+  /** The line total the patient pays, tax included. */
+  amount: number;
+  taxCode: TaxCodeRecord | null;
+  /** The rate in force on the invoice date, `null` if none yet. */
+  rate: TaxCodeRateRecord | null;
+  isPkp: boolean;
+};
+
+export type ComputeInvoiceLineTaxesParams<TLine extends InvoiceLineTaxInput> = {
+  lines: readonly TLine[];
+  /** Calendar date in the clinic's timezone, `YYYY-MM-DD`. */
+  onDate: string;
+};
+
+/**
+ * Lines with their tax attached, the PPN they add up to, and whether the
+ * clinic is PKP — the only case in which an unresolved line blocks issue.
+ */
+export type InvoiceLineTaxesResult<TLine extends InvoiceLineTaxInput> = {
+  lines: Array<TLine & { tax: InvoiceLineTax }>;
+  taxAmount: number;
+  isPkp: boolean;
+};
+
+/** The code overrides on the tariffs and medications an invoice's lines came from. */
+export type TaxCodeOverrides = {
+  byServiceTariffId: ReadonlyMap<string, string>;
+  byMedicationId: ReadonlyMap<string, string>;
+};
+
+export type FindTaxCodeOverridesParams = {
+  serviceTariffIds: string[];
+  medicationIds: string[];
+};
+
+/** Everything one invoice line's tax is resolved from. */
+export type ResolveLineTaxParams = {
+  line: InvoiceLineTaxInput;
+  catalog: TaxCodeCatalog;
+  overrides: TaxCodeOverrides;
+  isPkp: boolean;
+  onDate: string;
+};
+
+/** What a price breakdown is computed from, for one item. */
+export type BuildTaxPriceBreakdownParams = {
+  target: TaxAssignmentTargetRecord;
+  catalog: TaxCodeCatalog;
+  isPkp: boolean;
+  onDate: string;
 };

@@ -33,6 +33,8 @@ import type {
   TaxCodeControllerCreateTaxCodeV1201,
   TaxCodeControllerListTaxCodesV1200,
   TaxCodeControllerUpdateTaxCodeV1200,
+  TaxPriceBreakdownControllerListPriceBreakdownsV1200,
+  TaxPriceBreakdownControllerListPriceBreakdownsV1Params,
   UpdateTaxCategoryDefaultsDto,
   UpdateTaxCodeDto
 } from '../model';
@@ -807,6 +809,99 @@ export function useTaxAssignmentControllerBulkAssignV1<TData = Awaited<ReturnTyp
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getTaxAssignmentControllerBulkAssignV1QueryOptions(bulkAssignTaxCodeDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Split tariff or medicine prices into before-PPN and PPN
+ */
+export const taxPriceBreakdownControllerListPriceBreakdownsV1 = (
+    params: TaxPriceBreakdownControllerListPriceBreakdownsV1Params,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<TaxPriceBreakdownControllerListPriceBreakdownsV1200>(
+      {url: `/api/v1/tax/price-breakdowns`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+
+
+
+
+export const getTaxPriceBreakdownControllerListPriceBreakdownsV1QueryKey = (params?: TaxPriceBreakdownControllerListPriceBreakdownsV1Params,) => {
+    return [
+    `/api/v1/tax/price-breakdowns`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getTaxPriceBreakdownControllerListPriceBreakdownsV1QueryOptions = <TData = Awaited<ReturnType<typeof taxPriceBreakdownControllerListPriceBreakdownsV1>>, TError = unknown>(params: TaxPriceBreakdownControllerListPriceBreakdownsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taxPriceBreakdownControllerListPriceBreakdownsV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getTaxPriceBreakdownControllerListPriceBreakdownsV1QueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof taxPriceBreakdownControllerListPriceBreakdownsV1>>> = ({ signal }) => taxPriceBreakdownControllerListPriceBreakdownsV1(params, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof taxPriceBreakdownControllerListPriceBreakdownsV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type TaxPriceBreakdownControllerListPriceBreakdownsV1QueryResult = NonNullable<Awaited<ReturnType<typeof taxPriceBreakdownControllerListPriceBreakdownsV1>>>
+export type TaxPriceBreakdownControllerListPriceBreakdownsV1QueryError = unknown
+
+
+export function useTaxPriceBreakdownControllerListPriceBreakdownsV1<TData = Awaited<ReturnType<typeof taxPriceBreakdownControllerListPriceBreakdownsV1>>, TError = unknown>(
+ params: TaxPriceBreakdownControllerListPriceBreakdownsV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof taxPriceBreakdownControllerListPriceBreakdownsV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof taxPriceBreakdownControllerListPriceBreakdownsV1>>,
+          TError,
+          Awaited<ReturnType<typeof taxPriceBreakdownControllerListPriceBreakdownsV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useTaxPriceBreakdownControllerListPriceBreakdownsV1<TData = Awaited<ReturnType<typeof taxPriceBreakdownControllerListPriceBreakdownsV1>>, TError = unknown>(
+ params: TaxPriceBreakdownControllerListPriceBreakdownsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taxPriceBreakdownControllerListPriceBreakdownsV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof taxPriceBreakdownControllerListPriceBreakdownsV1>>,
+          TError,
+          Awaited<ReturnType<typeof taxPriceBreakdownControllerListPriceBreakdownsV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useTaxPriceBreakdownControllerListPriceBreakdownsV1<TData = Awaited<ReturnType<typeof taxPriceBreakdownControllerListPriceBreakdownsV1>>, TError = unknown>(
+ params: TaxPriceBreakdownControllerListPriceBreakdownsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taxPriceBreakdownControllerListPriceBreakdownsV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Split tariff or medicine prices into before-PPN and PPN
+ */
+
+export function useTaxPriceBreakdownControllerListPriceBreakdownsV1<TData = Awaited<ReturnType<typeof taxPriceBreakdownControllerListPriceBreakdownsV1>>, TError = unknown>(
+ params: TaxPriceBreakdownControllerListPriceBreakdownsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taxPriceBreakdownControllerListPriceBreakdownsV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getTaxPriceBreakdownControllerListPriceBreakdownsV1QueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

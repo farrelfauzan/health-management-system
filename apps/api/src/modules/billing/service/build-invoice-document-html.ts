@@ -42,6 +42,12 @@ type BuildInvoiceDocumentHtmlParams = {
    * whole across page breaks — a placement for a physical stamp, nothing more.
    */
   readonly showMateraiArea?: boolean;
+  /**
+   * P27-T04: print "Harga sudah termasuk PPN" under the document. The patient
+   * sees one tax-inclusive price per line and this note — never the DPP or PPN
+   * figures, which are for the clinic's own screens.
+   */
+  readonly showTaxNote?: boolean;
 };
 
 /**
@@ -69,7 +75,12 @@ type BuildInvoiceDocumentHtmlParams = {
 export function buildInvoiceDocumentHtml(params: BuildInvoiceDocumentHtmlParams): string {
   const itemColumns = resolveItemColumns(params.itemColumns);
   const filledHtml = fillTemplateTokens(params.contentHtml, params.resolved, itemColumns);
-  return wrapDocument(filledHtml, params.watermark, params.showMateraiArea ?? false);
+  return wrapDocument({
+    filledHtml,
+    watermark: params.watermark,
+    showMateraiArea: params.showMateraiArea ?? false,
+    showTaxNote: params.showTaxNote ?? false,
+  });
 }
 
 function resolveItemColumns(
@@ -168,11 +179,15 @@ function clearChildren(element: Element): void {
   }
 }
 
-function wrapDocument(
-  filledHtml: string,
-  watermark: InvoiceDocumentWatermark,
-  showMateraiArea: boolean,
-): string {
+type WrapDocumentParams = {
+  readonly filledHtml: string;
+  readonly watermark: InvoiceDocumentWatermark;
+  readonly showMateraiArea: boolean;
+  readonly showTaxNote: boolean;
+};
+
+function wrapDocument(params: WrapDocumentParams): string {
+  const { filledHtml, watermark, showMateraiArea, showTaxNote } = params;
   const watermarkMarkup = watermark.isVoid ? buildWatermarkMarkup(watermark) : '';
   return [
     '<!DOCTYPE html><html lang="id"><head><meta charset="utf-8"><style>',
@@ -181,12 +196,15 @@ function wrapDocument(
     watermarkMarkup,
     '<main class="hms-document">',
     filledHtml,
+    showTaxNote ? TAX_NOTE_MARKUP : '',
     showMateraiArea ? MATERAI_AREA_MARKUP : '',
     '</main>',
     watermark.isVoid ? buildVoidFooterMarkup(watermark) : '',
     '</body></html>',
   ].join('');
 }
+
+const TAX_NOTE_MARKUP = '<p class="hms-tax-note">Harga sudah termasuk PPN</p>';
 
 const MATERAI_AREA_MARKUP =
   '<section class="hms-materai" aria-label="Materai"><div class="hms-materai-box">Materai</div><div class="hms-materai-caption">Tempel materai di sini</div></section>';
@@ -244,6 +262,7 @@ const BASE_DOCUMENT_CSS = [
   '.hms-items tr { page-break-inside: avoid; }',
   '.hms-inline-image { max-width: 40mm; max-height: 20mm; }',
   // FR-E1-13: a stamp-sized placement, never split across pages.
+  '.hms-tax-note { margin-top: 4mm; font-size: 9pt; font-style: italic; color: #444; }',
   '.hms-materai { margin-top: 8mm; display: flex; flex-direction: column; align-items: flex-end; page-break-inside: avoid; }',
   '.hms-materai-box { width: 30mm; height: 22mm; border: 1px dashed #666; display: flex; align-items: center; justify-content: center; font-size: 9pt; color: #666; }',
   '.hms-materai-caption { font-size: 8pt; color: #666; margin-top: 1mm; }',

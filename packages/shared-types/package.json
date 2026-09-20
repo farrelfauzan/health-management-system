@@ -156,7 +156,8 @@
     "#taxes/resolve-effective-tax-code": "./src/taxes/resolve-effective-tax-code.ts",
     "#taxes/resolve-tax-rate": "./src/taxes/resolve-tax-rate.ts",
     "#taxes/to-tax-default-target": "./src/taxes/to-tax-default-target.ts",
-    "#taxes/is-faktur-code-allowed": "./src/taxes/is-faktur-code-allowed.ts"
+    "#taxes/is-faktur-code-allowed": "./src/taxes/is-faktur-code-allowed.ts",
+    "#taxes/compute-line-tax": "./src/taxes/compute-line-tax.ts"
   },
   "main": "./dist/index.cjs",
   "types": "./src/index.ts",

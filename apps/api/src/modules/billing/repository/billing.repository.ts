@@ -11,8 +11,11 @@ import {
   CreateInvoiceRecordPayload,
   InvoiceDetailRecord,
   InvoiceItemRecord,
+  InvoiceItemTaxColumns,
+  InvoiceLineTax,
   InvoiceRecord,
   InvoiceWithRelationsRecord,
+  IssueInvoiceRecordPayload,
   ListInvoicesParams,
   PaymentRecord,
   RecordPaymentRecordPayload,
@@ -45,12 +48,45 @@ const INVOICE_DETAIL_INCLUDE = {
   payment: true,
 } satisfies Prisma.InvoiceInclude;
 
-type InvoiceRowBase = Omit<InvoiceRecord, 'totalAmount'> & { totalAmount: unknown };
+type InvoiceRowBase = Omit<InvoiceRecord, 'totalAmount' | 'taxAmount'> & {
+  totalAmount: unknown;
+  taxAmount: unknown;
+};
 
-type InvoiceItemRow = Omit<InvoiceItemRecord, 'unitPrice' | 'amount'> & {
+type InvoiceItemRow = Omit<
+  InvoiceItemRecord,
+  'unitPrice' | 'amount' | 'taxableAmount' | 'taxBase' | 'taxRatePercent' | 'taxAmount'
+> & {
   unitPrice: unknown;
   amount: unknown;
+  taxableAmount: unknown;
+  taxBase: unknown;
+  taxRatePercent: unknown;
+  taxAmount: unknown;
 };
+
+/**
+ * The tax columns of an invoice line (P27-T04). A line the tax module did not
+ * price keeps the column defaults: no code and zero PPN.
+ */
+function toItemTaxData(tax: InvoiceLineTax | undefined): InvoiceItemTaxColumns {
+  if (!tax) {
+    return {};
+  }
+  return {
+    taxCode: tax.taxCode,
+    ppnTreatment: tax.ppnTreatment,
+    fakturTransactionCode: tax.fakturTransactionCode,
+    taxableAmount: tax.taxableAmount,
+    taxBase: tax.taxBase,
+    taxRatePercent: tax.taxRatePercent,
+    taxAmount: tax.taxAmount,
+  };
+}
+
+function toNullableNumber(value: unknown): number | null {
+  return value === null || value === undefined ? null : Number(value);
+}
 
 type PaymentRow = Omit<PaymentRecord, 'amount'> & { amount: unknown };
 
@@ -242,6 +278,7 @@ export class BillingRepository {
           patientId: payload.patientId,
           createdById: payload.createdById,
           totalAmount: payload.totalAmount,
+          taxAmount: payload.taxAmount ?? 0,
           items: {
             create: payload.items.map((item) => ({
               itemType: item.itemType,
@@ -253,6 +290,7 @@ export class BillingRepository {
               quantity: item.quantity,
               unitPrice: item.unitPrice,
               amount: item.amount,
+              ...toItemTaxData(item.tax),
             })),
           },
         },
@@ -313,13 +351,26 @@ export class BillingRepository {
     return row ? this.toInvoiceDetailRecord(row) : null;
   }
 
-  async issueInvoice(id: string, issuedAt: Date): Promise<InvoiceDetailRecord> {
-    const updated = await this.prisma.invoice.update({
-      where: { id },
-      data: { status: 'ISSUED', issuedAt },
-      include: INVOICE_DETAIL_INCLUDE,
+  /**
+   * The status change and the issue-date tax snapshot commit together
+   * (P27-T04): an ISSUED invoice whose lines still carry a draft's tax would
+   * report a rate that was never the one it was issued under.
+   */
+  async issueInvoice(payload: IssueInvoiceRecordPayload): Promise<InvoiceDetailRecord> {
+    return this.prisma.executeTransaction(async (tx) => {
+      for (const line of payload.lineTaxes) {
+        await tx.invoiceItem.update({
+          where: { id: line.itemId, invoiceId: payload.id },
+          data: toItemTaxData(line.tax),
+        });
+      }
+      const updated = await tx.invoice.update({
+        where: { id: payload.id },
+        data: { status: 'ISSUED', issuedAt: payload.issuedAt, taxAmount: payload.taxAmount },
+        include: INVOICE_DETAIL_INCLUDE,
+      });
+      return this.toInvoiceDetailRecord(updated);
     });
-    return this.toInvoiceDetailRecord(updated);
   }
 
   /**
@@ -366,6 +417,7 @@ export class BillingRepository {
           quantity: payload.item.quantity,
           unitPrice: payload.item.unitPrice,
           amount: payload.item.amount,
+          ...toItemTaxData(payload.item.tax),
         },
       });
       return this.updateInvoiceTotalFromItems(tx, payload.invoiceId);
@@ -622,11 +674,14 @@ export class BillingRepository {
   ): Promise<InvoiceDetailRecord> {
     const aggregate = await tx.invoiceItem.aggregate({
       where: { invoiceId },
-      _sum: { amount: true },
+      _sum: { amount: true, taxAmount: true },
     });
     const updated = await tx.invoice.update({
       where: { id: invoiceId },
-      data: { totalAmount: aggregate._sum.amount ?? 0 },
+      data: {
+        totalAmount: aggregate._sum.amount ?? 0,
+        taxAmount: aggregate._sum.taxAmount ?? 0,
+      },
       include: INVOICE_DETAIL_INCLUDE,
     });
     return this.toInvoiceDetailRecord(updated);
@@ -644,7 +699,7 @@ export class BillingRepository {
    * `Decimal` escapes the repository.
    */
   private toInvoiceRecord(row: InvoiceRowBase): InvoiceRecord {
-    return { ...row, totalAmount: Number(row.totalAmount) };
+    return { ...row, totalAmount: Number(row.totalAmount), taxAmount: Number(row.taxAmount) };
   }
 
   private toInvoiceWithRelationsRecord(
@@ -672,6 +727,10 @@ export class BillingRepository {
         ...item,
         unitPrice: Number(item.unitPrice),
         amount: Number(item.amount),
+        taxableAmount: toNullableNumber(item.taxableAmount),
+        taxBase: toNullableNumber(item.taxBase),
+        taxRatePercent: toNullableNumber(item.taxRatePercent),
+        taxAmount: Number(item.taxAmount),
       })),
       payment: payment ? { ...payment, amount: Number(payment.amount) } : null,
     };

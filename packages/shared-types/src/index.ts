@@ -97,6 +97,7 @@ export * from '#taxes/resolve-effective-tax-code';
 export * from '#taxes/resolve-tax-rate';
 export * from '#taxes/to-tax-default-target';
 export * from '#taxes/is-faktur-code-allowed';
+export * from '#taxes/compute-line-tax';
 export * from '#satusehat/schemas';
 export * from '#satusehat/contracts';
 export * from '#satusehat/types';

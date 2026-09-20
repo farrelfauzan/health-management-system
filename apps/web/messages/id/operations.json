@@ -562,7 +562,8 @@
           "COVERED": "Ditanggung penjamin, tidak ditagih di sini",
           "NOT_BILLED": "Seharusnya ditagih di sini, tetapi tidak ada barisnya"
         }
-      }
+      },
+      "taxCodeUnresolved": "Beberapa baris belum punya kode atau tarif pajak, jadi klinik PKP belum bisa menerbitkan tagihan ini. Atur di Pengaturan › Pajak › Tarif & obat, lalu terbitkan lagi."
     },
     "integrations": {
       "title": "Integrasi",

@@ -16,8 +16,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 
 import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
-import { TaxAssignmentRepository } from '../repository/tax-assignment.repository';
-import { TaxCodeService } from './tax-code.service';
+import { TaxAssignmentRepository } from '../../tax-core/repository/tax-assignment.repository';
+import { TaxCodeService } from '../../tax-core/service/tax-code.service';
 
 const TAX_ASSIGNMENT_AUDIT_RESOURCE = 'tax-assignment';
 const ASSIGNMENT_KINDS: readonly TaxAssignmentKindValue[] = ['SERVICE_TARIFF', 'MEDICATION'];

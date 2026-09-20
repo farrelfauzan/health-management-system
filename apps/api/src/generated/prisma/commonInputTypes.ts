@@ -1170,6 +1170,13 @@ export type EnumInvoiceItemTypeFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumInvoiceItemTypeFilter<$PrismaModel> | $Enums.InvoiceItemType
 }
 
+export type EnumPpnTreatmentNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.PpnTreatment | Prisma.EnumPpnTreatmentFieldRefInput<$PrismaModel> | null
+  in?: $Enums.PpnTreatment[] | Prisma.ListEnumPpnTreatmentFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.PpnTreatment[] | Prisma.ListEnumPpnTreatmentFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumPpnTreatmentNullableFilter<$PrismaModel> | $Enums.PpnTreatment | null
+}
+
 export type EnumInvoiceItemTypeWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.InvoiceItemType | Prisma.EnumInvoiceItemTypeFieldRefInput<$PrismaModel>
   in?: $Enums.InvoiceItemType[] | Prisma.ListEnumInvoiceItemTypeFieldRefInput<$PrismaModel>
@@ -1178,6 +1185,16 @@ export type EnumInvoiceItemTypeWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumInvoiceItemTypeFilter<$PrismaModel>
   _max?: Prisma.NestedEnumInvoiceItemTypeFilter<$PrismaModel>
+}
+
+export type EnumPpnTreatmentNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PpnTreatment | Prisma.EnumPpnTreatmentFieldRefInput<$PrismaModel> | null
+  in?: $Enums.PpnTreatment[] | Prisma.ListEnumPpnTreatmentFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.PpnTreatment[] | Prisma.ListEnumPpnTreatmentFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumPpnTreatmentNullableWithAggregatesFilter<$PrismaModel> | $Enums.PpnTreatment | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPpnTreatmentNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPpnTreatmentNullableFilter<$PrismaModel>
 }
 
 export type EnumPaymentMethodFilter<$PrismaModel = never> = {
@@ -3463,6 +3480,13 @@ export type NestedEnumInvoiceItemTypeFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumInvoiceItemTypeFilter<$PrismaModel> | $Enums.InvoiceItemType
 }
 
+export type NestedEnumPpnTreatmentNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.PpnTreatment | Prisma.EnumPpnTreatmentFieldRefInput<$PrismaModel> | null
+  in?: $Enums.PpnTreatment[] | Prisma.ListEnumPpnTreatmentFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.PpnTreatment[] | Prisma.ListEnumPpnTreatmentFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumPpnTreatmentNullableFilter<$PrismaModel> | $Enums.PpnTreatment | null
+}
+
 export type NestedEnumInvoiceItemTypeWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.InvoiceItemType | Prisma.EnumInvoiceItemTypeFieldRefInput<$PrismaModel>
   in?: $Enums.InvoiceItemType[] | Prisma.ListEnumInvoiceItemTypeFieldRefInput<$PrismaModel>
@@ -3471,6 +3495,16 @@ export type NestedEnumInvoiceItemTypeWithAggregatesFilter<$PrismaModel = never> 
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumInvoiceItemTypeFilter<$PrismaModel>
   _max?: Prisma.NestedEnumInvoiceItemTypeFilter<$PrismaModel>
+}
+
+export type NestedEnumPpnTreatmentNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PpnTreatment | Prisma.EnumPpnTreatmentFieldRefInput<$PrismaModel> | null
+  in?: $Enums.PpnTreatment[] | Prisma.ListEnumPpnTreatmentFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.PpnTreatment[] | Prisma.ListEnumPpnTreatmentFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumPpnTreatmentNullableWithAggregatesFilter<$PrismaModel> | $Enums.PpnTreatment | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPpnTreatmentNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPpnTreatmentNullableFilter<$PrismaModel>
 }
 
 export type NestedEnumPaymentMethodFilter<$PrismaModel = never> = {

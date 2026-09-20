@@ -139,6 +139,24 @@ describe('buildInvoiceDocumentHtml', () => {
     expect(withoutArea).not.toContain('hms-materai"');
   });
 
+  it('prints "Harga sudah termasuk PPN" only when asked, and no tax figures (P27-T04)', () => {
+    const withNote = buildInvoiceDocumentHtml({
+      contentHtml: '<p>a</p>',
+      resolved: buildResolved(),
+      watermark: NO_WATERMARK,
+      showTaxNote: true,
+    });
+    const withoutNote = buildInvoiceDocumentHtml({
+      contentHtml: '<p>a</p>',
+      resolved: buildResolved(),
+      watermark: NO_WATERMARK,
+    });
+
+    expect(withNote).toContain('<p class="hms-tax-note">Harga sudah termasuk PPN</p>');
+    expect(withNote).not.toMatch(/DPP|Subtotal/);
+    expect(withoutNote).not.toContain('Harga sudah termasuk PPN');
+  });
+
   it('renders an inline image token as an img and refuses a non-inline value', () => {
     const withInline = buildInvoiceDocumentHtml({
       contentHtml: '<span data-hms-var="clinic.logo"></span>',

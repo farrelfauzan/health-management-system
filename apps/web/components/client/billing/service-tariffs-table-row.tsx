@@ -1,10 +1,11 @@
 'use client';
 
-import type { ServiceTariffResponse } from '@hms/shared-types';
+import type { ServiceTariffResponse, TaxPriceBreakdownView } from '@hms/shared-types';
 import { Button, TableCell, TableRow } from '@hms/ui';
 import { useFormatter, useTranslations } from 'next-intl';
 
 import { ConsultationAudienceLabel } from '#components/client/billing/consultation-audience-label';
+import { TaxPriceBreakdownCells } from '#components/client/taxes/tax-price-breakdown-cells';
 import { DataTableMonoCell } from '#components/shared/data-table-mono-cell';
 import { StatusBadge } from '#components/shared/status-badge';
 import { formatStatusLabel } from '#lib/shared/status-label';
@@ -12,10 +13,19 @@ import { formatStatusLabel } from '#lib/shared/status-label';
 type ServiceTariffsTableRowProps = {
   tariff: ServiceTariffResponse;
   canManage: boolean;
+  /** P27-T04: the admin-only before-PPN and PPN columns. */
+  breakdown?: TaxPriceBreakdownView;
+  showBreakdown?: boolean;
   onEdit: (tariff: ServiceTariffResponse) => void;
 };
 
-export function ServiceTariffsTableRow({ tariff, canManage, onEdit }: ServiceTariffsTableRowProps) {
+export function ServiceTariffsTableRow({
+  tariff,
+  canManage,
+  breakdown,
+  showBreakdown = false,
+  onEdit,
+}: ServiceTariffsTableRowProps) {
   const t = useTranslations('operations.common');
   const format = useFormatter();
   return (
@@ -38,6 +48,9 @@ export function ServiceTariffsTableRow({ tariff, canManage, onEdit }: ServiceTar
           maximumFractionDigits: 2,
         })}
       </TableCell>
+      {showBreakdown ? (
+        <TaxPriceBreakdownCells breakdown={breakdown} className="px-4 text-sm text-slate-700" />
+      ) : null}
       <TableCell className="px-4">
         <StatusBadge status={tariff.isActive ? 'ACTIVE' : 'INACTIVE'} />
       </TableCell>

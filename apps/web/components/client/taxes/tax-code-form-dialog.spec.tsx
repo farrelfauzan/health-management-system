@@ -33,8 +33,12 @@ describe('TaxCodeFormDialog (P27-T03)', () => {
 
     expect(screen.getByLabelText(/Tarif \(%\)/)).toHaveValue('12');
     expect(screen.getByLabelText(/Pembilang DPP/)).toHaveValue('11');
-    fireEvent.change(screen.getByRole('textbox', { name: /^Kode/ }), { target: { value: 'estetika' } });
-    fireEvent.change(screen.getByRole('textbox', { name: /^Nama/ }), { target: { value: 'Perawatan estetika' } });
+    fireEvent.change(screen.getByRole('textbox', { name: /^Kode/ }), {
+      target: { value: 'estetika' },
+    });
+    fireEvent.change(screen.getByRole('textbox', { name: /^Nama/ }), {
+      target: { value: 'Perawatan estetika' },
+    });
     fireEvent.click(screen.getByRole('button', { name: 'Simpan' }));
 
     expect(screen.getByText(/Periksa kode/)).toBeInTheDocument();

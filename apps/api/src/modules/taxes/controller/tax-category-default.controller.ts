@@ -8,7 +8,7 @@ import { RequireFeature } from '../../../common/authorization/require-feature.de
 import { ApiEndpoint } from '../../../common/openapi/api-endpoint.decorator';
 import { TAXES_EXAMPLES } from '../../../common/openapi/taxes-examples';
 import { UpdateTaxCategoryDefaultsDto } from '../dto/update-tax-category-defaults.dto';
-import { TaxCodeService } from '../service/tax-code.service';
+import { TaxCodeService } from '../../tax-core/service/tax-code.service';
 
 /** The code each tariff category and every medication falls back to (P27-T03). */
 @ApiTags('Tax Codes')

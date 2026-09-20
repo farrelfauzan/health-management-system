@@ -6,6 +6,7 @@ import type {
   TaxAssignmentKindValue,
   TaxCodeSourceValue,
   TaxDefaultTargetValue,
+  TaxPriceBreakdownStatusValue,
   TaxpayerTypeValue,
 } from '#taxes/schemas';
 
@@ -97,4 +98,21 @@ export type TaxAssignmentsListMeta = {
 
 export type BulkAssignTaxCodeResult = {
   updatedCount: number;
+};
+
+/**
+ * One tariff or medicine price split into the part before PPN and the PPN
+ * inside it (P27-T04), at today's rate. Administrators only: the patient sees
+ * the price and "Harga sudah termasuk PPN", nothing more.
+ */
+export type TaxPriceBreakdownView = {
+  kind: TaxAssignmentKindValue;
+  id: string;
+  status: TaxPriceBreakdownStatusValue;
+  taxCode?: string;
+  ppnTreatment?: PpnTreatmentValue;
+  /** What the patient pays: the stored price, tax included. */
+  price?: number;
+  priceBeforeTax?: number;
+  taxAmount?: number;
 };

@@ -29,6 +29,7 @@ import {
   invoiceControllerRemoveInvoiceItemV1,
 } from '#lib/api/generated/invoices/invoices';
 import { notifyApiError } from '#lib/api/notify-api-error';
+import { resolveApiErrorCode } from '#lib/api/resolve-api-error-code';
 import { parseApiSuccess } from '#lib/api/response';
 import { invalidateBillingQueries } from '#lib/billing/invalidate-billing-queries';
 import { useInvoiceDetail } from '#lib/billing/use-invoice-detail';
@@ -79,6 +80,12 @@ export function InvoiceDetailDialog({ invoiceId, open, onOpenChange }: InvoiceDe
       parseApiSuccess<InvoiceDetail>(response, t('billing.issueError'));
       await invalidateBillingQueries(queryClient);
     } catch (error) {
+      // P27-T04: a PKP clinic cannot issue a bill with a line no tax code
+      // covers; say where to fix it rather than showing the API's English.
+      if (resolveApiErrorCode(error) === 'TAX_CODE_UNRESOLVED') {
+        setActionError(t('billing.taxCodeUnresolved'));
+        return;
+      }
       setActionError(notifyApiError(error, t('billing.issueError')));
     }
   }

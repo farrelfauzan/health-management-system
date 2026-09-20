@@ -2,9 +2,9 @@ import { TaxAssignmentTargetRecord, TaxCodeCatalog, TaxCodeRecord } from '@hms/s
 
 import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
-import { TaxAssignmentRepository } from '../repository/tax-assignment.repository';
+import { TaxAssignmentRepository } from '../../tax-core/repository/tax-assignment.repository';
 import { TaxAssignmentService } from './tax-assignment.service';
-import { TaxCodeService } from './tax-code.service';
+import { TaxCodeService } from '../../tax-core/service/tax-code.service';
 
 const JASA_MEDIS: TaxCodeRecord = {
   id: 'code-jasa',
