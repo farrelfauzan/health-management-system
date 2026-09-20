@@ -56,6 +56,9 @@ const GATED_CONTROLLERS: Readonly<Record<string, FeatureKey>> = {
   BpjsReportController: 'bpjs-pcare',
   BpjsSubmissionController: 'bpjs-pcare',
   BugReportController: 'bug-reporting',
+  // P25-T06 — the midwife's antenatal pathway. Default off: a clinic that
+  // does not follow pregnancies has no use for it.
+  PregnancyEpisodeController: 'maternal-care',
   BpjsAntreanConfigController: 'bpjs-antrean',
   BpjsAntreanWsController: 'bpjs-antrean',
   SatusehatLinkController: 'satusehat',

@@ -5,6 +5,7 @@ import enMessages from '../messages/en.json';
 import enAuthShellMessages from '../messages/en/auth-shell.json';
 import enClinicalMessages from '../messages/en/clinical.json';
 import enDashboardAiMessages from '../messages/en/dashboard-ai.json';
+import enMaternalCareMessages from '../messages/en/maternal-care.json';
 import enOperationsMessages from '../messages/en/operations.json';
 import enPharmacyInventoryMessages from '../messages/en/pharmacy-inventory.json';
 import enSharedMessages from '../messages/en/shared.json';
@@ -18,6 +19,7 @@ import idMessages from '../messages/id.json';
 import idAuthShellMessages from '../messages/id/auth-shell.json';
 import idClinicalMessages from '../messages/id/clinical.json';
 import idDashboardAiMessages from '../messages/id/dashboard-ai.json';
+import idMaternalCareMessages from '../messages/id/maternal-care.json';
 import idOperationsMessages from '../messages/id/operations.json';
 import idPharmacyInventoryMessages from '../messages/id/pharmacy-inventory.json';
 import idSharedMessages from '../messages/id/shared.json';
@@ -29,6 +31,7 @@ const messages = {
     ...enMessages,
     ...enAuthShellMessages,
     ...enClinicalMessages,
+    ...enMaternalCareMessages,
     ...enOperationsMessages,
     ...enPharmacyInventoryMessages,
     ...enDashboardAiMessages,
@@ -39,6 +42,7 @@ const messages = {
     ...idMessages,
     ...idAuthShellMessages,
     ...idClinicalMessages,
+    ...idMaternalCareMessages,
     ...idOperationsMessages,
     ...idPharmacyInventoryMessages,
     ...idDashboardAiMessages,

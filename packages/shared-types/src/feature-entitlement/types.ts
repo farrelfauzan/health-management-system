@@ -29,6 +29,11 @@ export type FeatureKey =
   // is seeded on. The key exists so a deployment that must not send text to our
   // triage vendor can switch the whole path off in one place.
   | 'bug-reporting'
+  // P25-T06: the midwife's antenatal work — pregnancy episodes, K-visit
+  // numbering and the ANC examination. Default **off**: a clinic that does not
+  // follow pregnancies has no use for a Kehamilan tab, and the pilot klinik
+  // bidan is switched on deliberately rather than by a deploy.
+  | 'maternal-care'
   // P27-T02: clinic taxes — the tax profile now, tax codes, invoice tax and
   // the monthly report drafts as P27 lands. Needs `billing`: every tax number
   // is computed from an invoice.

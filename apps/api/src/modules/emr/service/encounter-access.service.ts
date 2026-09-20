@@ -35,6 +35,18 @@ export class EncounterAccessService {
     private readonly auditContextService: AuditContextService,
   ) {}
 
+  /**
+   * One encounter with the relations this gate reads, for a module that hangs
+   * off an encounter without owning it (P25-T06). It lives here rather than on
+   * `EncounterService` deliberately: that service reaches back into the
+   * maternal module to freeze a K-code at close, so importing it from there
+   * would close a value-level require cycle that no `forwardRef` can open.
+   * This service imports nothing that imports it.
+   */
+  async findEncounterForAccess(id: string): Promise<EncounterWithRelationsRecord | null> {
+    return this.encounterRepository.findEncounterWithRelationsById(id);
+  }
+
   async resolveScopeOrThrow(
     currentUser: CurrentUser,
     action: 'read' | 'write',
@@ -77,7 +89,7 @@ export class EncounterAccessService {
       return;
     }
 
-    const assignment = await this.findAssignmentForCaller(encounter.patientId, currentUser);
+    const assignment = await this.findActiveAssignmentForCaller(encounter.patientId, currentUser);
 
     if (!assignment) {
       throw new ForbiddenException('You are not allowed to read this encounter');
@@ -126,7 +138,13 @@ export class EncounterAccessService {
     }
   }
 
-  private async findAssignmentForCaller(
+  /**
+   * The caller's active assignment to this patient, or null. Public because
+   * a record that rolls several encounters up — a pregnancy episode
+   * (P25-T06) — has to answer the same "may I see this patient's clinical
+   * record" question without having one encounter to ask it about.
+   */
+  async findActiveAssignmentForCaller(
     patientId: string,
     currentUser: CurrentUser,
   ): Promise<{ id: string } | null> {

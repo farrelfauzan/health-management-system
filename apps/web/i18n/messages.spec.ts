@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import enAuthShellMessages from '../messages/en/auth-shell.json';
 import enClinicalMessages from '../messages/en/clinical.json';
+import enMaternalCareMessages from '../messages/en/maternal-care.json';
 import enDashboardAiMessages from '../messages/en/dashboard-ai.json';
 import enMessages from '../messages/en.json';
 import enOperationsMessages from '../messages/en/operations.json';
@@ -15,6 +16,7 @@ import enSharedMessages from '../messages/en/shared.json';
 import enVaultMessages from '../messages/en/vault.json';
 import idAuthShellMessages from '../messages/id/auth-shell.json';
 import idClinicalMessages from '../messages/id/clinical.json';
+import idMaternalCareMessages from '../messages/id/maternal-care.json';
 import idDashboardAiMessages from '../messages/id/dashboard-ai.json';
 import idMessages from '../messages/id.json';
 import idOperationsMessages from '../messages/id/operations.json';
@@ -33,6 +35,7 @@ const CATALOG_PAIRS: ReadonlyArray<readonly [string, unknown, unknown]> = [
   ['root', enMessages, idMessages],
   ['auth-shell', enAuthShellMessages, idAuthShellMessages],
   ['clinical', enClinicalMessages, idClinicalMessages],
+  ['maternal-care', enMaternalCareMessages, idMaternalCareMessages],
   ['dashboard-ai', enDashboardAiMessages, idDashboardAiMessages],
   ['operations', enOperationsMessages, idOperationsMessages],
   ['pharmacy-inventory', enPharmacyInventoryMessages, idPharmacyInventoryMessages],

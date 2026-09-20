@@ -13,6 +13,8 @@ import {
   BadRequestException,
   ConflictException,
   ForbiddenException,
+  forwardRef,
+  Inject,
   Injectable,
   Logger,
   NotFoundException,
@@ -25,6 +27,7 @@ import { UpdateEncounterSoapDto } from '../dto/update-encounter-soap.dto';
 import { EncounterRepository } from '../repository/encounter.repository';
 import { LabOrderService } from '../../laboratory/service/lab-order.service';
 import { LabResultService } from '../../laboratory/service/lab-result.service';
+import { MaternalCareService } from '../../maternal-care/service/maternal-care.service';
 import { EncounterAccessService } from './encounter-access.service';
 import { EncounterMapper } from './encounter.mapper';
 import { MidwifeAuthorityEnforcementService } from './midwife-authority-enforcement.service';
@@ -50,6 +53,10 @@ export class EncounterService {
     private readonly labOrderService: LabOrderService,
     private readonly labResultService: LabResultService,
     private readonly midwifeAuthorityEnforcementService: MidwifeAuthorityEnforcementService,
+    // `forwardRef` because the maternal module reads this module's access
+    // rules while this one has to freeze a K-code at close (P25-T06).
+    @Inject(forwardRef(() => MaternalCareService))
+    private readonly maternalCareService: MaternalCareService,
   ) {}
 
   async listEncounters(
@@ -188,6 +195,12 @@ export class EncounterService {
       status: 'FINISHED',
       registrationStatus: 'COMPLETED',
     });
+    // P25-T06: a closed antenatal visit keeps the K-code it closed with, so
+    // that a visit cancelled later cannot renumber a record already reported.
+    // After the transition, because the code is derived from the episode as it
+    // stands at close, and through the service, because the numbering rule has
+    // one home. A visit that is not antenatal is a no-op there.
+    await this.maternalCareService.freezeVisitCodeOnEncounterClose(encounter.id);
 
     return { encounter, meta: { openLabOrders } };
   }

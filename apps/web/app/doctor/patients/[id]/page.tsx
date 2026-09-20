@@ -39,6 +39,7 @@ export default async function DoctorPatientDetailPage({
       patientsHref="/doctor/patients"
       isSatusehatEnabled={isFeatureEnabled(claims, 'satusehat')}
       isLaboratoryEnabled={isFeatureEnabled(claims, 'laboratory')}
+      isMaternalCareEnabled={isFeatureEnabled(claims, 'maternal-care')}
     />
   );
 }

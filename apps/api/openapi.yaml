@@ -38103,163 +38103,13 @@ paths:
         - bearer: []
       summary: Cancel an admission opened in error
       tags: *a51
-  /api/v1/admin/integrations/notion/status:
-    get:
-      operationId: NotionConnectorController_getStatus_v1
-      parameters: []
-      responses:
-        "200":
-          description: Whether this deployment has Notion credentials, the API version
-            pinned in code, the last four characters of the Bug Board data
-            source id, this replica’s circuit-breaker state, and when a bug
-            report last reached the board. Calls nothing upstream. The token is
-            never returned in any form.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: object
-                    properties:
-                      isConfigured:
-                        type: boolean
-                      apiVersion:
-                        type: string
-                      dataSourceIdLast4:
-                        type: string
-                      circuitBreakerState:
-                        type: string
-                      lastPublishedAt:
-                        type: string
-                    required:
-                      - isConfigured
-                      - apiVersion
-                      - dataSourceIdLast4
-                      - circuitBreakerState
-                      - lastPublishedAt
-                required:
-                  - data
-                example:
-                  data:
-                    isConfigured: true
-                    apiVersion: 2025-09-03
-                    dataSourceIdLast4: 5f21
-                    circuitBreakerState: CLOSED
-                    lastPublishedAt: 2026-09-12T02:41:00.000Z
-        "401":
-          description: Authentication is required.
-          content:
-            application/json:
-              schema:
-                example:
-                  error:
-                    code: UNAUTHORIZED
-                    message: Authentication is required
-        "403":
-          description: The authenticated user does not have the required permission.
-          content:
-            application/json:
-              schema:
-                example:
-                  error:
-                    code: FORBIDDEN
-                    message: Insufficient permission
-      security:
-        - bearer: []
-      summary: Read the Notion bug-report connector status
-      tags: &a52
-        - Notion Connector
-  /api/v1/admin/integrations/notion/test-connection:
+  /api/v1/patients/{patientId}/pregnancy-episodes:
     post:
-      operationId: NotionConnectorController_testConnection_v1
-      parameters: []
-      responses:
-        "200":
-          description: Reads the Bug Board’s schema and reports every reason a bug report
-            would be rejected — a renamed or retyped property, a missing select
-            option, or a board that was never shared with this integration
-            (reported as the “connection” problem carrying Notion’s own error
-            code). A failed check is a 200 with isSuccessful=false, so the
-            settings card can name each problem. An unconfigured deployment
-            answers isConfigured=false without calling Notion.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: object
-                    properties:
-                      isConfigured:
-                        type: boolean
-                      isSuccessful:
-                        type: boolean
-                      checkedAt:
-                        type: string
-                      problems:
-                        type: array
-                        items:
-                          type: object
-                          properties:
-                            field:
-                              type: string
-                            expected:
-                              type: string
-                            actual:
-                              type: string
-                          required:
-                            - field
-                            - expected
-                            - actual
-                    required:
-                      - isConfigured
-                      - isSuccessful
-                      - checkedAt
-                      - problems
-                required:
-                  - data
-                example:
-                  data:
-                    isConfigured: true
-                    isSuccessful: false
-                    checkedAt: 2026-09-12T03:15:00.000Z
-                    problems:
-                      - field: Severity
-                        expected: select
-                        actual: missing
-        "401":
-          description: Authentication is required.
-          content:
-            application/json:
-              schema:
-                example:
-                  error:
-                    code: UNAUTHORIZED
-                    message: Authentication is required
-        "403":
-          description: The authenticated user does not have the required permission.
-          content:
-            application/json:
-              schema:
-                example:
-                  error:
-                    code: FORBIDDEN
-                    message: Insufficient permission
-      security:
-        - bearer: []
-      summary: Test the Notion connection and check the Bug Board schema
-      tags: *a52
-  /api/v1/bug-reports:
-    post:
-      operationId: BugReportController_submitReport_v1
+      operationId: PregnancyEpisodeController_createEpisode_v1
       parameters:
-        - name: user-agent
-          required: false
-          in: header
-          description: "Read from the request rather than the body, so it is the browser’s
-            own claim about itself and not a field a caller can set. Absent or
-            oversized is not an error: it is truncated, or stored as “unknown”."
+        - name: patientId
+          required: true
+          in: path
           schema:
             type: string
       requestBody:
@@ -38267,31 +38117,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreateBugReportDto"
-            examples:
-              default:
-                summary: Valid request
-                value:
-                  title: Tombol simpan tidak berfungsi di halaman pasien
-                  description: Saya mengisi formulir pasien baru lalu menekan Simpan, dan tidak
-                    terjadi apa-apa. Tidak ada pesan kesalahan.
-                  stepsToReproduce: Buka halaman pasien, tekan Tambah, isi formulir, tekan Simpan.
-                  expected: Pasien tersimpan dan saya kembali ke daftar.
-                  actual: Halaman diam, formulir tetap terisi.
-                  pagePath: /admin/patients
-                  requestIds:
-                    - 3f1a9c7e-2b4d-4f8a-9c1e-7d5b8a2f6e04
-                  appVersion: 1.42.0
-                  acknowledgedNoSensitiveData: true
+              $ref: "#/components/schemas/CreatePregnancyEpisodeDto"
       responses:
-        "202":
-          description: "Accepts the report and answers at once with its BR- reference: the
-            AI triage and the Notion publish happen in a worker, so the reporter
-            never waits on a vendor. Refused with SENSITIVE_DATA_DETECTED,
-            naming the field and the category, when a free-text field looks like
-            it contains a NIK, BPJS number, phone, email, medical record number
-            or credential — the matched text is never echoed back. Eleven
-            reports from one person in a rolling day gives 429."
+        "200":
+          description: The episode was opened. 422 PREGNANCY_EPISODE_PATIENT_NOT_FEMALE
+            for a patient who is not female, and 409
+            PREGNANCY_EPISODE_ALREADY_ACTIVE when she already has one —
+            including when two tabs race, which the partial unique index
+            settles.
           content:
             application/json:
               schema:
@@ -38300,28 +38133,209 @@ paths:
                   data:
                     type: object
                     properties:
-                      reference:
+                      id:
+                        type: string
+                      patientId:
                         type: string
                       status:
                         type: string
+                      lastMenstrualPeriodDate:
+                        type: string
+                      estimatedDeliveryDate:
+                        type: string
+                      eddSource:
+                        type: string
+                      gravida:
+                        type: integer
+                      para:
+                        type: integer
+                      abortus:
+                        type: integer
+                      gpaLabel:
+                        type: string
+                      prePregnancyWeightKg:
+                        type: number
+                      bloodType:
+                        type: string
+                      rhesus:
+                        type: string
+                      riskNotes:
+                        nullable: true
+                      endedAt:
+                        nullable: true
+                      endReason:
+                        nullable: true
+                      createdAt:
+                        type: string
                     required:
-                      - reference
+                      - id
+                      - patientId
                       - status
+                      - lastMenstrualPeriodDate
+                      - estimatedDeliveryDate
+                      - eddSource
+                      - gravida
+                      - para
+                      - abortus
+                      - gpaLabel
+                      - prePregnancyWeightKg
+                      - bloodType
+                      - rhesus
+                      - riskNotes
+                      - endedAt
+                      - endReason
+                      - createdAt
+                  message:
+                    type: string
                 required:
                   - data
+                  - message
                 example:
                   data:
-                    reference: BR-000123
-                    status: RECEIVED
-        "400":
-          description: Request validation failed.
+                    id: 7c1d5e83-2a64-4f19-b8d3-91e4a6c05b72
+                    patientId: 4a9b2c71-8e35-4d02-a6f7-3b0c9d18e5a4
+                    status: ACTIVE
+                    lastMenstrualPeriodDate: 2026-02-02
+                    estimatedDeliveryDate: 2026-11-09
+                    eddSource: LMP
+                    gravida: 2
+                    para: 1
+                    abortus: 0
+                    gpaLabel: G2P1A0
+                    prePregnancyWeightKg: 54.5
+                    bloodType: O
+                    rhesus: +
+                    riskNotes: null
+                    endedAt: null
+                    endReason: null
+                    createdAt: 2026-03-10T02:00:00.000Z
+                  message: Pregnancy episode opened
+        "401":
+          description: Authentication is required.
           content:
             application/json:
               schema:
                 example:
                   error:
-                    code: BAD_REQUEST
-                    message: Request validation failed
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Patient not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Patient not found.
+      security:
+        - bearer: []
+      summary: Open a pregnancy episode
+      tags: &a52
+        - Maternal Care
+    get:
+      operationId: PregnancyEpisodeController_listEpisodes_v1
+      parameters:
+        - name: patientId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Every episode she has had, newest first.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        patientId:
+                          type: string
+                        status:
+                          type: string
+                        lastMenstrualPeriodDate:
+                          type: string
+                        estimatedDeliveryDate:
+                          type: string
+                        eddSource:
+                          type: string
+                        gravida:
+                          type: integer
+                        para:
+                          type: integer
+                        abortus:
+                          type: integer
+                        gpaLabel:
+                          type: string
+                        prePregnancyWeightKg:
+                          type: number
+                        bloodType:
+                          type: string
+                        rhesus:
+                          type: string
+                        riskNotes:
+                          nullable: true
+                        endedAt:
+                          nullable: true
+                        endReason:
+                          nullable: true
+                        createdAt:
+                          type: string
+                      required:
+                        - id
+                        - patientId
+                        - status
+                        - lastMenstrualPeriodDate
+                        - estimatedDeliveryDate
+                        - eddSource
+                        - gravida
+                        - para
+                        - abortus
+                        - gpaLabel
+                        - prePregnancyWeightKg
+                        - bloodType
+                        - rhesus
+                        - riskNotes
+                        - endedAt
+                        - endReason
+                        - createdAt
+                required:
+                  - data
+                example:
+                  data:
+                    - id: 7c1d5e83-2a64-4f19-b8d3-91e4a6c05b72
+                      patientId: 4a9b2c71-8e35-4d02-a6f7-3b0c9d18e5a4
+                      status: ACTIVE
+                      lastMenstrualPeriodDate: 2026-02-02
+                      estimatedDeliveryDate: 2026-11-09
+                      eddSource: LMP
+                      gravida: 2
+                      para: 1
+                      abortus: 0
+                      gpaLabel: G2P1A0
+                      prePregnancyWeightKg: 54.5
+                      bloodType: O
+                      rhesus: +
+                      riskNotes: null
+                      endedAt: null
+                      endReason: null
+                      createdAt: 2026-03-10T02:00:00.000Z
         "401":
           description: Authentication is required.
           content:
@@ -38342,9 +38356,814 @@ paths:
                     message: Insufficient permission
       security:
         - bearer: []
-      summary: File a bug report
-      tags:
-        - Bug Reports
+      summary: List a patient's pregnancy episodes
+      tags: *a52
+  /api/v1/patients/{patientId}/pregnancy-episodes/active:
+    get:
+      operationId: PregnancyEpisodeController_getActiveEpisode_v1
+      parameters:
+        - name: patientId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The episode with its numbered visits, how far along she is today,
+            and what each trimester still owes. `data` is null when she has no
+            active episode — not pregnant is an ordinary answer, not a 404.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      episode:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          patientId:
+                            type: string
+                          status:
+                            type: string
+                          lastMenstrualPeriodDate:
+                            type: string
+                          estimatedDeliveryDate:
+                            type: string
+                          eddSource:
+                            type: string
+                          gravida:
+                            type: integer
+                          para:
+                            type: integer
+                          abortus:
+                            type: integer
+                          gpaLabel:
+                            type: string
+                          prePregnancyWeightKg:
+                            type: number
+                          bloodType:
+                            type: string
+                          rhesus:
+                            type: string
+                          riskNotes:
+                            nullable: true
+                          endedAt:
+                            nullable: true
+                          endReason:
+                            nullable: true
+                          createdAt:
+                            type: string
+                        required:
+                          - id
+                          - patientId
+                          - status
+                          - lastMenstrualPeriodDate
+                          - estimatedDeliveryDate
+                          - eddSource
+                          - gravida
+                          - para
+                          - abortus
+                          - gpaLabel
+                          - prePregnancyWeightKg
+                          - bloodType
+                          - rhesus
+                          - riskNotes
+                          - endedAt
+                          - endReason
+                          - createdAt
+                      gestationalAge:
+                        type: object
+                        properties:
+                          weeks:
+                            type: integer
+                          days:
+                            type: integer
+                        required:
+                          - weeks
+                          - days
+                      currentTrimester:
+                        type: integer
+                      visits:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            encounterId:
+                              type: string
+                            startedAt:
+                              type: string
+                            encounterStatus:
+                              type: string
+                            ordinal:
+                              type: integer
+                            visitCode:
+                              type: string
+                            trimester:
+                              type: integer
+                            gestationalAge:
+                              type: object
+                              properties:
+                                weeks:
+                                  type: integer
+                                days:
+                                  type: integer
+                              required:
+                                - weeks
+                                - days
+                          required:
+                            - id
+                            - encounterId
+                            - startedAt
+                            - encounterStatus
+                            - ordinal
+                            - visitCode
+                            - trimester
+                            - gestationalAge
+                      externalDoctorVisits:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            facilityName:
+                              type: string
+                            visitedAt:
+                              type: string
+                            isUltrasoundDone:
+                              type: boolean
+                          required:
+                            - id
+                            - facilityName
+                            - visitedAt
+                            - isUltrasoundDone
+                      schedule:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            trimester:
+                              type: integer
+                            requiredVisitCount:
+                              type: integer
+                            completedVisitCount:
+                              type: integer
+                            state:
+                              type: string
+                            doctorVisit:
+                              type: object
+                              properties:
+                                trimester:
+                                  type: integer
+                                isMet:
+                                  type: boolean
+                                isUltrasoundRecorded:
+                                  type: boolean
+                              required:
+                                - trimester
+                                - isMet
+                                - isUltrasoundRecorded
+                          required:
+                            - trimester
+                            - requiredVisitCount
+                            - completedVisitCount
+                            - state
+                            - doctorVisit
+                    required:
+                      - episode
+                      - gestationalAge
+                      - currentTrimester
+                      - visits
+                      - externalDoctorVisits
+                      - schedule
+                required:
+                  - data
+                example:
+                  data:
+                    episode:
+                      id: 7c1d5e83-2a64-4f19-b8d3-91e4a6c05b72
+                      patientId: 4a9b2c71-8e35-4d02-a6f7-3b0c9d18e5a4
+                      status: ACTIVE
+                      lastMenstrualPeriodDate: 2026-02-02
+                      estimatedDeliveryDate: 2026-11-09
+                      eddSource: LMP
+                      gravida: 2
+                      para: 1
+                      abortus: 0
+                      gpaLabel: G2P1A0
+                      prePregnancyWeightKg: 54.5
+                      bloodType: O
+                      rhesus: +
+                      riskNotes: null
+                      endedAt: null
+                      endReason: null
+                      createdAt: 2026-03-10T02:00:00.000Z
+                    gestationalAge:
+                      weeks: 29
+                      days: 0
+                    currentTrimester: 3
+                    visits:
+                      - id: e5a1c07b-3d92-4c68-8f14-6b2d0e93a7c5
+                        encounterId: b2e7f409-6c13-4a85-9d27-5f8a0c3b1e69
+                        startedAt: 2026-08-23T01:30:00.000Z
+                        encounterStatus: IN_PROGRESS
+                        ordinal: 3
+                        visitCode: K3
+                        trimester: 3
+                        gestationalAge:
+                          weeks: 29
+                          days: 0
+                    externalDoctorVisits:
+                      - id: d3b8f512-4e07-4a91-b6c3-28d5019e7f4a
+                        facilityName: RS Ibu dan Anak Melati
+                        visitedAt: 2026-04-14
+                        isUltrasoundDone: true
+                    schedule:
+                      - trimester: 1
+                        requiredVisitCount: 1
+                        completedVisitCount: 1
+                        state: DONE
+                        doctorVisit:
+                          trimester: 1
+                          isMet: true
+                          isUltrasoundRecorded: true
+                      - trimester: 2
+                        requiredVisitCount: 2
+                        completedVisitCount: 1
+                        state: MISSED
+                        doctorVisit: null
+                      - trimester: 3
+                        requiredVisitCount: 3
+                        completedVisitCount: 1
+                        state: DUE
+                        doctorVisit:
+                          trimester: 3
+                          isMet: false
+                          isUltrasoundRecorded: false
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Get the active pregnancy episode
+      tags: *a52
+  /api/v1/pregnancy-episodes/{id}:
+    patch:
+      operationId: PregnancyEpisodeController_updateEpisode_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdatePregnancyEpisodeDto"
+      responses:
+        "200":
+          description: HPHT, HPL, GPA, blood type, rhesus and risk notes. ACTIVE episodes
+            only — 409 otherwise. A changed HPHT renumbers the visits that are
+            not yet closed.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      patientId:
+                        type: string
+                      status:
+                        type: string
+                      lastMenstrualPeriodDate:
+                        type: string
+                      estimatedDeliveryDate:
+                        type: string
+                      eddSource:
+                        type: string
+                      gravida:
+                        type: integer
+                      para:
+                        type: integer
+                      abortus:
+                        type: integer
+                      gpaLabel:
+                        type: string
+                      prePregnancyWeightKg:
+                        type: number
+                      bloodType:
+                        type: string
+                      rhesus:
+                        type: string
+                      riskNotes:
+                        nullable: true
+                      endedAt:
+                        nullable: true
+                      endReason:
+                        nullable: true
+                      createdAt:
+                        type: string
+                    required:
+                      - id
+                      - patientId
+                      - status
+                      - lastMenstrualPeriodDate
+                      - estimatedDeliveryDate
+                      - eddSource
+                      - gravida
+                      - para
+                      - abortus
+                      - gpaLabel
+                      - prePregnancyWeightKg
+                      - bloodType
+                      - rhesus
+                      - riskNotes
+                      - endedAt
+                      - endReason
+                      - createdAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 7c1d5e83-2a64-4f19-b8d3-91e4a6c05b72
+                    patientId: 4a9b2c71-8e35-4d02-a6f7-3b0c9d18e5a4
+                    status: ACTIVE
+                    lastMenstrualPeriodDate: 2026-02-02
+                    estimatedDeliveryDate: 2026-11-09
+                    eddSource: LMP
+                    gravida: 2
+                    para: 1
+                    abortus: 0
+                    gpaLabel: G2P1A0
+                    prePregnancyWeightKg: 54.5
+                    bloodType: O
+                    rhesus: +
+                    riskNotes: null
+                    endedAt: null
+                    endReason: null
+                    createdAt: 2026-03-10T02:00:00.000Z
+                  message: Pregnancy episode updated
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Pregnancy episode not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Pregnancy episode not found.
+      security:
+        - bearer: []
+      summary: Edit a pregnancy episode
+      tags: *a52
+  /api/v1/pregnancy-episodes/{id}/end:
+    post:
+      operationId: PregnancyEpisodeController_endEpisode_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EndPregnancyEpisodeDto"
+      responses:
+        "200":
+          description: Closes an episode that did not end in a birth. LOST_TO_FOLLOW_UP
+            defaults `endedAt` to HPHT + 308 days, which is where SATUSEHAT
+            closes the ANC period. DELIVERY is not accepted here — a delivered
+            pregnancy is closed by the delivery record.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      patientId:
+                        type: string
+                      status:
+                        type: string
+                      lastMenstrualPeriodDate:
+                        type: string
+                      estimatedDeliveryDate:
+                        type: string
+                      eddSource:
+                        type: string
+                      gravida:
+                        type: integer
+                      para:
+                        type: integer
+                      abortus:
+                        type: integer
+                      gpaLabel:
+                        type: string
+                      prePregnancyWeightKg:
+                        type: number
+                      bloodType:
+                        type: string
+                      rhesus:
+                        type: string
+                      riskNotes:
+                        nullable: true
+                      endedAt:
+                        type: string
+                      endReason:
+                        type: string
+                      createdAt:
+                        type: string
+                    required:
+                      - id
+                      - patientId
+                      - status
+                      - lastMenstrualPeriodDate
+                      - estimatedDeliveryDate
+                      - eddSource
+                      - gravida
+                      - para
+                      - abortus
+                      - gpaLabel
+                      - prePregnancyWeightKg
+                      - bloodType
+                      - rhesus
+                      - riskNotes
+                      - endedAt
+                      - endReason
+                      - createdAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 7c1d5e83-2a64-4f19-b8d3-91e4a6c05b72
+                    patientId: 4a9b2c71-8e35-4d02-a6f7-3b0c9d18e5a4
+                    status: ENDED
+                    lastMenstrualPeriodDate: 2026-02-02
+                    estimatedDeliveryDate: 2026-11-09
+                    eddSource: LMP
+                    gravida: 2
+                    para: 1
+                    abortus: 0
+                    gpaLabel: G2P1A0
+                    prePregnancyWeightKg: 54.5
+                    bloodType: O
+                    rhesus: +
+                    riskNotes: null
+                    endedAt: 2026-12-07T00:00:00.000Z
+                    endReason: LOST_TO_FOLLOW_UP
+                    createdAt: 2026-03-10T02:00:00.000Z
+                  message: Pregnancy episode ended
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Pregnancy episode not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Pregnancy episode not found.
+      security:
+        - bearer: []
+      summary: End a pregnancy episode
+      tags: *a52
+  /api/v1/pregnancy-episodes/{id}/external-doctor-visits:
+    post:
+      operationId: PregnancyEpisodeController_recordExternalDoctorVisit_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RecordExternalDoctorVisitDto"
+      responses:
+        "200":
+          description: A dokter or SpOG contact the mother made at another facility, read
+            off her Buku KIA (FR-ANC-07). It counts towards the two visits
+            Permenkes 21/2021 requires, so a klinik bidan that correctly
+            referred her out is not marked non-compliant.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      facilityName:
+                        type: string
+                      visitedAt:
+                        type: string
+                      isUltrasoundDone:
+                        type: boolean
+                    required:
+                      - id
+                      - facilityName
+                      - visitedAt
+                      - isUltrasoundDone
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: d3b8f512-4e07-4a91-b6c3-28d5019e7f4a
+                    facilityName: RS Ibu dan Anak Melati
+                    visitedAt: 2026-04-14
+                    isUltrasoundDone: true
+                  message: Doctor visit recorded
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Pregnancy episode not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Pregnancy episode not found.
+      security:
+        - bearer: []
+      summary: Record a doctor visit made elsewhere
+      tags: *a52
+  /api/v1/encounters/{encounterId}/antenatal-visit:
+    get:
+      operationId: PregnancyEpisodeController_getEncounterVisit_v1
+      parameters:
+        - name: encounterId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The K-code and gestational age for the encounter, or null when it
+            is not counted as an antenatal visit.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      encounterId:
+                        type: string
+                      pregnancyEpisodeId:
+                        type: string
+                      ordinal:
+                        type: integer
+                      visitCode:
+                        type: string
+                      gestationalAge:
+                        type: object
+                        properties:
+                          weeks:
+                            type: integer
+                          days:
+                            type: integer
+                        required:
+                          - weeks
+                          - days
+                    required:
+                      - encounterId
+                      - pregnancyEpisodeId
+                      - ordinal
+                      - visitCode
+                      - gestationalAge
+                required:
+                  - data
+                example:
+                  data:
+                    encounterId: b2e7f409-6c13-4a85-9d27-5f8a0c3b1e69
+                    pregnancyEpisodeId: 7c1d5e83-2a64-4f19-b8d3-91e4a6c05b72
+                    ordinal: 3
+                    visitCode: K3
+                    gestationalAge:
+                      weeks: 29
+                      days: 0
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Encounter not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Encounter not found.
+      security:
+        - bearer: []
+      summary: Read this encounter's antenatal visit
+      tags: *a52
+    post:
+      operationId: PregnancyEpisodeController_linkEncounterVisit_v1
+      parameters:
+        - name: encounterId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Links an open encounter to the patient's active episode and answers
+            with its K-code. 409 when it is already counted, 422 when she has no
+            active episode.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      encounterId:
+                        type: string
+                      pregnancyEpisodeId:
+                        type: string
+                      ordinal:
+                        type: integer
+                      visitCode:
+                        type: string
+                      gestationalAge:
+                        type: object
+                        properties:
+                          weeks:
+                            type: integer
+                          days:
+                            type: integer
+                        required:
+                          - weeks
+                          - days
+                    required:
+                      - encounterId
+                      - pregnancyEpisodeId
+                      - ordinal
+                      - visitCode
+                      - gestationalAge
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    encounterId: b2e7f409-6c13-4a85-9d27-5f8a0c3b1e69
+                    pregnancyEpisodeId: 7c1d5e83-2a64-4f19-b8d3-91e4a6c05b72
+                    ordinal: 3
+                    visitCode: K3
+                    gestationalAge:
+                      weeks: 29
+                      days: 0
+                  message: Encounter counted as an antenatal visit
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Encounter not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Encounter not found.
+      security:
+        - bearer: []
+      summary: Count this encounter as an antenatal visit
+      tags: *a52
   /api/v1/encounters:
     get:
       operationId: EncounterController_listEncounters_v1
@@ -45518,6 +46337,248 @@ paths:
         - bearer: []
       summary: Render a laboratory report version again
       tags: *a62
+  /api/v1/admin/integrations/notion/status:
+    get:
+      operationId: NotionConnectorController_getStatus_v1
+      parameters: []
+      responses:
+        "200":
+          description: Whether this deployment has Notion credentials, the API version
+            pinned in code, the last four characters of the Bug Board data
+            source id, this replica’s circuit-breaker state, and when a bug
+            report last reached the board. Calls nothing upstream. The token is
+            never returned in any form.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      isConfigured:
+                        type: boolean
+                      apiVersion:
+                        type: string
+                      dataSourceIdLast4:
+                        type: string
+                      circuitBreakerState:
+                        type: string
+                      lastPublishedAt:
+                        type: string
+                    required:
+                      - isConfigured
+                      - apiVersion
+                      - dataSourceIdLast4
+                      - circuitBreakerState
+                      - lastPublishedAt
+                required:
+                  - data
+                example:
+                  data:
+                    isConfigured: true
+                    apiVersion: 2025-09-03
+                    dataSourceIdLast4: 5f21
+                    circuitBreakerState: CLOSED
+                    lastPublishedAt: 2026-09-12T02:41:00.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Read the Notion bug-report connector status
+      tags: &a63
+        - Notion Connector
+  /api/v1/admin/integrations/notion/test-connection:
+    post:
+      operationId: NotionConnectorController_testConnection_v1
+      parameters: []
+      responses:
+        "200":
+          description: Reads the Bug Board’s schema and reports every reason a bug report
+            would be rejected — a renamed or retyped property, a missing select
+            option, or a board that was never shared with this integration
+            (reported as the “connection” problem carrying Notion’s own error
+            code). A failed check is a 200 with isSuccessful=false, so the
+            settings card can name each problem. An unconfigured deployment
+            answers isConfigured=false without calling Notion.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      isConfigured:
+                        type: boolean
+                      isSuccessful:
+                        type: boolean
+                      checkedAt:
+                        type: string
+                      problems:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            field:
+                              type: string
+                            expected:
+                              type: string
+                            actual:
+                              type: string
+                          required:
+                            - field
+                            - expected
+                            - actual
+                    required:
+                      - isConfigured
+                      - isSuccessful
+                      - checkedAt
+                      - problems
+                required:
+                  - data
+                example:
+                  data:
+                    isConfigured: true
+                    isSuccessful: false
+                    checkedAt: 2026-09-12T03:15:00.000Z
+                    problems:
+                      - field: Severity
+                        expected: select
+                        actual: missing
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Test the Notion connection and check the Bug Board schema
+      tags: *a63
+  /api/v1/bug-reports:
+    post:
+      operationId: BugReportController_submitReport_v1
+      parameters:
+        - name: user-agent
+          required: false
+          in: header
+          description: "Read from the request rather than the body, so it is the browser’s
+            own claim about itself and not a field a caller can set. Absent or
+            oversized is not an error: it is truncated, or stored as “unknown”."
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateBugReportDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  title: Tombol simpan tidak berfungsi di halaman pasien
+                  description: Saya mengisi formulir pasien baru lalu menekan Simpan, dan tidak
+                    terjadi apa-apa. Tidak ada pesan kesalahan.
+                  stepsToReproduce: Buka halaman pasien, tekan Tambah, isi formulir, tekan Simpan.
+                  expected: Pasien tersimpan dan saya kembali ke daftar.
+                  actual: Halaman diam, formulir tetap terisi.
+                  pagePath: /admin/patients
+                  requestIds:
+                    - 3f1a9c7e-2b4d-4f8a-9c1e-7d5b8a2f6e04
+                  appVersion: 1.42.0
+                  acknowledgedNoSensitiveData: true
+      responses:
+        "202":
+          description: "Accepts the report and answers at once with its BR- reference: the
+            AI triage and the Notion publish happen in a worker, so the reporter
+            never waits on a vendor. Refused with SENSITIVE_DATA_DETECTED,
+            naming the field and the category, when a free-text field looks like
+            it contains a NIK, BPJS number, phone, email, medical record number
+            or credential — the matched text is never echoed back. Eleven
+            reports from one person in a rolling day gives 429."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      reference:
+                        type: string
+                      status:
+                        type: string
+                    required:
+                      - reference
+                      - status
+                required:
+                  - data
+                example:
+                  data:
+                    reference: BR-000123
+                    status: RECEIVED
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: File a bug report
+      tags:
+        - Bug Reports
   /api/v1/tax/settings:
     get:
       operationId: TaxSettingsController_getTaxSettings_v1
@@ -45600,7 +46661,7 @@ paths:
       security:
         - bearer: []
       summary: Read the clinic's tax profile
-      tags: &a63
+      tags: &a64
         - Tax Settings
     patch:
       operationId: TaxSettingsController_updateTaxSettings_v1
@@ -45710,7 +46771,7 @@ paths:
       security:
         - bearer: []
       summary: Change the clinic's tax profile
-      tags: *a63
+      tags: *a64
   /api/v1/tax/codes:
     get:
       operationId: TaxCodeController_listTaxCodes_v1
@@ -45857,7 +46918,7 @@ paths:
       security:
         - bearer: []
       summary: List tax codes with their rates
-      tags: &a64
+      tags: &a65
         - Tax Codes
     post:
       operationId: TaxCodeController_createTaxCode_v1
@@ -46035,7 +47096,7 @@ paths:
       security:
         - bearer: []
       summary: Create a tax code
-      tags: *a64
+      tags: *a65
   /api/v1/tax/codes/{id}:
     patch:
       operationId: TaxCodeController_updateTaxCode_v1
@@ -46212,7 +47273,7 @@ paths:
       security:
         - bearer: []
       summary: Change a tax code
-      tags: *a64
+      tags: *a65
   /api/v1/tax/codes/{id}/rates:
     post:
       operationId: TaxCodeController_addTaxCodeRate_v1
@@ -46390,7 +47451,7 @@ paths:
       security:
         - bearer: []
       summary: Add a rate to a tax code
-      tags: *a64
+      tags: *a65
   /api/v1/tax/category-defaults:
     get:
       operationId: TaxCategoryDefaultController_listCategoryDefaults_v1
@@ -46450,7 +47511,7 @@ paths:
       security:
         - bearer: []
       summary: List the tax code defaults
-      tags: &a65
+      tags: &a66
         - Tax Codes
     put:
       operationId: TaxCategoryDefaultController_updateCategoryDefaults_v1
@@ -46537,7 +47598,7 @@ paths:
       security:
         - bearer: []
       summary: Set tax code defaults
-      tags: *a65
+      tags: *a66
   /api/v1/tax/assignments:
     get:
       operationId: TaxAssignmentController_listAssignments_v1
@@ -46703,7 +47764,7 @@ paths:
       security:
         - bearer: []
       summary: List tariffs and medications with their tax code
-      tags: &a66
+      tags: &a67
         - Tax Codes
   /api/v1/tax/assignments/bulk:
     post:
@@ -46781,7 +47842,7 @@ paths:
       security:
         - bearer: []
       summary: Assign a tax code to many tariffs and medications
-      tags: *a66
+      tags: *a67
   /api/v1/tax/price-breakdowns:
     get:
       operationId: TaxPriceBreakdownController_listPriceBreakdowns_v1
@@ -46973,7 +48034,7 @@ paths:
       security:
         - bearer: []
       summary: List a year's monthly tax reports
-      tags: &a67
+      tags: &a68
         - Tax Reports
     post:
       operationId: TaxReportController_createReport_v1
@@ -47164,7 +48225,7 @@ paths:
       security:
         - bearer: []
       summary: Create the draft for a month
-      tags: *a67
+      tags: *a68
   /api/v1/tax/reports/{id}:
     get:
       operationId: TaxReportController_getReport_v1
@@ -47335,7 +48396,7 @@ paths:
       security:
         - bearer: []
       summary: Read one monthly tax report
-      tags: *a67
+      tags: *a68
   /api/v1/tax/reports/{id}/recompute:
     post:
       operationId: TaxReportController_recomputeReport_v1
@@ -47507,7 +48568,7 @@ paths:
       security:
         - bearer: []
       summary: Recompute a draft from the books
-      tags: *a67
+      tags: *a68
   /api/v1/tax/reports/{id}/finalize:
     post:
       operationId: TaxReportController_finalizeReport_v1
@@ -47682,7 +48743,7 @@ paths:
       security:
         - bearer: []
       summary: Finalize a monthly tax report
-      tags: *a67
+      tags: *a68
   /api/v1/tax/reports/{id}/export:
     get:
       operationId: TaxReportController_exportReport_v1
@@ -47698,7 +48759,7 @@ paths:
             and due dates, then one row per payment or invoice. Totals equal the
             report to the rupiah. Audited as an export."
       summary: Export one monthly tax report as CSV
-      tags: *a67
+      tags: *a68
   /api/v1/tax/reports/{id}/pdf:
     post:
       description: P27-T12. A DRAFT is rendered on every request with a DRAFT
@@ -47722,7 +48783,7 @@ paths:
                 type: string
                 format: binary
       summary: Download one monthly tax report as PDF
-      tags: *a67
+      tags: *a68
   /api/v1/tax/reports/{id}/pdf/download-url:
     get:
       operationId: TaxReportController_createPdfDownloadUrl_v1
@@ -47783,7 +48844,7 @@ paths:
       security:
         - bearer: []
       summary: A signed link to a finalized report's PDF
-      tags: *a67
+      tags: *a68
   /api/v1/satusehat/patients/{patientId}/link:
     post:
       operationId: SatusehatLinkController_linkPatient_v1
@@ -47853,7 +48914,7 @@ paths:
       security:
         - bearer: []
       summary: Link a patient to their SATUSEHAT IHS number
-      tags: &a68
+      tags: &a69
         - SATUSEHAT
   /api/v1/satusehat/doctors/{doctorId}/link:
     post:
@@ -47924,7 +48985,7 @@ paths:
       security:
         - bearer: []
       summary: Link a doctor to their SATUSEHAT IHS practitioner number
-      tags: *a68
+      tags: *a69
   /api/v1/satusehat/doctors/{doctorId}/link-by-ihs/preview:
     post:
       operationId: SatusehatLinkController_previewDoctorIhsLink_v1
@@ -48032,7 +49093,7 @@ paths:
       security:
         - bearer: []
       summary: Preview linking a doctor to a hand-typed SATUSEHAT IHS number
-      tags: *a68
+      tags: *a69
   /api/v1/satusehat/doctors/{doctorId}/link-by-ihs:
     post:
       operationId: SatusehatLinkController_linkDoctorByIhs_v1
@@ -48127,7 +49188,7 @@ paths:
       security:
         - bearer: []
       summary: Link a doctor to a hand-typed SATUSEHAT IHS number after confirmation
-      tags: *a68
+      tags: *a69
   /api/v1/satusehat/environment:
     get:
       operationId: SatusehatSubmissionController_getEnvironment_v1
@@ -48186,7 +49247,7 @@ paths:
       security:
         - bearer: []
       summary: Which SATUSEHAT environment this deployment reports to
-      tags: &a69
+      tags: &a70
         - SATUSEHAT
   /api/v1/satusehat/submissions:
     get:
@@ -48375,7 +49436,7 @@ paths:
       security:
         - bearer: []
       summary: List SATUSEHAT submission outbox entries
-      tags: *a69
+      tags: *a70
   /api/v1/satusehat/submissions/{id}:
     get:
       operationId: SatusehatSubmissionController_getSubmissionDetail_v1
@@ -48547,7 +49608,7 @@ paths:
       security:
         - bearer: []
       summary: One SATUSEHAT submission and what it sent
-      tags: *a69
+      tags: *a70
   /api/v1/satusehat/submissions/{id}/check:
     post:
       operationId: SatusehatSubmissionController_checkSubmission_v1
@@ -48651,7 +49712,7 @@ paths:
       security:
         - bearer: []
       summary: Check with SATUSEHAT whether it still holds what we sent
-      tags: *a69
+      tags: *a70
   /api/v1/satusehat/submissions/{id}/retry:
     post:
       operationId: SatusehatSubmissionController_retrySubmission_v1
@@ -48776,7 +49837,7 @@ paths:
       security:
         - bearer: []
       summary: Retry a failed SATUSEHAT submission
-      tags: *a69
+      tags: *a70
   /api/v1/satusehat/encounters/{encounterId}/record-comparison:
     get:
       operationId: SatusehatRecordController_compareEncounterRecord_v1
@@ -49050,7 +50111,7 @@ paths:
       security:
         - bearer: []
       summary: The clinic's SATUSEHAT Location tree
-      tags: &a70
+      tags: &a71
         - SATUSEHAT
   /api/v1/satusehat/locations/register:
     post:
@@ -49165,7 +50226,7 @@ paths:
       security:
         - bearer: []
       summary: Register clinic rows as SATUSEHAT Locations, or push their changes
-      tags: *a70
+      tags: *a71
   /api/v1/bpjs/config:
     get:
       operationId: BpjsPcareConfigController_getConfig_v1
@@ -49279,7 +50340,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS PCare bridging configuration
-      tags: &a71
+      tags: &a72
         - BPJS PCare
     put:
       operationId: BpjsPcareConfigController_upsertConfig_v1
@@ -49417,7 +50478,7 @@ paths:
       security:
         - bearer: []
       summary: Create or replace the BPJS PCare bridging configuration
-      tags: *a71
+      tags: *a72
     delete:
       operationId: BpjsPcareConfigController_deleteConfig_v1
       parameters: []
@@ -49476,7 +50537,7 @@ paths:
       security:
         - bearer: []
       summary: Delete the BPJS PCare bridging configuration
-      tags: *a71
+      tags: *a72
   /api/v1/bpjs/config/test-connection:
     post:
       operationId: BpjsPcareConfigController_testConnection_v1
@@ -49542,7 +50603,7 @@ paths:
       security:
         - bearer: []
       summary: Test the stored BPJS PCare credentials
-      tags: *a71
+      tags: *a72
   /api/v1/bpjs/reference/sync:
     post:
       operationId: BpjsReferenceController_syncCatalogs_v1
@@ -49630,7 +50691,7 @@ paths:
       security:
         - bearer: []
       summary: Sync the enumerable BPJS PCare reference catalogs
-      tags: &a72
+      tags: &a73
         - BPJS PCare
   /api/v1/bpjs/reference/status:
     get:
@@ -49697,7 +50758,7 @@ paths:
       security:
         - bearer: []
       summary: Read per-catalog BPJS reference sync status
-      tags: *a72
+      tags: *a73
   /api/v1/bpjs/reference/{catalog}:
     get:
       operationId: BpjsReferenceController_searchCatalog_v1
@@ -49791,7 +50852,7 @@ paths:
       security:
         - bearer: []
       summary: Search a synced BPJS reference catalog locally
-      tags: *a72
+      tags: *a73
   /api/v1/bpjs/reference/{catalog}/search:
     post:
       operationId: BpjsReferenceController_searchCatalogRemote_v1
@@ -49897,7 +50958,7 @@ paths:
       security:
         - bearer: []
       summary: Search a keyword-only BPJS catalog live and cache the results
-      tags: *a72
+      tags: *a73
   /api/v1/bpjs/mappings:
     get:
       operationId: BpjsMappingController_getOverview_v1
@@ -49985,7 +51046,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS mapping overview
-      tags: &a73
+      tags: &a74
         - BPJS PCare
   /api/v1/bpjs/mappings/doctors/{doctorId}:
     put:
@@ -50079,7 +51140,7 @@ paths:
       security:
         - bearer: []
       summary: Set or clear a doctor’s BPJS kdDokter mapping
-      tags: *a73
+      tags: *a74
   /api/v1/bpjs/mappings/specialties/{specialtyId}:
     put:
       operationId: BpjsMappingController_setSpecialtyMapping_v1
@@ -50168,7 +51229,7 @@ paths:
       security:
         - bearer: []
       summary: Set or clear a specialty’s BPJS kdPoli mapping
-      tags: *a73
+      tags: *a74
   /api/v1/bpjs/mappings/medications/{medicationId}:
     put:
       operationId: BpjsMappingController_setMedicationMapping_v1
@@ -50262,7 +51323,7 @@ paths:
       security:
         - bearer: []
       summary: Link or unlink a medication’s DPHO code
-      tags: *a73
+      tags: *a74
   /api/v1/bpjs/eligibility/patients/{patientId}/check:
     post:
       operationId: BpjsEligibilityController_checkEligibility_v1
@@ -50562,7 +51623,7 @@ paths:
       security:
         - bearer: []
       summary: List BPJS PCare submission outbox entries
-      tags: &a74
+      tags: &a75
         - BPJS PCare
   /api/v1/bpjs/submissions/{id}/retry:
     post:
@@ -50671,7 +51732,7 @@ paths:
       security:
         - bearer: []
       summary: Retry a failed BPJS PCare submission
-      tags: *a74
+      tags: *a75
   /api/v1/bpjs/reports/monthly:
     get:
       operationId: BpjsReportController_getMonthlyReport_v1
@@ -50918,7 +51979,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS Antrean Online bridging configuration
-      tags: &a75
+      tags: &a76
         - BPJS Antrean
     put:
       operationId: BpjsAntreanConfigController_upsertConfig_v1
@@ -51059,7 +52120,7 @@ paths:
       security:
         - bearer: []
       summary: Create or replace the BPJS Antrean Online bridging configuration
-      tags: *a75
+      tags: *a76
     delete:
       operationId: BpjsAntreanConfigController_deleteConfig_v1
       parameters: []
@@ -51118,7 +52179,7 @@ paths:
       security:
         - bearer: []
       summary: Delete the BPJS Antrean Online bridging configuration
-      tags: *a75
+      tags: *a76
   /api/v1/bpjs/antrean/config/test-connection:
     post:
       operationId: BpjsAntreanConfigController_testConnection_v1
@@ -51184,7 +52245,7 @@ paths:
       security:
         - bearer: []
       summary: Test the stored BPJS Antrean credentials
-      tags: *a75
+      tags: *a76
   /api/v1/bpjs/antrean/inbound-readiness:
     get:
       operationId: BpjsAntreanConfigController_getInboundReadiness_v1
@@ -51254,7 +52315,7 @@ paths:
       security:
         - bearer: []
       summary: Report whether the inbound Antrean web services can serve BPJS
-      tags: *a75
+      tags: *a76
   /api/v1/bpjs/antrean/hfis-reconciliation:
     get:
       operationId: BpjsAntreanConfigController_getHfisReconciliation_v1
@@ -51356,7 +52417,7 @@ paths:
       security:
         - bearer: []
       summary: Compare HFIS against HMS and report the disagreements
-      tags: *a75
+      tags: *a76
   /api/v1/admin/features:
     get:
       operationId: FeatureAdminController_getEntitlements_v1
@@ -51435,7 +52496,7 @@ paths:
       security:
         - bearer: []
       summary: List every feature and whether this client has it
-      tags: &a76
+      tags: &a77
         - Feature Entitlements
   /api/v1/admin/features/{key}:
     put:
@@ -51552,7 +52613,7 @@ paths:
       security:
         - bearer: []
       summary: Switch a feature on or off for this client
-      tags: *a76
+      tags: *a77
   /api/v1/features/availability:
     get:
       operationId: FeatureAvailabilityController_getAvailability_v1
@@ -51675,7 +52736,7 @@ paths:
       security:
         - bearer: []
       summary: List active roles
-      tags: &a77
+      tags: &a78
         - RBAC
     post:
       operationId: RbacController_createRole_v1
@@ -51762,7 +52823,7 @@ paths:
       security:
         - bearer: []
       summary: Create a custom role
-      tags: *a77
+      tags: *a78
   /api/v1/rbac/permissions:
     get:
       operationId: RbacController_getPermissionCatalog_v1
@@ -51842,7 +52903,7 @@ paths:
       security:
         - bearer: []
       summary: List the permission catalog
-      tags: *a77
+      tags: *a78
   /api/v1/rbac/roles/{id}:
     get:
       operationId: RbacController_getRoleById_v1
@@ -51961,7 +53022,7 @@ paths:
       security:
         - bearer: []
       summary: Get a role with its permissions and member count
-      tags: *a77
+      tags: *a78
     patch:
       operationId: RbacController_updateRole_v1
       parameters:
@@ -52060,7 +53121,7 @@ paths:
       security:
         - bearer: []
       summary: Update a role name or description
-      tags: *a77
+      tags: *a78
     delete:
       operationId: RbacController_deleteRole_v1
       parameters:
@@ -52136,7 +53197,7 @@ paths:
       security:
         - bearer: []
       summary: Soft-delete a role
-      tags: *a77
+      tags: *a78
   /api/v1/rbac/roles/{id}/permissions:
     put:
       operationId: RbacController_setRolePermissions_v1
@@ -52282,7 +53343,7 @@ paths:
       security:
         - bearer: []
       summary: Replace the permission set attached to a role
-      tags: *a77
+      tags: *a78
   /api/v1/rbac/assign-role:
     post:
       operationId: RbacController_assignRole_v1
@@ -52374,7 +53435,7 @@ paths:
       security:
         - bearer: []
       summary: Assign a role to a user
-      tags: *a77
+      tags: *a78
   /api/v1/rbac/unassign-role:
     post:
       operationId: RbacController_unassignRole_v1
@@ -52466,7 +53527,7 @@ paths:
       security:
         - bearer: []
       summary: Unassign a role from a user
-      tags: *a77
+      tags: *a78
   /api/v1/health:
     get:
       operationId: HealthController_getHealth_v1
@@ -56088,47 +57149,149 @@ components:
         admittingDoctorId:
           type: string
           format: uuid
-    CreateBugReportDto:
+    CreatePregnancyEpisodeDto:
       type: object
       properties:
-        title:
+        lastMenstrualPeriodDate:
+          type: string
+          pattern: ^\d{4}-\d{2}-\d{2}$
+          nullable: true
+        estimatedDeliveryDate:
+          type: string
+          pattern: ^\d{4}-\d{2}-\d{2}$
+        eddSource:
+          type: string
+          enum:
+            - LMP
+            - ULTRASOUND
+            - CLINICAL
+        gravida:
+          type: integer
+          minimum: 1
+          exclusiveMinimum: false
+          maximum: 30
+          exclusiveMaximum: false
+        para:
+          type: integer
+          minimum: 0
+          exclusiveMinimum: false
+          maximum: 30
+          exclusiveMaximum: false
+        abortus:
+          type: integer
+          minimum: 0
+          exclusiveMinimum: false
+          maximum: 30
+          exclusiveMaximum: false
+        prePregnancyWeightKg:
+          type: number
+          minimum: 0
+          exclusiveMinimum: true
+          maximum: 300
+          exclusiveMaximum: false
+          nullable: true
+        bloodType:
           type: string
           minLength: 1
-          maxLength: 150
-        description:
+          maxLength: 8
+          nullable: true
+        rhesus:
           type: string
           minLength: 1
-          maxLength: 4000
-        stepsToReproduce:
+          maxLength: 8
+          nullable: true
+        riskNotes:
           type: string
           maxLength: 2000
-        expected:
+          nullable: true
+      required:
+        - gravida
+        - para
+        - abortus
+    UpdatePregnancyEpisodeDto:
+      type: object
+      properties:
+        lastMenstrualPeriodDate:
           type: string
-          maxLength: 2000
-        actual:
+          pattern: ^\d{4}-\d{2}-\d{2}$
+          nullable: true
+        estimatedDeliveryDate:
           type: string
-          maxLength: 2000
-        pagePath:
+          pattern: ^\d{4}-\d{2}-\d{2}$
+        eddSource:
+          type: string
+          enum:
+            - LMP
+            - ULTRASOUND
+            - CLINICAL
+        gravida:
+          type: integer
+          minimum: 1
+          exclusiveMinimum: false
+          maximum: 30
+          exclusiveMaximum: false
+        para:
+          type: integer
+          minimum: 0
+          exclusiveMinimum: false
+          maximum: 30
+          exclusiveMaximum: false
+        abortus:
+          type: integer
+          minimum: 0
+          exclusiveMinimum: false
+          maximum: 30
+          exclusiveMaximum: false
+        prePregnancyWeightKg:
+          type: number
+          minimum: 0
+          exclusiveMinimum: true
+          maximum: 300
+          exclusiveMaximum: false
+          nullable: true
+        bloodType:
           type: string
           minLength: 1
-          maxLength: 512
-        requestIds:
-          type: array
-          maxItems: 5
-          items:
-            type: string
-            pattern: ^[A-Za-z0-9._-]{1,128}$
-          default: []
-        appVersion:
+          maxLength: 8
+          nullable: true
+        rhesus:
           type: string
-          maxLength: 64
-        acknowledgedNoSensitiveData:
+          minLength: 1
+          maxLength: 8
+          nullable: true
+        riskNotes:
+          type: string
+          maxLength: 2000
+          nullable: true
+    EndPregnancyEpisodeDto:
+      type: object
+      properties:
+        reason:
+          type: string
+          enum:
+            - MISCARRIAGE
+            - LOST_TO_FOLLOW_UP
+        endedAt:
+          type: string
+          pattern: ^\d{4}-\d{2}-\d{2}$
+      required:
+        - reason
+    RecordExternalDoctorVisitDto:
+      type: object
+      properties:
+        facilityName:
+          type: string
+          minLength: 1
+          maxLength: 200
+        visitedAt:
+          type: string
+          pattern: ^\d{4}-\d{2}-\d{2}$
+        isUltrasoundDone:
           type: boolean
       required:
-        - title
-        - description
-        - pagePath
-        - acknowledgedNoSensitiveData
+        - facilityName
+        - visitedAt
+        - isUltrasoundDone
     OpenEncounterDto:
       type: object
       properties:
@@ -56863,6 +58026,47 @@ components:
           type: boolean
         singleOperator:
           type: boolean
+    CreateBugReportDto:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 150
+        description:
+          type: string
+          minLength: 1
+          maxLength: 4000
+        stepsToReproduce:
+          type: string
+          maxLength: 2000
+        expected:
+          type: string
+          maxLength: 2000
+        actual:
+          type: string
+          maxLength: 2000
+        pagePath:
+          type: string
+          minLength: 1
+          maxLength: 512
+        requestIds:
+          type: array
+          maxItems: 5
+          items:
+            type: string
+            pattern: ^[A-Za-z0-9._-]{1,128}$
+          default: []
+        appVersion:
+          type: string
+          maxLength: 64
+        acknowledgedNoSensitiveData:
+          type: boolean
+      required:
+        - title
+        - description
+        - pagePath
+        - acknowledgedNoSensitiveData
     UpdateTaxSettingsDto:
       type: object
       properties:

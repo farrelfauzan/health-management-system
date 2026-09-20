@@ -172,7 +172,10 @@ export const ModelName = {
   District: 'District',
   Village: 'Village',
   BugReport: 'BugReport',
-  BugReportCounter: 'BugReportCounter'
+  BugReportCounter: 'BugReportCounter',
+  PregnancyEpisode: 'PregnancyEpisode',
+  PregnancyExternalDoctorVisit: 'PregnancyExternalDoctorVisit',
+  AntenatalVisit: 'AntenatalVisit'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -2293,6 +2296,60 @@ export const BugReportCounterScalarFieldEnum = {
 } as const
 
 export type BugReportCounterScalarFieldEnum = (typeof BugReportCounterScalarFieldEnum)[keyof typeof BugReportCounterScalarFieldEnum]
+
+
+export const PregnancyEpisodeScalarFieldEnum = {
+  id: 'id',
+  patientId: 'patientId',
+  status: 'status',
+  lastMenstrualPeriodDate: 'lastMenstrualPeriodDate',
+  estimatedDeliveryDate: 'estimatedDeliveryDate',
+  eddSource: 'eddSource',
+  gravida: 'gravida',
+  para: 'para',
+  abortus: 'abortus',
+  prePregnancyWeightKg: 'prePregnancyWeightKg',
+  bloodType: 'bloodType',
+  rhesus: 'rhesus',
+  riskNotes: 'riskNotes',
+  endedAt: 'endedAt',
+  endReason: 'endReason',
+  satusehatEpisodeOfCareId: 'satusehatEpisodeOfCareId',
+  satusehatPostnatalEpisodeOfCareId: 'satusehatPostnatalEpisodeOfCareId',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type PregnancyEpisodeScalarFieldEnum = (typeof PregnancyEpisodeScalarFieldEnum)[keyof typeof PregnancyEpisodeScalarFieldEnum]
+
+
+export const PregnancyExternalDoctorVisitScalarFieldEnum = {
+  id: 'id',
+  pregnancyEpisodeId: 'pregnancyEpisodeId',
+  facilityName: 'facilityName',
+  visitedAt: 'visitedAt',
+  isUltrasoundDone: 'isUltrasoundDone',
+  recordedById: 'recordedById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type PregnancyExternalDoctorVisitScalarFieldEnum = (typeof PregnancyExternalDoctorVisitScalarFieldEnum)[keyof typeof PregnancyExternalDoctorVisitScalarFieldEnum]
+
+
+export const AntenatalVisitScalarFieldEnum = {
+  id: 'id',
+  pregnancyEpisodeId: 'pregnancyEpisodeId',
+  encounterId: 'encounterId',
+  visitCode: 'visitCode',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AntenatalVisitScalarFieldEnum = (typeof AntenatalVisitScalarFieldEnum)[keyof typeof AntenatalVisitScalarFieldEnum]
 
 
 export const SortOrder = {

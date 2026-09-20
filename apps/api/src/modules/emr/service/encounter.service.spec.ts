@@ -20,6 +20,7 @@ import { OpenEncounterDto } from '../dto/open-encounter.dto';
 import { UpdateEncounterSoapDto } from '../dto/update-encounter-soap.dto';
 import { EncounterRepository } from '../repository/encounter.repository';
 import { EncounterAccessService } from './encounter-access.service';
+import { MaternalCareService } from '../../maternal-care/service/maternal-care.service';
 import { EncounterMapper } from './encounter.mapper';
 import { EncounterService } from './encounter.service';
 import { MidwifeAuthorityEnforcementService } from './midwife-authority-enforcement.service';
@@ -90,6 +91,10 @@ describe('EncounterService', () => {
       auditServiceMock,
       configServiceMock,
     ),
+    // P25-T06: closing an encounter freezes the K-code onto its antenatal
+    // visit. A visit that is not antenatal is a no-op there, which is what
+    // every case in this spec is.
+    { freezeVisitCodeOnEncounterClose: jest.fn() } as unknown as MaternalCareService,
   );
 
   const adminUser = { sub: '4e8580c4-9e80-44ff-9f8f-8c8f9d8d90f8', email: 'admin@hms.local' };
