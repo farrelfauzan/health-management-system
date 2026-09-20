@@ -308,3 +308,41 @@ export type UpdateTaxCodeInput = z.infer<typeof updateTaxCodeSchema>;
 export type UpdateTaxCategoryDefaultsInput = z.infer<typeof updateTaxCategoryDefaultsSchema>;
 export type BulkAssignTaxCodeInput = z.infer<typeof bulkAssignTaxCodeSchema>;
 export type ListTaxAssignmentsQuery = z.infer<typeof listTaxAssignmentsQuerySchema>;
+
+/** The monthly drafts P27-T05 prepares; P27-T07 adds PPh 21. */
+export const taxReportKindSchema = z.enum(['PP55_OMZET', 'PPN_OUTPUT']);
+export const TAX_REPORT_KINDS = taxReportKindSchema.options;
+
+/** A draft is recomputed at will; a finalized report is a frozen snapshot. */
+export const taxReportStatusSchema = z.enum(['DRAFT', 'FINALIZED']);
+
+/** A calendar month, `YYYY-MM`, in the clinic's timezone. */
+export const taxReportPeriodSchema = z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/, 'Use YYYY-MM');
+
+export const createTaxReportSchema = z.object({
+  period: taxReportPeriodSchema,
+  kind: taxReportKindSchema,
+});
+
+export const listTaxReportsQuerySchema = z.object({
+  year: z.coerce.number().int().min(2018).max(2100),
+});
+
+/** PP 55/2022 Pasal 56: 0.5% of gross turnover. */
+export const PP55_RATE_PERCENT = 0.5;
+/** PP 55/2022 Pasal 60(2): an individual's first Rp500 juta a year is not taxed. */
+export const PP55_INDIVIDUAL_NON_TAXABLE_OMZET = 500_000_000;
+/** The billing code for PPh final UMKM: KAP 411128, KJS 420. */
+export const PP55_TAX_ACCOUNT_CODE = '411128';
+export const PP55_DEPOSIT_TYPE_CODE = '420';
+
+export const TAX_REPORT_NOT_APPLICABLE_ERROR_CODE = 'TAX_REPORT_NOT_APPLICABLE';
+export const TAX_REPORT_EXISTS_ERROR_CODE = 'TAX_REPORT_EXISTS';
+export const TAX_REPORT_FINALIZED_ERROR_CODE = 'TAX_REPORT_FINALIZED';
+export const TAX_REPORT_PERIOD_OPEN_ERROR_CODE = 'TAX_REPORT_PERIOD_OPEN';
+export const TAX_REPORT_PERIOD_IN_FUTURE_ERROR_CODE = 'TAX_REPORT_PERIOD_IN_FUTURE';
+
+export type TaxReportKindValue = z.infer<typeof taxReportKindSchema>;
+export type TaxReportStatusValue = z.infer<typeof taxReportStatusSchema>;
+export type CreateTaxReportInput = z.infer<typeof createTaxReportSchema>;
+export type ListTaxReportsQuery = z.infer<typeof listTaxReportsQuerySchema>;

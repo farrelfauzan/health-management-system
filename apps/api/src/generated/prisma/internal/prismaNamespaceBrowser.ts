@@ -102,6 +102,7 @@ export const ModelName = {
   TaxCode: 'TaxCode',
   TaxCodeRate: 'TaxCodeRate',
   TaxCategoryDefault: 'TaxCategoryDefault',
+  TaxReportDraft: 'TaxReportDraft',
   ServiceTariff: 'ServiceTariff',
   InvoiceCounter: 'InvoiceCounter',
   Invoice: 'Invoice',
@@ -1045,6 +1046,24 @@ export const TaxCategoryDefaultScalarFieldEnum = {
 } as const
 
 export type TaxCategoryDefaultScalarFieldEnum = (typeof TaxCategoryDefaultScalarFieldEnum)[keyof typeof TaxCategoryDefaultScalarFieldEnum]
+
+
+export const TaxReportDraftScalarFieldEnum = {
+  id: 'id',
+  period: 'period',
+  kind: 'kind',
+  status: 'status',
+  summary: 'summary',
+  lines: 'lines',
+  generatedAt: 'generatedAt',
+  generatedById: 'generatedById',
+  finalizedAt: 'finalizedAt',
+  finalizedById: 'finalizedById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TaxReportDraftScalarFieldEnum = (typeof TaxReportDraftScalarFieldEnum)[keyof typeof TaxReportDraftScalarFieldEnum]
 
 
 export const ServiceTariffScalarFieldEnum = {

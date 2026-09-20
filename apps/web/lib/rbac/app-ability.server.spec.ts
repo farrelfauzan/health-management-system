@@ -55,6 +55,13 @@ describe('resolveAppAbilityRules integration permissions', () => {
     expect(ability.can('read', 'TaxCode')).toBe(false);
   });
 
+  it('maps the tax-report keys to the TaxReport subject (P27-T05)', () => {
+    const ability = buildAppAbility(resolveAppAbilityRules({ permissions: ['tax-report.read:any'] }));
+
+    expect(ability.can('read', 'TaxReport')).toBe(true);
+    expect(ability.can('write', 'TaxReport')).toBe(false);
+  });
+
   it('maps the tax-code keys to the TaxCode subject', () => {
     // P27-T03. Without the resource row the Kode pajak and Tarif & obat tabs never render.
     const ability = buildAppAbility(resolveAppAbilityRules({ permissions: ['tax-code.read:any'] }));

@@ -7,6 +7,8 @@ import type {
   TaxAssignmentKindValue,
   TaxCodeSourceValue,
   TaxDefaultTargetValue,
+  TaxReportKindValue,
+  TaxReportStatusValue,
   TaxpayerTypeValue,
   UpdateTaxSettingsInput,
 } from '#taxes/schemas';
@@ -276,3 +278,172 @@ export type BuildTaxPriceBreakdownParams = {
   isPkp: boolean;
   onDate: string;
 };
+
+/**
+ * The PP 55 draft for one month (P27-T05). Cash basis (D-038 R6): omzet is
+ * what was paid in the month. `totals` are the figures compared when checking
+ * whether a finalized draft still matches the books.
+ */
+export type Pp55ReportSummary = {
+  kind: 'PP55_OMZET';
+  taxpayerType: TaxpayerTypeValue | null;
+  ratePercent: number;
+  paymentCount: number;
+  /** Paid earlier in the same year, before this month. */
+  yearToDateOmzetBefore: number;
+  /** The part of the Rp500 juta individual allowance used up by this month. */
+  nonTaxableAllowanceUsed: number;
+  totals: { grossOmzet: number; taxableOmzet: number; taxDue: number };
+  taxAccountCode: string;
+  depositTypeCode: string;
+  paymentDueDate: string;
+  reportingDueDate: string;
+};
+
+/** One faktur code's share of a month's output VAT. */
+export type PpnOutputGroup = {
+  fakturTransactionCode: string;
+  invoiceCount: number;
+  lineCount: number;
+  taxableAmount: number;
+  taxBase: number;
+  taxAmount: number;
+};
+
+/**
+ * The PPN keluaran draft for one month (P27-T05): invoices issued in the
+ * month, VOID excluded, by faktur code. Every buyer is a retail patient, so
+ * the whole month is `digunggung` (PMK 81/2024). Lines billed before the tax
+ * module carry no code and are counted apart rather than guessed.
+ */
+export type PpnOutputReportSummary = {
+  kind: 'PPN_OUTPUT';
+  invoiceCount: number;
+  groups: PpnOutputGroup[];
+  legacyLineCount: number;
+  legacyAmount: number;
+  notObjectLineCount: number;
+  notObjectAmount: number;
+  totals: { taxableAmount: number; taxBase: number; taxAmount: number };
+  paymentDueDate: string;
+  reportingDueDate: string;
+};
+
+export type TaxReportSummary = Pp55ReportSummary | PpnOutputReportSummary;
+
+/** A payment counted in a PP 55 month. */
+export type Pp55ReportLine = {
+  paymentId: string;
+  invoiceNumber: string;
+  paidAt: string;
+  method: string;
+  amount: number;
+};
+
+/** One invoice's output VAT under one faktur code (or `LEGACY` / `NOT_OBJECT`). */
+export type PpnOutputReportLine = {
+  invoiceId: string;
+  invoiceNumber: string;
+  issuedAt: string;
+  fakturTransactionCode: string;
+  lineCount: number;
+  taxableAmount: number;
+  taxBase: number;
+  taxAmount: number;
+};
+
+export type TaxReportLine = Pp55ReportLine | PpnOutputReportLine;
+
+/** A computed report, before it is stored. */
+export type ComputedTaxReport = {
+  summary: TaxReportSummary;
+  lines: TaxReportLine[];
+};
+
+/** A stored draft or finalized report. */
+export type TaxReportRecord = {
+  id: string;
+  period: string;
+  kind: TaxReportKindValue;
+  status: TaxReportStatusValue;
+  summary: TaxReportSummary;
+  lines: TaxReportLine[];
+  generatedAt: Date;
+  generatedById: string | null;
+  finalizedAt: Date | null;
+  finalizedById: string | null;
+};
+
+export type SaveTaxReportPayload = ComputedTaxReport & {
+  period: string;
+  kind: TaxReportKindValue;
+  generatedById: string;
+};
+
+export type ComputePp55MonthlyTaxParams = {
+  monthOmzet: number;
+  yearToDateOmzetBefore: number;
+  taxpayerType: TaxpayerTypeValue | null;
+};
+
+export type Pp55MonthlyTax = {
+  nonTaxableAllowanceUsed: number;
+  taxableOmzet: number;
+  taxDue: number;
+};
+
+/** A line of an issued invoice, as the PPN draft reads it. */
+export type PpnOutputSourceLine = {
+  invoiceId: string;
+  invoiceNumber: string;
+  issuedAt: Date;
+  taxCode: string | null;
+  ppnTreatment: PpnTreatmentValue | null;
+  fakturTransactionCode: string | null;
+  amount: number;
+  taxableAmount: number | null;
+  taxBase: number | null;
+  taxAmount: number;
+};
+
+/** A payment, as the PP 55 draft reads it. */
+export type Pp55SourcePayment = {
+  paymentId: string;
+  invoiceNumber: string;
+  paidAt: Date;
+  method: string;
+  amount: number;
+};
+
+/** The instants a clinic-timezone month spans, end exclusive. */
+export type TaxReportPeriodRange = { start: Date; end: Date };
+
+export type TaxReportDueDates = { paymentDueDate: string; reportingDueDate: string };
+
+/** One total that no longer matches the books, for a finalized report. */
+export type TaxReportDifference = { field: string; stored: number; live: number };
+
+export type SummarizePpnOutputParams = {
+  lines: readonly PpnOutputSourceLine[];
+  dueDates: TaxReportDueDates;
+};
+
+export type SummarizedPpnOutput = {
+  summary: PpnOutputReportSummary;
+  lines: PpnOutputReportLine[];
+};
+
+/** A draft or finalized report's figures after a recompute. */
+export type UpdateTaxReportComputationPayload = ComputedTaxReport & {
+  id: string;
+  generatedById: string;
+};
+
+export type FinalizeTaxReportPayload = ComputedTaxReport & {
+  id: string;
+  finalizedById: string;
+  finalizedAt: Date;
+};
+
+/** A report ready to download. */
+export type TaxReportCsvExport = { fileName: string; csv: string };

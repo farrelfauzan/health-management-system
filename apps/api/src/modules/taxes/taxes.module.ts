@@ -7,9 +7,12 @@ import { TaxAssignmentController } from './controller/tax-assignment.controller'
 import { TaxCategoryDefaultController } from './controller/tax-category-default.controller';
 import { TaxCodeController } from './controller/tax-code.controller';
 import { TaxPriceBreakdownController } from './controller/tax-price-breakdown.controller';
+import { TaxReportController } from './controller/tax-report.controller';
+import { TaxReportRepository } from './repository/tax-report.repository';
 import { TaxSettingsController } from './controller/tax-settings.controller';
 import { TaxAssignmentService } from './service/tax-assignment.service';
 import { TaxPriceBreakdownService } from './service/tax-price-breakdown.service';
+import { TaxReportService } from './service/tax-report.service';
 import { TaxSettingsService } from './service/tax-settings.service';
 
 /**
@@ -27,8 +30,15 @@ import { TaxSettingsService } from './service/tax-settings.service';
     TaxCategoryDefaultController,
     TaxAssignmentController,
     TaxPriceBreakdownController,
+    TaxReportController,
   ],
-  providers: [TaxSettingsService, TaxAssignmentService, TaxPriceBreakdownService],
+  providers: [
+    TaxSettingsService,
+    TaxAssignmentService,
+    TaxPriceBreakdownService,
+    TaxReportService,
+    TaxReportRepository,
+  ],
   exports: [TaxSettingsService],
 })
 export class TaxesModule {}

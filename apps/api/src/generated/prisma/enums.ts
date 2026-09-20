@@ -160,7 +160,8 @@ export const AuditAction = {
   MIDWIFE_AUTHORITY_REFUSED: 'MIDWIFE_AUTHORITY_REFUSED',
   TAX_SETTINGS_UPDATED: 'TAX_SETTINGS_UPDATED',
   TAX_CODE_CHANGED: 'TAX_CODE_CHANGED',
-  TAX_ASSIGNMENT_CHANGED: 'TAX_ASSIGNMENT_CHANGED'
+  TAX_ASSIGNMENT_CHANGED: 'TAX_ASSIGNMENT_CHANGED',
+  TAX_REPORT_FINALIZED: 'TAX_REPORT_FINALIZED'
 } as const
 
 export type AuditAction = (typeof AuditAction)[keyof typeof AuditAction]
@@ -826,6 +827,22 @@ export const TaxDefaultTarget = {
 } as const
 
 export type TaxDefaultTarget = (typeof TaxDefaultTarget)[keyof typeof TaxDefaultTarget]
+
+
+export const TaxReportKind = {
+  PP55_OMZET: 'PP55_OMZET',
+  PPN_OUTPUT: 'PPN_OUTPUT'
+} as const
+
+export type TaxReportKind = (typeof TaxReportKind)[keyof typeof TaxReportKind]
+
+
+export const TaxReportStatus = {
+  DRAFT: 'DRAFT',
+  FINALIZED: 'FINALIZED'
+} as const
+
+export type TaxReportStatus = (typeof TaxReportStatus)[keyof typeof TaxReportStatus]
 
 
 export const DocumentOwnerType = {

@@ -7,8 +7,11 @@ import type {
   TaxCodeSourceValue,
   TaxDefaultTargetValue,
   TaxPriceBreakdownStatusValue,
+  TaxReportKindValue,
+  TaxReportStatusValue,
   TaxpayerTypeValue,
 } from '#taxes/schemas';
+import type { TaxReportDifference, TaxReportLine, TaxReportSummary } from '#taxes/types';
 
 /**
  * The clinic's tax profile (P27-T02). `npwp` is read from the clinic profile,
@@ -115,4 +118,41 @@ export type TaxPriceBreakdownView = {
   price?: number;
   priceBeforeTax?: number;
   taxAmount?: number;
+};
+
+/**
+ * A monthly tax report draft (P27-T05). `differences` compares the stored
+ * totals with the books as they are now: empty while they agree, and never
+ * written back — a finalized report is what was filed.
+ */
+export type TaxReportView = {
+  id: string;
+  period: string;
+  kind: TaxReportKindValue;
+  status: TaxReportStatusValue;
+  summary: TaxReportSummary;
+  lines: TaxReportLine[];
+  generatedAt: string;
+  generatedById?: string;
+  finalizedAt?: string;
+  finalizedById?: string;
+  isOutOfDate: boolean;
+  differences: TaxReportDifference[];
+};
+
+/** One month's report in the year grid, without its lines. */
+export type TaxReportListItem = {
+  id: string;
+  period: string;
+  kind: TaxReportKindValue;
+  status: TaxReportStatusValue;
+  /** The headline figure: PPh final due, or output PPN. */
+  taxDue: number;
+  isOutOfDate: boolean;
+};
+
+/** Which reports the clinic's tax profile calls for, so the grid shows only those rows. */
+export type TaxReportsListMeta = {
+  year: number;
+  applicableKinds: TaxReportKindValue[];
 };

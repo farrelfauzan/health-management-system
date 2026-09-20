@@ -46040,6 +46040,828 @@ paths:
       summary: Split tariff or medicine prices into before-PPN and PPN
       tags:
         - Tax Codes
+  /api/v1/tax/reports:
+    get:
+      operationId: TaxReportController_listReports_v1
+      parameters:
+        - name: year
+          required: true
+          in: query
+          schema:
+            minimum: 2018
+            maximum: 2100
+            exclusiveMaximum: false
+            exclusiveMinimum: false
+            type: integer
+      responses:
+        "200":
+          description: "Every stored report of the year with its headline figure and
+            whether it still matches the books (`isOutOfDate`).
+            `meta.applicableKinds` names the reports the tax profile calls for:
+            PP55_OMZET on the 0.5% regime, PPN_OUTPUT for a PKP."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        period:
+                          type: string
+                        kind:
+                          type: string
+                        status:
+                          type: string
+                        taxDue:
+                          type: integer
+                        isOutOfDate:
+                          type: boolean
+                      required:
+                        - id
+                        - period
+                        - kind
+                        - status
+                        - taxDue
+                        - isOutOfDate
+                  meta:
+                    type: object
+                    properties:
+                      year:
+                        type: integer
+                      applicableKinds:
+                        type: array
+                        items:
+                          type: string
+                    required:
+                      - year
+                      - applicableKinds
+                required:
+                  - data
+                  - meta
+                example:
+                  data:
+                    - id: 9e8d7c6b-5a4f-4e3d-8c2b-1a0f9e8d7c6b
+                      period: 2026-08
+                      kind: PP55_OMZET
+                      status: FINALIZED
+                      taxDue: 1000000
+                      isOutOfDate: false
+                  meta:
+                    year: 2026
+                    applicableKinds:
+                      - PP55_OMZET
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: List a year's monthly tax reports
+      tags: &a66
+        - Tax Reports
+    post:
+      operationId: TaxReportController_createReport_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTaxReportDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  period: 2026-08
+                  kind: PP55_OMZET
+      responses:
+        "201":
+          description: Computes a DRAFT for the month from the books. 409
+            `TAX_REPORT_NOT_APPLICABLE` when the tax profile does not call for
+            it, `TAX_REPORT_EXISTS` when the month has one,
+            `TAX_REPORT_PERIOD_IN_FUTURE` for a month that has not started.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      period:
+                        type: string
+                      kind:
+                        type: string
+                      status:
+                        type: string
+                      summary:
+                        type: object
+                        properties:
+                          kind:
+                            type: string
+                          taxpayerType:
+                            type: string
+                          ratePercent:
+                            type: number
+                          paymentCount:
+                            type: integer
+                          yearToDateOmzetBefore:
+                            type: integer
+                          nonTaxableAllowanceUsed:
+                            type: integer
+                          totals:
+                            type: object
+                            properties:
+                              grossOmzet:
+                                type: integer
+                              taxableOmzet:
+                                type: integer
+                              taxDue:
+                                type: integer
+                            required:
+                              - grossOmzet
+                              - taxableOmzet
+                              - taxDue
+                          taxAccountCode:
+                            type: string
+                          depositTypeCode:
+                            type: string
+                          paymentDueDate:
+                            type: string
+                          reportingDueDate:
+                            type: string
+                        required:
+                          - kind
+                          - taxpayerType
+                          - ratePercent
+                          - paymentCount
+                          - yearToDateOmzetBefore
+                          - nonTaxableAllowanceUsed
+                          - totals
+                          - taxAccountCode
+                          - depositTypeCode
+                          - paymentDueDate
+                          - reportingDueDate
+                      lines:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            paymentId:
+                              type: string
+                            invoiceNumber:
+                              type: string
+                            paidAt:
+                              type: string
+                            method:
+                              type: string
+                            amount:
+                              type: integer
+                          required:
+                            - paymentId
+                            - invoiceNumber
+                            - paidAt
+                            - method
+                            - amount
+                      generatedAt:
+                        type: string
+                      isOutOfDate:
+                        type: boolean
+                      differences:
+                        type: array
+                        items: {}
+                    required:
+                      - id
+                      - period
+                      - kind
+                      - status
+                      - summary
+                      - lines
+                      - generatedAt
+                      - isOutOfDate
+                      - differences
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 9e8d7c6b-5a4f-4e3d-8c2b-1a0f9e8d7c6b
+                    period: 2026-08
+                    kind: PP55_OMZET
+                    status: DRAFT
+                    summary:
+                      kind: PP55_OMZET
+                      taxpayerType: INDIVIDUAL
+                      ratePercent: 0.5
+                      paymentCount: 412
+                      yearToDateOmzetBefore: 300000000
+                      nonTaxableAllowanceUsed: 200000000
+                      totals:
+                        grossOmzet: 400000000
+                        taxableOmzet: 200000000
+                        taxDue: 1000000
+                      taxAccountCode: "411128"
+                      depositTypeCode: "420"
+                      paymentDueDate: 2026-09-15
+                      reportingDueDate: 2026-09-15
+                    lines:
+                      - paymentId: 1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d
+                        invoiceNumber: INV/20260803/0012
+                        paidAt: 2026-08-03T04:12:00.000Z
+                        method: CASH
+                        amount: 150000
+                    generatedAt: 2026-09-02T02:00:00.000Z
+                    isOutOfDate: false
+                    differences: []
+                  message: Tax report drafted
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Create the draft for a month
+      tags: *a66
+  /api/v1/tax/reports/{id}:
+    get:
+      operationId: TaxReportController_getReport_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "The stored figures and lines, compared with the books as they are
+            now: `differences` lists every total that changed since, for example
+            an invoice voided after the report was finalized. A finalized report
+            is never rewritten."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      period:
+                        type: string
+                      kind:
+                        type: string
+                      status:
+                        type: string
+                      summary:
+                        type: object
+                        properties:
+                          kind:
+                            type: string
+                          taxpayerType:
+                            type: string
+                          ratePercent:
+                            type: number
+                          paymentCount:
+                            type: integer
+                          yearToDateOmzetBefore:
+                            type: integer
+                          nonTaxableAllowanceUsed:
+                            type: integer
+                          totals:
+                            type: object
+                            properties:
+                              grossOmzet:
+                                type: integer
+                              taxableOmzet:
+                                type: integer
+                              taxDue:
+                                type: integer
+                            required:
+                              - grossOmzet
+                              - taxableOmzet
+                              - taxDue
+                          taxAccountCode:
+                            type: string
+                          depositTypeCode:
+                            type: string
+                          paymentDueDate:
+                            type: string
+                          reportingDueDate:
+                            type: string
+                        required:
+                          - kind
+                          - taxpayerType
+                          - ratePercent
+                          - paymentCount
+                          - yearToDateOmzetBefore
+                          - nonTaxableAllowanceUsed
+                          - totals
+                          - taxAccountCode
+                          - depositTypeCode
+                          - paymentDueDate
+                          - reportingDueDate
+                      lines:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            paymentId:
+                              type: string
+                            invoiceNumber:
+                              type: string
+                            paidAt:
+                              type: string
+                            method:
+                              type: string
+                            amount:
+                              type: integer
+                          required:
+                            - paymentId
+                            - invoiceNumber
+                            - paidAt
+                            - method
+                            - amount
+                      generatedAt:
+                        type: string
+                      isOutOfDate:
+                        type: boolean
+                      differences:
+                        type: array
+                        items: {}
+                    required:
+                      - id
+                      - period
+                      - kind
+                      - status
+                      - summary
+                      - lines
+                      - generatedAt
+                      - isOutOfDate
+                      - differences
+                required:
+                  - data
+                example:
+                  data:
+                    id: 9e8d7c6b-5a4f-4e3d-8c2b-1a0f9e8d7c6b
+                    period: 2026-08
+                    kind: PP55_OMZET
+                    status: DRAFT
+                    summary:
+                      kind: PP55_OMZET
+                      taxpayerType: INDIVIDUAL
+                      ratePercent: 0.5
+                      paymentCount: 412
+                      yearToDateOmzetBefore: 300000000
+                      nonTaxableAllowanceUsed: 200000000
+                      totals:
+                        grossOmzet: 400000000
+                        taxableOmzet: 200000000
+                        taxDue: 1000000
+                      taxAccountCode: "411128"
+                      depositTypeCode: "420"
+                      paymentDueDate: 2026-09-15
+                      reportingDueDate: 2026-09-15
+                    lines:
+                      - paymentId: 1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d
+                        invoiceNumber: INV/20260803/0012
+                        paidAt: 2026-08-03T04:12:00.000Z
+                        method: CASH
+                        amount: 150000
+                    generatedAt: 2026-09-02T02:00:00.000Z
+                    isOutOfDate: false
+                    differences: []
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Read one monthly tax report
+      tags: *a66
+  /api/v1/tax/reports/{id}/recompute:
+    post:
+      operationId: TaxReportController_recomputeReport_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: DRAFT only; 409 `TAX_REPORT_FINALIZED` for a finalized report.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      period:
+                        type: string
+                      kind:
+                        type: string
+                      status:
+                        type: string
+                      summary:
+                        type: object
+                        properties:
+                          kind:
+                            type: string
+                          taxpayerType:
+                            type: string
+                          ratePercent:
+                            type: number
+                          paymentCount:
+                            type: integer
+                          yearToDateOmzetBefore:
+                            type: integer
+                          nonTaxableAllowanceUsed:
+                            type: integer
+                          totals:
+                            type: object
+                            properties:
+                              grossOmzet:
+                                type: integer
+                              taxableOmzet:
+                                type: integer
+                              taxDue:
+                                type: integer
+                            required:
+                              - grossOmzet
+                              - taxableOmzet
+                              - taxDue
+                          taxAccountCode:
+                            type: string
+                          depositTypeCode:
+                            type: string
+                          paymentDueDate:
+                            type: string
+                          reportingDueDate:
+                            type: string
+                        required:
+                          - kind
+                          - taxpayerType
+                          - ratePercent
+                          - paymentCount
+                          - yearToDateOmzetBefore
+                          - nonTaxableAllowanceUsed
+                          - totals
+                          - taxAccountCode
+                          - depositTypeCode
+                          - paymentDueDate
+                          - reportingDueDate
+                      lines:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            paymentId:
+                              type: string
+                            invoiceNumber:
+                              type: string
+                            paidAt:
+                              type: string
+                            method:
+                              type: string
+                            amount:
+                              type: integer
+                          required:
+                            - paymentId
+                            - invoiceNumber
+                            - paidAt
+                            - method
+                            - amount
+                      generatedAt:
+                        type: string
+                      isOutOfDate:
+                        type: boolean
+                      differences:
+                        type: array
+                        items: {}
+                    required:
+                      - id
+                      - period
+                      - kind
+                      - status
+                      - summary
+                      - lines
+                      - generatedAt
+                      - isOutOfDate
+                      - differences
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 9e8d7c6b-5a4f-4e3d-8c2b-1a0f9e8d7c6b
+                    period: 2026-08
+                    kind: PP55_OMZET
+                    status: DRAFT
+                    summary:
+                      kind: PP55_OMZET
+                      taxpayerType: INDIVIDUAL
+                      ratePercent: 0.5
+                      paymentCount: 412
+                      yearToDateOmzetBefore: 300000000
+                      nonTaxableAllowanceUsed: 200000000
+                      totals:
+                        grossOmzet: 400000000
+                        taxableOmzet: 200000000
+                        taxDue: 1000000
+                      taxAccountCode: "411128"
+                      depositTypeCode: "420"
+                      paymentDueDate: 2026-09-15
+                      reportingDueDate: 2026-09-15
+                    lines:
+                      - paymentId: 1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d
+                        invoiceNumber: INV/20260803/0012
+                        paidAt: 2026-08-03T04:12:00.000Z
+                        method: CASH
+                        amount: 150000
+                    generatedAt: 2026-09-02T02:00:00.000Z
+                    isOutOfDate: false
+                    differences: []
+                  message: Tax report recomputed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Recompute a draft from the books
+      tags: *a66
+  /api/v1/tax/reports/{id}/finalize:
+    post:
+      operationId: TaxReportController_finalizeReport_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Recomputes and freezes the month. Refused while the month is
+            running (409 `TAX_REPORT_PERIOD_OPEN`) and for an already finalized
+            report (409 `TAX_REPORT_FINALIZED`). Audited as
+            `TAX_REPORT_FINALIZED`.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      period:
+                        type: string
+                      kind:
+                        type: string
+                      status:
+                        type: string
+                      summary:
+                        type: object
+                        properties:
+                          kind:
+                            type: string
+                          taxpayerType:
+                            type: string
+                          ratePercent:
+                            type: number
+                          paymentCount:
+                            type: integer
+                          yearToDateOmzetBefore:
+                            type: integer
+                          nonTaxableAllowanceUsed:
+                            type: integer
+                          totals:
+                            type: object
+                            properties:
+                              grossOmzet:
+                                type: integer
+                              taxableOmzet:
+                                type: integer
+                              taxDue:
+                                type: integer
+                            required:
+                              - grossOmzet
+                              - taxableOmzet
+                              - taxDue
+                          taxAccountCode:
+                            type: string
+                          depositTypeCode:
+                            type: string
+                          paymentDueDate:
+                            type: string
+                          reportingDueDate:
+                            type: string
+                        required:
+                          - kind
+                          - taxpayerType
+                          - ratePercent
+                          - paymentCount
+                          - yearToDateOmzetBefore
+                          - nonTaxableAllowanceUsed
+                          - totals
+                          - taxAccountCode
+                          - depositTypeCode
+                          - paymentDueDate
+                          - reportingDueDate
+                      lines:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            paymentId:
+                              type: string
+                            invoiceNumber:
+                              type: string
+                            paidAt:
+                              type: string
+                            method:
+                              type: string
+                            amount:
+                              type: integer
+                          required:
+                            - paymentId
+                            - invoiceNumber
+                            - paidAt
+                            - method
+                            - amount
+                      generatedAt:
+                        type: string
+                      isOutOfDate:
+                        type: boolean
+                      differences:
+                        type: array
+                        items: {}
+                    required:
+                      - id
+                      - period
+                      - kind
+                      - status
+                      - summary
+                      - lines
+                      - generatedAt
+                      - isOutOfDate
+                      - differences
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 9e8d7c6b-5a4f-4e3d-8c2b-1a0f9e8d7c6b
+                    period: 2026-08
+                    kind: PP55_OMZET
+                    status: FINALIZED
+                    summary:
+                      kind: PP55_OMZET
+                      taxpayerType: INDIVIDUAL
+                      ratePercent: 0.5
+                      paymentCount: 412
+                      yearToDateOmzetBefore: 300000000
+                      nonTaxableAllowanceUsed: 200000000
+                      totals:
+                        grossOmzet: 400000000
+                        taxableOmzet: 200000000
+                        taxDue: 1000000
+                      taxAccountCode: "411128"
+                      depositTypeCode: "420"
+                      paymentDueDate: 2026-09-15
+                      reportingDueDate: 2026-09-15
+                    lines:
+                      - paymentId: 1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d
+                        invoiceNumber: INV/20260803/0012
+                        paidAt: 2026-08-03T04:12:00.000Z
+                        method: CASH
+                        amount: 150000
+                    generatedAt: 2026-09-02T02:00:00.000Z
+                    isOutOfDate: false
+                    differences: []
+                  message: Tax report finalized
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Finalize a monthly tax report
+      tags: *a66
+  /api/v1/tax/reports/{id}/export:
+    get:
+      operationId: TaxReportController_exportReport_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "The stored report as CSV: a header block with totals, billing code
+            and due dates, then one row per payment or invoice. Totals equal the
+            report to the rupiah. Audited as an export."
+      summary: Export one monthly tax report as CSV
+      tags: *a66
   /api/v1/satusehat/patients/{patientId}/link:
     post:
       operationId: SatusehatLinkController_linkPatient_v1
@@ -46109,7 +46931,7 @@ paths:
       security:
         - bearer: []
       summary: Link a patient to their SATUSEHAT IHS number
-      tags: &a66
+      tags: &a67
         - SATUSEHAT
   /api/v1/satusehat/doctors/{doctorId}/link:
     post:
@@ -46180,7 +47002,7 @@ paths:
       security:
         - bearer: []
       summary: Link a doctor to their SATUSEHAT IHS practitioner number
-      tags: *a66
+      tags: *a67
   /api/v1/satusehat/doctors/{doctorId}/link-by-ihs/preview:
     post:
       operationId: SatusehatLinkController_previewDoctorIhsLink_v1
@@ -46288,7 +47110,7 @@ paths:
       security:
         - bearer: []
       summary: Preview linking a doctor to a hand-typed SATUSEHAT IHS number
-      tags: *a66
+      tags: *a67
   /api/v1/satusehat/doctors/{doctorId}/link-by-ihs:
     post:
       operationId: SatusehatLinkController_linkDoctorByIhs_v1
@@ -46383,7 +47205,7 @@ paths:
       security:
         - bearer: []
       summary: Link a doctor to a hand-typed SATUSEHAT IHS number after confirmation
-      tags: *a66
+      tags: *a67
   /api/v1/satusehat/environment:
     get:
       operationId: SatusehatSubmissionController_getEnvironment_v1
@@ -46442,7 +47264,7 @@ paths:
       security:
         - bearer: []
       summary: Which SATUSEHAT environment this deployment reports to
-      tags: &a67
+      tags: &a68
         - SATUSEHAT
   /api/v1/satusehat/submissions:
     get:
@@ -46626,7 +47448,7 @@ paths:
       security:
         - bearer: []
       summary: List SATUSEHAT submission outbox entries
-      tags: *a67
+      tags: *a68
   /api/v1/satusehat/submissions/{id}:
     get:
       operationId: SatusehatSubmissionController_getSubmissionDetail_v1
@@ -46794,7 +47616,7 @@ paths:
       security:
         - bearer: []
       summary: One SATUSEHAT submission and what it sent
-      tags: *a67
+      tags: *a68
   /api/v1/satusehat/submissions/{id}/check:
     post:
       operationId: SatusehatSubmissionController_checkSubmission_v1
@@ -46898,7 +47720,7 @@ paths:
       security:
         - bearer: []
       summary: Check with SATUSEHAT whether it still holds what we sent
-      tags: *a67
+      tags: *a68
   /api/v1/satusehat/submissions/{id}/retry:
     post:
       operationId: SatusehatSubmissionController_retrySubmission_v1
@@ -47019,7 +47841,7 @@ paths:
       security:
         - bearer: []
       summary: Retry a failed SATUSEHAT submission
-      tags: *a67
+      tags: *a68
   /api/v1/satusehat/encounters/{encounterId}/record-comparison:
     get:
       operationId: SatusehatRecordController_compareEncounterRecord_v1
@@ -47293,7 +48115,7 @@ paths:
       security:
         - bearer: []
       summary: The clinic's SATUSEHAT Location tree
-      tags: &a68
+      tags: &a69
         - SATUSEHAT
   /api/v1/satusehat/locations/register:
     post:
@@ -47408,7 +48230,7 @@ paths:
       security:
         - bearer: []
       summary: Register clinic rows as SATUSEHAT Locations, or push their changes
-      tags: *a68
+      tags: *a69
   /api/v1/bpjs/config:
     get:
       operationId: BpjsPcareConfigController_getConfig_v1
@@ -47522,7 +48344,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS PCare bridging configuration
-      tags: &a69
+      tags: &a70
         - BPJS PCare
     put:
       operationId: BpjsPcareConfigController_upsertConfig_v1
@@ -47660,7 +48482,7 @@ paths:
       security:
         - bearer: []
       summary: Create or replace the BPJS PCare bridging configuration
-      tags: *a69
+      tags: *a70
     delete:
       operationId: BpjsPcareConfigController_deleteConfig_v1
       parameters: []
@@ -47719,7 +48541,7 @@ paths:
       security:
         - bearer: []
       summary: Delete the BPJS PCare bridging configuration
-      tags: *a69
+      tags: *a70
   /api/v1/bpjs/config/test-connection:
     post:
       operationId: BpjsPcareConfigController_testConnection_v1
@@ -47785,7 +48607,7 @@ paths:
       security:
         - bearer: []
       summary: Test the stored BPJS PCare credentials
-      tags: *a69
+      tags: *a70
   /api/v1/bpjs/reference/sync:
     post:
       operationId: BpjsReferenceController_syncCatalogs_v1
@@ -47873,7 +48695,7 @@ paths:
       security:
         - bearer: []
       summary: Sync the enumerable BPJS PCare reference catalogs
-      tags: &a70
+      tags: &a71
         - BPJS PCare
   /api/v1/bpjs/reference/status:
     get:
@@ -47940,7 +48762,7 @@ paths:
       security:
         - bearer: []
       summary: Read per-catalog BPJS reference sync status
-      tags: *a70
+      tags: *a71
   /api/v1/bpjs/reference/{catalog}:
     get:
       operationId: BpjsReferenceController_searchCatalog_v1
@@ -48034,7 +48856,7 @@ paths:
       security:
         - bearer: []
       summary: Search a synced BPJS reference catalog locally
-      tags: *a70
+      tags: *a71
   /api/v1/bpjs/reference/{catalog}/search:
     post:
       operationId: BpjsReferenceController_searchCatalogRemote_v1
@@ -48140,7 +48962,7 @@ paths:
       security:
         - bearer: []
       summary: Search a keyword-only BPJS catalog live and cache the results
-      tags: *a70
+      tags: *a71
   /api/v1/bpjs/mappings:
     get:
       operationId: BpjsMappingController_getOverview_v1
@@ -48228,7 +49050,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS mapping overview
-      tags: &a71
+      tags: &a72
         - BPJS PCare
   /api/v1/bpjs/mappings/doctors/{doctorId}:
     put:
@@ -48322,7 +49144,7 @@ paths:
       security:
         - bearer: []
       summary: Set or clear a doctor’s BPJS kdDokter mapping
-      tags: *a71
+      tags: *a72
   /api/v1/bpjs/mappings/specialties/{specialtyId}:
     put:
       operationId: BpjsMappingController_setSpecialtyMapping_v1
@@ -48411,7 +49233,7 @@ paths:
       security:
         - bearer: []
       summary: Set or clear a specialty’s BPJS kdPoli mapping
-      tags: *a71
+      tags: *a72
   /api/v1/bpjs/mappings/medications/{medicationId}:
     put:
       operationId: BpjsMappingController_setMedicationMapping_v1
@@ -48505,7 +49327,7 @@ paths:
       security:
         - bearer: []
       summary: Link or unlink a medication’s DPHO code
-      tags: *a71
+      tags: *a72
   /api/v1/bpjs/eligibility/patients/{patientId}/check:
     post:
       operationId: BpjsEligibilityController_checkEligibility_v1
@@ -48805,7 +49627,7 @@ paths:
       security:
         - bearer: []
       summary: List BPJS PCare submission outbox entries
-      tags: &a72
+      tags: &a73
         - BPJS PCare
   /api/v1/bpjs/submissions/{id}/retry:
     post:
@@ -48914,7 +49736,7 @@ paths:
       security:
         - bearer: []
       summary: Retry a failed BPJS PCare submission
-      tags: *a72
+      tags: *a73
   /api/v1/bpjs/reports/monthly:
     get:
       operationId: BpjsReportController_getMonthlyReport_v1
@@ -49161,7 +49983,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS Antrean Online bridging configuration
-      tags: &a73
+      tags: &a74
         - BPJS Antrean
     put:
       operationId: BpjsAntreanConfigController_upsertConfig_v1
@@ -49302,7 +50124,7 @@ paths:
       security:
         - bearer: []
       summary: Create or replace the BPJS Antrean Online bridging configuration
-      tags: *a73
+      tags: *a74
     delete:
       operationId: BpjsAntreanConfigController_deleteConfig_v1
       parameters: []
@@ -49361,7 +50183,7 @@ paths:
       security:
         - bearer: []
       summary: Delete the BPJS Antrean Online bridging configuration
-      tags: *a73
+      tags: *a74
   /api/v1/bpjs/antrean/config/test-connection:
     post:
       operationId: BpjsAntreanConfigController_testConnection_v1
@@ -49427,7 +50249,7 @@ paths:
       security:
         - bearer: []
       summary: Test the stored BPJS Antrean credentials
-      tags: *a73
+      tags: *a74
   /api/v1/bpjs/antrean/inbound-readiness:
     get:
       operationId: BpjsAntreanConfigController_getInboundReadiness_v1
@@ -49497,7 +50319,7 @@ paths:
       security:
         - bearer: []
       summary: Report whether the inbound Antrean web services can serve BPJS
-      tags: *a73
+      tags: *a74
   /api/v1/bpjs/antrean/hfis-reconciliation:
     get:
       operationId: BpjsAntreanConfigController_getHfisReconciliation_v1
@@ -49599,7 +50421,7 @@ paths:
       security:
         - bearer: []
       summary: Compare HFIS against HMS and report the disagreements
-      tags: *a73
+      tags: *a74
   /api/v1/admin/features:
     get:
       operationId: FeatureAdminController_getEntitlements_v1
@@ -49678,7 +50500,7 @@ paths:
       security:
         - bearer: []
       summary: List every feature and whether this client has it
-      tags: &a74
+      tags: &a75
         - Feature Entitlements
   /api/v1/admin/features/{key}:
     put:
@@ -49795,7 +50617,7 @@ paths:
       security:
         - bearer: []
       summary: Switch a feature on or off for this client
-      tags: *a74
+      tags: *a75
   /api/v1/features/availability:
     get:
       operationId: FeatureAvailabilityController_getAvailability_v1
@@ -49918,7 +50740,7 @@ paths:
       security:
         - bearer: []
       summary: List active roles
-      tags: &a75
+      tags: &a76
         - RBAC
     post:
       operationId: RbacController_createRole_v1
@@ -50005,7 +50827,7 @@ paths:
       security:
         - bearer: []
       summary: Create a custom role
-      tags: *a75
+      tags: *a76
   /api/v1/rbac/permissions:
     get:
       operationId: RbacController_getPermissionCatalog_v1
@@ -50085,7 +50907,7 @@ paths:
       security:
         - bearer: []
       summary: List the permission catalog
-      tags: *a75
+      tags: *a76
   /api/v1/rbac/roles/{id}:
     get:
       operationId: RbacController_getRoleById_v1
@@ -50204,7 +51026,7 @@ paths:
       security:
         - bearer: []
       summary: Get a role with its permissions and member count
-      tags: *a75
+      tags: *a76
     patch:
       operationId: RbacController_updateRole_v1
       parameters:
@@ -50303,7 +51125,7 @@ paths:
       security:
         - bearer: []
       summary: Update a role name or description
-      tags: *a75
+      tags: *a76
     delete:
       operationId: RbacController_deleteRole_v1
       parameters:
@@ -50379,7 +51201,7 @@ paths:
       security:
         - bearer: []
       summary: Soft-delete a role
-      tags: *a75
+      tags: *a76
   /api/v1/rbac/roles/{id}/permissions:
     put:
       operationId: RbacController_setRolePermissions_v1
@@ -50525,7 +51347,7 @@ paths:
       security:
         - bearer: []
       summary: Replace the permission set attached to a role
-      tags: *a75
+      tags: *a76
   /api/v1/rbac/assign-role:
     post:
       operationId: RbacController_assignRole_v1
@@ -50617,7 +51439,7 @@ paths:
       security:
         - bearer: []
       summary: Assign a role to a user
-      tags: *a75
+      tags: *a76
   /api/v1/rbac/unassign-role:
     post:
       operationId: RbacController_unassignRole_v1
@@ -50709,7 +51531,7 @@ paths:
       security:
         - bearer: []
       summary: Unassign a role from a user
-      tags: *a75
+      tags: *a76
   /api/v1/health:
     get:
       operationId: HealthController_getHealth_v1
@@ -55157,6 +55979,20 @@ components:
       required:
         - targets
         - taxCodeId
+    CreateTaxReportDto:
+      type: object
+      properties:
+        period:
+          type: string
+          pattern: ^\d{4}-(0[1-9]|1[0-2])$
+        kind:
+          type: string
+          enum:
+            - PP55_OMZET
+            - PPN_OUTPUT
+      required:
+        - period
+        - kind
     LinkDoctorByIhsDto:
       type: object
       properties:

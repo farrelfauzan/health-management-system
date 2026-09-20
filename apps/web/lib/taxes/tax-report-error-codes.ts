@@ -1,0 +1,8 @@
+/** Refusals the tax report screens explain in the reader's language (P27-T05). */
+export const TAX_REPORT_ERROR_CODES = [
+  'TAX_REPORT_NOT_APPLICABLE',
+  'TAX_REPORT_EXISTS',
+  'TAX_REPORT_FINALIZED',
+  'TAX_REPORT_PERIOD_OPEN',
+  'TAX_REPORT_PERIOD_IN_FUTURE',
+] as const;
