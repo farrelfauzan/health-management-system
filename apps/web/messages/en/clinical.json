@@ -656,7 +656,8 @@
         "noField": "No field of study",
         "legacyValue": "On file: {value}",
         "legacyNotice": "On file as free text: {value}. Pick a replacement from the list.",
-        "manageLink": "Missing an option? Add it under Settings."
+        "manageLink": "Missing an option? Add it under Settings.",
+        "askAdministrator": "Missing an option? Ask an administrator to add it."
       },
       "scheduleFields": {
         "day": "Day for entry {index}",
@@ -1146,6 +1147,7 @@
         "vaccine": "Vaccine",
         "vaccinePlaceholder": "Choose a vaccine",
         "noVaccines": "No catalog item is marked as a vaccine yet. Mark one in the medication catalog first.",
+        "noVaccinesAskAdministrator": "No catalog item is marked as a vaccine yet. Ask an administrator or pharmacist to mark one in the medication catalog.",
         "lotNumber": "Lot number",
         "expirationDate": "Expiry",
         "doseNumber": "Dose",
