@@ -70,6 +70,10 @@ export type AppSubject =
   // doctors and patients, and what a clinician has been cleared to do is a
   // compliance record, not part of the directory.
   | 'DoctorAuthority'
+  // P25-T05. A doctor's written pelimpahan to a midwife. Separate from
+  // `DoctorAuthority` because the two answer different questions: what she may
+  // do in her own right, and what somebody else answers for.
+  | 'DoctorMandate'
   | 'DoctorSchedule'
   | 'DoctorPatient'
   | 'DoctorPatientActivity'

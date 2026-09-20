@@ -18,6 +18,7 @@ import { ConfigService } from '@nestjs/config';
 import { AuditService } from '../../../common/audit/audit.service';
 import { AuditAction } from '../../../generated/prisma/client';
 import { DoctorAuthorityService } from '../../doctor-management/service/doctor-authority.service';
+import { DoctorMandateService } from '../../doctor-management/service/doctor-mandate.service';
 
 const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 
@@ -41,6 +42,7 @@ export class MidwifeAuthorityEnforcementService {
 
   constructor(
     private readonly doctorAuthorityService: DoctorAuthorityService,
+    private readonly doctorMandateService: DoctorMandateService,
     private readonly auditService: AuditService,
     configService: ConfigService,
   ) {
@@ -48,25 +50,53 @@ export class MidwifeAuthorityEnforcementService {
   }
 
   /**
-   * Refuses the procedure when the encounter's clinician is a midwife without
-   * an active authority of the kind it needs on the clinic-local day it was
-   * performed — so a backdated entry is judged on the day it happened.
+   * Decides what a midwife is recording this procedure under, and refuses it
+   * when the answer is nothing (P25-T03, extended by P25-T05).
+   *
+   * Her own authority comes first: with an active one of the kind the action
+   * needs, she acts in her own right and the row carries no mandate. Failing
+   * that, a live pelimpahan naming this code covers it, and the id comes back
+   * so the row records **who answers for the action**. A mandate also covers a
+   * code that needs no authority at all, which is why it is looked up for
+   * every procedure a midwife records rather than only for gated ones.
+   *
+   * Only when neither holds is the action refused — audited first, because
+   * `AuditInterceptor` never writes on a 4xx.
+   *
+   * Everything is judged on the clinic-local day the action was *performed*,
+   * so a backdated entry is judged on the day it happened.
    */
-  async assertProcedureAllowed(params: AssertMidwifeProcedureAuthorityParams): Promise<void> {
+  async resolveProcedureMandate(
+    params: AssertMidwifeProcedureAuthorityParams,
+  ): Promise<string | null> {
     if (params.encounter.doctor.profession !== 'MIDWIFE') {
-      return;
+      return null;
     }
+    const doctorId = params.encounter.doctorId;
+    const onDate = this.toClinicDate(params.performedAt ?? new Date());
     const kind = resolveMidwifeProcedureAuthorityKind({
       code: params.code,
       contraceptiveImplantAction: params.contraceptiveImplantAction,
     });
-    if (kind === null) {
-      return;
+    if (kind !== null && (await this.doctorAuthorityService.hasActiveAuthority({ doctorId, kind, onDate }))) {
+      // Her own authority. A mandate she also happens to hold does not take
+      // the action away from her, so nothing is stamped.
+      return null;
     }
-    const doctorId = params.encounter.doctorId;
-    const onDate = this.toClinicDate(params.performedAt ?? new Date());
-    if (await this.doctorAuthorityService.hasActiveAuthority({ doctorId, kind, onDate })) {
-      return;
+    const mandate = await this.doctorMandateService.findCoveringMandate({
+      midwifeDoctorId: doctorId,
+      icd9cmCode: params.code.trim(),
+      // The repository compares against a DATE column, so the clinic-local
+      // calendar day travels as a date rather than as the instant it was.
+      onDate: new Date(`${onDate}T00:00:00.000Z`),
+    });
+    if (mandate !== null) {
+      return mandate.id;
+    }
+    if (kind === null) {
+      // Nothing to gate and nothing to attribute: an ordinary procedure any
+      // midwife may record on her own.
+      return null;
     }
     await this.auditService.record({
       action: AuditAction.MIDWIFE_AUTHORITY_REFUSED,

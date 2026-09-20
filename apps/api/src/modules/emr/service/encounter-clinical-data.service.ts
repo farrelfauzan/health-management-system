@@ -172,9 +172,11 @@ export class EncounterClinicalDataService {
   }
 
   /**
-   * Codes a procedure. The midwife authority gate (P25-T03) runs on the code
-   * resolved from whichever path the caller used — catalog id or free code —
-   * and before the row is written, so a refused procedure is never saved.
+   * Codes a procedure. The midwife authority gate (P25-T03, extended by
+   * P25-T05) runs on the code resolved from whichever path the caller used —
+   * catalog id or free code — and before the row is written, so a refused
+   * procedure is never saved and one performed under a doctor's pelimpahan
+   * carries it from the first version of the row.
    */
   async addProcedure(
     encounterId: string,
@@ -184,7 +186,10 @@ export class EncounterClinicalDataService {
     const encounter = await this.assertWritableEncounter(encounterId, currentUser);
     const entry = await this.resolveProcedureEntry(payload);
     const performedAt = payload.performedAt ? new Date(payload.performedAt) : undefined;
-    await this.midwifeAuthorityEnforcementService.assertProcedureAllowed({
+    // Returns the pelimpahan this was recorded under, when it was one
+    // (P25-T05), and throws when a midwife may do it under neither her own
+    // authority nor a mandate.
+    const mandateId = await this.midwifeAuthorityEnforcementService.resolveProcedureMandate({
       encounter,
       code: entry.code,
       contraceptiveImplantAction: payload.contraceptiveImplantAction,
@@ -199,6 +204,7 @@ export class EncounterClinicalDataService {
       notes: payload.notes,
       performedAt,
       contraceptiveImplantAction: payload.contraceptiveImplantAction,
+      mandateId,
       recordedById: currentUser.sub,
     });
 

@@ -887,6 +887,63 @@
           "submit": "Revoke authority",
           "error": "Unable to revoke the authority. Please try again."
         }
+      },
+      "mandates": {
+        "title": "Doctor mandates",
+        "description": "A doctor's written pelimpahan to a midwife: a mandate stays under the doctor's responsibility, a delegation moves it to the midwife while he is away (PP 28/2024 Pasal 745).",
+        "empty": "No mandate has been recorded yet.",
+        "loadError": "Mandates could not be loaded.",
+        "add": "Record a mandate",
+        "mandatedBy": "Granted by {name}",
+        "procedures": "Procedures",
+        "downloadInstruction": "Download the written instruction",
+        "downloadError": "The written instruction could not be downloaded.",
+        "kind": {
+          "MANDATE": "Mandate",
+          "DELEGATION": "Delegation"
+        },
+        "kindHint": {
+          "MANDATE": "Responsibility stays with the doctor who grants it and supervises the work.",
+          "DELEGATION": "Responsibility moves to the midwife, and holds only while the doctor is away."
+        },
+        "policyWarning": {
+          "DELEGATION_OUTSIDE_ABSENCE_WINDOW": "The window falls outside the one-to-three months PP 28/2024 Pasal 745(3) describes for an absent doctor. Recorded, not refused.",
+          "OVERLAPS_EXISTING_MANDATE": "Another live mandate already covers part of this window."
+        },
+        "form": {
+          "title": "Record a mandate",
+          "description": "Record the written pelimpahan {name} works under, with the granting doctor's letter.",
+          "kind": "Form of pelimpahan",
+          "kindPlaceholder": "Choose a form",
+          "kindHint": "A mandate stays under the doctor's responsibility; a delegation moves it to the midwife.",
+          "mandatingDoctor": "Granting doctor",
+          "instruction": "The doctor's instruction",
+          "procedures": "Delegated procedures (ICD-9-CM)",
+          "proceduresPlaceholder": "Search a code or a procedure name",
+          "noProceduresYet": "No procedure chosen yet. A mandate covers exactly the procedures listed here.",
+          "removeProcedure": "Remove procedure {code}",
+          "instructionFile": "Written instruction (PDF or image)",
+          "instructionFileHint": "Required: a pelimpahan is written (PP 28/2024 Pasal 745(2)). Up to 20 MB.",
+          "kindRequired": "Choose the form of pelimpahan.",
+          "mandatingDoctorRequired": "Choose the granting doctor.",
+          "instructionRequired": "The doctor's instruction is required.",
+          "proceduresRequired": "Choose at least one delegated procedure.",
+          "tooManyProcedures": "That is more procedures than one mandate may carry.",
+          "validFromRequired": "A start date is required.",
+          "validUntilRequired": "An end date is required.",
+          "instructionFileRequired": "The written instruction must be uploaded.",
+          "invalidParties": "A mandate runs from a doctor to a different clinician who is a midwife.",
+          "instructionUnreadable": "The written instruction could not be read back. Upload the file again.",
+          "uploading": "Uploading the written instruction...",
+          "saving": "Saving...",
+          "submit": "Save",
+          "error": "The mandate could not be saved. Please try again."
+        },
+        "revokeDialog": {
+          "title": "Revoke the mandate",
+          "description": "Revoke the pelimpahan {doctor} granted to {name}. Procedures already recorded under it keep naming it.",
+          "error": "The mandate could not be revoked. Please try again."
+        }
       }
     },
     "portal": {
@@ -1081,6 +1138,10 @@
           "none": "Not an implant procedure",
           "INSERTION": "Implant insertion",
           "REMOVAL": "Implant removal"
+        },
+        "mandate": {
+          "MANDATE": "Under a mandate from {name}",
+          "DELEGATION": "Delegated by {name}"
         }
       },
       "vitals": {

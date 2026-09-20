@@ -8,6 +8,7 @@
  *
  * 🟢 You can import this file directly.
  */
+export type * from './models/DoctorMandate'
 export type * from './models/User'
 export type * from './models/LoginAttempt'
 export type * from './models/RefreshToken'

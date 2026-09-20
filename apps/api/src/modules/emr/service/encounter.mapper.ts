@@ -11,7 +11,7 @@ import {
   EncounterWithRelationsRecord,
   ImmunizationRecord,
   ImmunizationResponse,
-  ProcedureRecord,
+  ProcedureWithMandateRecord,
   ProcedureResponse,
   VitalSignsRecord,
   VitalSignsResponse,
@@ -162,8 +162,17 @@ export class EncounterMapper {
     };
   }
 
-  toProcedureResponse(procedure: ProcedureRecord): ProcedureResponse {
+  toProcedureResponse(procedure: ProcedureWithMandateRecord): ProcedureResponse {
     return {
+      ...(procedure.mandate
+        ? {
+            mandate: {
+              id: procedure.mandate.id,
+              kind: procedure.mandate.kind,
+              mandatingDoctorName: procedure.mandate.mandatingDoctor.fullName,
+            },
+          }
+        : {}),
       id: procedure.id,
       encounterId: procedure.encounterId,
       icd9cmCodeId: procedure.icd9cmCodeId ?? undefined,

@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 
 import { AssignPatientDialog } from '#components/client/doctors/assign-patient-dialog';
 import { DoctorAuthoritiesCard } from '#components/client/doctors/doctor-authorities-card';
+import { DoctorMandatesCard } from '#components/client/doctors/doctor-mandates-card';
 import { DoctorFormDialog } from '#components/client/doctors/doctor-form-dialog';
 import { DoctorEducationsCard } from '#components/client/doctors/doctor-educations-card';
 import { DoctorIdentifiersCard } from '#components/client/doctors/doctor-identifiers-card';
@@ -86,6 +87,11 @@ export function DoctorDetailPanel({ doctorId, isSatusehatEnabled }: DoctorDetail
         <div className="space-y-6">
           <DoctorLicensesCard licenses={doctor.licenses} />
           <DoctorAuthoritiesCard
+            doctorId={doctor.id}
+            doctorName={doctor.fullName}
+            profession={doctor.profession}
+          />
+          <DoctorMandatesCard
             doctorId={doctor.id}
             doctorName={doctor.fullName}
             profession={doctor.profession}

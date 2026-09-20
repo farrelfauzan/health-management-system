@@ -5,6 +5,8 @@ import type {
   DoctorAuthorityKindValue,
   DoctorInvitationStatusValue,
   DoctorLicenseTypeValue,
+  DoctorMandateKindValue,
+  DoctorMandatePolicyWarningValue,
 } from '#doctor-management/schemas';
 
 export type DoctorProfile = {
@@ -202,6 +204,49 @@ export type DoctorAuthority = {
   revokeReason: string | null;
   createdAt: string;
   updatedAt: string;
+};
+
+/**
+ * One pelimpahan as the clinician page shows it (P25-T05). `status` is judged
+ * the same way an authority's is — on the clinic's calendar day — so a mandate
+ * that ran out yesterday reads as EXPIRED rather than as an active record with
+ * a date somebody has to compare themselves.
+ */
+export type DoctorMandate = {
+  id: string;
+  midwifeDoctorId: string;
+  mandatingDoctorId: string;
+  /** Shown on every procedure performed under it: who answers for the action. */
+  mandatingDoctorName: string;
+  kind: DoctorMandateKindValue;
+  instruction: string;
+  icd9cmCodes: string[];
+  validFrom: string;
+  validUntil: string;
+  instructionMimeType: string;
+  status: DoctorAuthorityStatusValue;
+  /**
+   * Rules that no longer refuse a mandate but still deserve saying out loud
+   * (D-036 §3) — an overlap with a live mandate, or a delegation whose window
+   * is not the 1–3 month absence PP 28/2024 Pasal 745(3) describes.
+   */
+  policyWarnings: DoctorMandatePolicyWarningValue[];
+  revokedAt: string | null;
+  revokeReason: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+/** What a procedure says about the mandate it was performed under (P25-T05). */
+export type ProcedureMandateSummary = {
+  id: string;
+  kind: DoctorMandateKindValue;
+  /**
+   * The doctor who granted it. Under a MANDATE she is the responsible
+   * clinician; under a DELEGATION responsibility moved to the midwife, which
+   * is why `kind` travels beside the name rather than the name alone.
+   */
+  mandatingDoctorName: string;
 };
 
 export type DoctorAuthorityUploadUrlView = {

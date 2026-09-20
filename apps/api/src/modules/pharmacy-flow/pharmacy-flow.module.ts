@@ -4,6 +4,7 @@ import { SatusehatModule } from '../../common/satusehat/satusehat.module';
 import { AuthModule } from '../auth/auth.module';
 import { BillingModule } from '../billing/billing.module';
 import { ClinicalRequestDocumentModule } from '../clinical-request-document/clinical-request-document.module';
+import { DoctorManagementModule } from '../doctor-management/doctor-management.module';
 import { KfaLookupService } from './service/kfa-lookup.service';
 import { MidwifeFormularyService } from './service/midwife-formulary.service';
 import { DispenseController } from './controller/dispense.controller';
@@ -20,7 +21,16 @@ import { PharmacyFlowService } from './service/pharmacy-flow.service';
   // billing already owns. Neither imports this one back.
   // SatusehatModule for the KFA product lookup the catalog form searches: the
   // national code is the platform's, so the platform is what answers for it.
-  imports: [AuthModule, BillingModule, ClinicalRequestDocumentModule, SatusehatModule],
+  // DoctorManagementModule for the midwife authority behind an AUTHORITY_BOUND
+  // medicine (P25-T05): who holds which kewenangan is that module's to answer,
+  // and this one asks its service rather than reading its tables.
+  imports: [
+    AuthModule,
+    BillingModule,
+    ClinicalRequestDocumentModule,
+    DoctorManagementModule,
+    SatusehatModule,
+  ],
   controllers: [
     MedicationController,
     PrescriptionController,

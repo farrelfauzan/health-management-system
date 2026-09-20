@@ -497,6 +497,9 @@ export const DOCTOR_AUTHORITY_GRANT_DOCUMENT_MAX_SIZE_BYTES = 20 * 1024 * 1024;
 /** The object-key prefix every grant document upload is minted under, per clinician. */
 export const DOCTOR_AUTHORITY_GRANT_DOCUMENT_KEY_ROOT = 'doctor-authorities';
 
+/** The same, for the written instruction behind a pelimpahan (P25-T05). */
+export const DOCTOR_MANDATE_INSTRUCTION_KEY_ROOT = 'doctor-mandates';
+
 const grantDocumentStorageKeySchema = z.string().trim().min(1).max(512);
 
 const authorityReferenceSchema = z.string().trim().min(1).max(128);
@@ -567,6 +570,102 @@ export const revokeDoctorAuthoritySchema = z.object({
 });
 
 export type RevokeDoctorAuthorityInput = z.infer<typeof revokeDoctorAuthoritySchema>;
+
+/**
+ * The two forms a doctor's pelimpahan takes (P25-T05, D-036). Permenkes
+ * 28/2017 Pasal 27 is revoked; PP 28/2024 Pasal 745 and Permenkes 13/2025
+ * Pasal 184 replace it, and they are not one thing:
+ *
+ * - `MANDATE` (*mandat*): responsibility stays with the doctor, who
+ *   supervises. The everyday form.
+ * - `DELEGATION` (*delegasi*): responsibility moves to the midwife, and it is
+ *   valid only while the doctor is away — PP 28/2024 Pasal 745(3) puts that
+ *   at one to three months.
+ *
+ * Both are written, and both are reported back to the doctor. Which one it
+ * was decides who answers for the action, so it is shown on every procedure
+ * performed under it rather than being an administrative detail.
+ */
+export const DOCTOR_MANDATE_KINDS = ['MANDATE', 'DELEGATION'] as const;
+
+export const doctorMandateKindSchema = z.enum(DOCTOR_MANDATE_KINDS);
+
+export type DoctorMandateKindValue = z.infer<typeof doctorMandateKindSchema>;
+
+/**
+ * The parties are wrong: the midwife profile must be a `MIDWIFE`, the
+ * mandating profile an active `DOCTOR`, and they must be different (422).
+ */
+export const DOCTOR_MANDATE_INVALID_PARTIES_ERROR_CODE = 'DOCTOR_MANDATE_INVALID_PARTIES';
+
+/**
+ * A pelimpahan is written (PP 28/2024 Pasal 745(2)), so the instruction file
+ * is required — a mandate nobody signed is a conversation (422).
+ */
+export const DOCTOR_MANDATE_INSTRUCTION_REQUIRED_ERROR_CODE =
+  'DOCTOR_MANDATE_INSTRUCTION_REQUIRED';
+
+/**
+ * Warnings a mandate may carry without being refused (D-036 §3). The "same
+ * FKTP" and "never continuous" rules of the revoked Pasal 27 are no longer
+ * hard law, so they inform rather than block — and a delegation outside the
+ * 1–3 month window is a fact about the doctor's absence, not a validation
+ * error we can adjudicate.
+ */
+export const DOCTOR_MANDATE_POLICY_WARNINGS = [
+  'DELEGATION_OUTSIDE_ABSENCE_WINDOW',
+  'OVERLAPS_EXISTING_MANDATE',
+] as const;
+
+export const doctorMandatePolicyWarningSchema = z.enum(DOCTOR_MANDATE_POLICY_WARNINGS);
+
+export type DoctorMandatePolicyWarningValue = z.infer<typeof doctorMandatePolicyWarningSchema>;
+
+/** PP 28/2024 Pasal 745(3): a delegation covers an absence of 1–3 months. */
+export const DELEGATION_MIN_ABSENCE_DAYS = 30;
+export const DELEGATION_MAX_ABSENCE_DAYS = 92;
+
+export const MAX_MANDATE_PROCEDURE_CODES = 50;
+
+/**
+ * Records one pelimpahan (P25-T05, FR-AUTH-04).
+ *
+ * `icd9cmCodes` is the point of the record: a mandate names the actions it
+ * covers, so the procedure gate can tell one that is covered from one that is
+ * not. At least one, because a mandate for nothing is not a mandate.
+ *
+ * `validUntil` is required, like every authority (D-036 §4): a pelimpahan runs
+ * for as long as the doctor said and no longer. The regulation sets no maximum
+ * duration, so none is imposed here — an open question for product, recorded
+ * in the P25 addendum rather than invented in code.
+ */
+export const createDoctorMandateSchema = z
+  .object({
+    kind: doctorMandateKindSchema,
+    mandatingDoctorId: z.string().uuid(),
+    instruction: z.string().trim().min(3).max(2000),
+    icd9cmCodes: z
+      .array(z.string().trim().min(1).max(16))
+      .min(1)
+      .max(MAX_MANDATE_PROCEDURE_CODES)
+      .refine((codes) => new Set(codes).size === codes.length, 'Procedure codes must be unique'),
+    validFrom: licenseDateSchema,
+    validUntil: licenseDateSchema,
+    /** A key minted by the upload-url route. Required: the writing is the law. */
+    instructionStorageKey: grantDocumentStorageKeySchema,
+  })
+  .refine(hasValidityOrder, {
+    message: 'validUntil must be on or after validFrom',
+    path: ['validUntil'],
+  });
+
+export type CreateDoctorMandateInput = z.infer<typeof createDoctorMandateSchema>;
+
+export const revokeDoctorMandateSchema = z.object({
+  reason: z.string().trim().min(3).max(500),
+});
+
+export type RevokeDoctorMandateInput = z.infer<typeof revokeDoctorMandateSchema>;
 
 export const createDoctorAuthorityUploadUrlSchema = z.object({
   mimeType: doctorAuthorityGrantDocumentMimeTypeSchema,

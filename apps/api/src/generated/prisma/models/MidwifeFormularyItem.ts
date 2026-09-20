@@ -46,6 +46,7 @@ export type MidwifeFormularyItemMinAggregateOutputType = {
   code: string | null
   displayName: string | null
   group: $Enums.MidwifeFormularyGroup | null
+  authorityKind: $Enums.DoctorAuthorityKind | null
   regulationBasis: string | null
   sortOrder: number | null
   createdAt: Date | null
@@ -57,6 +58,7 @@ export type MidwifeFormularyItemMaxAggregateOutputType = {
   code: string | null
   displayName: string | null
   group: $Enums.MidwifeFormularyGroup | null
+  authorityKind: $Enums.DoctorAuthorityKind | null
   regulationBasis: string | null
   sortOrder: number | null
   createdAt: Date | null
@@ -68,6 +70,7 @@ export type MidwifeFormularyItemCountAggregateOutputType = {
   code: number
   displayName: number
   group: number
+  authorityKind: number
   regulationBasis: number
   kfaCodes: number
   kfaTemplateCodes: number
@@ -92,6 +95,7 @@ export type MidwifeFormularyItemMinAggregateInputType = {
   code?: true
   displayName?: true
   group?: true
+  authorityKind?: true
   regulationBasis?: true
   sortOrder?: true
   createdAt?: true
@@ -103,6 +107,7 @@ export type MidwifeFormularyItemMaxAggregateInputType = {
   code?: true
   displayName?: true
   group?: true
+  authorityKind?: true
   regulationBasis?: true
   sortOrder?: true
   createdAt?: true
@@ -114,6 +119,7 @@ export type MidwifeFormularyItemCountAggregateInputType = {
   code?: true
   displayName?: true
   group?: true
+  authorityKind?: true
   regulationBasis?: true
   kfaCodes?: true
   kfaTemplateCodes?: true
@@ -215,6 +221,7 @@ export type MidwifeFormularyItemGroupByOutputType = {
   code: string
   displayName: string
   group: $Enums.MidwifeFormularyGroup
+  authorityKind: $Enums.DoctorAuthorityKind | null
   regulationBasis: string
   kfaCodes: string[]
   kfaTemplateCodes: string[]
@@ -252,6 +259,7 @@ export type MidwifeFormularyItemWhereInput = {
   code?: Prisma.StringFilter<"MidwifeFormularyItem"> | string
   displayName?: Prisma.StringFilter<"MidwifeFormularyItem"> | string
   group?: Prisma.EnumMidwifeFormularyGroupFilter<"MidwifeFormularyItem"> | $Enums.MidwifeFormularyGroup
+  authorityKind?: Prisma.EnumDoctorAuthorityKindNullableFilter<"MidwifeFormularyItem"> | $Enums.DoctorAuthorityKind | null
   regulationBasis?: Prisma.StringFilter<"MidwifeFormularyItem"> | string
   kfaCodes?: Prisma.StringNullableListFilter<"MidwifeFormularyItem">
   kfaTemplateCodes?: Prisma.StringNullableListFilter<"MidwifeFormularyItem">
@@ -266,6 +274,7 @@ export type MidwifeFormularyItemOrderByWithRelationInput = {
   code?: Prisma.SortOrder
   displayName?: Prisma.SortOrder
   group?: Prisma.SortOrder
+  authorityKind?: Prisma.SortOrderInput | Prisma.SortOrder
   regulationBasis?: Prisma.SortOrder
   kfaCodes?: Prisma.SortOrder
   kfaTemplateCodes?: Prisma.SortOrder
@@ -283,6 +292,7 @@ export type MidwifeFormularyItemWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.MidwifeFormularyItemWhereInput | Prisma.MidwifeFormularyItemWhereInput[]
   displayName?: Prisma.StringFilter<"MidwifeFormularyItem"> | string
   group?: Prisma.EnumMidwifeFormularyGroupFilter<"MidwifeFormularyItem"> | $Enums.MidwifeFormularyGroup
+  authorityKind?: Prisma.EnumDoctorAuthorityKindNullableFilter<"MidwifeFormularyItem"> | $Enums.DoctorAuthorityKind | null
   regulationBasis?: Prisma.StringFilter<"MidwifeFormularyItem"> | string
   kfaCodes?: Prisma.StringNullableListFilter<"MidwifeFormularyItem">
   kfaTemplateCodes?: Prisma.StringNullableListFilter<"MidwifeFormularyItem">
@@ -297,6 +307,7 @@ export type MidwifeFormularyItemOrderByWithAggregationInput = {
   code?: Prisma.SortOrder
   displayName?: Prisma.SortOrder
   group?: Prisma.SortOrder
+  authorityKind?: Prisma.SortOrderInput | Prisma.SortOrder
   regulationBasis?: Prisma.SortOrder
   kfaCodes?: Prisma.SortOrder
   kfaTemplateCodes?: Prisma.SortOrder
@@ -319,6 +330,7 @@ export type MidwifeFormularyItemScalarWhereWithAggregatesInput = {
   code?: Prisma.StringWithAggregatesFilter<"MidwifeFormularyItem"> | string
   displayName?: Prisma.StringWithAggregatesFilter<"MidwifeFormularyItem"> | string
   group?: Prisma.EnumMidwifeFormularyGroupWithAggregatesFilter<"MidwifeFormularyItem"> | $Enums.MidwifeFormularyGroup
+  authorityKind?: Prisma.EnumDoctorAuthorityKindNullableWithAggregatesFilter<"MidwifeFormularyItem"> | $Enums.DoctorAuthorityKind | null
   regulationBasis?: Prisma.StringWithAggregatesFilter<"MidwifeFormularyItem"> | string
   kfaCodes?: Prisma.StringNullableListFilter<"MidwifeFormularyItem">
   kfaTemplateCodes?: Prisma.StringNullableListFilter<"MidwifeFormularyItem">
@@ -333,6 +345,7 @@ export type MidwifeFormularyItemCreateInput = {
   code: string
   displayName: string
   group: $Enums.MidwifeFormularyGroup
+  authorityKind?: $Enums.DoctorAuthorityKind | null
   regulationBasis: string
   kfaCodes?: Prisma.MidwifeFormularyItemCreatekfaCodesInput | string[]
   kfaTemplateCodes?: Prisma.MidwifeFormularyItemCreatekfaTemplateCodesInput | string[]
@@ -347,6 +360,7 @@ export type MidwifeFormularyItemUncheckedCreateInput = {
   code: string
   displayName: string
   group: $Enums.MidwifeFormularyGroup
+  authorityKind?: $Enums.DoctorAuthorityKind | null
   regulationBasis: string
   kfaCodes?: Prisma.MidwifeFormularyItemCreatekfaCodesInput | string[]
   kfaTemplateCodes?: Prisma.MidwifeFormularyItemCreatekfaTemplateCodesInput | string[]
@@ -361,6 +375,7 @@ export type MidwifeFormularyItemUpdateInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   displayName?: Prisma.StringFieldUpdateOperationsInput | string
   group?: Prisma.EnumMidwifeFormularyGroupFieldUpdateOperationsInput | $Enums.MidwifeFormularyGroup
+  authorityKind?: Prisma.NullableEnumDoctorAuthorityKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityKind | null
   regulationBasis?: Prisma.StringFieldUpdateOperationsInput | string
   kfaCodes?: Prisma.MidwifeFormularyItemUpdatekfaCodesInput | string[]
   kfaTemplateCodes?: Prisma.MidwifeFormularyItemUpdatekfaTemplateCodesInput | string[]
@@ -375,6 +390,7 @@ export type MidwifeFormularyItemUncheckedUpdateInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   displayName?: Prisma.StringFieldUpdateOperationsInput | string
   group?: Prisma.EnumMidwifeFormularyGroupFieldUpdateOperationsInput | $Enums.MidwifeFormularyGroup
+  authorityKind?: Prisma.NullableEnumDoctorAuthorityKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityKind | null
   regulationBasis?: Prisma.StringFieldUpdateOperationsInput | string
   kfaCodes?: Prisma.MidwifeFormularyItemUpdatekfaCodesInput | string[]
   kfaTemplateCodes?: Prisma.MidwifeFormularyItemUpdatekfaTemplateCodesInput | string[]
@@ -389,6 +405,7 @@ export type MidwifeFormularyItemCreateManyInput = {
   code: string
   displayName: string
   group: $Enums.MidwifeFormularyGroup
+  authorityKind?: $Enums.DoctorAuthorityKind | null
   regulationBasis: string
   kfaCodes?: Prisma.MidwifeFormularyItemCreatekfaCodesInput | string[]
   kfaTemplateCodes?: Prisma.MidwifeFormularyItemCreatekfaTemplateCodesInput | string[]
@@ -403,6 +420,7 @@ export type MidwifeFormularyItemUpdateManyMutationInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   displayName?: Prisma.StringFieldUpdateOperationsInput | string
   group?: Prisma.EnumMidwifeFormularyGroupFieldUpdateOperationsInput | $Enums.MidwifeFormularyGroup
+  authorityKind?: Prisma.NullableEnumDoctorAuthorityKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityKind | null
   regulationBasis?: Prisma.StringFieldUpdateOperationsInput | string
   kfaCodes?: Prisma.MidwifeFormularyItemUpdatekfaCodesInput | string[]
   kfaTemplateCodes?: Prisma.MidwifeFormularyItemUpdatekfaTemplateCodesInput | string[]
@@ -417,6 +435,7 @@ export type MidwifeFormularyItemUncheckedUpdateManyInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   displayName?: Prisma.StringFieldUpdateOperationsInput | string
   group?: Prisma.EnumMidwifeFormularyGroupFieldUpdateOperationsInput | $Enums.MidwifeFormularyGroup
+  authorityKind?: Prisma.NullableEnumDoctorAuthorityKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityKind | null
   regulationBasis?: Prisma.StringFieldUpdateOperationsInput | string
   kfaCodes?: Prisma.MidwifeFormularyItemUpdatekfaCodesInput | string[]
   kfaTemplateCodes?: Prisma.MidwifeFormularyItemUpdatekfaTemplateCodesInput | string[]
@@ -431,6 +450,7 @@ export type MidwifeFormularyItemCountOrderByAggregateInput = {
   code?: Prisma.SortOrder
   displayName?: Prisma.SortOrder
   group?: Prisma.SortOrder
+  authorityKind?: Prisma.SortOrder
   regulationBasis?: Prisma.SortOrder
   kfaCodes?: Prisma.SortOrder
   kfaTemplateCodes?: Prisma.SortOrder
@@ -449,6 +469,7 @@ export type MidwifeFormularyItemMaxOrderByAggregateInput = {
   code?: Prisma.SortOrder
   displayName?: Prisma.SortOrder
   group?: Prisma.SortOrder
+  authorityKind?: Prisma.SortOrder
   regulationBasis?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -460,6 +481,7 @@ export type MidwifeFormularyItemMinOrderByAggregateInput = {
   code?: Prisma.SortOrder
   displayName?: Prisma.SortOrder
   group?: Prisma.SortOrder
+  authorityKind?: Prisma.SortOrder
   regulationBasis?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -508,6 +530,7 @@ export type MidwifeFormularyItemSelect<ExtArgs extends runtime.Types.Extensions.
   code?: boolean
   displayName?: boolean
   group?: boolean
+  authorityKind?: boolean
   regulationBasis?: boolean
   kfaCodes?: boolean
   kfaTemplateCodes?: boolean
@@ -522,6 +545,7 @@ export type MidwifeFormularyItemSelectCreateManyAndReturn<ExtArgs extends runtim
   code?: boolean
   displayName?: boolean
   group?: boolean
+  authorityKind?: boolean
   regulationBasis?: boolean
   kfaCodes?: boolean
   kfaTemplateCodes?: boolean
@@ -536,6 +560,7 @@ export type MidwifeFormularyItemSelectUpdateManyAndReturn<ExtArgs extends runtim
   code?: boolean
   displayName?: boolean
   group?: boolean
+  authorityKind?: boolean
   regulationBasis?: boolean
   kfaCodes?: boolean
   kfaTemplateCodes?: boolean
@@ -550,6 +575,7 @@ export type MidwifeFormularyItemSelectScalar = {
   code?: boolean
   displayName?: boolean
   group?: boolean
+  authorityKind?: boolean
   regulationBasis?: boolean
   kfaCodes?: boolean
   kfaTemplateCodes?: boolean
@@ -559,7 +585,7 @@ export type MidwifeFormularyItemSelectScalar = {
   updatedAt?: boolean
 }
 
-export type MidwifeFormularyItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "displayName" | "group" | "regulationBasis" | "kfaCodes" | "kfaTemplateCodes" | "matchKeywords" | "sortOrder" | "createdAt" | "updatedAt", ExtArgs["result"]["midwifeFormularyItem"]>
+export type MidwifeFormularyItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "displayName" | "group" | "authorityKind" | "regulationBasis" | "kfaCodes" | "kfaTemplateCodes" | "matchKeywords" | "sortOrder" | "createdAt" | "updatedAt", ExtArgs["result"]["midwifeFormularyItem"]>
 
 export type $MidwifeFormularyItemPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "MidwifeFormularyItem"
@@ -569,6 +595,13 @@ export type $MidwifeFormularyItemPayload<ExtArgs extends runtime.Types.Extension
     code: string
     displayName: string
     group: $Enums.MidwifeFormularyGroup
+    /**
+     * Which authority an `AUTHORITY_BOUND` template row needs, and null for an
+     * `OWN_AUTHORITY` one (P25-T05). A database CHECK keeps the two in step:
+     * a bound row with no kind would be unenforceable, and a kind on an
+     * own-authority row would claim a gate that does not exist.
+     */
+    authorityKind: $Enums.DoctorAuthorityKind | null
     regulationBasis: string
     kfaCodes: string[]
     kfaTemplateCodes: string[]
@@ -1003,6 +1036,7 @@ export interface MidwifeFormularyItemFieldRefs {
   readonly code: Prisma.FieldRef<"MidwifeFormularyItem", 'String'>
   readonly displayName: Prisma.FieldRef<"MidwifeFormularyItem", 'String'>
   readonly group: Prisma.FieldRef<"MidwifeFormularyItem", 'MidwifeFormularyGroup'>
+  readonly authorityKind: Prisma.FieldRef<"MidwifeFormularyItem", 'DoctorAuthorityKind'>
   readonly regulationBasis: Prisma.FieldRef<"MidwifeFormularyItem", 'String'>
   readonly kfaCodes: Prisma.FieldRef<"MidwifeFormularyItem", 'String[]'>
   readonly kfaTemplateCodes: Prisma.FieldRef<"MidwifeFormularyItem", 'String[]'>

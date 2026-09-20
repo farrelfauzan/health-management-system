@@ -11,6 +11,7 @@ import { ConfigService } from '@nestjs/config';
 import { AuditContextService } from '../../../common/audit/audit-context.service';
 import { AuditService } from '../../../common/audit/audit.service';
 import { DoctorAuthorityService } from '../../doctor-management/service/doctor-authority.service';
+import { DoctorMandateService } from '../../doctor-management/service/doctor-mandate.service';
 import { AuthRepository } from '../../auth/repository/auth.repository';
 import { LabOrderService } from '../../laboratory/service/lab-order.service';
 import { LabResultService } from '../../laboratory/service/lab-result.service';
@@ -73,6 +74,9 @@ describe('EncounterService', () => {
     hasActiveAuthority: jest.fn(),
   } as unknown as DoctorAuthorityService;
   const auditServiceMock = { record: jest.fn() } as unknown as AuditService;
+  const doctorMandateServiceMock = {
+    findCoveringMandate: jest.fn(() => Promise.resolve(null)),
+  } as unknown as DoctorMandateService;
   const configServiceMock = { get: jest.fn(() => 'Asia/Jakarta') } as unknown as ConfigService;
   const service = new EncounterService(
     encounterRepositoryMock,
@@ -82,6 +86,7 @@ describe('EncounterService', () => {
     labResultServiceMock,
     new MidwifeAuthorityEnforcementService(
       doctorAuthorityServiceMock,
+      doctorMandateServiceMock,
       auditServiceMock,
       configServiceMock,
     ),

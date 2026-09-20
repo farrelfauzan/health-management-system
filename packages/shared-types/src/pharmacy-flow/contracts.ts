@@ -1,3 +1,4 @@
+import type { DoctorAuthorityKindValue } from '#doctor-management/schemas';
 import type { ChargeModeValue, FulfilmentSiteValue } from '#laboratory/schemas';
 import type {
   CompoundPreparationValue,
@@ -36,6 +37,8 @@ export type MidwifeFormularyItemResponse = {
   code: string;
   displayName: string;
   group: MidwifeFormularyGroupValue;
+  /** P25-T05. The authority an `AUTHORITY_BOUND` row needs; absent otherwise. */
+  authorityKind?: DoctorAuthorityKindValue;
   regulationBasis: string;
   kfaCodes: string[];
   kfaTemplateCodes: string[];
@@ -49,6 +52,8 @@ export type MidwifeFormularyMatchResponse = {
   name: string;
   kfaCode: string | null;
   isMidwifePrescribable: boolean;
+  /** P25-T05. The authority applying this row would bind the catalog row to. */
+  authorityKind: DoctorAuthorityKindValue | null;
   matchedBy: MidwifeFormularyMatchKindValue;
 };
 
@@ -99,6 +104,11 @@ export type MedicationResponse = {
   needsReorder: boolean;
   isVaccine: boolean;
   isMidwifePrescribable: boolean;
+  /**
+   * P25-T05. The authority a midwife needs to write this item, or absent when
+   * it sits inside her own. What the "Perlu kewenangan" badge reads.
+   */
+  midwifeAuthorityKind?: DoctorAuthorityKindValue;
   /**
    * Selling price per `unit`, in rupiah. Absent until the clinic prices the
    * item; a dispensed unpriced item is reported as a billing gap.

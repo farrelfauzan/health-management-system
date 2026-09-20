@@ -3,8 +3,10 @@
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
+  DOCTOR_AUTHORITY_KINDS,
   MEDICATION_CATEGORIES,
   MEDICATION_UNITS,
+  type DoctorAuthorityKindValue,
   type MedicationCategoryValue,
   type MedicationResponse,
   type MedicationUnitValue,
@@ -28,6 +30,7 @@ import {
 import { useLocale, useTranslations } from 'next-intl';
 
 import { CodeSearchPicker } from '#components/client/encounters/code-search-picker';
+import { MidwifeAuthorityRequiredBadge } from '#components/client/pharmacy/midwife-authority-required-badge';
 import { FieldDescription } from '#components/client/shared/field-description';
 import { FormLabel } from '#components/client/shared/form-label';
 import { InlineNotice } from '#components/client/shared/inline-notice';
@@ -45,6 +48,9 @@ import type { CodeSearchOption } from '#lib/encounters/code-search-option';
 import { invalidatePharmacyQueries } from '#lib/pharmacy/invalidate-pharmacy-queries';
 import { useKfaSearch } from '#lib/pharmacy/use-kfa-search';
 import { formatStatusLabel } from '#lib/shared/status-label';
+
+/** Radix refuses an empty `SelectItem` value, so "her own authority" gets a name. */
+const OWN_AUTHORITY_OPTION = 'OWN';
 
 type MedicationFormDialogProps = {
   open: boolean;
@@ -81,6 +87,11 @@ export function MedicationFormDialog({
   const [isVaccine, setIsVaccine] = useState<boolean>(medication?.isVaccine ?? false);
   const [isMidwifePrescribable, setIsMidwifePrescribable] = useState<boolean>(
     medication?.isMidwifePrescribable ?? false,
+  );
+  // '' is "her own authority", which is the ordinary answer and the one the
+  // API stores as null. A kind here binds the item to that kewenangan.
+  const [midwifeAuthorityKind, setMidwifeAuthorityKind] = useState<string>(
+    medication?.midwifeAuthorityKind ?? '',
   );
   const [error, setError] = useState<string | null>(null);
   const saveMutation = useMutation({
@@ -119,6 +130,7 @@ export function MedicationFormDialog({
       reorderLevel: level,
       isVaccine,
       isMidwifePrescribable,
+      midwifeAuthorityKind: (midwifeAuthorityKind || null) as DoctorAuthorityKindValue | null,
       unitPrice: parsedUnitPrice ?? (medication ? null : undefined),
     } satisfies CreateMedicationDto | UpdateMedicationDto;
 
@@ -325,6 +337,48 @@ export function MedicationFormDialog({
                 {t('isMidwifePrescribableDescription')}
               </FieldDescription>
             </div>
+            {/* P25-T05. Inside her formulary is not the same as hers to write:
+                a bound item needs the kewenangan named here, or a doctor. */}
+            {isMidwifePrescribable ? (
+              <div className="space-y-1.5 sm:col-span-2">
+                <div className="flex items-center gap-2">
+                  <FormLabel htmlFor="medication-midwife-authority-kind">
+                    {t('midwifeAuthorityKind')}
+                  </FormLabel>
+                  {midwifeAuthorityKind === '' ? null : (
+                    <MidwifeAuthorityRequiredBadge
+                      kind={midwifeAuthorityKind as DoctorAuthorityKindValue}
+                    />
+                  )}
+                </div>
+                <Select
+                  value={midwifeAuthorityKind}
+                  onValueChange={(value) =>
+                    setMidwifeAuthorityKind(value === OWN_AUTHORITY_OPTION ? '' : value)
+                  }
+                >
+                  <SelectTrigger
+                    id="medication-midwife-authority-kind"
+                    aria-describedby="medication-midwife-authority-kind-description"
+                  >
+                    <SelectValue placeholder={t('midwifeAuthorityKindOwn')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={OWN_AUTHORITY_OPTION}>
+                      {t('midwifeAuthorityKindOwn')}
+                    </SelectItem>
+                    {DOCTOR_AUTHORITY_KINDS.map((value) => (
+                      <SelectItem key={value} value={value}>
+                        {t(`midwifeAuthorityKindOption.${value}`)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FieldDescription id="medication-midwife-authority-kind-description">
+                  {t('midwifeAuthorityKindDescription')}
+                </FieldDescription>
+              </div>
+            ) : null}
           </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>

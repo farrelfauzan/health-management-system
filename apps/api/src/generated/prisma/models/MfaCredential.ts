@@ -481,14 +481,6 @@ export type MfaCredentialUncheckedUpdateOneWithoutUserNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.MfaCredentialUpdateToOneWithWhereWithoutUserInput, Prisma.MfaCredentialUpdateWithoutUserInput>, Prisma.MfaCredentialUncheckedUpdateWithoutUserInput>
 }
 
-export type IntFieldUpdateOperationsInput = {
-  set?: number
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
 export type NullableBigIntFieldUpdateOperationsInput = {
   set?: bigint | number | null
   increment?: bigint | number

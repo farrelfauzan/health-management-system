@@ -29,8 +29,8 @@ export * from "./enums"
  * const prisma = new PrismaClient({
  *   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL })
  * })
- * // Fetch zero or more Users
- * const users = await prisma.user.findMany()
+ * // Fetch zero or more DoctorMandates
+ * const doctorMandates = await prisma.doctorMandate.findMany()
  * ```
  * 
  * Read more in our [docs](https://pris.ly/d/client).
@@ -39,6 +39,16 @@ export const PrismaClient = $Class.getPrismaClientClass()
 export type PrismaClient<LogOpts extends Prisma.LogLevel = never, OmitOpts extends Prisma.PrismaClientOptions["omit"] = Prisma.PrismaClientOptions["omit"], ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = $Class.PrismaClient<LogOpts, OmitOpts, ExtArgs>
 export { Prisma }
 
+/**
+ * Model DoctorMandate
+ * One written pelimpahan from a doctor to a midwife (P25-T05, FR-AUTH-04).
+ * 
+ * `icd9cmCodes` is what makes it enforceable rather than filed: the procedure
+ * gate asks whether the code in front of it is on this list, so a mandate for
+ * an IUD insertion never covers anything else. Never open-ended — `validUntil`
+ * is required, like every authority (D-036).
+ */
+export type DoctorMandate = Prisma.DoctorMandateModel
 /**
  * Model User
  * 

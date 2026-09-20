@@ -31,6 +31,10 @@ export const ADMIN_PORTAL_ADMIN_RULES: AppRule[] = [
   // P25-T02. Administrators only, like the licence roster above.
   { action: 'read', subject: 'DoctorAuthority' },
   { action: 'write', subject: 'DoctorAuthority' },
+  // P25-T05. Administrators only: a pelimpahan is a compliance record, and
+  // the midwife it binds is not the one who records it.
+  { action: 'read', subject: 'DoctorMandate' },
+  { action: 'write', subject: 'DoctorMandate' },
   { action: 'write', subject: 'DoctorSchedule' },
   { action: 'read', subject: 'Appointment' },
   { action: 'create', subject: 'Appointment' },

@@ -40,6 +40,7 @@ export type ProcedureMinAggregateOutputType = {
   notes: string | null
   performedAt: Date | null
   contraceptiveImplantAction: $Enums.ContraceptiveImplantAction | null
+  mandateId: string | null
   recordedById: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -55,6 +56,7 @@ export type ProcedureMaxAggregateOutputType = {
   notes: string | null
   performedAt: Date | null
   contraceptiveImplantAction: $Enums.ContraceptiveImplantAction | null
+  mandateId: string | null
   recordedById: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -70,6 +72,7 @@ export type ProcedureCountAggregateOutputType = {
   notes: number
   performedAt: number
   contraceptiveImplantAction: number
+  mandateId: number
   recordedById: number
   createdAt: number
   updatedAt: number
@@ -87,6 +90,7 @@ export type ProcedureMinAggregateInputType = {
   notes?: true
   performedAt?: true
   contraceptiveImplantAction?: true
+  mandateId?: true
   recordedById?: true
   createdAt?: true
   updatedAt?: true
@@ -102,6 +106,7 @@ export type ProcedureMaxAggregateInputType = {
   notes?: true
   performedAt?: true
   contraceptiveImplantAction?: true
+  mandateId?: true
   recordedById?: true
   createdAt?: true
   updatedAt?: true
@@ -117,6 +122,7 @@ export type ProcedureCountAggregateInputType = {
   notes?: true
   performedAt?: true
   contraceptiveImplantAction?: true
+  mandateId?: true
   recordedById?: true
   createdAt?: true
   updatedAt?: true
@@ -205,6 +211,7 @@ export type ProcedureGroupByOutputType = {
   notes: string | null
   performedAt: Date
   contraceptiveImplantAction: $Enums.ContraceptiveImplantAction | null
+  mandateId: string | null
   recordedById: string | null
   createdAt: Date
   updatedAt: Date
@@ -241,12 +248,14 @@ export type ProcedureWhereInput = {
   notes?: Prisma.StringNullableFilter<"Procedure"> | string | null
   performedAt?: Prisma.DateTimeFilter<"Procedure"> | Date | string
   contraceptiveImplantAction?: Prisma.EnumContraceptiveImplantActionNullableFilter<"Procedure"> | $Enums.ContraceptiveImplantAction | null
+  mandateId?: Prisma.UuidNullableFilter<"Procedure"> | string | null
   recordedById?: Prisma.UuidNullableFilter<"Procedure"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Procedure"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Procedure"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"Procedure"> | Date | string | null
   encounter?: Prisma.XOR<Prisma.EncounterScalarRelationFilter, Prisma.EncounterWhereInput>
   icd9cmCode?: Prisma.XOR<Prisma.Icd9cmCodeNullableScalarRelationFilter, Prisma.Icd9cmCodeWhereInput> | null
+  mandate?: Prisma.XOR<Prisma.DoctorMandateNullableScalarRelationFilter, Prisma.DoctorMandateWhereInput> | null
   recordedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
 }
 
@@ -259,12 +268,14 @@ export type ProcedureOrderByWithRelationInput = {
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   performedAt?: Prisma.SortOrder
   contraceptiveImplantAction?: Prisma.SortOrderInput | Prisma.SortOrder
+  mandateId?: Prisma.SortOrderInput | Prisma.SortOrder
   recordedById?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   encounter?: Prisma.EncounterOrderByWithRelationInput
   icd9cmCode?: Prisma.Icd9cmCodeOrderByWithRelationInput
+  mandate?: Prisma.DoctorMandateOrderByWithRelationInput
   recordedBy?: Prisma.UserOrderByWithRelationInput
 }
 
@@ -280,12 +291,14 @@ export type ProcedureWhereUniqueInput = Prisma.AtLeast<{
   notes?: Prisma.StringNullableFilter<"Procedure"> | string | null
   performedAt?: Prisma.DateTimeFilter<"Procedure"> | Date | string
   contraceptiveImplantAction?: Prisma.EnumContraceptiveImplantActionNullableFilter<"Procedure"> | $Enums.ContraceptiveImplantAction | null
+  mandateId?: Prisma.UuidNullableFilter<"Procedure"> | string | null
   recordedById?: Prisma.UuidNullableFilter<"Procedure"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Procedure"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Procedure"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"Procedure"> | Date | string | null
   encounter?: Prisma.XOR<Prisma.EncounterScalarRelationFilter, Prisma.EncounterWhereInput>
   icd9cmCode?: Prisma.XOR<Prisma.Icd9cmCodeNullableScalarRelationFilter, Prisma.Icd9cmCodeWhereInput> | null
+  mandate?: Prisma.XOR<Prisma.DoctorMandateNullableScalarRelationFilter, Prisma.DoctorMandateWhereInput> | null
   recordedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
 }, "id">
 
@@ -298,6 +311,7 @@ export type ProcedureOrderByWithAggregationInput = {
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   performedAt?: Prisma.SortOrder
   contraceptiveImplantAction?: Prisma.SortOrderInput | Prisma.SortOrder
+  mandateId?: Prisma.SortOrderInput | Prisma.SortOrder
   recordedById?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -319,6 +333,7 @@ export type ProcedureScalarWhereWithAggregatesInput = {
   notes?: Prisma.StringNullableWithAggregatesFilter<"Procedure"> | string | null
   performedAt?: Prisma.DateTimeWithAggregatesFilter<"Procedure"> | Date | string
   contraceptiveImplantAction?: Prisma.EnumContraceptiveImplantActionNullableWithAggregatesFilter<"Procedure"> | $Enums.ContraceptiveImplantAction | null
+  mandateId?: Prisma.UuidNullableWithAggregatesFilter<"Procedure"> | string | null
   recordedById?: Prisma.UuidNullableWithAggregatesFilter<"Procedure"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Procedure"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Procedure"> | Date | string
@@ -337,6 +352,7 @@ export type ProcedureCreateInput = {
   deletedAt?: Date | string | null
   encounter: Prisma.EncounterCreateNestedOneWithoutProceduresInput
   icd9cmCode?: Prisma.Icd9cmCodeCreateNestedOneWithoutProceduresInput
+  mandate?: Prisma.DoctorMandateCreateNestedOneWithoutProceduresInput
   recordedBy?: Prisma.UserCreateNestedOneWithoutRecordedProceduresInput
 }
 
@@ -349,6 +365,7 @@ export type ProcedureUncheckedCreateInput = {
   notes?: string | null
   performedAt?: Date | string
   contraceptiveImplantAction?: $Enums.ContraceptiveImplantAction | null
+  mandateId?: string | null
   recordedById?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -367,6 +384,7 @@ export type ProcedureUpdateInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   encounter?: Prisma.EncounterUpdateOneRequiredWithoutProceduresNestedInput
   icd9cmCode?: Prisma.Icd9cmCodeUpdateOneWithoutProceduresNestedInput
+  mandate?: Prisma.DoctorMandateUpdateOneWithoutProceduresNestedInput
   recordedBy?: Prisma.UserUpdateOneWithoutRecordedProceduresNestedInput
 }
 
@@ -379,6 +397,7 @@ export type ProcedureUncheckedUpdateInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   performedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   contraceptiveImplantAction?: Prisma.NullableEnumContraceptiveImplantActionFieldUpdateOperationsInput | $Enums.ContraceptiveImplantAction | null
+  mandateId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recordedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -394,6 +413,7 @@ export type ProcedureCreateManyInput = {
   notes?: string | null
   performedAt?: Date | string
   contraceptiveImplantAction?: $Enums.ContraceptiveImplantAction | null
+  mandateId?: string | null
   recordedById?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -421,6 +441,7 @@ export type ProcedureUncheckedUpdateManyInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   performedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   contraceptiveImplantAction?: Prisma.NullableEnumContraceptiveImplantActionFieldUpdateOperationsInput | $Enums.ContraceptiveImplantAction | null
+  mandateId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recordedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -446,6 +467,7 @@ export type ProcedureCountOrderByAggregateInput = {
   notes?: Prisma.SortOrder
   performedAt?: Prisma.SortOrder
   contraceptiveImplantAction?: Prisma.SortOrder
+  mandateId?: Prisma.SortOrder
   recordedById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -461,6 +483,7 @@ export type ProcedureMaxOrderByAggregateInput = {
   notes?: Prisma.SortOrder
   performedAt?: Prisma.SortOrder
   contraceptiveImplantAction?: Prisma.SortOrder
+  mandateId?: Prisma.SortOrder
   recordedById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -476,10 +499,53 @@ export type ProcedureMinOrderByAggregateInput = {
   notes?: Prisma.SortOrder
   performedAt?: Prisma.SortOrder
   contraceptiveImplantAction?: Prisma.SortOrder
+  mandateId?: Prisma.SortOrder
   recordedById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
+}
+
+export type ProcedureCreateNestedManyWithoutMandateInput = {
+  create?: Prisma.XOR<Prisma.ProcedureCreateWithoutMandateInput, Prisma.ProcedureUncheckedCreateWithoutMandateInput> | Prisma.ProcedureCreateWithoutMandateInput[] | Prisma.ProcedureUncheckedCreateWithoutMandateInput[]
+  connectOrCreate?: Prisma.ProcedureCreateOrConnectWithoutMandateInput | Prisma.ProcedureCreateOrConnectWithoutMandateInput[]
+  createMany?: Prisma.ProcedureCreateManyMandateInputEnvelope
+  connect?: Prisma.ProcedureWhereUniqueInput | Prisma.ProcedureWhereUniqueInput[]
+}
+
+export type ProcedureUncheckedCreateNestedManyWithoutMandateInput = {
+  create?: Prisma.XOR<Prisma.ProcedureCreateWithoutMandateInput, Prisma.ProcedureUncheckedCreateWithoutMandateInput> | Prisma.ProcedureCreateWithoutMandateInput[] | Prisma.ProcedureUncheckedCreateWithoutMandateInput[]
+  connectOrCreate?: Prisma.ProcedureCreateOrConnectWithoutMandateInput | Prisma.ProcedureCreateOrConnectWithoutMandateInput[]
+  createMany?: Prisma.ProcedureCreateManyMandateInputEnvelope
+  connect?: Prisma.ProcedureWhereUniqueInput | Prisma.ProcedureWhereUniqueInput[]
+}
+
+export type ProcedureUpdateManyWithoutMandateNestedInput = {
+  create?: Prisma.XOR<Prisma.ProcedureCreateWithoutMandateInput, Prisma.ProcedureUncheckedCreateWithoutMandateInput> | Prisma.ProcedureCreateWithoutMandateInput[] | Prisma.ProcedureUncheckedCreateWithoutMandateInput[]
+  connectOrCreate?: Prisma.ProcedureCreateOrConnectWithoutMandateInput | Prisma.ProcedureCreateOrConnectWithoutMandateInput[]
+  upsert?: Prisma.ProcedureUpsertWithWhereUniqueWithoutMandateInput | Prisma.ProcedureUpsertWithWhereUniqueWithoutMandateInput[]
+  createMany?: Prisma.ProcedureCreateManyMandateInputEnvelope
+  set?: Prisma.ProcedureWhereUniqueInput | Prisma.ProcedureWhereUniqueInput[]
+  disconnect?: Prisma.ProcedureWhereUniqueInput | Prisma.ProcedureWhereUniqueInput[]
+  delete?: Prisma.ProcedureWhereUniqueInput | Prisma.ProcedureWhereUniqueInput[]
+  connect?: Prisma.ProcedureWhereUniqueInput | Prisma.ProcedureWhereUniqueInput[]
+  update?: Prisma.ProcedureUpdateWithWhereUniqueWithoutMandateInput | Prisma.ProcedureUpdateWithWhereUniqueWithoutMandateInput[]
+  updateMany?: Prisma.ProcedureUpdateManyWithWhereWithoutMandateInput | Prisma.ProcedureUpdateManyWithWhereWithoutMandateInput[]
+  deleteMany?: Prisma.ProcedureScalarWhereInput | Prisma.ProcedureScalarWhereInput[]
+}
+
+export type ProcedureUncheckedUpdateManyWithoutMandateNestedInput = {
+  create?: Prisma.XOR<Prisma.ProcedureCreateWithoutMandateInput, Prisma.ProcedureUncheckedCreateWithoutMandateInput> | Prisma.ProcedureCreateWithoutMandateInput[] | Prisma.ProcedureUncheckedCreateWithoutMandateInput[]
+  connectOrCreate?: Prisma.ProcedureCreateOrConnectWithoutMandateInput | Prisma.ProcedureCreateOrConnectWithoutMandateInput[]
+  upsert?: Prisma.ProcedureUpsertWithWhereUniqueWithoutMandateInput | Prisma.ProcedureUpsertWithWhereUniqueWithoutMandateInput[]
+  createMany?: Prisma.ProcedureCreateManyMandateInputEnvelope
+  set?: Prisma.ProcedureWhereUniqueInput | Prisma.ProcedureWhereUniqueInput[]
+  disconnect?: Prisma.ProcedureWhereUniqueInput | Prisma.ProcedureWhereUniqueInput[]
+  delete?: Prisma.ProcedureWhereUniqueInput | Prisma.ProcedureWhereUniqueInput[]
+  connect?: Prisma.ProcedureWhereUniqueInput | Prisma.ProcedureWhereUniqueInput[]
+  update?: Prisma.ProcedureUpdateWithWhereUniqueWithoutMandateInput | Prisma.ProcedureUpdateWithWhereUniqueWithoutMandateInput[]
+  updateMany?: Prisma.ProcedureUpdateManyWithWhereWithoutMandateInput | Prisma.ProcedureUpdateManyWithWhereWithoutMandateInput[]
+  deleteMany?: Prisma.ProcedureScalarWhereInput | Prisma.ProcedureScalarWhereInput[]
 }
 
 export type ProcedureCreateNestedManyWithoutRecordedByInput = {
@@ -612,6 +678,81 @@ export type NullableEnumContraceptiveImplantActionFieldUpdateOperationsInput = {
   set?: $Enums.ContraceptiveImplantAction | null
 }
 
+export type ProcedureCreateWithoutMandateInput = {
+  id?: string
+  code: string
+  display: string
+  notes?: string | null
+  performedAt?: Date | string
+  contraceptiveImplantAction?: $Enums.ContraceptiveImplantAction | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  encounter: Prisma.EncounterCreateNestedOneWithoutProceduresInput
+  icd9cmCode?: Prisma.Icd9cmCodeCreateNestedOneWithoutProceduresInput
+  recordedBy?: Prisma.UserCreateNestedOneWithoutRecordedProceduresInput
+}
+
+export type ProcedureUncheckedCreateWithoutMandateInput = {
+  id?: string
+  encounterId: string
+  icd9cmCodeId?: string | null
+  code: string
+  display: string
+  notes?: string | null
+  performedAt?: Date | string
+  contraceptiveImplantAction?: $Enums.ContraceptiveImplantAction | null
+  recordedById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+}
+
+export type ProcedureCreateOrConnectWithoutMandateInput = {
+  where: Prisma.ProcedureWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProcedureCreateWithoutMandateInput, Prisma.ProcedureUncheckedCreateWithoutMandateInput>
+}
+
+export type ProcedureCreateManyMandateInputEnvelope = {
+  data: Prisma.ProcedureCreateManyMandateInput | Prisma.ProcedureCreateManyMandateInput[]
+  skipDuplicates?: boolean
+}
+
+export type ProcedureUpsertWithWhereUniqueWithoutMandateInput = {
+  where: Prisma.ProcedureWhereUniqueInput
+  update: Prisma.XOR<Prisma.ProcedureUpdateWithoutMandateInput, Prisma.ProcedureUncheckedUpdateWithoutMandateInput>
+  create: Prisma.XOR<Prisma.ProcedureCreateWithoutMandateInput, Prisma.ProcedureUncheckedCreateWithoutMandateInput>
+}
+
+export type ProcedureUpdateWithWhereUniqueWithoutMandateInput = {
+  where: Prisma.ProcedureWhereUniqueInput
+  data: Prisma.XOR<Prisma.ProcedureUpdateWithoutMandateInput, Prisma.ProcedureUncheckedUpdateWithoutMandateInput>
+}
+
+export type ProcedureUpdateManyWithWhereWithoutMandateInput = {
+  where: Prisma.ProcedureScalarWhereInput
+  data: Prisma.XOR<Prisma.ProcedureUpdateManyMutationInput, Prisma.ProcedureUncheckedUpdateManyWithoutMandateInput>
+}
+
+export type ProcedureScalarWhereInput = {
+  AND?: Prisma.ProcedureScalarWhereInput | Prisma.ProcedureScalarWhereInput[]
+  OR?: Prisma.ProcedureScalarWhereInput[]
+  NOT?: Prisma.ProcedureScalarWhereInput | Prisma.ProcedureScalarWhereInput[]
+  id?: Prisma.UuidFilter<"Procedure"> | string
+  encounterId?: Prisma.UuidFilter<"Procedure"> | string
+  icd9cmCodeId?: Prisma.UuidNullableFilter<"Procedure"> | string | null
+  code?: Prisma.StringFilter<"Procedure"> | string
+  display?: Prisma.StringFilter<"Procedure"> | string
+  notes?: Prisma.StringNullableFilter<"Procedure"> | string | null
+  performedAt?: Prisma.DateTimeFilter<"Procedure"> | Date | string
+  contraceptiveImplantAction?: Prisma.EnumContraceptiveImplantActionNullableFilter<"Procedure"> | $Enums.ContraceptiveImplantAction | null
+  mandateId?: Prisma.UuidNullableFilter<"Procedure"> | string | null
+  recordedById?: Prisma.UuidNullableFilter<"Procedure"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"Procedure"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Procedure"> | Date | string
+  deletedAt?: Prisma.DateTimeNullableFilter<"Procedure"> | Date | string | null
+}
+
 export type ProcedureCreateWithoutRecordedByInput = {
   id?: string
   code: string
@@ -624,6 +765,7 @@ export type ProcedureCreateWithoutRecordedByInput = {
   deletedAt?: Date | string | null
   encounter: Prisma.EncounterCreateNestedOneWithoutProceduresInput
   icd9cmCode?: Prisma.Icd9cmCodeCreateNestedOneWithoutProceduresInput
+  mandate?: Prisma.DoctorMandateCreateNestedOneWithoutProceduresInput
 }
 
 export type ProcedureUncheckedCreateWithoutRecordedByInput = {
@@ -635,6 +777,7 @@ export type ProcedureUncheckedCreateWithoutRecordedByInput = {
   notes?: string | null
   performedAt?: Date | string
   contraceptiveImplantAction?: $Enums.ContraceptiveImplantAction | null
+  mandateId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -666,24 +809,6 @@ export type ProcedureUpdateManyWithWhereWithoutRecordedByInput = {
   data: Prisma.XOR<Prisma.ProcedureUpdateManyMutationInput, Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByInput>
 }
 
-export type ProcedureScalarWhereInput = {
-  AND?: Prisma.ProcedureScalarWhereInput | Prisma.ProcedureScalarWhereInput[]
-  OR?: Prisma.ProcedureScalarWhereInput[]
-  NOT?: Prisma.ProcedureScalarWhereInput | Prisma.ProcedureScalarWhereInput[]
-  id?: Prisma.UuidFilter<"Procedure"> | string
-  encounterId?: Prisma.UuidFilter<"Procedure"> | string
-  icd9cmCodeId?: Prisma.UuidNullableFilter<"Procedure"> | string | null
-  code?: Prisma.StringFilter<"Procedure"> | string
-  display?: Prisma.StringFilter<"Procedure"> | string
-  notes?: Prisma.StringNullableFilter<"Procedure"> | string | null
-  performedAt?: Prisma.DateTimeFilter<"Procedure"> | Date | string
-  contraceptiveImplantAction?: Prisma.EnumContraceptiveImplantActionNullableFilter<"Procedure"> | $Enums.ContraceptiveImplantAction | null
-  recordedById?: Prisma.UuidNullableFilter<"Procedure"> | string | null
-  createdAt?: Prisma.DateTimeFilter<"Procedure"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"Procedure"> | Date | string
-  deletedAt?: Prisma.DateTimeNullableFilter<"Procedure"> | Date | string | null
-}
-
 export type ProcedureCreateWithoutEncounterInput = {
   id?: string
   code: string
@@ -695,6 +820,7 @@ export type ProcedureCreateWithoutEncounterInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   icd9cmCode?: Prisma.Icd9cmCodeCreateNestedOneWithoutProceduresInput
+  mandate?: Prisma.DoctorMandateCreateNestedOneWithoutProceduresInput
   recordedBy?: Prisma.UserCreateNestedOneWithoutRecordedProceduresInput
 }
 
@@ -706,6 +832,7 @@ export type ProcedureUncheckedCreateWithoutEncounterInput = {
   notes?: string | null
   performedAt?: Date | string
   contraceptiveImplantAction?: $Enums.ContraceptiveImplantAction | null
+  mandateId?: string | null
   recordedById?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -749,6 +876,7 @@ export type ProcedureCreateWithoutIcd9cmCodeInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   encounter: Prisma.EncounterCreateNestedOneWithoutProceduresInput
+  mandate?: Prisma.DoctorMandateCreateNestedOneWithoutProceduresInput
   recordedBy?: Prisma.UserCreateNestedOneWithoutRecordedProceduresInput
 }
 
@@ -760,6 +888,7 @@ export type ProcedureUncheckedCreateWithoutIcd9cmCodeInput = {
   notes?: string | null
   performedAt?: Date | string
   contraceptiveImplantAction?: $Enums.ContraceptiveImplantAction | null
+  mandateId?: string | null
   recordedById?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -792,6 +921,66 @@ export type ProcedureUpdateManyWithWhereWithoutIcd9cmCodeInput = {
   data: Prisma.XOR<Prisma.ProcedureUpdateManyMutationInput, Prisma.ProcedureUncheckedUpdateManyWithoutIcd9cmCodeInput>
 }
 
+export type ProcedureCreateManyMandateInput = {
+  id?: string
+  encounterId: string
+  icd9cmCodeId?: string | null
+  code: string
+  display: string
+  notes?: string | null
+  performedAt?: Date | string
+  contraceptiveImplantAction?: $Enums.ContraceptiveImplantAction | null
+  recordedById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+}
+
+export type ProcedureUpdateWithoutMandateInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  display?: Prisma.StringFieldUpdateOperationsInput | string
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  performedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contraceptiveImplantAction?: Prisma.NullableEnumContraceptiveImplantActionFieldUpdateOperationsInput | $Enums.ContraceptiveImplantAction | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  encounter?: Prisma.EncounterUpdateOneRequiredWithoutProceduresNestedInput
+  icd9cmCode?: Prisma.Icd9cmCodeUpdateOneWithoutProceduresNestedInput
+  recordedBy?: Prisma.UserUpdateOneWithoutRecordedProceduresNestedInput
+}
+
+export type ProcedureUncheckedUpdateWithoutMandateInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  encounterId?: Prisma.StringFieldUpdateOperationsInput | string
+  icd9cmCodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  display?: Prisma.StringFieldUpdateOperationsInput | string
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  performedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contraceptiveImplantAction?: Prisma.NullableEnumContraceptiveImplantActionFieldUpdateOperationsInput | $Enums.ContraceptiveImplantAction | null
+  recordedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+}
+
+export type ProcedureUncheckedUpdateManyWithoutMandateInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  encounterId?: Prisma.StringFieldUpdateOperationsInput | string
+  icd9cmCodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  display?: Prisma.StringFieldUpdateOperationsInput | string
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  performedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contraceptiveImplantAction?: Prisma.NullableEnumContraceptiveImplantActionFieldUpdateOperationsInput | $Enums.ContraceptiveImplantAction | null
+  recordedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+}
+
 export type ProcedureCreateManyRecordedByInput = {
   id?: string
   encounterId: string
@@ -801,6 +990,7 @@ export type ProcedureCreateManyRecordedByInput = {
   notes?: string | null
   performedAt?: Date | string
   contraceptiveImplantAction?: $Enums.ContraceptiveImplantAction | null
+  mandateId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -818,6 +1008,7 @@ export type ProcedureUpdateWithoutRecordedByInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   encounter?: Prisma.EncounterUpdateOneRequiredWithoutProceduresNestedInput
   icd9cmCode?: Prisma.Icd9cmCodeUpdateOneWithoutProceduresNestedInput
+  mandate?: Prisma.DoctorMandateUpdateOneWithoutProceduresNestedInput
 }
 
 export type ProcedureUncheckedUpdateWithoutRecordedByInput = {
@@ -829,6 +1020,7 @@ export type ProcedureUncheckedUpdateWithoutRecordedByInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   performedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   contraceptiveImplantAction?: Prisma.NullableEnumContraceptiveImplantActionFieldUpdateOperationsInput | $Enums.ContraceptiveImplantAction | null
+  mandateId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -843,6 +1035,7 @@ export type ProcedureUncheckedUpdateManyWithoutRecordedByInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   performedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   contraceptiveImplantAction?: Prisma.NullableEnumContraceptiveImplantActionFieldUpdateOperationsInput | $Enums.ContraceptiveImplantAction | null
+  mandateId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -856,6 +1049,7 @@ export type ProcedureCreateManyEncounterInput = {
   notes?: string | null
   performedAt?: Date | string
   contraceptiveImplantAction?: $Enums.ContraceptiveImplantAction | null
+  mandateId?: string | null
   recordedById?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -873,6 +1067,7 @@ export type ProcedureUpdateWithoutEncounterInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   icd9cmCode?: Prisma.Icd9cmCodeUpdateOneWithoutProceduresNestedInput
+  mandate?: Prisma.DoctorMandateUpdateOneWithoutProceduresNestedInput
   recordedBy?: Prisma.UserUpdateOneWithoutRecordedProceduresNestedInput
 }
 
@@ -884,6 +1079,7 @@ export type ProcedureUncheckedUpdateWithoutEncounterInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   performedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   contraceptiveImplantAction?: Prisma.NullableEnumContraceptiveImplantActionFieldUpdateOperationsInput | $Enums.ContraceptiveImplantAction | null
+  mandateId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recordedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -898,6 +1094,7 @@ export type ProcedureUncheckedUpdateManyWithoutEncounterInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   performedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   contraceptiveImplantAction?: Prisma.NullableEnumContraceptiveImplantActionFieldUpdateOperationsInput | $Enums.ContraceptiveImplantAction | null
+  mandateId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recordedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -912,6 +1109,7 @@ export type ProcedureCreateManyIcd9cmCodeInput = {
   notes?: string | null
   performedAt?: Date | string
   contraceptiveImplantAction?: $Enums.ContraceptiveImplantAction | null
+  mandateId?: string | null
   recordedById?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -929,6 +1127,7 @@ export type ProcedureUpdateWithoutIcd9cmCodeInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   encounter?: Prisma.EncounterUpdateOneRequiredWithoutProceduresNestedInput
+  mandate?: Prisma.DoctorMandateUpdateOneWithoutProceduresNestedInput
   recordedBy?: Prisma.UserUpdateOneWithoutRecordedProceduresNestedInput
 }
 
@@ -940,6 +1139,7 @@ export type ProcedureUncheckedUpdateWithoutIcd9cmCodeInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   performedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   contraceptiveImplantAction?: Prisma.NullableEnumContraceptiveImplantActionFieldUpdateOperationsInput | $Enums.ContraceptiveImplantAction | null
+  mandateId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recordedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -954,6 +1154,7 @@ export type ProcedureUncheckedUpdateManyWithoutIcd9cmCodeInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   performedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   contraceptiveImplantAction?: Prisma.NullableEnumContraceptiveImplantActionFieldUpdateOperationsInput | $Enums.ContraceptiveImplantAction | null
+  mandateId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   recordedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -971,12 +1172,14 @@ export type ProcedureSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   notes?: boolean
   performedAt?: boolean
   contraceptiveImplantAction?: boolean
+  mandateId?: boolean
   recordedById?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
   encounter?: boolean | Prisma.EncounterDefaultArgs<ExtArgs>
   icd9cmCode?: boolean | Prisma.Procedure$icd9cmCodeArgs<ExtArgs>
+  mandate?: boolean | Prisma.Procedure$mandateArgs<ExtArgs>
   recordedBy?: boolean | Prisma.Procedure$recordedByArgs<ExtArgs>
 }, ExtArgs["result"]["procedure"]>
 
@@ -989,12 +1192,14 @@ export type ProcedureSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   notes?: boolean
   performedAt?: boolean
   contraceptiveImplantAction?: boolean
+  mandateId?: boolean
   recordedById?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
   encounter?: boolean | Prisma.EncounterDefaultArgs<ExtArgs>
   icd9cmCode?: boolean | Prisma.Procedure$icd9cmCodeArgs<ExtArgs>
+  mandate?: boolean | Prisma.Procedure$mandateArgs<ExtArgs>
   recordedBy?: boolean | Prisma.Procedure$recordedByArgs<ExtArgs>
 }, ExtArgs["result"]["procedure"]>
 
@@ -1007,12 +1212,14 @@ export type ProcedureSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   notes?: boolean
   performedAt?: boolean
   contraceptiveImplantAction?: boolean
+  mandateId?: boolean
   recordedById?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
   encounter?: boolean | Prisma.EncounterDefaultArgs<ExtArgs>
   icd9cmCode?: boolean | Prisma.Procedure$icd9cmCodeArgs<ExtArgs>
+  mandate?: boolean | Prisma.Procedure$mandateArgs<ExtArgs>
   recordedBy?: boolean | Prisma.Procedure$recordedByArgs<ExtArgs>
 }, ExtArgs["result"]["procedure"]>
 
@@ -1025,26 +1232,30 @@ export type ProcedureSelectScalar = {
   notes?: boolean
   performedAt?: boolean
   contraceptiveImplantAction?: boolean
+  mandateId?: boolean
   recordedById?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
 }
 
-export type ProcedureOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "encounterId" | "icd9cmCodeId" | "code" | "display" | "notes" | "performedAt" | "contraceptiveImplantAction" | "recordedById" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["procedure"]>
+export type ProcedureOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "encounterId" | "icd9cmCodeId" | "code" | "display" | "notes" | "performedAt" | "contraceptiveImplantAction" | "mandateId" | "recordedById" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["procedure"]>
 export type ProcedureInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   encounter?: boolean | Prisma.EncounterDefaultArgs<ExtArgs>
   icd9cmCode?: boolean | Prisma.Procedure$icd9cmCodeArgs<ExtArgs>
+  mandate?: boolean | Prisma.Procedure$mandateArgs<ExtArgs>
   recordedBy?: boolean | Prisma.Procedure$recordedByArgs<ExtArgs>
 }
 export type ProcedureIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   encounter?: boolean | Prisma.EncounterDefaultArgs<ExtArgs>
   icd9cmCode?: boolean | Prisma.Procedure$icd9cmCodeArgs<ExtArgs>
+  mandate?: boolean | Prisma.Procedure$mandateArgs<ExtArgs>
   recordedBy?: boolean | Prisma.Procedure$recordedByArgs<ExtArgs>
 }
 export type ProcedureIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   encounter?: boolean | Prisma.EncounterDefaultArgs<ExtArgs>
   icd9cmCode?: boolean | Prisma.Procedure$icd9cmCodeArgs<ExtArgs>
+  mandate?: boolean | Prisma.Procedure$mandateArgs<ExtArgs>
   recordedBy?: boolean | Prisma.Procedure$recordedByArgs<ExtArgs>
 }
 
@@ -1053,6 +1264,7 @@ export type $ProcedurePayload<ExtArgs extends runtime.Types.Extensions.InternalA
   objects: {
     encounter: Prisma.$EncounterPayload<ExtArgs>
     icd9cmCode: Prisma.$Icd9cmCodePayload<ExtArgs> | null
+    mandate: Prisma.$DoctorMandatePayload<ExtArgs> | null
     recordedBy: Prisma.$UserPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1072,6 +1284,12 @@ export type $ProcedurePayload<ExtArgs extends runtime.Types.Extensions.InternalA
      * midwife then needed an active IUD_IMPLANT authority (P25-T03).
      */
     contraceptiveImplantAction: $Enums.ContraceptiveImplantAction | null
+    /**
+     * Set when a midwife recorded this under a doctor's pelimpahan rather than
+     * her own authority (P25-T05). It is what the card reads to name the
+     * responsible clinician, so it is never inferred later.
+     */
+    mandateId: string | null
     recordedById: string | null
     createdAt: Date
     updatedAt: Date
@@ -1472,6 +1690,7 @@ export interface Prisma__ProcedureClient<T, Null = never, ExtArgs extends runtim
   readonly [Symbol.toStringTag]: "PrismaPromise"
   encounter<T extends Prisma.EncounterDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EncounterDefaultArgs<ExtArgs>>): Prisma.Prisma__EncounterClient<runtime.Types.Result.GetResult<Prisma.$EncounterPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   icd9cmCode<T extends Prisma.Procedure$icd9cmCodeArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Procedure$icd9cmCodeArgs<ExtArgs>>): Prisma.Prisma__Icd9cmCodeClient<runtime.Types.Result.GetResult<Prisma.$Icd9cmCodePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  mandate<T extends Prisma.Procedure$mandateArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Procedure$mandateArgs<ExtArgs>>): Prisma.Prisma__DoctorMandateClient<runtime.Types.Result.GetResult<Prisma.$DoctorMandatePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   recordedBy<T extends Prisma.Procedure$recordedByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Procedure$recordedByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1510,6 +1729,7 @@ export interface ProcedureFieldRefs {
   readonly notes: Prisma.FieldRef<"Procedure", 'String'>
   readonly performedAt: Prisma.FieldRef<"Procedure", 'DateTime'>
   readonly contraceptiveImplantAction: Prisma.FieldRef<"Procedure", 'ContraceptiveImplantAction'>
+  readonly mandateId: Prisma.FieldRef<"Procedure", 'String'>
   readonly recordedById: Prisma.FieldRef<"Procedure", 'String'>
   readonly createdAt: Prisma.FieldRef<"Procedure", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Procedure", 'DateTime'>
@@ -1931,6 +2151,25 @@ export type Procedure$icd9cmCodeArgs<ExtArgs extends runtime.Types.Extensions.In
    */
   include?: Prisma.Icd9cmCodeInclude<ExtArgs> | null
   where?: Prisma.Icd9cmCodeWhereInput
+}
+
+/**
+ * Procedure.mandate
+ */
+export type Procedure$mandateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the DoctorMandate
+   */
+  select?: Prisma.DoctorMandateSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the DoctorMandate
+   */
+  omit?: Prisma.DoctorMandateOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DoctorMandateInclude<ExtArgs> | null
+  where?: Prisma.DoctorMandateWhereInput
 }
 
 /**

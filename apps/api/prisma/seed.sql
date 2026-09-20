@@ -170,6 +170,12 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     ('doctor.update:any', 'Doctor', 'update', 'ANY', 'Update all doctor profiles'),
     ('doctor.update:own', 'Doctor', 'update', 'OWN', 'Update own doctor profile'),
     ('doctor.read-identifier:any', 'Doctor', 'read-identifier', 'ANY', 'Reveal any practitioner NIK'),
+    -- P25-T05. The written pelimpahan a midwife works under. Its own pair for
+    -- the same reason the authorities have theirs: `doctor.read:any` is held
+    -- by doctors and patients, and who answers for a delegated action is a
+    -- compliance record rather than directory information.
+    ('doctor.mandate.read:any', 'DoctorMandate', 'read', 'ANY', 'Read a midwife''s doctor mandates'),
+    ('doctor.mandate.write:any', 'DoctorMandate', 'write', 'ANY', 'Record and revoke a midwife''s doctor mandates'),
     ('doctor.read-identifier:own', 'Doctor', 'read-identifier', 'OWN', 'Reveal own practitioner NIK'),
     -- P16-T19. Its own key rather than reusing `doctor.read:any`, which is
     -- held by DOCTOR and PATIENT as well as ADMIN — a patient browsing the
@@ -523,6 +529,8 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('ADMIN', 'doctor.license-expiry.read:any'),
     ('ADMIN', 'doctor.authority.read:any'),
     ('ADMIN', 'doctor.authority.write:any'),
+    ('ADMIN', 'doctor.mandate.read:any'),
+    ('ADMIN', 'doctor.mandate.write:any'),
     ('ADMIN', 'doctor.read:any'),
     ('ADMIN', 'doctor.create:any'),
     ('ADMIN', 'doctor.update:any'),

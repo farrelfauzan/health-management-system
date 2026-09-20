@@ -7,9 +7,11 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
+import { AuditService } from '../../../common/audit/audit.service';
 import { AuthRepository } from '../../auth/repository/auth.repository';
 import { ClinicProfileService } from '../../billing/service/clinic-profile.service';
 import { ClinicalRequestDocumentService } from '../../clinical-request-document/service/clinical-request-document.service';
+import { DoctorAuthorityService } from '../../doctor-management/service/doctor-authority.service';
 import { MedicationIdentifierConflictError } from '../repository/medication-identifier-conflict.error';
 import { PharmacyFlowRepository } from '../repository/pharmacy-flow.repository';
 import { PharmacyFlowService } from './pharmacy-flow.service';
@@ -72,11 +74,16 @@ describe('PharmacyFlowService', () => {
     findUserById: jest.fn(),
   } as unknown as AuthRepository;
 
+  const hasActiveAuthorityMock = jest.fn();
+  const auditRecordMock = jest.fn();
+
   const service = new PharmacyFlowService(
     pharmacyFlowRepositoryMock,
     authRepositoryMock,
     { getProfile: jest.fn() } as unknown as ClinicProfileService,
     { renderAndFile: jest.fn() } as unknown as ClinicalRequestDocumentService,
+    { hasActiveAuthority: hasActiveAuthorityMock } as unknown as DoctorAuthorityService,
+    { record: auditRecordMock } as unknown as AuditService,
     { get: jest.fn().mockReturnValue('Asia/Jakarta') } as unknown as ConfigService,
   );
 
@@ -698,6 +705,90 @@ describe('PharmacyFlowService', () => {
       await service.createPrescription(createPayload, currentUser);
 
       expect(repositoryMock.findActiveMedicationsByIds).toHaveBeenCalledTimes(1);
+      expect(repositoryMock.createPrescription).toHaveBeenCalled();
+    });
+
+    // P25-T05 (FR-AUTH-05). Flagged for her formulary is not the same as hers
+    // to write: an AUTHORITY_BOUND item needs the authority it names.
+    it('refuses a midwife line for an authority-bound medicine she has no authority for', async () => {
+      mockPermissions([{ action: 'write', resource: 'Prescription', scope: 'ANY' }]);
+      repositoryMock.findActiveDoctorById.mockResolvedValue({
+        id: doctorId,
+        ownerUserId: null,
+        profession: 'MIDWIFE',
+      });
+      repositoryMock.findActiveMedicationsByIds.mockResolvedValue([
+        {
+          id: medicationId,
+          code: 'OXY-0001',
+          name: 'Oksitosin',
+          isMidwifePrescribable: true,
+          midwifeAuthorityKind: 'NO_OTHER_WORKER',
+        },
+      ]);
+      hasActiveAuthorityMock.mockResolvedValue(false);
+
+      const actualError = await service
+        .createPrescription(createPayload, currentUser)
+        .catch((err: unknown) => err);
+
+      expect(actualError).toBeInstanceOf(UnprocessableEntityException);
+      expect((actualError as UnprocessableEntityException).getResponse()).toEqual(
+        expect.objectContaining({
+          code: 'MIDWIFE_AUTHORITY_REQUIRED',
+          errors: { kind: 'NO_OTHER_WORKER', medicationIds: [medicationId] },
+        }),
+      );
+      expect(auditRecordMock).toHaveBeenCalledWith(
+        expect.objectContaining({ action: 'MIDWIFE_AUTHORITY_REFUSED' }),
+      );
+      expect(repositoryMock.createPrescription).not.toHaveBeenCalled();
+    });
+
+    it('saves a midwife line for an authority-bound medicine she holds the authority for', async () => {
+      mockPermissions([{ action: 'write', resource: 'Prescription', scope: 'ANY' }]);
+      repositoryMock.findActiveDoctorById.mockResolvedValue({
+        id: doctorId,
+        ownerUserId: null,
+        profession: 'MIDWIFE',
+      });
+      repositoryMock.findActiveMedicationsByIds.mockResolvedValue([
+        {
+          id: medicationId,
+          code: 'OXY-0001',
+          name: 'Oksitosin',
+          isMidwifePrescribable: true,
+          midwifeAuthorityKind: 'NO_OTHER_WORKER',
+        },
+      ]);
+      hasActiveAuthorityMock.mockResolvedValue(true);
+
+      await service.createPrescription(createPayload, currentUser);
+
+      expect(hasActiveAuthorityMock).toHaveBeenCalledWith({
+        doctorId,
+        kind: 'NO_OTHER_WORKER',
+        onDate: expect.any(String),
+      });
+      expect(auditRecordMock).not.toHaveBeenCalled();
+      expect(repositoryMock.createPrescription).toHaveBeenCalled();
+    });
+
+    it('never asks for an authority on a doctor line', async () => {
+      mockPermissions([{ action: 'write', resource: 'Prescription', scope: 'ANY' }]);
+      repositoryMock.findActiveMedicationsByIds.mockResolvedValue([
+        {
+          id: medicationId,
+          code: 'OXY-0001',
+          name: 'Oksitosin',
+          isMidwifePrescribable: false,
+          midwifeAuthorityKind: 'NO_OTHER_WORKER',
+        },
+      ]);
+
+      await service.createPrescription(createPayload, currentUser);
+
+      expect(hasActiveAuthorityMock).not.toHaveBeenCalled();
       expect(repositoryMock.createPrescription).toHaveBeenCalled();
     });
 

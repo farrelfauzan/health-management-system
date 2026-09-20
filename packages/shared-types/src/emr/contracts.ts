@@ -1,3 +1,4 @@
+import type { ProcedureMandateSummary } from '#doctor-management/contracts';
 import type { ClinicianProfessionValue } from '#doctor-management/schemas';
 import type {
   ContraceptiveImplantActionValue,
@@ -108,6 +109,12 @@ export type ProcedureResponse = {
   performedAt: string;
   /** Set when the procedure inserted or removed a contraceptive implant (P25-T03). */
   contraceptiveImplantAction?: ContraceptiveImplantActionValue;
+  /**
+   * Present when a midwife recorded this under a doctor's pelimpahan rather
+   * than her own authority (P25-T05). The card reads it to name the
+   * responsible clinician — "Di bawah mandat dr. …".
+   */
+  mandate?: ProcedureMandateSummary;
   recordedById?: string;
   createdAt: string;
   updatedAt: string;

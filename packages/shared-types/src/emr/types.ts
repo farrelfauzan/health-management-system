@@ -1,4 +1,7 @@
-import type { ClinicianProfessionValue } from '#doctor-management/schemas';
+import type {
+  ClinicianProfessionValue,
+  DoctorMandateKindValue,
+} from '#doctor-management/schemas';
 import type {
   ContraceptiveImplantActionValue,
   DiagnosisTypeValue,
@@ -171,9 +174,24 @@ export type ProcedureRecord = {
   notes: string | null;
   performedAt: Date;
   contraceptiveImplantAction: ContraceptiveImplantActionValue | null;
+  /** The pelimpahan it was recorded under, when it was one (P25-T05). */
+  mandateId: string | null;
   recordedById: string | null;
   createdAt: Date;
   updatedAt: Date;
+};
+
+/**
+ * One procedure with the pelimpahan it was performed under, when there was
+ * one (P25-T05). The join every read of a procedure makes, so the card can
+ * name the responsible clinician without a second query per row.
+ */
+export type ProcedureWithMandateRecord = ProcedureRecord & {
+  mandate: {
+    id: string;
+    kind: DoctorMandateKindValue;
+    mandatingDoctor: { fullName: string };
+  } | null;
 };
 
 export type CreateProcedureRecordPayload = {
@@ -184,6 +202,11 @@ export type CreateProcedureRecordPayload = {
   notes?: string;
   performedAt?: Date;
   contraceptiveImplantAction?: ContraceptiveImplantActionValue;
+  /**
+   * Resolved by the gate before the row is written (P25-T05): null when the
+   * midwife acted on her own authority, or when the clinician is a doctor.
+   */
+  mandateId: string | null;
   recordedById: string;
 };
 
@@ -258,7 +281,7 @@ export type EncounterDetailRecord = EncounterRecord & {
   doctor: EncounterRelatedDoctorRecord;
   vitalSigns: VitalSignsRecord[];
   diagnoses: DiagnosisRecord[];
-  procedures: ProcedureRecord[];
+  procedures: ProcedureWithMandateRecord[];
   immunizations: ImmunizationRecord[];
   prescriptions: EncounterPrescriptionRecord[];
 };

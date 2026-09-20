@@ -51,6 +51,7 @@ function toMatch(
       name: medication.name,
       kfaCode: medication.kfaCode,
       isMidwifePrescribable: medication.isMidwifePrescribable,
+      authorityKind: item.authorityKind,
       matchedBy,
     },
   ];

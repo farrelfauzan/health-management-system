@@ -15,6 +15,7 @@ import {
   ImmunizationRecord,
   ListEncountersParams,
   ProcedureRecord,
+  ProcedureWithMandateRecord,
   UpdateEncounterRecordPayload,
   UpsertBpjsReferralRecordPayload,
   VitalSignsRecord,
@@ -24,6 +25,16 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '../../../generated/prisma/client';
 import { PrismaService } from '../../../common/prisma/prisma.service';
 import { PrismaTransactionClient } from '../../../common/prisma/prisma.types';
+
+/**
+ * The pelimpahan a procedure was performed under (P25-T05), joined on every
+ * read so the card can name the responsible clinician without a query per row.
+ */
+const PROCEDURE_MANDATE_INCLUDE = {
+  mandate: {
+    select: { id: true, kind: true, mandatingDoctor: { select: { fullName: true } } },
+  },
+} as const;
 
 const IMMUNIZATION_INCLUDE = {
   medication: { select: { name: true, kfaCode: true } },
@@ -133,6 +144,7 @@ const ENCOUNTER_DETAIL_INCLUDE = {
   procedures: {
     where: { deletedAt: null },
     orderBy: { performedAt: 'asc' },
+    include: PROCEDURE_MANDATE_INCLUDE,
   },
   immunizations: {
     where: { deletedAt: null },
@@ -509,7 +521,9 @@ export class EncounterRepository {
     await this.prisma.softDelete(this.prisma.bpjsReferral, { id });
   }
 
-  async createProcedure(payload: CreateProcedureRecordPayload): Promise<ProcedureRecord> {
+  async createProcedure(
+    payload: CreateProcedureRecordPayload,
+  ): Promise<ProcedureWithMandateRecord> {
     return this.prisma.procedure.create({
       data: {
         encounterId: payload.encounterId,
@@ -519,8 +533,10 @@ export class EncounterRepository {
         notes: payload.notes,
         performedAt: payload.performedAt,
         contraceptiveImplantAction: payload.contraceptiveImplantAction,
+        mandateId: payload.mandateId,
         recordedById: payload.recordedById,
       },
+      include: PROCEDURE_MANDATE_INCLUDE,
     });
   }
 

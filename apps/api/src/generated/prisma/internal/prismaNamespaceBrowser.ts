@@ -51,6 +51,7 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
+  DoctorMandate: 'DoctorMandate',
   User: 'User',
   LoginAttempt: 'LoginAttempt',
   RefreshToken: 'RefreshToken',
@@ -188,6 +189,30 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 } as const)
 
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
+
+
+export const DoctorMandateScalarFieldEnum = {
+  id: 'id',
+  midwifeDoctorId: 'midwifeDoctorId',
+  mandatingDoctorId: 'mandatingDoctorId',
+  kind: 'kind',
+  instruction: 'instruction',
+  icd9cmCodes: 'icd9cmCodes',
+  validFrom: 'validFrom',
+  validUntil: 'validUntil',
+  instructionStorageKey: 'instructionStorageKey',
+  instructionMimeType: 'instructionMimeType',
+  instructionSizeBytes: 'instructionSizeBytes',
+  revokedAt: 'revokedAt',
+  revokedById: 'revokedById',
+  revokeReason: 'revokeReason',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type DoctorMandateScalarFieldEnum = (typeof DoctorMandateScalarFieldEnum)[keyof typeof DoctorMandateScalarFieldEnum]
 
 
 export const UserScalarFieldEnum = {
@@ -813,6 +838,7 @@ export const ProcedureScalarFieldEnum = {
   notes: 'notes',
   performedAt: 'performedAt',
   contraceptiveImplantAction: 'contraceptiveImplantAction',
+  mandateId: 'mandateId',
   recordedById: 'recordedById',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
@@ -836,6 +862,7 @@ export const MedicationScalarFieldEnum = {
   unitPrice: 'unitPrice',
   isVaccine: 'isVaccine',
   isMidwifePrescribable: 'isMidwifePrescribable',
+  midwifeAuthorityKind: 'midwifeAuthorityKind',
   taxCodeId: 'taxCodeId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
@@ -850,6 +877,7 @@ export const MidwifeFormularyItemScalarFieldEnum = {
   code: 'code',
   displayName: 'displayName',
   group: 'group',
+  authorityKind: 'authorityKind',
   regulationBasis: 'regulationBasis',
   kfaCodes: 'kfaCodes',
   kfaTemplateCodes: 'kfaTemplateCodes',

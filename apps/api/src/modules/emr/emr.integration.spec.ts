@@ -8,6 +8,7 @@ import { AppModule } from '../../app.module';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { AuthRepository } from '../auth/repository/auth.repository';
 import { DoctorAuthorityRepository } from '../doctor-management/repository/doctor-authority.repository';
+import { DoctorMandateRepository } from '../doctor-management/repository/doctor-mandate.repository';
 import { LabOrderRepository } from '../laboratory/repository/lab-order.repository';
 import { PharmacyFlowRepository } from '../pharmacy-flow/repository/pharmacy-flow.repository';
 import { Icd10CodeRepository } from '../terminology/repository/icd10-code.repository';
@@ -58,6 +59,13 @@ describe('EMR integration', () => {
     hasActiveAuthority: jest.fn(() => Promise.resolve(false)),
   };
 
+  // P25-T05. The gate now asks for a covering pelimpahan before it refuses,
+  // and that read goes through the mandate repository — stubbed for the same
+  // reason as the one above.
+  const doctorMandateRepositoryMock = {
+    findCovering: jest.fn<Promise<{ id: string } | null>, []>(() => Promise.resolve(null)),
+  };
+
   const icd10CodeRepositoryMock = {
     searchIcd10Codes: jest.fn(),
     findActiveIcd10CodeById: jest.fn(),
@@ -85,6 +93,7 @@ describe('EMR integration', () => {
   const registrationId = '0d9b34a1-7c2f-4bd0-8a8e-6a3c1de1a001';
   const patientId = '38a3f0f1-51d3-4f68-9d54-1f6a1de1a002';
   const doctorId = '7c1f2f0a-2f4b-4d6a-9d0a-9c4e1f0b9c11';
+  const mandateId = '1b6a6a2e-9d6e-4e58-8a2f-0f0f2c3b4d55';
   const icd10CodeId = 'ffffffff-ffff-4fff-8fff-ffffffffffff';
   const vaccineId = '9a8b7c6d-5e4f-4a3b-8c2d-1e0f9a8b7c6d';
   const timestamp = new Date('2026-07-20T08:00:00.000Z');
@@ -146,6 +155,8 @@ describe('EMR integration', () => {
       .useValue(icd10CodeRepositoryMock)
       .overrideProvider(DoctorAuthorityRepository)
       .useValue(doctorAuthorityRepositoryMock)
+      .overrideProvider(DoctorMandateRepository)
+      .useValue(doctorMandateRepositoryMock)
       .overrideProvider(LabOrderRepository)
       .useValue(labOrderRepositoryMock)
       .overrideProvider(PharmacyFlowRepository)
@@ -286,6 +297,78 @@ describe('EMR integration', () => {
           },
         }),
       });
+    });
+
+    // P25-T05. A live pelimpahan naming the code lets her record it, and the
+    // row says whose responsibility it was.
+    it('saves 69.7 under the mandate that covers it, stamping mandate_id', async () => {
+      const token = await buildToken('admin-user', 'admin@hms.local');
+      mockActorWithPermissions([{ action: 'write', resource: 'Encounter', scope: 'ANY' }]);
+      encounterRepositoryMock.findEncounterWithRelationsById.mockResolvedValue(
+        midwifeEncounterRecord,
+      );
+      doctorAuthorityRepositoryMock.hasActiveAuthority.mockResolvedValue(false);
+      doctorMandateRepositoryMock.findCovering.mockResolvedValue({ id: mandateId });
+      encounterRepositoryMock.createProcedure.mockResolvedValue({
+        id: 'ba7a2b6f-0d55-4d21-9a3f-6b1a0d9f8e10',
+        encounterId,
+        code: '69.7',
+        display: 'Insertion of contraceptive device',
+        contraceptiveImplantAction: null,
+        mandateId,
+        notes: null,
+        performedAt: new Date('2026-09-15T03:00:00.000Z'),
+        recordedById: 'admin-user',
+        createdAt: new Date('2026-09-15T03:00:00.000Z'),
+        updatedAt: new Date('2026-09-15T03:00:00.000Z'),
+        mandate: {
+          id: mandateId,
+          kind: 'MANDATE',
+          mandatingDoctor: { fullName: 'dr. Budi Santoso' },
+        },
+      });
+
+      const response = await request(app.getHttpServer())
+        .post(`/api/v1/v1/encounters/${encounterId}/procedures`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ code: '69.7', display: 'Insertion of contraceptive device' });
+
+      expect(response.status).toBe(201);
+      expect(encounterRepositoryMock.createProcedure).toHaveBeenCalledWith(
+        expect.objectContaining({ code: '69.7', mandateId }),
+      );
+      expect(response.body.data.mandate).toEqual(
+        expect.objectContaining({ id: mandateId, mandatingDoctorName: 'dr. Budi Santoso' }),
+      );
+      expect(prismaServiceMock.auditLog.create).not.toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ action: 'MIDWIFE_AUTHORITY_REFUSED' }),
+        }),
+      );
+    });
+
+    it('still refuses a gated code the mandate does not name', async () => {
+      const token = await buildToken('admin-user', 'admin@hms.local');
+      mockActorWithPermissions([{ action: 'write', resource: 'Encounter', scope: 'ANY' }]);
+      encounterRepositoryMock.findEncounterWithRelationsById.mockResolvedValue(
+        midwifeEncounterRecord,
+      );
+      doctorAuthorityRepositoryMock.hasActiveAuthority.mockResolvedValue(false);
+      // The list is part of the query, so a code outside it simply finds
+      // nothing — the same answer as holding no mandate at all.
+      doctorMandateRepositoryMock.findCovering.mockResolvedValue(null);
+
+      const response = await request(app.getHttpServer())
+        .post(`/api/v1/v1/encounters/${encounterId}/procedures`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ code: '97.71', display: 'Removal of intrauterine contraceptive device' });
+
+      expect(response.status).toBe(422);
+      expect(response.body.error.code).toBe('MIDWIFE_AUTHORITY_REQUIRED');
+      expect(doctorMandateRepositoryMock.findCovering).toHaveBeenCalledWith(
+        expect.objectContaining({ icd9cmCode: '97.71', midwifeDoctorId: doctorId }),
+      );
+      expect(encounterRepositoryMock.createProcedure).not.toHaveBeenCalled();
     });
 
     it('refuses a SICK_CHILD encounter for a midwife without MTBS and opens nothing', async () => {

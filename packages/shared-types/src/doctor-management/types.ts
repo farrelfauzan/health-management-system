@@ -3,6 +3,7 @@ import type {
   DoctorAuthorityGrantKindValue,
   DoctorAuthorityKindValue,
   DoctorEducationInput,
+  DoctorMandateKindValue,
   DoctorLicenseTypeValue,
 } from '#doctor-management/schemas';
 import type { SpecialtySummary } from '#specialty/contracts';
@@ -248,6 +249,63 @@ export type DoctorAuthorityRecord = {
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;
+};
+
+/**
+ * One pelimpahan as stored (P25-T05). `icd9cmCodes` is what makes it
+ * enforceable: the procedure gate asks whether the code in front of it is on
+ * this list, so a mandate for an IUD insertion never covers a caesarean.
+ */
+export type DoctorMandateRecord = {
+  id: string;
+  midwifeDoctorId: string;
+  mandatingDoctorId: string;
+  mandatingDoctorName: string;
+  kind: DoctorMandateKindValue;
+  instruction: string;
+  icd9cmCodes: string[];
+  validFrom: Date;
+  validUntil: Date;
+  instructionStorageKey: string;
+  instructionMimeType: string;
+  instructionSizeBytes: number;
+  revokedAt: Date | null;
+  revokedById: string | null;
+  revokeReason: string | null;
+  createdById: string;
+  createdAt: Date;
+  updatedAt: Date;
+  deletedAt: Date | null;
+};
+
+export type CreateDoctorMandateRecordPayload = {
+  midwifeDoctorId: string;
+  mandatingDoctorId: string;
+  kind: DoctorMandateKindValue;
+  instruction: string;
+  icd9cmCodes: string[];
+  validFrom: Date;
+  validUntil: Date;
+  instructionDocument: DoctorAuthorityGrantDocumentPayload;
+  createdById: string;
+};
+
+export type RevokeDoctorMandateRecordPayload = {
+  revokedById: string;
+  revokeReason: string;
+  revokedAt: Date;
+};
+
+/**
+ * The question the procedure gate asks when a midwife lacks the authority an
+ * action needs (P25-T05): is this code covered by a live mandate on the day it
+ * was performed? A mandate also covers a code that needs no authority at all,
+ * so the gate asks it for every procedure a midwife records.
+ */
+export type FindCoveringDoctorMandateParams = {
+  midwifeDoctorId: string;
+  icd9cmCode: string;
+  onDate: Date;
 };
 
 /** The stored grant document, verified against storage before it is recorded. */
