@@ -41,6 +41,14 @@ export type PdfRenderOptions = {
    */
   readonly preferCssPageSize?: boolean;
   /**
+   * A footer repeated on every page (P27-T12), self-contained like the body.
+   * Chromium fills `<span class="pageNumber">` and `<span class="totalPages">`
+   * in it, which is the only way to print "page x of y". It is rendered in a
+   * separate context: it sees none of the body's CSS, has a default font size
+   * of zero, and needs a bottom margin tall enough to hold it.
+   */
+  readonly footerHtml?: string;
+  /**
    * Correlation id echoed into the renderer's logs. Carries no PII: an
    * invoice number is a business identifier that a shared container's log is
    * not the place for, so callers pass a request id.

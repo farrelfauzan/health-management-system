@@ -46862,6 +46862,91 @@ paths:
             report to the rupiah. Audited as an export."
       summary: Export one monthly tax report as CSV
       tags: *a66
+  /api/v1/tax/reports/{id}/pdf:
+    post:
+      description: P27-T12. A DRAFT is rendered on every request with a DRAFT
+        watermark and is never stored. A FINALIZED report is rendered once and
+        stored; every later download is the same file. Audited as an export. 503
+        `TAX_REPORT_PDF_UNAVAILABLE` when the renderer or storage fails; a
+        failed render is retried on the next request.
+      operationId: TaxReportController_renderPdf_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The report as an A4 PDF.
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+      summary: Download one monthly tax report as PDF
+      tags: *a66
+  /api/v1/tax/reports/{id}/pdf/download-url:
+    get:
+      operationId: TaxReportController_createPdfDownloadUrl_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: P27-T12. Renders and stores the PDF on first use, then always links
+            the same file. 409 `TAX_REPORT_NOT_FINALIZED` for a DRAFT, whose PDF
+            is never stored. Audited as an export.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      url:
+                        type: string
+                      fileName:
+                        type: string
+                      expiresAt:
+                        type: string
+                    required:
+                      - url
+                      - fileName
+                      - expiresAt
+                required:
+                  - data
+                example:
+                  data:
+                    url: https://storage.example/tax-report/document/5b7c9d1e-2f3a-4b5c-8d6e-7f8091a2b3c4.pdf?X-Amz-Signature=example
+                    fileName: pajak-pp55-omzet-2026-08.pdf
+                    expiresAt: 2026-09-19T08:15:00.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: A signed link to a finalized report's PDF
+      tags: *a66
   /api/v1/satusehat/patients/{patientId}/link:
     post:
       operationId: SatusehatLinkController_linkPatient_v1

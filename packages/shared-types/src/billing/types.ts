@@ -386,6 +386,18 @@ export type CashierReportDayRange = {
  * a key all the way to the service — the signed URL is minted at the edge of
  * the response and nothing below the mapper ever holds one.
  */
+/**
+ * The clinic as a document header prints it (P27-T12): the logo already
+ * inlined as a `data:` URI, because the PDF renderer has no network.
+ */
+export type ClinicLetterhead = {
+  name: string;
+  legalName: string | null;
+  address: string | null;
+  taxId: string | null;
+  logoDataUri: string | null;
+};
+
 export type ClinicProfileRecord = {
   id: string;
   name: string;

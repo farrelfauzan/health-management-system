@@ -67,6 +67,20 @@ describe('GotenbergPdfRendererService', () => {
     });
   });
 
+  it('sends a footer as a footer.html part only when one is given', async () => {
+    fetchMock.mockResolvedValue(buildResponse(buildPdfBytes()));
+    const renderer = new GotenbergPdfRendererService(buildConfigService());
+
+    await renderer.render('<p>Rekap</p>', { footerHtml: '<p>Halaman</p>' });
+    await renderer.render('<p>Rekap</p>', { footerHtml: '   ' });
+
+    const withFooter = (fetchMock.mock.calls[0] as [string, RequestInit])[1].body as FormData;
+    const withoutFooter = (fetchMock.mock.calls[1] as [string, RequestInit])[1].body as FormData;
+    const footer = withFooter.getAll('files')[1] as File;
+    expect([footer.name, await footer.text()]).toEqual(['footer.html', '<p>Halaman</p>']);
+    expect(withoutFooter.getAll('files')).toHaveLength(1);
+  });
+
   it('strips a trailing slash from the base URL rather than producing a double slash', async () => {
     fetchMock.mockResolvedValue(buildResponse(buildPdfBytes()));
 

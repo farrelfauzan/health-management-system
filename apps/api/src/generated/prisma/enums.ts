@@ -845,6 +845,14 @@ export const TaxReportStatus = {
 export type TaxReportStatus = (typeof TaxReportStatus)[keyof typeof TaxReportStatus]
 
 
+export const TaxReportDocumentStatus = {
+  READY: 'READY',
+  FAILED: 'FAILED'
+} as const
+
+export type TaxReportDocumentStatus = (typeof TaxReportDocumentStatus)[keyof typeof TaxReportDocumentStatus]
+
+
 export const DocumentOwnerType = {
   CLINIC: 'CLINIC',
   PATIENT: 'PATIENT',

@@ -30,6 +30,7 @@ import {
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { notifyStatement } from '#lib/api/notify-statement';
 import { parseApiSuccess } from '#lib/api/response';
+import { downloadTaxReportPdf } from '#lib/taxes/download-tax-report-pdf';
 import { exportTaxReport } from '#lib/taxes/export-tax-report';
 import { formatTaxReportPeriod } from '#lib/taxes/format-tax-report-period';
 import { invalidateTaxReportQueries } from '#lib/taxes/invalidate-tax-report-queries';
@@ -43,7 +44,8 @@ type TaxReportDetailProps = {
 /**
  * One monthly tax report (P27-T05): the figures, what they came from, and —
  * for a finalized report — what has changed in the books since. A draft is
- * recomputed or finalized here; either can be exported as CSV.
+ * recomputed or finalized here; either can be exported as CSV or, since
+ * P27-T12, downloaded as PDF.
  */
 export function TaxReportDetail({ reportId }: TaxReportDetailProps) {
   const t = useTranslations('operations.taxes.reports');
@@ -58,6 +60,7 @@ export function TaxReportDetail({ reportId }: TaxReportDetailProps) {
   const finalizeMutation = useMutation({
     mutationFn: () => taxReportControllerFinalizeReportV1(reportId),
   });
+  const pdfMutation = useMutation({ mutationFn: downloadTaxReportPdf });
   const isBusy = recomputeMutation.isPending || finalizeMutation.isPending;
 
   async function runAction(action: 'recompute' | 'finalize'): Promise<void> {
@@ -81,6 +84,19 @@ export function TaxReportDetail({ reportId }: TaxReportDetailProps) {
       await exportTaxReport({ reportId, period: current.period, kind: current.kind });
     } catch (caughtError) {
       notifyApiError(caughtError, t('exportError'));
+    }
+  }
+
+  async function handleDownloadPdf(current: TaxReportView): Promise<void> {
+    try {
+      await pdfMutation.mutateAsync(current);
+    } catch (caughtError) {
+      const code = resolveTaxReportErrorCode(caughtError);
+      if (code) {
+        notifyStatement({ tone: 'error', title: t(`errors.${code}`) });
+        return;
+      }
+      notifyApiError(caughtError, t('pdfError'));
     }
   }
 
@@ -133,6 +149,15 @@ export function TaxReportDetail({ reportId }: TaxReportDetailProps) {
               <Button type="button" variant="outline" onClick={() => void handleExport(report)}>
                 <Icon name="download" size={18} />
                 {t('exportCsv')}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                disabled={isBusy || pdfMutation.isPending}
+                onClick={() => void handleDownloadPdf(report)}
+              >
+                <Icon name="picture_as_pdf" size={18} />
+                {t('downloadPdf')}
               </Button>
             </div>
           </div>

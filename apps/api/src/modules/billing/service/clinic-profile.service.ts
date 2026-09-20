@@ -5,6 +5,7 @@ import {
   CLINIC_LOGO_MAX_UPLOAD_SIZE_BYTES,
   CLINIC_LOGO_STORED_MIME_TYPE,
   CLINIC_NPWP_INVALID_ERROR_CODE,
+  ClinicLetterhead,
   ClinicLogoUploadUrlView,
   ClinicProfileRecord,
   ClinicProfileView,
@@ -15,6 +16,7 @@ import {
 } from '@hms/shared-types';
 
 import { AuditService } from '../../../common/audit/audit.service';
+import { buildSafeErrorLog } from '../../../common/observability/safe-logging';
 import { CurrentUser } from '../../../common/auth/current-user.type';
 import { reencodeImage } from '../../../common/image/reencode-image';
 import { validateImageContent } from '../../../common/image/validate-image-content';
@@ -91,6 +93,32 @@ export class ClinicProfileService {
   async getTaxId(): Promise<string | null> {
     const record = await this.clinicProfileRepository.findProfile();
     return record?.taxId ?? null;
+  }
+
+  /**
+   * The clinic as a document header prints it (P27-T12), logo inlined as a
+   * `data:` URI because the PDF renderer has no network. An unreadable logo
+   * prints without it rather than failing the document; an unconfigured
+   * clinic prints under the product label.
+   */
+  async getLetterhead(): Promise<ClinicLetterhead> {
+    const record = await this.clinicProfileRepository.findProfile();
+    if (record === null) {
+      return {
+        name: DEFAULT_CLINIC_LABEL,
+        legalName: null,
+        address: null,
+        taxId: null,
+        logoDataUri: null,
+      };
+    }
+    return {
+      name: record.name.trim() === '' ? DEFAULT_CLINIC_LABEL : record.name,
+      legalName: record.legalName,
+      address: record.address,
+      taxId: record.taxId,
+      logoDataUri: await this.readLogoDataUri(record),
+    };
   }
 
   async getProfile(): Promise<ClinicProfileView> {
@@ -362,5 +390,21 @@ export class ClinicProfileService {
       responseContentType: record.logoMimeType ?? CLINIC_LOGO_STORED_MIME_TYPE,
     });
     return toClinicProfileView(record, signed.url);
+  }
+
+  private async readLogoDataUri(record: ClinicProfileRecord): Promise<string | null> {
+    if (record.logoStorageKey === null) {
+      return null;
+    }
+    try {
+      const stored = await this.objectStorageService.getObject({ key: record.logoStorageKey });
+      const mimeType = record.logoMimeType ?? stored.contentType ?? CLINIC_LOGO_STORED_MIME_TYPE;
+      return `data:${mimeType};base64,${stored.body.toString('base64')}`;
+    } catch {
+      this.logger.warn(
+        buildSafeErrorLog('clinic_letterhead_logo_unreadable', { key: record.logoStorageKey }),
+      );
+      return null;
+    }
   }
 }

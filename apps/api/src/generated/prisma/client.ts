@@ -619,6 +619,14 @@ export type TaxCategoryDefault = Prisma.TaxCategoryDefaultModel
  */
 export type TaxReportDraft = Prisma.TaxReportDraftModel
 /**
+ * Model TaxReportDocument
+ * The PDF of a finalized tax report (P27-T12), rendered once and stored so
+ * every later download is the same file. A DRAFT's PDF is never stored: it
+ * is rendered on request with a DRAFT watermark. A FAILED row is rendered
+ * again on the next request; a READY row is never rewritten.
+ */
+export type TaxReportDocument = Prisma.TaxReportDocumentModel
+/**
  * Model ServiceTariff
  * Price-list row for services the clinic charges — consultation fees and
  * clinical actions (tindakan). Reference data like the terminology catalogs:

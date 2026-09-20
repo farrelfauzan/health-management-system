@@ -3042,9 +3042,39 @@ model TaxReportDraft {
 
   generatedBy User? @relation("TaxReportGeneratedBy", fields: [generatedById], references: [id], onDelete: SetNull)
   finalizedBy User? @relation("TaxReportFinalizedBy", fields: [finalizedById], references: [id], onDelete: SetNull)
+  document    TaxReportDocument?
 
   @@unique([period, kind])
   @@map("tax_report_drafts")
+}
+
+enum TaxReportDocumentStatus {
+  READY
+  FAILED
+
+  @@map("tax_report_document_status")
+}
+
+/// The PDF of a finalized tax report (P27-T12), rendered once and stored so
+/// every later download is the same file. A DRAFT's PDF is never stored: it
+/// is rendered on request with a DRAFT watermark. A FAILED row is rendered
+/// again on the next request; a READY row is never rewritten.
+model TaxReportDocument {
+  id            String                  @id @default(uuid()) @db.Uuid
+  reportId      String                  @unique @map("report_id") @db.Uuid
+  status        TaxReportDocumentStatus
+  storageKey    String?                 @map("storage_key")
+  /// SHA-256 of the stored bytes, hex.
+  checksum      String?
+  sizeBytes     Int?                    @map("size_bytes")
+  failureReason String?                 @map("failure_reason")
+  renderedAt    DateTime?               @map("rendered_at")
+  createdAt     DateTime                @default(now()) @map("created_at")
+  updatedAt     DateTime                @updatedAt @map("updated_at")
+
+  report TaxReportDraft @relation(fields: [reportId], references: [id], onDelete: Restrict)
+
+  @@map("tax_report_documents")
 }
 
 /// Price-list row for services the clinic charges — consultation fees and

@@ -18,6 +18,8 @@ const CONVERT_HTML_PATH = '/forms/chromium/convert/html';
  * the HTML arriving here is already self-contained.
  */
 const ENTRY_POINT_FILENAME = 'index.html';
+/** Gotenberg repeats the part named `footer.html` at the bottom of every page. */
+const FOOTER_FILENAME = 'footer.html';
 const TRACE_HEADER = 'Gotenberg-Trace';
 const PDF_MAGIC_BYTES = '%PDF-';
 
@@ -103,6 +105,9 @@ export class GotenbergPdfRendererService extends PdfRendererService {
   private buildForm(html: string, options: PdfRenderOptions): FormData {
     const form = new FormData();
     form.append('files', new Blob([html], { type: 'text/html' }), ENTRY_POINT_FILENAME);
+    if (options.footerHtml !== undefined && options.footerHtml.trim() !== '') {
+      form.append('files', new Blob([options.footerHtml], { type: 'text/html' }), FOOTER_FILENAME);
+    }
     form.append('paperWidth', String(options.paperWidthInches ?? A4_PAPER_WIDTH_INCHES));
     form.append('paperHeight', String(options.paperHeightInches ?? A4_PAPER_HEIGHT_INCHES));
     form.append('marginTop', this.readMargin(options, 'top'));

@@ -1,4 +1,5 @@
 import type { InvoiceItemTypeValue } from '#billing/schemas';
+import type { ClinicLetterhead } from '#billing/types';
 import type {
   CreateTaxCodeRateInput,
   FakturTransactionCodeValue,
@@ -8,6 +9,7 @@ import type {
   TaxCodeSourceValue,
   TaxDefaultTargetValue,
   TaxReportKindValue,
+  TaxReportDocumentStatusValue,
   TaxReportStatusValue,
   TaxpayerTypeValue,
   UpdateTaxSettingsInput,
@@ -447,3 +449,97 @@ export type FinalizeTaxReportPayload = ComputedTaxReport & {
 
 /** A report ready to download. */
 export type TaxReportCsvExport = { fileName: string; csv: string };
+
+/** A finalized report's stored PDF, as the repository returns it (P27-T12). */
+export type TaxReportDocumentRecord = {
+  id: string;
+  reportId: string;
+  status: TaxReportDocumentStatusValue;
+  storageKey: string | null;
+  /** SHA-256 of the stored bytes, hex. */
+  checksum: string | null;
+  sizeBytes: number | null;
+  failureReason: string | null;
+  renderedAt: Date | null;
+};
+
+export type SaveReadyTaxReportDocumentPayload = {
+  reportId: string;
+  storageKey: string;
+  checksum: string;
+  sizeBytes: number;
+  renderedAt: Date;
+};
+
+export type SaveFailedTaxReportDocumentPayload = {
+  reportId: string;
+  failureReason: string;
+};
+
+/** Who drafted and who finalized a report, as the PDF footer names them. */
+export type TaxReportActorNames = {
+  generatedByName: string | null;
+  finalizedByName: string | null;
+};
+
+/** Everything the PDF layout prints, gathered before it is built (P27-T12). */
+export type TaxReportPdfContext = {
+  report: TaxReportRecord;
+  letterhead: ClinicLetterhead;
+  nitku: string | null;
+  actors: TaxReportActorNames;
+  /** When this copy is rendered; a DRAFT prints it under its watermark. */
+  renderedAt: Date;
+  timeZone: string;
+};
+
+/** A rendered PDF, ready to stream. */
+export type TaxReportPdf = { fileName: string; bytes: Uint8Array };
+
+/**
+ * How the tax report PDF prints values (P27-T12): Indonesian, in the clinic's
+ * timezone. Handed to every section builder so all kinds read alike.
+ */
+export type TaxReportPdfValueFormatter = {
+  /** `Rp 1.000.000`, whole rupiah. */
+  rupiah: (amount: number) => string;
+  /** A `YYYY-MM-DD` calendar date as `15 Oktober 2026`. */
+  calendarDate: (date: string) => string;
+  /** An instant as `10 Agustus 2026, 11:00` in the clinic's timezone. */
+  instant: (value: Date | string) => string;
+  /** A `YYYY-MM` period as `Oktober 2026`. */
+  period: (period: string) => string;
+};
+
+export type BuildTaxReportPdfSectionsParams = {
+  report: TaxReportRecord;
+  format: TaxReportPdfValueFormatter;
+};
+
+/**
+ * One report kind's part of the PDF: its title and the HTML of its summary
+ * and line sections. The header, watermark and footer are shared, so a new
+ * kind (PPh 21, P27-T07) adds one of these and nothing else.
+ */
+export type TaxReportPdfLayout = {
+  title: string;
+  buildSections: (params: BuildTaxReportPdfSectionsParams) => string;
+};
+
+/** A table in the PDF; cells are plain text, escaped when the table is built. */
+export type TaxReportPdfTable = {
+  headers: string[];
+  rows: string[][];
+  /** Column indexes printed right-aligned, for amounts. */
+  numericColumns: number[];
+  /** A bold last row, for totals. */
+  totalRow?: string[];
+};
+
+/** A label and its value, as the summary blocks print them. */
+export type TaxReportPdfSummaryRow = { label: string; value: string; isEmphasised?: boolean };
+
+export type BuildTaxReportPdfHtmlParams = {
+  context: TaxReportPdfContext;
+  format: TaxReportPdfValueFormatter;
+};
