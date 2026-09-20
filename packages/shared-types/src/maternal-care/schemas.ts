@@ -97,3 +97,51 @@ export const recordExternalDoctorVisitSchema = z.object({
 });
 
 export type RecordExternalDoctorVisitInput = z.infer<typeof recordExternalDoctorVisitSchema>;
+
+export const fetalPresentationSchema = z.enum(['CEPHALIC', 'BREECH', 'TRANSVERSE', 'UNKNOWN']);
+
+export const fetalHeadEngagementSchema = z.enum(['ENGAGED', 'NOT_ENGAGED']);
+
+export const tetanusImmunizationStatusSchema = z.enum(['T0', 'T1', 'T2', 'T3', 'T4', 'T5']);
+
+/**
+ * The 10T examination upsert (P25-T07, FR-ANC-03). Every field is optional and
+ * nullable: a checklist item that was not done is "not done", and a midwife
+ * must be able to save a fundal height before the foetal heart is audible.
+ *
+ * The bounds are plausibility guards, not clinical rules — a fundal height of
+ * 400 cm is a typo, and the referral rules are what judge a real value.
+ */
+export const upsertAntenatalExaminationSchema = z.object({
+  muacCm: z.number().min(10).max(60).nullish(),
+  fundalHeightCm: z.number().min(5).max(60).nullish(),
+  fetalHeartRateBpm: z.number().int().min(50).max(240).nullish(),
+  fetalPresentation: fetalPresentationSchema.nullish(),
+  fetalHeadEngagement: fetalHeadEngagementSchema.nullish(),
+  fetalCount: z.number().int().min(1).max(6).nullish(),
+  estimatedFetalWeightGrams: z.number().int().min(100).max(8000).nullish(),
+  tetanusStatus: tetanusImmunizationStatusSchema.nullish(),
+  ironTabletsGiven: z.number().int().min(0).max(500).nullish(),
+  counsellingTopics: z.array(z.string().trim().min(1).max(120)).max(20).optional(),
+  caseManagementNotes: z.string().trim().max(2000).nullish(),
+});
+
+export type UpsertAntenatalExaminationInput = z.infer<typeof upsertAntenatalExaminationSchema>;
+
+/** Setting a referral prompt aside. The reason is required (FR-ANC-04). */
+export const dismissAntenatalReferralSchema = z.object({
+  ruleCode: z.string().trim().min(1).max(64),
+  reason: z.string().trim().min(1).max(500),
+});
+
+export type DismissAntenatalReferralInput = z.infer<typeof dismissAntenatalReferralSchema>;
+
+/** Issuing a surat rujukan from a visit (FR-ANC-04). */
+export const issueAntenatalReferralLetterSchema = z.object({
+  destination: z.string().trim().min(1).max(200),
+  notes: z.string().trim().max(2000).optional(),
+});
+
+export type IssueAntenatalReferralLetterInput = z.infer<
+  typeof issueAntenatalReferralLetterSchema
+>;

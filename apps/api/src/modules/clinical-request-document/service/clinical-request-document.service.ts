@@ -12,6 +12,8 @@ import { DocumentTemplateService } from '../../document-template/service/documen
 import { ClinicalRequestDocumentRepository } from '../repository/clinical-request-document.repository';
 import { BUILT_IN_CLINICAL_REQUEST_TEMPLATES } from './built-in-clinical-request-templates';
 import { buildClinicalRequestHtml } from './build-clinical-request-html';
+import { CLINICAL_REQUEST_AUDIT_ACTION_BY_KIND } from './clinical-request-audit-actions';
+import { CLINICAL_REQUEST_AUDIT_RESOURCE_BY_KIND } from './clinical-request-audit-resources';
 
 const PDF_CONTENT_TYPE = 'application/pdf';
 
@@ -90,8 +92,8 @@ export class ClinicalRequestDocumentService {
       uploadedById: actorUserId,
     });
     await this.auditService.record({
-      action: context.kind === 'LAB_REQUEST' ? 'LAB_REQUEST_PRINTED' : 'PRESCRIPTION_PRINTED',
-      resource: context.kind === 'LAB_REQUEST' ? 'LabOrder' : 'Prescription',
+      action: CLINICAL_REQUEST_AUDIT_ACTION_BY_KIND[context.kind],
+      resource: CLINICAL_REQUEST_AUDIT_RESOURCE_BY_KIND[context.kind],
       resourceId: context.subjectId,
       actorUserId,
       patientId: context.patientId,

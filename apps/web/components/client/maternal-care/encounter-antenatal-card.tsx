@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button, Card, CardContent, CardHeader, CardTitle, Icon, Skeleton, toast } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { AntenatalExaminationCard } from '#components/client/maternal-care/antenatal-examination-card';
 import { pregnancyEpisodeControllerLinkEncounterVisitV1 } from '#lib/api/generated/maternal-care/maternal-care';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { invalidateMaternalCareQueries } from '#lib/maternal-care/invalidate-maternal-care-queries';
@@ -38,6 +39,7 @@ export function EncounterAntenatalCard({ encounterId, isEditable }: EncounterAnt
   });
 
   return (
+    <>
     <Card className="rounded-xl border-slate-200 shadow-none">
       <CardHeader>
         <CardTitle className="font-heading text-base">
@@ -78,5 +80,13 @@ export function EncounterAntenatalCard({ encounterId, isEditable }: EncounterAnt
         ) : null}
       </CardContent>
     </Card>
+    {/* The 10T examination hangs off the same visit (P25-T07), so it appears
+        the moment this encounter is counted as one and not before. */}
+    <AntenatalExaminationCard
+      encounterId={encounterId}
+      isEditable={isEditable}
+      isAntenatalVisit={visit !== null}
+    />
+    </>
   );
 }

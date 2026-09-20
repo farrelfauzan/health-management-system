@@ -508,7 +508,9 @@ export const ModelName = {
   BugReportCounter: 'BugReportCounter',
   PregnancyEpisode: 'PregnancyEpisode',
   PregnancyExternalDoctorVisit: 'PregnancyExternalDoctorVisit',
-  AntenatalVisit: 'AntenatalVisit'
+  AntenatalVisit: 'AntenatalVisit',
+  AntenatalExamination: 'AntenatalExamination',
+  AntenatalReferralDismissal: 'AntenatalReferralDismissal'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -524,7 +526,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "doctorMandate" | "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientDeliveryConsent" | "documentDelivery" | "documentDeliveryLink" | "patientAllergy" | "doctorCredentialOption" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorLicenseExpiryNotice" | "doctorAuthority" | "doctorAuthorityExpiryNotice" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "midwifeFormularyItem" | "prescription" | "prescriptionMedication" | "prescriptionItemComponent" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "taxSettings" | "taxCode" | "taxCodeRate" | "taxCategoryDefault" | "taxReportDraft" | "taxReportDocument" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "satusehatSubmissionResource" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "vaultDocumentExpiryNotice" | "vaultDocumentShare" | "userOffboardingNotice" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit" | "documentType" | "documentTypeApprover" | "managedDocument" | "documentApprovalRequest" | "documentApprovalApprover" | "documentApprovalDecision" | "labTest" | "labReferenceRange" | "labPanel" | "labPanelMember" | "labOrderCounter" | "labOrder" | "labOrderItem" | "labSpecimenCounter" | "labSpecimen" | "labResult" | "laboratorySettings" | "labReport" | "immunization" | "province" | "regency" | "district" | "village" | "bugReport" | "bugReportCounter" | "pregnancyEpisode" | "pregnancyExternalDoctorVisit" | "antenatalVisit"
+    modelProps: "doctorMandate" | "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientDeliveryConsent" | "documentDelivery" | "documentDeliveryLink" | "patientAllergy" | "doctorCredentialOption" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorLicenseExpiryNotice" | "doctorAuthority" | "doctorAuthorityExpiryNotice" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "midwifeFormularyItem" | "prescription" | "prescriptionMedication" | "prescriptionItemComponent" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "taxSettings" | "taxCode" | "taxCodeRate" | "taxCategoryDefault" | "taxReportDraft" | "taxReportDocument" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "satusehatSubmissionResource" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "vaultDocumentExpiryNotice" | "vaultDocumentShare" | "userOffboardingNotice" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit" | "documentType" | "documentTypeApprover" | "managedDocument" | "documentApprovalRequest" | "documentApprovalApprover" | "documentApprovalDecision" | "labTest" | "labReferenceRange" | "labPanel" | "labPanelMember" | "labOrderCounter" | "labOrder" | "labOrderItem" | "labSpecimenCounter" | "labSpecimen" | "labResult" | "laboratorySettings" | "labReport" | "immunization" | "province" | "regency" | "district" | "village" | "bugReport" | "bugReportCounter" | "pregnancyEpisode" | "pregnancyExternalDoctorVisit" | "antenatalVisit" | "antenatalExamination" | "antenatalReferralDismissal"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -9778,6 +9780,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    AntenatalExamination: {
+      payload: Prisma.$AntenatalExaminationPayload<ExtArgs>
+      fields: Prisma.AntenatalExaminationFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.AntenatalExaminationFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AntenatalExaminationPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.AntenatalExaminationFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AntenatalExaminationPayload>
+        }
+        findFirst: {
+          args: Prisma.AntenatalExaminationFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AntenatalExaminationPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.AntenatalExaminationFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AntenatalExaminationPayload>
+        }
+        findMany: {
+          args: Prisma.AntenatalExaminationFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AntenatalExaminationPayload>[]
+        }
+        create: {
+          args: Prisma.AntenatalExaminationCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AntenatalExaminationPayload>
+        }
+        createMany: {
+          args: Prisma.AntenatalExaminationCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.AntenatalExaminationCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AntenatalExaminationPayload>[]
+        }
+        delete: {
+          args: Prisma.AntenatalExaminationDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AntenatalExaminationPayload>
+        }
+        update: {
+          args: Prisma.AntenatalExaminationUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AntenatalExaminationPayload>
+        }
+        deleteMany: {
+          args: Prisma.AntenatalExaminationDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.AntenatalExaminationUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.AntenatalExaminationUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AntenatalExaminationPayload>[]
+        }
+        upsert: {
+          args: Prisma.AntenatalExaminationUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AntenatalExaminationPayload>
+        }
+        aggregate: {
+          args: Prisma.AntenatalExaminationAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateAntenatalExamination>
+        }
+        groupBy: {
+          args: Prisma.AntenatalExaminationGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AntenatalExaminationGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.AntenatalExaminationCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AntenatalExaminationCountAggregateOutputType> | number
+        }
+      }
+    }
+    AntenatalReferralDismissal: {
+      payload: Prisma.$AntenatalReferralDismissalPayload<ExtArgs>
+      fields: Prisma.AntenatalReferralDismissalFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.AntenatalReferralDismissalFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AntenatalReferralDismissalPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.AntenatalReferralDismissalFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AntenatalReferralDismissalPayload>
+        }
+        findFirst: {
+          args: Prisma.AntenatalReferralDismissalFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AntenatalReferralDismissalPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.AntenatalReferralDismissalFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AntenatalReferralDismissalPayload>
+        }
+        findMany: {
+          args: Prisma.AntenatalReferralDismissalFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AntenatalReferralDismissalPayload>[]
+        }
+        create: {
+          args: Prisma.AntenatalReferralDismissalCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AntenatalReferralDismissalPayload>
+        }
+        createMany: {
+          args: Prisma.AntenatalReferralDismissalCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.AntenatalReferralDismissalCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AntenatalReferralDismissalPayload>[]
+        }
+        delete: {
+          args: Prisma.AntenatalReferralDismissalDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AntenatalReferralDismissalPayload>
+        }
+        update: {
+          args: Prisma.AntenatalReferralDismissalUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AntenatalReferralDismissalPayload>
+        }
+        deleteMany: {
+          args: Prisma.AntenatalReferralDismissalDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.AntenatalReferralDismissalUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.AntenatalReferralDismissalUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AntenatalReferralDismissalPayload>[]
+        }
+        upsert: {
+          args: Prisma.AntenatalReferralDismissalUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AntenatalReferralDismissalPayload>
+        }
+        aggregate: {
+          args: Prisma.AntenatalReferralDismissalAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateAntenatalReferralDismissal>
+        }
+        groupBy: {
+          args: Prisma.AntenatalReferralDismissalGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AntenatalReferralDismissalGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.AntenatalReferralDismissalCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AntenatalReferralDismissalCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -11975,6 +12125,40 @@ export const AntenatalVisitScalarFieldEnum = {
 export type AntenatalVisitScalarFieldEnum = (typeof AntenatalVisitScalarFieldEnum)[keyof typeof AntenatalVisitScalarFieldEnum]
 
 
+export const AntenatalExaminationScalarFieldEnum = {
+  id: 'id',
+  antenatalVisitId: 'antenatalVisitId',
+  muacCm: 'muacCm',
+  fundalHeightCm: 'fundalHeightCm',
+  fetalHeartRateBpm: 'fetalHeartRateBpm',
+  fetalPresentation: 'fetalPresentation',
+  fetalHeadEngagement: 'fetalHeadEngagement',
+  fetalCount: 'fetalCount',
+  estimatedFetalWeightGrams: 'estimatedFetalWeightGrams',
+  tetanusStatus: 'tetanusStatus',
+  ironTabletsGiven: 'ironTabletsGiven',
+  counsellingTopics: 'counsellingTopics',
+  caseManagementNotes: 'caseManagementNotes',
+  recordedById: 'recordedById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AntenatalExaminationScalarFieldEnum = (typeof AntenatalExaminationScalarFieldEnum)[keyof typeof AntenatalExaminationScalarFieldEnum]
+
+
+export const AntenatalReferralDismissalScalarFieldEnum = {
+  id: 'id',
+  antenatalVisitId: 'antenatalVisitId',
+  ruleCode: 'ruleCode',
+  reason: 'reason',
+  dismissedById: 'dismissedById',
+  createdAt: 'createdAt'
+} as const
+
+export type AntenatalReferralDismissalScalarFieldEnum = (typeof AntenatalReferralDismissalScalarFieldEnum)[keyof typeof AntenatalReferralDismissalScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -13703,6 +13887,48 @@ export type ListEnumAntenatalVisitCodeFieldRefInput<$PrismaModel> = FieldRefInpu
 
 
 /**
+ * Reference to a field of type 'FetalPresentation'
+ */
+export type EnumFetalPresentationFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FetalPresentation'>
+    
+
+
+/**
+ * Reference to a field of type 'FetalPresentation[]'
+ */
+export type ListEnumFetalPresentationFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FetalPresentation[]'>
+    
+
+
+/**
+ * Reference to a field of type 'FetalHeadEngagement'
+ */
+export type EnumFetalHeadEngagementFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FetalHeadEngagement'>
+    
+
+
+/**
+ * Reference to a field of type 'FetalHeadEngagement[]'
+ */
+export type ListEnumFetalHeadEngagementFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FetalHeadEngagement[]'>
+    
+
+
+/**
+ * Reference to a field of type 'TetanusImmunizationStatus'
+ */
+export type EnumTetanusImmunizationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TetanusImmunizationStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'TetanusImmunizationStatus[]'
+ */
+export type ListEnumTetanusImmunizationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TetanusImmunizationStatus[]'>
+    
+
+
+/**
  * Reference to a field of type 'Float'
  */
 export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -13950,6 +14176,8 @@ export type GlobalOmitConfig = {
   pregnancyEpisode?: Prisma.PregnancyEpisodeOmit
   pregnancyExternalDoctorVisit?: Prisma.PregnancyExternalDoctorVisitOmit
   antenatalVisit?: Prisma.AntenatalVisitOmit
+  antenatalExamination?: Prisma.AntenatalExaminationOmit
+  antenatalReferralDismissal?: Prisma.AntenatalReferralDismissalOmit
 }
 
 /* Types for Logging */

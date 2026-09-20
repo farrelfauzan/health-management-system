@@ -356,6 +356,10 @@ enum AuditAction {
   PREGNANCY_EPISODE_ENDED
   /// An encounter was counted as an antenatal visit of an episode (P25-T06).
   ANTENATAL_VISIT_LINKED
+  /// A sourced referral prompt was dismissed with a reason (P25-T07,
+  /// FR-ANC-04). Nothing is blocked by a prompt, so the dismissal is the only
+  /// record that the midwife saw it and judged otherwise.
+  ANTENATAL_REFERRAL_DISMISSED
   /// The clinic's tax profile changed (P27-T02): taxpayer type, PP 55 regime,
   /// PKP status, NITKU or pricing mode. Carries each changed field's old and
   /// new value — every later tax computation reads this row, and a report is
@@ -1001,6 +1005,13 @@ enum DocumentTemplateKind {
   /// release, filed as the patient's LAB_RESULT document, and re-rendered as a
   /// new version on every amendment.
   LAB_REPORT
+  /// The surat rujukan a midwife issues when an antenatal finding needs a
+  /// doctor (P25-T07, FR-ANC-04). Rendered from the episode and the visit, so
+  /// the letter and the record cannot disagree about what was found.
+  REFERRAL_LETTER
+  /// The surat keterangan hamil, issued from the episode rather than from a
+  /// single visit (P25-T07, FR-ANC-06).
+  PREGNANCY_CERTIFICATE
 }
 
 /// Where a template sits in its lifecycle. DRAFT until the first immutable
@@ -1159,6 +1170,8 @@ model User {
   grantedDoctorMandates     DoctorMandate[]            @relation("DoctorMandateCreatedBy")
   createdPregnancyEpisodes  PregnancyEpisode[]         @relation("PregnancyEpisodeCreatedBy")
   recordedExternalDoctorVisits PregnancyExternalDoctorVisit[] @relation("PregnancyExternalDoctorVisitRecordedBy")
+  recordedAntenatalExaminations AntenatalExamination[]        @relation("AntenatalExaminationRecordedBy")
+  dismissedAntenatalReferrals   AntenatalReferralDismissal[]  @relation("AntenatalReferralDismissedBy")
   revokedDoctorMandates     DoctorMandate[]            @relation("DoctorMandateRevokedBy")
 
   @@index([organizationUnitId])
@@ -4223,6 +4236,11 @@ enum DocumentCategory {
   CONSENT_FORM
   DISCHARGE_SUMMARY
   MEDICAL_CERTIFICATE
+  /// A surat keterangan hamil (P25-T07). Its own category rather than
+  /// `MEDICAL_CERTIFICATE`: it is filed on the patient and reissued from the
+  /// episode, and a clinic looking for "her pregnancy letter" should not have
+  /// to read every certificate she has ever been given.
+  PREGNANCY_CERTIFICATE
   INSURANCE
   IDENTITY
   OTHER
@@ -6609,6 +6627,106 @@ model AntenatalVisit {
   pregnancyEpisode PregnancyEpisode @relation(fields: [pregnancyEpisodeId], references: [id], onDelete: Cascade)
   encounter        Encounter        @relation(fields: [encounterId], references: [id], onDelete: Cascade)
 
+  examination         AntenatalExamination?
+  referralDismissals  AntenatalReferralDismissal[]
+
   @@index([pregnancyEpisodeId])
   @@map("antenatal_visits")
+}
+
+/// How the baby lies (P25-T07). `UNKNOWN` is a real answer early in pregnancy,
+/// when the presentation is not yet fixed and guessing would be worse.
+enum FetalPresentation {
+  CEPHALIC
+  BREECH
+  TRANSVERSE
+  UNKNOWN
+
+  @@map("fetal_presentation")
+}
+
+/// The head against the pelvic inlet — "kepala terhadap PAP" (P25-T07).
+enum FetalHeadEngagement {
+  ENGAGED
+  NOT_ENGAGED
+
+  @@map("fetal_head_engagement")
+}
+
+/// Tetanus immunisation status, T0 through T5 (P25-T07).
+enum TetanusImmunizationStatus {
+  T0
+  T1
+  T2
+  T3
+  T4
+  T5
+
+  @@map("tetanus_immunization_status")
+}
+
+/// The integrated 10T examination of one antenatal visit (P25-T07, FR-ANC-03).
+///
+/// **Every field is nullable on purpose.** A checklist item that was not done
+/// is "not done", not invalid — a midwife recording a fundal height before the
+/// foetal heart is audible must be able to save.
+///
+/// Weight, height and blood pressure are deliberately **absent**: they come
+/// from the encounter's latest `VitalSigns` row, the TT dose is an
+/// `Immunization`, and the iron tablets prescribed are a `Prescription`.
+/// `ironTabletsGiven` is the count actually handed over, which is a different
+/// fact from what was prescribed and has nowhere else to live.
+model AntenatalExamination {
+  id               String @id @default(uuid()) @db.Uuid
+  antenatalVisitId String @unique @map("antenatal_visit_id") @db.Uuid
+
+  /// LiLA, mid-upper arm circumference.
+  muacCm                  Decimal?             @map("muac_cm") @db.Decimal(4, 1)
+  fundalHeightCm          Decimal?             @map("fundal_height_cm") @db.Decimal(4, 1)
+  fetalHeartRateBpm       Int?                 @map("fetal_heart_rate_bpm")
+  fetalPresentation       FetalPresentation?   @map("fetal_presentation")
+  fetalHeadEngagement     FetalHeadEngagement? @map("fetal_head_engagement")
+  fetalCount              Int?                 @map("fetal_count")
+  estimatedFetalWeightGrams Int?               @map("estimated_fetal_weight_grams")
+
+  tetanusStatus     TetanusImmunizationStatus? @map("tetanus_status")
+  ironTabletsGiven  Int?                       @map("iron_tablets_given")
+
+  /// Free text rather than an enum: the playbook's "Tema Konseling" list could
+  /// not be read from a primary source, and an invented code list would be
+  /// worse than the midwife's own words (P25-T07).
+  counsellingTopics  String[] @map("counselling_topics")
+  caseManagementNotes String? @map("case_management_notes")
+
+  recordedById String   @map("recorded_by_id") @db.Uuid
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  antenatalVisit AntenatalVisit @relation(fields: [antenatalVisitId], references: [id], onDelete: Cascade)
+  recordedBy     User           @relation("AntenatalExaminationRecordedBy", fields: [recordedById], references: [id], onDelete: Restrict)
+
+  @@index([recordedById])
+  @@map("antenatal_examinations")
+}
+
+/// A sourced referral prompt the midwife saw and set aside (P25-T07,
+/// FR-ANC-04).
+///
+/// Nothing is ever blocked by a prompt, so without this row there is no record
+/// that a raised blood pressure was noticed at all. The reason is required:
+/// "dismissed" on its own answers nothing later.
+model AntenatalReferralDismissal {
+  id               String   @id @default(uuid()) @db.Uuid
+  antenatalVisitId String   @map("antenatal_visit_id") @db.Uuid
+  ruleCode         String   @map("rule_code")
+  reason           String
+  dismissedById    String   @map("dismissed_by_id") @db.Uuid
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  antenatalVisit AntenatalVisit @relation(fields: [antenatalVisitId], references: [id], onDelete: Cascade)
+  dismissedBy    User           @relation("AntenatalReferralDismissedBy", fields: [dismissedById], references: [id], onDelete: Restrict)
+
+  @@unique([antenatalVisitId, ruleCode])
+  @@index([dismissedById])
+  @@map("antenatal_referral_dismissals")
 }

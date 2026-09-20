@@ -48,6 +48,14 @@ WITH seed_lab_tests(code, name, loinc_code, loinc_display, specimen_type, result
     ('WIDAL', 'Widal', NULL, NULL, 'SERUM', 'TEXT', NULL, 0, ARRAY[]::TEXT[]),
     ('HBSAG', 'HBsAg', '5195-3', 'Hepatitis B virus surface Ag [Presence] in Serum', 'SERUM', 'CODED', NULL, 0, ARRAY['Non-reaktif','Reaktif']::TEXT[]),
     ('ANTIHIV', 'Anti-HIV', '75622-1', 'HIV 1 and 2 Ab [Presence] in Serum or Plasma by Rapid immunoassay', 'SERUM', 'CODED', NULL, 0, ARRAY['Non-reaktif','Reaktif']::TEXT[]),
+    -- P25-T07: syphilis screening, which the integrated antenatal standard
+    -- requires and this catalogue had no test for. The LOINC codes are the ones
+    -- the SATUSEHAT ANC playbook uses: RPR 20508-8 and VDRL 14904-7. The
+    -- playbook's HIV, HBsAg and glucose codes differ from the ones above; that
+    -- disagreement is deliberately left alone here and belongs to P25-T08's
+    -- live probe.
+    ('RPR', 'Sifilis - RPR', '20508-8', 'Reagin Ab [Presence] in Serum by RPR', 'SERUM', 'CODED', NULL, 0, ARRAY['Non-reaktif','Reaktif']::TEXT[]),
+    ('VDRL', 'Sifilis - VDRL', '14904-7', 'Reagin Ab [Presence] in Serum by VDRL', 'SERUM', 'CODED', NULL, 0, ARRAY['Non-reaktif','Reaktif']::TEXT[]),
     ('HCGURIN', 'hCG Urin', '2106-3', 'Choriogonadotropin [Presence] in Urine', 'URINE', 'CODED', NULL, 0, ARRAY['Negatif','Positif']::TEXT[]),
     ('NS1', 'Dengue NS1', '72258-8', 'Dengue virus NS1 Ag [Presence] in Serum or Plasma by Immunoassay', 'SERUM', 'CODED', NULL, 0, ARRAY['Negatif','Positif']::TEXT[]),
     ('URPH', 'Urin - pH', '5803-2', 'pH of Urine by Test strip', 'URINE', 'NUMERIC', '[pH]', 1, ARRAY[]::TEXT[]),

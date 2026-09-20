@@ -90,6 +90,42 @@ export const MATERNAL_CARE_EXAMPLES = {
     visitCode: 'K3',
     gestationalAge: { weeks: 29, days: 0 },
   },
+  examination: {
+    examination: {
+      muacCm: 24.5,
+      fundalHeightCm: 28,
+      fetalHeartRateBpm: 148,
+      fetalPresentation: 'CEPHALIC',
+      fetalHeadEngagement: 'NOT_ENGAGED',
+      fetalCount: 1,
+      estimatedFetalWeightGrams: 1550,
+      tetanusStatus: 'T2',
+      ironTabletsGiven: 30,
+      counsellingTopics: ['Tanda bahaya kehamilan', 'Persiapan persalinan'],
+      caseManagementNotes: null,
+    },
+    checklist: [
+      { code: 'WEIGHT_AND_HEIGHT', source: 'VITAL_SIGNS', isDone: true },
+      { code: 'BLOOD_PRESSURE', source: 'VITAL_SIGNS', isDone: true },
+      { code: 'MUAC', source: 'EXAMINATION', isDone: true },
+      { code: 'FUNDAL_HEIGHT', source: 'EXAMINATION', isDone: true },
+      { code: 'FETAL_PRESENTATION_AND_HEART_RATE', source: 'EXAMINATION', isDone: true },
+      { code: 'TETANUS_IMMUNIZATION', source: 'IMMUNIZATION', isDone: false },
+      { code: 'IRON_TABLETS', source: 'PRESCRIPTION', isDone: true },
+      { code: 'LABORATORY', source: 'LAB_ORDER', isDone: true },
+      { code: 'CASE_MANAGEMENT', source: 'EXAMINATION', isDone: false },
+      { code: 'COUNSELLING', source: 'EXAMINATION', isDone: true },
+    ],
+    // Empty until the Pedoman's thresholds can be read from a primary source
+    // (P25-T07): the mechanism ships, the rule list does not.
+    referralRules: [],
+  },
+  document: {
+    documentId: 'a71c3f08-52d4-4e96-bb17-0c4e8d2f6a93',
+    kind: 'REFERRAL_LETTER',
+    title: 'Surat Rujukan — Ibu Rina',
+    renderedAt: '2026-08-23T02:15:00.000Z',
+  },
   externalDoctorVisit: {
     id: 'd3b8f512-4e07-4a91-b6c3-28d5019e7f4a',
     facilityName: 'RS Ibu dan Anak Melati',

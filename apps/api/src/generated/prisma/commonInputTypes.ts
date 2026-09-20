@@ -2502,6 +2502,57 @@ export type EnumAntenatalVisitCodeNullableWithAggregatesFilter<$PrismaModel = ne
   _max?: Prisma.NestedEnumAntenatalVisitCodeNullableFilter<$PrismaModel>
 }
 
+export type EnumFetalPresentationNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.FetalPresentation | Prisma.EnumFetalPresentationFieldRefInput<$PrismaModel> | null
+  in?: $Enums.FetalPresentation[] | Prisma.ListEnumFetalPresentationFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.FetalPresentation[] | Prisma.ListEnumFetalPresentationFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumFetalPresentationNullableFilter<$PrismaModel> | $Enums.FetalPresentation | null
+}
+
+export type EnumFetalHeadEngagementNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.FetalHeadEngagement | Prisma.EnumFetalHeadEngagementFieldRefInput<$PrismaModel> | null
+  in?: $Enums.FetalHeadEngagement[] | Prisma.ListEnumFetalHeadEngagementFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.FetalHeadEngagement[] | Prisma.ListEnumFetalHeadEngagementFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumFetalHeadEngagementNullableFilter<$PrismaModel> | $Enums.FetalHeadEngagement | null
+}
+
+export type EnumTetanusImmunizationStatusNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.TetanusImmunizationStatus | Prisma.EnumTetanusImmunizationStatusFieldRefInput<$PrismaModel> | null
+  in?: $Enums.TetanusImmunizationStatus[] | Prisma.ListEnumTetanusImmunizationStatusFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.TetanusImmunizationStatus[] | Prisma.ListEnumTetanusImmunizationStatusFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumTetanusImmunizationStatusNullableFilter<$PrismaModel> | $Enums.TetanusImmunizationStatus | null
+}
+
+export type EnumFetalPresentationNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.FetalPresentation | Prisma.EnumFetalPresentationFieldRefInput<$PrismaModel> | null
+  in?: $Enums.FetalPresentation[] | Prisma.ListEnumFetalPresentationFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.FetalPresentation[] | Prisma.ListEnumFetalPresentationFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumFetalPresentationNullableWithAggregatesFilter<$PrismaModel> | $Enums.FetalPresentation | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumFetalPresentationNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumFetalPresentationNullableFilter<$PrismaModel>
+}
+
+export type EnumFetalHeadEngagementNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.FetalHeadEngagement | Prisma.EnumFetalHeadEngagementFieldRefInput<$PrismaModel> | null
+  in?: $Enums.FetalHeadEngagement[] | Prisma.ListEnumFetalHeadEngagementFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.FetalHeadEngagement[] | Prisma.ListEnumFetalHeadEngagementFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumFetalHeadEngagementNullableWithAggregatesFilter<$PrismaModel> | $Enums.FetalHeadEngagement | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumFetalHeadEngagementNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumFetalHeadEngagementNullableFilter<$PrismaModel>
+}
+
+export type EnumTetanusImmunizationStatusNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.TetanusImmunizationStatus | Prisma.EnumTetanusImmunizationStatusFieldRefInput<$PrismaModel> | null
+  in?: $Enums.TetanusImmunizationStatus[] | Prisma.ListEnumTetanusImmunizationStatusFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.TetanusImmunizationStatus[] | Prisma.ListEnumTetanusImmunizationStatusFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumTetanusImmunizationStatusNullableWithAggregatesFilter<$PrismaModel> | $Enums.TetanusImmunizationStatus | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumTetanusImmunizationStatusNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumTetanusImmunizationStatusNullableFilter<$PrismaModel>
+}
+
 export type NestedUuidFilter<$PrismaModel = never> = {
   equals?: string | Prisma.StringFieldRefInput<$PrismaModel>
   in?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
@@ -4943,6 +4994,57 @@ export type NestedEnumAntenatalVisitCodeNullableWithAggregatesFilter<$PrismaMode
   _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
   _min?: Prisma.NestedEnumAntenatalVisitCodeNullableFilter<$PrismaModel>
   _max?: Prisma.NestedEnumAntenatalVisitCodeNullableFilter<$PrismaModel>
+}
+
+export type NestedEnumFetalPresentationNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.FetalPresentation | Prisma.EnumFetalPresentationFieldRefInput<$PrismaModel> | null
+  in?: $Enums.FetalPresentation[] | Prisma.ListEnumFetalPresentationFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.FetalPresentation[] | Prisma.ListEnumFetalPresentationFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumFetalPresentationNullableFilter<$PrismaModel> | $Enums.FetalPresentation | null
+}
+
+export type NestedEnumFetalHeadEngagementNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.FetalHeadEngagement | Prisma.EnumFetalHeadEngagementFieldRefInput<$PrismaModel> | null
+  in?: $Enums.FetalHeadEngagement[] | Prisma.ListEnumFetalHeadEngagementFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.FetalHeadEngagement[] | Prisma.ListEnumFetalHeadEngagementFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumFetalHeadEngagementNullableFilter<$PrismaModel> | $Enums.FetalHeadEngagement | null
+}
+
+export type NestedEnumTetanusImmunizationStatusNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.TetanusImmunizationStatus | Prisma.EnumTetanusImmunizationStatusFieldRefInput<$PrismaModel> | null
+  in?: $Enums.TetanusImmunizationStatus[] | Prisma.ListEnumTetanusImmunizationStatusFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.TetanusImmunizationStatus[] | Prisma.ListEnumTetanusImmunizationStatusFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumTetanusImmunizationStatusNullableFilter<$PrismaModel> | $Enums.TetanusImmunizationStatus | null
+}
+
+export type NestedEnumFetalPresentationNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.FetalPresentation | Prisma.EnumFetalPresentationFieldRefInput<$PrismaModel> | null
+  in?: $Enums.FetalPresentation[] | Prisma.ListEnumFetalPresentationFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.FetalPresentation[] | Prisma.ListEnumFetalPresentationFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumFetalPresentationNullableWithAggregatesFilter<$PrismaModel> | $Enums.FetalPresentation | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumFetalPresentationNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumFetalPresentationNullableFilter<$PrismaModel>
+}
+
+export type NestedEnumFetalHeadEngagementNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.FetalHeadEngagement | Prisma.EnumFetalHeadEngagementFieldRefInput<$PrismaModel> | null
+  in?: $Enums.FetalHeadEngagement[] | Prisma.ListEnumFetalHeadEngagementFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.FetalHeadEngagement[] | Prisma.ListEnumFetalHeadEngagementFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumFetalHeadEngagementNullableWithAggregatesFilter<$PrismaModel> | $Enums.FetalHeadEngagement | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumFetalHeadEngagementNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumFetalHeadEngagementNullableFilter<$PrismaModel>
+}
+
+export type NestedEnumTetanusImmunizationStatusNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.TetanusImmunizationStatus | Prisma.EnumTetanusImmunizationStatusFieldRefInput<$PrismaModel> | null
+  in?: $Enums.TetanusImmunizationStatus[] | Prisma.ListEnumTetanusImmunizationStatusFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.TetanusImmunizationStatus[] | Prisma.ListEnumTetanusImmunizationStatusFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumTetanusImmunizationStatusNullableWithAggregatesFilter<$PrismaModel> | $Enums.TetanusImmunizationStatus | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumTetanusImmunizationStatusNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumTetanusImmunizationStatusNullableFilter<$PrismaModel>
 }
 
 

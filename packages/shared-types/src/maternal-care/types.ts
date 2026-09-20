@@ -182,3 +182,133 @@ export type PregnancyEpisodePatientRow = {
   sex: string | null;
   ownerUserId: string | null;
 };
+
+/** How the baby lies, and the head against the pelvic inlet (P25-T07). */
+export type FetalPresentationValue = 'CEPHALIC' | 'BREECH' | 'TRANSVERSE' | 'UNKNOWN';
+
+export type FetalHeadEngagementValue = 'ENGAGED' | 'NOT_ENGAGED';
+
+export type TetanusImmunizationStatusValue = 'T0' | 'T1' | 'T2' | 'T3' | 'T4' | 'T5';
+
+/**
+ * What a referral rule needs to exist (P25-T07, FR-ANC-04).
+ *
+ * `source` is **required**, and that is the whole point: a threshold that
+ * sends a mother to a hospital has to be traceable to the page it came from,
+ * so a rule cannot be added without citing one.
+ */
+export type AntenatalReferralRule = {
+  code: string;
+  label: string;
+  /** The Pedoman page or Buku KIA section the threshold is taken from. */
+  source: string;
+  isTriggered: (input: AntenatalReferralRuleInput) => boolean;
+};
+
+/** Everything a referral rule may look at: the visit, and the vitals with it. */
+export type AntenatalReferralRuleInput = {
+  gestationalAge: GestationalAge;
+  systolicBloodPressure: number | null;
+  diastolicBloodPressure: number | null;
+  muacCm: number | null;
+  haemoglobinGramsPerDecilitre: number | null;
+  fetalHeartRateBpm: number | null;
+  fetalPresentation: FetalPresentationValue | null;
+};
+
+/** A rule that fired, with whether the midwife has already set it aside. */
+export type TriggeredAntenatalReferralRule = {
+  code: string;
+  label: string;
+  source: string;
+  dismissedReason: string | null;
+};
+
+/** The ten items of the integrated antenatal standard (P25-T07, FR-ANC-03). */
+export type TenTItemCode =
+  | 'WEIGHT_AND_HEIGHT'
+  | 'BLOOD_PRESSURE'
+  | 'MUAC'
+  | 'FUNDAL_HEIGHT'
+  | 'FETAL_PRESENTATION_AND_HEART_RATE'
+  | 'TETANUS_IMMUNIZATION'
+  | 'IRON_TABLETS'
+  | 'LABORATORY'
+  | 'CASE_MANAGEMENT'
+  | 'COUNSELLING';
+
+/**
+ * Where a checklist item's answer comes from. Named rather than implied, so a
+ * midwife reading "NOT_DONE" can tell whether to take a measurement, order a
+ * test, or write a note.
+ */
+export type TenTItemSource =
+  | 'VITAL_SIGNS'
+  | 'EXAMINATION'
+  | 'IMMUNIZATION'
+  | 'LAB_ORDER'
+  | 'PRESCRIPTION';
+
+export type TenTChecklistItem = {
+  code: TenTItemCode;
+  source: TenTItemSource;
+  isDone: boolean;
+};
+
+/** One visit's 10T examination, as persistence holds it. */
+export type AntenatalExaminationRow = {
+  id: string;
+  antenatalVisitId: string;
+  muacCm: number | null;
+  fundalHeightCm: number | null;
+  fetalHeartRateBpm: number | null;
+  fetalPresentation: FetalPresentationValue | null;
+  fetalHeadEngagement: FetalHeadEngagementValue | null;
+  fetalCount: number | null;
+  estimatedFetalWeightGrams: number | null;
+  tetanusStatus: TetanusImmunizationStatusValue | null;
+  ironTabletsGiven: number | null;
+  counsellingTopics: string[];
+  caseManagementNotes: string | null;
+};
+
+/** What the checklist reads off the rest of the encounter. */
+export type TenTChecklistSources = {
+  hasWeightAndHeight: boolean;
+  hasBloodPressure: boolean;
+  hasImmunization: boolean;
+  hasLabOrder: boolean;
+  hasIronPrescription: boolean;
+};
+
+/** What the repository needs to upsert one visit's examination (P25-T07). */
+export type UpsertAntenatalExaminationPayload = {
+  antenatalVisitId: string;
+  recordedById: string;
+  muacCm?: number | null;
+  fundalHeightCm?: number | null;
+  fetalHeartRateBpm?: number | null;
+  fetalPresentation?: FetalPresentationValue | null;
+  fetalHeadEngagement?: FetalHeadEngagementValue | null;
+  fetalCount?: number | null;
+  estimatedFetalWeightGrams?: number | null;
+  tetanusStatus?: TetanusImmunizationStatusValue | null;
+  ironTabletsGiven?: number | null;
+  counsellingTopics?: string[];
+  caseManagementNotes?: string | null;
+};
+
+/**
+ * What a maternal letter prints about the patient (P25-T07). The NIK arrives
+ * as its stored last four digits only — the letter is carried by hand and read
+ * by people the clinic never meets, so the plaintext never leaves the
+ * identifier columns for this path.
+ */
+export type MaternalLetterPatient = {
+  fullName: string;
+  mrn: string;
+  dateOfBirth: Date | null;
+  sex: string | null;
+  address: string | null;
+  nikLast4: string | null;
+};

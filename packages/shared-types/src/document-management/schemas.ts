@@ -95,6 +95,10 @@ export const DOCUMENT_CATEGORIES = [
   'CONSENT_FORM',
   'DISCHARGE_SUMMARY',
   'MEDICAL_CERTIFICATE',
+  // P25-T07: the surat keterangan hamil. Its own category rather than a
+  // medical certificate, because it is reissued from the pregnancy episode and
+  // a clinic looking for it should not read every certificate she has had.
+  'PREGNANCY_CERTIFICATE',
   'INSURANCE',
   'IDENTITY',
   'OTHER',

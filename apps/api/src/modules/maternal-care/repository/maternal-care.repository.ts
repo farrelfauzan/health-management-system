@@ -1,5 +1,7 @@
 import {
+  AntenatalExaminationRow,
   AntenatalVisitCodeValue,
+  MaternalLetterPatient,
   CreatePregnancyEpisodeRecordPayload,
   ExternalDoctorVisitRow,
   PregnancyEpisodePatientRow,
@@ -7,7 +9,9 @@ import {
   PregnancyEpisodeRecord,
   PregnancyEpisodeVisitRow,
   RecordExternalDoctorVisitPayload,
+  TenTChecklistSources,
   UpdatePregnancyEpisodeRecordPayload,
+  UpsertAntenatalExaminationPayload,
 } from '@hms/shared-types';
 import { Injectable } from '@nestjs/common';
 
@@ -15,6 +19,23 @@ import { PrismaService } from '../../../common/prisma/prisma.service';
 import { PregnancyEpisodeConflictError } from './pregnancy-episode-conflict.error';
 
 const UNIQUE_CONSTRAINT_ERROR_CODE = 'P2002';
+
+/** The only projection of `antenatal_examinations` any query requests. */
+const ANTENATAL_EXAMINATION_SELECT = {
+  id: true,
+  antenatalVisitId: true,
+  muacCm: true,
+  fundalHeightCm: true,
+  fetalHeartRateBpm: true,
+  fetalPresentation: true,
+  fetalHeadEngagement: true,
+  fetalCount: true,
+  estimatedFetalWeightGrams: true,
+  tetanusStatus: true,
+  ironTabletsGiven: true,
+  counsellingTopics: true,
+  caseManagementNotes: true,
+} as const;
 
 /**
  * The only projection of `pregnancy_episodes` any query requests. Listed
@@ -239,6 +260,136 @@ export class MaternalCareRepository {
   }
 
   /**
+   * One visit's 10T examination, or null when nothing has been recorded yet.
+   */
+  async findExaminationByVisitId(
+    antenatalVisitId: string,
+  ): Promise<AntenatalExaminationRow | null> {
+    const examination = await this.prisma.antenatalExamination.findUnique({
+      where: { antenatalVisitId },
+      select: ANTENATAL_EXAMINATION_SELECT,
+    });
+
+    return examination === null ? null : toAntenatalExaminationRow(examination);
+  }
+
+  /**
+   * Upserts the examination. One row per visit, so a midwife who comes back to
+   * add the foetal heart rate edits the row she started rather than filing a
+   * second reading of the same examination.
+   */
+  async upsertExamination(payload: UpsertAntenatalExaminationPayload): Promise<AntenatalExaminationRow> {
+    const { antenatalVisitId, recordedById, ...fields } = payload;
+    const examination = await this.prisma.antenatalExamination.upsert({
+      where: { antenatalVisitId },
+      create: { antenatalVisitId, recordedById, ...fields },
+      update: fields,
+      select: ANTENATAL_EXAMINATION_SELECT,
+    });
+
+    return toAntenatalExaminationRow(examination);
+  }
+
+  /**
+   * What the 10T checklist reads off the rest of the encounter. One query per
+   * source, counted rather than fetched: the checklist asks whether the thing
+   * exists, never what it said.
+   */
+  async findChecklistSources(encounterId: string): Promise<TenTChecklistSources> {
+    const [vitals, immunizationCount, labOrderCount, prescriptionCount] = await Promise.all([
+      this.prisma.vitalSigns.findFirst({
+        where: { encounterId, deletedAt: null },
+        orderBy: { recordedAt: 'desc' },
+        select: {
+          weightKg: true,
+          heightCm: true,
+          systolicBloodPressure: true,
+          diastolicBloodPressure: true,
+        },
+      }),
+      this.prisma.immunization.count({ where: { encounterId, deletedAt: null } }),
+      // A lab order has no soft delete — it is cancelled instead — and a
+      // cancelled order is not a test that was done.
+      this.prisma.labOrder.count({ where: { encounterId, status: { not: 'CANCELLED' } } }),
+      this.prisma.prescription.count({ where: { encounterId, deletedAt: null } }),
+    ]);
+
+    return {
+      hasWeightAndHeight: vitals !== null && vitals.weightKg !== null && vitals.heightCm !== null,
+      hasBloodPressure:
+        vitals !== null &&
+        vitals.systolicBloodPressure !== null &&
+        vitals.diastolicBloodPressure !== null,
+      hasImmunization: immunizationCount > 0,
+      hasLabOrder: labOrderCount > 0,
+      hasIronPrescription: prescriptionCount > 0,
+    };
+  }
+
+  /** The latest vitals a referral rule may look at, as plain numbers. */
+  async findLatestVitalsForRules(encounterId: string): Promise<{
+    systolicBloodPressure: number | null;
+    diastolicBloodPressure: number | null;
+  }> {
+    const vitals = await this.prisma.vitalSigns.findFirst({
+      where: { encounterId, deletedAt: null },
+      orderBy: { recordedAt: 'desc' },
+      select: { systolicBloodPressure: true, diastolicBloodPressure: true },
+    });
+
+    return {
+      systolicBloodPressure: vitals?.systolicBloodPressure ?? null,
+      diastolicBloodPressure: vitals?.diastolicBloodPressure ?? null,
+    };
+  }
+
+  async listReferralDismissals(antenatalVisitId: string): Promise<Record<string, string>> {
+    const dismissals = await this.prisma.antenatalReferralDismissal.findMany({
+      where: { antenatalVisitId },
+      select: { ruleCode: true, reason: true },
+    });
+
+    return Object.fromEntries(dismissals.map((row) => [row.ruleCode, row.reason]));
+  }
+
+  async recordReferralDismissal(payload: {
+    antenatalVisitId: string;
+    ruleCode: string;
+    reason: string;
+    dismissedById: string;
+  }): Promise<void> {
+    await this.prisma.antenatalReferralDismissal.upsert({
+      where: {
+        antenatalVisitId_ruleCode: {
+          antenatalVisitId: payload.antenatalVisitId,
+          ruleCode: payload.ruleCode,
+        },
+      },
+      create: payload,
+      update: { reason: payload.reason, dismissedById: payload.dismissedById },
+    });
+  }
+
+  /**
+   * What a maternal letter prints about the patient (P25-T07). `nikLast4` is
+   * the stored partial, never a decrypt: the full identifier has no business
+   * on a letter carried by hand to another facility.
+   */
+  async findLetterPatient(patientId: string): Promise<MaternalLetterPatient | null> {
+    return this.prisma.findFirstActive(this.prisma.patientProfile, {
+      where: { id: patientId },
+      select: {
+        fullName: true,
+        mrn: true,
+        dateOfBirth: true,
+        sex: true,
+        address: true,
+        nikLast4: true,
+      },
+    });
+  }
+
+  /**
    * The patient's sex, for the create guard, and who owns her record, for the
    * own-scope read: a patient reading her own pregnancy is unaffected by the
    * clinician rules (D-033).
@@ -289,5 +440,32 @@ function toPregnancyEpisodeRecord(row: {
     endReason: row.endReason as PregnancyEpisodeRecord['endReason'],
     prePregnancyWeightKg:
       row.prePregnancyWeightKg === null ? null : Number(row.prePregnancyWeightKg),
+  };
+}
+
+/** Decimals come back as Prisma Decimals; the contract carries numbers. */
+function toAntenatalExaminationRow(row: {
+  id: string;
+  antenatalVisitId: string;
+  muacCm: unknown;
+  fundalHeightCm: unknown;
+  fetalHeartRateBpm: number | null;
+  fetalPresentation: string | null;
+  fetalHeadEngagement: string | null;
+  fetalCount: number | null;
+  estimatedFetalWeightGrams: number | null;
+  tetanusStatus: string | null;
+  ironTabletsGiven: number | null;
+  counsellingTopics: string[];
+  caseManagementNotes: string | null;
+}): AntenatalExaminationRow {
+  return {
+    ...row,
+    muacCm: row.muacCm === null ? null : Number(row.muacCm),
+    fundalHeightCm: row.fundalHeightCm === null ? null : Number(row.fundalHeightCm),
+    fetalPresentation: row.fetalPresentation as AntenatalExaminationRow['fetalPresentation'],
+    fetalHeadEngagement:
+      row.fetalHeadEngagement as AntenatalExaminationRow['fetalHeadEngagement'],
+    tetanusStatus: row.tetanusStatus as AntenatalExaminationRow['tetanusStatus'],
   };
 }

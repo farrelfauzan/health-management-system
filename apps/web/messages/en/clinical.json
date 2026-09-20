@@ -240,6 +240,7 @@
           "CONSENT_FORM": "Consent form",
           "DISCHARGE_SUMMARY": "Discharge summary",
           "MEDICAL_CERTIFICATE": "Medical certificate",
+          "PREGNANCY_CERTIFICATE": "Pregnancy certificate",
           "INSURANCE": "Insurance",
           "IDENTITY": "Identity",
           "OTHER": "Other"
@@ -969,6 +970,7 @@
           "CONSENT_FORM": "Consent form",
           "DISCHARGE_SUMMARY": "Discharge summary",
           "MEDICAL_CERTIFICATE": "Medical certificate",
+          "PREGNANCY_CERTIFICATE": "Pregnancy certificate",
           "INSURANCE": "Insurance",
           "IDENTITY": "Identity",
           "OTHER": "Other"
