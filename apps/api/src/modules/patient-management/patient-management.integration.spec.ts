@@ -1030,7 +1030,7 @@ describe('PatientManagement integration', () => {
           rtRw: null,
           postalCode: null,
         },
-        clearedSatusehatLink: false,
+        satusehatLinkNikEffect: 'UNCHANGED',
       });
 
       const response = await request(app.getHttpServer())

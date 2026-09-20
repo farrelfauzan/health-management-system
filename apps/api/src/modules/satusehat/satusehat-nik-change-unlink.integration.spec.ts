@@ -163,7 +163,7 @@ describe('SATUSEHAT link clearing on NIK change against Postgres', () => {
 
       const result = await patientRepository.updatePatient(patientId, { nik: buildNik() });
 
-      expect(result.clearedSatusehatLink).toBe(true);
+      expect(result.satusehatLinkNikEffect).toBe('CLEARED');
       const stored = await prisma.patientProfile.findUnique({
         where: { id: patientId },
         select: {
@@ -184,7 +184,7 @@ describe('SATUSEHAT link clearing on NIK change against Postgres', () => {
 
       const result = await patientRepository.updatePatient(patientId, { nik: null });
 
-      expect(result.clearedSatusehatLink).toBe(true);
+      expect(result.satusehatLinkNikEffect).toBe('CLEARED');
       const stored = await prisma.patientProfile.findUnique({
         where: { id: patientId },
         select: { satusehatPatientIdCiphertext: true, nikIndex: true },
@@ -199,7 +199,7 @@ describe('SATUSEHAT link clearing on NIK change against Postgres', () => {
 
       const result = await patientRepository.updatePatient(patientId, { nik });
 
-      expect(result.clearedSatusehatLink).toBe(false);
+      expect(result.satusehatLinkNikEffect).toBe('UNCHANGED');
       const stored = await prisma.patientProfile.findUnique({
         where: { id: patientId },
         select: { satusehatPatientIdCiphertext: true },
@@ -212,7 +212,7 @@ describe('SATUSEHAT link clearing on NIK change against Postgres', () => {
 
       const result = await patientRepository.updatePatient(patientId, { address: 'Jl. Baru 2' });
 
-      expect(result.clearedSatusehatLink).toBe(false);
+      expect(result.satusehatLinkNikEffect).toBe('UNCHANGED');
       const stored = await prisma.patientProfile.findUnique({
         where: { id: patientId },
         select: { satusehatPatientIdCiphertext: true },
@@ -235,7 +235,74 @@ describe('SATUSEHAT link clearing on NIK change against Postgres', () => {
 
       const result = await patientRepository.updatePatient(patient.id, { nik: buildNik() });
 
-      expect(result.clearedSatusehatLink).toBe(false);
+      expect(result.satusehatLinkNikEffect).toBe('UNCHANGED');
+    });
+  });
+
+  /**
+   * P24-T13: a baby created on the master patient index under her mother's NIK
+   * keeps the IHS number the platform assigned her when her own NIK arrives.
+   * Proven here rather than in a unit test because the exemption turns on the
+   * *stored* blind index being null, which only a real write establishes.
+   */
+  describe('newborns', () => {
+    async function createLinkedNewborn(): Promise<string> {
+      const mother = await prisma.patientProfile.create({
+        data: {
+          sex: 'FEMALE',
+          mrn: `NIKC-${randomUUID().slice(0, 18)}`,
+          fullName: 'Ibu Unlink Spec',
+          dateOfBirth: new Date('1995-01-01'),
+          phoneNumber: '0800000000',
+          address: 'Jl. Unlink 4',
+        },
+      });
+      createdPatientIds.push(mother.id);
+      const newborn = await prisma.patientProfile.create({
+        data: {
+          sex: 'FEMALE',
+          mrn: `NIKC-${randomUUID().slice(0, 18)}`,
+          fullName: 'Bayi Ny. Unlink',
+          dateOfBirth: new Date('2026-01-01'),
+          phoneNumber: '0800000000',
+          address: 'Jl. Unlink 4',
+          motherPatientId: mother.id,
+          birthOrder: 1,
+          satusehatPatientIdCiphertext: 'ciphertext-newborn',
+          satusehatPatientIdKeyVersion: 1,
+          satusehatPatientIdLast4: '9911',
+        },
+      });
+      createdPatientIds.push(newborn.id);
+      return newborn.id;
+    }
+
+    it('keeps the IHS number when a newborn receives her first NIK', async () => {
+      const newbornId = await createLinkedNewborn();
+
+      const result = await patientRepository.updatePatient(newbornId, { nik: buildNik() });
+
+      expect(result.satusehatLinkNikEffect).toBe('NEWBORN_NIK_ADDED');
+      const stored = await prisma.patientProfile.findUnique({
+        where: { id: newbornId },
+        select: { satusehatPatientIdCiphertext: true, nikIndex: true },
+      });
+      expect(stored?.satusehatPatientIdCiphertext).toBe('ciphertext-newborn');
+      expect(stored?.nikIndex).not.toBeNull();
+    });
+
+    it('still clears the link when a newborn who already has a NIK gets another', async () => {
+      const newbornId = await createLinkedNewborn();
+      await patientRepository.updatePatient(newbornId, { nik: buildNik() });
+
+      const result = await patientRepository.updatePatient(newbornId, { nik: buildNik() });
+
+      expect(result.satusehatLinkNikEffect).toBe('CLEARED');
+      const stored = await prisma.patientProfile.findUnique({
+        where: { id: newbornId },
+        select: { satusehatPatientIdCiphertext: true },
+      });
+      expect(stored?.satusehatPatientIdCiphertext).toBeNull();
     });
   });
 });

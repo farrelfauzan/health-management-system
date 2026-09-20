@@ -450,6 +450,8 @@ Sprint 28 = 29 points, Sprint 29 = 27, Sprint 30 = 19 (16 without T17). Sprint 3
 | Rawat inap: IMP, `location[]` with periods on transfer, serviceClass extension, discharge codes | satusehat.kemkes.go.id/platform/docs/id/interoperability/rawat-inap-new/ | VERIFIED |
 | Sub-extension name `upgradeClassIndicator` vs `upgradeClass` | same page (narrative and example disagree) | UNVERIFIED |
 | Newborn Patient via `nik-ibu`, duplicate check, PATCH to add NIK | satusehat.kemkes.go.id/platform/docs/id/master-data/master-patient-index/pasien-bayi/ | VERIFIED |
+| `PATCH /Patient/{id}` takes an RFC 6902 operation list — `[{ "op", "path", "value" }]` — sent as `application/json` | satusehat.kemkes.go.id/platform/docs/id/master-data/master-patient-index/rest-api-mpi/apis/patient/ (read 2026-09-20, P24-T13) | VERIFIED |
+| Which operations a newborn's first NIK should use (append the `nik` identifier, restate name and birth date, keep `nik-ibu`) | no published example for this case; the pasien-bayi page names only the *fields* that may be updated (NIK, nama lengkap, tanggal lahir) | UNVERIFIED (shape chosen from the field list; first production clinic confirms) |
 | `multipleBirthInteger` for a single birth | same page ("can use 0"); not observable on staging, where no test mother is female (spike §2) | STILL UNVERIFIED |
 | KYC generate-url, hybrid encryption, challenge-code, operator access-code flow | satusehat.kemkes.go.id/platform/docs/id/kyc/kyc-doc/ | VERIFIED |
 | KYC sandbox availability | staging `/kyc/v1/*` answers with decrypt errors, so it exists (P21-T01, spike §3) | PARTLY VERIFIED |

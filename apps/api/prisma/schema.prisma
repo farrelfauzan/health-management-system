@@ -94,6 +94,10 @@ enum AuditAction {
   /// under her mother's NIK (P24-T11, FR-NB-03). Never carries either NIK —
   /// only that the record was created and how it was identified.
   SATUSEHAT_PATIENT_CREATED
+  /// A newborn's first NIK was sent to the SATUSEHAT Patient she already has,
+  /// rather than clearing the link (P24-T13, FR-NB-05). Carries the outcome —
+  /// SENT, REJECTED by Dukcapil, or UNCONFIRMED after an outage — never the NIK.
+  SATUSEHAT_PATIENT_NIK_PATCHED
   /// A row was registered as a SATUSEHAT Location, by POST or by adopting the
   /// one an identifier search found (P24-T06). Carries the kind and the id.
   SATUSEHAT_LOCATION_REGISTERED

@@ -14,6 +14,7 @@ import { AuthRepository } from '../../auth/repository/auth.repository';
 import { RegionsService } from '../../regions/service/regions.service';
 import { PatientIdentifierConflictError } from '../repository/patient-identifier-conflict.error';
 import { PatientManagementRepository } from '../repository/patient-management.repository';
+import { NewbornSatusehatNikService } from './newborn-satusehat-nik.service';
 import { PatientManagementService } from './patient-management.service';
 
 type PermissionScope = 'ANY' | 'OWN';
@@ -93,12 +94,17 @@ describe('PatientManagementService', () => {
     get: jest.fn((key: string) => (key === 'CLINIC_TIMEZONE' ? 'Asia/Jakarta' : undefined)),
   } as unknown as ConfigService;
 
+  const newbornSatusehatNikServiceMock = {
+    sendFirstNik: jest.fn().mockResolvedValue(null),
+  } as unknown as NewbornSatusehatNikService;
+
   const service = new PatientManagementService(
     patientManagementRepositoryMock,
     authRepositoryMock,
     auditServiceMock,
     privacyNoticeRepositoryMock,
     regionsServiceMock,
+    newbornSatusehatNikServiceMock,
     configServiceMock,
   );
 
@@ -541,7 +547,7 @@ describe('PatientManagementService', () => {
       );
       (patientManagementRepositoryMock.updatePatient as jest.Mock).mockResolvedValue({
         patient: mockCreatedPatient,
-        clearedSatusehatLink: false,
+        satusehatLinkNikEffect: 'UNCHANGED' as const,
       });
       (patientManagementRepositoryMock.findPatientById as jest.Mock).mockResolvedValue(
         mockCreatedPatient,
@@ -712,7 +718,7 @@ describe('PatientManagementService', () => {
       );
       (patientManagementRepositoryMock.updatePatient as jest.Mock).mockResolvedValue({
         patient: mockPatientRecord,
-        clearedSatusehatLink: false,
+        satusehatLinkNikEffect: 'UNCHANGED' as const,
       });
       (patientManagementRepositoryMock.findPatientById as jest.Mock).mockResolvedValue(
         mockPatientRecord,

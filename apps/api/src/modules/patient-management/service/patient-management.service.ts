@@ -37,6 +37,8 @@ import { ImportPatientDto } from '../dto/import-patient.dto';
 import { ListPatientsQueryDto } from '../dto/list-patients-query.dto';
 import { UpdatePatientDto } from '../dto/update-patient.dto';
 import { PatientIdentifierConflictError } from '../repository/patient-identifier-conflict.error';
+import { toDateOnly } from '../to-date-only';
+import { NewbornSatusehatNikService } from './newborn-satusehat-nik.service';
 import { PatientManagementRepository } from '../repository/patient-management.repository';
 import {
   CurrentPrivacyNoticeEvidenceRequiredError,
@@ -81,10 +83,6 @@ function parseDateOnly(value: string): Date {
   return date;
 }
 
-function toDateOnly(value: Date): string {
-  return value.toISOString().slice(0, 10);
-}
-
 /**
  * What a newborn's guardian is to her (P24-T10). Indonesian, because it is
  * printed on her record and read at the counter, not a code.
@@ -104,6 +102,7 @@ export class PatientManagementService {
     private readonly auditService: AuditService,
     private readonly privacyNoticeRepository: PrivacyNoticeRepository,
     private readonly regionsService: RegionsService,
+    private readonly newbornSatusehatNikService: NewbornSatusehatNikService,
     configService: ConfigService,
   ) {
     this.clinicTimeZone =
@@ -581,7 +580,7 @@ export class PatientManagementService {
     await this.regionsService.assertOptionalAddressChain(payload);
 
     const updated = await this.updatePatientRecord(id, payload);
-    if (updated.clearedSatusehatLink) {
+    if (updated.satusehatLinkNikEffect === 'CLEARED') {
       // A corrected NIK dropped the IHS number resolved from the old one
       // (D-035). Audited without the NIK: the row says the link is gone and
       // why, never what the identifier was or became.
@@ -593,16 +592,26 @@ export class PatientManagementService {
         metadata: { reason: 'NIK_CHANGED' },
       });
     }
+    // A newborn keeps her IHS number and the platform is told about the NIK
+    // instead (P24-T13). The warning, if any, rides back with the response so
+    // the admin sees the refusal beside the identifier that was saved anyway.
+    const satusehatWarning =
+      updated.satusehatLinkNikEffect === 'NEWBORN_NIK_ADDED'
+        ? await this.newbornSatusehatNikService.sendFirstNik(id, currentUser.sub)
+        : null;
 
     return {
       patient: this.toPatientResponse(updated.patient),
-      identifierWarnings: this.collectIdentifierWarnings({
-        nik: payload.nik,
-        dateOfBirth:
-          payload.dateOfBirth ??
-          (patient.dateOfBirth === null ? undefined : toDateOnly(patient.dateOfBirth)),
-        sex: payload.sex ?? patient.sex ?? undefined,
-      }),
+      identifierWarnings: [
+        ...this.collectIdentifierWarnings({
+          nik: payload.nik,
+          dateOfBirth:
+            payload.dateOfBirth ??
+            (patient.dateOfBirth === null ? undefined : toDateOnly(patient.dateOfBirth)),
+          sex: payload.sex ?? patient.sex ?? undefined,
+        }),
+        ...(satusehatWarning === null ? [] : [satusehatWarning]),
+      ],
     };
   }
 
