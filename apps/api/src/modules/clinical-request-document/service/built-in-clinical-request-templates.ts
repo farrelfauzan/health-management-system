@@ -82,8 +82,55 @@ const PRESCRIPTION_CONTENT_HTML = [
   SIGNATURE_BLOCK,
 ].join('');
 
+
+// The pregnancy block both maternal letters open with. Written in the same
+// canonical token grammar as the rest of this file, so a clinic that later
+// opens the editor gets a layout the sanitiser already agrees with.
+const PREGNANCY_BLOCK = [
+  '<table width="100%" style="border-collapse:collapse;font-size:10pt;margin-bottom:4mm"><tbody>',
+  '<tr><td style="width:18%">NIK</td><td style="width:46%">: <span data-hms-var="patient.nikMasked"></span></td>',
+  '<td style="width:14%">GPA</td><td style="width:22%">: <span data-hms-var="pregnancy.gpa"></span></td></tr>',
+  '<tr><td>Alamat</td><td>: <span data-hms-var="patient.address"></span></td>',
+  '<td>HPHT</td><td>: <span data-hms-var="pregnancy.lastMenstrualPeriodDate"></span></td></tr>',
+  '<tr><td>Usia kehamilan</td><td>: <span data-hms-var="pregnancy.gestationalAge"></span></td>',
+  '<td>HPL</td><td>: <span data-hms-var="pregnancy.estimatedDeliveryDate"></span></td></tr>',
+  '</tbody></table>',
+].join('');
+
+const REFERRAL_LETTER_CONTENT_HTML = [
+  LETTERHEAD,
+  '<h3 style="text-align:center;margin:4mm 0">SURAT RUJUKAN</h3>',
+  '<table width="100%" style="border-collapse:collapse;font-size:10pt;margin-bottom:3mm"><tbody>',
+  '<tr><td style="width:18%">Tanggal</td><td>: <span data-hms-var="request.issuedAt"></span></td></tr>',
+  '<tr><td>Kepada Yth.</td><td>: <span data-hms-var="referral.destination"></span></td></tr>',
+  '</tbody></table>',
+  PATIENT_BLOCK,
+  PREGNANCY_BLOCK,
+  '<p style="font-size:10pt;margin:0 0 1mm 0">Dengan hormat, mohon penanganan lebih lanjut atas pasien tersebut dengan hasil pemeriksaan berikut:</p>',
+  '<table width="100%" style="border-collapse:collapse;font-size:10pt;margin-bottom:3mm"><tbody>',
+  '<tr><td style="width:18%">Hasil</td><td>: <span data-hms-var="referral.findings"></span></td></tr>',
+  '<tr><td>Alasan</td><td>: <span data-hms-var="referral.triggeredRules"></span></td></tr>',
+  '<tr><td>Catatan</td><td>: <span data-hms-var="referral.notes"></span></td></tr>',
+  '</tbody></table>',
+  SIGNATURE_BLOCK,
+].join('');
+
+const PREGNANCY_CERTIFICATE_CONTENT_HTML = [
+  LETTERHEAD,
+  '<h3 style="text-align:center;margin:4mm 0">SURAT KETERANGAN HAMIL</h3>',
+  '<p style="font-size:10pt;margin:0 0 2mm 0">Yang bertanda tangan di bawah ini menerangkan bahwa:</p>',
+  PATIENT_BLOCK,
+  PREGNANCY_BLOCK,
+  '<p style="font-size:10pt;margin:2mm 0 0 0">adalah benar dalam keadaan hamil menurut pemeriksaan pada tanggal <span data-hms-var="request.issuedAt"></span>.</p>',
+  '<p style="font-size:10pt;margin:2mm 0 0 0">Surat keterangan ini dibuat untuk dipergunakan sebagaimana mestinya.</p>',
+  SIGNATURE_BLOCK,
+].join('');
+
 export const BUILT_IN_CLINICAL_REQUEST_TEMPLATES: Readonly<
-  Record<'LAB_REQUEST' | 'PRESCRIPTION', { contentHtml: string; settings: TemplateSettingsValue }>
+  Record<
+    'LAB_REQUEST' | 'PRESCRIPTION' | 'REFERRAL_LETTER' | 'PREGNANCY_CERTIFICATE',
+    { contentHtml: string; settings: TemplateSettingsValue }
+  >
 > = {
   LAB_REQUEST: {
     contentHtml: LAB_REQUEST_CONTENT_HTML,
@@ -91,6 +138,14 @@ export const BUILT_IN_CLINICAL_REQUEST_TEMPLATES: Readonly<
   },
   PRESCRIPTION: {
     contentHtml: PRESCRIPTION_CONTENT_HTML,
+    settings: resolveDefaultTemplateSettings(),
+  },
+  REFERRAL_LETTER: {
+    contentHtml: REFERRAL_LETTER_CONTENT_HTML,
+    settings: resolveDefaultTemplateSettings(),
+  },
+  PREGNANCY_CERTIFICATE: {
+    contentHtml: PREGNANCY_CERTIFICATE_CONTENT_HTML,
     settings: resolveDefaultTemplateSettings(),
   },
 };

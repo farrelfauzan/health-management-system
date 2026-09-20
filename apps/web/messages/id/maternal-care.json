@@ -101,6 +101,75 @@
       "ACTIVE": "Berjalan",
       "DELIVERED": "Sudah melahirkan",
       "ENDED": "Berakhir"
+    },
+    "examination": {
+      "title": "Pemeriksaan ANC 10T",
+      "checklistTitle": "Checklist 10T",
+      "items": {
+        "WEIGHT_AND_HEIGHT": "Timbang berat & ukur tinggi",
+        "BLOOD_PRESSURE": "Ukur tekanan darah",
+        "MUAC": "Ukur LiLA",
+        "FUNDAL_HEIGHT": "Ukur tinggi fundus uteri",
+        "FETAL_PRESENTATION_AND_HEART_RATE": "Tentukan presentasi & DJJ",
+        "TETANUS_IMMUNIZATION": "Skrining status imunisasi TT",
+        "IRON_TABLETS": "Beri tablet tambah darah",
+        "LABORATORY": "Pemeriksaan laboratorium",
+        "CASE_MANAGEMENT": "Tatalaksana kasus",
+        "COUNSELLING": "Temu wicara / konseling"
+      },
+      "sources": {
+        "VITAL_SIGNS": "dari tanda vital",
+        "EXAMINATION": "dari pemeriksaan",
+        "IMMUNIZATION": "dari imunisasi",
+        "LAB_ORDER": "dari permintaan lab",
+        "PRESCRIPTION": "dari resep"
+      },
+      "done": "Sudah",
+      "notDone": "Belum",
+      "visitRequired": "Tandai kunjungan ini sebagai kunjungan ANC lebih dulu.",
+      "form": {
+        "muacCm": "LiLA (cm)",
+        "fundalHeightCm": "Tinggi fundus (cm)",
+        "fetalHeartRateBpm": "DJJ (x/menit)",
+        "fetalPresentation": "Presentasi janin",
+        "fetalHeadEngagement": "Kepala terhadap PAP",
+        "fetalCount": "Jumlah janin",
+        "estimatedFetalWeightGrams": "Taksiran berat janin (gram)",
+        "tetanusStatus": "Status imunisasi TT",
+        "ironTabletsGiven": "Tablet tambah darah diberikan",
+        "counsellingTopics": "Tema konseling (pisahkan dengan koma)",
+        "caseManagementNotes": "Catatan tatalaksana",
+        "vitalsHint": "Berat, tinggi dan tekanan darah diambil dari tanda vital kunjungan ini, tidak diisi ulang di sini.",
+        "save": "Simpan pemeriksaan"
+      },
+      "presentations": {
+        "CEPHALIC": "Kepala",
+        "BREECH": "Sungsang",
+        "TRANSVERSE": "Lintang",
+        "UNKNOWN": "Belum jelas"
+      },
+      "engagements": {
+        "ENGAGED": "Sudah masuk PAP",
+        "NOT_ENGAGED": "Belum masuk PAP"
+      },
+      "referral": {
+        "title": "Perlu rujukan",
+        "empty": "Tidak ada temuan yang memicu rujukan.",
+        "pending": "Daftar aturan rujukan belum diisi: ambang dari Pedoman Pelayanan Antenatal Terpadu belum bisa diverifikasi dari sumber primer, jadi belum ada aturan yang dipasang.",
+        "source": "Sumber",
+        "dismiss": "Abaikan dengan alasan",
+        "dismissed": "Diabaikan: {reason}",
+        "reasonLabel": "Alasan",
+        "confirmDismiss": "Simpan alasan"
+      },
+      "documents": {
+        "referralLetter": "Buat surat rujukan",
+        "pregnancyCertificate": "Surat keterangan hamil",
+        "destination": "Tujuan rujukan",
+        "notes": "Catatan",
+        "issued": "Dokumen diterbitkan",
+        "reissueHint": "Menerbitkan ulang membuat dokumen baru; dokumen lama tetap tersimpan."
+      }
     }
   }
 }

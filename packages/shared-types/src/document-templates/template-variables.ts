@@ -49,6 +49,10 @@ export const TEMPLATE_VARIABLE_KINDS = [
   'LAB_REQUEST',
   'PRESCRIPTION',
   'LAB_REPORT',
+  // P25-T07: the two maternal letters. Both are rendered from the pregnancy
+  // episode rather than drafted, so the letter and the record cannot disagree.
+  'REFERRAL_LETTER',
+  'PREGNANCY_CERTIFICATE',
 ] as const;
 
 export type TemplateVariableKind = (typeof TEMPLATE_VARIABLE_KINDS)[number];
@@ -778,6 +782,105 @@ export const LAB_REPORT_TEMPLATE_VARIABLES: readonly TemplateVariable[] = [
   },
 ];
 
+
+/**
+ * What both maternal letters print about the pregnancy (P25-T07).
+ *
+ * The NIK is **masked** — last four digits — like everywhere else a letter
+ * leaves the building: a surat rujukan is carried by hand to a hospital
+ * counter and read by people the clinic never meets.
+ */
+const MATERNAL_SHARED_VARIABLES: readonly TemplateVariable[] = [
+  ...CLINICAL_REQUEST_SHARED_VARIABLES,
+  {
+    token: 'patient.nikMasked',
+    labelId: 'NIK (disamarkan)',
+    labelEn: 'NIK (masked)',
+    type: 'text',
+    sample: '••••••••••••3204',
+  },
+  {
+    token: 'patient.address',
+    labelId: 'Alamat pasien',
+    labelEn: 'Patient address',
+    type: 'text',
+    sample: 'Jl. Kenanga No. 3, Kota Jakarta Pusat',
+  },
+  {
+    token: 'pregnancy.lastMenstrualPeriodDate',
+    labelId: 'HPHT',
+    labelEn: 'Last menstrual period',
+    type: 'date',
+    sample: '2 Februari 2026',
+  },
+  {
+    token: 'pregnancy.estimatedDeliveryDate',
+    labelId: 'HPL',
+    labelEn: 'Estimated delivery date',
+    type: 'date',
+    sample: '9 November 2026',
+  },
+  {
+    token: 'pregnancy.gestationalAge',
+    labelId: 'Usia kehamilan',
+    labelEn: 'Gestational age',
+    type: 'text',
+    sample: '29 minggu 0 hari',
+  },
+  {
+    token: 'pregnancy.gpa',
+    labelId: 'GPA',
+    labelEn: 'GPA',
+    type: 'text',
+    sample: 'G2P1A0',
+  },
+];
+
+/**
+ * The surat rujukan a midwife issues when an antenatal finding needs a doctor
+ * (P25-T07, FR-ANC-04). The findings and the triggered rules are printed from
+ * the visit, so the letter cannot say something the record does not.
+ */
+export const REFERRAL_LETTER_TEMPLATE_VARIABLES: readonly TemplateVariable[] = [
+  ...MATERNAL_SHARED_VARIABLES,
+  {
+    token: 'referral.destination',
+    labelId: 'Tujuan rujukan',
+    labelEn: 'Referral destination',
+    type: 'text',
+    sample: 'RSUD Kota Jakarta Pusat — Poli Kebidanan',
+  },
+  {
+    token: 'referral.findings',
+    labelId: 'Hasil pemeriksaan',
+    labelEn: 'Examination findings',
+    type: 'text',
+    sample: 'TD 150/95 mmHg, LiLA 22 cm, DJJ 148 x/menit',
+  },
+  {
+    token: 'referral.triggeredRules',
+    labelId: 'Alasan rujukan',
+    labelEn: 'Referral reasons',
+    type: 'text',
+    sample: '—',
+  },
+  {
+    token: 'referral.notes',
+    labelId: 'Catatan',
+    labelEn: 'Notes',
+    type: 'text',
+    sample: 'Mohon penanganan lebih lanjut.',
+  },
+];
+
+/**
+ * The surat keterangan hamil (P25-T07, FR-ANC-06). Issued from the episode
+ * rather than from a single visit, because what it attests is the pregnancy.
+ */
+export const PREGNANCY_CERTIFICATE_TEMPLATE_VARIABLES: readonly TemplateVariable[] = [
+  ...MATERNAL_SHARED_VARIABLES,
+];
+
 export const TEMPLATE_VARIABLES_BY_KIND: Readonly<
   Record<TemplateVariableKind, readonly TemplateVariable[]>
 > = {
@@ -785,4 +888,6 @@ export const TEMPLATE_VARIABLES_BY_KIND: Readonly<
   LAB_REQUEST: LAB_REQUEST_TEMPLATE_VARIABLES,
   PRESCRIPTION: PRESCRIPTION_TEMPLATE_VARIABLES,
   LAB_REPORT: LAB_REPORT_TEMPLATE_VARIABLES,
+  REFERRAL_LETTER: REFERRAL_LETTER_TEMPLATE_VARIABLES,
+  PREGNANCY_CERTIFICATE: PREGNANCY_CERTIFICATE_TEMPLATE_VARIABLES,
 };

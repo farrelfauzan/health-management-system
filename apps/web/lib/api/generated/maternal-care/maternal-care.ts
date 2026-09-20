@@ -21,8 +21,15 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  AntenatalExaminationControllerDismissReferralRuleV1200,
+  AntenatalExaminationControllerGetExaminationV1200,
+  AntenatalExaminationControllerIssuePregnancyCertificateV1200,
+  AntenatalExaminationControllerIssueReferralLetterV1200,
+  AntenatalExaminationControllerUpsertExaminationV1200,
   CreatePregnancyEpisodeDto,
+  DismissAntenatalReferralDto,
   EndPregnancyEpisodeDto,
+  IssueAntenatalReferralLetterDto,
   PregnancyEpisodeControllerCreateEpisodeV1200,
   PregnancyEpisodeControllerEndEpisodeV1200,
   PregnancyEpisodeControllerGetActiveEpisodeV1200,
@@ -32,7 +39,8 @@ import type {
   PregnancyEpisodeControllerRecordExternalDoctorVisitV1200,
   PregnancyEpisodeControllerUpdateEpisodeV1200,
   RecordExternalDoctorVisitDto,
-  UpdatePregnancyEpisodeDto
+  UpdatePregnancyEpisodeDto,
+  UpsertAntenatalExaminationDto
 } from '../model';
 
 import { orvalAxiosMutator } from '../../http';
@@ -816,6 +824,493 @@ export function usePregnancyEpisodeControllerLinkEncounterVisitV1<TData = Awaite
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getPregnancyEpisodeControllerLinkEncounterVisitV1QueryOptions(encounterId,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Read this visit's 10T examination
+ */
+export const antenatalExaminationControllerGetExaminationV1 = (
+    encounterId: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<AntenatalExaminationControllerGetExaminationV1200>(
+      {url: `/api/v1/encounters/${encounterId}/antenatal-examination`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getAntenatalExaminationControllerGetExaminationV1QueryKey = (encounterId: string,) => {
+    return [
+    `/api/v1/encounters/${encounterId}/antenatal-examination`
+    ] as const;
+    }
+
+
+export const getAntenatalExaminationControllerGetExaminationV1QueryOptions = <TData = Awaited<ReturnType<typeof antenatalExaminationControllerGetExaminationV1>>, TError = unknown>(encounterId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof antenatalExaminationControllerGetExaminationV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getAntenatalExaminationControllerGetExaminationV1QueryKey(encounterId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof antenatalExaminationControllerGetExaminationV1>>> = ({ signal }) => antenatalExaminationControllerGetExaminationV1(encounterId, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: encounterId !== null && encounterId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof antenatalExaminationControllerGetExaminationV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AntenatalExaminationControllerGetExaminationV1QueryResult = NonNullable<Awaited<ReturnType<typeof antenatalExaminationControllerGetExaminationV1>>>
+export type AntenatalExaminationControllerGetExaminationV1QueryError = unknown
+
+
+export function useAntenatalExaminationControllerGetExaminationV1<TData = Awaited<ReturnType<typeof antenatalExaminationControllerGetExaminationV1>>, TError = unknown>(
+ encounterId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof antenatalExaminationControllerGetExaminationV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof antenatalExaminationControllerGetExaminationV1>>,
+          TError,
+          Awaited<ReturnType<typeof antenatalExaminationControllerGetExaminationV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAntenatalExaminationControllerGetExaminationV1<TData = Awaited<ReturnType<typeof antenatalExaminationControllerGetExaminationV1>>, TError = unknown>(
+ encounterId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof antenatalExaminationControllerGetExaminationV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof antenatalExaminationControllerGetExaminationV1>>,
+          TError,
+          Awaited<ReturnType<typeof antenatalExaminationControllerGetExaminationV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAntenatalExaminationControllerGetExaminationV1<TData = Awaited<ReturnType<typeof antenatalExaminationControllerGetExaminationV1>>, TError = unknown>(
+ encounterId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof antenatalExaminationControllerGetExaminationV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Read this visit's 10T examination
+ */
+
+export function useAntenatalExaminationControllerGetExaminationV1<TData = Awaited<ReturnType<typeof antenatalExaminationControllerGetExaminationV1>>, TError = unknown>(
+ encounterId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof antenatalExaminationControllerGetExaminationV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getAntenatalExaminationControllerGetExaminationV1QueryOptions(encounterId,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Record this visit's 10T examination
+ */
+export const antenatalExaminationControllerUpsertExaminationV1 = (
+    encounterId: string,
+    upsertAntenatalExaminationDto: UpsertAntenatalExaminationDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<AntenatalExaminationControllerUpsertExaminationV1200>(
+      {url: `/api/v1/encounters/${encounterId}/antenatal-examination`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: upsertAntenatalExaminationDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getAntenatalExaminationControllerUpsertExaminationV1QueryKey = (encounterId: string,
+    upsertAntenatalExaminationDto?: UpsertAntenatalExaminationDto,) => {
+    return [
+    'PUT', `/api/v1/encounters/${encounterId}/antenatal-examination`, upsertAntenatalExaminationDto
+    ] as const;
+    }
+
+
+export const getAntenatalExaminationControllerUpsertExaminationV1QueryOptions = <TData = Awaited<ReturnType<typeof antenatalExaminationControllerUpsertExaminationV1>>, TError = unknown>(encounterId: string,
+    upsertAntenatalExaminationDto: UpsertAntenatalExaminationDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof antenatalExaminationControllerUpsertExaminationV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getAntenatalExaminationControllerUpsertExaminationV1QueryKey(encounterId,upsertAntenatalExaminationDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof antenatalExaminationControllerUpsertExaminationV1>>> = ({ signal }) => antenatalExaminationControllerUpsertExaminationV1(encounterId,upsertAntenatalExaminationDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: encounterId !== null && encounterId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof antenatalExaminationControllerUpsertExaminationV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AntenatalExaminationControllerUpsertExaminationV1QueryResult = NonNullable<Awaited<ReturnType<typeof antenatalExaminationControllerUpsertExaminationV1>>>
+export type AntenatalExaminationControllerUpsertExaminationV1QueryError = unknown
+
+
+export function useAntenatalExaminationControllerUpsertExaminationV1<TData = Awaited<ReturnType<typeof antenatalExaminationControllerUpsertExaminationV1>>, TError = unknown>(
+ encounterId: string,
+    upsertAntenatalExaminationDto: UpsertAntenatalExaminationDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof antenatalExaminationControllerUpsertExaminationV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof antenatalExaminationControllerUpsertExaminationV1>>,
+          TError,
+          Awaited<ReturnType<typeof antenatalExaminationControllerUpsertExaminationV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAntenatalExaminationControllerUpsertExaminationV1<TData = Awaited<ReturnType<typeof antenatalExaminationControllerUpsertExaminationV1>>, TError = unknown>(
+ encounterId: string,
+    upsertAntenatalExaminationDto: UpsertAntenatalExaminationDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof antenatalExaminationControllerUpsertExaminationV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof antenatalExaminationControllerUpsertExaminationV1>>,
+          TError,
+          Awaited<ReturnType<typeof antenatalExaminationControllerUpsertExaminationV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAntenatalExaminationControllerUpsertExaminationV1<TData = Awaited<ReturnType<typeof antenatalExaminationControllerUpsertExaminationV1>>, TError = unknown>(
+ encounterId: string,
+    upsertAntenatalExaminationDto: UpsertAntenatalExaminationDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof antenatalExaminationControllerUpsertExaminationV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Record this visit's 10T examination
+ */
+
+export function useAntenatalExaminationControllerUpsertExaminationV1<TData = Awaited<ReturnType<typeof antenatalExaminationControllerUpsertExaminationV1>>, TError = unknown>(
+ encounterId: string,
+    upsertAntenatalExaminationDto: UpsertAntenatalExaminationDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof antenatalExaminationControllerUpsertExaminationV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getAntenatalExaminationControllerUpsertExaminationV1QueryOptions(encounterId,upsertAntenatalExaminationDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Set a referral prompt aside
+ */
+export const antenatalExaminationControllerDismissReferralRuleV1 = (
+    encounterId: string,
+    dismissAntenatalReferralDto: DismissAntenatalReferralDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<AntenatalExaminationControllerDismissReferralRuleV1200>(
+      {url: `/api/v1/encounters/${encounterId}/antenatal-referral-dismissals`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: dismissAntenatalReferralDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getAntenatalExaminationControllerDismissReferralRuleV1QueryKey = (encounterId: string,
+    dismissAntenatalReferralDto?: DismissAntenatalReferralDto,) => {
+    return [
+    'POST', `/api/v1/encounters/${encounterId}/antenatal-referral-dismissals`, dismissAntenatalReferralDto
+    ] as const;
+    }
+
+
+export const getAntenatalExaminationControllerDismissReferralRuleV1QueryOptions = <TData = Awaited<ReturnType<typeof antenatalExaminationControllerDismissReferralRuleV1>>, TError = unknown>(encounterId: string,
+    dismissAntenatalReferralDto: DismissAntenatalReferralDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof antenatalExaminationControllerDismissReferralRuleV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getAntenatalExaminationControllerDismissReferralRuleV1QueryKey(encounterId,dismissAntenatalReferralDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof antenatalExaminationControllerDismissReferralRuleV1>>> = ({ signal }) => antenatalExaminationControllerDismissReferralRuleV1(encounterId,dismissAntenatalReferralDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: encounterId !== null && encounterId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof antenatalExaminationControllerDismissReferralRuleV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AntenatalExaminationControllerDismissReferralRuleV1QueryResult = NonNullable<Awaited<ReturnType<typeof antenatalExaminationControllerDismissReferralRuleV1>>>
+export type AntenatalExaminationControllerDismissReferralRuleV1QueryError = unknown
+
+
+export function useAntenatalExaminationControllerDismissReferralRuleV1<TData = Awaited<ReturnType<typeof antenatalExaminationControllerDismissReferralRuleV1>>, TError = unknown>(
+ encounterId: string,
+    dismissAntenatalReferralDto: DismissAntenatalReferralDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof antenatalExaminationControllerDismissReferralRuleV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof antenatalExaminationControllerDismissReferralRuleV1>>,
+          TError,
+          Awaited<ReturnType<typeof antenatalExaminationControllerDismissReferralRuleV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAntenatalExaminationControllerDismissReferralRuleV1<TData = Awaited<ReturnType<typeof antenatalExaminationControllerDismissReferralRuleV1>>, TError = unknown>(
+ encounterId: string,
+    dismissAntenatalReferralDto: DismissAntenatalReferralDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof antenatalExaminationControllerDismissReferralRuleV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof antenatalExaminationControllerDismissReferralRuleV1>>,
+          TError,
+          Awaited<ReturnType<typeof antenatalExaminationControllerDismissReferralRuleV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAntenatalExaminationControllerDismissReferralRuleV1<TData = Awaited<ReturnType<typeof antenatalExaminationControllerDismissReferralRuleV1>>, TError = unknown>(
+ encounterId: string,
+    dismissAntenatalReferralDto: DismissAntenatalReferralDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof antenatalExaminationControllerDismissReferralRuleV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Set a referral prompt aside
+ */
+
+export function useAntenatalExaminationControllerDismissReferralRuleV1<TData = Awaited<ReturnType<typeof antenatalExaminationControllerDismissReferralRuleV1>>, TError = unknown>(
+ encounterId: string,
+    dismissAntenatalReferralDto: DismissAntenatalReferralDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof antenatalExaminationControllerDismissReferralRuleV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getAntenatalExaminationControllerDismissReferralRuleV1QueryOptions(encounterId,dismissAntenatalReferralDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Issue the surat rujukan
+ */
+export const antenatalExaminationControllerIssueReferralLetterV1 = (
+    encounterId: string,
+    issueAntenatalReferralLetterDto: IssueAntenatalReferralLetterDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<AntenatalExaminationControllerIssueReferralLetterV1200>(
+      {url: `/api/v1/encounters/${encounterId}/antenatal-referral-letter`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: issueAntenatalReferralLetterDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getAntenatalExaminationControllerIssueReferralLetterV1QueryKey = (encounterId: string,
+    issueAntenatalReferralLetterDto?: IssueAntenatalReferralLetterDto,) => {
+    return [
+    'POST', `/api/v1/encounters/${encounterId}/antenatal-referral-letter`, issueAntenatalReferralLetterDto
+    ] as const;
+    }
+
+
+export const getAntenatalExaminationControllerIssueReferralLetterV1QueryOptions = <TData = Awaited<ReturnType<typeof antenatalExaminationControllerIssueReferralLetterV1>>, TError = unknown>(encounterId: string,
+    issueAntenatalReferralLetterDto: IssueAntenatalReferralLetterDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof antenatalExaminationControllerIssueReferralLetterV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getAntenatalExaminationControllerIssueReferralLetterV1QueryKey(encounterId,issueAntenatalReferralLetterDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof antenatalExaminationControllerIssueReferralLetterV1>>> = ({ signal }) => antenatalExaminationControllerIssueReferralLetterV1(encounterId,issueAntenatalReferralLetterDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: encounterId !== null && encounterId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof antenatalExaminationControllerIssueReferralLetterV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AntenatalExaminationControllerIssueReferralLetterV1QueryResult = NonNullable<Awaited<ReturnType<typeof antenatalExaminationControllerIssueReferralLetterV1>>>
+export type AntenatalExaminationControllerIssueReferralLetterV1QueryError = unknown
+
+
+export function useAntenatalExaminationControllerIssueReferralLetterV1<TData = Awaited<ReturnType<typeof antenatalExaminationControllerIssueReferralLetterV1>>, TError = unknown>(
+ encounterId: string,
+    issueAntenatalReferralLetterDto: IssueAntenatalReferralLetterDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof antenatalExaminationControllerIssueReferralLetterV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof antenatalExaminationControllerIssueReferralLetterV1>>,
+          TError,
+          Awaited<ReturnType<typeof antenatalExaminationControllerIssueReferralLetterV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAntenatalExaminationControllerIssueReferralLetterV1<TData = Awaited<ReturnType<typeof antenatalExaminationControllerIssueReferralLetterV1>>, TError = unknown>(
+ encounterId: string,
+    issueAntenatalReferralLetterDto: IssueAntenatalReferralLetterDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof antenatalExaminationControllerIssueReferralLetterV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof antenatalExaminationControllerIssueReferralLetterV1>>,
+          TError,
+          Awaited<ReturnType<typeof antenatalExaminationControllerIssueReferralLetterV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAntenatalExaminationControllerIssueReferralLetterV1<TData = Awaited<ReturnType<typeof antenatalExaminationControllerIssueReferralLetterV1>>, TError = unknown>(
+ encounterId: string,
+    issueAntenatalReferralLetterDto: IssueAntenatalReferralLetterDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof antenatalExaminationControllerIssueReferralLetterV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Issue the surat rujukan
+ */
+
+export function useAntenatalExaminationControllerIssueReferralLetterV1<TData = Awaited<ReturnType<typeof antenatalExaminationControllerIssueReferralLetterV1>>, TError = unknown>(
+ encounterId: string,
+    issueAntenatalReferralLetterDto: IssueAntenatalReferralLetterDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof antenatalExaminationControllerIssueReferralLetterV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getAntenatalExaminationControllerIssueReferralLetterV1QueryOptions(encounterId,issueAntenatalReferralLetterDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Issue the surat keterangan hamil
+ */
+export const antenatalExaminationControllerIssuePregnancyCertificateV1 = (
+    id: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<AntenatalExaminationControllerIssuePregnancyCertificateV1200>(
+      {url: `/api/v1/pregnancy-episodes/${id}/pregnancy-certificate`, method: 'POST', signal
+    },
+      );
+    }
+
+
+
+
+export const getAntenatalExaminationControllerIssuePregnancyCertificateV1QueryKey = (id: string,) => {
+    return [
+    'POST', `/api/v1/pregnancy-episodes/${id}/pregnancy-certificate`
+    ] as const;
+    }
+
+
+export const getAntenatalExaminationControllerIssuePregnancyCertificateV1QueryOptions = <TData = Awaited<ReturnType<typeof antenatalExaminationControllerIssuePregnancyCertificateV1>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof antenatalExaminationControllerIssuePregnancyCertificateV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getAntenatalExaminationControllerIssuePregnancyCertificateV1QueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof antenatalExaminationControllerIssuePregnancyCertificateV1>>> = ({ signal }) => antenatalExaminationControllerIssuePregnancyCertificateV1(id, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof antenatalExaminationControllerIssuePregnancyCertificateV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AntenatalExaminationControllerIssuePregnancyCertificateV1QueryResult = NonNullable<Awaited<ReturnType<typeof antenatalExaminationControllerIssuePregnancyCertificateV1>>>
+export type AntenatalExaminationControllerIssuePregnancyCertificateV1QueryError = unknown
+
+
+export function useAntenatalExaminationControllerIssuePregnancyCertificateV1<TData = Awaited<ReturnType<typeof antenatalExaminationControllerIssuePregnancyCertificateV1>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof antenatalExaminationControllerIssuePregnancyCertificateV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof antenatalExaminationControllerIssuePregnancyCertificateV1>>,
+          TError,
+          Awaited<ReturnType<typeof antenatalExaminationControllerIssuePregnancyCertificateV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAntenatalExaminationControllerIssuePregnancyCertificateV1<TData = Awaited<ReturnType<typeof antenatalExaminationControllerIssuePregnancyCertificateV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof antenatalExaminationControllerIssuePregnancyCertificateV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof antenatalExaminationControllerIssuePregnancyCertificateV1>>,
+          TError,
+          Awaited<ReturnType<typeof antenatalExaminationControllerIssuePregnancyCertificateV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAntenatalExaminationControllerIssuePregnancyCertificateV1<TData = Awaited<ReturnType<typeof antenatalExaminationControllerIssuePregnancyCertificateV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof antenatalExaminationControllerIssuePregnancyCertificateV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Issue the surat keterangan hamil
+ */
+
+export function useAntenatalExaminationControllerIssuePregnancyCertificateV1<TData = Awaited<ReturnType<typeof antenatalExaminationControllerIssuePregnancyCertificateV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof antenatalExaminationControllerIssuePregnancyCertificateV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getAntenatalExaminationControllerIssuePregnancyCertificateV1QueryOptions(id,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

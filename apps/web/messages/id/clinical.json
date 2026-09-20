@@ -240,6 +240,7 @@
           "CONSENT_FORM": "Formulir persetujuan",
           "DISCHARGE_SUMMARY": "Resume pulang",
           "MEDICAL_CERTIFICATE": "Surat keterangan dokter",
+          "PREGNANCY_CERTIFICATE": "Surat keterangan hamil",
           "INSURANCE": "Asuransi",
           "IDENTITY": "Identitas",
           "OTHER": "Lainnya"
@@ -969,6 +970,7 @@
           "CONSENT_FORM": "Formulir persetujuan",
           "DISCHARGE_SUMMARY": "Ringkasan pulang",
           "MEDICAL_CERTIFICATE": "Surat keterangan sehat",
+          "PREGNANCY_CERTIFICATE": "Surat keterangan hamil",
           "INSURANCE": "Asuransi",
           "IDENTITY": "Identitas",
           "OTHER": "Lainnya"

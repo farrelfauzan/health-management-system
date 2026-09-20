@@ -101,6 +101,75 @@
       "ACTIVE": "Active",
       "DELIVERED": "Delivered",
       "ENDED": "Ended"
+    },
+    "examination": {
+      "title": "ANC 10T examination",
+      "checklistTitle": "10T checklist",
+      "items": {
+        "WEIGHT_AND_HEIGHT": "Weight and height",
+        "BLOOD_PRESSURE": "Blood pressure",
+        "MUAC": "Mid-upper arm circumference",
+        "FUNDAL_HEIGHT": "Fundal height",
+        "FETAL_PRESENTATION_AND_HEART_RATE": "Presentation and foetal heart rate",
+        "TETANUS_IMMUNIZATION": "Tetanus immunisation status",
+        "IRON_TABLETS": "Iron tablets",
+        "LABORATORY": "Laboratory tests",
+        "CASE_MANAGEMENT": "Case management",
+        "COUNSELLING": "Counselling"
+      },
+      "sources": {
+        "VITAL_SIGNS": "from vitals",
+        "EXAMINATION": "from examination",
+        "IMMUNIZATION": "from immunisation",
+        "LAB_ORDER": "from lab order",
+        "PRESCRIPTION": "from prescription"
+      },
+      "done": "Done",
+      "notDone": "Not done",
+      "visitRequired": "Count this encounter as an antenatal visit first.",
+      "form": {
+        "muacCm": "MUAC (cm)",
+        "fundalHeightCm": "Fundal height (cm)",
+        "fetalHeartRateBpm": "Foetal heart rate (bpm)",
+        "fetalPresentation": "Foetal presentation",
+        "fetalHeadEngagement": "Head engagement",
+        "fetalCount": "Number of foetuses",
+        "estimatedFetalWeightGrams": "Estimated foetal weight (g)",
+        "tetanusStatus": "Tetanus immunisation status",
+        "ironTabletsGiven": "Iron tablets handed over",
+        "counsellingTopics": "Counselling topics (comma separated)",
+        "caseManagementNotes": "Case management notes",
+        "vitalsHint": "Weight, height and blood pressure come from this encounter's vitals and are not re-entered here.",
+        "save": "Save examination"
+      },
+      "presentations": {
+        "CEPHALIC": "Cephalic",
+        "BREECH": "Breech",
+        "TRANSVERSE": "Transverse",
+        "UNKNOWN": "Not yet clear"
+      },
+      "engagements": {
+        "ENGAGED": "Engaged",
+        "NOT_ENGAGED": "Not engaged"
+      },
+      "referral": {
+        "title": "Referral needed",
+        "empty": "No finding triggers a referral.",
+        "pending": "The referral rule list is empty: the Pedoman Pelayanan Antenatal Terpadu thresholds could not be verified from a primary source, so no rule has been fitted yet.",
+        "source": "Source",
+        "dismiss": "Dismiss with a reason",
+        "dismissed": "Dismissed: {reason}",
+        "reasonLabel": "Reason",
+        "confirmDismiss": "Save reason"
+      },
+      "documents": {
+        "referralLetter": "Issue referral letter",
+        "pregnancyCertificate": "Pregnancy certificate",
+        "destination": "Referral destination",
+        "notes": "Notes",
+        "issued": "Document issued",
+        "reissueHint": "Reissuing renders a new document; the previous one is kept."
+      }
     }
   }
 }

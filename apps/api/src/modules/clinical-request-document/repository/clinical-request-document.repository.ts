@@ -1,7 +1,8 @@
-import { ClinicalRequestRenderContext } from '@hms/shared-types';
+import { ClinicalRequestRenderContext, DocumentCategoryValue } from '@hms/shared-types';
 import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from '../../../common/prisma/prisma.service';
+import { CLINICAL_REQUEST_AUDIT_ACTION_BY_KIND } from '../service/clinical-request-audit-actions';
 
 type FileClinicalRequestDocumentPayload = {
   context: ClinicalRequestRenderContext;
@@ -13,6 +14,20 @@ type FileClinicalRequestDocumentPayload = {
 type FiledClinicalRequestDocument = {
   id: string;
   printCount: number;
+};
+
+/**
+ * Which patient-file category each rendered kind is filed under. A map rather
+ * than the old hard-coded `REFERRAL_LETTER`, which was already loose for a
+ * resep and would be wrong for a surat keterangan hamil.
+ */
+const DOCUMENT_CATEGORY_BY_KIND: Readonly<
+  Record<ClinicalRequestRenderContext['kind'], DocumentCategoryValue>
+> = {
+  LAB_REQUEST: 'REFERRAL_LETTER',
+  PRESCRIPTION: 'REFERRAL_LETTER',
+  REFERRAL_LETTER: 'REFERRAL_LETTER',
+  PREGNANCY_CERTIFICATE: 'PREGNANCY_CERTIFICATE',
 };
 
 const PDF_MIME_TYPE = 'application/pdf';
@@ -84,17 +99,21 @@ export class ClinicalRequestDocumentRepository {
           uploadedById,
           patientId: context.patientId,
           encounterId: context.encounterId,
-          category: 'REFERRAL_LETTER',
+          category: DOCUMENT_CATEGORY_BY_KIND[context.kind],
           documentDate: new Date(),
         },
         select: { id: true },
       });
+      // Only the two request kinds point back at the record they were
+      // rendered from: a lab order has one current letter and a prescription
+      // one current resep. A maternal letter has no such column, and is not
+      // meant to — see `findExistingIdInTransaction`.
       if (context.kind === 'LAB_REQUEST') {
         await tx.labOrder.update({
           where: { id: context.subjectId },
           data: { requestDocumentId: created.id },
         });
-      } else {
+      } else if (context.kind === 'PRESCRIPTION') {
         await tx.prescription.update({
           where: { id: context.subjectId },
           data: { documentId: created.id },
@@ -104,10 +123,23 @@ export class ClinicalRequestDocumentRepository {
     });
   }
 
+  /**
+   * The document this request already has, when it has one.
+   *
+   * The two maternal letters (P25-T07) deliberately have none: "terbitkan
+   * ulang" is a **new** document rendered from current data and the old one is
+   * kept, because a surat rujukan the patient already carried to a hospital is
+   * a record of what was said that day. A resep is the opposite — one current
+   * copy, reprinted — which is why the two behave differently here rather than
+   * in the caller.
+   */
   private async findExistingIdInTransaction(
     tx: Parameters<Parameters<PrismaService['executeTransaction']>[0]>[0],
     context: ClinicalRequestRenderContext,
   ): Promise<string | null> {
+    if (context.kind === 'REFERRAL_LETTER' || context.kind === 'PREGNANCY_CERTIFICATE') {
+      return null;
+    }
     if (context.kind === 'LAB_REQUEST') {
       const order = await tx.labOrder.findUnique({
         where: { id: context.subjectId },
@@ -133,7 +165,7 @@ export class ClinicalRequestDocumentRepository {
   ): Promise<number> {
     const previous = await tx.auditLog.count({
       where: {
-        action: context.kind === 'LAB_REQUEST' ? 'LAB_REQUEST_PRINTED' : 'PRESCRIPTION_PRINTED',
+        action: CLINICAL_REQUEST_AUDIT_ACTION_BY_KIND[context.kind],
         resourceId: context.subjectId,
       },
     });

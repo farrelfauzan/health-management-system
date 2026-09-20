@@ -166,6 +166,7 @@ export const AuditAction = {
   PREGNANCY_EPISODE_UPDATED: 'PREGNANCY_EPISODE_UPDATED',
   PREGNANCY_EPISODE_ENDED: 'PREGNANCY_EPISODE_ENDED',
   ANTENATAL_VISIT_LINKED: 'ANTENATAL_VISIT_LINKED',
+  ANTENATAL_REFERRAL_DISMISSED: 'ANTENATAL_REFERRAL_DISMISSED',
   TAX_SETTINGS_UPDATED: 'TAX_SETTINGS_UPDATED',
   TAX_CODE_CHANGED: 'TAX_CODE_CHANGED',
   TAX_ASSIGNMENT_CHANGED: 'TAX_ASSIGNMENT_CHANGED',
@@ -712,7 +713,9 @@ export const DocumentTemplateKind = {
   INVOICE: 'INVOICE',
   LAB_REQUEST: 'LAB_REQUEST',
   PRESCRIPTION: 'PRESCRIPTION',
-  LAB_REPORT: 'LAB_REPORT'
+  LAB_REPORT: 'LAB_REPORT',
+  REFERRAL_LETTER: 'REFERRAL_LETTER',
+  PREGNANCY_CERTIFICATE: 'PREGNANCY_CERTIFICATE'
 } as const
 
 export type DocumentTemplateKind = (typeof DocumentTemplateKind)[keyof typeof DocumentTemplateKind]
@@ -952,6 +955,7 @@ export const DocumentCategory = {
   CONSENT_FORM: 'CONSENT_FORM',
   DISCHARGE_SUMMARY: 'DISCHARGE_SUMMARY',
   MEDICAL_CERTIFICATE: 'MEDICAL_CERTIFICATE',
+  PREGNANCY_CERTIFICATE: 'PREGNANCY_CERTIFICATE',
   INSURANCE: 'INSURANCE',
   IDENTITY: 'IDENTITY',
   OTHER: 'OTHER'
@@ -1291,3 +1295,33 @@ export const AntenatalVisitCode = {
 } as const
 
 export type AntenatalVisitCode = (typeof AntenatalVisitCode)[keyof typeof AntenatalVisitCode]
+
+
+export const FetalPresentation = {
+  CEPHALIC: 'CEPHALIC',
+  BREECH: 'BREECH',
+  TRANSVERSE: 'TRANSVERSE',
+  UNKNOWN: 'UNKNOWN'
+} as const
+
+export type FetalPresentation = (typeof FetalPresentation)[keyof typeof FetalPresentation]
+
+
+export const FetalHeadEngagement = {
+  ENGAGED: 'ENGAGED',
+  NOT_ENGAGED: 'NOT_ENGAGED'
+} as const
+
+export type FetalHeadEngagement = (typeof FetalHeadEngagement)[keyof typeof FetalHeadEngagement]
+
+
+export const TetanusImmunizationStatus = {
+  T0: 'T0',
+  T1: 'T1',
+  T2: 'T2',
+  T3: 'T3',
+  T4: 'T4',
+  T5: 'T5'
+} as const
+
+export type TetanusImmunizationStatus = (typeof TetanusImmunizationStatus)[keyof typeof TetanusImmunizationStatus]

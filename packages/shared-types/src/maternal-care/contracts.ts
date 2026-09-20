@@ -5,8 +5,13 @@ import type {
 } from '#maternal-care/schemas';
 import type {
   AntenatalVisitCodeValue,
+  FetalHeadEngagementValue,
+  FetalPresentationValue,
   GestationalAge,
   PregnancyTrimester,
+  TenTChecklistItem,
+  TetanusImmunizationStatusValue,
+  TriggeredAntenatalReferralRule,
   TrimesterScheduleEntry,
 } from '#maternal-care/types';
 
@@ -75,4 +80,33 @@ export type EncounterAntenatalVisitResponse = {
   ordinal: number;
   visitCode: AntenatalVisitCodeValue | null;
   gestationalAge: GestationalAge;
+};
+
+/** One visit's 10T examination as the API returns it (P25-T07). */
+export type AntenatalExaminationResponse = {
+  examination: {
+    muacCm: number | null;
+    fundalHeightCm: number | null;
+    fetalHeartRateBpm: number | null;
+    fetalPresentation: FetalPresentationValue | null;
+    fetalHeadEngagement: FetalHeadEngagementValue | null;
+    fetalCount: number | null;
+    estimatedFetalWeightGrams: number | null;
+    tetanusStatus: TetanusImmunizationStatusValue | null;
+    ironTabletsGiven: number | null;
+    counsellingTopics: string[];
+    caseManagementNotes: string | null;
+  } | null;
+  /** Each of the ten items, with where its answer came from. */
+  checklist: TenTChecklistItem[];
+  /** Sourced prompts this visit's findings set off, dismissed ones included. */
+  referralRules: TriggeredAntenatalReferralRule[];
+};
+
+/** A maternal document that was rendered and filed (FR-ANC-04, FR-ANC-06). */
+export type MaternalDocumentResponse = {
+  documentId: string;
+  kind: 'REFERRAL_LETTER' | 'PREGNANCY_CERTIFICATE';
+  title: string;
+  renderedAt: string;
 };

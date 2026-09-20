@@ -175,7 +175,9 @@ export const ModelName = {
   BugReportCounter: 'BugReportCounter',
   PregnancyEpisode: 'PregnancyEpisode',
   PregnancyExternalDoctorVisit: 'PregnancyExternalDoctorVisit',
-  AntenatalVisit: 'AntenatalVisit'
+  AntenatalVisit: 'AntenatalVisit',
+  AntenatalExamination: 'AntenatalExamination',
+  AntenatalReferralDismissal: 'AntenatalReferralDismissal'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -2350,6 +2352,40 @@ export const AntenatalVisitScalarFieldEnum = {
 } as const
 
 export type AntenatalVisitScalarFieldEnum = (typeof AntenatalVisitScalarFieldEnum)[keyof typeof AntenatalVisitScalarFieldEnum]
+
+
+export const AntenatalExaminationScalarFieldEnum = {
+  id: 'id',
+  antenatalVisitId: 'antenatalVisitId',
+  muacCm: 'muacCm',
+  fundalHeightCm: 'fundalHeightCm',
+  fetalHeartRateBpm: 'fetalHeartRateBpm',
+  fetalPresentation: 'fetalPresentation',
+  fetalHeadEngagement: 'fetalHeadEngagement',
+  fetalCount: 'fetalCount',
+  estimatedFetalWeightGrams: 'estimatedFetalWeightGrams',
+  tetanusStatus: 'tetanusStatus',
+  ironTabletsGiven: 'ironTabletsGiven',
+  counsellingTopics: 'counsellingTopics',
+  caseManagementNotes: 'caseManagementNotes',
+  recordedById: 'recordedById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AntenatalExaminationScalarFieldEnum = (typeof AntenatalExaminationScalarFieldEnum)[keyof typeof AntenatalExaminationScalarFieldEnum]
+
+
+export const AntenatalReferralDismissalScalarFieldEnum = {
+  id: 'id',
+  antenatalVisitId: 'antenatalVisitId',
+  ruleCode: 'ruleCode',
+  reason: 'reason',
+  dismissedById: 'dismissedById',
+  createdAt: 'createdAt'
+} as const
+
+export type AntenatalReferralDismissalScalarFieldEnum = (typeof AntenatalReferralDismissalScalarFieldEnum)[keyof typeof AntenatalReferralDismissalScalarFieldEnum]
 
 
 export const SortOrder = {

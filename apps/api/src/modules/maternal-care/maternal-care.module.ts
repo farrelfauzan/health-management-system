@@ -1,9 +1,12 @@
 import { forwardRef, Module } from '@nestjs/common';
 
 import { AuthModule } from '../auth/auth.module';
+import { ClinicalRequestDocumentModule } from '../clinical-request-document/clinical-request-document.module';
 import { EmrModule } from '../emr/emr.module';
+import { AntenatalExaminationController } from './controller/antenatal-examination.controller';
 import { PregnancyEpisodeController } from './controller/pregnancy-episode.controller';
 import { MaternalCareRepository } from './repository/maternal-care.repository';
+import { AntenatalExaminationService } from './service/antenatal-examination.service';
 import { MaternalCareService } from './service/maternal-care.service';
 
 /**
@@ -17,9 +20,12 @@ import { MaternalCareService } from './service/maternal-care.service';
  * through its service.
  */
 @Module({
-  imports: [AuthModule, forwardRef(() => EmrModule)],
-  controllers: [PregnancyEpisodeController],
-  providers: [MaternalCareRepository, MaternalCareService],
+  // `ClinicalRequestDocumentModule` renders the two maternal letters (P25-T07)
+  // through the same published-template → Gotenberg → object-storage path the
+  // resep and the surat pengantar take, rather than growing a second renderer.
+  imports: [AuthModule, ClinicalRequestDocumentModule, forwardRef(() => EmrModule)],
+  controllers: [PregnancyEpisodeController, AntenatalExaminationController],
+  providers: [MaternalCareRepository, MaternalCareService, AntenatalExaminationService],
   exports: [MaternalCareService],
 })
 export class MaternalCareModule {}

@@ -1607,3 +1607,28 @@ export type PregnancyExternalDoctorVisit = Prisma.PregnancyExternalDoctorVisitMo
  * read, so a cancelled or backdated visit never leaves a gap in the sequence.
  */
 export type AntenatalVisit = Prisma.AntenatalVisitModel
+/**
+ * Model AntenatalExamination
+ * The integrated 10T examination of one antenatal visit (P25-T07, FR-ANC-03).
+ * 
+ * **Every field is nullable on purpose.** A checklist item that was not done
+ * is "not done", not invalid — a midwife recording a fundal height before the
+ * foetal heart is audible must be able to save.
+ * 
+ * Weight, height and blood pressure are deliberately **absent**: they come
+ * from the encounter's latest `VitalSigns` row, the TT dose is an
+ * `Immunization`, and the iron tablets prescribed are a `Prescription`.
+ * `ironTabletsGiven` is the count actually handed over, which is a different
+ * fact from what was prescribed and has nowhere else to live.
+ */
+export type AntenatalExamination = Prisma.AntenatalExaminationModel
+/**
+ * Model AntenatalReferralDismissal
+ * A sourced referral prompt the midwife saw and set aside (P25-T07,
+ * FR-ANC-04).
+ * 
+ * Nothing is ever blocked by a prompt, so without this row there is no record
+ * that a raised blood pressure was noticed at all. The reason is required:
+ * "dismissed" on its own answers nothing later.
+ */
+export type AntenatalReferralDismissal = Prisma.AntenatalReferralDismissalModel

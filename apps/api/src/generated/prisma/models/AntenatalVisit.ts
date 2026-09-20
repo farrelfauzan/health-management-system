@@ -197,6 +197,8 @@ export type AntenatalVisitWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"AntenatalVisit"> | Date | string
   pregnancyEpisode?: Prisma.XOR<Prisma.PregnancyEpisodeScalarRelationFilter, Prisma.PregnancyEpisodeWhereInput>
   encounter?: Prisma.XOR<Prisma.EncounterScalarRelationFilter, Prisma.EncounterWhereInput>
+  examination?: Prisma.XOR<Prisma.AntenatalExaminationNullableScalarRelationFilter, Prisma.AntenatalExaminationWhereInput> | null
+  referralDismissals?: Prisma.AntenatalReferralDismissalListRelationFilter
 }
 
 export type AntenatalVisitOrderByWithRelationInput = {
@@ -208,6 +210,8 @@ export type AntenatalVisitOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   pregnancyEpisode?: Prisma.PregnancyEpisodeOrderByWithRelationInput
   encounter?: Prisma.EncounterOrderByWithRelationInput
+  examination?: Prisma.AntenatalExaminationOrderByWithRelationInput
+  referralDismissals?: Prisma.AntenatalReferralDismissalOrderByRelationAggregateInput
 }
 
 export type AntenatalVisitWhereUniqueInput = Prisma.AtLeast<{
@@ -222,6 +226,8 @@ export type AntenatalVisitWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"AntenatalVisit"> | Date | string
   pregnancyEpisode?: Prisma.XOR<Prisma.PregnancyEpisodeScalarRelationFilter, Prisma.PregnancyEpisodeWhereInput>
   encounter?: Prisma.XOR<Prisma.EncounterScalarRelationFilter, Prisma.EncounterWhereInput>
+  examination?: Prisma.XOR<Prisma.AntenatalExaminationNullableScalarRelationFilter, Prisma.AntenatalExaminationWhereInput> | null
+  referralDismissals?: Prisma.AntenatalReferralDismissalListRelationFilter
 }, "id" | "encounterId">
 
 export type AntenatalVisitOrderByWithAggregationInput = {
@@ -255,6 +261,8 @@ export type AntenatalVisitCreateInput = {
   updatedAt?: Date | string
   pregnancyEpisode: Prisma.PregnancyEpisodeCreateNestedOneWithoutAntenatalVisitsInput
   encounter: Prisma.EncounterCreateNestedOneWithoutAntenatalVisitInput
+  examination?: Prisma.AntenatalExaminationCreateNestedOneWithoutAntenatalVisitInput
+  referralDismissals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutAntenatalVisitInput
 }
 
 export type AntenatalVisitUncheckedCreateInput = {
@@ -264,6 +272,8 @@ export type AntenatalVisitUncheckedCreateInput = {
   visitCode?: $Enums.AntenatalVisitCode | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  examination?: Prisma.AntenatalExaminationUncheckedCreateNestedOneWithoutAntenatalVisitInput
+  referralDismissals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutAntenatalVisitInput
 }
 
 export type AntenatalVisitUpdateInput = {
@@ -273,6 +283,8 @@ export type AntenatalVisitUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   pregnancyEpisode?: Prisma.PregnancyEpisodeUpdateOneRequiredWithoutAntenatalVisitsNestedInput
   encounter?: Prisma.EncounterUpdateOneRequiredWithoutAntenatalVisitNestedInput
+  examination?: Prisma.AntenatalExaminationUpdateOneWithoutAntenatalVisitNestedInput
+  referralDismissals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutAntenatalVisitNestedInput
 }
 
 export type AntenatalVisitUncheckedUpdateInput = {
@@ -282,6 +294,8 @@ export type AntenatalVisitUncheckedUpdateInput = {
   visitCode?: Prisma.NullableEnumAntenatalVisitCodeFieldUpdateOperationsInput | $Enums.AntenatalVisitCode | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  examination?: Prisma.AntenatalExaminationUncheckedUpdateOneWithoutAntenatalVisitNestedInput
+  referralDismissals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutAntenatalVisitNestedInput
 }
 
 export type AntenatalVisitCreateManyInput = {
@@ -349,6 +363,11 @@ export type AntenatalVisitMinOrderByAggregateInput = {
   visitCode?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type AntenatalVisitScalarRelationFilter = {
+  is?: Prisma.AntenatalVisitWhereInput
+  isNot?: Prisma.AntenatalVisitWhereInput
 }
 
 export type AntenatalVisitCreateNestedOneWithoutEncounterInput = {
@@ -429,12 +448,42 @@ export type NullableEnumAntenatalVisitCodeFieldUpdateOperationsInput = {
   set?: $Enums.AntenatalVisitCode | null
 }
 
+export type AntenatalVisitCreateNestedOneWithoutExaminationInput = {
+  create?: Prisma.XOR<Prisma.AntenatalVisitCreateWithoutExaminationInput, Prisma.AntenatalVisitUncheckedCreateWithoutExaminationInput>
+  connectOrCreate?: Prisma.AntenatalVisitCreateOrConnectWithoutExaminationInput
+  connect?: Prisma.AntenatalVisitWhereUniqueInput
+}
+
+export type AntenatalVisitUpdateOneRequiredWithoutExaminationNestedInput = {
+  create?: Prisma.XOR<Prisma.AntenatalVisitCreateWithoutExaminationInput, Prisma.AntenatalVisitUncheckedCreateWithoutExaminationInput>
+  connectOrCreate?: Prisma.AntenatalVisitCreateOrConnectWithoutExaminationInput
+  upsert?: Prisma.AntenatalVisitUpsertWithoutExaminationInput
+  connect?: Prisma.AntenatalVisitWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.AntenatalVisitUpdateToOneWithWhereWithoutExaminationInput, Prisma.AntenatalVisitUpdateWithoutExaminationInput>, Prisma.AntenatalVisitUncheckedUpdateWithoutExaminationInput>
+}
+
+export type AntenatalVisitCreateNestedOneWithoutReferralDismissalsInput = {
+  create?: Prisma.XOR<Prisma.AntenatalVisitCreateWithoutReferralDismissalsInput, Prisma.AntenatalVisitUncheckedCreateWithoutReferralDismissalsInput>
+  connectOrCreate?: Prisma.AntenatalVisitCreateOrConnectWithoutReferralDismissalsInput
+  connect?: Prisma.AntenatalVisitWhereUniqueInput
+}
+
+export type AntenatalVisitUpdateOneRequiredWithoutReferralDismissalsNestedInput = {
+  create?: Prisma.XOR<Prisma.AntenatalVisitCreateWithoutReferralDismissalsInput, Prisma.AntenatalVisitUncheckedCreateWithoutReferralDismissalsInput>
+  connectOrCreate?: Prisma.AntenatalVisitCreateOrConnectWithoutReferralDismissalsInput
+  upsert?: Prisma.AntenatalVisitUpsertWithoutReferralDismissalsInput
+  connect?: Prisma.AntenatalVisitWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.AntenatalVisitUpdateToOneWithWhereWithoutReferralDismissalsInput, Prisma.AntenatalVisitUpdateWithoutReferralDismissalsInput>, Prisma.AntenatalVisitUncheckedUpdateWithoutReferralDismissalsInput>
+}
+
 export type AntenatalVisitCreateWithoutEncounterInput = {
   id?: string
   visitCode?: $Enums.AntenatalVisitCode | null
   createdAt?: Date | string
   updatedAt?: Date | string
   pregnancyEpisode: Prisma.PregnancyEpisodeCreateNestedOneWithoutAntenatalVisitsInput
+  examination?: Prisma.AntenatalExaminationCreateNestedOneWithoutAntenatalVisitInput
+  referralDismissals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutAntenatalVisitInput
 }
 
 export type AntenatalVisitUncheckedCreateWithoutEncounterInput = {
@@ -443,6 +492,8 @@ export type AntenatalVisitUncheckedCreateWithoutEncounterInput = {
   visitCode?: $Enums.AntenatalVisitCode | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  examination?: Prisma.AntenatalExaminationUncheckedCreateNestedOneWithoutAntenatalVisitInput
+  referralDismissals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutAntenatalVisitInput
 }
 
 export type AntenatalVisitCreateOrConnectWithoutEncounterInput = {
@@ -467,6 +518,8 @@ export type AntenatalVisitUpdateWithoutEncounterInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   pregnancyEpisode?: Prisma.PregnancyEpisodeUpdateOneRequiredWithoutAntenatalVisitsNestedInput
+  examination?: Prisma.AntenatalExaminationUpdateOneWithoutAntenatalVisitNestedInput
+  referralDismissals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutAntenatalVisitNestedInput
 }
 
 export type AntenatalVisitUncheckedUpdateWithoutEncounterInput = {
@@ -475,6 +528,8 @@ export type AntenatalVisitUncheckedUpdateWithoutEncounterInput = {
   visitCode?: Prisma.NullableEnumAntenatalVisitCodeFieldUpdateOperationsInput | $Enums.AntenatalVisitCode | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  examination?: Prisma.AntenatalExaminationUncheckedUpdateOneWithoutAntenatalVisitNestedInput
+  referralDismissals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutAntenatalVisitNestedInput
 }
 
 export type AntenatalVisitCreateWithoutPregnancyEpisodeInput = {
@@ -483,6 +538,8 @@ export type AntenatalVisitCreateWithoutPregnancyEpisodeInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   encounter: Prisma.EncounterCreateNestedOneWithoutAntenatalVisitInput
+  examination?: Prisma.AntenatalExaminationCreateNestedOneWithoutAntenatalVisitInput
+  referralDismissals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutAntenatalVisitInput
 }
 
 export type AntenatalVisitUncheckedCreateWithoutPregnancyEpisodeInput = {
@@ -491,6 +548,8 @@ export type AntenatalVisitUncheckedCreateWithoutPregnancyEpisodeInput = {
   visitCode?: $Enums.AntenatalVisitCode | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  examination?: Prisma.AntenatalExaminationUncheckedCreateNestedOneWithoutAntenatalVisitInput
+  referralDismissals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutAntenatalVisitInput
 }
 
 export type AntenatalVisitCreateOrConnectWithoutPregnancyEpisodeInput = {
@@ -531,6 +590,118 @@ export type AntenatalVisitScalarWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"AntenatalVisit"> | Date | string
 }
 
+export type AntenatalVisitCreateWithoutExaminationInput = {
+  id?: string
+  visitCode?: $Enums.AntenatalVisitCode | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  pregnancyEpisode: Prisma.PregnancyEpisodeCreateNestedOneWithoutAntenatalVisitsInput
+  encounter: Prisma.EncounterCreateNestedOneWithoutAntenatalVisitInput
+  referralDismissals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutAntenatalVisitInput
+}
+
+export type AntenatalVisitUncheckedCreateWithoutExaminationInput = {
+  id?: string
+  pregnancyEpisodeId: string
+  encounterId: string
+  visitCode?: $Enums.AntenatalVisitCode | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  referralDismissals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutAntenatalVisitInput
+}
+
+export type AntenatalVisitCreateOrConnectWithoutExaminationInput = {
+  where: Prisma.AntenatalVisitWhereUniqueInput
+  create: Prisma.XOR<Prisma.AntenatalVisitCreateWithoutExaminationInput, Prisma.AntenatalVisitUncheckedCreateWithoutExaminationInput>
+}
+
+export type AntenatalVisitUpsertWithoutExaminationInput = {
+  update: Prisma.XOR<Prisma.AntenatalVisitUpdateWithoutExaminationInput, Prisma.AntenatalVisitUncheckedUpdateWithoutExaminationInput>
+  create: Prisma.XOR<Prisma.AntenatalVisitCreateWithoutExaminationInput, Prisma.AntenatalVisitUncheckedCreateWithoutExaminationInput>
+  where?: Prisma.AntenatalVisitWhereInput
+}
+
+export type AntenatalVisitUpdateToOneWithWhereWithoutExaminationInput = {
+  where?: Prisma.AntenatalVisitWhereInput
+  data: Prisma.XOR<Prisma.AntenatalVisitUpdateWithoutExaminationInput, Prisma.AntenatalVisitUncheckedUpdateWithoutExaminationInput>
+}
+
+export type AntenatalVisitUpdateWithoutExaminationInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  visitCode?: Prisma.NullableEnumAntenatalVisitCodeFieldUpdateOperationsInput | $Enums.AntenatalVisitCode | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  pregnancyEpisode?: Prisma.PregnancyEpisodeUpdateOneRequiredWithoutAntenatalVisitsNestedInput
+  encounter?: Prisma.EncounterUpdateOneRequiredWithoutAntenatalVisitNestedInput
+  referralDismissals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutAntenatalVisitNestedInput
+}
+
+export type AntenatalVisitUncheckedUpdateWithoutExaminationInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  pregnancyEpisodeId?: Prisma.StringFieldUpdateOperationsInput | string
+  encounterId?: Prisma.StringFieldUpdateOperationsInput | string
+  visitCode?: Prisma.NullableEnumAntenatalVisitCodeFieldUpdateOperationsInput | $Enums.AntenatalVisitCode | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  referralDismissals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutAntenatalVisitNestedInput
+}
+
+export type AntenatalVisitCreateWithoutReferralDismissalsInput = {
+  id?: string
+  visitCode?: $Enums.AntenatalVisitCode | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  pregnancyEpisode: Prisma.PregnancyEpisodeCreateNestedOneWithoutAntenatalVisitsInput
+  encounter: Prisma.EncounterCreateNestedOneWithoutAntenatalVisitInput
+  examination?: Prisma.AntenatalExaminationCreateNestedOneWithoutAntenatalVisitInput
+}
+
+export type AntenatalVisitUncheckedCreateWithoutReferralDismissalsInput = {
+  id?: string
+  pregnancyEpisodeId: string
+  encounterId: string
+  visitCode?: $Enums.AntenatalVisitCode | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  examination?: Prisma.AntenatalExaminationUncheckedCreateNestedOneWithoutAntenatalVisitInput
+}
+
+export type AntenatalVisitCreateOrConnectWithoutReferralDismissalsInput = {
+  where: Prisma.AntenatalVisitWhereUniqueInput
+  create: Prisma.XOR<Prisma.AntenatalVisitCreateWithoutReferralDismissalsInput, Prisma.AntenatalVisitUncheckedCreateWithoutReferralDismissalsInput>
+}
+
+export type AntenatalVisitUpsertWithoutReferralDismissalsInput = {
+  update: Prisma.XOR<Prisma.AntenatalVisitUpdateWithoutReferralDismissalsInput, Prisma.AntenatalVisitUncheckedUpdateWithoutReferralDismissalsInput>
+  create: Prisma.XOR<Prisma.AntenatalVisitCreateWithoutReferralDismissalsInput, Prisma.AntenatalVisitUncheckedCreateWithoutReferralDismissalsInput>
+  where?: Prisma.AntenatalVisitWhereInput
+}
+
+export type AntenatalVisitUpdateToOneWithWhereWithoutReferralDismissalsInput = {
+  where?: Prisma.AntenatalVisitWhereInput
+  data: Prisma.XOR<Prisma.AntenatalVisitUpdateWithoutReferralDismissalsInput, Prisma.AntenatalVisitUncheckedUpdateWithoutReferralDismissalsInput>
+}
+
+export type AntenatalVisitUpdateWithoutReferralDismissalsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  visitCode?: Prisma.NullableEnumAntenatalVisitCodeFieldUpdateOperationsInput | $Enums.AntenatalVisitCode | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  pregnancyEpisode?: Prisma.PregnancyEpisodeUpdateOneRequiredWithoutAntenatalVisitsNestedInput
+  encounter?: Prisma.EncounterUpdateOneRequiredWithoutAntenatalVisitNestedInput
+  examination?: Prisma.AntenatalExaminationUpdateOneWithoutAntenatalVisitNestedInput
+}
+
+export type AntenatalVisitUncheckedUpdateWithoutReferralDismissalsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  pregnancyEpisodeId?: Prisma.StringFieldUpdateOperationsInput | string
+  encounterId?: Prisma.StringFieldUpdateOperationsInput | string
+  visitCode?: Prisma.NullableEnumAntenatalVisitCodeFieldUpdateOperationsInput | $Enums.AntenatalVisitCode | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  examination?: Prisma.AntenatalExaminationUncheckedUpdateOneWithoutAntenatalVisitNestedInput
+}
+
 export type AntenatalVisitCreateManyPregnancyEpisodeInput = {
   id?: string
   encounterId: string
@@ -545,6 +716,8 @@ export type AntenatalVisitUpdateWithoutPregnancyEpisodeInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   encounter?: Prisma.EncounterUpdateOneRequiredWithoutAntenatalVisitNestedInput
+  examination?: Prisma.AntenatalExaminationUpdateOneWithoutAntenatalVisitNestedInput
+  referralDismissals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutAntenatalVisitNestedInput
 }
 
 export type AntenatalVisitUncheckedUpdateWithoutPregnancyEpisodeInput = {
@@ -553,6 +726,8 @@ export type AntenatalVisitUncheckedUpdateWithoutPregnancyEpisodeInput = {
   visitCode?: Prisma.NullableEnumAntenatalVisitCodeFieldUpdateOperationsInput | $Enums.AntenatalVisitCode | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  examination?: Prisma.AntenatalExaminationUncheckedUpdateOneWithoutAntenatalVisitNestedInput
+  referralDismissals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutAntenatalVisitNestedInput
 }
 
 export type AntenatalVisitUncheckedUpdateManyWithoutPregnancyEpisodeInput = {
@@ -564,6 +739,35 @@ export type AntenatalVisitUncheckedUpdateManyWithoutPregnancyEpisodeInput = {
 }
 
 
+/**
+ * Count Type AntenatalVisitCountOutputType
+ */
+
+export type AntenatalVisitCountOutputType = {
+  referralDismissals: number
+}
+
+export type AntenatalVisitCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  referralDismissals?: boolean | AntenatalVisitCountOutputTypeCountReferralDismissalsArgs
+}
+
+/**
+ * AntenatalVisitCountOutputType without action
+ */
+export type AntenatalVisitCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AntenatalVisitCountOutputType
+   */
+  select?: Prisma.AntenatalVisitCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * AntenatalVisitCountOutputType without action
+ */
+export type AntenatalVisitCountOutputTypeCountReferralDismissalsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AntenatalReferralDismissalWhereInput
+}
+
 
 export type AntenatalVisitSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -574,6 +778,9 @@ export type AntenatalVisitSelect<ExtArgs extends runtime.Types.Extensions.Intern
   updatedAt?: boolean
   pregnancyEpisode?: boolean | Prisma.PregnancyEpisodeDefaultArgs<ExtArgs>
   encounter?: boolean | Prisma.EncounterDefaultArgs<ExtArgs>
+  examination?: boolean | Prisma.AntenatalVisit$examinationArgs<ExtArgs>
+  referralDismissals?: boolean | Prisma.AntenatalVisit$referralDismissalsArgs<ExtArgs>
+  _count?: boolean | Prisma.AntenatalVisitCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["antenatalVisit"]>
 
 export type AntenatalVisitSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -611,6 +818,9 @@ export type AntenatalVisitOmit<ExtArgs extends runtime.Types.Extensions.Internal
 export type AntenatalVisitInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   pregnancyEpisode?: boolean | Prisma.PregnancyEpisodeDefaultArgs<ExtArgs>
   encounter?: boolean | Prisma.EncounterDefaultArgs<ExtArgs>
+  examination?: boolean | Prisma.AntenatalVisit$examinationArgs<ExtArgs>
+  referralDismissals?: boolean | Prisma.AntenatalVisit$referralDismissalsArgs<ExtArgs>
+  _count?: boolean | Prisma.AntenatalVisitCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type AntenatalVisitIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   pregnancyEpisode?: boolean | Prisma.PregnancyEpisodeDefaultArgs<ExtArgs>
@@ -626,6 +836,8 @@ export type $AntenatalVisitPayload<ExtArgs extends runtime.Types.Extensions.Inte
   objects: {
     pregnancyEpisode: Prisma.$PregnancyEpisodePayload<ExtArgs>
     encounter: Prisma.$EncounterPayload<ExtArgs>
+    examination: Prisma.$AntenatalExaminationPayload<ExtArgs> | null
+    referralDismissals: Prisma.$AntenatalReferralDismissalPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1030,6 +1242,8 @@ export interface Prisma__AntenatalVisitClient<T, Null = never, ExtArgs extends r
   readonly [Symbol.toStringTag]: "PrismaPromise"
   pregnancyEpisode<T extends Prisma.PregnancyEpisodeDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PregnancyEpisodeDefaultArgs<ExtArgs>>): Prisma.Prisma__PregnancyEpisodeClient<runtime.Types.Result.GetResult<Prisma.$PregnancyEpisodePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   encounter<T extends Prisma.EncounterDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EncounterDefaultArgs<ExtArgs>>): Prisma.Prisma__EncounterClient<runtime.Types.Result.GetResult<Prisma.$EncounterPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  examination<T extends Prisma.AntenatalVisit$examinationArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AntenatalVisit$examinationArgs<ExtArgs>>): Prisma.Prisma__AntenatalExaminationClient<runtime.Types.Result.GetResult<Prisma.$AntenatalExaminationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  referralDismissals<T extends Prisma.AntenatalVisit$referralDismissalsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AntenatalVisit$referralDismissalsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AntenatalReferralDismissalPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1463,6 +1677,49 @@ export type AntenatalVisitDeleteManyArgs<ExtArgs extends runtime.Types.Extension
    * Limit how many AntenatalVisits to delete.
    */
   limit?: number
+}
+
+/**
+ * AntenatalVisit.examination
+ */
+export type AntenatalVisit$examinationArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AntenatalExamination
+   */
+  select?: Prisma.AntenatalExaminationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AntenatalExamination
+   */
+  omit?: Prisma.AntenatalExaminationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AntenatalExaminationInclude<ExtArgs> | null
+  where?: Prisma.AntenatalExaminationWhereInput
+}
+
+/**
+ * AntenatalVisit.referralDismissals
+ */
+export type AntenatalVisit$referralDismissalsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AntenatalReferralDismissal
+   */
+  select?: Prisma.AntenatalReferralDismissalSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AntenatalReferralDismissal
+   */
+  omit?: Prisma.AntenatalReferralDismissalOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AntenatalReferralDismissalInclude<ExtArgs> | null
+  where?: Prisma.AntenatalReferralDismissalWhereInput
+  orderBy?: Prisma.AntenatalReferralDismissalOrderByWithRelationInput | Prisma.AntenatalReferralDismissalOrderByWithRelationInput[]
+  cursor?: Prisma.AntenatalReferralDismissalWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AntenatalReferralDismissalScalarFieldEnum | Prisma.AntenatalReferralDismissalScalarFieldEnum[]
 }
 
 /**

@@ -18,6 +18,7 @@ const CATEGORY_LABELS: Readonly<Record<DocumentCategoryValue, { id: string; en: 
   CONSENT_FORM: { id: 'formulir persetujuan', en: 'consent form' },
   DISCHARGE_SUMMARY: { id: 'resume pulang', en: 'discharge summary' },
   MEDICAL_CERTIFICATE: { id: 'surat keterangan dokter', en: 'medical certificate' },
+  PREGNANCY_CERTIFICATE: { id: 'surat keterangan hamil', en: 'pregnancy certificate' },
   INSURANCE: { id: 'dokumen asuransi', en: 'insurance document' },
   IDENTITY: { id: 'dokumen identitas', en: 'identity document' },
   OTHER: { id: 'dokumen medis', en: 'medical document' },
