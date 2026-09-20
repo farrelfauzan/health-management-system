@@ -11,4 +11,5 @@ export type AdmissionFlowControllerDischargeAdmissionV1200DataBedAssignmentsItem
   id: string;
   bed: AdmissionFlowControllerDischargeAdmissionV1200DataBedAssignmentsItemBed;
   startedAt: string;
+  endedAt: string;
 };

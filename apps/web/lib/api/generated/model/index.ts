@@ -62,10 +62,6 @@ export * from './admissionFlowControllerDischargeAdmissionV1200DataBedAssignment
 export * from './admissionFlowControllerDischargeAdmissionV1200DataBedAssignmentsItemBedRoom';
 export * from './admissionFlowControllerDischargeAdmissionV1200DataBedAssignmentsItemBedRoomRoomClass';
 export * from './admissionFlowControllerDischargeAdmissionV1200DataBedAssignmentsItemBedWard';
-export * from './admissionFlowControllerDischargeAdmissionV1200DataCurrentBed';
-export * from './admissionFlowControllerDischargeAdmissionV1200DataCurrentBedRoom';
-export * from './admissionFlowControllerDischargeAdmissionV1200DataCurrentBedRoomRoomClass';
-export * from './admissionFlowControllerDischargeAdmissionV1200DataCurrentBedWard';
 export * from './admissionFlowControllerDischargeAdmissionV1200DataPatient';
 export * from './admissionFlowControllerDischargeAdmissionV1200Meta';
 export * from './admissionFlowControllerDischargeAdmissionV1200MetaRoomCharge';
@@ -545,6 +541,7 @@ export * from './deliveryActionControllerRevokeV1200DataRequestedBy';
 export * from './deliveryLinkPublicControllerResolveLinkV1200';
 export * from './deliveryLinkPublicControllerResolveLinkV1200Data';
 export * from './dischargeAdmissionDto';
+export * from './dischargeAdmissionDtoDischargeDisposition';
 export * from './dispenseControllerCreateDispenseV1201';
 export * from './dispenseControllerCreateDispenseV1201Data';
 export * from './dispenseControllerCreateDispenseV1201DataItemsItem';

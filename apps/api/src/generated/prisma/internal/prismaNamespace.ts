@@ -11105,6 +11105,8 @@ export const AdmissionScalarFieldEnum = {
   admittedAt: 'admittedAt',
   dischargedAt: 'dischargedAt',
   dischargeSummary: 'dischargeSummary',
+  dischargeDisposition: 'dischargeDisposition',
+  dischargeDispositionNote: 'dischargeDispositionNote',
   cancelledAt: 'cancelledAt',
   cancelReason: 'cancelReason',
   createdById: 'createdById',
@@ -12936,6 +12938,20 @@ export type EnumAdmissionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$
  * Reference to a field of type 'AdmissionStatus[]'
  */
 export type ListEnumAdmissionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AdmissionStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'DischargeDisposition'
+ */
+export type EnumDischargeDispositionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DischargeDisposition'>
+    
+
+
+/**
+ * Reference to a field of type 'DischargeDisposition[]'
+ */
+export type ListEnumDischargeDispositionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DischargeDisposition[]'>
     
 
 

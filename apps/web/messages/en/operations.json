@@ -1073,7 +1073,19 @@
       "roomChargeNone": "No room charges: the stay crossed no midnight.",
       "roomChargeGaps": "Some nights could not be priced — check the accommodation tariffs.",
       "cancelIsNotDischarge": "Cancelling marks the stay as opened in error and returns the patient to out-patient. Use Discharge for a patient going home.",
-      "confirm": "Confirm"
+      "confirm": "Confirm",
+      "dischargeDisposition": "How the stay ended",
+      "dischargeDispositionPlaceholder": "Select how the patient left",
+      "dischargeDispositionRequired": "Choose how the stay ended before discharging.",
+      "dischargeDispositionNote": "Note",
+      "dischargeDispositionNoteRequired": "A note is required when the stay ended in some other way.",
+      "dischargeDispositions": {
+        "HOME": "Home",
+        "AGAINST_ADVICE": "Against medical advice",
+        "REFERRED": "Referred to another facility",
+        "DIED": "Died",
+        "OTHER": "Other"
+      }
     },
     "organization": {
       "title": "Organization",

@@ -1,3 +1,4 @@
+import type { DischargeDispositionValue } from '#admission-flow/schemas';
 import type { ImmunizationReasonValue } from '#emr/schemas';
 import type { LabResultFlagValue, LabSpecimenTypeValue } from '#laboratory/schemas';
 import type { SatusehatLocationRegistrationOutcomeView } from '#satusehat/contracts';
@@ -275,6 +276,22 @@ export type SatusehatSubmissionAdmission = {
   admissionId: string;
   admittedAt: Date;
   dischargedAt: Date;
+  /** How the stay ended; null on a row discharged before P24-T08. */
+  dischargeDisposition: DischargeDispositionValue | null;
+  /** The beds occupied, oldest first (FR-IP-01). */
+  beds: readonly SatusehatSubmissionBedStay[];
+};
+
+/**
+ * One bed of an inpatient stay, as the bundle reports it: the bed's registered
+ * Location, the class its room is in, and the period it was occupied.
+ */
+export type SatusehatSubmissionBedStay = {
+  bedId: string;
+  satusehatLocationId: string | null;
+  serviceClass: SatusehatServiceClassValue | null;
+  startedAt: Date;
+  endedAt: Date | null;
 };
 
 /**
@@ -320,7 +337,10 @@ export type SatusehatSubmissionBundleData = {
    * read together so the Location the bundle names is decided from one
    * snapshot rather than from a second query taken later (P24-T07).
    */
-  encounterLocation: Omit<SatusehatEncounterLocationSources, 'configuredLocationId'>;
+  encounterLocation: Omit<
+    SatusehatEncounterLocationSources,
+    'configuredLocationId' | 'bedLocationIds'
+  >;
 };
 
 /**
@@ -679,6 +699,30 @@ export type SatusehatEncounterLocationSources = SatusehatRootLocationSources & {
   specialtyLocationId: string | null;
   /** Null only when the visit names no poli at all. */
   specialtyName: string | null;
+  /**
+   * The Location of each bed an inpatient stay passed through, in order, with
+   * a null for any bed nobody has registered (P24-T08). Empty for an
+   * outpatient visit, which is what makes the poli decide instead.
+   */
+  bedLocationIds: readonly (string | null)[];
+};
+
+/**
+ * What decides the discharge code an inpatient stay reports (P24-T08). The
+ * disposition is null for a stay discharged before the column existed, which
+ * keeps D-030's `home`.
+ */
+export type SatusehatDischargeDispositionInput = {
+  disposition: DischargeDispositionValue | null;
+  admittedAt: Date;
+  dischargedAt: Date;
+};
+
+/** One `hospitalization.dischargeDisposition` coding, ready to send. */
+export type SatusehatDischargeDisposition = {
+  system: string;
+  code: string;
+  display: string;
 };
 
 /**

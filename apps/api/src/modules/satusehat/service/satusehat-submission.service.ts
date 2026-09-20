@@ -1,7 +1,9 @@
 import { randomUUID } from 'node:crypto';
 
 import {
+  resolveSatusehatServiceClassCode,
   SatusehatLocationFallbackReasonValue,
+  SatusehatSubmissionAdmission,
   SatusehatSubmissionAllergy,
   SatusehatSubmissionBundleData,
   SatusehatSubmissionDispenseItem,
@@ -20,10 +22,12 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 import { AuditService } from '../../../common/audit/audit.service';
+import { resolveSatusehatDischargeDisposition } from '../../../common/satusehat/resolve-satusehat-discharge-disposition';
 import { resolveSatusehatEncounterLocation } from '../../../common/satusehat/resolve-satusehat-encounter-location';
 import { resolveSatusehatRootLocationId } from '../../../common/satusehat/resolve-satusehat-root-location-id';
 import { SatusehatFhirMapper } from '../../../common/satusehat/satusehat-fhir.mapper';
 import {
+  SatusehatEncounterAdmission,
   SatusehatCompositionSectionInput,
   SatusehatCreatedResourceLocation,
   SatusehatFhirBundleEntry,
@@ -241,6 +245,8 @@ export class SatusehatSubmissionService {
     const encounterLocation = resolveSatusehatEncounterLocation({
       ...bundleData.encounterLocation,
       configuredLocationId: this.satusehatConfig.locationId,
+      bedLocationIds:
+        bundleData.admission?.beds.map((bed) => bed.satusehatLocationId) ?? [],
     });
     const bundle = this.buildTransactionBundle(
       bundleData,
@@ -785,12 +791,7 @@ export class SatusehatSubmissionService {
       startedAt: bundleData.startedAt,
       endedAt,
       ...(bundleData.admission
-        ? {
-            admission: {
-              admittedAt: bundleData.admission.admittedAt,
-              dischargedAt: bundleData.admission.dischargedAt,
-            },
-          }
+        ? { admission: this.buildEncounterAdmission(bundleData.admission) }
         : {}),
       conditionReferences: conditionEntries.map((entry, index) => ({
         reference: entry.fullUrl,
@@ -845,6 +846,33 @@ export class SatusehatSubmissionService {
    * encounter with nothing at all produces no Composition — a document with no
    * sections is not a medical resume.
    */
+  /**
+   * The stay as the Encounter reports it (P24-T08): the bed history in order,
+   * and the discharge code resolved from what staff recorded plus how long the
+   * stay lasted. A bed whose room class is unmapped carries no service-class
+   * extension rather than a guessed one — P24-T06 already refuses to register
+   * such a room, so this is the same gap seen from the bundle.
+   */
+  private buildEncounterAdmission(
+    admission: SatusehatSubmissionAdmission,
+  ): SatusehatEncounterAdmission {
+    return {
+      admittedAt: admission.admittedAt,
+      dischargedAt: admission.dischargedAt,
+      dischargeDisposition: resolveSatusehatDischargeDisposition({
+        disposition: admission.dischargeDisposition,
+        admittedAt: admission.admittedAt,
+        dischargedAt: admission.dischargedAt,
+      }),
+      beds: admission.beds.map((bed) => ({
+        locationId: bed.satusehatLocationId,
+        serviceClassCode: resolveSatusehatServiceClassCode(bed.serviceClass),
+        startedAt: bed.startedAt,
+        endedAt: bed.endedAt,
+      })),
+    };
+  }
+
   private buildCompositionEntry(context: {
     bundleData: SatusehatSubmissionBundleData;
     endedAt: Date;

@@ -342,9 +342,26 @@ describe('Admission flow against Postgres', () => {
     expect(response.status).toBe(409);
   });
 
+  it('refuses a discharge that does not say how the stay ended', async () => {
+    const response = await asClerk('post', `/api/v1/admissions/${admissionId}/discharge`).send({
+      dischargeSummary: 'Pasien membaik.',
+    });
+
+    expect(response.status).toBe(400);
+  });
+
+  it('refuses OTHER without the note that is the only account of what happened', async () => {
+    const response = await asClerk('post', `/api/v1/admissions/${admissionId}/discharge`).send({
+      dischargeDisposition: 'OTHER',
+    });
+
+    expect(response.status).toBe(400);
+  });
+
   it('discharges the patient, freeing the bed and closing the history', async () => {
     const response = await asClerk('post', `/api/v1/admissions/${admissionId}/discharge`).send({
       dischargeSummary: 'Trombosit stabil, pasien dipulangkan.',
+      dischargeDisposition: 'HOME',
     });
 
     expect(response.status).toBe(200);
@@ -356,13 +373,20 @@ describe('Admission flow against Postgres', () => {
       ),
     ).toBe(true);
 
+    expect(response.body.data.dischargeDisposition).toBe('HOME');
+    // The code the SATUSEHAT bundle will send, resolved once here so P25-T15's
+    // death reporting does not re-derive the 48-hour split (P24-T08).
+    expect(response.body.data.satusehatDischargeDispositionCode).toBe('home');
+
     const bed = await prisma.bed.findUniqueOrThrow({ where: { id: secondBedId } });
     expect(bed.status).toBe('AVAILABLE');
     expect(await readPatientStatus(PATIENT_ID)).toBe('DISCHARGED');
   });
 
   it('never re-opens a settled admission', async () => {
-    const discharge = await asClerk('post', `/api/v1/admissions/${admissionId}/discharge`).send({});
+    const discharge = await asClerk('post', `/api/v1/admissions/${admissionId}/discharge`).send({
+      dischargeDisposition: 'HOME',
+    });
     expect(discharge.status).toBe(409);
 
     const transfer = await asClerk('post', `/api/v1/admissions/${admissionId}/transfer`).send({

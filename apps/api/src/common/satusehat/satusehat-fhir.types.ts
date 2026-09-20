@@ -6,6 +6,8 @@
  * `ResourceType/{ihs-id}` or a `urn:uuid:` bundle-local reference) so bundle
  * assembly stays with the caller.
  */
+import type { SatusehatDischargeDisposition } from '@hms/shared-types';
+
 export type SatusehatFhirCoding = {
   system: string;
   code: string;
@@ -60,6 +62,13 @@ export type SatusehatFhirEncounterHospitalization = {
   dischargeDisposition: SatusehatFhirCodeableConcept;
 };
 
+/** One place a visit happened, over the period it happened there. */
+export type SatusehatFhirEncounterLocation = {
+  location: SatusehatFhirReference;
+  period?: SatusehatFhirPeriod;
+  extension?: SatusehatFhirExtension[];
+};
+
 export type SatusehatFhirEncounter = {
   resourceType: 'Encounter';
   identifier: SatusehatFhirIdentifier[];
@@ -77,7 +86,12 @@ export type SatusehatFhirEncounter = {
   }>;
   serviceType?: SatusehatFhirCodeableConcept;
   period: SatusehatFhirPeriod;
-  location: Array<{ location: SatusehatFhirReference }>;
+  /**
+   * One entry for an outpatient visit, and one per bed the patient occupied
+   * for an inpatient stay (P24-T08) — each with the period it covers and the
+   * service class the room was in.
+   */
+  location: SatusehatFhirEncounterLocation[];
   statusHistory: SatusehatEncounterStatusHistoryEntry[];
   hospitalization?: SatusehatFhirEncounterHospitalization;
   diagnosis?: SatusehatFhirEncounterDiagnosis[];
@@ -266,6 +280,25 @@ export type SatusehatFhirDiagnosticReport = {
 export type SatusehatEncounterAdmission = {
   admittedAt: Date;
   dischargedAt: Date;
+  /**
+   * The beds the patient occupied, oldest first (P24-T08, FR-IP-01). Empty
+   * for a stay whose assignments could not be read, which falls back to the
+   * single root entry an outpatient visit uses.
+   */
+  beds: readonly SatusehatEncounterBedStay[];
+  /** Already resolved from the recorded disposition and the stay's length. */
+  dischargeDisposition: SatusehatDischargeDisposition;
+};
+
+/** One bed occupied during a stay, over the period it was occupied. */
+export type SatusehatEncounterBedStay = {
+  /** The bed's registered Location, or null when nobody has registered it. */
+  locationId: string | null;
+  /** `1`, `2`, `3`, `vip`, `vvip` — null when the room's class is unmapped. */
+  serviceClassCode: string | null;
+  startedAt: Date;
+  /** Null while the patient is still in the bed; the stay's end is used. */
+  endedAt: Date | null;
 };
 
 export type SatusehatEncounterMapInput = {
@@ -488,9 +521,16 @@ export type SatusehatDiagnosticReportMapInput = {
   conclusion?: string;
 };
 
+/**
+ * One FHIR extension, either simple (a value) or complex (named
+ * sub-extensions). The inpatient service class uses both shapes: a Location
+ * carries the class alone, while an `Encounter.location` entry carries it
+ * beside an upgrade indicator (P24-T06, P24-T08).
+ */
 export type SatusehatFhirExtension = {
   url: string;
-  valueCodeableConcept: SatusehatFhirCodeableConcept;
+  valueCodeableConcept?: SatusehatFhirCodeableConcept;
+  extension?: SatusehatFhirExtension[];
 };
 
 /**
@@ -842,7 +882,7 @@ export type SatusehatFhirLocation = {
   position?: { longitude: number; latitude: number; altitude: number };
   managingOrganization: SatusehatFhirReference;
   partOf?: SatusehatFhirReference;
-  extension?: { url: string; valueCodeableConcept: SatusehatFhirCodeableConcept }[];
+  extension?: SatusehatFhirExtension[];
 };
 
 /**
