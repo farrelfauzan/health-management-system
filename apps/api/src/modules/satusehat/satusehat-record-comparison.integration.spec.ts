@@ -128,6 +128,11 @@ describe('SATUSEHAT record comparison integration', () => {
       latestVitalSigns: null,
       prescriptions: [],
       dispenseItems: [],
+      encounterLocation: {
+        specialtyName: 'Poli Umum',
+        specialtyLocationId: null,
+        registeredRootLocationId: null,
+      },
     };
   }
 

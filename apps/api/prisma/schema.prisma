@@ -772,6 +772,17 @@ enum SatusehatResourceOutcome {
 /// deliberately **not** here: it was sent, so it is SENT with a null
 /// `satusehatId`. Calling it a skip would claim the national record lacks
 /// something it holds.
+/// Why a reported Encounter named a Location other than the poli's own
+/// (P24-T07, FR-LOC-09). `NO_POLI` is a visit registered without a specialty —
+/// registering Locations would not change it. `POLI_NOT_REGISTERED` is a poli
+/// the Location panel can still register. Both reported under the root site.
+enum SatusehatLocationFallbackReason {
+  NO_POLI
+  POLI_NOT_REGISTERED
+
+  @@map("satusehat_location_fallback_reason")
+}
+
 enum SatusehatResourceSkipReason {
   NO_KFA_CODE
   NO_ICD9CM_CODE
@@ -3544,6 +3555,12 @@ model SatusehatSubmission {
   /// IHS Encounter id returned by the platform on success — the provenance
   /// link between the local record and the national one.
   satusehatEncounterId String?                   @map("satusehat_encounter_id")
+  /// Set when the Encounter this row sent named a fallback Location rather
+  /// than the visit's poli (P24-T07). Kind-agnostic: a LAB_REPORT row names no
+  /// poli, so it stays null. Written when the bundle is accepted, so it
+  /// describes what actually reached the platform, and null on every row
+  /// settled before the column existed.
+  locationFallbackReason SatusehatLocationFallbackReason? @map("location_fallback_reason")
   createdAt            DateTime                  @default(now()) @map("created_at")
   updatedAt            DateTime                  @updatedAt @map("updated_at")
 

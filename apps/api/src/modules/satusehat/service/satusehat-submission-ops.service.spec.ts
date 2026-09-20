@@ -36,6 +36,7 @@ describe('SatusehatSubmissionOpsService', () => {
     lastAttemptAt: new Date('2026-07-28T08:00:00.000Z'),
     submittedAt: null,
     satusehatEncounterId: null,
+    locationFallbackReason: null,
     createdAt: new Date('2026-07-27T10:15:00.000Z'),
     updatedAt: new Date('2026-07-28T08:00:00.000Z'),
   };
@@ -131,6 +132,7 @@ describe('SatusehatSubmissionOpsService', () => {
         lastAttemptAt: '2026-07-28T08:00:00.000Z',
         submittedAt: null,
         satusehatEncounterId: null,
+        locationFallbackReason: null,
         createdAt: '2026-07-27T10:15:00.000Z',
         updatedAt: '2026-07-28T08:00:00.000Z',
       });

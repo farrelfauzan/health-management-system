@@ -10624,6 +10624,7 @@ export const SatusehatSubmissionScalarFieldEnum = {
   lastAttemptAt: 'lastAttemptAt',
   submittedAt: 'submittedAt',
   satusehatEncounterId: 'satusehatEncounterId',
+  locationFallbackReason: 'locationFallbackReason',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -12529,6 +12530,20 @@ export type EnumSatusehatSubmissionStatusFieldRefInput<$PrismaModel> = FieldRefI
  * Reference to a field of type 'SatusehatSubmissionStatus[]'
  */
 export type ListEnumSatusehatSubmissionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SatusehatSubmissionStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'SatusehatLocationFallbackReason'
+ */
+export type EnumSatusehatLocationFallbackReasonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SatusehatLocationFallbackReason'>
+    
+
+
+/**
+ * Reference to a field of type 'SatusehatLocationFallbackReason[]'
+ */
+export type ListEnumSatusehatLocationFallbackReasonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SatusehatLocationFallbackReason[]'>
     
 
 

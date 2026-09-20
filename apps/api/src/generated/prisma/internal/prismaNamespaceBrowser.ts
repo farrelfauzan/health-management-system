@@ -1297,6 +1297,7 @@ export const SatusehatSubmissionScalarFieldEnum = {
   lastAttemptAt: 'lastAttemptAt',
   submittedAt: 'submittedAt',
   satusehatEncounterId: 'satusehatEncounterId',
+  locationFallbackReason: 'locationFallbackReason',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

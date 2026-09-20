@@ -142,6 +142,7 @@ export class SatusehatSubmissionOpsService {
       lastAttemptAt: record.lastAttemptAt?.toISOString() ?? null,
       submittedAt: record.submittedAt?.toISOString() ?? null,
       satusehatEncounterId: record.satusehatEncounterId,
+      locationFallbackReason: record.locationFallbackReason,
       createdAt: record.createdAt.toISOString(),
       updatedAt: record.updatedAt.toISOString(),
     };

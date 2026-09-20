@@ -287,7 +287,7 @@
       "newTariff": "New Tariff",
       "saveTariff": "Save Tariff",
       "consultationAudience": {
-        "description": "Who this consultation fee prices. Generation matches it against the clinician who held the visit. Leave both on \u201cany\u201d to make this the clinic-wide fee \u2014 there can be only one.",
+        "description": "Who this consultation fee prices. Generation matches it against the clinician who held the visit. Leave both on “any” to make this the clinic-wide fee — there can be only one.",
         "poli": "Poli",
         "anyPoli": "Any poli (clinic-wide)",
         "profession": "Profession",
@@ -760,6 +760,11 @@
           "FAILED": "Failed",
           "SKIPPED": "Not sent"
         }
+      },
+      "locationFallback": {
+        "label": "Fallback location",
+        "poliNotRegistered": "This poli has no SATUSEHAT Location yet, so the visit was reported under the clinic site. Register it under Lokasi SATUSEHAT.",
+        "noPoli": "This visit was registered without a poli, so it was reported under the clinic site."
       }
     },
     "administration": {

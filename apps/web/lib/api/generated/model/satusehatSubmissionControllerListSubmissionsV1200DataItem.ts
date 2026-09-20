@@ -19,6 +19,7 @@ export type SatusehatSubmissionControllerListSubmissionsV1200DataItem = {
   lastAttemptAt: string;
   submittedAt: unknown | null;
   satusehatEncounterId: unknown | null;
+  locationFallbackReason: unknown | null;
   createdAt: string;
   updatedAt: string;
 };

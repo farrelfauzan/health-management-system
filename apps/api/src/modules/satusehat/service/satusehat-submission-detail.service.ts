@@ -225,6 +225,7 @@ export class SatusehatSubmissionDetailService {
       lastAttemptAt: submission.lastAttemptAt?.toISOString() ?? null,
       submittedAt: submission.submittedAt?.toISOString() ?? null,
       satusehatEncounterId: submission.satusehatEncounterId,
+      locationFallbackReason: submission.locationFallbackReason,
       createdAt: submission.createdAt.toISOString(),
       updatedAt: submission.updatedAt.toISOString(),
     };

@@ -34,6 +34,9 @@ const endedAt = new Date('2026-07-28T02:20:00.000Z');
 function buildEncounterInput() {
   return {
     encounterId: 'e1d2c3b4-a596-4877-b8a9-c0d1e2f3a4b5',
+    // Null is the pre-P24-T07 shape: nothing resolved, so the deployment's
+    // configured site is what the visit reports under.
+    locationId: null,
     patientIhsNumber: 'P02478375538',
     patientName: 'Budi Santoso',
     practitionerIhsNumber: 'N10000001',
@@ -244,6 +247,17 @@ describe('SatusehatFhirMapper', () => {
         start: '2026-07-28T02:00:00.000Z',
         end: '2026-07-28T02:00:00.000Z',
       });
+    });
+
+    it('reports under the poli Location the caller resolved, without the site display', () => {
+      const actualEncounter = mapper.mapEncounter({
+        ...buildEncounterInput(),
+        locationId: 'poli-kia-location-id',
+      });
+
+      expect(actualEncounter.location).toEqual([
+        { location: { reference: 'Location/poli-kia-location-id' } },
+      ]);
     });
 
     it('throws SATUSEHAT_NOT_CONFIGURED when the location is not registered', () => {

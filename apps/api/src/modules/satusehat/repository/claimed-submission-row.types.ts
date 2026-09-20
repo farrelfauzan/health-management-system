@@ -1,4 +1,5 @@
 import {
+  SatusehatLocationFallbackReasonValue,
   SatusehatSubmissionKindValue,
   SatusehatSubmissionStatusValue,
 } from '@hms/shared-types';
@@ -23,6 +24,7 @@ export type ClaimedSubmissionRow = {
   last_attempt_at: Date | null;
   submitted_at: Date | null;
   satusehat_encounter_id: string | null;
+  location_fallback_reason: SatusehatLocationFallbackReasonValue | null;
   created_at: Date;
   updated_at: Date;
 };

@@ -1398,6 +1398,13 @@ export type EnumSatusehatSubmissionStatusFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumSatusehatSubmissionStatusFilter<$PrismaModel> | $Enums.SatusehatSubmissionStatus
 }
 
+export type EnumSatusehatLocationFallbackReasonNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.SatusehatLocationFallbackReason | Prisma.EnumSatusehatLocationFallbackReasonFieldRefInput<$PrismaModel> | null
+  in?: $Enums.SatusehatLocationFallbackReason[] | Prisma.ListEnumSatusehatLocationFallbackReasonFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.SatusehatLocationFallbackReason[] | Prisma.ListEnumSatusehatLocationFallbackReasonFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumSatusehatLocationFallbackReasonNullableFilter<$PrismaModel> | $Enums.SatusehatLocationFallbackReason | null
+}
+
 export type EnumSatusehatSubmissionKindWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.SatusehatSubmissionKind | Prisma.EnumSatusehatSubmissionKindFieldRefInput<$PrismaModel>
   in?: $Enums.SatusehatSubmissionKind[] | Prisma.ListEnumSatusehatSubmissionKindFieldRefInput<$PrismaModel>
@@ -1416,6 +1423,16 @@ export type EnumSatusehatSubmissionStatusWithAggregatesFilter<$PrismaModel = nev
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumSatusehatSubmissionStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumSatusehatSubmissionStatusFilter<$PrismaModel>
+}
+
+export type EnumSatusehatLocationFallbackReasonNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.SatusehatLocationFallbackReason | Prisma.EnumSatusehatLocationFallbackReasonFieldRefInput<$PrismaModel> | null
+  in?: $Enums.SatusehatLocationFallbackReason[] | Prisma.ListEnumSatusehatLocationFallbackReasonFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.SatusehatLocationFallbackReason[] | Prisma.ListEnumSatusehatLocationFallbackReasonFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumSatusehatLocationFallbackReasonNullableWithAggregatesFilter<$PrismaModel> | $Enums.SatusehatLocationFallbackReason | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumSatusehatLocationFallbackReasonNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumSatusehatLocationFallbackReasonNullableFilter<$PrismaModel>
 }
 
 export type EnumSatusehatResourceOutcomeFilter<$PrismaModel = never> = {
@@ -3732,6 +3749,13 @@ export type NestedEnumSatusehatSubmissionStatusFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumSatusehatSubmissionStatusFilter<$PrismaModel> | $Enums.SatusehatSubmissionStatus
 }
 
+export type NestedEnumSatusehatLocationFallbackReasonNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.SatusehatLocationFallbackReason | Prisma.EnumSatusehatLocationFallbackReasonFieldRefInput<$PrismaModel> | null
+  in?: $Enums.SatusehatLocationFallbackReason[] | Prisma.ListEnumSatusehatLocationFallbackReasonFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.SatusehatLocationFallbackReason[] | Prisma.ListEnumSatusehatLocationFallbackReasonFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumSatusehatLocationFallbackReasonNullableFilter<$PrismaModel> | $Enums.SatusehatLocationFallbackReason | null
+}
+
 export type NestedEnumSatusehatSubmissionKindWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.SatusehatSubmissionKind | Prisma.EnumSatusehatSubmissionKindFieldRefInput<$PrismaModel>
   in?: $Enums.SatusehatSubmissionKind[] | Prisma.ListEnumSatusehatSubmissionKindFieldRefInput<$PrismaModel>
@@ -3750,6 +3774,16 @@ export type NestedEnumSatusehatSubmissionStatusWithAggregatesFilter<$PrismaModel
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumSatusehatSubmissionStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumSatusehatSubmissionStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumSatusehatLocationFallbackReasonNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.SatusehatLocationFallbackReason | Prisma.EnumSatusehatLocationFallbackReasonFieldRefInput<$PrismaModel> | null
+  in?: $Enums.SatusehatLocationFallbackReason[] | Prisma.ListEnumSatusehatLocationFallbackReasonFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.SatusehatLocationFallbackReason[] | Prisma.ListEnumSatusehatLocationFallbackReasonFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumSatusehatLocationFallbackReasonNullableWithAggregatesFilter<$PrismaModel> | $Enums.SatusehatLocationFallbackReason | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumSatusehatLocationFallbackReasonNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumSatusehatLocationFallbackReasonNullableFilter<$PrismaModel>
 }
 
 export type NestedEnumSatusehatResourceOutcomeFilter<$PrismaModel = never> = {
