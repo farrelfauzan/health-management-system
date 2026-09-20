@@ -413,7 +413,30 @@
       "loadingImmunizations": "Loading the immunisation history...",
       "noAddress": "No address recorded",
       "directoryTab": "Directory",
-      "fromChatTab": "From chat"
+      "fromChatTab": "From chat",
+      "newborn": {
+        "action": "Register newborn",
+        "title": "Register a newborn",
+        "description": "From {mother}'s record.",
+        "prefillNotice": "The baby will be registered as “{name}”, at {address}, with her mother as guardian and the next birth order. Her NIK stays empty until she has one.",
+        "motherAddressUnknown": "her mother’s address",
+        "sex": "Sex",
+        "sexPlaceholder": "Select the sex",
+        "sexRequired": "Choose the sex before registering.",
+        "sexes": {
+          "MALE": "Male",
+          "FEMALE": "Female"
+        },
+        "dateOfBirth": "Date of birth",
+        "dateOfBirthHint": "Today when left empty.",
+        "placeOfBirth": "Place of birth",
+        "privacyNoticeRequired": "Record the mother’s acknowledgement of the privacy notice.",
+        "submit": "Register",
+        "saving": "Registering…",
+        "cancel": "Cancel",
+        "registered": "The newborn was registered.",
+        "error": "Unable to register this newborn."
+      }
     },
     "privacyNotice": {
       "title": "Patient Privacy Notice",

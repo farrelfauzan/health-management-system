@@ -31,7 +31,9 @@ import type {
   PatientManagementControllerImportPatientV1201,
   PatientManagementControllerListPatientsV1200,
   PatientManagementControllerListPatientsV1Params,
+  PatientManagementControllerRegisterNewbornV1201,
   PatientManagementControllerUpdatePatientV1200,
+  RegisterNewbornDto,
   UpdatePatientDto
 } from '../model';
 
@@ -516,6 +518,107 @@ export function usePatientManagementControllerUpdatePatientV1<TData = Awaited<Re
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getPatientManagementControllerUpdatePatientV1QueryOptions(id,updatePatientDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Register a newborn from her mother's record
+ */
+export const patientManagementControllerRegisterNewbornV1 = (
+    motherId: string,
+    registerNewbornDto: RegisterNewbornDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<PatientManagementControllerRegisterNewbornV1201>(
+      {url: `/api/v1/patients/${motherId}/newborns`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: registerNewbornDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getPatientManagementControllerRegisterNewbornV1QueryKey = (motherId: string,
+    registerNewbornDto?: RegisterNewbornDto,) => {
+    return [
+    'POST', `/api/v1/patients/${motherId}/newborns`, registerNewbornDto
+    ] as const;
+    }
+
+
+export const getPatientManagementControllerRegisterNewbornV1QueryOptions = <TData = Awaited<ReturnType<typeof patientManagementControllerRegisterNewbornV1>>, TError = unknown>(motherId: string,
+    registerNewbornDto: RegisterNewbornDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientManagementControllerRegisterNewbornV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getPatientManagementControllerRegisterNewbornV1QueryKey(motherId,registerNewbornDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof patientManagementControllerRegisterNewbornV1>>> = ({ signal }) => patientManagementControllerRegisterNewbornV1(motherId,registerNewbornDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: motherId !== null && motherId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof patientManagementControllerRegisterNewbornV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type PatientManagementControllerRegisterNewbornV1QueryResult = NonNullable<Awaited<ReturnType<typeof patientManagementControllerRegisterNewbornV1>>>
+export type PatientManagementControllerRegisterNewbornV1QueryError = unknown
+
+
+export function usePatientManagementControllerRegisterNewbornV1<TData = Awaited<ReturnType<typeof patientManagementControllerRegisterNewbornV1>>, TError = unknown>(
+ motherId: string,
+    registerNewbornDto: RegisterNewbornDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientManagementControllerRegisterNewbornV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof patientManagementControllerRegisterNewbornV1>>,
+          TError,
+          Awaited<ReturnType<typeof patientManagementControllerRegisterNewbornV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePatientManagementControllerRegisterNewbornV1<TData = Awaited<ReturnType<typeof patientManagementControllerRegisterNewbornV1>>, TError = unknown>(
+ motherId: string,
+    registerNewbornDto: RegisterNewbornDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientManagementControllerRegisterNewbornV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof patientManagementControllerRegisterNewbornV1>>,
+          TError,
+          Awaited<ReturnType<typeof patientManagementControllerRegisterNewbornV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePatientManagementControllerRegisterNewbornV1<TData = Awaited<ReturnType<typeof patientManagementControllerRegisterNewbornV1>>, TError = unknown>(
+ motherId: string,
+    registerNewbornDto: RegisterNewbornDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientManagementControllerRegisterNewbornV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Register a newborn from her mother's record
+ */
+
+export function usePatientManagementControllerRegisterNewbornV1<TData = Awaited<ReturnType<typeof patientManagementControllerRegisterNewbornV1>>, TError = unknown>(
+ motherId: string,
+    registerNewbornDto: RegisterNewbornDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof patientManagementControllerRegisterNewbornV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getPatientManagementControllerRegisterNewbornV1QueryOptions(motherId,registerNewbornDto,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

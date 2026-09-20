@@ -110,6 +110,13 @@ export const mrnSchema = z.string().trim().min(3).max(64);
 export const placeOfBirthSchema = z.string().trim().min(2).max(120);
 
 /**
+ * A ceiling on the birth order (P24-T10). Not a medical limit — it is there so
+ * a mistyped year can never be stored as a birth order, and the highest
+ * recorded human parity is far below it.
+ */
+const MAX_BIRTH_ORDER = 30;
+
+/**
  * Cross-checks the demographic data encoded in a NIK against the submitted date
  * of birth and sex. NIK has no checksum, but digits 7-12 encode `DDMMYY` with 40
  * added to `DD` for female citizens.
@@ -615,6 +622,40 @@ export const updatePatientSchema = z
   .refine((payload) => Object.values(payload).some((value) => value !== undefined), {
     message: 'At least one field is required',
   });
+
+/**
+ * Registering a baby born at the clinic, from her mother's record (P24-T10,
+ * FR-NB-01).
+ *
+ * Almost everything is prefilled from the mother by the service — her name
+ * makes the baby's, her address and wilayah codes are the baby's address, and
+ * the next free birth order is counted for her — so the form asks only for
+ * what nobody else can know. The NIK stays empty: a baby has none for weeks,
+ * which is exactly the case P24-T11 identifies her to SATUSEHAT by her
+ * mother's.
+ *
+ * The privacy notice is the one thing that cannot be inherited: it is a record
+ * of what a person was told, and the baby is a new data subject. Her mother
+ * acknowledges it for her, which is why `subjectType` must be
+ * `REPRESENTATIVE` — a newborn cannot acknowledge anything herself.
+ */
+export const registerNewbornSchema = z.object({
+  sex: patientSexSchema,
+  /** Today when absent: a baby is registered on the day she is born. */
+  dateOfBirth: patientDateSchema
+    .refine(isValidDateValue, 'Date of birth must be a valid calendar date')
+    .refine(isDateNotFuture, 'Date of birth cannot be in the future')
+    .optional(),
+  /** The next free order when absent; twins are registered 1 then 2. */
+  birthOrder: z.coerce.number().int().min(1).max(MAX_BIRTH_ORDER).optional(),
+  placeOfBirth: placeOfBirthSchema.optional(),
+  privacyNotice: privacyNoticeEvidenceSchema.refine(
+    (evidence) => evidence.subjectType === 'REPRESENTATIVE',
+    { message: 'A newborn acknowledges the privacy notice through her mother' },
+  ),
+});
+
+export type RegisterNewbornInput = z.infer<typeof registerNewbornSchema>;
 
 export type ListPatientsQueryInput = z.infer<typeof listPatientsQuerySchema>;
 /**

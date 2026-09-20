@@ -26,6 +26,7 @@ import { PatientImmunizationsCard } from '#components/client/patients/patient-im
 import { PatientPrivacyHistoryCard } from '#components/client/patients/patient-privacy-history-card';
 import { PatientDoctorsCard } from '#components/client/patients/patient-doctors-card';
 import { PatientFormDialog } from '#components/client/patients/patient-form-dialog';
+import { RegisterNewbornDialog } from '#components/client/patients/register-newborn-dialog';
 import { EmptyState } from '#components/shared/empty-state';
 import { PageHeader } from '#components/shared/page-header';
 import { useShellBreadcrumbRoot } from '#lib/navigation/use-shell-breadcrumb-root';
@@ -83,7 +84,15 @@ export function PatientDetailPanel({
   const detailQuery = usePatientDetail(patientId);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState<boolean>(false);
   const [isAssignDialogOpen, setIsAssignDialogOpen] = useState<boolean>(false);
+  const [isNewbornDialogOpen, setIsNewbornDialogOpen] = useState<boolean>(false);
   const patient = detailQuery.patient;
+  // P24-T10. A baby is registered from a mother: a male record has none to
+  // give, and a record that is itself a newborn has no babies of her own.
+  const canRegisterNewborn =
+    patient !== undefined &&
+    patient.sex === 'FEMALE' &&
+    patient.motherPatientId === undefined &&
+    ability.can('create-newborn', 'Patient');
 
   if (detailQuery.isPending) {
     return (
@@ -120,12 +129,24 @@ export function PatientDetailPanel({
           { label: patient.fullName },
         ]}
         actions={
-          <Can action="update" subject="Patient">
-            <Button type="button" variant="outline" onClick={() => setIsEditDialogOpen(true)}>
-              <Icon name="edit" size={18} />
-              {t('common.edit')} {t('patients.title')}
-            </Button>
-          </Can>
+          <>
+            {canRegisterNewborn ? (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsNewbornDialogOpen(true)}
+              >
+                <Icon name="child_care" size={18} />
+                {t('patients.newborn.action')}
+              </Button>
+            ) : null}
+            <Can action="update" subject="Patient">
+              <Button type="button" variant="outline" onClick={() => setIsEditDialogOpen(true)}>
+                <Icon name="edit" size={18} />
+                {t('common.edit')} {t('patients.title')}
+              </Button>
+            </Can>
+          </>
         }
       />
 
@@ -190,6 +211,19 @@ export function PatientDetailPanel({
           patientId={patient.id}
           patientName={patient.fullName}
           assignedDoctorIds={patient.doctors.map((doctor) => doctor.id)}
+        />
+      ) : null}
+
+      {isNewbornDialogOpen ? (
+        <RegisterNewbornDialog
+          open={isNewbornDialogOpen}
+          onOpenChange={setIsNewbornDialogOpen}
+          mother={{
+            id: patient.id,
+            fullName: patient.fullName,
+            addressSummary: patient.addressDetails?.formattedAddress,
+            phoneNumber: patient.phoneNumber,
+          }}
         />
       ) : null}
     </div>

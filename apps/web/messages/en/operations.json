@@ -1087,7 +1087,8 @@
         "OTHER": "Other"
       },
       "chart": "Chart",
-      "openChart": "Open the visit"
+      "openChart": "Open the visit",
+      "registerNewborn": "Register newborn"
     },
     "organization": {
       "title": "Organization",

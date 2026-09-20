@@ -115,6 +115,14 @@ export type CreatePatientRecordPayload = {
   bpjsNumber?: string;
   ownerUserId?: string;
   isActive: boolean;
+  /**
+   * Set only by the newborn route (P24-T10): the mother this baby was
+   * registered from, and which of her children she is. Always together — a
+   * birth order without a mother is a number about nothing, and the database
+   * CHECK says so too.
+   */
+  motherPatientId?: string;
+  birthOrder?: number;
   doctorIds?: string[];
   allergies?: PatientAllergyInput[];
   actorUserId: string;
@@ -217,6 +225,9 @@ export type PatientRecord = {
   emergencyContactPhone: string | null;
   guardianName: string | null;
   guardianRelation: string | null;
+  /** Set on a newborn registered from her mother's record (P24-T10). */
+  motherPatientId: string | null;
+  birthOrder: number | null;
   ownerUserId: string | null;
   isActive: boolean;
   lastVisitAt: Date | null;

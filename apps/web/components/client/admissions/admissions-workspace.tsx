@@ -19,6 +19,7 @@ import { useTranslations } from 'next-intl';
 
 import { AdmissionDetailDialog } from '#components/client/admissions/admission-detail-dialog';
 import { AdmissionsTable } from '#components/client/admissions/admissions-table';
+import { RegisterNewbornDialog } from '#components/client/patients/register-newborn-dialog';
 import { AdmitPatientDialog } from '#components/client/admissions/admit-patient-dialog';
 import { CancelAdmissionDialog } from '#components/client/admissions/cancel-admission-dialog';
 import { DischargeAdmissionDialog } from '#components/client/admissions/discharge-admission-dialog';
@@ -35,7 +36,14 @@ const ADMISSION_STATUS_OPTIONS: AdmissionStatusValue[] = ['ADMITTED', 'DISCHARGE
 
 const ALL_STATUSES_VALUE = 'all';
 
-type ActiveDialog = 'admit' | 'cancel' | 'detail' | 'discharge' | 'transfer' | null;
+type ActiveDialog =
+  | 'admit'
+  | 'cancel'
+  | 'detail'
+  | 'discharge'
+  | 'newborn'
+  | 'transfer'
+  | null;
 
 export function AdmissionsWorkspace() {
   const t = useTranslations('operations');
@@ -58,6 +66,9 @@ export function AdmissionsWorkspace() {
   const canTransfer = ability.can('transfer', 'Admission');
   const canDischarge = ability.can('discharge', 'Admission');
   const canCancel = ability.can('cancel', 'Admission');
+  // P24-T10. The bidan registers the baby while the mother is still in the
+  // bed, which is where the action belongs — not on a patient search.
+  const canRegisterNewborn = ability.can('create-newborn', 'Patient');
 
   function openDialogFor(admission: AdmissionResponse, dialog: ActiveDialog): void {
     setSelectedAdmission(admission);
@@ -138,10 +149,12 @@ export function AdmissionsWorkspace() {
             canTransfer={canTransfer}
             canDischarge={canDischarge}
             canCancel={canCancel}
+            canRegisterNewborn={canRegisterNewborn}
             onOpen={(admission) => openDialogFor(admission, 'detail')}
             onTransfer={(admission) => openDialogFor(admission, 'transfer')}
             onDischarge={(admission) => openDialogFor(admission, 'discharge')}
             onCancel={(admission) => openDialogFor(admission, 'cancel')}
+            onRegisterNewborn={(admission) => openDialogFor(admission, 'newborn')}
           />
           <NumberedPagination
             className="border-t border-slate-100 px-4 py-3"
@@ -191,6 +204,20 @@ export function AdmissionsWorkspace() {
         <DischargeAdmissionDialog
           open
           admission={selectedAdmission}
+          onOpenChange={(isOpen) => {
+            if (!isOpen) {
+              closeDialog();
+            }
+          }}
+        />
+      ) : null}
+      {selectedAdmission && activeDialog === 'newborn' ? (
+        <RegisterNewbornDialog
+          open
+          mother={{
+            id: selectedAdmission.patientId,
+            fullName: selectedAdmission.patient.fullName,
+          }}
           onOpenChange={(isOpen) => {
             if (!isOpen) {
               closeDialog();

@@ -19,10 +19,12 @@ type AdmissionsTableProps = {
   canTransfer: boolean;
   canDischarge: boolean;
   canCancel: boolean;
+  canRegisterNewborn: boolean;
   onOpen: (admission: AdmissionResponse) => void;
   onTransfer: (admission: AdmissionResponse) => void;
   onDischarge: (admission: AdmissionResponse) => void;
   onCancel: (admission: AdmissionResponse) => void;
+  onRegisterNewborn: (admission: AdmissionResponse) => void;
 };
 
 export function AdmissionsTable({
@@ -32,10 +34,12 @@ export function AdmissionsTable({
   canTransfer,
   canDischarge,
   canCancel,
+  canRegisterNewborn,
   onOpen,
   onTransfer,
   onDischarge,
   onCancel,
+  onRegisterNewborn,
 }: AdmissionsTableProps) {
   const t = useTranslations('operations');
 
@@ -75,10 +79,12 @@ export function AdmissionsTable({
               canTransfer={canTransfer}
               canDischarge={canDischarge}
               canCancel={canCancel}
+              canRegisterNewborn={canRegisterNewborn}
               onOpen={onOpen}
               onTransfer={onTransfer}
               onDischarge={onDischarge}
               onCancel={onCancel}
+              onRegisterNewborn={onRegisterNewborn}
             />
           ))
         )}

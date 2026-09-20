@@ -8,6 +8,8 @@ const registrationId = '55555555-5555-4555-8555-555555555555';
 const medicationId = '66666666-6666-4666-8666-666666666666';
 const prescriptionId = '77777777-7777-4777-8777-777777777777';
 const assignmentId = '88888888-8888-4888-8888-888888888888';
+const newbornPatientId = '11111111-1111-4111-8111-111111111112';
+const privacyNoticeVersionId = '99999999-9999-4999-8999-999999999999';
 const timestamp = '2026-07-20T08:00:00.000Z';
 const paginationMeta = { page: 1, limit: 10, total: 1 };
 // Synthetic identifiers only — never a real NIK or BPJS number. This NIK is
@@ -660,6 +662,40 @@ export const PHASE_THREE_EXAMPLES = {
       postalCode: '40111',
       status: 'IN_PATIENT',
       allergies: [{ substance: 'Penicillin', severity: 'MODERATE' }],
+    },
+    /**
+     * P24-T10. The bidan is asked for what nobody else knows; the rest is the
+     * mother's. The notice is acknowledged by her, as the baby's
+     * representative — a newborn can acknowledge nothing herself.
+     */
+    registerNewbornRequest: {
+      sex: 'FEMALE',
+      dateOfBirth: '2026-09-20',
+      placeOfBirth: 'Klinik Saling Jaga',
+      birthOrder: 2,
+      privacyNotice: {
+        privacyNoticeVersionId,
+        locale: 'id',
+        outcome: 'ACKNOWLEDGED',
+        subjectType: 'REPRESENTATIVE',
+        representativeName: 'Aisha Rahman',
+        representativeRelation: 'Ibu',
+        provenance: 'FRONT_DESK',
+      },
+    },
+    /** The baby as she comes back: her mother's address, and no NIK. */
+    newborn: {
+      ...patient,
+      id: newbornPatientId,
+      mrn: '00000002',
+      fullName: 'Bayi Ny. Aisha Rahman',
+      dateOfBirth: optionalExample('2026-09-20'),
+      placeOfBirth: 'Klinik Saling Jaga',
+      nikMasked: optionalExample(null),
+      guardianName: optionalExample('Aisha Rahman'),
+      guardianRelation: optionalExample('Ibu'),
+      motherPatientId: optionalExample(patientId),
+      birthOrder: optionalExample(2),
     },
     mutationMeta: { identifierWarnings: [] },
     identifiers: {

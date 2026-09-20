@@ -1087,7 +1087,8 @@
         "OTHER": "Lainnya"
       },
       "chart": "Rekam kunjungan",
-      "openChart": "Buka kunjungan"
+      "openChart": "Buka kunjungan",
+      "registerNewborn": "Daftarkan bayi"
     },
     "organization": {
       "title": "Organisasi",
