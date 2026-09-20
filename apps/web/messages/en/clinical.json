@@ -1403,7 +1403,9 @@
       "midwifeAuthority": {
         "refused": "This midwife holds no active authority for {kind}.",
         "referral": "Refer to a doctor or a puskesmas"
-      }
+      },
+      "administrativeSubtitle": "The visit's administrative summary: who, when, and what state it is in.",
+      "administrativeNotice": "The clinical content of this visit — SOAP notes, diagnoses, procedures, prescriptions and laboratory results — is reached only by the clinicians who examine the patient (D-033)."
     }
   }
 }

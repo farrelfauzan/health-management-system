@@ -45,7 +45,10 @@ describe('AI chatbot RBAC seed', () => {
         'chat.session.read:any',
         'chat.session.delete:own',
         'chat.message.create:own',
-        'chat.message.read:any',
+        // P22-T02 enforcing D-033: `chat.message.read:any` is gone. Chat about
+        // a patient's health is clinical record content, so the support view
+        // keeps the session metadata above — who, when, which channel — and
+        // loses what was said.
         'ai-provider.read:any',
         'ai-provider.write:any',
       ],

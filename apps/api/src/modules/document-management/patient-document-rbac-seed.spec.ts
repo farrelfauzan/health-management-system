@@ -20,10 +20,12 @@ describe('Patient document RBAC seed', () => {
   ] as const;
 
   const EXPECTED_BINDINGS: ReadonlyArray<readonly [string, readonly string[]]> = [
-    [
-      'ADMIN',
-      ['patient-document.read:any', 'patient-document.write:any', 'patient-document.delete:any'],
-    ],
+    // P22-T02 enforcing D-033: ADMIN holds **none** of these. A
+    // `PATIENT_CLINICAL` file is clinical record content, reserved to the
+    // clinicians who examine the patient, so the front desk lost all three —
+    // read included, because filing what the patient brought cannot be had
+    // without the read that comes with it.
+    ['ADMIN', []],
     [
       'DOCTOR',
       [

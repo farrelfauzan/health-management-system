@@ -124,7 +124,12 @@ export const ADMIN_PORTAL_ADMIN_RULES: AppRule[] = [
   { action: 'read', subject: 'ChatSession' },
   { action: 'delete', subject: 'ChatSession' },
   { action: 'create', subject: 'ChatMessage' },
-  { action: 'read', subject: 'ChatMessage' },
+  // P22-T02 enforcing D-033: reading someone else's messages is **gone**. The
+  // support view keeps `ChatSession` — who, when, which channel — and loses
+  // the content, because chat about a patient's health is clinical record
+  // content. Dropped from the preset as well as from the seed: the admin shell
+  // runs on this fallback when a session hint predates a key, so leaving it
+  // here would render a transcript button that the API refuses.
   { action: 'read', subject: 'Conversation' },
   { action: 'write', subject: 'Conversation' },
   { action: 'block', subject: 'Conversation' },
@@ -136,13 +141,13 @@ export const ADMIN_PORTAL_ADMIN_RULES: AppRule[] = [
   // rather than losing it to a silently narrower preset.
   { action: 'read', subject: 'ClinicProfile' },
   { action: 'write', subject: 'ClinicProfile' },
-  // P16-T08. The three patient-document grants `seed.sql` gives ADMIN, so an
-  // admin whose session hint predates them still sees the Documents tab on a
-  // patient record. `release` is deliberately absent: it is a clinician's
-  // grant on their own patients, never an administrator's.
-  { action: 'read', subject: 'PatientDocument' },
-  { action: 'write', subject: 'PatientDocument' },
-  { action: 'delete', subject: 'PatientDocument' },
+  // P16-T08's three patient-document grants are **gone** as of P22-T02
+  // enforcing D-033: a PATIENT_CLINICAL file is clinical record content and
+  // belongs to the clinicians who examine the patient. The Documents tab
+  // therefore disappears from the admin's view of a patient record, which is
+  // the visible half of this change and the reason it carries a migration
+  // note. An admin whose session hint still lists the old keys keeps them
+  // until it refreshes — the API's guard is what actually refuses.
   // P16-T17. An administrator has a vault of their own on the same terms as a
   // doctor — an admin is also a person with a contract and a KTP. It grants
   // them nothing over anyone else's: there is no `:any` key in the catalog

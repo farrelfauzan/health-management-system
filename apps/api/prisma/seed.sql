@@ -654,7 +654,13 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('ADMIN', 'chat.session.read:any'),
     ('ADMIN', 'chat.session.delete:own'),
     ('ADMIN', 'chat.message.create:own'),
-    ('ADMIN', 'chat.message.read:any'),
+    -- P22-T02 enforcing D-033: `chat.message.read:any` is **revoked**. Chat
+    -- about a patient's health is clinical record content by the decision's
+    -- own definition, and reading it is not front-desk or billing work. The
+    -- support view keeps session metadata — who, when, which channel — which
+    -- is what `chat.session.read:any` above is, and which D-033 lists among
+    -- the things that are *not* clinical content. An admin still reads their
+    -- own messages through `chat.message.create:own` and the OWN read below.
     -- Provider credentials spend the clinic's money at an upstream vendor and
     -- decide which third party sees chat context, so custody sits with ADMIN
     -- alone — the same call as bpjs.config.manage. Read is split from write so
@@ -675,13 +681,18 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     -- corpora stay distinguishable in the audit trail.
     ('ADMIN', 'document.read:own'),
     ('ADMIN', 'document.write:own'),
-    -- Patient clinical files (P16-T08): the front desk files what the
-    -- patient brought, and mis-filed documents are corrected here. Release
-    -- is deliberately absent — deciding when a result reaches the patient is
-    -- a clinical call, and ADMIN holds no release grant at any scope.
-    ('ADMIN', 'patient-document.read:any'),
-    ('ADMIN', 'patient-document.write:any'),
-    ('ADMIN', 'patient-document.delete:any'),
+    -- Patient clinical files (P16-T08) were ADMIN's until P22-T02 enforced
+    -- D-033: a `DocumentPurpose.PATIENT_CLINICAL` file — a lab result, a
+    -- referral letter, a scanned consent form — is clinical record content,
+    -- and the decision reserves it to the clinicians who examine the patient.
+    -- All three keys are **revoked**, read included: filing what the patient
+    -- brought is the one part that reads as front-desk work, but it cannot be
+    -- had without the read that comes with it.
+    --
+    -- This is the change a pilot clinic will feel. The documents tab on the
+    -- patient record disappears for ADMIN, and the intake of an outside
+    -- referral (`EXTERNAL_REFERRAL`) is the open case D-033 flags for a
+    -- product decision rather than something this ticket settles.
     -- Their own vault, on exactly the same terms as a doctor's (P16-T17): an
     -- administrator is also a person with a contract and a KTP. It grants
     -- them nothing over anyone else's documents, and there is no ANY key
@@ -1053,9 +1064,38 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('MIDWIFE', 'notification.manage:own'),
     ('MIDWIFE', 'bug-report.create:own')
 ),
+-- P22-T02 enforcing D-033: the keys that reach clinical record *content*.
+-- SUPER_ADMIN is a platform and IT role and receives none of them — the
+-- decision gives it no break-glass path, because an emergency is handled by
+-- assigning a clinician, and a real break-glass would need its own decision
+-- with an audited reason and an expiry.
+--
+-- Kept in step with `clinical-access-seed.spec.ts`, which fails CI when a
+-- non-clinician role gains one of these outside the two openings D-033 allows.
+clinical_content_keys(permission_key) AS (
+  VALUES
+    ('encounter.read:any'),
+    ('encounter.write:any'),
+    ('prescription.read:any'),
+    ('prescription.write:any'),
+    ('dispense.write:any'),
+    ('lab-order.read:any'),
+    ('lab-order.write:any'),
+    ('lab-specimen.write:any'),
+    ('lab-result.write:any'),
+    ('lab-result.verify:any'),
+    ('patient-document.read:any'),
+    ('patient-document.write:any'),
+    ('patient-document.delete:any'),
+    ('chat.message.read:any')
+),
 combined_role_permissions AS (
   SELECT 'SUPER_ADMIN'::text AS role_code, p."permission_key"
   FROM "permissions" p
+  WHERE p."permission_key" NOT IN (
+    SELECT "permission_key"
+    FROM clinical_content_keys
+  )
   UNION
   SELECT role_code, permission_key
   FROM explicit_role_permissions
