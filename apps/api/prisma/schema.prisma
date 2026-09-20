@@ -1407,6 +1407,17 @@ model PatientProfile {
   /// `003/007`, free text as the KTP prints it.
   rtRw         String?             @map("rt_rw")
   postalCode   String?             @map("postal_code")
+  /// The mother whose record this baby was registered from (P24-T10,
+  /// FR-NB-01). Set makes the row a **newborn**: no NIK for weeks, the
+  /// mother's address, and — until she has one of her own — her NIK is how
+  /// SATUSEHAT identifies the baby (P24-T11). `Restrict`, because a mother
+  /// with a child in the registry is not a record anyone may remove.
+  motherPatientId String?          @map("mother_patient_id") @db.Uuid
+  /// Which of her children this is, counting from 1. Required exactly when
+  /// `motherPatientId` is set, enforced by a CHECK in the migration, and
+  /// unique per mother so a twin cannot be registered twice. It is also
+  /// `Patient.multipleBirthInteger` on the wire.
+  birthOrder      Int?             @map("birth_order")
   ownerUserId  String?             @map("owner_user_id") @db.Uuid
   isActive     Boolean             @default(true) @map("is_active")
   createdAt    DateTime            @default(now()) @map("created_at")
@@ -1454,6 +1465,8 @@ model PatientProfile {
   satusehatPatientIdLast4      String? @map("satusehat_patient_id_last4")
 
   ownerUser             User?                        @relation(fields: [ownerUserId], references: [id], onDelete: SetNull)
+  mother                PatientProfile?              @relation("PatientMother", fields: [motherPatientId], references: [id], onDelete: Restrict)
+  newborns              PatientProfile[]             @relation("PatientMother")
   province              Province?                    @relation(fields: [provinceCode], references: [code], onDelete: Restrict)
   regency               Regency?                     @relation(fields: [regencyCode], references: [code], onDelete: Restrict)
   district              District?                    @relation(fields: [districtCode], references: [code], onDelete: Restrict)
@@ -1497,6 +1510,7 @@ model PatientProfile {
   @@index([regencyCode])
   @@index([districtCode])
   @@index([villageCode])
+  @@index([motherPatientId])
   @@map("patient_profiles")
 }
 

@@ -10,6 +10,7 @@ import {
 import {
   Actor,
   collectNikDemographicWarnings,
+  getCalendarDateInTimeZone,
   ConvertsProspectivePatient,
   CreatePatientBaseInput,
   CreatePatientFromProspectiveResult,
@@ -21,9 +22,12 @@ import {
   PatientRecord,
   PatientScopeActor,
   PatientSexValue,
+  RegisterNewbornInput,
   REMOTE_REGISTRATION_PROVENANCES,
   UpdatedPatient,
 } from '@hms/shared-types';
+
+import { ConfigService } from '@nestjs/config';
 
 import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
@@ -81,15 +85,30 @@ function toDateOnly(value: Date): string {
   return value.toISOString().slice(0, 10);
 }
 
+/**
+ * What a newborn's guardian is to her (P24-T10). Indonesian, because it is
+ * printed on her record and read at the counter, not a code.
+ */
+const NEWBORN_GUARDIAN_RELATION = 'Ibu';
+
+/** Matches every other clinic-local date in the API (`CLINIC_TIMEZONE`). */
+const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
+
 @Injectable()
 export class PatientManagementService {
+  private readonly clinicTimeZone: string;
+
   constructor(
     private readonly patientManagementRepository: PatientManagementRepository,
     private readonly authRepository: AuthRepository,
     private readonly auditService: AuditService,
     private readonly privacyNoticeRepository: PrivacyNoticeRepository,
     private readonly regionsService: RegionsService,
-  ) {}
+    configService: ConfigService,
+  ) {
+    this.clinicTimeZone =
+      configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
+  }
 
   async listPatients(query: ListPatientsQueryDto, currentUser: CurrentUser) {
     const actor = await this.getActorOrThrow(currentUser);
@@ -192,6 +211,129 @@ export class PatientManagementService {
         sex: payload.sex,
       }),
     };
+  }
+
+  /**
+   * Registers a baby born at the clinic, from her mother's record (P24-T10,
+   * FR-NB-01).
+   *
+   * The bidan is asked for the three things nobody else knows — the sex, and
+   * optionally the time and place of birth — and everything else is taken
+   * from the mother: her name makes the baby's, her address and wilayah codes
+   * are the baby's address, and the next free birth order is counted for her.
+   * Retyping an address at a bedside is how addresses drift apart.
+   *
+   * The NIK stays empty. A baby has none for weeks, which is the whole reason
+   * SATUSEHAT identifies her by her mother's (P24-T11).
+   *
+   * Two refusals worth naming. A mother whose sex is not FEMALE is refused
+   * here rather than by SATUSEHAT later, which rejects a `nik-ibu` that is not
+   * female. And a newborn cannot herself be a mother: a record with a mother
+   * is a baby, and registering a baby's baby is a misclick, not a pregnancy.
+   */
+  async registerNewborn(
+    motherId: string,
+    payload: RegisterNewbornInput,
+    currentUser: CurrentUser,
+  ) {
+    const actor = await this.getActorOrThrow(currentUser);
+
+    if (!this.resolveScope(actor, 'Patient', 'create-newborn').hasAny) {
+      throw new ForbiddenException('You are not allowed to register newborns');
+    }
+
+    const mother = await this.patientManagementRepository.findPatientRecordById(motherId);
+
+    if (!mother) {
+      throw new NotFoundException('Mother not found');
+    }
+
+    this.assertMotherCanRegisterNewborn(mother);
+    const birthOrder =
+      payload.birthOrder ??
+      (await this.patientManagementRepository.findHighestNewbornBirthOrder(mother.id)) + 1;
+    const created = await this.runPatientCreate(
+      this.buildNewbornCreatePayload({ mother, payload, birthOrder, currentUser }),
+    );
+
+    return { patient: this.toPatientResponse(created) };
+  }
+
+  private assertMotherCanRegisterNewborn(mother: PatientRecord): void {
+    if (mother.sex !== 'FEMALE') {
+      throw new BadRequestException('A newborn can only be registered from a female patient');
+    }
+
+    if (mother.motherPatientId !== null) {
+      throw new BadRequestException('A newborn can not be registered as a mother');
+    }
+
+    if (!mother.isActive) {
+      throw new BadRequestException('The mother record is inactive');
+    }
+  }
+
+  /**
+   * The baby's record as the create path wants it. Her guardian is her mother,
+   * named rather than left to the free-text field a clerk would otherwise
+   * retype, and the privacy notice carries the mother as the representative
+   * who acknowledged it — the request schema already refuses anything else.
+   */
+  private buildNewbornCreatePayload(context: {
+    mother: PatientRecord;
+    payload: RegisterNewbornInput;
+    birthOrder: number;
+    currentUser: CurrentUser;
+  }): CreatePatientRecordPayload {
+    const { mother, payload, birthOrder, currentUser } = context;
+    return {
+      fullName: `Bayi Ny. ${mother.fullName}`,
+      dateOfBirth: payload.dateOfBirth
+        ? parseDateOnly(payload.dateOfBirth)
+        : this.resolveClinicToday(),
+      placeOfBirth: payload.placeOfBirth,
+      sex: payload.sex,
+      status: 'OUT_PATIENT',
+      phoneNumber: mother.phoneNumber,
+      address: this.resolveMotherAddressOrThrow(mother),
+      provinceCode: mother.provinceCode ?? undefined,
+      regencyCode: mother.regencyCode ?? undefined,
+      districtCode: mother.districtCode ?? undefined,
+      villageCode: mother.villageCode ?? undefined,
+      rtRw: mother.rtRw ?? undefined,
+      postalCode: mother.postalCode ?? undefined,
+      guardianName: mother.fullName,
+      guardianRelation: NEWBORN_GUARDIAN_RELATION,
+      motherPatientId: mother.id,
+      birthOrder,
+      isActive: true,
+      actorUserId: currentUser.sub,
+      privacyNotice: {
+        ...payload.privacyNotice,
+        representativeName: payload.privacyNotice.representativeName ?? mother.fullName,
+        representativeRelation:
+          payload.privacyNotice.representativeRelation ?? NEWBORN_GUARDIAN_RELATION,
+      },
+    };
+  }
+
+  /**
+   * A baby inherits her mother's address, so a mother whose record has none
+   * is refused here rather than producing a newborn with an empty one. The
+   * column is required on every record written since P17-T05; this catches
+   * the older rows.
+   */
+  private resolveMotherAddressOrThrow(mother: PatientRecord): string {
+    if (mother.address === null || mother.address.trim() === '') {
+      throw new BadRequestException(
+        "The mother's record has no address; complete it before registering the baby",
+      );
+    }
+    return mother.address;
+  }
+
+  private resolveClinicToday(): Date {
+    return parseDateOnly(getCalendarDateInTimeZone(new Date(), this.clinicTimeZone));
   }
 
   /**
@@ -815,6 +957,8 @@ export class PatientManagementService {
       emergencyContactPhone: patient.emergencyContactPhone ?? undefined,
       guardianName: patient.guardianName ?? undefined,
       guardianRelation: patient.guardianRelation ?? undefined,
+      motherPatientId: patient.motherPatientId ?? undefined,
+      birthOrder: patient.birthOrder ?? undefined,
       ownerUserId: patient.ownerUserId ?? undefined,
       isActive: patient.isActive,
       lastVisitAt: patient.lastVisitAt?.toISOString(),

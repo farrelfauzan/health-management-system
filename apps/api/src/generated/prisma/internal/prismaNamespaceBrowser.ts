@@ -316,6 +316,8 @@ export const PatientProfileScalarFieldEnum = {
   villageCode: 'villageCode',
   rtRw: 'rtRw',
   postalCode: 'postalCode',
+  motherPatientId: 'motherPatientId',
+  birthOrder: 'birthOrder',
   ownerUserId: 'ownerUserId',
   isActive: 'isActive',
   createdAt: 'createdAt',

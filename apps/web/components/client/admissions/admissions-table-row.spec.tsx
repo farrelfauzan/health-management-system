@@ -45,10 +45,12 @@ function renderRow(admission: AdmissionResponse, handlers: Record<string, () => 
             canTransfer
             canDischarge
             canCancel
+            canRegisterNewborn
             onOpen={handlers.onOpen ?? vi.fn()}
             onTransfer={handlers.onTransfer ?? vi.fn()}
             onDischarge={handlers.onDischarge ?? vi.fn()}
             onCancel={handlers.onCancel ?? vi.fn()}
+            onRegisterNewborn={handlers.onRegisterNewborn ?? vi.fn()}
           />
         </TableBody>
       </Table>

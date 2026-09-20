@@ -22,6 +22,7 @@ import { PHASE_THREE_EXAMPLES } from '../../../common/openapi/phase-three-exampl
 import { CreatePatientDto } from '../dto/create-patient.dto';
 import { ImportPatientDto } from '../dto/import-patient.dto';
 import { ListPatientsQueryDto } from '../dto/list-patients-query.dto';
+import { RegisterNewbornDto } from '../dto/register-newborn.dto';
 import { UpdatePatientDto } from '../dto/update-patient.dto';
 import { PatientManagementService } from '../service/patient-management.service';
 
@@ -132,6 +133,44 @@ export class PatientManagementController {
       data: result.patient,
       meta: { identifierWarnings: result.identifierWarnings },
       message: 'Patient created',
+    };
+  }
+
+  @Post(':motherId/newborns')
+  @HttpCode(201)
+  @Auth([{ action: 'create-newborn', subject: 'Patient' }])
+  @Audited({ resource: 'patient', action: AuditAction.CREATE })
+  @ApiEndpoint({
+    summary: "Register a newborn from her mother's record",
+    responseDescription:
+      "The baby was registered as her mother's child (P24-T10). Her name, address, wilayah codes and phone come from the mother, her guardian is the mother, and her birth order is the next free one unless the caller gave it — twins are registered 1 then 2. The NIK stays empty: a baby has none for weeks, which is why SATUSEHAT identifies her by her mother's. The privacy notice is acknowledged by the mother as her representative.",
+    responseExample: {
+      data: PHASE_THREE_EXAMPLES.patient.newborn,
+      message: 'Newborn registered',
+    },
+    requestType: RegisterNewbornDto,
+    requestExample: PHASE_THREE_EXAMPLES.patient.registerNewbornRequest,
+    successStatus: 201,
+    notFoundDescription: 'Mother not found.',
+  })
+  async registerNewborn(
+    @Param('motherId', new ParseUUIDPipe()) motherId: string,
+    @Body() payload: RegisterNewbornDto,
+    @AuthUser() currentUser?: CurrentUser,
+  ) {
+    if (!currentUser?.sub) {
+      throw new UnauthorizedException('Missing authenticated user');
+    }
+
+    const result = await this.patientManagementService.registerNewborn(
+      motherId,
+      payload,
+      currentUser,
+    );
+
+    return {
+      data: result.patient,
+      message: 'Newborn registered',
     };
   }
 

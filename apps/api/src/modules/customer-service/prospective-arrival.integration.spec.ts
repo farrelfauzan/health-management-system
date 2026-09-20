@@ -242,6 +242,7 @@ describe('prospective arrival conversion against Postgres', () => {
         { record: jest.fn() } as unknown as AuditService,
         privacyNoticeRepository,
         new RegionsService(new RegionsRepository(prisma)),
+        configService,
       ),
       identifierCrypto,
       { record: jest.fn() } as unknown as AuditService,

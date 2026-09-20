@@ -13,6 +13,9 @@ export const ADMIN_PORTAL_ADMIN_RULES: AppRule[] = [
   ...ADMIN_MANAGEMENT_ADMIN_RULES,
   { action: 'read', subject: 'Patient' },
   { action: 'create', subject: 'Patient' },
+  // P24-T10. Administrators register newborns too — the front desk does it
+  // when the bidan is still with the mother.
+  { action: 'create-newborn', subject: 'Patient' },
   { action: 'update', subject: 'Patient' },
   { action: 'read-identifier', subject: 'Patient' },
   { action: 'read-identifier', subject: 'Doctor' },

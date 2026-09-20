@@ -72,6 +72,8 @@ const PATIENT_RECORD_SELECT = {
   emergencyContactPhone: true,
   guardianName: true,
   guardianRelation: true,
+  motherPatientId: true,
+  birthOrder: true,
   ownerUserId: true,
   isActive: true,
   createdAt: true,
@@ -390,6 +392,30 @@ export class PatientManagementRepository {
    * goes through {@link findPatientDetailById} instead. A row outside the
    * actor's scope is `null`, indistinguishable from a missing record.
    */
+  /**
+   * The highest birth order already registered for one mother (P24-T10), so
+   * the next baby is numbered after her siblings rather than by counting rows
+   * — a soft-deleted registration must not renumber the living children.
+   *
+   * Zero when she has none: the first baby is order 1, as a KIA book counts.
+   */
+  async findHighestNewbornBirthOrder(motherPatientId: string): Promise<number> {
+    const highest = await this.prisma.patientProfile.aggregate({
+      where: { motherPatientId, deletedAt: null },
+      _max: { birthOrder: true },
+    });
+    return highest._max.birthOrder ?? 0;
+  }
+
+  /** The mother a newborn is registered from, ignoring the caller's scope. */
+  async findPatientRecordById(id: string): Promise<PatientRecord | null> {
+    const patient = await this.prisma.findFirstActive(this.prisma.patientProfile, {
+      where: { id },
+      select: PATIENT_RECORD_SELECT,
+    });
+    return patient ? toPatientRecord(patient) : null;
+  }
+
   async findPatientById(id: string, actor: PatientScopeActor): Promise<PatientRecord | null> {
     const scopedWhere: Prisma.PatientProfileWhereInput = {
       id,
@@ -689,6 +715,10 @@ export class PatientManagementRepository {
         ...(payload.source === undefined ? {} : { source: payload.source }),
         ownerUserId: payload.ownerUserId ?? null,
         isActive: payload.isActive,
+        // Written together or not at all (P24-T10): the CHECK on the table
+        // says a birth order without a mother describes nothing.
+        motherPatientId: payload.motherPatientId ?? null,
+        birthOrder: payload.birthOrder ?? null,
         ...this.buildIdentifierColumns({
           nik: payload.nik ?? null,
           bpjsNumber: payload.bpjsNumber ?? null,

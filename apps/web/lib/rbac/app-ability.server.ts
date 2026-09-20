@@ -53,6 +53,11 @@ const SUPPORTED_ACTIONS: AppAction[] = [
   // resource `registration` and action `checkin-override`; without this entry
   // the rule resolves to nothing and "Check in anyway" never renders.
   'checkin-override',
+  // P24-T10. `patient.create-newborn:any` splits on the last dot into
+  // resource `patient` and action `create-newborn`; without this entry the
+  // rule resolves to nothing and "Daftarkan bayi" never renders for the bidan
+  // who is standing next to the baby.
+  'create-newborn',
 ];
 const SUBJECT_BY_RESOURCE: Record<string, AppSubject> = {
   user: 'User',

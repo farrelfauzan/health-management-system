@@ -5,9 +5,12 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 
+import { ConfigService } from '@nestjs/config';
+
 import { AuditService } from '../../../common/audit/audit.service';
 import { PrivacyNoticeRepository } from '../../../common/privacy-notice/privacy-notice.repository';
 import { AuthRepository } from '../../auth/repository/auth.repository';
+
 import { RegionsService } from '../../regions/service/regions.service';
 import { PatientIdentifierConflictError } from '../repository/patient-identifier-conflict.error';
 import { PatientManagementRepository } from '../repository/patient-management.repository';
@@ -64,6 +67,8 @@ describe('PatientManagementService', () => {
     findPatientIdentifiers: jest.fn(),
     createPatient: jest.fn(),
     updatePatient: jest.fn(),
+    findPatientRecordById: jest.fn(),
+    findHighestNewbornBirthOrder: jest.fn(),
   } as unknown as PatientManagementRepository;
 
   const authRepositoryMock = {
@@ -84,12 +89,17 @@ describe('PatientManagementService', () => {
     assertOptionalAddressChain: jest.fn().mockResolvedValue(null),
   } as unknown as RegionsService;
 
+  const configServiceMock = {
+    get: jest.fn((key: string) => (key === 'CLINIC_TIMEZONE' ? 'Asia/Jakarta' : undefined)),
+  } as unknown as ConfigService;
+
   const service = new PatientManagementService(
     patientManagementRepositoryMock,
     authRepositoryMock,
     auditServiceMock,
     privacyNoticeRepositoryMock,
     regionsServiceMock,
+    configServiceMock,
   );
 
   const currentUser = {
@@ -794,6 +804,173 @@ describe('PatientManagementService', () => {
           updatedAt: '2026-01-01T00:00:00.000Z',
         },
       ]);
+    });
+  });
+
+  describe('registering a newborn from her mother (P24-T10)', () => {
+    const motherId = '5e6f7a8b-9c0d-4e1f-a02b-3c4d5e6f7a8b';
+    const newbornPrivacyNotice = {
+      ...privacyNotice,
+      subjectType: 'REPRESENTATIVE' as const,
+    };
+
+    function buildMother(overrides: Record<string, unknown> = {}) {
+      return {
+        id: motherId,
+        fullName: 'Siti Aminah',
+        sex: 'FEMALE',
+        phoneNumber: '+628123456789',
+        address: 'Jl. Merdeka No. 10',
+        provinceCode: '31',
+        regencyCode: '31.71',
+        districtCode: '31.71.01',
+        villageCode: '31.71.01.1001',
+        rtRw: '001/002',
+        postalCode: '10110',
+        motherPatientId: null,
+        birthOrder: null,
+        isActive: true,
+        ...overrides,
+      };
+    }
+
+    beforeEach(() => {
+      (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
+        buildActor([{ action: 'create-newborn', resource: 'Patient', scope: 'ANY' }]),
+      );
+      (patientManagementRepositoryMock.findPatientRecordById as jest.Mock).mockResolvedValue(
+        buildMother(),
+      );
+      (patientManagementRepositoryMock.findHighestNewbornBirthOrder as jest.Mock).mockResolvedValue(
+        1,
+      );
+      (patientManagementRepositoryMock.createPatient as jest.Mock).mockImplementation(
+        (payload: Record<string, unknown>) => ({
+          id: 'a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d',
+          mrn: '00000002',
+          fullName: payload.fullName,
+          dateOfBirth: payload.dateOfBirth,
+          placeOfBirth: payload.placeOfBirth ?? null,
+          sex: payload.sex,
+          status: payload.status,
+          phoneNumber: payload.phoneNumber,
+          address: payload.address,
+          nikLast4: null,
+          bpjsNumberLast4: null,
+          hasSatusehatPatientId: false,
+          guardianName: payload.guardianName ?? null,
+          guardianRelation: payload.guardianRelation ?? null,
+          motherPatientId: payload.motherPatientId ?? null,
+          birthOrder: payload.birthOrder ?? null,
+          ownerUserId: null,
+          isActive: true,
+          createdAt: new Date('2026-09-20T00:00:00.000Z'),
+          updatedAt: new Date('2026-09-20T00:00:00.000Z'),
+        }),
+      );
+    });
+
+    it("takes the baby's name, address and guardian from her mother, and numbers her next", async () => {
+      const actualResult = await service.registerNewborn(
+        motherId,
+        { sex: 'FEMALE', privacyNotice: newbornPrivacyNotice },
+        currentUser,
+      );
+
+      const writtenPayload = (patientManagementRepositoryMock.createPatient as jest.Mock).mock
+        .calls[0]?.[0] as Record<string, unknown>;
+      expect(writtenPayload.fullName).toBe('Bayi Ny. Siti Aminah');
+      expect(writtenPayload.address).toBe('Jl. Merdeka No. 10');
+      expect(writtenPayload.villageCode).toBe('31.71.01.1001');
+      expect(writtenPayload.guardianName).toBe('Siti Aminah');
+      expect(writtenPayload.guardianRelation).toBe('Ibu');
+      expect(writtenPayload.motherPatientId).toBe(motherId);
+      // She already has one child, so this is the second.
+      expect(writtenPayload.birthOrder).toBe(2);
+      // A baby has no NIK for weeks; that is the whole point of P24-T11.
+      expect(writtenPayload.nik).toBeUndefined();
+      expect(actualResult.patient.birthOrder).toBe(2);
+    });
+
+    it('honours a birth order the caller gave, so a twin can be registered second', async () => {
+      await service.registerNewborn(
+        motherId,
+        { sex: 'MALE', birthOrder: 3, privacyNotice: newbornPrivacyNotice },
+        currentUser,
+      );
+
+      const writtenPayload = (patientManagementRepositoryMock.createPatient as jest.Mock).mock
+        .calls[0]?.[0] as Record<string, unknown>;
+      expect(writtenPayload.birthOrder).toBe(3);
+    });
+
+    it('names the mother as the representative who acknowledged the notice', async () => {
+      await service.registerNewborn(
+        motherId,
+        { sex: 'FEMALE', privacyNotice: newbornPrivacyNotice },
+        currentUser,
+      );
+
+      const writtenPayload = (patientManagementRepositoryMock.createPatient as jest.Mock).mock
+        .calls[0]?.[0] as { privacyNotice: Record<string, unknown> };
+      expect(writtenPayload.privacyNotice.subjectType).toBe('REPRESENTATIVE');
+      expect(writtenPayload.privacyNotice.representativeName).toBe('Siti Aminah');
+      expect(writtenPayload.privacyNotice.representativeRelation).toBe('Ibu');
+    });
+
+    it('refuses a mother whose sex is not female, as SATUSEHAT would', async () => {
+      (patientManagementRepositoryMock.findPatientRecordById as jest.Mock).mockResolvedValue(
+        buildMother({ sex: 'MALE' }),
+      );
+
+      await expect(
+        service.registerNewborn(
+          motherId,
+          { sex: 'FEMALE', privacyNotice: newbornPrivacyNotice },
+          currentUser,
+        ),
+      ).rejects.toBeInstanceOf(BadRequestException);
+      expect(patientManagementRepositoryMock.createPatient).not.toHaveBeenCalled();
+    });
+
+    it('refuses a newborn as a mother — a baby has no babies', async () => {
+      (patientManagementRepositoryMock.findPatientRecordById as jest.Mock).mockResolvedValue(
+        buildMother({ motherPatientId: 'her-own-mother', birthOrder: 1 }),
+      );
+
+      await expect(
+        service.registerNewborn(
+          motherId,
+          { sex: 'FEMALE', privacyNotice: newbornPrivacyNotice },
+          currentUser,
+        ),
+      ).rejects.toBeInstanceOf(BadRequestException);
+    });
+
+    it('404s for a mother who does not exist', async () => {
+      (patientManagementRepositoryMock.findPatientRecordById as jest.Mock).mockResolvedValue(null);
+
+      await expect(
+        service.registerNewborn(
+          motherId,
+          { sex: 'FEMALE', privacyNotice: newbornPrivacyNotice },
+          currentUser,
+        ),
+      ).rejects.toBeInstanceOf(NotFoundException);
+    });
+
+    it('refuses a caller without the newborn grant, even one who may read patients', async () => {
+      (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
+        buildActor([{ action: 'read', resource: 'Patient', scope: 'ANY' }]),
+      );
+
+      await expect(
+        service.registerNewborn(
+          motherId,
+          { sex: 'FEMALE', privacyNotice: newbornPrivacyNotice },
+          currentUser,
+        ),
+      ).rejects.toBeInstanceOf(ForbiddenException);
     });
   });
 

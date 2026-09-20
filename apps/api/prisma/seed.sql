@@ -155,6 +155,11 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     ('patient.read:any', 'Patient', 'read', 'ANY', 'Read all patients'),
     ('patient.read:own', 'Patient', 'read', 'OWN', 'Read own patient profile'),
     ('patient.create:any', 'Patient', 'create', 'ANY', 'Create patients'),
+    -- P24-T10. Its own key rather than `patient.create:any`: registering a
+    -- baby from her mother's record is a clinical act a bidan performs at the
+    -- bedside, while the general create is front-desk work with a form full
+    -- of identifiers. A midwife holds this and not that.
+    ('patient.create-newborn:any', 'Patient', 'create-newborn', 'ANY', 'Register a newborn from the mother''s record'),
     ('patient.update:any', 'Patient', 'update', 'ANY', 'Update all patients'),
     ('patient.update:own', 'Patient', 'update', 'OWN', 'Update own patient profile'),
     ('patient.read-identifier:any', 'Patient', 'read-identifier', 'ANY', 'Reveal any patient NIK and BPJS number'),
@@ -504,6 +509,7 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('ADMIN', 'user.update:any'),
     ('ADMIN', 'patient.read:any'),
     ('ADMIN', 'patient.create:any'),
+    ('ADMIN', 'patient.create-newborn:any'),
     ('ADMIN', 'patient.update:any'),
     -- Unmasking is deliberately narrow: front-desk admins verify a KTP against
     -- the record and migrate legacy folders; doctors and pharmacists work from
@@ -696,6 +702,11 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('DOCTOR', 'portal.doctor-access:any'),
     ('DOCTOR', 'auth.logout:own'),
     ('DOCTOR', 'patient.read:own'),
+    -- P24-T10. The clinician who attended the birth registers the baby, from
+    -- the mother's record and at the bedside. MIDWIFE holds it through the
+    -- equality rule below, which is the point: a bidan-led clinic is where
+    -- this happens.
+    ('DOCTOR', 'patient.create-newborn:any'),
     ('DOCTOR', 'doctor.read:any'),
     ('DOCTOR', 'doctor.read-identifier:own'),
     -- P20-T03. A doctor corrects their own name, title, degrees, phone and
@@ -872,6 +883,11 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     -- patient.
     ('CUSTOMER_SERVICE_CHANNEL', 'patient.read:any'),
     ('CUSTOMER_SERVICE_CHANNEL', 'patient.create:any'),
+    -- Deliberately **not** `patient.create-newborn:any`: this is the chat
+    -- bot's service account, and registering a baby means witnessing a birth
+    -- and taking the mother's acknowledgement of the privacy notice in
+    -- person. A channel that defers the notice because nobody was there
+    -- cannot do either (P24-T10).
     ('CUSTOMER_SERVICE_CHANNEL', 'appointment.read:any'),
     ('CUSTOMER_SERVICE_CHANNEL', 'appointment.create:any'),
     ('CUSTOMER_SERVICE_CHANNEL', 'appointment.session.read:any'),
@@ -979,6 +995,7 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('MIDWIFE', 'portal.doctor-access:any'),
     ('MIDWIFE', 'auth.logout:own'),
     ('MIDWIFE', 'patient.read:own'),
+    ('MIDWIFE', 'patient.create-newborn:any'),
     ('MIDWIFE', 'doctor.read:any'),
     ('MIDWIFE', 'doctor.read-identifier:own'),
     ('MIDWIFE', 'doctor.update:own'),

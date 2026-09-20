@@ -14,10 +14,13 @@ type AdmissionsTableRowProps = {
   canTransfer: boolean;
   canDischarge: boolean;
   canCancel: boolean;
+  /** P24-T10. A bidan registers the baby from the mother's open stay. */
+  canRegisterNewborn: boolean;
   onOpen: (admission: AdmissionResponse) => void;
   onTransfer: (admission: AdmissionResponse) => void;
   onDischarge: (admission: AdmissionResponse) => void;
   onCancel: (admission: AdmissionResponse) => void;
+  onRegisterNewborn: (admission: AdmissionResponse) => void;
 };
 
 export function AdmissionsTableRow({
@@ -25,10 +28,12 @@ export function AdmissionsTableRow({
   canTransfer,
   canDischarge,
   canCancel,
+  canRegisterNewborn,
   onOpen,
   onTransfer,
   onDischarge,
   onCancel,
+  onRegisterNewborn,
 }: AdmissionsTableRowProps) {
   const t = useTranslations('operations');
   const format = useFormatter();
@@ -50,6 +55,15 @@ export function AdmissionsTableRow({
             label: t('admissions.discharge'),
             icon: 'logout',
             onSelect: () => onDischarge(admission),
+          },
+        ]
+      : []),
+    ...(canRegisterNewborn && isOpenStay
+      ? [
+          {
+            label: t('admissions.registerNewborn'),
+            icon: 'child_care',
+            onSelect: () => onRegisterNewborn(admission),
           },
         ]
       : []),

@@ -100,6 +100,13 @@ export type PatientProfile = {
   emergencyContactPhone?: string;
   guardianName?: string;
   guardianRelation?: string;
+  /**
+   * Present on a newborn registered from her mother's record (P24-T10): who
+   * her mother is, and which of her children she is. Their presence is what
+   * "this row is a newborn" means anywhere in the product.
+   */
+  motherPatientId?: string;
+  birthOrder?: number;
   ownerUserId?: string;
   lastVisitAt?: string;
   isActive: boolean;

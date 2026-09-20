@@ -49,7 +49,12 @@ export type AppAction =
   // verb rather than a wider `update`, because every desk clerk holds
   // `registration.update:any` and the whole point of the rule is that the
   // exception is somebody's decision.
-  | 'checkin-override';
+  | 'checkin-override'
+  // P24-T10. Registering a baby from her mother's record. Its own verb rather
+  // than `create`: the general patient create is front-desk work with a form
+  // full of identifiers, while this is a clinical act at the bedside that a
+  // midwife performs and holds no `patient.create:any` for.
+  | 'create-newborn';
 export type AppSubject =
   | 'User'
   | 'Role'

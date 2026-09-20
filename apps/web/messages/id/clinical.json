@@ -413,7 +413,30 @@
       "loadingImmunizations": "Memuat riwayat imunisasi...",
       "noAddress": "Alamat belum dicatat",
       "directoryTab": "Direktori",
-      "fromChatTab": "Dari chat"
+      "fromChatTab": "Dari chat",
+      "newborn": {
+        "action": "Daftarkan bayi",
+        "title": "Daftarkan bayi",
+        "description": "Dari rekam {mother}.",
+        "prefillNotice": "Bayi akan didaftarkan sebagai “{name}”, beralamat di {address}, dengan ibunya sebagai wali dan urutan kelahiran berikutnya. NIK dibiarkan kosong sampai bayi memilikinya.",
+        "motherAddressUnknown": "alamat ibunya",
+        "sex": "Jenis kelamin",
+        "sexPlaceholder": "Pilih jenis kelamin",
+        "sexRequired": "Pilih jenis kelamin sebelum mendaftarkan.",
+        "sexes": {
+          "MALE": "Laki-laki",
+          "FEMALE": "Perempuan"
+        },
+        "dateOfBirth": "Tanggal lahir",
+        "dateOfBirthHint": "Hari ini bila dikosongkan.",
+        "placeOfBirth": "Tempat lahir",
+        "privacyNoticeRequired": "Catat pernyataan ibu atas pemberitahuan privasi.",
+        "submit": "Daftarkan",
+        "saving": "Mendaftarkan…",
+        "cancel": "Batal",
+        "registered": "Bayi berhasil didaftarkan.",
+        "error": "Bayi tidak dapat didaftarkan."
+      }
     },
     "privacyNotice": {
       "title": "Pemberitahuan Privasi Pasien",
