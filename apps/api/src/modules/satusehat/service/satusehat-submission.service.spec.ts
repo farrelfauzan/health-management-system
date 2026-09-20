@@ -354,12 +354,15 @@ describe('SatusehatSubmissionService', () => {
   };
   const linkRepositoryMock = {
     findPatientLinkTarget: jest.fn(),
+    findNewbornLinkContext: jest.fn(),
     savePatientIhsNumber: jest.fn(),
     findDoctorLinkTarget: jest.fn(),
     saveDoctorIhsNumber: jest.fn(),
   };
   const masterDataClientMock = {
     findPatientIhsNumberByNik: jest.fn(),
+    findNewbornIhsNumberByMotherNik: jest.fn(),
+    createNewbornPatient: jest.fn(),
     findPractitionerIhsNumberByNik: jest.fn(),
   };
   const httpClientMock = {
@@ -384,6 +387,9 @@ describe('SatusehatSubmissionService', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    // Most cases are about an ordinary patient: not a newborn, so the
+    // `nik-ibu` path (P24-T11) is never entered.
+    linkRepositoryMock.findNewbornLinkContext.mockResolvedValue(null);
   });
 
   it('submits a transaction bundle and records the returned IHS encounter id', async () => {
@@ -1413,6 +1419,123 @@ describe('SatusehatSubmissionService', () => {
       id: buildSubmission().id,
       satusehatEncounterId: 'ihs-enc-1',
       locationFallbackReason: 'BED_NOT_REGISTERED',
+    });
+  });
+
+  describe("a newborn's identity under her mother's NIK (P24-T11)", () => {
+    const newbornContext = {
+      fullName: 'Bayi Ny. Siti Aminah',
+      sex: 'FEMALE' as const,
+      dateOfBirth: new Date('2026-09-20T00:00:00.000Z'),
+      birthOrder: 2,
+      address: {
+        street: 'Jl. Merdeka No. 10',
+        provinceCode: '31',
+        regencyCode: '31.71',
+        regencyName: 'Kota Administrasi Jakarta Pusat',
+        districtCode: '31.71.01',
+        villageCode: '31.71.01.1001',
+        rtRw: '001/002',
+        postalCode: '10110',
+      },
+      mother: { id: 'mother-1', nik: '3201015205900001' },
+    };
+
+    beforeEach(() => {
+      submissionRepositoryMock.findBundleData.mockResolvedValue(
+        buildBundleData({ patientIhsNumber: null, diagnoses: [], latestVitalSigns: null }),
+      );
+      // A baby has no NIK of her own — that is the case, not a gap.
+      linkRepositoryMock.findPatientLinkTarget.mockResolvedValue({
+        id: patientId,
+        nik: null,
+        hasSatusehatPatientId: false,
+      });
+      linkRepositoryMock.findNewbornLinkContext.mockResolvedValue(newbornContext);
+      httpClientMock.sendRequest.mockResolvedValue({ entry: [] });
+    });
+
+    it('links her when the mother’s NIK already holds a matching record', async () => {
+      masterDataClientMock.findNewbornIhsNumberByMotherNik.mockResolvedValue('P-baby-1');
+
+      await buildService().processSubmission(buildSubmission());
+
+      expect(masterDataClientMock.findNewbornIhsNumberByMotherNik).toHaveBeenCalledWith(
+        '3201015205900001',
+        { birthDate: '2026-09-20', multipleBirthInteger: 2 },
+      );
+      expect(masterDataClientMock.createNewbornPatient).not.toHaveBeenCalled();
+      expect(linkRepositoryMock.savePatientIhsNumber).toHaveBeenCalledWith({
+        patientId,
+        ihsNumber: 'P-baby-1',
+      });
+      expect(auditServiceMock.record).toHaveBeenCalledWith(
+        expect.objectContaining({
+          action: 'SATUSEHAT_PATIENT_LINKED',
+          metadata: { lookup: 'NIK_IBU', trigger: 'SUBMISSION_WORKER' },
+        }),
+      );
+    });
+
+    it('creates her under the mother’s NIK when no sibling entry matches', async () => {
+      masterDataClientMock.findNewbornIhsNumberByMotherNik.mockResolvedValue(null);
+      masterDataClientMock.findPatientIhsNumberByNik.mockResolvedValue('P-mother-1');
+      masterDataClientMock.createNewbornPatient.mockResolvedValue('P-baby-new');
+
+      await buildService().processSubmission(buildSubmission());
+
+      const sentResource = masterDataClientMock.createNewbornPatient.mock.calls[0]?.[0] as {
+        identifier: Array<{ system: string; value: string }>;
+        gender: string;
+        birthDate: string;
+        multipleBirthInteger: number;
+        name: Array<{ text: string }>;
+      };
+      expect(sentResource.identifier[0]?.system).toBe('https://fhir.kemkes.go.id/id/nik-ibu');
+      expect(sentResource.identifier[0]?.value).toBe('3201015205900001');
+      expect(sentResource.gender).toBe('female');
+      expect(sentResource.birthDate).toBe('2026-09-20');
+      // Sent as it was searched by, so the next submission finds this record.
+      expect(sentResource.multipleBirthInteger).toBe(2);
+      expect(sentResource.name[0]?.text).toBe('Bayi Ny. Siti Aminah');
+      expect(linkRepositoryMock.savePatientIhsNumber).toHaveBeenCalledWith({
+        patientId,
+        ihsNumber: 'P-baby-new',
+      });
+      expect(auditServiceMock.record).toHaveBeenCalledWith(
+        expect.objectContaining({
+          action: 'SATUSEHAT_PATIENT_CREATED',
+          metadata: { lookup: 'NIK_IBU', trigger: 'SUBMISSION_WORKER' },
+        }),
+      );
+    });
+
+    it('fails with "NIK ibu belum tercatat" when the mother has none on record', async () => {
+      linkRepositoryMock.findNewbornLinkContext.mockResolvedValue({
+        ...newbornContext,
+        mother: { id: 'mother-1', nik: null },
+      });
+
+      await buildService().processSubmission(buildSubmission());
+
+      expect(submissionRepositoryMock.markFailed).toHaveBeenCalledWith(
+        expect.objectContaining({ lastError: expect.stringContaining('NIK ibu belum tercatat') }),
+      );
+      expect(masterDataClientMock.createNewbornPatient).not.toHaveBeenCalled();
+    });
+
+    it('fails with "Ibu tidak ditemukan di SATUSEHAT" rather than posting under an unknown NIK', async () => {
+      masterDataClientMock.findNewbornIhsNumberByMotherNik.mockResolvedValue(null);
+      masterDataClientMock.findPatientIhsNumberByNik.mockResolvedValue(null);
+
+      await buildService().processSubmission(buildSubmission());
+
+      expect(submissionRepositoryMock.markFailed).toHaveBeenCalledWith(
+        expect.objectContaining({
+          lastError: expect.stringContaining('Ibu tidak ditemukan di SATUSEHAT'),
+        }),
+      );
+      expect(masterDataClientMock.createNewbornPatient).not.toHaveBeenCalled();
     });
   });
 

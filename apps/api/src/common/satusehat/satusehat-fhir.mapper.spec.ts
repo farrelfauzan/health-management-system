@@ -280,6 +280,46 @@ describe('SatusehatFhirMapper', () => {
     });
   });
 
+  describe('mapNewbornToPatient (P24-T11)', () => {
+    const newbornInput = {
+      motherNik: '3201015205900001',
+      fullName: 'Bayi Ny. Siti Aminah',
+      sex: 'FEMALE' as const,
+      birthDate: '2026-09-20',
+      multipleBirthInteger: 2,
+    };
+
+    it("identifies the baby by her mother's NIK, never by one of her own", () => {
+      const actualPatient = mapper.mapNewbornToPatient(newbornInput);
+
+      expect(actualPatient.resourceType).toBe('Patient');
+      expect(actualPatient.identifier).toEqual([
+        {
+          system: 'https://fhir.kemkes.go.id/id/nik-ibu',
+          use: 'official',
+          value: '3201015205900001',
+        },
+      ]);
+      expect(actualPatient.gender).toBe('female');
+      expect(actualPatient.birthDate).toBe('2026-09-20');
+      expect(actualPatient.multipleBirthInteger).toBe(2);
+      expect(actualPatient.name).toEqual([{ use: 'official', text: 'Bayi Ny. Siti Aminah' }]);
+      // A baby who was given no address goes out without the element rather
+      // than with an empty one.
+      expect(actualPatient.address).toBeUndefined();
+    });
+
+    it("carries her mother's address when the record has one", () => {
+      const actualPatient = mapper.mapNewbornToPatient({
+        ...newbornInput,
+        address: { street: 'Jl. Merdeka No. 10', regencyName: 'Kota Jakarta Pusat' },
+      });
+
+      expect(actualPatient.address?.[0]?.line).toEqual(['Jl. Merdeka No. 10']);
+      expect(actualPatient.address?.[0]?.country).toBe('ID');
+    });
+  });
+
   describe('mapEncounter for an inpatient stay', () => {
     const admittedAt = new Date('2026-07-28T02:30:00.000Z');
     const dischargedAt = new Date('2026-07-30T04:00:00.000Z');

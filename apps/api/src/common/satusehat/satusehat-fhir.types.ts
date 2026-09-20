@@ -563,6 +563,38 @@ export type SatusehatFhirAddress = {
 };
 
 /**
+ * What the mapper needs to post one newborn (P24-T11). The address is the
+ * mother's, read off her record by the caller; absent when she has none.
+ */
+export type SatusehatNewbornPatientMapInput = {
+  motherNik: string;
+  fullName: string;
+  sex: 'MALE' | 'FEMALE';
+  birthDate: string;
+  multipleBirthInteger: number;
+  address?: SatusehatPatientAddressMapInput;
+};
+
+/**
+ * A newborn as the master patient index receives her (P24-T11, FR-NB-03).
+ *
+ * The identifier is her **mother's** NIK under the `nik-ibu` system: a baby
+ * has none of her own for weeks, and this is how the platform holds her until
+ * she does. `multipleBirthInteger` is her birth order, which is what tells her
+ * from a sibling born the same day.
+ */
+export type SatusehatFhirNewbornPatient = {
+  resourceType: 'Patient';
+  active: true;
+  identifier: Array<{ system: string; use: 'official'; value: string }>;
+  name: Array<{ use: 'official'; text: string }>;
+  gender: 'male' | 'female';
+  birthDate: string;
+  multipleBirthInteger: number;
+  address?: SatusehatFhirAddress[];
+};
+
+/**
  * What the mapper needs to build a patient's FHIR address: the street line
  * plus whatever of the structured address (P19-T10) the record holds. Codes
  * are the dotted Kemendagri form the registry stores; the mapper strips the
