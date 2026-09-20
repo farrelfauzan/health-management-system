@@ -105,6 +105,17 @@
       "applying": "Applying…",
       "applied": "{count, plural, =0 {No new medications marked} one {# medication marked for midwives} other {# medications marked for midwives}}",
       "applyError": "The midwife formulary could not be applied."
+    },
+    "midwifeAuthorityKind": "Authority a midwife needs",
+    "midwifeAuthorityKindOwn": "Her own authority (no pelimpahan)",
+    "midwifeAuthorityKindDescription": "Choose an authority when only a midwife holding it may write this medicine. Without it the prescription is refused and the patient goes to a doctor (PP 28/2024 Pasal 744).",
+    "midwifeAuthorityRequired": "Needs authority: {kind}",
+    "midwifeAuthorityKindOption": {
+      "IUD_IMPLANT": "IUD & implant insertion",
+      "MTBS": "MTBS (sick child)",
+      "PROGRAM_IMMUNIZATION": "Programme immunisation",
+      "INTEGRATED_ANC": "Integrated ANC",
+      "NO_OTHER_WORKER": "No other health worker available"
     }
   }
 }

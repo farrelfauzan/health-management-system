@@ -1,4 +1,7 @@
-import type { ClinicianProfessionValue } from '#doctor-management/schemas';
+import type {
+  ClinicianProfessionValue,
+  DoctorAuthorityKindValue,
+} from '#doctor-management/schemas';
 import type { ChargeModeValue, FulfilmentSiteValue } from '#laboratory/schemas';
 import type { MidwifeFormularyTemplateLookupStatus } from '#pharmacy-flow/contracts';
 import type {
@@ -62,6 +65,8 @@ export type MedicationRecord = {
   reorderLevel: number;
   isVaccine: boolean;
   isMidwifePrescribable: boolean;
+  /** P25-T05. Null unless the item needs an authority of this kind. */
+  midwifeAuthorityKind: DoctorAuthorityKindValue | null;
   /** Rupiah per `unit`; null until the clinic prices the item. */
   unitPrice: number | null;
   createdAt: Date;
@@ -99,6 +104,7 @@ export type CreateMedicationRecordPayload = {
   reorderLevel: number;
   isVaccine?: boolean;
   isMidwifePrescribable?: boolean;
+  midwifeAuthorityKind?: DoctorAuthorityKindValue | null;
   unitPrice?: number;
 };
 
@@ -113,6 +119,7 @@ export type UpdateMedicationRecordPayload = {
   reorderLevel?: number;
   isVaccine?: boolean;
   isMidwifePrescribable?: boolean;
+  midwifeAuthorityKind?: DoctorAuthorityKindValue | null;
   unitPrice?: number | null;
 };
 
@@ -334,6 +341,8 @@ export type MidwifeFormularyItemRecord = {
   code: string;
   displayName: string;
   group: MidwifeFormularyGroupValue;
+  /** P25-T05. Set exactly on the `AUTHORITY_BOUND` rows; null on the others. */
+  authorityKind: DoctorAuthorityKindValue | null;
   regulationBasis: string;
   kfaCodes: string[];
   kfaTemplateCodes: string[];
@@ -356,6 +365,8 @@ export type MidwifeFormularyMatch = {
   name: string;
   kfaCode: string | null;
   isMidwifePrescribable: boolean;
+  /** P25-T05. The kind this row would be stamped with when applied. */
+  authorityKind: DoctorAuthorityKindValue | null;
   matchedBy: MidwifeFormularyMatchKindValue;
 };
 

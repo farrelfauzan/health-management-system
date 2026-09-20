@@ -18,6 +18,16 @@ export { Prisma }
 export * as $Enums from './enums'
 export * from './enums';
 /**
+ * Model DoctorMandate
+ * One written pelimpahan from a doctor to a midwife (P25-T05, FR-AUTH-04).
+ * 
+ * `icd9cmCodes` is what makes it enforceable rather than filed: the procedure
+ * gate asks whether the code in front of it is on this list, so a mandate for
+ * an IUD insertion never covers anything else. Never open-ended — `validUntil`
+ * is required, like every authority (D-036).
+ */
+export type DoctorMandate = Prisma.DoctorMandateModel
+/**
  * Model User
  * 
  */

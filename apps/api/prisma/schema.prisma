@@ -341,6 +341,9 @@ enum AuditAction {
   /// active delegated authority of the kind it needs (P25-T03). Written
   /// explicitly before the 422, because the interceptor never logs a 4xx.
   MIDWIFE_AUTHORITY_REFUSED
+  /// A doctor's pelimpahan to a midwife was recorded or ended (P25-T05).
+  DOCTOR_MANDATE_GRANTED
+  DOCTOR_MANDATE_REVOKED
   /// The clinic's tax profile changed (P27-T02): taxpayer type, PP 55 regime,
   /// PKP status, NITKU or pricing mode. Carries each changed field's old and
   /// new value — every later tax computation reads this row, and a report is
@@ -608,6 +611,63 @@ enum MidwifeFormularyGroup {
 /// Permenkes 28/2017 Pasal 25 list, kept as the reference by Permenkes 13/2025
 /// Pasal 305(1). `NO_OTHER_WORKER` is the authority for a place with no other
 /// health worker (PP 28/2024 Pasal 744(2)(a), Permenkes 13/2025 Pasal 186).
+/// The two forms a doctor's pelimpahan takes (P25-T05, D-036). A MANDATE
+/// leaves responsibility with the doctor who supervises; a DELEGATION moves it
+/// to the midwife and is valid only while he is away (PP 28/2024 Pasal 745).
+enum DoctorMandateKind {
+  MANDATE
+  DELEGATION
+
+  @@map("doctor_mandate_kind")
+}
+
+/// One written pelimpahan from a doctor to a midwife (P25-T05, FR-AUTH-04).
+///
+/// `icd9cmCodes` is what makes it enforceable rather than filed: the procedure
+/// gate asks whether the code in front of it is on this list, so a mandate for
+/// an IUD insertion never covers anything else. Never open-ended — `validUntil`
+/// is required, like every authority (D-036).
+model DoctorMandate {
+  id                     String            @id @default(uuid()) @db.Uuid
+  midwifeDoctorId        String            @map("midwife_doctor_id") @db.Uuid
+  mandatingDoctorId      String            @map("mandating_doctor_id") @db.Uuid
+  kind                   DoctorMandateKind
+  /// What the doctor asked her to do, in his words.
+  instruction            String
+  /// The delegated procedures, as ICD-9-CM codes. At least one: a mandate for
+  /// nothing is not a mandate.
+  icd9cmCodes            String[]          @map("icd9cm_codes")
+  validFrom              DateTime          @map("valid_from") @db.Date
+  validUntil             DateTime          @map("valid_until") @db.Date
+  /// The signed instruction. Required, because a pelimpahan is written
+  /// (PP 28/2024 Pasal 745(2)) — one nobody signed is a conversation.
+  instructionStorageKey  String            @map("instruction_storage_key")
+  instructionMimeType    String            @map("instruction_mime_type")
+  instructionSizeBytes   Int               @map("instruction_size_bytes")
+  revokedAt              DateTime?         @map("revoked_at") @db.Timestamptz(3)
+  revokedById            String?           @map("revoked_by_id") @db.Uuid
+  revokeReason           String?           @map("revoke_reason")
+  createdById            String            @map("created_by_id") @db.Uuid
+  createdAt              DateTime          @default(now()) @map("created_at")
+  updatedAt              DateTime          @updatedAt @map("updated_at")
+  deletedAt              DateTime?         @map("deleted_at")
+
+  midwifeDoctor   DoctorProfile @relation("DoctorMandateMidwife", fields: [midwifeDoctorId], references: [id], onDelete: Cascade)
+  mandatingDoctor DoctorProfile @relation("DoctorMandateMandatingDoctor", fields: [mandatingDoctorId], references: [id], onDelete: Restrict)
+  createdBy       User          @relation("DoctorMandateCreatedBy", fields: [createdById], references: [id])
+  revokedBy       User?         @relation("DoctorMandateRevokedBy", fields: [revokedById], references: [id])
+
+  procedures Procedure[]
+
+  @@index([midwifeDoctorId])
+  @@index([mandatingDoctorId])
+  @@index([validUntil])
+  @@index([deletedAt])
+  @@index([createdById])
+  @@index([revokedById])
+  @@map("doctor_mandates")
+}
+
 enum DoctorAuthorityKind {
   IUD_IMPLANT
   MTBS
@@ -1084,6 +1144,8 @@ model User {
   finalizedTaxReports        TaxReportDraft[]           @relation("TaxReportFinalizedBy")
   grantedDoctorAuthorities  DoctorAuthority[]          @relation("DoctorAuthorityCreatedBy")
   revokedDoctorAuthorities  DoctorAuthority[]          @relation("DoctorAuthorityRevokedBy")
+  grantedDoctorMandates     DoctorMandate[]            @relation("DoctorMandateCreatedBy")
+  revokedDoctorMandates     DoctorMandate[]            @relation("DoctorMandateRevokedBy")
 
   @@index([organizationUnitId])
   /// The offboarding sweep's one read: everyone currently in a window.
@@ -1898,6 +1960,9 @@ model DoctorProfile {
   prescriptions       Prescription[]
   licenses            DoctorLicense[]
   authorities         DoctorAuthority[]
+  /// Pelimpahan she works under, and pelimpahan he granted (P25-T05).
+  mandatesReceived    DoctorMandate[]   @relation("DoctorMandateMidwife")
+  mandatesGranted     DoctorMandate[]   @relation("DoctorMandateMandatingDoctor")
   educations          DoctorEducation[]
   encounters          Encounter[]
   admissions          Admission[]
@@ -2555,6 +2620,10 @@ model Procedure {
   /// Set when the procedure inserted or removed a contraceptive implant; a
   /// midwife then needed an active IUD_IMPLANT authority (P25-T03).
   contraceptiveImplantAction ContraceptiveImplantAction? @map("contraceptive_implant_action")
+  /// Set when a midwife recorded this under a doctor's pelimpahan rather than
+  /// her own authority (P25-T05). It is what the card reads to name the
+  /// responsible clinician, so it is never inferred later.
+  mandateId    String?   @map("mandate_id") @db.Uuid
   recordedById String?   @map("recorded_by_id") @db.Uuid
   createdAt    DateTime  @default(now()) @map("created_at")
   updatedAt    DateTime  @updatedAt @map("updated_at")
@@ -2562,9 +2631,11 @@ model Procedure {
 
   encounter  Encounter   @relation(fields: [encounterId], references: [id], onDelete: Restrict)
   icd9cmCode Icd9cmCode? @relation(fields: [icd9cmCodeId], references: [id], onDelete: SetNull)
+  mandate    DoctorMandate? @relation(fields: [mandateId], references: [id], onDelete: Restrict)
   recordedBy User?       @relation("ProcedureRecordedBy", fields: [recordedById], references: [id], onDelete: SetNull)
 
   @@index([encounterId, performedAt])
+  @@index([mandateId])
   @@index([code])
   @@index([deletedAt])
   @@map("procedures")
@@ -2597,6 +2668,13 @@ model Medication {
   /// default and never seeded: Permenkes 28/2017 limits a bidan to her own
   /// authorities, and which catalog items fall inside them is the clinic's call.
   isMidwifePrescribable Boolean @default(false) @map("is_midwife_prescribable")
+  /// Which of a bidan's authorities this item sits under when she is the one
+  /// prescribing (P25-T05, FR-FORM-01). Null is the ordinary case: the item is
+  /// either outside her formulary altogether or inside her own authority, and
+  /// `isMidwifePrescribable` already answers that. A kind here marks the item
+  /// AUTHORITY_BOUND — she may write it only under a doctor's pelimpahan or an
+  /// authority of that kind (PP 28/2024 Pasal 744).
+  midwifeAuthorityKind  DoctorAuthorityKind? @map("midwife_authority_kind")
   /// This medication's own tax code (P27-T03). Null means it follows the
   /// medication default in `tax_category_defaults`.
   taxCodeId             String?             @map("tax_code_id") @db.Uuid
@@ -2634,6 +2712,11 @@ model MidwifeFormularyItem {
   code             String                @unique
   displayName      String                @map("display_name")
   group            MidwifeFormularyGroup
+  /// Which authority an `AUTHORITY_BOUND` template row needs, and null for an
+  /// `OWN_AUTHORITY` one (P25-T05). A database CHECK keeps the two in step:
+  /// a bound row with no kind would be unenforceable, and a kind on an
+  /// own-authority row would claim a gate that does not exist.
+  authorityKind    DoctorAuthorityKind?  @map("authority_kind")
   regulationBasis  String                @map("regulation_basis")
   kfaCodes         String[]              @default([]) @map("kfa_codes")
   kfaTemplateCodes String[]              @default([]) @map("kfa_template_codes")

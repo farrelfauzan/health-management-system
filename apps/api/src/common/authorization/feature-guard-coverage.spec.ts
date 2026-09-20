@@ -149,6 +149,10 @@ const NEVER_GATED_CONTROLLERS: readonly string[] = [
   // is not a module the clinic bought, and switching off a feature must not
   // make her authority unreadable while P25-T03 still enforces it.
   'DoctorAuthorityController',
+  // P25-T05. Same reasoning for the pelimpahan she works under: it is the
+  // written record of who answers for an action, and the procedure gate reads
+  // it whether or not any feature is switched on.
+  'DoctorMandateController',
 ];
 
 /**

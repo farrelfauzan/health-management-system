@@ -16,6 +16,7 @@ const IRON_ITEM: MidwifeFormularyItemRecord = {
   code: 'FE_PREGNANCY',
   displayName: 'Tablet tambah darah',
   group: 'OWN_AUTHORITY',
+  authorityKind: null,
   regulationBasis: 'Permenkes 28/2017 Pasal 19 ayat (3) huruf e',
   kfaCodes: ['93015491'],
   kfaTemplateCodes: ['92000653'],

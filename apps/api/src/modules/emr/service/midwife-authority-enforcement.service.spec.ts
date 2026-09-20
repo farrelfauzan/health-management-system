@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 
 import { AuditService } from '../../../common/audit/audit.service';
 import { DoctorAuthorityService } from '../../doctor-management/service/doctor-authority.service';
+import { DoctorMandateService } from '../../doctor-management/service/doctor-mandate.service';
 import { MidwifeAuthorityEnforcementService } from './midwife-authority-enforcement.service';
 
 type ExceptionBody = { code?: string; errors?: { kind?: string } };
@@ -29,12 +30,18 @@ describe('MidwifeAuthorityEnforcementService', () => {
     hasActiveAuthority: hasActiveAuthorityMock,
   } as unknown as DoctorAuthorityService;
   const auditServiceMock = { record: recordMock } as unknown as AuditService;
+  const findCoveringMandateMock = jest.fn();
+  const doctorMandateServiceMock = {
+    findCoveringMandate: findCoveringMandateMock,
+  } as unknown as DoctorMandateService;
   const configServiceMock = { get: jest.fn(() => 'Asia/Jakarta') } as unknown as ConfigService;
   const service = new MidwifeAuthorityEnforcementService(
     doctorAuthorityServiceMock,
+    doctorMandateServiceMock,
     auditServiceMock,
     configServiceMock,
   );
+  const mandateId = '1b6a6a2e-9d6e-4e58-8a2f-0f0f2c3b4d55';
   const actorUserId = '4e8580c4-9e80-44ff-9f8f-8c8f9d8d90f8';
   const midwifeId = '7c1f2f0a-2f4b-4d6a-9d0a-9c4e1f0b9c11';
   const patientId = '38a3f0f1-51d3-4f68-9d54-1f6a1de1a002';
@@ -76,6 +83,9 @@ describe('MidwifeAuthorityEnforcementService', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    // No mandate unless a test grants one: the repository answers null when
+    // nothing covers the code, and every existing case depends on that.
+    findCoveringMandateMock.mockResolvedValue(null);
     jest.useFakeTimers().setSystemTime(new Date('2026-09-15T03:00:00.000Z'));
   });
 
@@ -83,12 +93,12 @@ describe('MidwifeAuthorityEnforcementService', () => {
     jest.useRealTimers();
   });
 
-  describe('assertProcedureAllowed', () => {
+  describe('resolveProcedureMandate', () => {
     it('refuses 69.7 for a midwife without IUD_IMPLANT, auditing before the 422', async () => {
       hasActiveAuthorityMock.mockResolvedValue(false);
 
       const actual = await captureException(() =>
-        service.assertProcedureAllowed({
+        service.resolveProcedureMandate({
           encounter: buildEncounter('MIDWIFE'),
           code: '69.7',
           actorUserId,
@@ -120,7 +130,7 @@ describe('MidwifeAuthorityEnforcementService', () => {
       hasActiveAuthorityMock.mockResolvedValue(false);
 
       await captureException(() =>
-        service.assertProcedureAllowed({
+        service.resolveProcedureMandate({
           encounter: buildEncounter('MIDWIFE'),
           code: '97.71',
           performedAt: new Date('2026-08-31T18:30:00.000Z'),
@@ -136,7 +146,7 @@ describe('MidwifeAuthorityEnforcementService', () => {
     it('allows a midwife with an active authority', async () => {
       hasActiveAuthorityMock.mockResolvedValue(true);
 
-      await service.assertProcedureAllowed({
+      await service.resolveProcedureMandate({
         encounter: buildEncounter('MIDWIFE'),
         code: '69.7',
         actorUserId,
@@ -145,8 +155,89 @@ describe('MidwifeAuthorityEnforcementService', () => {
       expect(recordMock).not.toHaveBeenCalled();
     });
 
+    it('saves a covered code under the mandate that covers it', async () => {
+      hasActiveAuthorityMock.mockResolvedValue(false);
+      findCoveringMandateMock.mockResolvedValue({ id: mandateId });
+
+      const actual = await service.resolveProcedureMandate({
+        encounter: buildEncounter('MIDWIFE'),
+        code: '69.7',
+        actorUserId,
+      });
+
+      expect(actual).toBe(mandateId);
+      expect(findCoveringMandateMock).toHaveBeenCalledWith({
+        midwifeDoctorId: midwifeId,
+        icd9cmCode: '69.7',
+        onDate: new Date('2026-09-15T00:00:00.000Z'),
+      });
+      expect(recordMock).not.toHaveBeenCalled();
+    });
+
+    it('stamps no mandate when she holds the authority herself', async () => {
+      hasActiveAuthorityMock.mockResolvedValue(true);
+      findCoveringMandateMock.mockResolvedValue({ id: mandateId });
+
+      const actual = await service.resolveProcedureMandate({
+        encounter: buildEncounter('MIDWIFE'),
+        code: '69.7',
+        actorUserId,
+      });
+
+      expect(actual).toBeNull();
+      expect(findCoveringMandateMock).not.toHaveBeenCalled();
+    });
+
+    it('refuses a gated code when the mandate has expired', async () => {
+      hasActiveAuthorityMock.mockResolvedValue(false);
+      // An expired mandate is not a different answer from no mandate: the
+      // window is part of the query, so the lookup simply finds nothing.
+      findCoveringMandateMock.mockResolvedValue(null);
+
+      const actual = await captureException(() =>
+        service.resolveProcedureMandate({
+          encounter: buildEncounter('MIDWIFE'),
+          code: '69.7',
+          performedAt: new Date('2026-09-20T01:00:00.000Z'),
+          actorUserId,
+        }),
+      );
+
+      expect(readBody(actual).code).toBe('MIDWIFE_AUTHORITY_REQUIRED');
+      expect(findCoveringMandateMock).toHaveBeenCalledWith(
+        expect.objectContaining({ onDate: new Date('2026-09-20T00:00:00.000Z') }),
+      );
+    });
+
+    it('records an ungated code with no mandate, and asks for one anyway', async () => {
+      const actual = await service.resolveProcedureMandate({
+        encounter: buildEncounter('MIDWIFE'),
+        code: '99.29',
+        actorUserId,
+      });
+
+      expect(actual).toBeNull();
+      expect(hasActiveAuthorityMock).not.toHaveBeenCalled();
+      expect(findCoveringMandateMock).toHaveBeenCalledWith(
+        expect.objectContaining({ icd9cmCode: '99.29' }),
+      );
+      expect(recordMock).not.toHaveBeenCalled();
+    });
+
+    it('attributes an ungated code to the mandate that names it', async () => {
+      findCoveringMandateMock.mockResolvedValue({ id: mandateId });
+
+      const actual = await service.resolveProcedureMandate({
+        encounter: buildEncounter('MIDWIFE'),
+        code: '99.29',
+        actorUserId,
+      });
+
+      expect(actual).toBe(mandateId);
+    });
+
     it('never checks a doctor', async () => {
-      await service.assertProcedureAllowed({
+      await service.resolveProcedureMandate({
         encounter: buildEncounter('DOCTOR'),
         code: '69.7',
         contraceptiveImplantAction: 'INSERTION',
@@ -154,6 +245,7 @@ describe('MidwifeAuthorityEnforcementService', () => {
       });
 
       expect(hasActiveAuthorityMock).not.toHaveBeenCalled();
+      expect(findCoveringMandateMock).not.toHaveBeenCalled();
     });
   });
 

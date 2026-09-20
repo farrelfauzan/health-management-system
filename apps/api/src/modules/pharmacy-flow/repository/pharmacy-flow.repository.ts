@@ -345,6 +345,7 @@ export class PharmacyFlowRepository {
           reorderLevel: payload.reorderLevel,
           isVaccine: payload.isVaccine ?? false,
           isMidwifePrescribable: payload.isMidwifePrescribable ?? false,
+          midwifeAuthorityKind: payload.midwifeAuthorityKind ?? null,
           unitPrice: payload.unitPrice ?? null,
         },
         include: STOCK_RELATION_INCLUDE,
@@ -371,6 +372,9 @@ export class PharmacyFlowRepository {
           ...(payload.isVaccine !== undefined ? { isVaccine: payload.isVaccine } : {}),
           ...(payload.isMidwifePrescribable !== undefined
             ? { isMidwifePrescribable: payload.isMidwifePrescribable }
+            : {}),
+          ...(payload.midwifeAuthorityKind !== undefined
+            ? { midwifeAuthorityKind: payload.midwifeAuthorityKind }
             : {}),
           ...(payload.unitPrice !== undefined ? { unitPrice: payload.unitPrice } : {}),
         },

@@ -6,6 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { UpdateMedicationDtoCategory } from './updateMedicationDtoCategory';
+import type { UpdateMedicationDtoMidwifeAuthorityKind } from './updateMedicationDtoMidwifeAuthorityKind';
 import type { UpdateMedicationDtoUnit } from './updateMedicationDtoUnit';
 
 export interface UpdateMedicationDto {
@@ -48,6 +49,8 @@ export interface UpdateMedicationDto {
   reorderLevel?: number;
   isVaccine?: boolean;
   isMidwifePrescribable?: boolean;
+  /** @nullable */
+  midwifeAuthorityKind?: UpdateMedicationDtoMidwifeAuthorityKind;
   /**
      * @minimum 0
      * @maximum 9999999999.99

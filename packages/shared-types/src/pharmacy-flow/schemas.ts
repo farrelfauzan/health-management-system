@@ -1,4 +1,5 @@
 import { moneyAmountSchema } from '#billing/schemas';
+import { doctorAuthorityKindSchema } from '#doctor-management/schemas';
 import { chargeModeSchema, fulfilmentSiteSchema } from '#laboratory/schemas';
 import { z } from 'zod';
 
@@ -201,6 +202,13 @@ export const createMedicationSchema = z
     /** P24-T04. Whether a midwife may prescribe this item. */
     isMidwifePrescribable: z.boolean().optional(),
     /**
+     * P25-T05. Which authority a midwife needs to write this item. Omitted or
+     * null is the ordinary case — the item is inside her own authority, and
+     * `isMidwifePrescribable` alone decides. A kind here makes it
+     * AUTHORITY_BOUND: she may write it only holding that kewenangan.
+     */
+    midwifeAuthorityKind: doctorAuthorityKindSchema.nullable().optional(),
+    /**
      * Selling price per `unit`, in rupiah. Optional because a catalog row can
      * exist before the clinic has priced it — invoice generation then reports
      * the dispensed item as an `UNPRICED_MEDICATION` gap rather than billing it
@@ -222,6 +230,8 @@ export const updateMedicationSchema = z
     reorderLevel: medicationReorderLevelSchema.optional(),
     isVaccine: z.boolean().optional(),
     isMidwifePrescribable: z.boolean().optional(),
+    /** `null` releases the item back to her own authority. */
+    midwifeAuthorityKind: doctorAuthorityKindSchema.nullable().optional(),
     /** `null` un-prices the item, so its next dispense is a gap again. */
     unitPrice: moneyAmountSchema.nullable().optional(),
   })

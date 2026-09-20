@@ -887,6 +887,63 @@
           "submit": "Cabut kewenangan",
           "error": "Kewenangan gagal dicabut. Silakan coba lagi."
         }
+      },
+      "mandates": {
+        "title": "Pelimpahan Dokter",
+        "description": "Pelimpahan tertulis dari dokter kepada bidan: mandat tetap di bawah tanggung jawab dokter, delegatif berpindah kepada bidan selama dokter berhalangan (PP 28/2024 Pasal 745).",
+        "empty": "Belum ada pelimpahan yang dicatat.",
+        "loadError": "Pelimpahan gagal dimuat.",
+        "add": "Catat pelimpahan",
+        "mandatedBy": "Diberikan oleh {name}",
+        "procedures": "Tindakan",
+        "downloadInstruction": "Unduh surat pelimpahan",
+        "downloadError": "Surat pelimpahan gagal diunduh.",
+        "kind": {
+          "MANDATE": "Mandat",
+          "DELEGATION": "Delegatif"
+        },
+        "kindHint": {
+          "MANDATE": "Tanggung jawab tetap pada dokter pemberi mandat, yang mengawasi pelaksanaannya.",
+          "DELEGATION": "Tanggung jawab berpindah kepada bidan, dan hanya berlaku selama dokter berhalangan."
+        },
+        "policyWarning": {
+          "DELEGATION_OUTSIDE_ABSENCE_WINDOW": "Masa berlaku di luar rentang 1–3 bulan yang digambarkan PP 28/2024 Pasal 745 ayat (3) untuk dokter yang berhalangan. Dicatat, bukan ditolak.",
+          "OVERLAPS_EXISTING_MANDATE": "Masih ada pelimpahan lain yang berlaku pada rentang tanggal ini."
+        },
+        "form": {
+          "title": "Catat pelimpahan",
+          "description": "Catat pelimpahan tertulis yang diterima {name} beserta surat dari dokter pemberinya.",
+          "kind": "Bentuk pelimpahan",
+          "kindPlaceholder": "Pilih bentuk pelimpahan",
+          "kindHint": "Mandat tetap di bawah tanggung jawab dokter; delegatif memindahkannya kepada bidan.",
+          "mandatingDoctor": "Dokter pemberi pelimpahan",
+          "instruction": "Instruksi dokter",
+          "procedures": "Tindakan yang dilimpahkan (ICD-9-CM)",
+          "proceduresPlaceholder": "Cari kode atau nama tindakan",
+          "noProceduresYet": "Belum ada tindakan dipilih. Pelimpahan hanya berlaku untuk tindakan yang tercantum di sini.",
+          "removeProcedure": "Hapus tindakan {code}",
+          "instructionFile": "Surat pelimpahan (PDF atau gambar)",
+          "instructionFileHint": "Wajib: pelimpahan harus tertulis (PP 28/2024 Pasal 745 ayat (2)). Maksimal 20 MB.",
+          "kindRequired": "Pilih bentuk pelimpahan.",
+          "mandatingDoctorRequired": "Pilih dokter pemberi pelimpahan.",
+          "instructionRequired": "Instruksi dokter wajib diisi.",
+          "proceduresRequired": "Pilih minimal satu tindakan yang dilimpahkan.",
+          "tooManyProcedures": "Jumlah tindakan melebihi batas satu pelimpahan.",
+          "validFromRequired": "Tanggal mulai berlaku wajib diisi.",
+          "validUntilRequired": "Tanggal akhir berlaku wajib diisi.",
+          "instructionFileRequired": "Surat pelimpahan wajib diunggah.",
+          "invalidParties": "Pelimpahan hanya dapat dicatat dari seorang dokter kepada seorang bidan yang berbeda.",
+          "instructionUnreadable": "Surat pelimpahan tidak dapat dibaca kembali. Unggah ulang berkasnya.",
+          "uploading": "Mengunggah surat pelimpahan...",
+          "saving": "Menyimpan...",
+          "submit": "Simpan",
+          "error": "Pelimpahan gagal disimpan. Silakan coba lagi."
+        },
+        "revokeDialog": {
+          "title": "Cabut pelimpahan",
+          "description": "Cabut pelimpahan yang diberikan {doctor} kepada {name}. Tindakan yang sudah tercatat di bawahnya tetap menyebut pelimpahan ini.",
+          "error": "Pelimpahan gagal dicabut. Silakan coba lagi."
+        }
       }
     },
     "portal": {
@@ -1081,6 +1138,10 @@
           "none": "Bukan tindakan implan",
           "INSERTION": "Pemasangan implan",
           "REMOVAL": "Pencabutan implan"
+        },
+        "mandate": {
+          "MANDATE": "Di bawah mandat {name}",
+          "DELEGATION": "Delegatif dari {name}"
         }
       },
       "vitals": {

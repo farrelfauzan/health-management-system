@@ -159,6 +159,8 @@ export const AuditAction = {
   DOCTOR_AUTHORITY_UPDATED: 'DOCTOR_AUTHORITY_UPDATED',
   DOCTOR_AUTHORITY_REVOKED: 'DOCTOR_AUTHORITY_REVOKED',
   MIDWIFE_AUTHORITY_REFUSED: 'MIDWIFE_AUTHORITY_REFUSED',
+  DOCTOR_MANDATE_GRANTED: 'DOCTOR_MANDATE_GRANTED',
+  DOCTOR_MANDATE_REVOKED: 'DOCTOR_MANDATE_REVOKED',
   TAX_SETTINGS_UPDATED: 'TAX_SETTINGS_UPDATED',
   TAX_CODE_CHANGED: 'TAX_CODE_CHANGED',
   TAX_ASSIGNMENT_CHANGED: 'TAX_ASSIGNMENT_CHANGED',
@@ -410,6 +412,14 @@ export const MidwifeFormularyGroup = {
 } as const
 
 export type MidwifeFormularyGroup = (typeof MidwifeFormularyGroup)[keyof typeof MidwifeFormularyGroup]
+
+
+export const DoctorMandateKind = {
+  MANDATE: 'MANDATE',
+  DELEGATION: 'DELEGATION'
+} as const
+
+export type DoctorMandateKind = (typeof DoctorMandateKind)[keyof typeof DoctorMandateKind]
 
 
 export const DoctorAuthorityKind = {

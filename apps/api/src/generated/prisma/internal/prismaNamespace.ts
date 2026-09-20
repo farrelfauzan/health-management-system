@@ -384,6 +384,7 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 
 
 export const ModelName = {
+  DoctorMandate: 'DoctorMandate',
   User: 'User',
   LoginAttempt: 'LoginAttempt',
   RefreshToken: 'RefreshToken',
@@ -520,10 +521,84 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientDeliveryConsent" | "documentDelivery" | "documentDeliveryLink" | "patientAllergy" | "doctorCredentialOption" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorLicenseExpiryNotice" | "doctorAuthority" | "doctorAuthorityExpiryNotice" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "midwifeFormularyItem" | "prescription" | "prescriptionMedication" | "prescriptionItemComponent" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "taxSettings" | "taxCode" | "taxCodeRate" | "taxCategoryDefault" | "taxReportDraft" | "taxReportDocument" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "satusehatSubmissionResource" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "vaultDocumentExpiryNotice" | "vaultDocumentShare" | "userOffboardingNotice" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit" | "documentType" | "documentTypeApprover" | "managedDocument" | "documentApprovalRequest" | "documentApprovalApprover" | "documentApprovalDecision" | "labTest" | "labReferenceRange" | "labPanel" | "labPanelMember" | "labOrderCounter" | "labOrder" | "labOrderItem" | "labSpecimenCounter" | "labSpecimen" | "labResult" | "laboratorySettings" | "labReport" | "immunization" | "province" | "regency" | "district" | "village" | "bugReport" | "bugReportCounter"
+    modelProps: "doctorMandate" | "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientDeliveryConsent" | "documentDelivery" | "documentDeliveryLink" | "patientAllergy" | "doctorCredentialOption" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorLicenseExpiryNotice" | "doctorAuthority" | "doctorAuthorityExpiryNotice" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "midwifeFormularyItem" | "prescription" | "prescriptionMedication" | "prescriptionItemComponent" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "taxSettings" | "taxCode" | "taxCodeRate" | "taxCategoryDefault" | "taxReportDraft" | "taxReportDocument" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "satusehatSubmissionResource" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "vaultDocumentExpiryNotice" | "vaultDocumentShare" | "userOffboardingNotice" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit" | "documentType" | "documentTypeApprover" | "managedDocument" | "documentApprovalRequest" | "documentApprovalApprover" | "documentApprovalDecision" | "labTest" | "labReferenceRange" | "labPanel" | "labPanelMember" | "labOrderCounter" | "labOrder" | "labOrderItem" | "labSpecimenCounter" | "labSpecimen" | "labResult" | "laboratorySettings" | "labReport" | "immunization" | "province" | "regency" | "district" | "village" | "bugReport" | "bugReportCounter"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
+    DoctorMandate: {
+      payload: Prisma.$DoctorMandatePayload<ExtArgs>
+      fields: Prisma.DoctorMandateFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.DoctorMandateFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorMandatePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.DoctorMandateFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorMandatePayload>
+        }
+        findFirst: {
+          args: Prisma.DoctorMandateFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorMandatePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.DoctorMandateFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorMandatePayload>
+        }
+        findMany: {
+          args: Prisma.DoctorMandateFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorMandatePayload>[]
+        }
+        create: {
+          args: Prisma.DoctorMandateCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorMandatePayload>
+        }
+        createMany: {
+          args: Prisma.DoctorMandateCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.DoctorMandateCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorMandatePayload>[]
+        }
+        delete: {
+          args: Prisma.DoctorMandateDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorMandatePayload>
+        }
+        update: {
+          args: Prisma.DoctorMandateUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorMandatePayload>
+        }
+        deleteMany: {
+          args: Prisma.DoctorMandateDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.DoctorMandateUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.DoctorMandateUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorMandatePayload>[]
+        }
+        upsert: {
+          args: Prisma.DoctorMandateUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DoctorMandatePayload>
+        }
+        aggregate: {
+          args: Prisma.DoctorMandateAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateDoctorMandate>
+        }
+        groupBy: {
+          args: Prisma.DoctorMandateGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DoctorMandateGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.DoctorMandateCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DoctorMandateCountAggregateOutputType> | number
+        }
+      }
+    }
     User: {
       payload: Prisma.$UserPayload<ExtArgs>
       fields: Prisma.UserFieldRefs
@@ -9517,6 +9592,30 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
 
 
+export const DoctorMandateScalarFieldEnum = {
+  id: 'id',
+  midwifeDoctorId: 'midwifeDoctorId',
+  mandatingDoctorId: 'mandatingDoctorId',
+  kind: 'kind',
+  instruction: 'instruction',
+  icd9cmCodes: 'icd9cmCodes',
+  validFrom: 'validFrom',
+  validUntil: 'validUntil',
+  instructionStorageKey: 'instructionStorageKey',
+  instructionMimeType: 'instructionMimeType',
+  instructionSizeBytes: 'instructionSizeBytes',
+  revokedAt: 'revokedAt',
+  revokedById: 'revokedById',
+  revokeReason: 'revokeReason',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type DoctorMandateScalarFieldEnum = (typeof DoctorMandateScalarFieldEnum)[keyof typeof DoctorMandateScalarFieldEnum]
+
+
 export const UserScalarFieldEnum = {
   id: 'id',
   email: 'email',
@@ -10140,6 +10239,7 @@ export const ProcedureScalarFieldEnum = {
   notes: 'notes',
   performedAt: 'performedAt',
   contraceptiveImplantAction: 'contraceptiveImplantAction',
+  mandateId: 'mandateId',
   recordedById: 'recordedById',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
@@ -10163,6 +10263,7 @@ export const MedicationScalarFieldEnum = {
   unitPrice: 'unitPrice',
   isVaccine: 'isVaccine',
   isMidwifePrescribable: 'isMidwifePrescribable',
+  midwifeAuthorityKind: 'midwifeAuthorityKind',
   taxCodeId: 'taxCodeId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
@@ -10177,6 +10278,7 @@ export const MidwifeFormularyItemScalarFieldEnum = {
   code: 'code',
   displayName: 'displayName',
   group: 'group',
+  authorityKind: 'authorityKind',
   regulationBasis: 'regulationBasis',
   kfaCodes: 'kfaCodes',
   kfaTemplateCodes: 'kfaTemplateCodes',
@@ -11663,9 +11765,16 @@ export type ListStringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaMod
 
 
 /**
- * Reference to a field of type 'Boolean'
+ * Reference to a field of type 'DoctorMandateKind'
  */
-export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+export type EnumDoctorMandateKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DoctorMandateKind'>
+    
+
+
+/**
+ * Reference to a field of type 'DoctorMandateKind[]'
+ */
+export type ListEnumDoctorMandateKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DoctorMandateKind[]'>
     
 
 
@@ -11694,6 +11803,13 @@ export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'In
  * Reference to a field of type 'Int[]'
  */
 export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Boolean'
+ */
+export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
     
 
 
@@ -13374,6 +13490,7 @@ export type PrismaClientOptions = ({
   queryPlanCacheMaxSize?: number
 }
 export type GlobalOmitConfig = {
+  doctorMandate?: Prisma.DoctorMandateOmit
   user?: Prisma.UserOmit
   loginAttempt?: Prisma.LoginAttemptOmit
   refreshToken?: Prisma.RefreshTokenOmit

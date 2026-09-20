@@ -1,5 +1,6 @@
 import {
   ApplyMidwifeFormularyInput,
+  DoctorAuthorityKindValue,
   MIDWIFE_FORMULARY_MEDICATION_NOT_MATCHED_ERROR_CODE,
   MidwifeFormularyApplyItemResponse,
   MidwifeFormularyApplyResponse,
@@ -68,6 +69,7 @@ export class MidwifeFormularyService {
     if (idsToFlag.length > 0) {
       await this.midwifeFormularyRepository.flagMidwifePrescribable(idsToFlag);
     }
+    await this.bindAuthorityKinds(medicationIds, applicable);
     const flagged = new Set(idsToFlag);
     const items: MidwifeFormularyApplyItemResponse[] = medicationIds.map((medicationId) => ({
       medicationId,
@@ -78,6 +80,28 @@ export class MidwifeFormularyService {
       alreadyFlaggedCount: medicationIds.length - idsToFlag.length,
       items,
     };
+  }
+
+  /**
+   * Stamps every applied row that an `AUTHORITY_BOUND` template item matched
+   * with the authority that item names (P25-T05). One statement per kind: the
+   * template holds a handful of them, and the write is a set membership test.
+   */
+  private async bindAuthorityKinds(
+    medicationIds: string[],
+    applicable: ReadonlyMap<string, MidwifeFormularyMatch>,
+  ): Promise<void> {
+    const idsByKind = new Map<DoctorAuthorityKindValue, string[]>();
+    for (const medicationId of medicationIds) {
+      const authorityKind = applicable.get(medicationId)?.authorityKind ?? null;
+      if (authorityKind === null) {
+        continue;
+      }
+      idsByKind.set(authorityKind, [...(idsByKind.get(authorityKind) ?? []), medicationId]);
+    }
+    for (const [authorityKind, ids] of idsByKind) {
+      await this.midwifeFormularyRepository.bindMidwifeAuthorityKind(ids, authorityKind);
+    }
   }
 
   private assertAllMatched(
@@ -191,6 +215,7 @@ function toItemResponse(item: MidwifeFormularyItemRecord): MidwifeFormularyItemR
     code: item.code,
     displayName: item.displayName,
     group: item.group,
+    ...(item.authorityKind === null ? {} : { authorityKind: item.authorityKind }),
     regulationBasis: item.regulationBasis,
     kfaCodes: item.kfaCodes,
     kfaTemplateCodes: item.kfaTemplateCodes,

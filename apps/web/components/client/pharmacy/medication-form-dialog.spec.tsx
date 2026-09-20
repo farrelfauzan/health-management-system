@@ -171,3 +171,70 @@ describe('MedicationFormDialog selling price', () => {
     expect(createRequestMock).not.toHaveBeenCalled();
   });
 });
+
+// P25-T05 (FR-FORM-01). Flagged for a bidan's formulary is not the same as
+// hers to write: a bound item names the kewenangan she needs.
+describe('MedicationFormDialog midwife authority', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    createRequestMock.mockResolvedValue(buildEnvelope(PRICED_MEDICATION) as never);
+    updateRequestMock.mockResolvedValue(buildEnvelope(PRICED_MEDICATION) as never);
+  });
+
+  it('hides the authority field until the item is in the midwife formulary', async () => {
+    render(
+      <MedicationFormDialog open onOpenChange={() => {}} medication={null} onSaved={() => {}} />,
+    );
+
+    expect(screen.queryByLabelText('Authority a midwife needs')).not.toBeInTheDocument();
+
+    await userEvent.click(screen.getByLabelText(/midwife may prescribe/i));
+
+    expect(await screen.findByLabelText('Authority a midwife needs')).toBeInTheDocument();
+  });
+
+  it('sends null for an item that sits inside her own authority', async () => {
+    render(
+      <MedicationFormDialog open onOpenChange={() => {}} medication={null} onSaved={() => {}} />,
+    );
+
+    await userEvent.type(screen.getByLabelText(/^Medication code/), 'MED-FE-001');
+    await userEvent.type(screen.getByLabelText(/^Medication name/), 'Tablet Tambah Darah');
+    await userEvent.click(screen.getByLabelText(/midwife may prescribe/i));
+    await userEvent.click(screen.getByRole('button', { name: 'Save medication' }));
+
+    await waitFor(() =>
+      expect(createRequestMock).toHaveBeenCalledWith(
+        expect.objectContaining({ isMidwifePrescribable: true, midwifeAuthorityKind: null }),
+      ),
+    );
+  });
+
+  it('badges a bound item with the authority it names, and sends that kind', async () => {
+    render(
+      <MedicationFormDialog
+        open
+        onOpenChange={() => {}}
+        medication={{
+          ...PRICED_MEDICATION,
+          isMidwifePrescribable: true,
+          midwifeAuthorityKind: 'NO_OTHER_WORKER',
+        }}
+        onSaved={() => {}}
+      />,
+    );
+
+    expect(
+      await screen.findByText('Needs authority: No other health worker available'),
+    ).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Save medication' }));
+
+    await waitFor(() =>
+      expect(updateRequestMock).toHaveBeenCalledWith(
+        PRICED_MEDICATION.id,
+        expect.objectContaining({ midwifeAuthorityKind: 'NO_OTHER_WORKER' }),
+      ),
+    );
+  });
+});

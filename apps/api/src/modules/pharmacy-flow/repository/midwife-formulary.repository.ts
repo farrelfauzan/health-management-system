@@ -1,4 +1,8 @@
-import { MidwifeFormularyCandidateRecord, MidwifeFormularyItemRecord } from '@hms/shared-types';
+import {
+  DoctorAuthorityKindValue,
+  MidwifeFormularyCandidateRecord,
+  MidwifeFormularyItemRecord,
+} from '@hms/shared-types';
 import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from '../../../common/prisma/prisma.service';
@@ -46,6 +50,24 @@ export class MidwifeFormularyRepository {
     const result = await this.prisma.medication.updateMany({
       where: { id: { in: medicationIds }, deletedAt: null, isMidwifePrescribable: false },
       data: { isMidwifePrescribable: true },
+    });
+    return result.count;
+  }
+
+  /**
+   * Binds rows matched by an `AUTHORITY_BOUND` template item to the authority
+   * that item names (P25-T05). Written separately from the flag because the
+   * two answer different questions and a row can already be flagged while
+   * still needing the binding — an existing kind is never overwritten, for
+   * the same reason the flag is never cleared: the clinic's own edit wins.
+   */
+  async bindMidwifeAuthorityKind(
+    medicationIds: string[],
+    authorityKind: DoctorAuthorityKindValue,
+  ): Promise<number> {
+    const result = await this.prisma.medication.updateMany({
+      where: { id: { in: medicationIds }, deletedAt: null, midwifeAuthorityKind: null },
+      data: { midwifeAuthorityKind: authorityKind },
     });
     return result.count;
   }

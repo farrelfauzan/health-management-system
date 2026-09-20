@@ -2,12 +2,14 @@ import {
   Actor,
   ActorScopeResolution,
   ClinicalRequestDocumentView,
+  DoctorAuthorityKindValue,
   ExpiryReportResponse,
   getCalendarDateInTimeZone,
   DispenseRecordDetailRecord,
   DispenseRecordResponse,
   isPrescriptionDispensable,
   MEDICATION_NOT_MIDWIFE_PRESCRIBABLE_ERROR_CODE,
+  MIDWIFE_AUTHORITY_REQUIRED_ERROR_CODE,
   MedicationRecord,
   MedicationResponse,
   PrescribingClinicianRecord,
@@ -27,10 +29,13 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
+import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { AuditAction } from '../../../generated/prisma/client';
 import { AuthRepository } from '../../auth/repository/auth.repository';
 import { ClinicProfileService } from '../../billing/service/clinic-profile.service';
 import { ClinicalRequestDocumentService } from '../../clinical-request-document/service/clinical-request-document.service';
+import { DoctorAuthorityService } from '../../doctor-management/service/doctor-authority.service';
 import { buildPrescriptionContext } from './build-prescription-context';
 import { CreateDispenseDto } from '../dto/create-dispense.dto';
 import { CreateMedicationDto } from '../dto/create-medication.dto';
@@ -53,6 +58,8 @@ export class PharmacyFlowService {
     private readonly authRepository: AuthRepository,
     private readonly clinicProfileService: ClinicProfileService,
     private readonly clinicalRequestDocumentService: ClinicalRequestDocumentService,
+    private readonly doctorAuthorityService: DoctorAuthorityService,
+    private readonly auditService: AuditService,
     configService: ConfigService,
   ) {
     this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? 'Asia/Jakarta';
@@ -115,6 +122,7 @@ export class PharmacyFlowService {
         reorderLevel: payload.reorderLevel,
         isVaccine: payload.isVaccine,
         isMidwifePrescribable: payload.isMidwifePrescribable,
+        midwifeAuthorityKind: payload.midwifeAuthorityKind,
         unitPrice: payload.unitPrice,
       }),
     );
@@ -223,6 +231,7 @@ export class PharmacyFlowService {
     await this.assertMedicationsExist(prescribedMedicationIds);
     if (clinician.profession === 'MIDWIFE') {
       await this.assertMidwifePrescribable(prescribedMedicationIds);
+      await this.assertMidwifeAuthorityForMedications(doctorId, prescribedMedicationIds, currentUser);
     }
 
     if (payload.encounterId) {
@@ -535,6 +544,57 @@ export class PharmacyFlowService {
     });
   }
 
+  /**
+   * P25-T05 (FR-AUTH-05). Some of what a bidan may prescribe she may prescribe
+   * only under an authority: `isMidwifePrescribable` says the item is in her
+   * formulary, and `midwifeAuthorityKind` says which authority it sits under.
+   * Null is the ordinary case and needs nothing.
+   *
+   * Asked per kind rather than per item, so a resep with three oxytocin lines
+   * costs one lookup and names one authority in the refusal. Audited before
+   * the 422 because `AuditInterceptor` never writes on a 4xx.
+   */
+  private async assertMidwifeAuthorityForMedications(
+    doctorId: string,
+    medicationIds: string[],
+    currentUser: CurrentUser,
+  ): Promise<void> {
+    const medications = await this.pharmacyFlowRepository.findActiveMedicationsByIds(
+      medicationIds,
+      this.getClinicDate(new Date()),
+    );
+    const boundIdsByKind = new Map<DoctorAuthorityKindValue, string[]>();
+    for (const medication of medications) {
+      // Nullish rather than truthy: a projection that simply omits the column
+      // must read as unbound, never as bound to `undefined`.
+      const kind = (medication.midwifeAuthorityKind ?? null) as DoctorAuthorityKindValue | null;
+      if (kind === null) {
+        continue;
+      }
+      boundIdsByKind.set(kind, [...(boundIdsByKind.get(kind) ?? []), medication.id]);
+    }
+    if (boundIdsByKind.size === 0) {
+      return;
+    }
+    const onDate = getCalendarDateInTimeZone(new Date(), this.clinicTimeZone);
+    for (const [kind, boundMedicationIds] of boundIdsByKind) {
+      if (await this.doctorAuthorityService.hasActiveAuthority({ doctorId, kind, onDate })) {
+        continue;
+      }
+      await this.auditService.record({
+        action: AuditAction.MIDWIFE_AUTHORITY_REFUSED,
+        resource: 'prescription',
+        actorUserId: currentUser.sub,
+        metadata: { kind, medicationIds: boundMedicationIds, doctorId },
+      });
+      throw new UnprocessableEntityException({
+        code: MIDWIFE_AUTHORITY_REQUIRED_ERROR_CODE,
+        message: `This midwife holds no active ${kind} authority (PP 28/2024 Pasal 744); a doctor must write this medicine`,
+        errors: { kind, medicationIds: boundMedicationIds },
+      });
+    }
+  }
+
   private assertPrescriptionDispensable(prescription: PrescriptionDetailRecord): void {
     if (!isPrescriptionDispensable(prescription.status)) {
       throw new ConflictException(
@@ -702,6 +762,7 @@ export class PharmacyFlowService {
       needsReorder: medication.stockQty <= medication.reorderLevel,
       isVaccine: medication.isVaccine,
       isMidwifePrescribable: medication.isMidwifePrescribable,
+      midwifeAuthorityKind: medication.midwifeAuthorityKind ?? undefined,
       unitPrice: medication.unitPrice ?? undefined,
       createdAt: medication.createdAt.toISOString(),
       updatedAt: medication.updatedAt.toISOString(),

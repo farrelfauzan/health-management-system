@@ -105,6 +105,17 @@
       "applying": "Menerapkan…",
       "applied": "{count, plural, =0 {Tidak ada obat baru yang ditandai} other {# obat ditandai boleh diresepkan bidan}}",
       "applyError": "Formularium bidan tidak dapat diterapkan."
+    },
+    "midwifeAuthorityKind": "Kewenangan yang diperlukan bidan",
+    "midwifeAuthorityKindOwn": "Kewenangan sendiri (tanpa pelimpahan)",
+    "midwifeAuthorityKindDescription": "Pilih kewenangan bila obat ini hanya boleh ditulis bidan yang memilikinya. Tanpa kewenangan itu resepnya ditolak dan pasien harus ke dokter (PP 28/2024 Pasal 744).",
+    "midwifeAuthorityRequired": "Perlu kewenangan: {kind}",
+    "midwifeAuthorityKindOption": {
+      "IUD_IMPLANT": "Pemasangan AKDR & implan",
+      "MTBS": "MTBS (anak sakit)",
+      "PROGRAM_IMMUNIZATION": "Imunisasi program",
+      "INTEGRATED_ANC": "ANC terintegrasi",
+      "NO_OTHER_WORKER": "Daerah tanpa tenaga kesehatan lain"
     }
   }
 }

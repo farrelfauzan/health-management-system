@@ -6,6 +6,7 @@ import type { ProcedureResponse } from '@hms/shared-types';
 import { Icon } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { ProcedureMandateNote } from '#components/client/encounters/procedure-mandate-note';
 import { InlineNotice } from '#components/client/shared/inline-notice';
 import { encounterClinicalDataControllerRemoveProcedureV1 } from '#lib/api/generated/encounters/encounters';
 import { notifyApiError } from '#lib/api/notify-api-error';
@@ -49,6 +50,7 @@ export function EncounterProcedureRow({
             {t(`encounters.procedure.implantAction.${procedure.contraceptiveImplantAction}`)}
           </p>
         ) : null}
+        {procedure.mandate ? <ProcedureMandateNote mandate={procedure.mandate} /> : null}
         {procedure.notes ? <p className="text-xs text-slate-500">{procedure.notes}</p> : null}
         {actionError ? <InlineNotice tone="error">{actionError}</InlineNotice> : null}
       </div>
