@@ -175,6 +175,157 @@ describe('SATUSEHAT submission outbox against Postgres', () => {
     return { admissionId: admission.id, assignmentId: assignment.id, bedId: bed.id };
   }
 
+  /**
+   * A mother who arrives in labour (P24-T09): no consultation to admit from,
+   * so the admission opens its own registration and encounter in the same
+   * transaction. Returns everything the assertions and the teardown need.
+   */
+  async function admitDirectly(): Promise<{
+    admissionId: string;
+    assignmentId: string;
+    bedId: string;
+    encounterId: string;
+    registrationId: string;
+  }> {
+    const patient = await prisma.patientProfile.create({
+      data: {
+        sex: 'FEMALE',
+        mrn: `OUTBOX-${randomUUID().slice(0, 18)}`,
+        fullName: 'Outbox Direct Admission',
+        dateOfBirth: new Date('1995-05-05'),
+        phoneNumber: '0800000000',
+        address: 'Jl. Integrasi 2',
+      },
+    });
+    createdPatientIds.push(patient.id);
+    const doctor = await prisma.doctorProfile.create({
+      data: {
+        licenseNumber: `OUTBOX-${randomUUID().slice(0, 18)}`,
+        fullName: 'Bidan Outbox',
+        specialtyId,
+      },
+    });
+    createdDoctorIds.push(doctor.id);
+    const bed = await prisma.bed.create({
+      data: { roomId, code: `OBB-${randomUUID().slice(0, 8)}` },
+    });
+    const admission = await admissionRepository.admitPatient({
+      patientId: patient.id,
+      admittingDoctorId: doctor.id,
+      bedId: bed.id,
+      admittedAt: new Date(),
+    });
+    createdAdmissionIds.push(admission.id);
+    const encounterId = admission.sourceEncounterId as string;
+    createdEncounterIds.push(encounterId);
+    const encounter = await prisma.encounter.findUniqueOrThrow({
+      where: { id: encounterId },
+      select: { registrationId: true },
+    });
+    createdRegistrationIds.push(encounter.registrationId);
+    return {
+      admissionId: admission.id,
+      assignmentId: admission.bedAssignments[0]?.id as string,
+      bedId: bed.id,
+      encounterId,
+      registrationId: encounter.registrationId,
+    };
+  }
+
+  describe('a direct admission opens its own visit', () => {
+    it('creates an ADMISSION registration outside the queue and an open encounter', async () => {
+      const stay = await admitDirectly();
+
+      const registration = await prisma.registration.findUniqueOrThrow({
+        where: { id: stay.registrationId },
+      });
+      expect(registration.type).toBe('ADMISSION');
+      expect(registration.status).toBe('CHECKED_IN');
+      expect(registration.checkedInAt).not.toBeNull();
+      // Nobody is waiting to be called, so the stay draws no ticket.
+      expect(registration.queueNumber).toBeNull();
+      expect(registration.queueDate).toBeNull();
+      expect(registration.poliQueueNumber).toBeNull();
+      const encounter = await prisma.encounter.findUniqueOrThrow({
+        where: { id: stay.encounterId },
+      });
+      expect(encounter.status).toBe('IN_PROGRESS');
+    });
+
+    it('enqueues exactly one ENCOUNTER row when the stay is discharged, then closed', async () => {
+      const stay = await admitDirectly();
+
+      await admissionRepository.dischargeAdmission({
+        admissionId: stay.admissionId,
+        currentAssignmentId: stay.assignmentId,
+        currentBedId: stay.bedId,
+        dischargedAt: new Date(),
+        dischargeDisposition: 'HOME',
+      });
+      await encounterRepository.closeEncounter({
+        id: stay.encounterId,
+        registrationId: stay.registrationId,
+        status: 'FINISHED',
+        registrationStatus: 'COMPLETED',
+        endedAt: new Date(),
+      });
+
+      const actualRows = await prisma.satusehatSubmission.findMany({
+        where: { encounterId: stay.encounterId, kind: 'ENCOUNTER' },
+      });
+      expect(actualRows).toHaveLength(1);
+    });
+
+    it('enqueues exactly one ENCOUNTER row when the stay is closed, then discharged', async () => {
+      const stay = await admitDirectly();
+
+      await encounterRepository.closeEncounter({
+        id: stay.encounterId,
+        registrationId: stay.registrationId,
+        status: 'FINISHED',
+        registrationStatus: 'COMPLETED',
+        endedAt: new Date(),
+      });
+      await admissionRepository.dischargeAdmission({
+        admissionId: stay.admissionId,
+        currentAssignmentId: stay.assignmentId,
+        currentBedId: stay.bedId,
+        dischargedAt: new Date(),
+        dischargeDisposition: 'HOME',
+      });
+
+      const actualRows = await prisma.satusehatSubmission.findMany({
+        where: { encounterId: stay.encounterId, kind: 'ENCOUNTER' },
+      });
+      expect(actualRows).toHaveLength(1);
+    });
+
+    it('retracts the visit it opened when the admission is cancelled, and reports nothing', async () => {
+      const stay = await admitDirectly();
+
+      await admissionRepository.cancelAdmission({
+        admissionId: stay.admissionId,
+        currentAssignmentId: stay.assignmentId,
+        currentBedId: stay.bedId,
+        cancelledAt: new Date(),
+        cancelReason: 'Dibuat pada pasien yang salah',
+      });
+
+      const encounter = await prisma.encounter.findUniqueOrThrow({
+        where: { id: stay.encounterId },
+      });
+      expect(encounter.status).toBe('CANCELLED');
+      const registration = await prisma.registration.findUniqueOrThrow({
+        where: { id: stay.registrationId },
+      });
+      expect(registration.status).toBe('CANCELLED');
+      const actualRows = await prisma.satusehatSubmission.findMany({
+        where: { encounterId: stay.encounterId },
+      });
+      expect(actualRows).toHaveLength(0);
+    });
+  });
+
   it('creates the PENDING outbox row in the same transaction as a FINISHED close', async () => {
     const { encounterId, registrationId } = await createOpenEncounter();
 

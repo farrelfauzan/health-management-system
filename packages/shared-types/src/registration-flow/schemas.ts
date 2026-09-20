@@ -48,8 +48,12 @@ export function canTransitionRegistrationStatus(
   return REGISTRATION_STATUS_TRANSITIONS[fromStatus].includes(toStatus);
 }
 
-/** What a visit is for. A LAB_ONLY visit opens no encounter (P18-T10). */
-export const REGISTRATION_TYPES = ['CONSULTATION', 'LAB_ONLY'] as const;
+/**
+ * What a visit is for. A LAB_ONLY visit opens no encounter (P18-T10), and an
+ * ADMISSION visit is opened by a direct admission rather than by the front
+ * desk (P24-T09) — it holds no antrian number and reaches no queue board.
+ */
+export const REGISTRATION_TYPES = ['CONSULTATION', 'LAB_ONLY', 'ADMISSION'] as const;
 
 export const registrationTypeSchema = z.enum(REGISTRATION_TYPES);
 

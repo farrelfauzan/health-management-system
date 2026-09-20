@@ -733,6 +733,10 @@ enum LabOrderSource {
 enum RegistrationType {
   CONSULTATION
   LAB_ONLY
+  /// A direct admission's own visit (P24-T09, FR-IP-03): a mother who arrives
+  /// in labour is admitted without queueing, so the registration that carries
+  /// her chart holds no antrian number and never reaches the poli board.
+  ADMISSION
 
   @@map("registration_type")
 }
@@ -2242,7 +2246,8 @@ model Registration {
   patientId       String             @map("patient_id") @db.Uuid
   appointmentId   String?            @unique @map("appointment_id") @db.Uuid
   /// What the visit is for. A LAB_ONLY visit skips the poli queue and never
-  /// opens an encounter (P18-T10).
+  /// opens an encounter (P18-T10); an ADMISSION visit skips the queue too and
+  /// is opened by the admission itself (P24-T09).
   type            RegistrationType   @default(CONSULTATION)
   status          RegistrationStatus @default(PENDING)
   /// Daily antrian ticket, allocated from `QueueCounter` when the

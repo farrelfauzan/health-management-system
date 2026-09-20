@@ -529,7 +529,8 @@ export type LabOrderSource = (typeof LabOrderSource)[keyof typeof LabOrderSource
 
 export const RegistrationType = {
   CONSULTATION: 'CONSULTATION',
-  LAB_ONLY: 'LAB_ONLY'
+  LAB_ONLY: 'LAB_ONLY',
+  ADMISSION: 'ADMISSION'
 } as const
 
 export type RegistrationType = (typeof RegistrationType)[keyof typeof RegistrationType]

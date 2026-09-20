@@ -8,6 +8,7 @@ import type {
   ServiceTariffCategoryValue,
 } from '#billing/schemas';
 import type { ClinicianProfessionValue } from '#doctor-management/schemas';
+import type { RegistrationTypeValue } from '#registration-flow/schemas';
 import type { EncounterStatusValue } from '#emr/schemas';
 import type { RoomClassSummaryRecord } from '#room-management/types';
 
@@ -306,7 +307,7 @@ export type IssueInvoiceRecordPayload = {
 export type BillingSourceVisitRecord = {
   id: string;
   patientId: string;
-  type: 'CONSULTATION' | 'LAB_ONLY';
+  type: RegistrationTypeValue;
   status: 'PENDING' | 'CHECKED_IN' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
 };
 

@@ -1085,7 +1085,9 @@
         "REFERRED": "Dirujuk ke fasilitas lain",
         "DIED": "Meninggal",
         "OTHER": "Lainnya"
-      }
+      },
+      "chart": "Rekam kunjungan",
+      "openChart": "Buka kunjungan"
     },
     "organization": {
       "title": "Organisasi",

@@ -173,6 +173,13 @@ describe('Admission flow against Postgres', () => {
       where: { admission: { patientId: { in: patientIds } } },
     });
     await prisma.admission.deleteMany({ where: { patientId: { in: patientIds } } });
+    // A direct admission opens its own registration and encounter (P24-T09),
+    // and both restrict the patient delete below.
+    await prisma.satusehatSubmission.deleteMany({
+      where: { encounter: { patientId: { in: patientIds } } },
+    });
+    await prisma.encounter.deleteMany({ where: { patientId: { in: patientIds } } });
+    await prisma.registration.deleteMany({ where: { patientId: { in: patientIds } } });
     await prisma.bed.deleteMany({ where: { roomId: { in: roomIds } } });
     await prisma.room.deleteMany({ where: { id: { in: roomIds } } });
     await prisma.ward.deleteMany({ where: { id: { in: wardIds } } });
@@ -252,6 +259,17 @@ describe('Admission flow against Postgres', () => {
     expect(response.body.data.status).toBe('ADMITTED');
     expect(response.body.data.currentBed.id).toBe(firstBedId);
     expect(response.body.data.bedAssignments).toHaveLength(1);
+    // No consultation to admit from, so the stay opened its own visit
+    // (P24-T09): a mother admitted in labour has somewhere to record care
+    // from the first minute, and one Encounter to report at the end.
+    expect(response.body.data.sourceEncounterId).toBeDefined();
+    const openedEncounter = await prisma.encounter.findUniqueOrThrow({
+      where: { id: response.body.data.sourceEncounterId },
+      select: { status: true, doctorId: true, registration: { select: { type: true } } },
+    });
+    expect(openedEncounter.status).toBe('IN_PROGRESS');
+    expect(openedEncounter.doctorId).toBe(DOCTOR_ID);
+    expect(openedEncounter.registration.type).toBe('ADMISSION');
     admissionId = response.body.data.id;
 
     const bed = await prisma.bed.findUniqueOrThrow({ where: { id: firstBedId } });

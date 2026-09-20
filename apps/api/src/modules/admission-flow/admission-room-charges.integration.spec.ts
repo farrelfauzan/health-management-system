@@ -218,6 +218,13 @@ describe('Admission room charges against Postgres', () => {
     await prisma.room.deleteMany({ where: { id: { in: roomIds } } });
     await prisma.ward.deleteMany({ where: { id: { in: wardIds } } });
     await prisma.roomClass.deleteMany({ where: { code: { startsWith: 'IMP15' } } });
+    // A direct admission opens its own registration and encounter (P24-T09),
+    // and both restrict the patient delete below.
+    await prisma.satusehatSubmission.deleteMany({
+      where: { encounter: { patientId: { in: patientIds } } },
+    });
+    await prisma.encounter.deleteMany({ where: { patientId: { in: patientIds } } });
+    await prisma.registration.deleteMany({ where: { patientId: { in: patientIds } } });
     await prisma.patientProfile.deleteMany({ where: { id: { in: patientIds } } });
     await prisma.doctorProfile.deleteMany({ where: { id: DOCTOR_ID } });
     await prisma.specialty.deleteMany({ where: { id: SPECIALTY_ID } });

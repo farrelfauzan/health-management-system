@@ -10,6 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@hms/ui';
+import Link from 'next/link';
 import { useFormatter, useTranslations } from 'next-intl';
 
 import { AdmissionBedHistoryList } from '#components/client/admissions/admission-bed-history-list';
@@ -71,6 +72,21 @@ export function AdmissionDetailDialog({
               </dd>
             </div>
           </dl>
+
+          {admission.sourceEncounterId ? (
+            <div>
+              <p className="text-xs text-slate-500">{t('admissions.chart')}</p>
+              {/* A direct admission opens its own visit (P24-T09), so the
+                  stay always has somewhere to record diagnoses, vitals and
+                  prescriptions — this is the way in to it. */}
+              <Link
+                href={`/admin/encounters/${admission.sourceEncounterId}`}
+                className="mt-1 inline-block text-sm font-medium text-primary underline"
+              >
+                {t('admissions.openChart')}
+              </Link>
+            </div>
+          ) : null}
 
           {admission.reason ? (
             <div>

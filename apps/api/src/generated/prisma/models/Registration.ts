@@ -2067,7 +2067,8 @@ export type $RegistrationPayload<ExtArgs extends runtime.Types.Extensions.Intern
     appointmentId: string | null
     /**
      * What the visit is for. A LAB_ONLY visit skips the poli queue and never
-     * opens an encounter (P18-T10).
+     * opens an encounter (P18-T10); an ADMISSION visit skips the queue too and
+     * is opened by the admission itself (P24-T09).
      */
     type: $Enums.RegistrationType
     status: $Enums.RegistrationStatus
