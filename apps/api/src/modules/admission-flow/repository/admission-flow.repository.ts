@@ -110,11 +110,13 @@ export class AdmissionFlowRepository {
   async admitPatient(payload: AdmitPatientRecordPayload): Promise<AdmissionRecord> {
     try {
       const admission = await this.prisma.executeTransaction(async (tx) => {
+        const sourceEncounterId =
+          payload.sourceEncounterId ?? (await this.openAdmissionEncounter(tx, payload));
         const created = await tx.admission.create({
           data: {
             patientId: payload.patientId,
             admittingDoctorId: payload.admittingDoctorId,
-            sourceEncounterId: payload.sourceEncounterId,
+            sourceEncounterId,
             reason: payload.reason,
             admittedAt: payload.admittedAt,
             createdById: payload.createdById,
@@ -145,6 +147,58 @@ export class AdmissionFlowRepository {
     } catch (err) {
       throw this.mapUniqueViolation(err);
     }
+  }
+
+  /**
+   * The visit a direct admission opens for itself (P24-T09, FR-IP-03).
+   *
+   * A mother who arrives in labour is admitted without queueing, so there is
+   * no consultation to attach the stay to — and an Encounter cannot exist
+   * without a Registration, nor be reported without a check-in time. Both are
+   * written here, in the admission's own transaction, so a stay either has its
+   * chart or was never opened.
+   *
+   * The registration is `ADMISSION`: no antrian number, no poli number, no
+   * queue date. It is not a ticket — nobody is waiting to be called — and
+   * drawing one would put an inpatient in a queue the board renders.
+   *
+   * It is `CHECKED_IN` at the moment of admission because that is when the
+   * patient arrived, and `checkedInAt` is what the SATUSEHAT Encounter reports
+   * as the visit's start. The privacy notice is deliberately not re-asserted
+   * here: the patient's record already exists and carried its acknowledgement
+   * when it was created, and a labour admission must not stop at a consent
+   * form the front desk normally re-captures.
+   */
+  private async openAdmissionEncounter(
+    tx: PrismaTransactionClient,
+    payload: AdmitPatientRecordPayload,
+  ): Promise<string> {
+    const registration = await tx.registration.create({
+      data: {
+        patientId: payload.patientId,
+        type: 'ADMISSION',
+        status: 'CHECKED_IN',
+        registeredAt: payload.admittedAt,
+        checkedInAt: payload.admittedAt,
+        createdById: payload.createdById,
+      },
+      select: { id: true },
+    });
+    const encounter = await tx.encounter.create({
+      data: {
+        registrationId: registration.id,
+        patientId: payload.patientId,
+        // The admitting clinician attends the stay. No `encounter.write` check
+        // stands between admitting a patient and opening her chart: admitting
+        // is the authority, and requiring both would leave a role that may
+        // admit unable to record what happens next.
+        doctorId: payload.admittingDoctorId,
+        startedAt: payload.admittedAt,
+        createdById: payload.createdById,
+      },
+      select: { id: true },
+    });
+    return encounter.id;
   }
 
   /** Close one assignment, open the next, flip both beds — one transaction. */
@@ -284,6 +338,7 @@ export class AdmissionFlowRepository {
           cancelReason: payload.cancelReason,
         },
       });
+      await this.cancelAdmissionOwnEncounter(tx, updated.sourceEncounterId);
       await tx.patientProfile.update({
         where: { id: updated.patientId },
         data: { status: 'OUT_PATIENT' },
@@ -295,6 +350,40 @@ export class AdmissionFlowRepository {
     });
 
     return this.toAdmissionRecord(admission);
+  }
+
+  /**
+   * Retracts the visit a direct admission opened for itself (P24-T09), and
+   * only that one: a stay admitted from a consultation leaves that
+   * consultation alone, because the outpatient visit did happen.
+   *
+   * Only while the encounter is still open. A chart the clinician already
+   * finished describes care that was given and may already have been reported,
+   * so cancelling the stay does not retract it — "opened in error" is a claim
+   * about the admission, not about the medicine.
+   */
+  private async cancelAdmissionOwnEncounter(
+    tx: PrismaTransactionClient,
+    sourceEncounterId: string | null,
+  ): Promise<void> {
+    if (sourceEncounterId === null) {
+      return;
+    }
+    const encounter = await tx.encounter.findUnique({
+      where: { id: sourceEncounterId },
+      select: { id: true, status: true, registration: { select: { id: true, type: true } } },
+    });
+    if (encounter?.registration.type !== 'ADMISSION' || encounter.status !== 'IN_PROGRESS') {
+      return;
+    }
+    await tx.encounter.update({
+      where: { id: encounter.id },
+      data: { status: 'CANCELLED', endedAt: new Date() },
+    });
+    await tx.registration.update({
+      where: { id: encounter.registration.id },
+      data: { status: 'CANCELLED' },
+    });
   }
 
   async updateAdmission(payload: UpdateAdmissionRecordPayload): Promise<AdmissionRecord> {

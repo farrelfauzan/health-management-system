@@ -1085,7 +1085,9 @@
         "REFERRED": "Referred to another facility",
         "DIED": "Died",
         "OTHER": "Other"
-      }
+      },
+      "chart": "Chart",
+      "openChart": "Open the visit"
     },
     "organization": {
       "title": "Organization",

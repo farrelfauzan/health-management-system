@@ -227,6 +227,11 @@ export class RegistrationFlowRepository {
         status: {
           in: OPEN_REGISTRATION_STATUSES,
         },
+        // A direct admission's own visit is not a queue ticket (P24-T09): it
+        // holds no antrian number and nobody is waiting to be called on it.
+        // Counting it here would tell the front desk that an inpatient is
+        // already registered and refuse the visit she is actually there for.
+        type: { not: 'ADMISSION' },
         ...(params.excludeRegistrationId
           ? {
               id: {
