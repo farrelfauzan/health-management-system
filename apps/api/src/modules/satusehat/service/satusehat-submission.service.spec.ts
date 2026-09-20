@@ -1332,6 +1332,8 @@ describe('SatusehatSubmissionService', () => {
           admissionId: 'adm-1',
           admittedAt: new Date('2026-07-28T02:30:00.000Z'),
           dischargedAt: new Date('2026-07-30T04:00:00.000Z'),
+          dischargeDisposition: null,
+          beds: [],
         },
       }),
     );
@@ -1351,6 +1353,67 @@ describe('SatusehatSubmissionService', () => {
     expect(encounterResource.class.code).toBe('IMP');
     expect(encounterResource.period.end).toBe('2026-07-30T04:00:00.000Z');
     expect(encounterResource.hospitalization).toBeDefined();
+  });
+
+  it('reports a two-bed stay as its bed history, flagging the bed nobody registered', async () => {
+    submissionRepositoryMock.findBundleData.mockResolvedValue(
+      buildBundleData({
+        diagnoses: [],
+        latestVitalSigns: null,
+        encounterLocation: {
+          specialtyName: 'Poli KIA',
+          specialtyLocationId: 'poli-kia-location-id',
+          registeredRootLocationId: 'registered-site-id',
+        },
+        admission: {
+          admissionId: 'adm-1',
+          admittedAt: new Date('2026-07-28T02:30:00.000Z'),
+          dischargedAt: new Date('2026-07-30T04:00:00.000Z'),
+          dischargeDisposition: 'AGAINST_ADVICE' as const,
+          beds: [
+            {
+              bedId: 'bed-1',
+              satusehatLocationId: 'bed-1-location-id',
+              serviceClass: 'CLASS_2' as const,
+              startedAt: new Date('2026-07-28T02:30:00.000Z'),
+              endedAt: new Date('2026-07-29T07:00:00.000Z'),
+            },
+            {
+              bedId: 'bed-4',
+              satusehatLocationId: null,
+              serviceClass: 'VIP' as const,
+              startedAt: new Date('2026-07-29T07:00:00.000Z'),
+              endedAt: null,
+            },
+          ],
+        },
+      }),
+    );
+    httpClientMock.sendRequest.mockResolvedValue({
+      entry: [{ response: { status: '201 Created', location: 'Encounter/ihs-enc-1/_history/1' } }],
+    });
+
+    await buildService().processSubmission(buildSubmission());
+
+    const bundle = (
+      httpClientMock.sendRequest.mock.calls[0]?.[0] as { body: SatusehatFhirTransactionBundle }
+    ).body;
+    const encounterResource = bundle.entry[0]?.resource as {
+      location: Array<{ location: { reference: string }; period: { start: string; end: string } }>;
+      hospitalization: { dischargeDisposition: { coding: Array<{ code: string }> } };
+    };
+    expect(encounterResource.location.map((entry) => entry.location.reference)).toEqual([
+      'Location/bed-1-location-id',
+      // Unregistered, so it names the site the stay falls back to.
+      'Location/registered-site-id',
+    ]);
+    expect(encounterResource.location[1]?.period.end).toBe('2026-07-30T04:00:00.000Z');
+    expect(encounterResource.hospitalization.dischargeDisposition.coding[0]?.code).toBe('aadvice');
+    expect(submissionRepositoryMock.markSubmitted).toHaveBeenCalledWith({
+      id: buildSubmission().id,
+      satusehatEncounterId: 'ihs-enc-1',
+      locationFallbackReason: 'BED_NOT_REGISTERED',
+    });
   });
 
   it('appends unreported allergies and writes the returned ids back after a 201', async () => {

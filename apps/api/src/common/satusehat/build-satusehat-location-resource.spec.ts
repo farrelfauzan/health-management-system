@@ -30,7 +30,7 @@ describe('buildSatusehatLocationResource', () => {
     expect(actualResource.position).toEqual({ longitude: 106.8272, latitude: -6.1754, altitude: 0 });
     expect(actualResource.partOf).toEqual({ reference: 'Location/room-ihs', display: 'Kamar 1' });
     expect(actualResource.physicalType.coding[0]?.code).toBe('bd');
-    expect(actualResource.extension?.[0]?.valueCodeableConcept.coding[0]).toEqual({
+    expect(actualResource.extension?.[0]?.valueCodeableConcept?.coding[0]).toEqual({
       system: 'http://terminology.kemkes.go.id/CodeSystem/locationServiceClass-Inpatient',
       code: '2',
       display: 'Kelas 2',

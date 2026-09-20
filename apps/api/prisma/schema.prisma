@@ -779,6 +779,9 @@ enum SatusehatResourceOutcome {
 enum SatusehatLocationFallbackReason {
   NO_POLI
   POLI_NOT_REGISTERED
+  /// A bed the stay passed through has no Location yet (P24-T08), so that
+  /// entry named the root site instead.
+  BED_NOT_REGISTERED
 
   @@map("satusehat_location_fallback_reason")
 }
@@ -4758,6 +4761,19 @@ enum AdmissionStatus {
   @@map("admission_status")
 }
 
+/// How an inpatient stay ended (P24-T08, FR-IP-02). `OTHER` carries a note;
+/// `DIED` splits into `exp-lt48h` / `exp-gt48h` on the wire, computed from the
+/// stay's length rather than asked of the bidan.
+enum DischargeDisposition {
+  HOME
+  AGAINST_ADVICE
+  REFERRED
+  DIED
+  OTHER
+
+  @@map("discharge_disposition")
+}
+
 /// Room class (kelas perawatan) — the axis Indonesian clinics price
 /// accommodation on, as **master data the clinic owns** rather than an enum
 /// the vendor ships.
@@ -4920,6 +4936,13 @@ model Admission {
   admittedAt        DateTime        @default(now()) @map("admitted_at")
   dischargedAt      DateTime?       @map("discharged_at")
   dischargeSummary  String?         @map("discharge_summary")
+  /// How the stay ended (P24-T08). Null on every row discharged before this
+  /// column existed; those keep reporting D-030's `home`, which is what they
+  /// were already sent as.
+  dischargeDisposition     DischargeDisposition? @map("discharge_disposition")
+  /// Required when the disposition is OTHER, enforced by a CHECK in the
+  /// migration as well as by the request schema.
+  dischargeDispositionNote String?               @map("discharge_disposition_note")
   cancelledAt       DateTime?       @map("cancelled_at")
   cancelReason      String?         @map("cancel_reason")
   createdById       String?         @map("created_by_id") @db.Uuid

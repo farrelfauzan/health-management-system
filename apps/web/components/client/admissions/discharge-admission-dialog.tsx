@@ -6,6 +6,7 @@ import type {
   AdmissionResponse,
   AdmissionRoomChargeResult,
   DischargeAdmissionInput,
+  DischargeDispositionValue,
 } from '@hms/shared-types';
 import {
   Button,
@@ -25,6 +26,7 @@ import { admissionFlowControllerDischargeAdmissionV1 } from '#lib/api/generated/
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { parseApiSuccess } from '#lib/api/response';
 import { invalidateAdmissionQueries } from '#lib/admissions/invalidate-admission-queries';
+import { DischargeDispositionSelect } from '#components/client/admissions/discharge-disposition-select';
 
 type DischargeAdmissionDialogProps = {
   open: boolean;
@@ -40,6 +42,8 @@ export function DischargeAdmissionDialog({
   const t = useTranslations('operations');
   const queryClient = useQueryClient();
   const [dischargeSummary, setDischargeSummary] = useState<string>('');
+  const [disposition, setDisposition] = useState<DischargeDispositionValue | ''>('');
+  const [dispositionNote, setDispositionNote] = useState<string>('');
   const [actionError, setActionError] = useState<string | null>(null);
   const dischargeMutation = useMutation({
     mutationFn: (payload: DischargeAdmissionInput) =>
@@ -76,11 +80,23 @@ export function DischargeAdmissionDialog({
     event.preventDefault();
     setActionError(null);
 
+    if (disposition === '') {
+      setActionError(t('admissions.dischargeDispositionRequired'));
+      return;
+    }
+    const trimmedNote = dispositionNote.trim();
+    if (disposition === 'OTHER' && trimmedNote === '') {
+      setActionError(t('admissions.dischargeDispositionNoteRequired'));
+      return;
+    }
+
     try {
       const envelope = parseApiSuccess<AdmissionResponse>(
-        await dischargeMutation.mutateAsync(
-          dischargeSummary.trim() ? { dischargeSummary: dischargeSummary.trim() } : {},
-        ),
+        await dischargeMutation.mutateAsync({
+          dischargeDisposition: disposition,
+          ...(dischargeSummary.trim() ? { dischargeSummary: dischargeSummary.trim() } : {}),
+          ...(trimmedNote ? { dischargeDispositionNote: trimmedNote } : {}),
+        }),
         t('admissions.dischargeError'),
       );
       announceRoomCharge(
@@ -101,6 +117,18 @@ export function DischargeAdmissionDialog({
           <DialogDescription>{admission.patient.fullName}</DialogDescription>
         </DialogHeader>
         <form noValidate className="space-y-4" onSubmit={(event) => void handleSubmit(event)}>
+          <DischargeDispositionSelect value={disposition} onValueChange={setDisposition} />
+          <div className="space-y-2">
+            <Label htmlFor="discharge-disposition-note">
+              {t('admissions.dischargeDispositionNote')}
+            </Label>
+            <Textarea
+              id="discharge-disposition-note"
+              rows={2}
+              value={dispositionNote}
+              onChange={(event) => setDispositionNote(event.target.value)}
+            />
+          </div>
           <div className="space-y-2">
             <Label htmlFor="discharge-summary">{t('admissions.dischargeSummary')}</Label>
             <Textarea

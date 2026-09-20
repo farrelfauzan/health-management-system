@@ -1,25 +1,14 @@
+import { buildSatusehatServiceClassExtension } from './satusehat-service-class-extension';
 import { SatusehatFhirLocation, SatusehatLocationResourceInput } from './satusehat-fhir.types';
 
 const LOCATION_IDENTIFIER_SYSTEM_PREFIX = 'http://sys-ids.kemkes.go.id/location/';
 const PHYSICAL_TYPE_SYSTEM = 'http://terminology.hl7.org/CodeSystem/location-physical-type';
-const SERVICE_CLASS_EXTENSION_URL =
-  'https://fhir.kemkes.go.id/r4/StructureDefinition/LocationServiceClass';
-const INPATIENT_SERVICE_CLASS_SYSTEM =
-  'http://terminology.kemkes.go.id/CodeSystem/locationServiceClass-Inpatient';
 const PHYSICAL_TYPE_DISPLAY: Readonly<Record<SatusehatLocationResourceInput['physicalTypeCode'], string>> = {
   si: 'Site',
   ro: 'Room',
   wa: 'Ward',
   bd: 'Bed',
 };
-const SERVICE_CLASS_DISPLAY: Readonly<Record<string, string>> = {
-  '1': 'Kelas 1',
-  '2': 'Kelas 2',
-  '3': 'Kelas 3',
-  vip: 'Kelas VIP',
-  vvip: 'Kelas VVIP',
-};
-
 /**
  * The identifier system a clinic's Locations are registered under (FR-LOC-06).
  * Scoped by organization, so two clinics' row UUIDs can never collide.
@@ -72,24 +61,7 @@ export function buildSatusehatLocationResource(
         }),
     ...(input.serviceClassCode === null
       ? {}
-      : { extension: [buildServiceClassExtension(input.serviceClassCode)] }),
+      : { extension: [buildSatusehatServiceClassExtension(input.serviceClassCode)] }),
   };
 }
 
-function buildServiceClassExtension(code: string): {
-  url: string;
-  valueCodeableConcept: SatusehatFhirLocation['physicalType'];
-} {
-  return {
-    url: SERVICE_CLASS_EXTENSION_URL,
-    valueCodeableConcept: {
-      coding: [
-        {
-          system: INPATIENT_SERVICE_CLASS_SYSTEM,
-          code,
-          display: SERVICE_CLASS_DISPLAY[code] ?? code,
-        },
-      ],
-    },
-  };
-}

@@ -7,6 +7,8 @@ import {
 } from '@hms/shared-types';
 import { Injectable } from '@nestjs/common';
 
+import { resolveSatusehatDischargeDisposition } from '../../../common/satusehat/resolve-satusehat-discharge-disposition';
+
 @Injectable()
 export class AdmissionMapper {
   toAdmissionResponse(admission: AdmissionRecord): AdmissionResponse {
@@ -33,6 +35,9 @@ export class AdmissionMapper {
       admittedAt: admission.admittedAt.toISOString(),
       dischargedAt: admission.dischargedAt?.toISOString(),
       dischargeSummary: admission.dischargeSummary ?? undefined,
+      dischargeDisposition: admission.dischargeDisposition ?? undefined,
+      dischargeDispositionNote: admission.dischargeDispositionNote ?? undefined,
+      satusehatDischargeDispositionCode: this.resolveDischargeDispositionCode(admission),
       cancelledAt: admission.cancelledAt?.toISOString(),
       cancelReason: admission.cancelReason ?? undefined,
       currentBed: openAssignment ? this.toBedResponse(openAssignment) : undefined,
@@ -42,6 +47,23 @@ export class AdmissionMapper {
       createdAt: admission.createdAt.toISOString(),
       updatedAt: admission.updatedAt.toISOString(),
     };
+  }
+
+  /**
+   * The code the SATUSEHAT bundle would send for this stay (P24-T08), so a
+   * reader — P25-T15's death reporting above all — does not have to re-derive
+   * the under/over-48-hour split a death is coded by. Absent while the patient
+   * is still in a bed: nothing has ended, so nothing has a disposition yet.
+   */
+  private resolveDischargeDispositionCode(admission: AdmissionRecord): string | undefined {
+    if (admission.dischargedAt === null) {
+      return undefined;
+    }
+    return resolveSatusehatDischargeDisposition({
+      disposition: admission.dischargeDisposition,
+      admittedAt: admission.admittedAt,
+      dischargedAt: admission.dischargedAt,
+    }).code;
   }
 
   private toBedAssignmentResponse(assignment: BedAssignmentRecord): BedAssignmentResponse {

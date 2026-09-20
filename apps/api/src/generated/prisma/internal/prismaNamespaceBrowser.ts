@@ -1778,6 +1778,8 @@ export const AdmissionScalarFieldEnum = {
   admittedAt: 'admittedAt',
   dischargedAt: 'dischargedAt',
   dischargeSummary: 'dischargeSummary',
+  dischargeDisposition: 'dischargeDisposition',
+  dischargeDispositionNote: 'dischargeDispositionNote',
   cancelledAt: 'cancelledAt',
   cancelReason: 'cancelReason',
   createdById: 'createdById',

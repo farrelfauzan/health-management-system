@@ -200,6 +200,8 @@ export class AdmissionFlowRepository {
           status: 'DISCHARGED',
           dischargedAt: payload.dischargedAt,
           dischargeSummary: payload.dischargeSummary,
+          dischargeDisposition: payload.dischargeDisposition,
+          dischargeDispositionNote: payload.dischargeDispositionNote,
         },
       });
       await tx.patientProfile.update({
@@ -378,6 +380,8 @@ export class AdmissionFlowRepository {
       admittedAt: row.admittedAt,
       dischargedAt: row.dischargedAt,
       dischargeSummary: row.dischargeSummary,
+      dischargeDisposition: row.dischargeDisposition,
+      dischargeDispositionNote: row.dischargeDispositionNote,
       cancelledAt: row.cancelledAt,
       cancelReason: row.cancelReason,
       createdAt: row.createdAt,

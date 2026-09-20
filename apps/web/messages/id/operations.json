@@ -1073,7 +1073,19 @@
       "roomChargeNone": "Tidak ada biaya kamar: masa rawat tidak melewati tengah malam.",
       "roomChargeGaps": "Sebagian malam belum dapat ditagihkan — periksa tarif akomodasi.",
       "cancelIsNotDischarge": "Pembatalan menandai masa rawat sebagai kekeliruan pencatatan dan mengembalikan pasien ke rawat jalan. Gunakan Pulangkan untuk pasien yang benar-benar pulang.",
-      "confirm": "Konfirmasi"
+      "confirm": "Konfirmasi",
+      "dischargeDisposition": "Cara pasien pulang",
+      "dischargeDispositionPlaceholder": "Pilih cara pasien pulang",
+      "dischargeDispositionRequired": "Pilih cara pasien pulang sebelum memulangkan.",
+      "dischargeDispositionNote": "Keterangan",
+      "dischargeDispositionNoteRequired": "Keterangan wajib diisi bila pasien pulang dengan cara lain.",
+      "dischargeDispositions": {
+        "HOME": "Pulang ke rumah",
+        "AGAINST_ADVICE": "Pulang atas permintaan sendiri",
+        "REFERRED": "Dirujuk ke fasilitas lain",
+        "DIED": "Meninggal",
+        "OTHER": "Lainnya"
+      }
     },
     "organization": {
       "title": "Organisasi",

@@ -58,6 +58,42 @@ export const ADMISSION_FLOW_EXAMPLES = {
       createdAt: '2026-09-05T03:00:00.000Z',
       updatedAt: '2026-09-05T03:00:00.000Z',
     },
+    /**
+     * The same stay once it ends (P24-T08): the bed history closed, how the
+     * patient left, and the code the SATUSEHAT bundle sends for it.
+     */
+    dischargedItem: {
+      id: '4c5d6e7f-8091-42a3-b425-d6e7f8a9b0c1',
+      patientId: 'f5e4d3c2-b1a0-4918-a7b6-c5d4e3f2a1b0',
+      patient: {
+        id: 'f5e4d3c2-b1a0-4918-a7b6-c5d4e3f2a1b0',
+        mrn: 'RM-000123',
+        fullName: 'Budi Santoso',
+      },
+      admittingDoctorId: 'c1d2e3f4-a5b6-4c7d-8e9f-0a1b2c3d4e5f',
+      admittingDoctor: {
+        id: 'c1d2e3f4-a5b6-4c7d-8e9f-0a1b2c3d4e5f',
+        fullName: 'dr. Siti Rahayu, Sp.PD',
+      },
+      sourceEncounterId: 'e1d2c3b4-a596-4877-b8a9-c0d1e2f3a4b5',
+      status: 'DISCHARGED',
+      reason: 'Demam berdarah, trombosit menurun',
+      admittedAt: '2026-09-05T03:00:00.000Z',
+      dischargedAt: '2026-09-08T02:00:00.000Z',
+      dischargeSummary: 'Trombosit stabil, pasien dipulangkan dengan obat oral.',
+      dischargeDisposition: 'HOME',
+      satusehatDischargeDispositionCode: 'home',
+      bedAssignments: [
+        {
+          id: '5d6e7f80-9102-43b4-8536-e7f8a9b0c1d2',
+          bed: BED_EXAMPLE,
+          startedAt: '2026-09-05T03:00:00.000Z',
+          endedAt: '2026-09-08T02:00:00.000Z',
+        },
+      ],
+      createdAt: '2026-09-05T03:00:00.000Z',
+      updatedAt: '2026-09-08T02:00:00.000Z',
+    },
     admitRequest: {
       patientId: 'f5e4d3c2-b1a0-4918-a7b6-c5d4e3f2a1b0',
       admittingDoctorId: 'c1d2e3f4-a5b6-4c7d-8e9f-0a1b2c3d4e5f',
@@ -70,6 +106,7 @@ export const ADMISSION_FLOW_EXAMPLES = {
     },
     dischargeRequest: {
       dischargeSummary: 'Trombosit stabil, pasien dipulangkan dengan obat oral.',
+      dischargeDisposition: 'HOME',
     },
     cancelRequest: {
       reason: 'Dibuat pada pasien yang salah',

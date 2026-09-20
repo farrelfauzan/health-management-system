@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { escapeXhtml } from './escape-xhtml';
 import { SatusehatError } from './satusehat.error';
 import { resolveSatusehatConfig } from './satusehat.config';
+import { buildSatusehatEncounterServiceClassExtension } from './satusehat-service-class-extension';
 import { SATUSEHAT_VITAL_SIGN_DEFINITIONS } from './satusehat-vital-sign-definitions';
 import {
   SatusehatAllergyMapInput,
@@ -21,6 +22,7 @@ import {
   SatusehatFhirComposition,
   SatusehatFhirCompositionSection,
   SatusehatFhirEncounterHospitalization,
+  SatusehatFhirEncounterLocation,
   SatusehatFhirCoding,
   SatusehatFhirCondition,
   SatusehatFhirDiagnosticReport,
@@ -221,8 +223,6 @@ const CONDITION_CLINICAL_SYSTEM = 'http://terminology.hl7.org/CodeSystem/conditi
 const CONDITION_CATEGORY_SYSTEM = 'http://terminology.hl7.org/CodeSystem/condition-category';
 const DIAGNOSIS_ROLE_SYSTEM = 'http://terminology.hl7.org/CodeSystem/diagnosis-role';
 const OBSERVATION_CATEGORY_SYSTEM = 'http://terminology.hl7.org/CodeSystem/observation-category';
-const DISCHARGE_DISPOSITION_SYSTEM =
-  'http://terminology.hl7.org/CodeSystem/discharge-disposition';
 const KFA_SYSTEM = 'http://sys-ids.kemkes.go.id/kfa';
 const MEDICATION_IDENTIFIER_SYSTEM_PREFIX = 'http://sys-ids.kemkes.go.id/medication';
 const PRESCRIPTION_IDENTIFIER_SYSTEM_PREFIX = 'http://sys-ids.kemkes.go.id/prescription';
@@ -308,17 +308,7 @@ export class SatusehatFhirMapper {
         start: this.toFhirInstant(this.resolveArrivedAt(input)),
         end: this.toFhirInstant(this.resolveEndedAt(input)),
       },
-      location: [
-        {
-          // The configured display names the site, so it is only truthful
-          // while the site is what the visit reports under (P24-T07). A poli's
-          // Location travels as a bare reference; SATUSEHAT holds its name.
-          location: this.buildReference(
-            `Location/${locationId}`,
-            input.locationId === null ? this.satusehatConfig.locationName : undefined,
-          ),
-        },
-      ],
+      location: this.buildEncounterLocations(input, locationId),
       statusHistory: this.buildStatusHistory(input),
       ...this.buildHospitalization(input),
       ...this.buildEncounterDiagnosis(input),
@@ -1359,11 +1349,10 @@ export class SatusehatFhirMapper {
   }
 
   /**
-   * The clinic records no discharge disposition, so every inpatient stay is
-   * reported as discharged home. That is the truthful default for a klinik
-   * pratama — a stay that ends any other way is a transfer the clinic arranges
-   * outside this system — and inventing a column for it belongs to whichever
-   * ticket actually gives staff somewhere to record it.
+   * How the stay ended (P24-T08, FR-IP-02). The coding is resolved by the
+   * caller from the recorded disposition and the stay's length, because the
+   * under/over-48-hour split on a death is arithmetic on two timestamps rather
+   * than a mapping decision.
    */
   private buildHospitalization(
     input: SatusehatEncounterMapInput,
@@ -1372,11 +1361,55 @@ export class SatusehatFhirMapper {
       return {};
     }
     const hospitalization: SatusehatFhirEncounterHospitalization = {
-      dischargeDisposition: {
-        coding: [{ system: DISCHARGE_DISPOSITION_SYSTEM, code: 'home', display: 'Home' }],
-      },
+      dischargeDisposition: { coding: [input.admission.dischargeDisposition] },
     };
     return { hospitalization };
+  }
+
+  /**
+   * Where the visit happened (FR-LOC-09, FR-IP-01).
+   *
+   * An outpatient visit names one Location: its poli, or whatever the caller
+   * fell back to. An inpatient stay names every bed the patient occupied, in
+   * order, each over the period it covered and carrying the room's service
+   * class — that history is the point of reporting a stay rather than a visit.
+   * A bed nobody has registered falls back to the same resolved Location the
+   * outpatient path uses, so the entry still points somewhere real.
+   *
+   * A stay whose bed history could not be read falls back to the single entry:
+   * one Location for the whole stay is what was sent before this existed, and
+   * it beats reporting a stay with no place at all.
+   */
+  private buildEncounterLocations(
+    input: SatusehatEncounterMapInput,
+    fallbackLocationId: string,
+  ): SatusehatFhirEncounterLocation[] {
+    const admission = input.admission;
+    if (admission === undefined || admission.beds.length === 0) {
+      return [
+        {
+          // The configured display names the site, so it is only truthful
+          // while the site is what the visit reports under (P24-T07). A poli's
+          // Location travels as a bare reference; SATUSEHAT holds its name.
+          location: this.buildReference(
+            `Location/${fallbackLocationId}`,
+            input.locationId === null ? this.satusehatConfig.locationName : undefined,
+          ),
+        },
+      ];
+    }
+    return admission.beds.map((bed) => ({
+      location: { reference: `Location/${bed.locationId ?? fallbackLocationId}` },
+      period: {
+        start: this.toFhirInstant(bed.startedAt),
+        end: this.toFhirInstant(bed.endedAt ?? admission.dischargedAt),
+      },
+      ...(bed.serviceClassCode === null
+        ? {}
+        : {
+            extension: [buildSatusehatEncounterServiceClassExtension(bed.serviceClassCode)],
+          }),
+    }));
   }
 
   /**

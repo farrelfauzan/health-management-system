@@ -1,4 +1,4 @@
-import type { AdmissionStatusValue } from '#admission-flow/schemas';
+import type { AdmissionStatusValue, DischargeDispositionValue } from '#admission-flow/schemas';
 import type { RoomClassSummaryRecord } from '#room-management/types';
 
 /** Where a bed is, flattened for display on an admission row. */
@@ -43,6 +43,13 @@ export type AdmissionRecord = {
   admittedAt: Date;
   dischargedAt: Date | null;
   dischargeSummary: string | null;
+  /**
+   * How the stay ended (P24-T08). Null on every row discharged before the
+   * column existed; those keep being reported as `home`, which is what D-030
+   * already sent for them.
+   */
+  dischargeDisposition: DischargeDispositionValue | null;
+  dischargeDispositionNote: string | null;
   cancelledAt: Date | null;
   cancelReason: string | null;
   createdAt: Date;
@@ -91,6 +98,8 @@ export type DischargeAdmissionRecordPayload = {
   currentBedId: string;
   dischargedAt: Date;
   dischargeSummary?: string;
+  dischargeDisposition: DischargeDispositionValue;
+  dischargeDispositionNote?: string;
 };
 
 export type CancelAdmissionRecordPayload = {

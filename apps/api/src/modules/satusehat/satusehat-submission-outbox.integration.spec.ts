@@ -229,6 +229,7 @@ describe('SATUSEHAT submission outbox against Postgres', () => {
       currentAssignmentId: stay.assignmentId,
       currentBedId: stay.bedId,
       dischargedAt: new Date(),
+      dischargeDisposition: 'HOME',
     });
 
     const actualSubmission = await prisma.satusehatSubmission.findFirst({
@@ -247,6 +248,7 @@ describe('SATUSEHAT submission outbox against Postgres', () => {
       currentAssignmentId: stay.assignmentId,
       currentBedId: stay.bedId,
       dischargedAt: new Date(),
+      dischargeDisposition: 'HOME',
     });
 
     const actualSubmission = await prisma.satusehatSubmission.findFirst({
@@ -263,6 +265,7 @@ describe('SATUSEHAT submission outbox against Postgres', () => {
       currentAssignmentId: stay.assignmentId,
       currentBedId: stay.bedId,
       dischargedAt: new Date(),
+      dischargeDisposition: 'HOME',
     });
 
     await encounterRepository.closeEncounter({
@@ -321,6 +324,7 @@ describe('SATUSEHAT submission outbox against Postgres', () => {
         currentAssignmentId: randomUUID(),
         currentBedId: stay.bedId,
         dischargedAt: new Date(),
+        dischargeDisposition: 'HOME',
       }),
     ).rejects.toThrow();
 

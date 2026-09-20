@@ -36648,12 +36648,17 @@ paths:
                 summary: Valid request
                 value:
                   dischargeSummary: Trombosit stabil, pasien dipulangkan dengan obat oral.
+                  dischargeDisposition: HOME
       responses:
         "200":
           description: The bed assignment was closed, the bed freed, and the patient set
             to DISCHARGED. Terminal — a readmission is a new admission.
-            `meta.roomCharge` reports the accommodation invoice raised for the
-            stay, including any ward class that had no live tariff.
+            `dischargeDisposition` says how the patient left and is required
+            (P24-T08); `satusehatDischargeDispositionCode` is the code the
+            national record receives for it, with a death split into `exp-lt48h`
+            / `exp-gt48h` by how long the stay lasted. `meta.roomCharge` reports
+            the accommodation invoice raised for the stay, including any ward
+            class that had no live tariff.
           content:
             application/json:
               schema:
@@ -36699,58 +36704,14 @@ paths:
                         type: string
                       admittedAt:
                         type: string
-                      currentBed:
-                        type: object
-                        properties:
-                          id:
-                            type: string
-                          code:
-                            type: string
-                          room:
-                            type: object
-                            properties:
-                              id:
-                                type: string
-                              code:
-                                type: string
-                              name:
-                                type: string
-                              roomClass:
-                                type: object
-                                properties:
-                                  id:
-                                    type: string
-                                  code:
-                                    type: string
-                                  name:
-                                    type: string
-                                required:
-                                  - id
-                                  - code
-                                  - name
-                            required:
-                              - id
-                              - code
-                              - name
-                              - roomClass
-                          ward:
-                            type: object
-                            properties:
-                              id:
-                                type: string
-                              code:
-                                type: string
-                              name:
-                                type: string
-                            required:
-                              - id
-                              - code
-                              - name
-                        required:
-                          - id
-                          - code
-                          - room
-                          - ward
+                      dischargedAt:
+                        type: string
+                      dischargeSummary:
+                        type: string
+                      dischargeDisposition:
+                        type: string
+                      satusehatDischargeDispositionCode:
+                        type: string
                       bedAssignments:
                         type: array
                         items:
@@ -36812,10 +36773,13 @@ paths:
                                 - ward
                             startedAt:
                               type: string
+                            endedAt:
+                              type: string
                           required:
                             - id
                             - bed
                             - startedAt
+                            - endedAt
                       createdAt:
                         type: string
                       updatedAt:
@@ -36830,7 +36794,10 @@ paths:
                       - status
                       - reason
                       - admittedAt
-                      - currentBed
+                      - dischargedAt
+                      - dischargeSummary
+                      - dischargeDisposition
+                      - satusehatDischargeDispositionCode
                       - bedAssignments
                       - createdAt
                       - updatedAt
@@ -36878,24 +36845,13 @@ paths:
                       id: c1d2e3f4-a5b6-4c7d-8e9f-0a1b2c3d4e5f
                       fullName: dr. Siti Rahayu, Sp.PD
                     sourceEncounterId: e1d2c3b4-a596-4877-b8a9-c0d1e2f3a4b5
-                    status: ADMITTED
+                    status: DISCHARGED
                     reason: Demam berdarah, trombosit menurun
                     admittedAt: 2026-09-05T03:00:00.000Z
-                    currentBed:
-                      id: 3b4c5d6e-7f80-4192-a314-c5d6e7f8a9b0
-                      code: A
-                      room:
-                        id: 2a3b4c5d-6e7f-4081-9203-b4c5d6e7f8a9
-                        code: "201"
-                        name: Kamar 201
-                        roomClass:
-                          id: 0e1f2a3b-4c5d-4e6f-8a90-b1c2d3e4f5a6
-                          code: KELAS_1
-                          name: Kelas 1
-                      ward:
-                        id: 1f2e3d4c-5b6a-4798-8069-a1b2c3d4e5f6
-                        code: MELATI
-                        name: Bangsal Melati
+                    dischargedAt: 2026-09-08T02:00:00.000Z
+                    dischargeSummary: Trombosit stabil, pasien dipulangkan dengan obat oral.
+                    dischargeDisposition: HOME
+                    satusehatDischargeDispositionCode: home
                     bedAssignments:
                       - id: 5d6e7f80-9102-43b4-8536-e7f8a9b0c1d2
                         bed:
@@ -36914,8 +36870,9 @@ paths:
                             code: MELATI
                             name: Bangsal Melati
                         startedAt: 2026-09-05T03:00:00.000Z
+                        endedAt: 2026-09-08T02:00:00.000Z
                     createdAt: 2026-09-05T03:00:00.000Z
-                    updatedAt: 2026-09-05T03:00:00.000Z
+                    updatedAt: 2026-09-08T02:00:00.000Z
                   meta:
                     roomCharge:
                       invoiceId: 7f809102-1324-45d6-8758-a9b0c1d2e3f4
@@ -55079,6 +55036,20 @@ components:
           type: string
           minLength: 1
           maxLength: 5000
+        dischargeDisposition:
+          type: string
+          enum:
+            - HOME
+            - AGAINST_ADVICE
+            - REFERRED
+            - DIED
+            - OTHER
+        dischargeDispositionNote:
+          type: string
+          minLength: 1
+          maxLength: 1000
+      required:
+        - dischargeDisposition
     CancelAdmissionDto:
       type: object
       properties:

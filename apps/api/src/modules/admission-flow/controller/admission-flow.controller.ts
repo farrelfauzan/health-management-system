@@ -148,9 +148,9 @@ export class AdmissionFlowController {
   @ApiEndpoint({
     summary: 'Discharge an admitted patient',
     responseDescription:
-      'The bed assignment was closed, the bed freed, and the patient set to DISCHARGED. Terminal — a readmission is a new admission. `meta.roomCharge` reports the accommodation invoice raised for the stay, including any ward class that had no live tariff.',
+      'The bed assignment was closed, the bed freed, and the patient set to DISCHARGED. Terminal — a readmission is a new admission. `dischargeDisposition` says how the patient left and is required (P24-T08); `satusehatDischargeDispositionCode` is the code the national record receives for it, with a death split into `exp-lt48h` / `exp-gt48h` by how long the stay lasted. `meta.roomCharge` reports the accommodation invoice raised for the stay, including any ward class that had no live tariff.',
     responseExample: {
-      data: ADMISSION_FLOW_EXAMPLES.admission.listItem,
+      data: ADMISSION_FLOW_EXAMPLES.admission.dischargedItem,
       meta: { roomCharge: ADMISSION_FLOW_EXAMPLES.admission.roomCharge },
       message: 'Patient discharged',
     },

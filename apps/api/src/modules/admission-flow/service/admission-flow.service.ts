@@ -164,6 +164,8 @@ export class AdmissionFlowService {
       currentBedId: currentAssignment.bed.id,
       dischargedAt,
       dischargeSummary: payload.dischargeSummary,
+      dischargeDisposition: payload.dischargeDisposition,
+      dischargeDispositionNote: payload.dischargeDispositionNote,
     });
     const roomCharge = await this.accommodationBillingService.generateRoomCharges({
       admission: discharged,

@@ -51,6 +51,8 @@ export type AdmissionMinAggregateOutputType = {
   admittedAt: Date | null
   dischargedAt: Date | null
   dischargeSummary: string | null
+  dischargeDisposition: $Enums.DischargeDisposition | null
+  dischargeDispositionNote: string | null
   cancelledAt: Date | null
   cancelReason: string | null
   createdById: string | null
@@ -69,6 +71,8 @@ export type AdmissionMaxAggregateOutputType = {
   admittedAt: Date | null
   dischargedAt: Date | null
   dischargeSummary: string | null
+  dischargeDisposition: $Enums.DischargeDisposition | null
+  dischargeDispositionNote: string | null
   cancelledAt: Date | null
   cancelReason: string | null
   createdById: string | null
@@ -87,6 +91,8 @@ export type AdmissionCountAggregateOutputType = {
   admittedAt: number
   dischargedAt: number
   dischargeSummary: number
+  dischargeDisposition: number
+  dischargeDispositionNote: number
   cancelledAt: number
   cancelReason: number
   createdById: number
@@ -107,6 +113,8 @@ export type AdmissionMinAggregateInputType = {
   admittedAt?: true
   dischargedAt?: true
   dischargeSummary?: true
+  dischargeDisposition?: true
+  dischargeDispositionNote?: true
   cancelledAt?: true
   cancelReason?: true
   createdById?: true
@@ -125,6 +133,8 @@ export type AdmissionMaxAggregateInputType = {
   admittedAt?: true
   dischargedAt?: true
   dischargeSummary?: true
+  dischargeDisposition?: true
+  dischargeDispositionNote?: true
   cancelledAt?: true
   cancelReason?: true
   createdById?: true
@@ -143,6 +153,8 @@ export type AdmissionCountAggregateInputType = {
   admittedAt?: true
   dischargedAt?: true
   dischargeSummary?: true
+  dischargeDisposition?: true
+  dischargeDispositionNote?: true
   cancelledAt?: true
   cancelReason?: true
   createdById?: true
@@ -234,6 +246,8 @@ export type AdmissionGroupByOutputType = {
   admittedAt: Date
   dischargedAt: Date | null
   dischargeSummary: string | null
+  dischargeDisposition: $Enums.DischargeDisposition | null
+  dischargeDispositionNote: string | null
   cancelledAt: Date | null
   cancelReason: string | null
   createdById: string | null
@@ -273,6 +287,8 @@ export type AdmissionWhereInput = {
   admittedAt?: Prisma.DateTimeFilter<"Admission"> | Date | string
   dischargedAt?: Prisma.DateTimeNullableFilter<"Admission"> | Date | string | null
   dischargeSummary?: Prisma.StringNullableFilter<"Admission"> | string | null
+  dischargeDisposition?: Prisma.EnumDischargeDispositionNullableFilter<"Admission"> | $Enums.DischargeDisposition | null
+  dischargeDispositionNote?: Prisma.StringNullableFilter<"Admission"> | string | null
   cancelledAt?: Prisma.DateTimeNullableFilter<"Admission"> | Date | string | null
   cancelReason?: Prisma.StringNullableFilter<"Admission"> | string | null
   createdById?: Prisma.UuidNullableFilter<"Admission"> | string | null
@@ -298,6 +314,8 @@ export type AdmissionOrderByWithRelationInput = {
   admittedAt?: Prisma.SortOrder
   dischargedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   dischargeSummary?: Prisma.SortOrderInput | Prisma.SortOrder
+  dischargeDisposition?: Prisma.SortOrderInput | Prisma.SortOrder
+  dischargeDispositionNote?: Prisma.SortOrderInput | Prisma.SortOrder
   cancelledAt?: Prisma.SortOrderInput | Prisma.SortOrder
   cancelReason?: Prisma.SortOrderInput | Prisma.SortOrder
   createdById?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -326,6 +344,8 @@ export type AdmissionWhereUniqueInput = Prisma.AtLeast<{
   admittedAt?: Prisma.DateTimeFilter<"Admission"> | Date | string
   dischargedAt?: Prisma.DateTimeNullableFilter<"Admission"> | Date | string | null
   dischargeSummary?: Prisma.StringNullableFilter<"Admission"> | string | null
+  dischargeDisposition?: Prisma.EnumDischargeDispositionNullableFilter<"Admission"> | $Enums.DischargeDisposition | null
+  dischargeDispositionNote?: Prisma.StringNullableFilter<"Admission"> | string | null
   cancelledAt?: Prisma.DateTimeNullableFilter<"Admission"> | Date | string | null
   cancelReason?: Prisma.StringNullableFilter<"Admission"> | string | null
   createdById?: Prisma.UuidNullableFilter<"Admission"> | string | null
@@ -351,6 +371,8 @@ export type AdmissionOrderByWithAggregationInput = {
   admittedAt?: Prisma.SortOrder
   dischargedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   dischargeSummary?: Prisma.SortOrderInput | Prisma.SortOrder
+  dischargeDisposition?: Prisma.SortOrderInput | Prisma.SortOrder
+  dischargeDispositionNote?: Prisma.SortOrderInput | Prisma.SortOrder
   cancelledAt?: Prisma.SortOrderInput | Prisma.SortOrder
   cancelReason?: Prisma.SortOrderInput | Prisma.SortOrder
   createdById?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -375,6 +397,8 @@ export type AdmissionScalarWhereWithAggregatesInput = {
   admittedAt?: Prisma.DateTimeWithAggregatesFilter<"Admission"> | Date | string
   dischargedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Admission"> | Date | string | null
   dischargeSummary?: Prisma.StringNullableWithAggregatesFilter<"Admission"> | string | null
+  dischargeDisposition?: Prisma.EnumDischargeDispositionNullableWithAggregatesFilter<"Admission"> | $Enums.DischargeDisposition | null
+  dischargeDispositionNote?: Prisma.StringNullableWithAggregatesFilter<"Admission"> | string | null
   cancelledAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Admission"> | Date | string | null
   cancelReason?: Prisma.StringNullableWithAggregatesFilter<"Admission"> | string | null
   createdById?: Prisma.UuidNullableWithAggregatesFilter<"Admission"> | string | null
@@ -390,6 +414,8 @@ export type AdmissionCreateInput = {
   admittedAt?: Date | string
   dischargedAt?: Date | string | null
   dischargeSummary?: string | null
+  dischargeDisposition?: $Enums.DischargeDisposition | null
+  dischargeDispositionNote?: string | null
   cancelledAt?: Date | string | null
   cancelReason?: string | null
   createdAt?: Date | string
@@ -414,6 +440,8 @@ export type AdmissionUncheckedCreateInput = {
   admittedAt?: Date | string
   dischargedAt?: Date | string | null
   dischargeSummary?: string | null
+  dischargeDisposition?: $Enums.DischargeDisposition | null
+  dischargeDispositionNote?: string | null
   cancelledAt?: Date | string | null
   cancelReason?: string | null
   createdById?: string | null
@@ -432,6 +460,8 @@ export type AdmissionUpdateInput = {
   admittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dischargedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dischargeSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dischargeDisposition?: Prisma.NullableEnumDischargeDispositionFieldUpdateOperationsInput | $Enums.DischargeDisposition | null
+  dischargeDispositionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -456,6 +486,8 @@ export type AdmissionUncheckedUpdateInput = {
   admittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dischargedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dischargeSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dischargeDisposition?: Prisma.NullableEnumDischargeDispositionFieldUpdateOperationsInput | $Enums.DischargeDisposition | null
+  dischargeDispositionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -477,6 +509,8 @@ export type AdmissionCreateManyInput = {
   admittedAt?: Date | string
   dischargedAt?: Date | string | null
   dischargeSummary?: string | null
+  dischargeDisposition?: $Enums.DischargeDisposition | null
+  dischargeDispositionNote?: string | null
   cancelledAt?: Date | string | null
   cancelReason?: string | null
   createdById?: string | null
@@ -492,6 +526,8 @@ export type AdmissionUpdateManyMutationInput = {
   admittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dischargedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dischargeSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dischargeDisposition?: Prisma.NullableEnumDischargeDispositionFieldUpdateOperationsInput | $Enums.DischargeDisposition | null
+  dischargeDispositionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -509,6 +545,8 @@ export type AdmissionUncheckedUpdateManyInput = {
   admittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dischargedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dischargeSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dischargeDisposition?: Prisma.NullableEnumDischargeDispositionFieldUpdateOperationsInput | $Enums.DischargeDisposition | null
+  dischargeDispositionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -542,6 +580,8 @@ export type AdmissionCountOrderByAggregateInput = {
   admittedAt?: Prisma.SortOrder
   dischargedAt?: Prisma.SortOrder
   dischargeSummary?: Prisma.SortOrder
+  dischargeDisposition?: Prisma.SortOrder
+  dischargeDispositionNote?: Prisma.SortOrder
   cancelledAt?: Prisma.SortOrder
   cancelReason?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
@@ -560,6 +600,8 @@ export type AdmissionMaxOrderByAggregateInput = {
   admittedAt?: Prisma.SortOrder
   dischargedAt?: Prisma.SortOrder
   dischargeSummary?: Prisma.SortOrder
+  dischargeDisposition?: Prisma.SortOrder
+  dischargeDispositionNote?: Prisma.SortOrder
   cancelledAt?: Prisma.SortOrder
   cancelReason?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
@@ -578,6 +620,8 @@ export type AdmissionMinOrderByAggregateInput = {
   admittedAt?: Prisma.SortOrder
   dischargedAt?: Prisma.SortOrder
   dischargeSummary?: Prisma.SortOrder
+  dischargeDisposition?: Prisma.SortOrder
+  dischargeDispositionNote?: Prisma.SortOrder
   cancelledAt?: Prisma.SortOrder
   cancelReason?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
@@ -795,6 +839,10 @@ export type EnumAdmissionStatusFieldUpdateOperationsInput = {
   set?: $Enums.AdmissionStatus
 }
 
+export type NullableEnumDischargeDispositionFieldUpdateOperationsInput = {
+  set?: $Enums.DischargeDisposition | null
+}
+
 export type AdmissionCreateNestedOneWithoutBedAssignmentsInput = {
   create?: Prisma.XOR<Prisma.AdmissionCreateWithoutBedAssignmentsInput, Prisma.AdmissionUncheckedCreateWithoutBedAssignmentsInput>
   connectOrCreate?: Prisma.AdmissionCreateOrConnectWithoutBedAssignmentsInput
@@ -816,6 +864,8 @@ export type AdmissionCreateWithoutCreatedByInput = {
   admittedAt?: Date | string
   dischargedAt?: Date | string | null
   dischargeSummary?: string | null
+  dischargeDisposition?: $Enums.DischargeDisposition | null
+  dischargeDispositionNote?: string | null
   cancelledAt?: Date | string | null
   cancelReason?: string | null
   createdAt?: Date | string
@@ -839,6 +889,8 @@ export type AdmissionUncheckedCreateWithoutCreatedByInput = {
   admittedAt?: Date | string
   dischargedAt?: Date | string | null
   dischargeSummary?: string | null
+  dischargeDisposition?: $Enums.DischargeDisposition | null
+  dischargeDispositionNote?: string | null
   cancelledAt?: Date | string | null
   cancelReason?: string | null
   createdAt?: Date | string
@@ -888,6 +940,8 @@ export type AdmissionScalarWhereInput = {
   admittedAt?: Prisma.DateTimeFilter<"Admission"> | Date | string
   dischargedAt?: Prisma.DateTimeNullableFilter<"Admission"> | Date | string | null
   dischargeSummary?: Prisma.StringNullableFilter<"Admission"> | string | null
+  dischargeDisposition?: Prisma.EnumDischargeDispositionNullableFilter<"Admission"> | $Enums.DischargeDisposition | null
+  dischargeDispositionNote?: Prisma.StringNullableFilter<"Admission"> | string | null
   cancelledAt?: Prisma.DateTimeNullableFilter<"Admission"> | Date | string | null
   cancelReason?: Prisma.StringNullableFilter<"Admission"> | string | null
   createdById?: Prisma.UuidNullableFilter<"Admission"> | string | null
@@ -903,6 +957,8 @@ export type AdmissionCreateWithoutPatientInput = {
   admittedAt?: Date | string
   dischargedAt?: Date | string | null
   dischargeSummary?: string | null
+  dischargeDisposition?: $Enums.DischargeDisposition | null
+  dischargeDispositionNote?: string | null
   cancelledAt?: Date | string | null
   cancelReason?: string | null
   createdAt?: Date | string
@@ -925,6 +981,8 @@ export type AdmissionUncheckedCreateWithoutPatientInput = {
   admittedAt?: Date | string
   dischargedAt?: Date | string | null
   dischargeSummary?: string | null
+  dischargeDisposition?: $Enums.DischargeDisposition | null
+  dischargeDispositionNote?: string | null
   cancelledAt?: Date | string | null
   cancelReason?: string | null
   createdById?: string | null
@@ -969,6 +1027,8 @@ export type AdmissionCreateWithoutAdmittingDoctorInput = {
   admittedAt?: Date | string
   dischargedAt?: Date | string | null
   dischargeSummary?: string | null
+  dischargeDisposition?: $Enums.DischargeDisposition | null
+  dischargeDispositionNote?: string | null
   cancelledAt?: Date | string | null
   cancelReason?: string | null
   createdAt?: Date | string
@@ -991,6 +1051,8 @@ export type AdmissionUncheckedCreateWithoutAdmittingDoctorInput = {
   admittedAt?: Date | string
   dischargedAt?: Date | string | null
   dischargeSummary?: string | null
+  dischargeDisposition?: $Enums.DischargeDisposition | null
+  dischargeDispositionNote?: string | null
   cancelledAt?: Date | string | null
   cancelReason?: string | null
   createdById?: string | null
@@ -1035,6 +1097,8 @@ export type AdmissionCreateWithoutSourceEncounterInput = {
   admittedAt?: Date | string
   dischargedAt?: Date | string | null
   dischargeSummary?: string | null
+  dischargeDisposition?: $Enums.DischargeDisposition | null
+  dischargeDispositionNote?: string | null
   cancelledAt?: Date | string | null
   cancelReason?: string | null
   createdAt?: Date | string
@@ -1057,6 +1121,8 @@ export type AdmissionUncheckedCreateWithoutSourceEncounterInput = {
   admittedAt?: Date | string
   dischargedAt?: Date | string | null
   dischargeSummary?: string | null
+  dischargeDisposition?: $Enums.DischargeDisposition | null
+  dischargeDispositionNote?: string | null
   cancelledAt?: Date | string | null
   cancelReason?: string | null
   createdById?: string | null
@@ -1101,6 +1167,8 @@ export type AdmissionCreateWithoutInvoicesInput = {
   admittedAt?: Date | string
   dischargedAt?: Date | string | null
   dischargeSummary?: string | null
+  dischargeDisposition?: $Enums.DischargeDisposition | null
+  dischargeDispositionNote?: string | null
   cancelledAt?: Date | string | null
   cancelReason?: string | null
   createdAt?: Date | string
@@ -1124,6 +1192,8 @@ export type AdmissionUncheckedCreateWithoutInvoicesInput = {
   admittedAt?: Date | string
   dischargedAt?: Date | string | null
   dischargeSummary?: string | null
+  dischargeDisposition?: $Enums.DischargeDisposition | null
+  dischargeDispositionNote?: string | null
   cancelledAt?: Date | string | null
   cancelReason?: string | null
   createdById?: string | null
@@ -1157,6 +1227,8 @@ export type AdmissionUpdateWithoutInvoicesInput = {
   admittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dischargedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dischargeSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dischargeDisposition?: Prisma.NullableEnumDischargeDispositionFieldUpdateOperationsInput | $Enums.DischargeDisposition | null
+  dischargeDispositionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1180,6 +1252,8 @@ export type AdmissionUncheckedUpdateWithoutInvoicesInput = {
   admittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dischargedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dischargeSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dischargeDisposition?: Prisma.NullableEnumDischargeDispositionFieldUpdateOperationsInput | $Enums.DischargeDisposition | null
+  dischargeDispositionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1197,6 +1271,8 @@ export type AdmissionCreateWithoutClinicalDocumentsInput = {
   admittedAt?: Date | string
   dischargedAt?: Date | string | null
   dischargeSummary?: string | null
+  dischargeDisposition?: $Enums.DischargeDisposition | null
+  dischargeDispositionNote?: string | null
   cancelledAt?: Date | string | null
   cancelReason?: string | null
   createdAt?: Date | string
@@ -1220,6 +1296,8 @@ export type AdmissionUncheckedCreateWithoutClinicalDocumentsInput = {
   admittedAt?: Date | string
   dischargedAt?: Date | string | null
   dischargeSummary?: string | null
+  dischargeDisposition?: $Enums.DischargeDisposition | null
+  dischargeDispositionNote?: string | null
   cancelledAt?: Date | string | null
   cancelReason?: string | null
   createdById?: string | null
@@ -1253,6 +1331,8 @@ export type AdmissionUpdateWithoutClinicalDocumentsInput = {
   admittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dischargedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dischargeSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dischargeDisposition?: Prisma.NullableEnumDischargeDispositionFieldUpdateOperationsInput | $Enums.DischargeDisposition | null
+  dischargeDispositionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1276,6 +1356,8 @@ export type AdmissionUncheckedUpdateWithoutClinicalDocumentsInput = {
   admittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dischargedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dischargeSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dischargeDisposition?: Prisma.NullableEnumDischargeDispositionFieldUpdateOperationsInput | $Enums.DischargeDisposition | null
+  dischargeDispositionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1293,6 +1375,8 @@ export type AdmissionCreateWithoutBedAssignmentsInput = {
   admittedAt?: Date | string
   dischargedAt?: Date | string | null
   dischargeSummary?: string | null
+  dischargeDisposition?: $Enums.DischargeDisposition | null
+  dischargeDispositionNote?: string | null
   cancelledAt?: Date | string | null
   cancelReason?: string | null
   createdAt?: Date | string
@@ -1316,6 +1400,8 @@ export type AdmissionUncheckedCreateWithoutBedAssignmentsInput = {
   admittedAt?: Date | string
   dischargedAt?: Date | string | null
   dischargeSummary?: string | null
+  dischargeDisposition?: $Enums.DischargeDisposition | null
+  dischargeDispositionNote?: string | null
   cancelledAt?: Date | string | null
   cancelReason?: string | null
   createdById?: string | null
@@ -1349,6 +1435,8 @@ export type AdmissionUpdateWithoutBedAssignmentsInput = {
   admittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dischargedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dischargeSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dischargeDisposition?: Prisma.NullableEnumDischargeDispositionFieldUpdateOperationsInput | $Enums.DischargeDisposition | null
+  dischargeDispositionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1372,6 +1460,8 @@ export type AdmissionUncheckedUpdateWithoutBedAssignmentsInput = {
   admittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dischargedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dischargeSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dischargeDisposition?: Prisma.NullableEnumDischargeDispositionFieldUpdateOperationsInput | $Enums.DischargeDisposition | null
+  dischargeDispositionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1392,6 +1482,8 @@ export type AdmissionCreateManyCreatedByInput = {
   admittedAt?: Date | string
   dischargedAt?: Date | string | null
   dischargeSummary?: string | null
+  dischargeDisposition?: $Enums.DischargeDisposition | null
+  dischargeDispositionNote?: string | null
   cancelledAt?: Date | string | null
   cancelReason?: string | null
   createdAt?: Date | string
@@ -1406,6 +1498,8 @@ export type AdmissionUpdateWithoutCreatedByInput = {
   admittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dischargedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dischargeSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dischargeDisposition?: Prisma.NullableEnumDischargeDispositionFieldUpdateOperationsInput | $Enums.DischargeDisposition | null
+  dischargeDispositionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1429,6 +1523,8 @@ export type AdmissionUncheckedUpdateWithoutCreatedByInput = {
   admittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dischargedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dischargeSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dischargeDisposition?: Prisma.NullableEnumDischargeDispositionFieldUpdateOperationsInput | $Enums.DischargeDisposition | null
+  dischargeDispositionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1449,6 +1545,8 @@ export type AdmissionUncheckedUpdateManyWithoutCreatedByInput = {
   admittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dischargedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dischargeSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dischargeDisposition?: Prisma.NullableEnumDischargeDispositionFieldUpdateOperationsInput | $Enums.DischargeDisposition | null
+  dischargeDispositionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1465,6 +1563,8 @@ export type AdmissionCreateManyPatientInput = {
   admittedAt?: Date | string
   dischargedAt?: Date | string | null
   dischargeSummary?: string | null
+  dischargeDisposition?: $Enums.DischargeDisposition | null
+  dischargeDispositionNote?: string | null
   cancelledAt?: Date | string | null
   cancelReason?: string | null
   createdById?: string | null
@@ -1480,6 +1580,8 @@ export type AdmissionUpdateWithoutPatientInput = {
   admittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dischargedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dischargeSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dischargeDisposition?: Prisma.NullableEnumDischargeDispositionFieldUpdateOperationsInput | $Enums.DischargeDisposition | null
+  dischargeDispositionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1502,6 +1604,8 @@ export type AdmissionUncheckedUpdateWithoutPatientInput = {
   admittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dischargedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dischargeSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dischargeDisposition?: Prisma.NullableEnumDischargeDispositionFieldUpdateOperationsInput | $Enums.DischargeDisposition | null
+  dischargeDispositionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1522,6 +1626,8 @@ export type AdmissionUncheckedUpdateManyWithoutPatientInput = {
   admittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dischargedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dischargeSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dischargeDisposition?: Prisma.NullableEnumDischargeDispositionFieldUpdateOperationsInput | $Enums.DischargeDisposition | null
+  dischargeDispositionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1539,6 +1645,8 @@ export type AdmissionCreateManyAdmittingDoctorInput = {
   admittedAt?: Date | string
   dischargedAt?: Date | string | null
   dischargeSummary?: string | null
+  dischargeDisposition?: $Enums.DischargeDisposition | null
+  dischargeDispositionNote?: string | null
   cancelledAt?: Date | string | null
   cancelReason?: string | null
   createdById?: string | null
@@ -1554,6 +1662,8 @@ export type AdmissionUpdateWithoutAdmittingDoctorInput = {
   admittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dischargedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dischargeSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dischargeDisposition?: Prisma.NullableEnumDischargeDispositionFieldUpdateOperationsInput | $Enums.DischargeDisposition | null
+  dischargeDispositionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1576,6 +1686,8 @@ export type AdmissionUncheckedUpdateWithoutAdmittingDoctorInput = {
   admittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dischargedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dischargeSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dischargeDisposition?: Prisma.NullableEnumDischargeDispositionFieldUpdateOperationsInput | $Enums.DischargeDisposition | null
+  dischargeDispositionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1596,6 +1708,8 @@ export type AdmissionUncheckedUpdateManyWithoutAdmittingDoctorInput = {
   admittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dischargedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dischargeSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dischargeDisposition?: Prisma.NullableEnumDischargeDispositionFieldUpdateOperationsInput | $Enums.DischargeDisposition | null
+  dischargeDispositionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1613,6 +1727,8 @@ export type AdmissionCreateManySourceEncounterInput = {
   admittedAt?: Date | string
   dischargedAt?: Date | string | null
   dischargeSummary?: string | null
+  dischargeDisposition?: $Enums.DischargeDisposition | null
+  dischargeDispositionNote?: string | null
   cancelledAt?: Date | string | null
   cancelReason?: string | null
   createdById?: string | null
@@ -1628,6 +1744,8 @@ export type AdmissionUpdateWithoutSourceEncounterInput = {
   admittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dischargedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dischargeSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dischargeDisposition?: Prisma.NullableEnumDischargeDispositionFieldUpdateOperationsInput | $Enums.DischargeDisposition | null
+  dischargeDispositionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1650,6 +1768,8 @@ export type AdmissionUncheckedUpdateWithoutSourceEncounterInput = {
   admittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dischargedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dischargeSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dischargeDisposition?: Prisma.NullableEnumDischargeDispositionFieldUpdateOperationsInput | $Enums.DischargeDisposition | null
+  dischargeDispositionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1670,6 +1790,8 @@ export type AdmissionUncheckedUpdateManyWithoutSourceEncounterInput = {
   admittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dischargedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   dischargeSummary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dischargeDisposition?: Prisma.NullableEnumDischargeDispositionFieldUpdateOperationsInput | $Enums.DischargeDisposition | null
+  dischargeDispositionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1737,6 +1859,8 @@ export type AdmissionSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   admittedAt?: boolean
   dischargedAt?: boolean
   dischargeSummary?: boolean
+  dischargeDisposition?: boolean
+  dischargeDispositionNote?: boolean
   cancelledAt?: boolean
   cancelReason?: boolean
   createdById?: boolean
@@ -1763,6 +1887,8 @@ export type AdmissionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   admittedAt?: boolean
   dischargedAt?: boolean
   dischargeSummary?: boolean
+  dischargeDisposition?: boolean
+  dischargeDispositionNote?: boolean
   cancelledAt?: boolean
   cancelReason?: boolean
   createdById?: boolean
@@ -1785,6 +1911,8 @@ export type AdmissionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   admittedAt?: boolean
   dischargedAt?: boolean
   dischargeSummary?: boolean
+  dischargeDisposition?: boolean
+  dischargeDispositionNote?: boolean
   cancelledAt?: boolean
   cancelReason?: boolean
   createdById?: boolean
@@ -1807,6 +1935,8 @@ export type AdmissionSelectScalar = {
   admittedAt?: boolean
   dischargedAt?: boolean
   dischargeSummary?: boolean
+  dischargeDisposition?: boolean
+  dischargeDispositionNote?: boolean
   cancelledAt?: boolean
   cancelReason?: boolean
   createdById?: boolean
@@ -1815,7 +1945,7 @@ export type AdmissionSelectScalar = {
   deletedAt?: boolean
 }
 
-export type AdmissionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "patientId" | "admittingDoctorId" | "sourceEncounterId" | "status" | "reason" | "admittedAt" | "dischargedAt" | "dischargeSummary" | "cancelledAt" | "cancelReason" | "createdById" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["admission"]>
+export type AdmissionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "patientId" | "admittingDoctorId" | "sourceEncounterId" | "status" | "reason" | "admittedAt" | "dischargedAt" | "dischargeSummary" | "dischargeDisposition" | "dischargeDispositionNote" | "cancelledAt" | "cancelReason" | "createdById" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["admission"]>
 export type AdmissionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   patient?: boolean | Prisma.PatientProfileDefaultArgs<ExtArgs>
   admittingDoctor?: boolean | Prisma.DoctorProfileDefaultArgs<ExtArgs>
@@ -1864,6 +1994,17 @@ export type $AdmissionPayload<ExtArgs extends runtime.Types.Extensions.InternalA
     admittedAt: Date
     dischargedAt: Date | null
     dischargeSummary: string | null
+    /**
+     * How the stay ended (P24-T08). Null on every row discharged before this
+     * column existed; those keep reporting D-030's `home`, which is what they
+     * were already sent as.
+     */
+    dischargeDisposition: $Enums.DischargeDisposition | null
+    /**
+     * Required when the disposition is OTHER, enforced by a CHECK in the
+     * migration as well as by the request schema.
+     */
+    dischargeDispositionNote: string | null
     cancelledAt: Date | null
     cancelReason: string | null
     createdById: string | null
@@ -2309,6 +2450,8 @@ export interface AdmissionFieldRefs {
   readonly admittedAt: Prisma.FieldRef<"Admission", 'DateTime'>
   readonly dischargedAt: Prisma.FieldRef<"Admission", 'DateTime'>
   readonly dischargeSummary: Prisma.FieldRef<"Admission", 'String'>
+  readonly dischargeDisposition: Prisma.FieldRef<"Admission", 'DischargeDisposition'>
+  readonly dischargeDispositionNote: Prisma.FieldRef<"Admission", 'String'>
   readonly cancelledAt: Prisma.FieldRef<"Admission", 'DateTime'>
   readonly cancelReason: Prisma.FieldRef<"Admission", 'String'>
   readonly createdById: Prisma.FieldRef<"Admission", 'String'>

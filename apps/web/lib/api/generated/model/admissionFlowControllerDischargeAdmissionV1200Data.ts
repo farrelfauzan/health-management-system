@@ -7,7 +7,6 @@
  */
 import type { AdmissionFlowControllerDischargeAdmissionV1200DataAdmittingDoctor } from './admissionFlowControllerDischargeAdmissionV1200DataAdmittingDoctor';
 import type { AdmissionFlowControllerDischargeAdmissionV1200DataBedAssignmentsItem } from './admissionFlowControllerDischargeAdmissionV1200DataBedAssignmentsItem';
-import type { AdmissionFlowControllerDischargeAdmissionV1200DataCurrentBed } from './admissionFlowControllerDischargeAdmissionV1200DataCurrentBed';
 import type { AdmissionFlowControllerDischargeAdmissionV1200DataPatient } from './admissionFlowControllerDischargeAdmissionV1200DataPatient';
 
 export type AdmissionFlowControllerDischargeAdmissionV1200Data = {
@@ -20,7 +19,10 @@ export type AdmissionFlowControllerDischargeAdmissionV1200Data = {
   status: string;
   reason: string;
   admittedAt: string;
-  currentBed: AdmissionFlowControllerDischargeAdmissionV1200DataCurrentBed;
+  dischargedAt: string;
+  dischargeSummary: string;
+  dischargeDisposition: string;
+  satusehatDischargeDispositionCode: string;
   bedAssignments: AdmissionFlowControllerDischargeAdmissionV1200DataBedAssignmentsItem[];
   createdAt: string;
   updatedAt: string;

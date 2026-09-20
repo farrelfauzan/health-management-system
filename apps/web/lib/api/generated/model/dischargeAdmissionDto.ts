@@ -5,6 +5,7 @@
  * Health Management System API
  * OpenAPI spec version: 1.0.0
  */
+import type { DischargeAdmissionDtoDischargeDisposition } from './dischargeAdmissionDtoDischargeDisposition';
 
 export interface DischargeAdmissionDto {
   dischargedAt?: string;
@@ -13,4 +14,10 @@ export interface DischargeAdmissionDto {
      * @maxLength 5000
      */
   dischargeSummary?: string;
+  dischargeDisposition: DischargeAdmissionDtoDischargeDisposition;
+  /**
+     * @minLength 1
+     * @maxLength 1000
+     */
+  dischargeDispositionNote?: string;
 }

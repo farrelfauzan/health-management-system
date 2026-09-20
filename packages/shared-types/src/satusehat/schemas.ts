@@ -234,8 +234,15 @@ export type SatusehatLocationKindValue = z.infer<typeof satusehatLocationKindSch
  * registered on SATUSEHAT, which the Location panel can fix. Both fall back to
  * the root site Location, so the two are kept apart by what an operator is
  * meant to do about them.
+ *
+ * `BED_NOT_REGISTERED` is the inpatient equivalent (P24-T08): a stay names the
+ * beds it passed through, and one of them has no Location yet.
  */
-export const SATUSEHAT_LOCATION_FALLBACK_REASONS = ['NO_POLI', 'POLI_NOT_REGISTERED'] as const;
+export const SATUSEHAT_LOCATION_FALLBACK_REASONS = [
+  'NO_POLI',
+  'POLI_NOT_REGISTERED',
+  'BED_NOT_REGISTERED',
+] as const;
 
 export const satusehatLocationFallbackReasonSchema = z.enum(SATUSEHAT_LOCATION_FALLBACK_REASONS);
 

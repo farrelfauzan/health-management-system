@@ -163,6 +163,15 @@ Both were re-checked in the phase-closing security pass and stand as written.
 
 ## D-031: QuestionnaireResponse Is Not Required of This Clinic Yet (P10-T17 Spike)
 
+> **Superseded in part by P24-T07 and P24-T08 (Sprint 31).** Two consequences
+> below no longer hold. `dischargeDisposition` is now the one staff record on
+> the discharge form (`HOME` / `AGAINST_ADVICE` / `REFERRED` / `DIED` /
+> `OTHER`); a stay discharged before that column existed still reports `home`,
+> so nothing was rewritten. And `location` is no longer the facility alone: an
+> outpatient visit names its poli and an inpatient stay names every bed it
+> passed through, with the room's service class. The rest of D-030 — the two
+> producers, the orderings, `EMER` — stands.
+
 > **Numbering note:** D-030 is claimed by `P10-T09` (PR #260), which has since landed.
 
 - **Status:** Accepted (spike outcome — no code)

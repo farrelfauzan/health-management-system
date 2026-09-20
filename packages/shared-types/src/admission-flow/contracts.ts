@@ -1,4 +1,4 @@
-import type { AdmissionStatusValue } from '#admission-flow/schemas';
+import type { AdmissionStatusValue, DischargeDispositionValue } from '#admission-flow/schemas';
 import type { RoomClassSummary } from '#room-management/contracts';
 
 export type AdmissionBedResponse = {
@@ -43,6 +43,16 @@ export type AdmissionResponse = {
   admittedAt: string;
   dischargedAt?: string;
   dischargeSummary?: string;
+  /** How the stay ended (P24-T08). Absent on a stay discharged before it. */
+  dischargeDisposition?: DischargeDispositionValue;
+  dischargeDispositionNote?: string;
+  /**
+   * The code the SATUSEHAT bundle sends for that disposition, computed rather
+   * than stored: a death splits into `exp-lt48h` and `exp-gt48h` by how long
+   * the stay lasted. Present on a discharged stay only. P25-T15's death
+   * reporting reads it here rather than re-deriving the split.
+   */
+  satusehatDischargeDispositionCode?: string;
   cancelledAt?: string;
   cancelReason?: string;
   /** Null once the stay ends — the last assignment is closed on discharge. */

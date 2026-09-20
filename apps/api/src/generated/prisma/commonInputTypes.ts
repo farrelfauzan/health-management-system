@@ -1999,6 +1999,13 @@ export type EnumAdmissionStatusFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumAdmissionStatusFilter<$PrismaModel> | $Enums.AdmissionStatus
 }
 
+export type EnumDischargeDispositionNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.DischargeDisposition | Prisma.EnumDischargeDispositionFieldRefInput<$PrismaModel> | null
+  in?: $Enums.DischargeDisposition[] | Prisma.ListEnumDischargeDispositionFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.DischargeDisposition[] | Prisma.ListEnumDischargeDispositionFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumDischargeDispositionNullableFilter<$PrismaModel> | $Enums.DischargeDisposition | null
+}
+
 export type EnumAdmissionStatusWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.AdmissionStatus | Prisma.EnumAdmissionStatusFieldRefInput<$PrismaModel>
   in?: $Enums.AdmissionStatus[] | Prisma.ListEnumAdmissionStatusFieldRefInput<$PrismaModel>
@@ -2007,6 +2014,16 @@ export type EnumAdmissionStatusWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumAdmissionStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumAdmissionStatusFilter<$PrismaModel>
+}
+
+export type EnumDischargeDispositionNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.DischargeDisposition | Prisma.EnumDischargeDispositionFieldRefInput<$PrismaModel> | null
+  in?: $Enums.DischargeDisposition[] | Prisma.ListEnumDischargeDispositionFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.DischargeDisposition[] | Prisma.ListEnumDischargeDispositionFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumDischargeDispositionNullableWithAggregatesFilter<$PrismaModel> | $Enums.DischargeDisposition | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumDischargeDispositionNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumDischargeDispositionNullableFilter<$PrismaModel>
 }
 
 export type EnumNotificationTypeFilter<$PrismaModel = never> = {
@@ -4323,6 +4340,13 @@ export type NestedEnumAdmissionStatusFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumAdmissionStatusFilter<$PrismaModel> | $Enums.AdmissionStatus
 }
 
+export type NestedEnumDischargeDispositionNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.DischargeDisposition | Prisma.EnumDischargeDispositionFieldRefInput<$PrismaModel> | null
+  in?: $Enums.DischargeDisposition[] | Prisma.ListEnumDischargeDispositionFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.DischargeDisposition[] | Prisma.ListEnumDischargeDispositionFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumDischargeDispositionNullableFilter<$PrismaModel> | $Enums.DischargeDisposition | null
+}
+
 export type NestedEnumAdmissionStatusWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.AdmissionStatus | Prisma.EnumAdmissionStatusFieldRefInput<$PrismaModel>
   in?: $Enums.AdmissionStatus[] | Prisma.ListEnumAdmissionStatusFieldRefInput<$PrismaModel>
@@ -4331,6 +4355,16 @@ export type NestedEnumAdmissionStatusWithAggregatesFilter<$PrismaModel = never> 
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumAdmissionStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumAdmissionStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumDischargeDispositionNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.DischargeDisposition | Prisma.EnumDischargeDispositionFieldRefInput<$PrismaModel> | null
+  in?: $Enums.DischargeDisposition[] | Prisma.ListEnumDischargeDispositionFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.DischargeDisposition[] | Prisma.ListEnumDischargeDispositionFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumDischargeDispositionNullableWithAggregatesFilter<$PrismaModel> | $Enums.DischargeDisposition | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumDischargeDispositionNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumDischargeDispositionNullableFilter<$PrismaModel>
 }
 
 export type NestedEnumNotificationTypeFilter<$PrismaModel = never> = {

@@ -279,6 +279,7 @@ describe('Admission room charges against Postgres', () => {
     const discharge = await asClerk('post', `/api/v1/admissions/${admissionId}/discharge`).send({
       dischargedAt: DISCHARGED_AT,
       dischargeSummary: 'Pasien pulang dalam kondisi stabil.',
+      dischargeDisposition: 'HOME',
     });
     expect(discharge.status).toBe(200);
     expect(discharge.body.meta.roomCharge).toMatchObject({ nights: 4, gaps: [] });
@@ -346,7 +347,7 @@ describe('Admission room charges against Postgres', () => {
     const discharge = await asClerk(
       'post',
       `/api/v1/admissions/${admit.body.data.id}/discharge`,
-    ).send({ dischargedAt: DISCHARGED_AT });
+    ).send({ dischargedAt: DISCHARGED_AT, dischargeDisposition: 'HOME' });
 
     // The patient goes home either way. A missing tariff is a billing problem,
     // and holding a clinically ready patient on the ward over one would be a

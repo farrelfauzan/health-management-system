@@ -1,5 +1,6 @@
 import {
   ClaimDueSubmissionsPayload,
+  DischargeDispositionValue,
   ListSatusehatSubmissionsParams,
   SatusehatLocationFallbackReasonValue,
   MarkSubmissionFailedPayload,
@@ -19,6 +20,7 @@ import {
   SatusehatSubmissionRecord,
   SatusehatSubmissionStatusValue,
   SatusehatSubmissionResourceRecord,
+  SatusehatServiceClassValue,
   SaveAllergyIhsIdPayload,
   SaveImmunizationIhsIdPayload,
   SaveLabReportIhsIdsPayload,
@@ -87,6 +89,23 @@ function toSubmissionRecordFromRow(
   const { labOrder, ...rest } = row;
   return { ...rest, labOrderNumber: labOrder?.orderNumber ?? null };
 }
+
+/** The discharged stay one bundle reports, with the beds it passed through. */
+type AdmissionBundleRow = {
+  id: string;
+  admittedAt: Date;
+  dischargedAt: Date | null;
+  dischargeDisposition: DischargeDispositionValue | null;
+  bedAssignments: Array<{
+    startedAt: Date;
+    endedAt: Date | null;
+    bed: {
+      id: string;
+      satusehatLocationId: string | null;
+      room: { roomClass: { satusehatServiceClass: SatusehatServiceClassValue | null } };
+    };
+  }>;
+};
 
 const MEDICATION_SELECT = {
   select: { id: true, code: true, kfaCode: true, name: true, unit: true },
@@ -438,7 +457,31 @@ export class SatusehatSubmissionRepository {
           where: { deletedAt: null, status: 'DISCHARGED', dischargedAt: { not: null } },
           orderBy: { admittedAt: 'desc' },
           take: 1,
-          select: { id: true, admittedAt: true, dischargedAt: true },
+          select: {
+            id: true,
+            admittedAt: true,
+            dischargedAt: true,
+            dischargeDisposition: true,
+            // The bed history is what an IMP Encounter's location[] is built
+            // from (P24-T08), so it travels with the bundle data rather than
+            // being read again at send time.
+            bedAssignments: {
+              orderBy: { startedAt: 'asc' },
+              select: {
+                startedAt: true,
+                endedAt: true,
+                bed: {
+                  select: {
+                    id: true,
+                    satusehatLocationId: true,
+                    room: {
+                      select: { roomClass: { select: { satusehatServiceClass: true } } },
+                    },
+                  },
+                },
+              },
+            },
+          },
         },
         immunizations: {
           where: { deletedAt: null },
@@ -647,7 +690,7 @@ export class SatusehatSubmissionRepository {
    * happened — both leave the visit ambulatory (P10-T09).
    */
   private toSubmissionAdmission(
-    admission: { id: string; admittedAt: Date; dischargedAt: Date | null } | undefined,
+    admission: AdmissionBundleRow | undefined,
   ): SatusehatSubmissionAdmission | null {
     if (admission === undefined || admission.dischargedAt === null) {
       return null;
@@ -656,6 +699,14 @@ export class SatusehatSubmissionRepository {
       admissionId: admission.id,
       admittedAt: admission.admittedAt,
       dischargedAt: admission.dischargedAt,
+      dischargeDisposition: admission.dischargeDisposition,
+      beds: admission.bedAssignments.map((assignment) => ({
+        bedId: assignment.bed.id,
+        satusehatLocationId: assignment.bed.satusehatLocationId,
+        serviceClass: assignment.bed.room.roomClass.satusehatServiceClass,
+        startedAt: assignment.startedAt,
+        endedAt: assignment.endedAt,
+      })),
     };
   }
 

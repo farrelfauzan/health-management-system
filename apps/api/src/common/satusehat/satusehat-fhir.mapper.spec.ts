@@ -283,11 +283,60 @@ describe('SatusehatFhirMapper', () => {
   describe('mapEncounter for an inpatient stay', () => {
     const admittedAt = new Date('2026-07-28T02:30:00.000Z');
     const dischargedAt = new Date('2026-07-30T04:00:00.000Z');
+    const dischargedHome = {
+      system: 'http://terminology.hl7.org/CodeSystem/discharge-disposition',
+      code: 'home',
+      display: 'Home',
+    };
+
+    function buildServiceClassExtension(code: string, display: string) {
+      return {
+        url: 'https://fhir.kemkes.go.id/r4/StructureDefinition/LocationServiceClass',
+        extension: [
+          {
+            url: 'serviceClass',
+            valueCodeableConcept: {
+              coding: [
+                {
+                  system:
+                    'http://terminology.kemkes.go.id/CodeSystem/locationServiceClass-Inpatient',
+                  code,
+                  display,
+                },
+              ],
+            },
+          },
+          {
+            url: 'upgradeClassIndicator',
+            valueCodeableConcept: {
+              coding: [
+                {
+                  system: 'http://terminology.kemkes.go.id/CodeSystem/locationUpgradeClass',
+                  code: 'kelas-tetap',
+                  display: 'Kelas tetap',
+                },
+              ],
+            },
+          },
+        ],
+      };
+    }
+
+    /** A stay with no bed history, which is what the older cases describe. */
+    function buildAdmission(overrides: Record<string, unknown> = {}) {
+      return {
+        admittedAt,
+        dischargedAt,
+        beds: [],
+        dischargeDisposition: dischargedHome,
+        ...overrides,
+      };
+    }
 
     it('reports class IMP over the admission period with a hospitalization element', () => {
       const actualEncounter = mapper.mapEncounter({
         ...buildEncounterInput(),
-        admission: { admittedAt, dischargedAt },
+        admission: buildAdmission(),
       });
 
       expect(actualEncounter.class).toEqual({
@@ -300,22 +349,70 @@ describe('SatusehatFhirMapper', () => {
         end: '2026-07-30T04:00:00.000Z',
       });
       expect(actualEncounter.hospitalization).toEqual({
-        dischargeDisposition: {
-          coding: [
+        dischargeDisposition: { coding: [dischargedHome] },
+      });
+    });
+
+    it('reports every bed the patient occupied, in order, with its service class', () => {
+      const actualEncounter = mapper.mapEncounter({
+        ...buildEncounterInput(),
+        locationId: 'registered-site-id',
+        admission: buildAdmission({
+          beds: [
             {
-              system: 'http://terminology.hl7.org/CodeSystem/discharge-disposition',
-              code: 'home',
-              display: 'Home',
+              locationId: 'bed-1-location-id',
+              serviceClassCode: '2',
+              startedAt: admittedAt,
+              endedAt: new Date('2026-07-29T07:00:00.000Z'),
+            },
+            {
+              locationId: 'bed-4-location-id',
+              serviceClassCode: 'vip',
+              startedAt: new Date('2026-07-29T07:00:00.000Z'),
+              endedAt: null,
             },
           ],
-        },
+        }),
       });
+
+      expect(actualEncounter.location).toEqual([
+        {
+          location: { reference: 'Location/bed-1-location-id' },
+          period: { start: '2026-07-28T02:30:00.000Z', end: '2026-07-29T07:00:00.000Z' },
+          extension: [buildServiceClassExtension('2', 'Kelas 2')],
+        },
+        {
+          // Still open at discharge, so the stay's end closes the period.
+          location: { reference: 'Location/bed-4-location-id' },
+          period: { start: '2026-07-29T07:00:00.000Z', end: '2026-07-30T04:00:00.000Z' },
+          extension: [buildServiceClassExtension('vip', 'Kelas VIP')],
+        },
+      ]);
+    });
+
+    it('points an unregistered bed at the resolved site and leaves out an unmapped class', () => {
+      const actualEncounter = mapper.mapEncounter({
+        ...buildEncounterInput(),
+        locationId: 'registered-site-id',
+        admission: buildAdmission({
+          beds: [
+            { locationId: null, serviceClassCode: null, startedAt: admittedAt, endedAt: null },
+          ],
+        }),
+      });
+
+      expect(actualEncounter.location).toEqual([
+        {
+          location: { reference: 'Location/registered-site-id' },
+          period: { start: '2026-07-28T02:30:00.000Z', end: '2026-07-30T04:00:00.000Z' },
+        },
+      ]);
     });
 
     it('runs in-progress from admission to discharge', () => {
       const actualEncounter = mapper.mapEncounter({
         ...buildEncounterInput(),
-        admission: { admittedAt, dischargedAt },
+        admission: buildAdmission(),
       });
 
       expect(actualEncounter.statusHistory).toEqual([
@@ -337,7 +434,7 @@ describe('SatusehatFhirMapper', () => {
     it('clamps an admission stamped before the encounter opened', () => {
       const actualEncounter = mapper.mapEncounter({
         ...buildEncounterInput(),
-        admission: { admittedAt: new Date('2026-07-28T00:00:00.000Z'), dischargedAt },
+        admission: buildAdmission({ admittedAt: new Date('2026-07-28T00:00:00.000Z') }),
       });
 
       expect(actualEncounter.statusHistory[1]?.period.start).toBe('2026-07-28T02:00:00.000Z');
@@ -346,7 +443,7 @@ describe('SatusehatFhirMapper', () => {
     it('clamps a discharge stamped before the encounter opened', () => {
       const actualEncounter = mapper.mapEncounter({
         ...buildEncounterInput(),
-        admission: { admittedAt, dischargedAt: new Date('2026-07-27T00:00:00.000Z') },
+        admission: buildAdmission({ dischargedAt: new Date('2026-07-27T00:00:00.000Z') }),
       });
 
       expect(actualEncounter.period.end).toBe('2026-07-28T02:00:00.000Z');
@@ -1114,7 +1211,7 @@ describe('SatusehatFhirMapper', () => {
         ],
       });
 
-      expect(actualMedication.extension[0]?.valueCodeableConcept.coding[0]?.code).toBe('SD');
+      expect(actualMedication.extension[0]?.valueCodeableConcept?.coding[0]?.code).toBe('SD');
       expect(actualMedication.identifier[0]?.value).toBe('5e6f7a8b-9c0d-4e1f-a02b-3c4d5e6f7a8b');
       expect(actualMedication.ingredient).toHaveLength(2);
       expect(actualMedication.ingredient?.[0]?.itemReference).toEqual({

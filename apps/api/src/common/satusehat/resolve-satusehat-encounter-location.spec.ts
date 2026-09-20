@@ -8,6 +8,7 @@ describe('resolveSatusehatEncounterLocation', () => {
         specialtyLocationId: 'poli-kia-location-id',
         registeredRootLocationId: 'registered-site-id',
         configuredLocationId: 'env-location-id',
+        bedLocationIds: [],
       }),
     ).toEqual({ locationId: 'poli-kia-location-id', fallbackReason: null });
   });
@@ -19,6 +20,7 @@ describe('resolveSatusehatEncounterLocation', () => {
         specialtyLocationId: null,
         registeredRootLocationId: 'registered-site-id',
         configuredLocationId: 'env-location-id',
+        bedLocationIds: [],
       }),
     ).toEqual({ locationId: 'registered-site-id', fallbackReason: 'POLI_NOT_REGISTERED' });
   });
@@ -30,6 +32,7 @@ describe('resolveSatusehatEncounterLocation', () => {
         specialtyLocationId: null,
         registeredRootLocationId: null,
         configuredLocationId: 'env-location-id',
+        bedLocationIds: [],
       }),
     ).toEqual({ locationId: 'env-location-id', fallbackReason: 'POLI_NOT_REGISTERED' });
   });
@@ -41,8 +44,33 @@ describe('resolveSatusehatEncounterLocation', () => {
         specialtyLocationId: null,
         registeredRootLocationId: 'registered-site-id',
         configuredLocationId: 'env-location-id',
+        bedLocationIds: [],
       }),
     ).toEqual({ locationId: 'registered-site-id', fallbackReason: 'NO_POLI' });
+  });
+
+  it('names the site as the beds fall back to, and flags an unregistered bed', () => {
+    expect(
+      resolveSatusehatEncounterLocation({
+        specialtyName: 'Poli KIA',
+        specialtyLocationId: 'poli-kia-location-id',
+        registeredRootLocationId: 'registered-site-id',
+        configuredLocationId: 'env-location-id',
+        bedLocationIds: ['bed-1-location-id', null],
+      }),
+    ).toEqual({ locationId: 'registered-site-id', fallbackReason: 'BED_NOT_REGISTERED' });
+  });
+
+  it('flags nothing for a stay whose every bed is registered', () => {
+    expect(
+      resolveSatusehatEncounterLocation({
+        specialtyName: null,
+        specialtyLocationId: null,
+        registeredRootLocationId: 'registered-site-id',
+        configuredLocationId: 'env-location-id',
+        bedLocationIds: ['bed-1-location-id', 'bed-4-location-id'],
+      }),
+    ).toEqual({ locationId: 'registered-site-id', fallbackReason: null });
   });
 
   it('resolves no location at all when nothing is configured', () => {
@@ -52,6 +80,7 @@ describe('resolveSatusehatEncounterLocation', () => {
         specialtyLocationId: null,
         registeredRootLocationId: null,
         configuredLocationId: undefined,
+        bedLocationIds: [],
       }),
     ).toEqual({ locationId: null, fallbackReason: 'POLI_NOT_REGISTERED' });
   });

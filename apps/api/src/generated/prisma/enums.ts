@@ -562,7 +562,8 @@ export type SatusehatResourceOutcome = (typeof SatusehatResourceOutcome)[keyof t
 
 export const SatusehatLocationFallbackReason = {
   NO_POLI: 'NO_POLI',
-  POLI_NOT_REGISTERED: 'POLI_NOT_REGISTERED'
+  POLI_NOT_REGISTERED: 'POLI_NOT_REGISTERED',
+  BED_NOT_REGISTERED: 'BED_NOT_REGISTERED'
 } as const
 
 export type SatusehatLocationFallbackReason = (typeof SatusehatLocationFallbackReason)[keyof typeof SatusehatLocationFallbackReason]
@@ -1014,6 +1015,17 @@ export const AdmissionStatus = {
 } as const
 
 export type AdmissionStatus = (typeof AdmissionStatus)[keyof typeof AdmissionStatus]
+
+
+export const DischargeDisposition = {
+  HOME: 'HOME',
+  AGAINST_ADVICE: 'AGAINST_ADVICE',
+  REFERRED: 'REFERRED',
+  DIED: 'DIED',
+  OTHER: 'OTHER'
+} as const
+
+export type DischargeDisposition = (typeof DischargeDisposition)[keyof typeof DischargeDisposition]
 
 
 export const NotificationType = {
