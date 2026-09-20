@@ -287,7 +287,7 @@
       "newTariff": "Tarif Baru",
       "saveTariff": "Simpan Tarif",
       "consultationAudience": {
-        "description": "Tarif konsultasi ini berlaku untuk siapa. Saat tagihan dibuat, sistem mencocokkannya dengan klinisi yang menangani kunjungan. Biarkan keduanya \u201csemua\u201d untuk menjadikannya tarif klinik \u2014 hanya boleh ada satu.",
+        "description": "Tarif konsultasi ini berlaku untuk siapa. Saat tagihan dibuat, sistem mencocokkannya dengan klinisi yang menangani kunjungan. Biarkan keduanya “semua” untuk menjadikannya tarif klinik — hanya boleh ada satu.",
         "poli": "Poli",
         "anyPoli": "Semua poli (tarif klinik)",
         "profession": "Profesi",
@@ -760,6 +760,11 @@
           "FAILED": "Gagal",
           "SKIPPED": "Tidak dikirim"
         }
+      },
+      "locationFallback": {
+        "label": "Lokasi cadangan",
+        "poliNotRegistered": "Poli ini belum punya Location SATUSEHAT, jadi kunjungan dilaporkan atas nama lokasi klinik. Daftarkan di Lokasi SATUSEHAT.",
+        "noPoli": "Kunjungan ini didaftarkan tanpa poli, jadi dilaporkan atas nama lokasi klinik."
       }
     },
     "administration": {

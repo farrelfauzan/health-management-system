@@ -45,6 +45,7 @@ function buildSubmission(overrides: Partial<SatusehatSubmissionRecord> = {}): Sa
     lastAttemptAt: null,
     submittedAt: null,
     satusehatEncounterId: null,
+    locationFallbackReason: null,
     createdAt: new Date('2026-07-28T03:00:00.000Z'),
     updatedAt: new Date('2026-07-28T03:00:00.000Z'),
     ...overrides,
@@ -103,6 +104,11 @@ function buildBundleData(overrides: Record<string, unknown> = {}) {
     retractedReportedAllergyCount: 0,
     prescriptions: [],
     dispenseItems: [],
+    encounterLocation: {
+      specialtyName: 'Poli KIA',
+      specialtyLocationId: 'poli-kia-location-id',
+      registeredRootLocationId: null,
+    },
     ...overrides,
   };
 }
@@ -152,6 +158,7 @@ function buildLabBundleData(overrides: Record<string, unknown> = {}) {
     satusehatEncounterId: 'ihs-enc-1',
     registrationId: '6c7d8e9f-0a1b-4c2d-8e3f-4a5b6c7d8e9f',
     visitStartedAt: new Date('2026-07-28T01:30:00.000Z'),
+    registeredRootLocationId: null,
     patientId,
     patientName: 'Budi Santoso',
     patientIhsNumber: 'P02478375538',
@@ -409,10 +416,88 @@ describe('SatusehatSubmissionService', () => {
       'ClinicalImpression',
       'Composition',
     ]);
-    expect(submissionRepositoryMock.markSubmitted).toHaveBeenCalledWith(
-      buildSubmission().id,
-      'ihs-enc-1',
-    );
+    expect(submissionRepositoryMock.markSubmitted).toHaveBeenCalledWith({
+      id: buildSubmission().id,
+      satusehatEncounterId: 'ihs-enc-1',
+      locationFallbackReason: null,
+    });
+  });
+
+  describe('the Location a visit reports under (P24-T07)', () => {
+    async function submitWithEncounterLocation(
+      encounterLocation: Record<string, unknown>,
+    ): Promise<SatusehatFhirTransactionBundle> {
+      submissionRepositoryMock.findBundleData.mockResolvedValue(
+        buildBundleData({ encounterLocation }),
+      );
+      httpClientMock.sendRequest.mockResolvedValue({
+        entry: [
+          { response: { status: '201 Created', location: 'Encounter/ihs-enc-1/_history/1' } },
+        ],
+      });
+
+      await buildService().processSubmission(buildSubmission());
+
+      return (
+        httpClientMock.sendRequest.mock.calls[0]?.[0] as {
+          body: SatusehatFhirTransactionBundle;
+        }
+      ).body;
+    }
+
+    it('names the registered poli and records no fallback', async () => {
+      const bundle = await submitWithEncounterLocation({
+        specialtyName: 'Poli KIA',
+        specialtyLocationId: 'poli-kia-location-id',
+        registeredRootLocationId: 'registered-site-id',
+      });
+
+      const encounter = bundle.entry[0]?.resource as { location: unknown };
+      expect(encounter.location).toEqual([
+        { location: { reference: 'Location/poli-kia-location-id' } },
+      ]);
+      expect(submissionRepositoryMock.markSubmitted).toHaveBeenCalledWith({
+        id: buildSubmission().id,
+        satusehatEncounterId: 'ihs-enc-1',
+        locationFallbackReason: null,
+      });
+    });
+
+    it('falls back to the registered root and flags an unregistered poli on the row', async () => {
+      const bundle = await submitWithEncounterLocation({
+        specialtyName: 'Poli Umum',
+        specialtyLocationId: null,
+        registeredRootLocationId: 'registered-site-id',
+      });
+
+      const encounter = bundle.entry[0]?.resource as { location: unknown };
+      expect(encounter.location).toEqual([
+        { location: { reference: 'Location/registered-site-id' } },
+      ]);
+      expect(submissionRepositoryMock.markSubmitted).toHaveBeenCalledWith({
+        id: buildSubmission().id,
+        satusehatEncounterId: 'ihs-enc-1',
+        locationFallbackReason: 'POLI_NOT_REGISTERED',
+      });
+    });
+
+    it('falls back to SATUSEHAT_LOCATION_ID for a walk-in registered without a poli', async () => {
+      const bundle = await submitWithEncounterLocation({
+        specialtyName: null,
+        specialtyLocationId: null,
+        registeredRootLocationId: null,
+      });
+
+      const encounter = bundle.entry[0]?.resource as { location: unknown };
+      expect(encounter.location).toEqual([
+        { location: { reference: 'Location/location-uuid' } },
+      ]);
+      expect(submissionRepositoryMock.markSubmitted).toHaveBeenCalledWith({
+        id: buildSubmission().id,
+        satusehatEncounterId: 'ihs-enc-1',
+        locationFallbackReason: 'NO_POLI',
+      });
+    });
   });
 
   it('records the IHS encounter id when the platform answers with an absolute location URL', async () => {
@@ -439,10 +524,11 @@ describe('SatusehatSubmissionService', () => {
 
     await service.processSubmission(buildSubmission());
 
-    expect(submissionRepositoryMock.markSubmitted).toHaveBeenCalledWith(
-      buildSubmission().id,
-      'ihs-enc-abs',
-    );
+    expect(submissionRepositoryMock.markSubmitted).toHaveBeenCalledWith({
+      id: buildSubmission().id,
+      satusehatEncounterId: 'ihs-enc-abs',
+      locationFallbackReason: null,
+    });
   });
 
   it('records a null IHS encounter id when no entry carries an Encounter location', async () => {
@@ -462,7 +548,11 @@ describe('SatusehatSubmissionService', () => {
 
     await service.processSubmission(buildSubmission());
 
-    expect(submissionRepositoryMock.markSubmitted).toHaveBeenCalledWith(buildSubmission().id, null);
+    expect(submissionRepositoryMock.markSubmitted).toHaveBeenCalledWith({
+      id: buildSubmission().id,
+      satusehatEncounterId: null,
+      locationFallbackReason: null,
+    });
   });
 
   it('records what the submission sent, with the id SATUSEHAT gave each resource', async () => {
@@ -710,10 +800,11 @@ describe('SatusehatSubmissionService', () => {
 
     // The bundle reached the platform and nothing can un-send it, so provenance
     // failing must not schedule a retry that would duplicate every resource.
-    expect(submissionRepositoryMock.markSubmitted).toHaveBeenCalledWith(
-      buildSubmission().id,
-      'ihs-enc-1',
-    );
+    expect(submissionRepositoryMock.markSubmitted).toHaveBeenCalledWith({
+      id: buildSubmission().id,
+      satusehatEncounterId: 'ihs-enc-1',
+      locationFallbackReason: null,
+    });
     expect(submissionRepositoryMock.scheduleRetry).not.toHaveBeenCalled();
     expect(submissionRepositoryMock.markFailed).not.toHaveBeenCalled();
   });
@@ -1647,10 +1738,11 @@ describe('SatusehatSubmissionService', () => {
       body: SatusehatFhirTransactionBundle;
     }).body;
     expect(bundle.entry.filter((entry) => entry.request.url === 'Observation')).toHaveLength(0);
-    expect(submissionRepositoryMock.markSubmitted).toHaveBeenCalledWith(
-      buildSubmission().id,
-      null,
-    );
+    expect(submissionRepositoryMock.markSubmitted).toHaveBeenCalledWith({
+      id: buildSubmission().id,
+      satusehatEncounterId: null,
+      locationFallbackReason: null,
+    });
   });
   describe('lab report submissions', () => {
     function buildLabSubmission(overrides: Record<string, unknown> = {}) {
@@ -1707,10 +1799,11 @@ describe('SatusehatSubmissionService', () => {
         observationIdsByResultId: { 'result-glucose': 'ihs-obs-1', 'result-hba1c': 'ihs-obs-2' },
       });
       // A lab row records no IHS encounter of its own — it referenced one.
-      expect(submissionRepositoryMock.markSubmitted).toHaveBeenCalledWith(
-        'a0b1c2d3-e4f5-4a6b-8c7d-9e0f1a2b3c4d',
-        null,
-      );
+      expect(submissionRepositoryMock.markSubmitted).toHaveBeenCalledWith({
+        id: 'a0b1c2d3-e4f5-4a6b-8c7d-9e0f1a2b3c4d',
+        satusehatEncounterId: null,
+        locationFallbackReason: null,
+      });
     });
 
     it('sends a minimal Encounter of its own for a visit that had no consultation', async () => {

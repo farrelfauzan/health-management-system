@@ -19,6 +19,7 @@ export type SatusehatSubmissionControllerGetSubmissionDetailV1200DataSubmission 
   lastAttemptAt: string;
   submittedAt: string;
   satusehatEncounterId: string;
+  locationFallbackReason: unknown | null;
   createdAt: string;
   updatedAt: string;
 };

@@ -1,8 +1,10 @@
 import {
   ClaimDueSubmissionsPayload,
   ListSatusehatSubmissionsParams,
+  SatusehatLocationFallbackReasonValue,
   MarkSubmissionFailedPayload,
   MarkSubmissionRetryPayload,
+  MarkSubmissionSubmittedPayload,
   SatusehatSubmissionAllergy,
   SatusehatSubmissionBundleData,
   SatusehatSubmissionDispenseItem,
@@ -45,6 +47,7 @@ function toSubmissionRecord(row: ClaimedSubmissionRow): SatusehatSubmissionRecor
     lastAttemptAt: row.last_attempt_at,
     submittedAt: row.submitted_at,
     satusehatEncounterId: row.satusehat_encounter_id,
+    locationFallbackReason: row.location_fallback_reason,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -71,6 +74,7 @@ type SubmissionRowWithOrderNumber = {
   lastAttemptAt: Date | null;
   submittedAt: Date | null;
   satusehatEncounterId: string | null;
+  locationFallbackReason: SatusehatLocationFallbackReasonValue | null;
   createdAt: Date;
   updatedAt: Date;
   labOrder: { orderNumber: string } | null;
@@ -250,7 +254,8 @@ export class SatusehatSubmissionRepository {
                 "claimed"."status", "claimed"."attempts",
                 "claimed"."last_error", "claimed"."next_attempt_at",
                 "claimed"."last_attempt_at", "claimed"."submitted_at",
-                "claimed"."satusehat_encounter_id", "claimed"."created_at",
+                "claimed"."satusehat_encounter_id",
+                "claimed"."location_fallback_reason", "claimed"."created_at",
                 "claimed"."updated_at"
     `;
     return rows.map((row) => toSubmissionRecord(row));
@@ -389,7 +394,15 @@ export class SatusehatSubmissionRepository {
     const encounter = await this.prisma.encounter.findUnique({
       where: { id: encounterId },
       include: {
-        registration: { select: { checkedInAt: true } },
+        // The poli travels with the registration, so the Location the bundle
+        // names is decided from the visit itself (P24-T07). Null for a walk-in
+        // registered without a specialty.
+        registration: {
+          select: {
+            checkedInAt: true,
+            specialty: { select: { name: true, satusehatLocationId: true } },
+          },
+        },
         patient: {
           select: {
             id: true,
@@ -521,6 +534,7 @@ export class SatusehatSubmissionRepository {
     if (!encounter) {
       return null;
     }
+    const registeredRootLocationId = await this.findRegisteredRootLocationId();
     const latestVitals = encounter.vitalSigns[0];
     return {
       encounterId: encounter.id,
@@ -591,7 +605,25 @@ export class SatusehatSubmissionRepository {
       dispenseItems: encounter.prescriptions.flatMap((prescription) =>
         this.toSubmissionDispenseItems(prescription),
       ),
+      encounterLocation: {
+        specialtyName: encounter.registration.specialty?.name ?? null,
+        specialtyLocationId: encounter.registration.specialty?.satusehatLocationId ?? null,
+        registeredRootLocationId: registeredRootLocationId,
+      },
     };
+  }
+
+  /**
+   * The clinic's registered root site Location (P24-T05), read as its own
+   * statement because it lives on the singleton clinic profile rather than on
+   * anything the visit joins to. Null while no root has been registered, which
+   * leaves the deployment's `SATUSEHAT_LOCATION_ID` in charge.
+   */
+  private async findRegisteredRootLocationId(): Promise<string | null> {
+    const clinic = await this.prisma.clinicProfile.findFirst({
+      select: { satusehatLocationId: true },
+    });
+    return clinic?.satusehatLocationId ?? null;
   }
 
   /**
@@ -780,6 +812,7 @@ export class SatusehatSubmissionRepository {
     if (order === null) {
       return null;
     }
+    const registeredRootLocationId = await this.findRegisteredRootLocationId();
     const primaryDiagnosis = order.encounter?.diagnoses[0] ?? null;
     return {
       labOrderId: order.id,
@@ -792,6 +825,7 @@ export class SatusehatSubmissionRepository {
         order.encounter?.satusehatSubmissions[0]?.satusehatEncounterId ?? null,
       registrationId: order.registrationId,
       visitStartedAt: order.registration.registeredAt,
+      registeredRootLocationId,
       patientId: order.patient.id,
       patientName: order.patient.fullName,
       patientIhsNumber: this.decryptOptional(order.patient.satusehatPatientIdCiphertext),
@@ -961,17 +995,18 @@ export class SatusehatSubmissionRepository {
     });
   }
 
-  async markSubmitted(id: string, satusehatEncounterId: string | null): Promise<void> {
+  async markSubmitted(payload: MarkSubmissionSubmittedPayload): Promise<void> {
     const now = new Date();
     await this.prisma.satusehatSubmission.update({
-      where: { id },
+      where: { id: payload.id },
       data: {
         status: 'SUBMITTED',
         submittedAt: now,
         lastAttemptAt: now,
         attempts: { increment: 1 },
         lastError: null,
-        satusehatEncounterId,
+        satusehatEncounterId: payload.satusehatEncounterId,
+        locationFallbackReason: payload.locationFallbackReason,
       },
     });
   }

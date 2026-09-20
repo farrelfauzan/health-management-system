@@ -5,6 +5,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type {
   BpjsSubmissionStatusValue,
   BpjsSubmissionTypeValue,
+  SatusehatLocationFallbackReasonValue,
   SatusehatSubmissionKindValue,
   SatusehatSubmissionStatusValue,
 } from '@hms/shared-types';
@@ -59,6 +60,7 @@ import {
 import { useTabSearchParam } from '#lib/navigation/use-tab-search-param';
 import { formatStatusLabel } from '#lib/shared/status-label';
 import { IntegrationProviderLogo } from '#components/client/integrations/integration-provider-logo';
+import { SatusehatLocationFallbackBadge } from '#components/client/integrations/satusehat-location-fallback-badge';
 import { SatusehatSubmissionDetailDialog } from '#components/client/integrations/satusehat-submission-detail-dialog';
 
 type Provider = SubmissionMonitorProvider;
@@ -78,6 +80,11 @@ type MonitorRow = {
   externalReference: string | null;
   lastError: string | null;
   lastAttemptAt: string | null;
+  /**
+   * Set when the reported Encounter named the root site instead of the visit's
+   * poli (P24-T07). Always null on a BPJS row, which names no Location.
+   */
+  locationFallbackReason: SatusehatLocationFallbackReasonValue | null;
 };
 
 const STATUS_OPTIONS: StatusFilter[] = ['ALL', 'PENDING', 'SUBMITTED', 'FAILED'];
@@ -198,6 +205,7 @@ export function IntegrationSubmissionMonitor() {
         externalReference: submission.bpjsReferenceNo,
         lastError: submission.lastError,
         lastAttemptAt: submission.lastAttemptAt,
+        locationFallbackReason: null,
       }));
     }
     return satusehatQuery.submissions.map((submission) => ({
@@ -212,6 +220,7 @@ export function IntegrationSubmissionMonitor() {
       externalReference: submission.satusehatEncounterId,
       lastError: submission.lastError,
       lastAttemptAt: submission.lastAttemptAt,
+      locationFallbackReason: submission.locationFallbackReason,
     }));
   }, [bpjsQuery.submissions, provider, satusehatQuery.submissions]);
 
@@ -352,7 +361,16 @@ export function IntegrationSubmissionMonitor() {
                         <TableCell className="font-mono text-xs">
                           {row.localReference ?? '—'}
                         </TableCell>
-                        <TableCell>{row.kind}</TableCell>
+                        <TableCell>
+                          <span className="flex flex-wrap items-center gap-2">
+                            {row.kind}
+                            {row.locationFallbackReason ? (
+                              <SatusehatLocationFallbackBadge
+                                reason={row.locationFallbackReason}
+                              />
+                            ) : null}
+                          </span>
+                        </TableCell>
                         <TableCell>
                           <Badge variant="outline" className={statusClass(row.status)}>
                             {formatStatusLabel(row.status)}

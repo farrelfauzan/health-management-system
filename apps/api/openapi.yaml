@@ -47443,6 +47443,8 @@ paths:
                           nullable: true
                         satusehatEncounterId:
                           nullable: true
+                        locationFallbackReason:
+                          nullable: true
                         createdAt:
                           type: string
                         updatedAt:
@@ -47460,6 +47462,7 @@ paths:
                         - lastAttemptAt
                         - submittedAt
                         - satusehatEncounterId
+                        - locationFallbackReason
                         - createdAt
                         - updatedAt
                   meta:
@@ -47492,6 +47495,7 @@ paths:
                       lastAttemptAt: 2026-07-28T08:00:00.000Z
                       submittedAt: null
                       satusehatEncounterId: null
+                      locationFallbackReason: null
                       createdAt: 2026-07-27T10:15:00.000Z
                       updatedAt: 2026-07-28T08:00:00.000Z
                     - id: 9f0e1d2c-3b4a-4958-8677-8695a4b3c2d1
@@ -47506,6 +47510,7 @@ paths:
                       lastAttemptAt: null
                       submittedAt: null
                       satusehatEncounterId: null
+                      locationFallbackReason: null
                       createdAt: 2026-07-28T10:30:00.000Z
                       updatedAt: 2026-07-28T10:30:00.000Z
                   meta:
@@ -47586,6 +47591,8 @@ paths:
                             type: string
                           satusehatEncounterId:
                             type: string
+                          locationFallbackReason:
+                            nullable: true
                           createdAt:
                             type: string
                           updatedAt:
@@ -47603,6 +47610,7 @@ paths:
                           - lastAttemptAt
                           - submittedAt
                           - satusehatEncounterId
+                          - locationFallbackReason
                           - createdAt
                           - updatedAt
                       hasResourceList:
@@ -47655,6 +47663,7 @@ paths:
                       lastAttemptAt: 2026-07-28T02:25:04.000Z
                       submittedAt: 2026-07-28T02:25:04.000Z
                       satusehatEncounterId: 0a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d
+                      locationFallbackReason: null
                       createdAt: 2026-07-28T02:20:00.000Z
                       updatedAt: 2026-07-28T02:25:04.000Z
                     hasResourceList: true
@@ -47855,6 +47864,8 @@ paths:
                         type: string
                       satusehatEncounterId:
                         type: string
+                      locationFallbackReason:
+                        type: string
                       createdAt:
                         type: string
                       updatedAt:
@@ -47872,6 +47883,7 @@ paths:
                       - lastAttemptAt
                       - submittedAt
                       - satusehatEncounterId
+                      - locationFallbackReason
                       - createdAt
                       - updatedAt
                   message:
@@ -47893,6 +47905,7 @@ paths:
                     lastAttemptAt: 2026-07-28T09:05:01.000Z
                     submittedAt: 2026-07-28T09:05:01.000Z
                     satusehatEncounterId: a1b2c3d4-0000-4000-8000-9f8e7d6c5b4a
+                    locationFallbackReason: POLI_NOT_REGISTERED
                     createdAt: 2026-07-27T10:15:00.000Z
                     updatedAt: 2026-07-28T09:05:01.000Z
                   message: Submission retry processed

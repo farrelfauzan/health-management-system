@@ -55,6 +55,7 @@ export type SatusehatSubmissionMinAggregateOutputType = {
   lastAttemptAt: Date | null
   submittedAt: Date | null
   satusehatEncounterId: string | null
+  locationFallbackReason: $Enums.SatusehatLocationFallbackReason | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -71,6 +72,7 @@ export type SatusehatSubmissionMaxAggregateOutputType = {
   lastAttemptAt: Date | null
   submittedAt: Date | null
   satusehatEncounterId: string | null
+  locationFallbackReason: $Enums.SatusehatLocationFallbackReason | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -87,6 +89,7 @@ export type SatusehatSubmissionCountAggregateOutputType = {
   lastAttemptAt: number
   submittedAt: number
   satusehatEncounterId: number
+  locationFallbackReason: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -113,6 +116,7 @@ export type SatusehatSubmissionMinAggregateInputType = {
   lastAttemptAt?: true
   submittedAt?: true
   satusehatEncounterId?: true
+  locationFallbackReason?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -129,6 +133,7 @@ export type SatusehatSubmissionMaxAggregateInputType = {
   lastAttemptAt?: true
   submittedAt?: true
   satusehatEncounterId?: true
+  locationFallbackReason?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -145,6 +150,7 @@ export type SatusehatSubmissionCountAggregateInputType = {
   lastAttemptAt?: true
   submittedAt?: true
   satusehatEncounterId?: true
+  locationFallbackReason?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -248,6 +254,7 @@ export type SatusehatSubmissionGroupByOutputType = {
   lastAttemptAt: Date | null
   submittedAt: Date | null
   satusehatEncounterId: string | null
+  locationFallbackReason: $Enums.SatusehatLocationFallbackReason | null
   createdAt: Date
   updatedAt: Date
   _count: SatusehatSubmissionCountAggregateOutputType | null
@@ -287,6 +294,7 @@ export type SatusehatSubmissionWhereInput = {
   lastAttemptAt?: Prisma.DateTimeNullableFilter<"SatusehatSubmission"> | Date | string | null
   submittedAt?: Prisma.DateTimeNullableFilter<"SatusehatSubmission"> | Date | string | null
   satusehatEncounterId?: Prisma.StringNullableFilter<"SatusehatSubmission"> | string | null
+  locationFallbackReason?: Prisma.EnumSatusehatLocationFallbackReasonNullableFilter<"SatusehatSubmission"> | $Enums.SatusehatLocationFallbackReason | null
   createdAt?: Prisma.DateTimeFilter<"SatusehatSubmission"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"SatusehatSubmission"> | Date | string
   encounter?: Prisma.XOR<Prisma.EncounterNullableScalarRelationFilter, Prisma.EncounterWhereInput> | null
@@ -306,6 +314,7 @@ export type SatusehatSubmissionOrderByWithRelationInput = {
   lastAttemptAt?: Prisma.SortOrderInput | Prisma.SortOrder
   submittedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   satusehatEncounterId?: Prisma.SortOrderInput | Prisma.SortOrder
+  locationFallbackReason?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   encounter?: Prisma.EncounterOrderByWithRelationInput
@@ -328,6 +337,7 @@ export type SatusehatSubmissionWhereUniqueInput = Prisma.AtLeast<{
   lastAttemptAt?: Prisma.DateTimeNullableFilter<"SatusehatSubmission"> | Date | string | null
   submittedAt?: Prisma.DateTimeNullableFilter<"SatusehatSubmission"> | Date | string | null
   satusehatEncounterId?: Prisma.StringNullableFilter<"SatusehatSubmission"> | string | null
+  locationFallbackReason?: Prisma.EnumSatusehatLocationFallbackReasonNullableFilter<"SatusehatSubmission"> | $Enums.SatusehatLocationFallbackReason | null
   createdAt?: Prisma.DateTimeFilter<"SatusehatSubmission"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"SatusehatSubmission"> | Date | string
   encounter?: Prisma.XOR<Prisma.EncounterNullableScalarRelationFilter, Prisma.EncounterWhereInput> | null
@@ -347,6 +357,7 @@ export type SatusehatSubmissionOrderByWithAggregationInput = {
   lastAttemptAt?: Prisma.SortOrderInput | Prisma.SortOrder
   submittedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   satusehatEncounterId?: Prisma.SortOrderInput | Prisma.SortOrder
+  locationFallbackReason?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.SatusehatSubmissionCountOrderByAggregateInput
@@ -371,6 +382,7 @@ export type SatusehatSubmissionScalarWhereWithAggregatesInput = {
   lastAttemptAt?: Prisma.DateTimeNullableWithAggregatesFilter<"SatusehatSubmission"> | Date | string | null
   submittedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"SatusehatSubmission"> | Date | string | null
   satusehatEncounterId?: Prisma.StringNullableWithAggregatesFilter<"SatusehatSubmission"> | string | null
+  locationFallbackReason?: Prisma.EnumSatusehatLocationFallbackReasonNullableWithAggregatesFilter<"SatusehatSubmission"> | $Enums.SatusehatLocationFallbackReason | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"SatusehatSubmission"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"SatusehatSubmission"> | Date | string
 }
@@ -385,6 +397,7 @@ export type SatusehatSubmissionCreateInput = {
   lastAttemptAt?: Date | string | null
   submittedAt?: Date | string | null
   satusehatEncounterId?: string | null
+  locationFallbackReason?: $Enums.SatusehatLocationFallbackReason | null
   createdAt?: Date | string
   updatedAt?: Date | string
   encounter?: Prisma.EncounterCreateNestedOneWithoutSatusehatSubmissionsInput
@@ -404,6 +417,7 @@ export type SatusehatSubmissionUncheckedCreateInput = {
   lastAttemptAt?: Date | string | null
   submittedAt?: Date | string | null
   satusehatEncounterId?: string | null
+  locationFallbackReason?: $Enums.SatusehatLocationFallbackReason | null
   createdAt?: Date | string
   updatedAt?: Date | string
   resources?: Prisma.SatusehatSubmissionResourceUncheckedCreateNestedManyWithoutSubmissionInput
@@ -419,6 +433,7 @@ export type SatusehatSubmissionUpdateInput = {
   lastAttemptAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   satusehatEncounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locationFallbackReason?: Prisma.NullableEnumSatusehatLocationFallbackReasonFieldUpdateOperationsInput | $Enums.SatusehatLocationFallbackReason | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   encounter?: Prisma.EncounterUpdateOneWithoutSatusehatSubmissionsNestedInput
@@ -438,6 +453,7 @@ export type SatusehatSubmissionUncheckedUpdateInput = {
   lastAttemptAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   satusehatEncounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locationFallbackReason?: Prisma.NullableEnumSatusehatLocationFallbackReasonFieldUpdateOperationsInput | $Enums.SatusehatLocationFallbackReason | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   resources?: Prisma.SatusehatSubmissionResourceUncheckedUpdateManyWithoutSubmissionNestedInput
@@ -455,6 +471,7 @@ export type SatusehatSubmissionCreateManyInput = {
   lastAttemptAt?: Date | string | null
   submittedAt?: Date | string | null
   satusehatEncounterId?: string | null
+  locationFallbackReason?: $Enums.SatusehatLocationFallbackReason | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -469,6 +486,7 @@ export type SatusehatSubmissionUpdateManyMutationInput = {
   lastAttemptAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   satusehatEncounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locationFallbackReason?: Prisma.NullableEnumSatusehatLocationFallbackReasonFieldUpdateOperationsInput | $Enums.SatusehatLocationFallbackReason | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -485,6 +503,7 @@ export type SatusehatSubmissionUncheckedUpdateManyInput = {
   lastAttemptAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   satusehatEncounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locationFallbackReason?: Prisma.NullableEnumSatusehatLocationFallbackReasonFieldUpdateOperationsInput | $Enums.SatusehatLocationFallbackReason | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -511,6 +530,7 @@ export type SatusehatSubmissionCountOrderByAggregateInput = {
   lastAttemptAt?: Prisma.SortOrder
   submittedAt?: Prisma.SortOrder
   satusehatEncounterId?: Prisma.SortOrder
+  locationFallbackReason?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -531,6 +551,7 @@ export type SatusehatSubmissionMaxOrderByAggregateInput = {
   lastAttemptAt?: Prisma.SortOrder
   submittedAt?: Prisma.SortOrder
   satusehatEncounterId?: Prisma.SortOrder
+  locationFallbackReason?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -547,6 +568,7 @@ export type SatusehatSubmissionMinOrderByAggregateInput = {
   lastAttemptAt?: Prisma.SortOrder
   submittedAt?: Prisma.SortOrder
   satusehatEncounterId?: Prisma.SortOrder
+  locationFallbackReason?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -608,6 +630,10 @@ export type EnumSatusehatSubmissionKindFieldUpdateOperationsInput = {
 
 export type EnumSatusehatSubmissionStatusFieldUpdateOperationsInput = {
   set?: $Enums.SatusehatSubmissionStatus
+}
+
+export type NullableEnumSatusehatLocationFallbackReasonFieldUpdateOperationsInput = {
+  set?: $Enums.SatusehatLocationFallbackReason | null
 }
 
 export type SatusehatSubmissionCreateNestedOneWithoutResourcesInput = {
@@ -676,6 +702,7 @@ export type SatusehatSubmissionCreateWithoutEncounterInput = {
   lastAttemptAt?: Date | string | null
   submittedAt?: Date | string | null
   satusehatEncounterId?: string | null
+  locationFallbackReason?: $Enums.SatusehatLocationFallbackReason | null
   createdAt?: Date | string
   updatedAt?: Date | string
   labOrder?: Prisma.LabOrderCreateNestedOneWithoutSatusehatSubmissionsInput
@@ -693,6 +720,7 @@ export type SatusehatSubmissionUncheckedCreateWithoutEncounterInput = {
   lastAttemptAt?: Date | string | null
   submittedAt?: Date | string | null
   satusehatEncounterId?: string | null
+  locationFallbackReason?: $Enums.SatusehatLocationFallbackReason | null
   createdAt?: Date | string
   updatedAt?: Date | string
   resources?: Prisma.SatusehatSubmissionResourceUncheckedCreateNestedManyWithoutSubmissionInput
@@ -739,6 +767,7 @@ export type SatusehatSubmissionScalarWhereInput = {
   lastAttemptAt?: Prisma.DateTimeNullableFilter<"SatusehatSubmission"> | Date | string | null
   submittedAt?: Prisma.DateTimeNullableFilter<"SatusehatSubmission"> | Date | string | null
   satusehatEncounterId?: Prisma.StringNullableFilter<"SatusehatSubmission"> | string | null
+  locationFallbackReason?: Prisma.EnumSatusehatLocationFallbackReasonNullableFilter<"SatusehatSubmission"> | $Enums.SatusehatLocationFallbackReason | null
   createdAt?: Prisma.DateTimeFilter<"SatusehatSubmission"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"SatusehatSubmission"> | Date | string
 }
@@ -753,6 +782,7 @@ export type SatusehatSubmissionCreateWithoutResourcesInput = {
   lastAttemptAt?: Date | string | null
   submittedAt?: Date | string | null
   satusehatEncounterId?: string | null
+  locationFallbackReason?: $Enums.SatusehatLocationFallbackReason | null
   createdAt?: Date | string
   updatedAt?: Date | string
   encounter?: Prisma.EncounterCreateNestedOneWithoutSatusehatSubmissionsInput
@@ -771,6 +801,7 @@ export type SatusehatSubmissionUncheckedCreateWithoutResourcesInput = {
   lastAttemptAt?: Date | string | null
   submittedAt?: Date | string | null
   satusehatEncounterId?: string | null
+  locationFallbackReason?: $Enums.SatusehatLocationFallbackReason | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -801,6 +832,7 @@ export type SatusehatSubmissionUpdateWithoutResourcesInput = {
   lastAttemptAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   satusehatEncounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locationFallbackReason?: Prisma.NullableEnumSatusehatLocationFallbackReasonFieldUpdateOperationsInput | $Enums.SatusehatLocationFallbackReason | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   encounter?: Prisma.EncounterUpdateOneWithoutSatusehatSubmissionsNestedInput
@@ -819,6 +851,7 @@ export type SatusehatSubmissionUncheckedUpdateWithoutResourcesInput = {
   lastAttemptAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   satusehatEncounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locationFallbackReason?: Prisma.NullableEnumSatusehatLocationFallbackReasonFieldUpdateOperationsInput | $Enums.SatusehatLocationFallbackReason | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -833,6 +866,7 @@ export type SatusehatSubmissionCreateWithoutLabOrderInput = {
   lastAttemptAt?: Date | string | null
   submittedAt?: Date | string | null
   satusehatEncounterId?: string | null
+  locationFallbackReason?: $Enums.SatusehatLocationFallbackReason | null
   createdAt?: Date | string
   updatedAt?: Date | string
   encounter?: Prisma.EncounterCreateNestedOneWithoutSatusehatSubmissionsInput
@@ -850,6 +884,7 @@ export type SatusehatSubmissionUncheckedCreateWithoutLabOrderInput = {
   lastAttemptAt?: Date | string | null
   submittedAt?: Date | string | null
   satusehatEncounterId?: string | null
+  locationFallbackReason?: $Enums.SatusehatLocationFallbackReason | null
   createdAt?: Date | string
   updatedAt?: Date | string
   resources?: Prisma.SatusehatSubmissionResourceUncheckedCreateNestedManyWithoutSubmissionInput
@@ -892,6 +927,7 @@ export type SatusehatSubmissionCreateManyEncounterInput = {
   lastAttemptAt?: Date | string | null
   submittedAt?: Date | string | null
   satusehatEncounterId?: string | null
+  locationFallbackReason?: $Enums.SatusehatLocationFallbackReason | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -906,6 +942,7 @@ export type SatusehatSubmissionUpdateWithoutEncounterInput = {
   lastAttemptAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   satusehatEncounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locationFallbackReason?: Prisma.NullableEnumSatusehatLocationFallbackReasonFieldUpdateOperationsInput | $Enums.SatusehatLocationFallbackReason | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   labOrder?: Prisma.LabOrderUpdateOneWithoutSatusehatSubmissionsNestedInput
@@ -923,6 +960,7 @@ export type SatusehatSubmissionUncheckedUpdateWithoutEncounterInput = {
   lastAttemptAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   satusehatEncounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locationFallbackReason?: Prisma.NullableEnumSatusehatLocationFallbackReasonFieldUpdateOperationsInput | $Enums.SatusehatLocationFallbackReason | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   resources?: Prisma.SatusehatSubmissionResourceUncheckedUpdateManyWithoutSubmissionNestedInput
@@ -939,6 +977,7 @@ export type SatusehatSubmissionUncheckedUpdateManyWithoutEncounterInput = {
   lastAttemptAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   satusehatEncounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locationFallbackReason?: Prisma.NullableEnumSatusehatLocationFallbackReasonFieldUpdateOperationsInput | $Enums.SatusehatLocationFallbackReason | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -954,6 +993,7 @@ export type SatusehatSubmissionCreateManyLabOrderInput = {
   lastAttemptAt?: Date | string | null
   submittedAt?: Date | string | null
   satusehatEncounterId?: string | null
+  locationFallbackReason?: $Enums.SatusehatLocationFallbackReason | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -968,6 +1008,7 @@ export type SatusehatSubmissionUpdateWithoutLabOrderInput = {
   lastAttemptAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   satusehatEncounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locationFallbackReason?: Prisma.NullableEnumSatusehatLocationFallbackReasonFieldUpdateOperationsInput | $Enums.SatusehatLocationFallbackReason | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   encounter?: Prisma.EncounterUpdateOneWithoutSatusehatSubmissionsNestedInput
@@ -985,6 +1026,7 @@ export type SatusehatSubmissionUncheckedUpdateWithoutLabOrderInput = {
   lastAttemptAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   satusehatEncounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locationFallbackReason?: Prisma.NullableEnumSatusehatLocationFallbackReasonFieldUpdateOperationsInput | $Enums.SatusehatLocationFallbackReason | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   resources?: Prisma.SatusehatSubmissionResourceUncheckedUpdateManyWithoutSubmissionNestedInput
@@ -1001,6 +1043,7 @@ export type SatusehatSubmissionUncheckedUpdateManyWithoutLabOrderInput = {
   lastAttemptAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   submittedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   satusehatEncounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locationFallbackReason?: Prisma.NullableEnumSatusehatLocationFallbackReasonFieldUpdateOperationsInput | $Enums.SatusehatLocationFallbackReason | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1048,6 +1091,7 @@ export type SatusehatSubmissionSelect<ExtArgs extends runtime.Types.Extensions.I
   lastAttemptAt?: boolean
   submittedAt?: boolean
   satusehatEncounterId?: boolean
+  locationFallbackReason?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   encounter?: boolean | Prisma.SatusehatSubmission$encounterArgs<ExtArgs>
@@ -1068,6 +1112,7 @@ export type SatusehatSubmissionSelectCreateManyAndReturn<ExtArgs extends runtime
   lastAttemptAt?: boolean
   submittedAt?: boolean
   satusehatEncounterId?: boolean
+  locationFallbackReason?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   encounter?: boolean | Prisma.SatusehatSubmission$encounterArgs<ExtArgs>
@@ -1086,6 +1131,7 @@ export type SatusehatSubmissionSelectUpdateManyAndReturn<ExtArgs extends runtime
   lastAttemptAt?: boolean
   submittedAt?: boolean
   satusehatEncounterId?: boolean
+  locationFallbackReason?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   encounter?: boolean | Prisma.SatusehatSubmission$encounterArgs<ExtArgs>
@@ -1104,11 +1150,12 @@ export type SatusehatSubmissionSelectScalar = {
   lastAttemptAt?: boolean
   submittedAt?: boolean
   satusehatEncounterId?: boolean
+  locationFallbackReason?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type SatusehatSubmissionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "encounterId" | "kind" | "labOrderId" | "status" | "attempts" | "lastError" | "nextAttemptAt" | "lastAttemptAt" | "submittedAt" | "satusehatEncounterId" | "createdAt" | "updatedAt", ExtArgs["result"]["satusehatSubmission"]>
+export type SatusehatSubmissionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "encounterId" | "kind" | "labOrderId" | "status" | "attempts" | "lastError" | "nextAttemptAt" | "lastAttemptAt" | "submittedAt" | "satusehatEncounterId" | "locationFallbackReason" | "createdAt" | "updatedAt", ExtArgs["result"]["satusehatSubmission"]>
 export type SatusehatSubmissionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   encounter?: boolean | Prisma.SatusehatSubmission$encounterArgs<ExtArgs>
   labOrder?: boolean | Prisma.SatusehatSubmission$labOrderArgs<ExtArgs>
@@ -1169,6 +1216,14 @@ export type $SatusehatSubmissionPayload<ExtArgs extends runtime.Types.Extensions
      * link between the local record and the national one.
      */
     satusehatEncounterId: string | null
+    /**
+     * Set when the Encounter this row sent named a fallback Location rather
+     * than the visit's poli (P24-T07). Kind-agnostic: a LAB_REPORT row names no
+     * poli, so it stays null. Written when the bundle is accepted, so it
+     * describes what actually reached the platform, and null on every row
+     * settled before the column existed.
+     */
+    locationFallbackReason: $Enums.SatusehatLocationFallbackReason | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["satusehatSubmission"]>
@@ -1608,6 +1663,7 @@ export interface SatusehatSubmissionFieldRefs {
   readonly lastAttemptAt: Prisma.FieldRef<"SatusehatSubmission", 'DateTime'>
   readonly submittedAt: Prisma.FieldRef<"SatusehatSubmission", 'DateTime'>
   readonly satusehatEncounterId: Prisma.FieldRef<"SatusehatSubmission", 'String'>
+  readonly locationFallbackReason: Prisma.FieldRef<"SatusehatSubmission", 'SatusehatLocationFallbackReason'>
   readonly createdAt: Prisma.FieldRef<"SatusehatSubmission", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"SatusehatSubmission", 'DateTime'>
 }

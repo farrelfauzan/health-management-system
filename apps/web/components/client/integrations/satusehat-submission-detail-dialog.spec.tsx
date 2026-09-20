@@ -39,6 +39,7 @@ function buildDetail(
       lastAttemptAt: '2026-07-28T02:25:04.000Z',
       submittedAt: '2026-07-28T02:25:04.000Z',
       satusehatEncounterId: 'ihs-enc-1',
+      locationFallbackReason: null,
       createdAt: '2026-07-28T02:20:00.000Z',
       updatedAt: '2026-07-28T02:25:04.000Z',
     },

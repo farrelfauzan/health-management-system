@@ -278,10 +278,7 @@ export class SatusehatFhirMapper {
       this.satusehatConfig.organizationId,
       'SATUSEHAT_ORGANIZATION_ID',
     );
-    const locationId = this.requireConfigValue(
-      this.satusehatConfig.locationId,
-      'SATUSEHAT_LOCATION_ID',
-    );
+    const locationId = this.resolveLocationId(input.locationId);
     return {
       resourceType: 'Encounter',
       identifier: [
@@ -313,9 +310,12 @@ export class SatusehatFhirMapper {
       },
       location: [
         {
+          // The configured display names the site, so it is only truthful
+          // while the site is what the visit reports under (P24-T07). A poli's
+          // Location travels as a bare reference; SATUSEHAT holds its name.
           location: this.buildReference(
             `Location/${locationId}`,
-            this.satusehatConfig.locationName,
+            input.locationId === null ? this.satusehatConfig.locationName : undefined,
           ),
         },
       ],
@@ -1181,10 +1181,7 @@ export class SatusehatFhirMapper {
       this.satusehatConfig.organizationId,
       'SATUSEHAT_ORGANIZATION_ID',
     );
-    const locationId = this.requireConfigValue(
-      this.satusehatConfig.locationId,
-      'SATUSEHAT_LOCATION_ID',
-    );
+    const locationId = this.resolveLocationId(input.locationId);
     const period = {
       start: this.toFhirInstant(input.startedAt),
       end: this.toFhirInstant(input.endedAt),
@@ -1489,6 +1486,20 @@ export class SatusehatFhirMapper {
 
   private toFhirInstant(timestamp: Date): string {
     return timestamp.toISOString();
+  }
+
+  /**
+   * The Location a visit reports under: the one the caller resolved (P24-T07),
+   * else the deployment's configured site. A clinic that registered nothing
+   * therefore submits exactly as it did before polis had Locations, and one
+   * that configured nothing at all is still refused rather than sent an
+   * Encounter with a dangling reference.
+   */
+  private resolveLocationId(resolvedLocationId: string | null): string {
+    return (
+      resolvedLocationId ??
+      this.requireConfigValue(this.satusehatConfig.locationId, 'SATUSEHAT_LOCATION_ID')
+    );
   }
 
   private requireConfigValue(value: string | undefined, key: string): string {

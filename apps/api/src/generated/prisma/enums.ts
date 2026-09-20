@@ -560,6 +560,14 @@ export const SatusehatResourceOutcome = {
 export type SatusehatResourceOutcome = (typeof SatusehatResourceOutcome)[keyof typeof SatusehatResourceOutcome]
 
 
+export const SatusehatLocationFallbackReason = {
+  NO_POLI: 'NO_POLI',
+  POLI_NOT_REGISTERED: 'POLI_NOT_REGISTERED'
+} as const
+
+export type SatusehatLocationFallbackReason = (typeof SatusehatLocationFallbackReason)[keyof typeof SatusehatLocationFallbackReason]
+
+
 export const SatusehatResourceSkipReason = {
   NO_KFA_CODE: 'NO_KFA_CODE',
   NO_ICD9CM_CODE: 'NO_ICD9CM_CODE',

@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 
 import {
+  SatusehatLocationFallbackReasonValue,
   SatusehatSubmissionAllergy,
   SatusehatSubmissionBundleData,
   SatusehatSubmissionDispenseItem,
@@ -19,6 +20,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 import { AuditService } from '../../../common/audit/audit.service';
+import { resolveSatusehatEncounterLocation } from '../../../common/satusehat/resolve-satusehat-encounter-location';
+import { resolveSatusehatRootLocationId } from '../../../common/satusehat/resolve-satusehat-root-location-id';
 import { SatusehatFhirMapper } from '../../../common/satusehat/satusehat-fhir.mapper';
 import {
   SatusehatCompositionSectionInput,
@@ -72,6 +75,13 @@ type SubmittedBundle = {
   bundle: SatusehatFhirTransactionBundle;
   createdResources: ReadonlyMap<string, SatusehatCreatedResourceLocation>;
   resourceList: SatusehatResourceListBuilder;
+  /**
+   * Set when the Encounter went out under a fallback Location rather than the
+   * visit's poli (P24-T07), so the row the caller settles carries the warning
+   * the monitor shows. Always null on the laboratory chain: a blood draw has
+   * no poli to fall back from.
+   */
+  locationFallbackReason: SatusehatLocationFallbackReasonValue | null;
 };
 
 const PERMANENT_ERROR_CODES: readonly string[] = [
@@ -153,7 +163,11 @@ export class SatusehatSubmissionService {
       const satusehatEncounterId = encounterEntry
         ? (submitted.createdResources.get(encounterEntry.fullUrl)?.id ?? null)
         : null;
-      await this.submissionRepository.markSubmitted(submission.id, satusehatEncounterId);
+      await this.submissionRepository.markSubmitted({
+        id: submission.id,
+        satusehatEncounterId,
+        locationFallbackReason: submitted.locationFallbackReason,
+      });
       await this.saveSubmissionResources(submission.id, submitted);
       this.logger.log('SATUSEHAT encounter submission succeeded');
     } catch (caughtError) {
@@ -196,7 +210,11 @@ export class SatusehatSubmissionService {
       throw new SatusehatSubmissionDataError('Lab report submission carries no order');
     }
     const submitted = await this.submitLabReportBundle(submission.labOrderId);
-    await this.submissionRepository.markSubmitted(submission.id, null);
+    await this.submissionRepository.markSubmitted({
+      id: submission.id,
+      satusehatEncounterId: null,
+      locationFallbackReason: null,
+    });
     await this.saveSubmissionResources(submission.id, submitted);
     this.logger.log(
       submitted.bundle.entry.length > 0
@@ -220,6 +238,10 @@ export class SatusehatSubmissionService {
     const allergyFullUrls = new Map<string, string>();
     const immunizationFullUrls = new Map<string, string>();
     const resourceList = new SatusehatResourceListBuilder();
+    const encounterLocation = resolveSatusehatEncounterLocation({
+      ...bundleData.encounterLocation,
+      configuredLocationId: this.satusehatConfig.locationId,
+    });
     const bundle = this.buildTransactionBundle(
       bundleData,
       bundleData.endedAt,
@@ -228,6 +250,7 @@ export class SatusehatSubmissionService {
       allergyFullUrls,
       immunizationFullUrls,
       resourceList,
+      encounterLocation.locationId,
     );
     const response = await this.httpClient.sendRequest<SatusehatTransactionResponse>({
       method: 'POST',
@@ -237,7 +260,12 @@ export class SatusehatSubmissionService {
     const createdResources = this.extractCreatedResources(bundle, response);
     await this.saveAllergyIhsIds(allergyFullUrls, createdResources);
     await this.saveImmunizationIhsIds(immunizationFullUrls, createdResources);
-    return { bundle, createdResources, resourceList };
+    return {
+      bundle,
+      createdResources,
+      resourceList,
+      locationFallbackReason: encounterLocation.fallbackReason,
+    };
   }
 
   /**
@@ -280,7 +308,12 @@ export class SatusehatSubmissionService {
       // list is what stops that reading as a clean success: it holds the skips
       // and no sent resource at all, so the monitor can say the report carried
       // nothing rather than showing an empty green row.
-      return { bundle: EMPTY_TRANSACTION_BUNDLE, createdResources: new Map(), resourceList };
+      return {
+        bundle: EMPTY_TRANSACTION_BUNDLE,
+        createdResources: new Map(),
+        resourceList,
+        locationFallbackReason: null,
+      };
     }
     const patientIhsNumber = await this.resolvePatientIhsNumber(bundleData);
     const practitionerIhsNumber = await this.resolveLabRequesterIhsNumber(bundleData);
@@ -315,7 +348,7 @@ export class SatusehatSubmissionService {
       specimenFullUrls,
       observationFullUrls,
     });
-    return { bundle, createdResources, resourceList };
+    return { bundle, createdResources, resourceList, locationFallbackReason: null };
   }
 
   /**
@@ -437,6 +470,10 @@ export class SatusehatSubmissionService {
             fullUrl: `urn:uuid:${randomUUID()}`,
             resource: this.fhirMapper.mapLabOnlyVisitToEncounter({
               registrationId: bundleData.registrationId,
+              locationId: resolveSatusehatRootLocationId({
+                registeredRootLocationId: bundleData.registeredRootLocationId,
+                configuredLocationId: this.satusehatConfig.locationId,
+              }),
               patientIhsNumber,
               patientName: bundleData.patientName,
               startedAt: bundleData.visitStartedAt,
@@ -671,6 +708,7 @@ export class SatusehatSubmissionService {
     allergyFullUrls: Map<string, string>,
     immunizationFullUrls: Map<string, string>,
     resourceList: SatusehatResourceListBuilder,
+    locationId: string | null,
   ): SatusehatFhirTransactionBundle {
     const encounterFullUrl = `urn:uuid:${randomUUID()}`;
     resourceList.trackLocalRecord(encounterFullUrl, bundleData.encounterId);
@@ -738,6 +776,7 @@ export class SatusehatSubmissionService {
     );
     const encounterResource = this.fhirMapper.mapEncounter({
       encounterId: bundleData.encounterId,
+      locationId,
       patientIhsNumber,
       patientName: bundleData.patientName,
       practitionerIhsNumber,

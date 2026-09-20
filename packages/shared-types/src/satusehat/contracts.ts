@@ -1,6 +1,7 @@
 import type {
   SatusehatEnvironmentValue,
   SatusehatLocationBlockReasonValue,
+  SatusehatLocationFallbackReasonValue,
   SatusehatLocationKindValue,
   SatusehatLocationNodeStatusValue,
   SatusehatLocationRegistrationOutcomeValue,
@@ -75,6 +76,12 @@ export type SatusehatSubmissionView = {
   lastAttemptAt: string | null;
   submittedAt: string | null;
   satusehatEncounterId: string | null;
+  /**
+   * Set when the reported Encounter named a fallback Location instead of the
+   * visit's poli (P24-T07), which the monitor shows as a warning on the row.
+   * Presence only — no poli name, no clinical content.
+   */
+  locationFallbackReason: SatusehatLocationFallbackReasonValue | null;
   createdAt: string;
   updatedAt: string;
 };

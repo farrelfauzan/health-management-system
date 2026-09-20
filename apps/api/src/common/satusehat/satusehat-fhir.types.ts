@@ -270,6 +270,14 @@ export type SatusehatEncounterAdmission = {
 
 export type SatusehatEncounterMapInput = {
   encounterId: string;
+  /**
+   * The Location the visit reports under, already resolved by
+   * `resolveSatusehatEncounterLocation` (P24-T07): the poli's own, else the
+   * root site chain. Null hands the decision back to `SATUSEHAT_LOCATION_ID`,
+   * which is also what a caller that resolved nothing at all passes — the
+   * mapper then refuses, exactly as it did before a poli could be named.
+   */
+  locationId: string | null;
   patientIhsNumber: string;
   patientName?: string;
   practitionerIhsNumber: string;
@@ -394,6 +402,12 @@ export type SatusehatVitalSignsMapInput = {
  */
 export type SatusehatLabOnlyEncounterMapInput = {
   registrationId: string;
+  /**
+   * The root site Location (P24-T07). A blood draw belongs to no poli, so this
+   * is never a specialty's Location; null falls back to
+   * `SATUSEHAT_LOCATION_ID` as before.
+   */
+  locationId: string | null;
   patientIhsNumber: string;
   patientName?: string;
   startedAt: Date;

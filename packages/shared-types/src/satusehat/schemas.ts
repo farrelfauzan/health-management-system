@@ -224,6 +224,25 @@ export const satusehatLocationKindSchema = z.enum(SATUSEHAT_LOCATION_KINDS);
 
 export type SatusehatLocationKindValue = z.infer<typeof satusehatLocationKindSchema>;
 
+/**
+ * Why a reported Encounter named a Location other than the poli's own
+ * (P24-T07, FR-LOC-09).
+ *
+ * `NO_POLI` is a visit that names no specialty at all — a walk-in registered
+ * without one, which no amount of Location registration would fix.
+ * `POLI_NOT_REGISTERED` is a visit whose poli exists but has never been
+ * registered on SATUSEHAT, which the Location panel can fix. Both fall back to
+ * the root site Location, so the two are kept apart by what an operator is
+ * meant to do about them.
+ */
+export const SATUSEHAT_LOCATION_FALLBACK_REASONS = ['NO_POLI', 'POLI_NOT_REGISTERED'] as const;
+
+export const satusehatLocationFallbackReasonSchema = z.enum(SATUSEHAT_LOCATION_FALLBACK_REASONS);
+
+export type SatusehatLocationFallbackReasonValue = z.infer<
+  typeof satusehatLocationFallbackReasonSchema
+>;
+
 /** Where one row stands on the Location panel (P24-T06). */
 export const SATUSEHAT_LOCATION_NODE_STATUSES = ['REGISTERED', 'UNREGISTERED', 'BLOCKED'] as const;
 

@@ -19,6 +19,7 @@ export type SatusehatSubmissionControllerRetrySubmissionV1200Data = {
   lastAttemptAt: string;
   submittedAt: string;
   satusehatEncounterId: string;
+  locationFallbackReason: string;
   createdAt: string;
   updatedAt: string;
 };

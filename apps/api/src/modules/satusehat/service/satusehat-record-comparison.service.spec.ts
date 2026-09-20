@@ -88,6 +88,11 @@ describe('SatusehatRecordComparisonService', () => {
         },
       ],
       dispenseItems: [],
+      encounterLocation: {
+        specialtyName: null,
+        specialtyLocationId: null,
+        registeredRootLocationId: null,
+      },
     } as SatusehatSubmissionBundleData;
   }
 
@@ -107,6 +112,7 @@ describe('SatusehatRecordComparisonService', () => {
       lastAttemptAt: new Date(),
       submittedAt: new Date(),
       satusehatEncounterId: 'ihs-enc-1',
+      locationFallbackReason: null,
       createdAt: new Date(),
       updatedAt: new Date(),
     };

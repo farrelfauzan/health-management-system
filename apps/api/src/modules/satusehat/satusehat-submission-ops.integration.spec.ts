@@ -1,4 +1,8 @@
-import { SatusehatSubmissionBundleData, SatusehatSubmissionRecord } from '@hms/shared-types';
+import {
+  MarkSubmissionSubmittedPayload,
+  SatusehatSubmissionBundleData,
+  SatusehatSubmissionRecord,
+} from '@hms/shared-types';
 import { INestApplication, VersioningType } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Test } from '@nestjs/testing';
@@ -99,6 +103,7 @@ describe('SATUSEHAT submission ops integration', () => {
       lastAttemptAt: new Date('2026-07-28T08:00:00.000Z'),
       submittedAt: null,
       satusehatEncounterId: null,
+      locationFallbackReason: null,
       createdAt: new Date('2026-07-27T10:15:00.000Z'),
       updatedAt: new Date('2026-07-28T08:00:00.000Z'),
     };
@@ -206,6 +211,11 @@ describe('SATUSEHAT submission ops integration', () => {
           dispensedAt: new Date('2026-07-27T09:30:00.000Z'),
         },
       ],
+      encounterLocation: {
+        specialtyName: 'Poli Umum',
+        specialtyLocationId: null,
+        registeredRootLocationId: null,
+      },
     };
   }
 
@@ -241,7 +251,7 @@ describe('SATUSEHAT submission ops integration', () => {
       return Promise.resolve({ ...submissionRow });
     });
     submissionRepositoryMock.markSubmitted.mockImplementation(
-      (id: string, satusehatEncounterId: string | null) => {
+      (payload: MarkSubmissionSubmittedPayload) => {
         submissionRow = {
           ...submissionRow,
           status: 'SUBMITTED',
@@ -249,7 +259,8 @@ describe('SATUSEHAT submission ops integration', () => {
           lastError: null,
           submittedAt: new Date('2026-07-28T09:05:01.000Z'),
           lastAttemptAt: new Date('2026-07-28T09:05:01.000Z'),
-          satusehatEncounterId,
+          satusehatEncounterId: payload.satusehatEncounterId,
+          locationFallbackReason: payload.locationFallbackReason,
         };
         return Promise.resolve();
       },
@@ -464,10 +475,14 @@ describe('SATUSEHAT submission ops integration', () => {
     expect(response.body.data.status).toBe('SUBMITTED');
     expect(response.body.data.attempts).toBe(1);
     expect(response.body.data.satusehatEncounterId).toBe(SATUSEHAT_SANDBOX_FIXTURES.encounterIhsId);
-    expect(submissionRepositoryMock.markSubmitted).toHaveBeenCalledWith(
-      submissionId,
-      SATUSEHAT_SANDBOX_FIXTURES.encounterIhsId,
-    );
+    expect(submissionRepositoryMock.markSubmitted).toHaveBeenCalledWith({
+      id: submissionId,
+      satusehatEncounterId: SATUSEHAT_SANDBOX_FIXTURES.encounterIhsId,
+      // The stub visit is registered under a poli nobody has registered yet,
+      // so the row carries the warning the monitor renders (P24-T07).
+      locationFallbackReason: 'POLI_NOT_REGISTERED',
+    });
+    expect(response.body.data.locationFallbackReason).toBe('POLI_NOT_REGISTERED');
     expect(auditServiceMock.record).toHaveBeenCalledWith(
       expect.objectContaining({
         action: 'SATUSEHAT_SUBMISSION_RETRIED',

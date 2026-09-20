@@ -3,6 +3,7 @@ import type { LabResultFlagValue, LabSpecimenTypeValue } from '#laboratory/schem
 import type { SatusehatLocationRegistrationOutcomeView } from '#satusehat/contracts';
 import type {
   SatusehatLocationBlockReasonValue,
+  SatusehatLocationFallbackReasonValue,
   SatusehatLocationKindValue,
   SatusehatResourceOutcomeValue,
   SatusehatResourceSkipReasonValue,
@@ -73,6 +74,14 @@ export type SatusehatSubmissionRecord = {
   lastAttemptAt: Date | null;
   submittedAt: Date | null;
   satusehatEncounterId: string | null;
+  /**
+   * Set when the reported Encounter named a fallback Location instead of the
+   * visit's own poli (P24-T07). Null on a row that named the poli, on a row
+   * that never named one (a lab report has no poli), and on every row settled
+   * before the column existed. Presence only — the monitor shows a warning,
+   * never clinical content.
+   */
+  locationFallbackReason: SatusehatLocationFallbackReasonValue | null;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -306,6 +315,12 @@ export type SatusehatSubmissionBundleData = {
   latestVitalSigns: SatusehatSubmissionVitalSigns | null;
   prescriptions: readonly SatusehatSubmissionPrescription[];
   dispenseItems: readonly SatusehatSubmissionDispenseItem[];
+  /**
+   * The poli the visit was registered under and the clinic's registered root,
+   * read together so the Location the bundle names is decided from one
+   * snapshot rather than from a second query taken later (P24-T07).
+   */
+  encounterLocation: Omit<SatusehatEncounterLocationSources, 'configuredLocationId'>;
 };
 
 /**
@@ -385,6 +400,12 @@ export type SatusehatLabReportBundleData = {
    */
   registrationId: string;
   visitStartedAt: Date;
+  /**
+   * The clinic's registered root site Location, so a lab-only visit reports
+   * under it rather than under `SATUSEHAT_LOCATION_ID` alone (P24-T07). A
+   * blood draw belongs to no poli, so it never carries a fallback warning.
+   */
+  registeredRootLocationId: string | null;
   patientId: string;
   patientName: string;
   patientIhsNumber: string | null;
@@ -442,6 +463,17 @@ export type SaveAllergyIhsIdPayload = {
 export type SaveImmunizationIhsIdPayload = {
   immunizationId: string;
   satusehatImmunizationId: string;
+};
+
+/**
+ * What settling a row as SUBMITTED records. `locationFallbackReason` is
+ * written here rather than when the bundle is built, so it describes the
+ * Location that actually reached the platform (P24-T07).
+ */
+export type MarkSubmissionSubmittedPayload = {
+  id: string;
+  satusehatEncounterId: string | null;
+  locationFallbackReason: SatusehatLocationFallbackReasonValue | null;
 };
 
 export type MarkSubmissionRetryPayload = {
@@ -635,6 +667,28 @@ export type SatusehatLocationRegistrationBlocker = {
 export type SatusehatRootLocationSources = {
   registeredRootLocationId: string | null;
   configuredLocationId: string | undefined;
+};
+
+/**
+ * Where the Location id on one reported Encounter comes from (FR-LOC-09).
+ * `specialtyLocationId` is the poli's own registered Location; the rest is the
+ * root chain the visit falls back to when it has none.
+ */
+export type SatusehatEncounterLocationSources = SatusehatRootLocationSources & {
+  /** Null when the visit names no poli, or when its poli is unregistered. */
+  specialtyLocationId: string | null;
+  /** Null only when the visit names no poli at all. */
+  specialtyName: string | null;
+};
+
+/**
+ * The Location one Encounter reports under, and why it is not the poli's own
+ * when it is not. `locationId` is null only when nothing is configured at all,
+ * which the mapper still refuses.
+ */
+export type SatusehatEncounterLocation = {
+  locationId: string | null;
+  fallbackReason: SatusehatLocationFallbackReasonValue | null;
 };
 
 /**
