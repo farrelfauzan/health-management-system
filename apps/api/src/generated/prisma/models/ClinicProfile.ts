@@ -713,8 +713,9 @@ export type $ClinicProfilePayload<ExtArgs extends runtime.Types.Extensions.Inter
      */
     licenseNumber: string | null
     /**
-     * NPWP. Stored as written; HMS neither validates nor formats it, because a
-     * receipt reproduces what the clinic was issued.
+     * NPWP. A new or changed value must be the 16 digits Coretax uses and is
+     * stored as digits only (P27-T02, D-038). A 15-digit value written before
+     * that rule is kept and flagged, never rejected on an unrelated save.
      */
     taxId: string | null
     /**

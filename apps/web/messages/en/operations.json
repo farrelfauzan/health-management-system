@@ -1952,6 +1952,10 @@
           "title": "Service tariffs",
           "description": "The price list invoices are generated from, including LAB prices the laboratory catalog attaches."
         },
+        "taxes": {
+          "title": "Taxes",
+          "description": "Who the clinic is as a taxpayer: PP 55 regime, PKP status, NITKU and whether prices include PPN."
+        },
         "laboratory": {
           "title": "Laboratory",
           "description": "The test catalog with its reference ranges and panels, and who may release a result."
@@ -2015,6 +2019,65 @@
       "saveError": "The credential option could not be saved.",
       "codeRequired": "Enter a code in upper-snake ASCII, for example SP_PD.",
       "labelRequired": "Enter the printed label."
+    },
+    "taxes": {
+      "settings": {
+        "title": "Tax profile",
+        "description": "Every tax figure the clinic gets — tax on invoices and the monthly report drafts — is computed from these answers. Saling Jaga prepares drafts; the clinic pays and files in Coretax itself.",
+        "loadError": "The tax settings could not be loaded.",
+        "save": "Save tax profile",
+        "saved": "Tax profile saved",
+        "saveError": "The tax profile could not be saved.",
+        "npwp": {
+          "label": "Clinic NPWP (from the clinic profile)",
+          "missing": "Not recorded",
+          "status": {
+            "MISSING": "No NPWP is recorded. Coretax reports need the clinic's 16-digit NPWP.",
+            "LEGACY_15_DIGIT": "This NPWP is in the old 15-digit format. Coretax uses 16 digits; update it on the clinic profile.",
+            "INVALID": "This NPWP is not a valid 16-digit number."
+          },
+          "fixLink": "Open the clinic profile"
+        },
+        "incomeTax": {
+          "title": "Income tax",
+          "taxpayerType": "Taxpayer type",
+          "taxpayerTypePlaceholder": "Choose the clinic's legal form",
+          "regime": "Income-tax regime",
+          "pp55StartYear": "First year on the 0.5% rate"
+        },
+        "taxpayerType": {
+          "INDIVIDUAL": "Individual (orang pribadi)",
+          "PT_PERORANGAN": "PT perorangan",
+          "PT": "PT",
+          "CV": "CV",
+          "KOPERASI": "Koperasi",
+          "YAYASAN": "Yayasan"
+        },
+        "regime": {
+          "PP55_FINAL": "PP 55 final tax (0.5% of turnover)",
+          "GENERAL": "General regime (Pasal 17 / 31E)"
+        },
+        "pp55": {
+          "unlimited": "No end year for this taxpayer type (PP 20/2026).",
+          "lastYear": "May use the 0.5% rate until the end of {year}.",
+          "notEligible": "This taxpayer type cannot use the 0.5% rate with this start year (PP 20/2026)."
+        },
+        "ppn": {
+          "title": "PPN (VAT)",
+          "isPkp": "The clinic is a PKP (Pengusaha Kena Pajak)",
+          "isPkpOn": "Taxable goods such as medicines will carry PPN; exempt medical services are still reported with faktur code 08.",
+          "isPkpOff": "The clinic never charges PPN. Registration becomes mandatory above Rp4.8 billion turnover a year, even when services are exempt.",
+          "pkpSince": "PKP since",
+          "nitku": "NITKU",
+          "nitkuHint": "22 digits: the 16-digit NPWP followed by the place-of-business code (000000 for the head office).",
+          "pricesIncludeTaxNote": "All tariff and medicine prices include PPN. Patients see one price per line and the note \"Harga sudah termasuk PPN\" on the receipt when PPN applies; the before/after-PPN breakdown is shown to administrators on the tariff and medicine price lists."
+        },
+        "errors": {
+          "TAX_PP55_NOT_ELIGIBLE": "This taxpayer type cannot be on PP 55 with that start year. Individuals and PT perorangan have no end year; a PT or CV may only finish a period that started in 2026 or earlier; a yayasan is never eligible.",
+          "TAX_PKP_SINCE_REQUIRED": "Enter the date the clinic was registered as a PKP.",
+          "TAX_NITKU_NPWP_MISMATCH": "The NITKU must start with the clinic's 16-digit NPWP. Record the NPWP on the clinic profile first."
+        }
+      }
     }
   },
   "channelArrivals": {

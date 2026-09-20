@@ -1952,6 +1952,10 @@
           "title": "Tarif layanan",
           "description": "Daftar harga sumber pembuatan tagihan, termasuk tarif LAB yang dipakai katalog laboratorium."
         },
+        "taxes": {
+          "title": "Pajak",
+          "description": "Status klinik sebagai wajib pajak: skema PP 55, status PKP, NITKU, dan apakah harga sudah termasuk PPN."
+        },
         "laboratory": {
           "title": "Laboratorium",
           "description": "Katalog pemeriksaan beserta rentang rujukan dan paketnya, serta siapa yang boleh merilis hasil."
@@ -2015,6 +2019,65 @@
       "saveError": "Pilihan kredensial gagal disimpan.",
       "codeRequired": "Isi kode dengan huruf kapital dan garis bawah, misalnya SP_PD.",
       "labelRequired": "Isi label tercetak."
+    },
+    "taxes": {
+      "settings": {
+        "title": "Profil pajak",
+        "description": "Semua angka pajak klinik — pajak pada invoice dan draft laporan bulanan — dihitung dari jawaban di sini. Saling Jaga menyiapkan draft; klinik tetap menyetor dan melapor sendiri di Coretax.",
+        "loadError": "Pengaturan pajak tidak dapat dimuat.",
+        "save": "Simpan profil pajak",
+        "saved": "Profil pajak disimpan",
+        "saveError": "Profil pajak tidak dapat disimpan.",
+        "npwp": {
+          "label": "NPWP klinik (dari profil klinik)",
+          "missing": "Belum dicatat",
+          "status": {
+            "MISSING": "NPWP belum dicatat. Laporan Coretax memerlukan NPWP 16 digit klinik.",
+            "LEGACY_15_DIGIT": "NPWP ini masih format lama 15 digit. Coretax memakai 16 digit; perbarui di profil klinik.",
+            "INVALID": "NPWP ini bukan nomor 16 digit yang valid."
+          },
+          "fixLink": "Buka profil klinik"
+        },
+        "incomeTax": {
+          "title": "Pajak penghasilan",
+          "taxpayerType": "Jenis wajib pajak",
+          "taxpayerTypePlaceholder": "Pilih bentuk badan klinik",
+          "regime": "Skema PPh",
+          "pp55StartYear": "Tahun pertama memakai tarif 0,5%"
+        },
+        "taxpayerType": {
+          "INDIVIDUAL": "Orang pribadi",
+          "PT_PERORANGAN": "PT perorangan",
+          "PT": "PT",
+          "CV": "CV",
+          "KOPERASI": "Koperasi",
+          "YAYASAN": "Yayasan"
+        },
+        "regime": {
+          "PP55_FINAL": "PPh final PP 55 (0,5% dari omzet)",
+          "GENERAL": "Skema umum (Pasal 17 / 31E)"
+        },
+        "pp55": {
+          "unlimited": "Tidak ada batas waktu untuk jenis wajib pajak ini (PP 20/2026).",
+          "lastYear": "Boleh memakai tarif 0,5% sampai akhir {year}.",
+          "notEligible": "Jenis wajib pajak ini tidak dapat memakai tarif 0,5% dengan tahun mulai tersebut (PP 20/2026)."
+        },
+        "ppn": {
+          "title": "PPN",
+          "isPkp": "Klinik berstatus PKP (Pengusaha Kena Pajak)",
+          "isPkpOn": "Barang kena pajak seperti obat dikenai PPN; jasa medis yang dibebaskan tetap dilaporkan dengan faktur kode 08.",
+          "isPkpOff": "Klinik tidak memungut PPN. Pengukuhan PKP wajib bila omzet melebihi Rp4,8 miliar setahun, meskipun jasanya dibebaskan.",
+          "pkpSince": "PKP sejak",
+          "nitku": "NITKU",
+          "nitkuHint": "22 digit: NPWP 16 digit diikuti kode tempat usaha (000000 untuk kantor pusat).",
+          "pricesIncludeTaxNote": "Semua harga tarif dan obat sudah termasuk PPN. Pasien melihat satu harga per baris dan catatan \"Harga sudah termasuk PPN\" pada kuitansi bila ada PPN; rincian harga sebelum dan sesudah PPN hanya ditampilkan untuk admin di daftar tarif dan harga obat."
+        },
+        "errors": {
+          "TAX_PP55_NOT_ELIGIBLE": "Jenis wajib pajak ini tidak dapat memakai PP 55 dengan tahun mulai tersebut. Orang pribadi dan PT perorangan tanpa batas waktu; PT atau CV hanya boleh menyelesaikan masa yang dimulai paling lambat 2026; yayasan tidak memenuhi syarat.",
+          "TAX_PKP_SINCE_REQUIRED": "Isi tanggal pengukuhan klinik sebagai PKP.",
+          "TAX_NITKU_NPWP_MISMATCH": "NITKU harus diawali NPWP 16 digit klinik. Catat NPWP di profil klinik terlebih dahulu."
+        }
+      }
     }
   },
   "channelArrivals": {

@@ -98,6 +98,9 @@ export const ADMIN_PORTAL_ADMIN_RULES: AppRule[] = [
   { action: 'verify', subject: 'LabResult' },
   { action: 'read', subject: 'LaboratorySettings' },
   { action: 'write', subject: 'LaboratorySettings' },
+  // P27-T02. `seed.sql` grants ADMIN both tax-settings keys.
+  { action: 'read', subject: 'TaxSettings' },
+  { action: 'write', subject: 'TaxSettings' },
   { action: 'read', subject: 'Invoice' },
   { action: 'write', subject: 'Invoice' },
   // P16-T25. `seed.sql` gives ADMIN the deliver key; an admin whose hint

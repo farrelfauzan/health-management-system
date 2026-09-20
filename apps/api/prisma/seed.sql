@@ -118,6 +118,10 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     -- force without being able to change them.
     ('lab-settings.read:any', 'LaboratorySettings', 'read', 'ANY', 'Read the laboratory verification settings'),
     ('lab-settings.write:any', 'LaboratorySettings', 'write', 'ANY', 'Change the laboratory verification settings'),
+    -- P27-T02. The clinic's tax profile: taxpayer type, PP 55 regime, PKP status,
+    -- NITKU and pricing mode. Administrators only; no clinical role reads it.
+    ('tax-settings.read:any', 'TaxSettings', 'read', 'ANY', 'Read the clinic tax profile'),
+    ('tax-settings.write:any', 'TaxSettings', 'write', 'ANY', 'Change the clinic tax profile'),
     ('portal.patient-access:own', 'Portal', 'patient-access', 'OWN', 'Access the patient portal'),
     ('role.assign:any', 'Role', 'assign', 'ANY', 'Assign roles to users'),
     ('role.read:any', 'Role', 'read', 'ANY', 'Read role catalog'),
@@ -558,6 +562,8 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('ADMIN', 'lab-result.verify:any'),
     ('ADMIN', 'lab-settings.read:any'),
     ('ADMIN', 'lab-settings.write:any'),
+    ('ADMIN', 'tax-settings.read:any'),
+    ('ADMIN', 'tax-settings.write:any'),
     ('ADMIN', 'invoice.read:any'),
     ('ADMIN', 'invoice.write:any'),
     ('ADMIN', 'invoice.deliver:any'),
@@ -1258,7 +1264,12 @@ FROM (
     -- tells us something is broken. The switch exists so a deployment whose
     -- controller has not agreed to our triage vendor can close the whole path
     -- in one place rather than by revoking a permission per role.
-    ('bug-reporting', TRUE)
+    ('bug-reporting', TRUE),
+    -- P27-T02. On by default, like the laboratory row and for its reason: no
+    -- screen edits entitlements yet, so a FALSE seed would hide the tax page
+    -- with no way back. Until an administrator saves a profile the clinic
+    -- reads as general regime, not PKP — which charges nobody anything.
+    ('taxes', TRUE)
 ) AS seed_feature_entitlements(feature_key, is_enabled)
 ON CONFLICT ("feature_key") DO NOTHING;
 

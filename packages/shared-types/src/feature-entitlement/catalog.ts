@@ -144,6 +144,15 @@ export const FEATURE_CATALOG: readonly FeatureCatalogEntry[] = [
     // because the moment you need it is the moment you are somewhere else.
     navHrefs: [],
   },
+  {
+    // P27-T02. The tax profile, and in later P27 tickets the tax codes, the
+    // tax on invoices and the monthly report drafts. Drafts only — the clinic
+    // files in Coretax itself (D-038).
+    key: 'taxes',
+    name: 'Taxes',
+    description: 'Tax profile, tax codes on tariffs, tax on invoices and monthly tax report drafts.',
+    navHrefs: ['/admin/settings/taxes'],
+  },
 ];
 
 /**
@@ -162,6 +171,9 @@ export const FEATURE_CATALOG: readonly FeatureCatalogEntry[] = [
  */
 export const FEATURE_PREREQUISITES: Readonly<Partial<Record<FeatureKey, FeatureKey>>> = {
   'invoice-delivery': 'invoice-documents',
+  // P27-T02. Every tax figure is computed from an invoice; a tax page over a
+  // clinic that does not bill would describe nothing.
+  taxes: 'billing',
 };
 
 /** Every catalog key, in catalog order. */

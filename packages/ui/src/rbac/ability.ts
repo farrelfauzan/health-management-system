@@ -103,6 +103,8 @@ export type AppSubject =
   | 'LabSpecimen'
   | 'LabResult'
   | 'LaboratorySettings'
+  // P27-T02. The clinic's tax profile; administrators only.
+  | 'TaxSettings'
   | 'Invoice'
   | 'Payment'
   | 'ChatSession'

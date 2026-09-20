@@ -145,7 +145,14 @@
     "#laboratory/contracts": "./src/laboratory/contracts.ts",
     "#laboratory/types": "./src/laboratory/types.ts",
     "#laboratory/compute-lab-flag": "./src/laboratory/compute-lab-flag.ts",
-    "#laboratory/resolve-lab-reference-range": "./src/laboratory/resolve-lab-reference-range.ts"
+    "#laboratory/resolve-lab-reference-range": "./src/laboratory/resolve-lab-reference-range.ts",
+    "#taxes/schemas": "./src/taxes/schemas.ts",
+    "#taxes/contracts": "./src/taxes/contracts.ts",
+    "#taxes/types": "./src/taxes/types.ts",
+    "#taxes/normalize-npwp": "./src/taxes/normalize-npwp.ts",
+    "#taxes/resolve-npwp-status": "./src/taxes/resolve-npwp-status.ts",
+    "#taxes/resolve-tax-id-change": "./src/taxes/resolve-tax-id-change.ts",
+    "#taxes/resolve-pp55-eligibility": "./src/taxes/resolve-pp55-eligibility.ts"
   },
   "main": "./dist/index.cjs",
   "types": "./src/index.ts",

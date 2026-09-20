@@ -157,7 +157,8 @@ export const AuditAction = {
   DOCTOR_AUTHORITY_GRANTED: 'DOCTOR_AUTHORITY_GRANTED',
   DOCTOR_AUTHORITY_UPDATED: 'DOCTOR_AUTHORITY_UPDATED',
   DOCTOR_AUTHORITY_REVOKED: 'DOCTOR_AUTHORITY_REVOKED',
-  MIDWIFE_AUTHORITY_REFUSED: 'MIDWIFE_AUTHORITY_REFUSED'
+  MIDWIFE_AUTHORITY_REFUSED: 'MIDWIFE_AUTHORITY_REFUSED',
+  TAX_SETTINGS_UPDATED: 'TAX_SETTINGS_UPDATED'
 } as const
 
 export type AuditAction = (typeof AuditAction)[keyof typeof AuditAction]
@@ -781,6 +782,26 @@ export const DoctorCredentialKind = {
 } as const
 
 export type DoctorCredentialKind = (typeof DoctorCredentialKind)[keyof typeof DoctorCredentialKind]
+
+
+export const TaxpayerType = {
+  INDIVIDUAL: 'INDIVIDUAL',
+  PT_PERORANGAN: 'PT_PERORANGAN',
+  PT: 'PT',
+  CV: 'CV',
+  KOPERASI: 'KOPERASI',
+  YAYASAN: 'YAYASAN'
+} as const
+
+export type TaxpayerType = (typeof TaxpayerType)[keyof typeof TaxpayerType]
+
+
+export const IncomeTaxRegime = {
+  PP55_FINAL: 'PP55_FINAL',
+  GENERAL: 'GENERAL'
+} as const
+
+export type IncomeTaxRegime = (typeof IncomeTaxRegime)[keyof typeof IncomeTaxRegime]
 
 
 export const DocumentOwnerType = {
