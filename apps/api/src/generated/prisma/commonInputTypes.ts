@@ -1078,6 +1078,40 @@ export type EnumIncomeTaxRegimeWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumIncomeTaxRegimeFilter<$PrismaModel>
 }
 
+export type EnumPpnTreatmentFilter<$PrismaModel = never> = {
+  equals?: $Enums.PpnTreatment | Prisma.EnumPpnTreatmentFieldRefInput<$PrismaModel>
+  in?: $Enums.PpnTreatment[] | Prisma.ListEnumPpnTreatmentFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PpnTreatment[] | Prisma.ListEnumPpnTreatmentFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPpnTreatmentFilter<$PrismaModel> | $Enums.PpnTreatment
+}
+
+export type EnumPpnTreatmentWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PpnTreatment | Prisma.EnumPpnTreatmentFieldRefInput<$PrismaModel>
+  in?: $Enums.PpnTreatment[] | Prisma.ListEnumPpnTreatmentFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PpnTreatment[] | Prisma.ListEnumPpnTreatmentFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPpnTreatmentWithAggregatesFilter<$PrismaModel> | $Enums.PpnTreatment
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPpnTreatmentFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPpnTreatmentFilter<$PrismaModel>
+}
+
+export type EnumTaxDefaultTargetFilter<$PrismaModel = never> = {
+  equals?: $Enums.TaxDefaultTarget | Prisma.EnumTaxDefaultTargetFieldRefInput<$PrismaModel>
+  in?: $Enums.TaxDefaultTarget[] | Prisma.ListEnumTaxDefaultTargetFieldRefInput<$PrismaModel>
+  notIn?: $Enums.TaxDefaultTarget[] | Prisma.ListEnumTaxDefaultTargetFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumTaxDefaultTargetFilter<$PrismaModel> | $Enums.TaxDefaultTarget
+}
+
+export type EnumTaxDefaultTargetWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.TaxDefaultTarget | Prisma.EnumTaxDefaultTargetFieldRefInput<$PrismaModel>
+  in?: $Enums.TaxDefaultTarget[] | Prisma.ListEnumTaxDefaultTargetFieldRefInput<$PrismaModel>
+  notIn?: $Enums.TaxDefaultTarget[] | Prisma.ListEnumTaxDefaultTargetFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumTaxDefaultTargetWithAggregatesFilter<$PrismaModel> | $Enums.TaxDefaultTarget
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumTaxDefaultTargetFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumTaxDefaultTargetFilter<$PrismaModel>
+}
+
 export type EnumServiceTariffCategoryFilter<$PrismaModel = never> = {
   equals?: $Enums.ServiceTariffCategory | Prisma.EnumServiceTariffCategoryFieldRefInput<$PrismaModel>
   in?: $Enums.ServiceTariffCategory[] | Prisma.ListEnumServiceTariffCategoryFieldRefInput<$PrismaModel>
@@ -3335,6 +3369,40 @@ export type NestedEnumIncomeTaxRegimeWithAggregatesFilter<$PrismaModel = never> 
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumIncomeTaxRegimeFilter<$PrismaModel>
   _max?: Prisma.NestedEnumIncomeTaxRegimeFilter<$PrismaModel>
+}
+
+export type NestedEnumPpnTreatmentFilter<$PrismaModel = never> = {
+  equals?: $Enums.PpnTreatment | Prisma.EnumPpnTreatmentFieldRefInput<$PrismaModel>
+  in?: $Enums.PpnTreatment[] | Prisma.ListEnumPpnTreatmentFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PpnTreatment[] | Prisma.ListEnumPpnTreatmentFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPpnTreatmentFilter<$PrismaModel> | $Enums.PpnTreatment
+}
+
+export type NestedEnumPpnTreatmentWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PpnTreatment | Prisma.EnumPpnTreatmentFieldRefInput<$PrismaModel>
+  in?: $Enums.PpnTreatment[] | Prisma.ListEnumPpnTreatmentFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PpnTreatment[] | Prisma.ListEnumPpnTreatmentFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPpnTreatmentWithAggregatesFilter<$PrismaModel> | $Enums.PpnTreatment
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPpnTreatmentFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPpnTreatmentFilter<$PrismaModel>
+}
+
+export type NestedEnumTaxDefaultTargetFilter<$PrismaModel = never> = {
+  equals?: $Enums.TaxDefaultTarget | Prisma.EnumTaxDefaultTargetFieldRefInput<$PrismaModel>
+  in?: $Enums.TaxDefaultTarget[] | Prisma.ListEnumTaxDefaultTargetFieldRefInput<$PrismaModel>
+  notIn?: $Enums.TaxDefaultTarget[] | Prisma.ListEnumTaxDefaultTargetFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumTaxDefaultTargetFilter<$PrismaModel> | $Enums.TaxDefaultTarget
+}
+
+export type NestedEnumTaxDefaultTargetWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.TaxDefaultTarget | Prisma.EnumTaxDefaultTargetFieldRefInput<$PrismaModel>
+  in?: $Enums.TaxDefaultTarget[] | Prisma.ListEnumTaxDefaultTargetFieldRefInput<$PrismaModel>
+  notIn?: $Enums.TaxDefaultTarget[] | Prisma.ListEnumTaxDefaultTargetFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumTaxDefaultTargetWithAggregatesFilter<$PrismaModel> | $Enums.TaxDefaultTarget
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumTaxDefaultTargetFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumTaxDefaultTargetFilter<$PrismaModel>
 }
 
 export type NestedEnumServiceTariffCategoryFilter<$PrismaModel = never> = {

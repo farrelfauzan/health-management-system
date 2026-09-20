@@ -2077,6 +2077,139 @@
           "TAX_PKP_SINCE_REQUIRED": "Enter the date the clinic was registered as a PKP.",
           "TAX_NITKU_NPWP_MISMATCH": "The NITKU must start with the clinic's 16-digit NPWP. Record the NPWP on the clinic profile first."
         }
+      },
+      "tabs": {
+        "profile": "Tax profile",
+        "codes": "Tax codes",
+        "assignments": "Tariffs & medicines"
+      },
+      "treatment": {
+        "EXEMPT_MEDICAL": "Exempt (medical service)",
+        "STANDARD": "Taxed",
+        "EXEMPT_OTHER": "Exempt (facility)",
+        "NOT_OBJECT": "Not a PPN object"
+      },
+      "codes": {
+        "title": "Tax codes",
+        "description": "Each tariff and medicine is taxed under a code. System codes come with Saling Jaga; add your own for anything they do not describe. A new rate starts on its date and never changes invoices already issued.",
+        "add": "Add tax code",
+        "loadError": "The tax codes could not be loaded.",
+        "saved": "Tax code saved",
+        "rateSaved": "Rate added",
+        "saveError": "The change could not be saved.",
+        "system": "System code",
+        "active": "Active",
+        "inactive": "Inactive",
+        "edit": "Edit",
+        "addRate": "Add rate",
+        "upcomingRate": "From {date}: {rate}",
+        "usage": "{defaults} defaults · {overrides} items",
+        "columns": {
+          "code": "Code",
+          "treatment": "Treatment",
+          "faktur": "Faktur code",
+          "rate": "Rate",
+          "usage": "Used by",
+          "status": "Status",
+          "actions": "Actions"
+        },
+        "faktur": {
+          "01": "01 — ordinary",
+          "04": "04 — DPP nilai lain",
+          "08": "08 — exempt"
+        },
+        "rateDialogTitle": "New rate for {code}",
+        "rateDialogDescription": "The new rate applies from its date; it must start after {date}, the latest rate. Invoices already issued keep their rate.",
+        "rate": {
+          "ratePercent": "Rate (%)",
+          "effectiveFrom": "Effective from",
+          "dppNumerator": "DPP numerator",
+          "dppDenominator": "DPP denominator",
+          "hint": "Since PMK 131/2024 most goods and services are 12% on a DPP of 11/12 of the price — an effective 11%. Use 1/1 when the whole price is the base.",
+          "invalid": "Fill in a rate between 0 and 100, a DPP fraction of at most 1, and a date."
+        },
+        "form": {
+          "createTitle": "New tax code",
+          "editTitle": "Edit {code}",
+          "description": "The treatment is fixed once the code exists; a different treatment is a different code.",
+          "code": "Code",
+          "treatment": "Treatment",
+          "name": "Name",
+          "faktur": "Faktur code",
+          "noFaktur": "None (not a PPN object)",
+          "invoiceNote": "Note on documents",
+          "initialRate": "First rate",
+          "isActive": "Active",
+          "save": "Save",
+          "invalid": "Check the code (2–40 letters, digits or dashes), the name and the rate."
+        },
+        "errors": {
+          "TAX_CODE_SYSTEM_LOCKED": "This is a system code: only its name, note and active flag can change.",
+          "TAX_CODE_IN_USE": "This code is still a category default or set on items. Move them to another code before deactivating it.",
+          "TAX_CODE_CONFLICT": "A tax code with this code already exists.",
+          "TAX_CODE_INACTIVE": "That tax code is inactive. Reactivate it or choose another.",
+          "TAX_CODE_FAKTUR_MISMATCH": "That faktur code does not match the code's treatment.",
+          "TAX_RATE_NOT_AFTER_LATEST": "A new rate must start after the latest one.",
+          "TAX_RATE_NOT_APPLICABLE": "Only a taxed code carries a rate.",
+          "TAX_ASSIGNMENT_TARGET_NOT_FOUND": "Some selected items no longer exist. Reload the list and try again."
+        }
+      },
+      "defaults": {
+        "title": "Category defaults",
+        "description": "The code a tariff or medicine uses when it has none of its own. Changing a default changes every item that follows it.",
+        "loadError": "The defaults could not be loaded.",
+        "none": "No default",
+        "save": "Save defaults",
+        "saved": "Defaults saved",
+        "targets": {
+          "CONSULTATION": "Consultation tariffs",
+          "PROCEDURE": "Procedure tariffs",
+          "ACCOMMODATION": "Accommodation tariffs",
+          "LAB": "Laboratory tariffs",
+          "OTHER": "Other tariffs",
+          "MEDICATION": "Medicines"
+        }
+      },
+      "assignments": {
+        "title": "Tax code per tariff and medicine",
+        "description": "Every active tariff and medicine with the code it is taxed under. Select rows to give them a code of their own, or return them to their category default.",
+        "unresolved": "{count, plural, one {# item has} other {# items have}} no tax code. Invoices will not issue until they do.",
+        "loadError": "The list could not be loaded.",
+        "empty": "Nothing matches these filters.",
+        "selectPage": "Select this page",
+        "select": "Select {name}",
+        "noCode": "No tax code",
+        "selected": "{count} selected",
+        "chooseCode": "Choose a tax code",
+        "apply": "Apply tax code",
+        "resetToDefault": "Use category default",
+        "applied": "Tax code applied to {count, plural, one {# item} other {# items}}",
+        "pageSummary": "Page {page} of {lastPage} · {total} items",
+        "previous": "Previous",
+        "next": "Next",
+        "filters": {
+          "kind": "Type",
+          "allKinds": "All types",
+          "source": "Source",
+          "allSources": "All sources",
+          "search": "Search name or code"
+        },
+        "kind": {
+          "SERVICE_TARIFF": "Tariff",
+          "MEDICATION": "Medicine"
+        },
+        "source": {
+          "OVERRIDE": "Own code",
+          "CATEGORY_DEFAULT": "Category default",
+          "UNRESOLVED": "Not set"
+        },
+        "columns": {
+          "item": "Item",
+          "kind": "Type",
+          "price": "Price",
+          "taxCode": "Tax code",
+          "source": "Source"
+        }
       }
     }
   },

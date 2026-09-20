@@ -2077,6 +2077,139 @@
           "TAX_PKP_SINCE_REQUIRED": "Isi tanggal pengukuhan klinik sebagai PKP.",
           "TAX_NITKU_NPWP_MISMATCH": "NITKU harus diawali NPWP 16 digit klinik. Catat NPWP di profil klinik terlebih dahulu."
         }
+      },
+      "tabs": {
+        "profile": "Profil pajak",
+        "codes": "Kode pajak",
+        "assignments": "Tarif & obat"
+      },
+      "treatment": {
+        "EXEMPT_MEDICAL": "Dibebaskan (jasa medis)",
+        "STANDARD": "Kena PPN",
+        "EXEMPT_OTHER": "Dibebaskan (fasilitas)",
+        "NOT_OBJECT": "Bukan objek PPN"
+      },
+      "codes": {
+        "title": "Kode pajak",
+        "description": "Setiap tarif dan obat dikenai pajak menurut satu kode. Kode sistem sudah disediakan Saling Jaga; tambahkan kode sendiri untuk yang belum tercakup. Tarif baru berlaku mulai tanggalnya dan tidak mengubah invoice yang sudah terbit.",
+        "add": "Tambah kode pajak",
+        "loadError": "Kode pajak tidak dapat dimuat.",
+        "saved": "Kode pajak disimpan",
+        "rateSaved": "Tarif pajak ditambahkan",
+        "saveError": "Perubahan tidak dapat disimpan.",
+        "system": "Kode sistem",
+        "active": "Aktif",
+        "inactive": "Nonaktif",
+        "edit": "Ubah",
+        "addRate": "Tambah tarif",
+        "upcomingRate": "Mulai {date}: {rate}",
+        "usage": "{defaults} default · {overrides} item",
+        "columns": {
+          "code": "Kode",
+          "treatment": "Perlakuan",
+          "faktur": "Kode faktur",
+          "rate": "Tarif",
+          "usage": "Dipakai oleh",
+          "status": "Status",
+          "actions": "Aksi"
+        },
+        "faktur": {
+          "01": "01 — biasa",
+          "04": "04 — DPP nilai lain",
+          "08": "08 — dibebaskan"
+        },
+        "rateDialogTitle": "Tarif baru untuk {code}",
+        "rateDialogDescription": "Tarif baru berlaku mulai tanggalnya dan harus dimulai setelah {date}, tarif terakhir. Invoice yang sudah terbit tetap memakai tarif lamanya.",
+        "rate": {
+          "ratePercent": "Tarif (%)",
+          "effectiveFrom": "Berlaku mulai",
+          "dppNumerator": "Pembilang DPP",
+          "dppDenominator": "Penyebut DPP",
+          "hint": "Sejak PMK 131/2024 sebagian besar barang dan jasa dikenai 12% atas DPP 11/12 dari harga — efektif 11%. Pakai 1/1 bila seluruh harga menjadi dasar.",
+          "invalid": "Isi tarif antara 0 dan 100, pecahan DPP paling besar 1, dan tanggal berlaku."
+        },
+        "form": {
+          "createTitle": "Kode pajak baru",
+          "editTitle": "Ubah {code}",
+          "description": "Perlakuan tidak bisa diubah setelah kode dibuat; perlakuan berbeda berarti kode berbeda.",
+          "code": "Kode",
+          "treatment": "Perlakuan",
+          "name": "Nama",
+          "faktur": "Kode faktur",
+          "noFaktur": "Tidak ada (bukan objek PPN)",
+          "invoiceNote": "Catatan pada dokumen",
+          "initialRate": "Tarif pertama",
+          "isActive": "Aktif",
+          "save": "Simpan",
+          "invalid": "Periksa kode (2–40 huruf, angka, atau tanda hubung), nama, dan tarifnya."
+        },
+        "errors": {
+          "TAX_CODE_SYSTEM_LOCKED": "Ini kode sistem: hanya nama, catatan, dan status aktifnya yang bisa diubah.",
+          "TAX_CODE_IN_USE": "Kode ini masih menjadi default kategori atau dipakai item. Pindahkan dulu ke kode lain sebelum dinonaktifkan.",
+          "TAX_CODE_CONFLICT": "Kode pajak dengan kode ini sudah ada.",
+          "TAX_CODE_INACTIVE": "Kode pajak itu nonaktif. Aktifkan kembali atau pilih kode lain.",
+          "TAX_CODE_FAKTUR_MISMATCH": "Kode faktur itu tidak sesuai dengan perlakuan kode ini.",
+          "TAX_RATE_NOT_AFTER_LATEST": "Tarif baru harus dimulai setelah tarif terakhir.",
+          "TAX_RATE_NOT_APPLICABLE": "Hanya kode kena PPN yang memiliki tarif.",
+          "TAX_ASSIGNMENT_TARGET_NOT_FOUND": "Sebagian item yang dipilih sudah tidak ada. Muat ulang daftar lalu coba lagi."
+        }
+      },
+      "defaults": {
+        "title": "Default per kategori",
+        "description": "Kode yang dipakai tarif atau obat bila tidak punya kode sendiri. Mengubah default mengubah semua item yang mengikutinya.",
+        "loadError": "Default tidak dapat dimuat.",
+        "none": "Tanpa default",
+        "save": "Simpan default",
+        "saved": "Default disimpan",
+        "targets": {
+          "CONSULTATION": "Tarif konsultasi",
+          "PROCEDURE": "Tarif tindakan",
+          "ACCOMMODATION": "Tarif rawat inap",
+          "LAB": "Tarif laboratorium",
+          "OTHER": "Tarif lainnya",
+          "MEDICATION": "Obat"
+        }
+      },
+      "assignments": {
+        "title": "Kode pajak per tarif dan obat",
+        "description": "Semua tarif dan obat aktif beserta kode pajaknya. Pilih baris untuk memberi kode sendiri, atau kembalikan ke default kategorinya.",
+        "unresolved": "{count} item belum punya kode pajak. Invoice tidak akan bisa diterbitkan sampai kodenya diatur.",
+        "loadError": "Daftar tidak dapat dimuat.",
+        "empty": "Tidak ada yang cocok dengan filter ini.",
+        "selectPage": "Pilih halaman ini",
+        "select": "Pilih {name}",
+        "noCode": "Belum ada kode",
+        "selected": "{count} dipilih",
+        "chooseCode": "Pilih kode pajak",
+        "apply": "Terapkan kode pajak",
+        "resetToDefault": "Pakai default kategori",
+        "applied": "Kode pajak diterapkan ke {count} item",
+        "pageSummary": "Halaman {page} dari {lastPage} · {total} item",
+        "previous": "Sebelumnya",
+        "next": "Berikutnya",
+        "filters": {
+          "kind": "Jenis",
+          "allKinds": "Semua jenis",
+          "source": "Sumber",
+          "allSources": "Semua sumber",
+          "search": "Cari nama atau kode"
+        },
+        "kind": {
+          "SERVICE_TARIFF": "Tarif",
+          "MEDICATION": "Obat"
+        },
+        "source": {
+          "OVERRIDE": "Kode sendiri",
+          "CATEGORY_DEFAULT": "Default kategori",
+          "UNRESOLVED": "Belum diatur"
+        },
+        "columns": {
+          "item": "Item",
+          "kind": "Jenis",
+          "price": "Harga",
+          "taxCode": "Kode pajak",
+          "source": "Sumber"
+        }
       }
     }
   },

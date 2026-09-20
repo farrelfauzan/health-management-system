@@ -121,6 +121,10 @@ The phase is **P27**, not P26: `P26-T01` already names the consultation-tariff-b
 - R6. **PP 55 omzet is cash-basis** — payments received in the month — until the consultant says otherwise (§6).
 - R7. **Drafts say they are drafts.** Every draft screen and document carries "Draft — bukan pelaporan resmi. Setor dan laporkan melalui Coretax DJP."
 - R8. **NPWP is stored as 16 digits.** A new or changed value must normalise to 16 digits. An existing 15-digit value is kept and flagged, never rejected on an unrelated save.
+- R9. **A tax code's treatment is fixed at creation** (P27-T03). Moving a code between exempt and taxed would re-tax every item using it, so a different treatment is a different code. A system code also keeps its faktur code; only its name, note and active flag change.
+- R10. **Rates are append-only.** A rate applies from its `effectiveFrom` until the next rate's date; a new rate must start after the latest one. There is no `effectiveTo` column, because the next row is the end.
+- R11. **An item resolves override → category default → unresolved.** Unresolved is counted on the assignment screen and, from P27-T04, refused at invoice issue. It is never silently zero. A code still used by a default or an item cannot be deactivated.
+- R12. **Tax codes are assigned on the Pajak page, not on the tariff and medicine forms** (P27-T03). The bulk screen covers one item as well as many, and P27-T04 adds the before/after-PPN columns to the tariff and medicine lists.
 
 ## 6. Questions for a tax consultant
 

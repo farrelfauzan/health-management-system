@@ -44874,6 +44874,1077 @@ paths:
         - bearer: []
       summary: Change the clinic's tax profile
       tags: *a62
+  /api/v1/tax/codes:
+    get:
+      operationId: TaxCodeController_listTaxCodes_v1
+      parameters: []
+      responses:
+        "200":
+          description: System codes first. `currentRate` is the rate in force today in the
+            clinic timezone; a later-dated rate is listed but not yet current.
+            `defaultTargets` and `overrideCount` say where the code is used.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        code:
+                          type: string
+                        name:
+                          type: string
+                        ppnTreatment:
+                          type: string
+                        fakturTransactionCode:
+                          type: string
+                        isSystem:
+                          type: boolean
+                        isActive:
+                          type: boolean
+                        currentRate:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            ratePercent:
+                              type: integer
+                            dppNumerator:
+                              type: integer
+                            dppDenominator:
+                              type: integer
+                            effectiveRatePercent:
+                              type: integer
+                            effectiveFrom:
+                              type: string
+                          required:
+                            - id
+                            - ratePercent
+                            - dppNumerator
+                            - dppDenominator
+                            - effectiveRatePercent
+                            - effectiveFrom
+                        rates:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                              ratePercent:
+                                type: integer
+                              dppNumerator:
+                                type: integer
+                              dppDenominator:
+                                type: integer
+                              effectiveRatePercent:
+                                type: integer
+                              effectiveFrom:
+                                type: string
+                            required:
+                              - id
+                              - ratePercent
+                              - dppNumerator
+                              - dppDenominator
+                              - effectiveRatePercent
+                              - effectiveFrom
+                        defaultTargets:
+                          type: array
+                          items:
+                            type: string
+                        overrideCount:
+                          type: integer
+                      required:
+                        - id
+                        - code
+                        - name
+                        - ppnTreatment
+                        - fakturTransactionCode
+                        - isSystem
+                        - isActive
+                        - currentRate
+                        - rates
+                        - defaultTargets
+                        - overrideCount
+                required:
+                  - data
+                example:
+                  data:
+                    - id: 5f3c2b1a-0d9e-4c8b-a7f6-e5d4c3b2a190
+                      code: BARANG-PPN
+                      name: Barang kena pajak (obat, alat kesehatan)
+                      ppnTreatment: STANDARD
+                      fakturTransactionCode: "04"
+                      isSystem: true
+                      isActive: true
+                      currentRate:
+                        id: 7b5e4d3c-2f1a-4e0d-9c8b-a7f6e5d4c3b2
+                        ratePercent: 12
+                        dppNumerator: 11
+                        dppDenominator: 12
+                        effectiveRatePercent: 11
+                        effectiveFrom: 2025-01-01
+                      rates:
+                        - id: 7b5e4d3c-2f1a-4e0d-9c8b-a7f6e5d4c3b2
+                          ratePercent: 12
+                          dppNumerator: 11
+                          dppDenominator: 12
+                          effectiveRatePercent: 11
+                          effectiveFrom: 2025-01-01
+                      defaultTargets:
+                        - MEDICATION
+                      overrideCount: 3
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: List tax codes with their rates
+      tags: &a63
+        - Tax Codes
+    post:
+      operationId: TaxCodeController_createTaxCode_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTaxCodeDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  code: ESTETIKA
+                  name: Perawatan estetika
+                  ppnTreatment: STANDARD
+                  fakturTransactionCode: "04"
+                  initialRate:
+                    ratePercent: 12
+                    dppNumerator: 11
+                    dppDenominator: 12
+                    effectiveFrom: 2025-01-01
+      responses:
+        "201":
+          description: A clinic-defined code. The faktur code must match the treatment (08
+            exempt, 01 or 04 standard, none for not an object), and a STANDARD
+            code arrives with its first rate. 409 `TAX_CODE_CONFLICT` when the
+            code exists.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      code:
+                        type: string
+                      name:
+                        type: string
+                      ppnTreatment:
+                        type: string
+                      fakturTransactionCode:
+                        type: string
+                      isSystem:
+                        type: boolean
+                      isActive:
+                        type: boolean
+                      currentRate:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          ratePercent:
+                            type: integer
+                          dppNumerator:
+                            type: integer
+                          dppDenominator:
+                            type: integer
+                          effectiveRatePercent:
+                            type: integer
+                          effectiveFrom:
+                            type: string
+                        required:
+                          - id
+                          - ratePercent
+                          - dppNumerator
+                          - dppDenominator
+                          - effectiveRatePercent
+                          - effectiveFrom
+                      rates:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            ratePercent:
+                              type: integer
+                            dppNumerator:
+                              type: integer
+                            dppDenominator:
+                              type: integer
+                            effectiveRatePercent:
+                              type: integer
+                            effectiveFrom:
+                              type: string
+                          required:
+                            - id
+                            - ratePercent
+                            - dppNumerator
+                            - dppDenominator
+                            - effectiveRatePercent
+                            - effectiveFrom
+                      defaultTargets:
+                        type: array
+                        items:
+                          type: string
+                      overrideCount:
+                        type: integer
+                    required:
+                      - id
+                      - code
+                      - name
+                      - ppnTreatment
+                      - fakturTransactionCode
+                      - isSystem
+                      - isActive
+                      - currentRate
+                      - rates
+                      - defaultTargets
+                      - overrideCount
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 5f3c2b1a-0d9e-4c8b-a7f6-e5d4c3b2a190
+                    code: BARANG-PPN
+                    name: Barang kena pajak (obat, alat kesehatan)
+                    ppnTreatment: STANDARD
+                    fakturTransactionCode: "04"
+                    isSystem: true
+                    isActive: true
+                    currentRate:
+                      id: 7b5e4d3c-2f1a-4e0d-9c8b-a7f6e5d4c3b2
+                      ratePercent: 12
+                      dppNumerator: 11
+                      dppDenominator: 12
+                      effectiveRatePercent: 11
+                      effectiveFrom: 2025-01-01
+                    rates:
+                      - id: 7b5e4d3c-2f1a-4e0d-9c8b-a7f6e5d4c3b2
+                        ratePercent: 12
+                        dppNumerator: 11
+                        dppDenominator: 12
+                        effectiveRatePercent: 11
+                        effectiveFrom: 2025-01-01
+                    defaultTargets:
+                      - MEDICATION
+                    overrideCount: 3
+                  message: Tax code created
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Create a tax code
+      tags: *a63
+  /api/v1/tax/codes/{id}:
+    patch:
+      operationId: TaxCodeController_updateTaxCode_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateTaxCodeDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  name: Barang kena pajak
+                  isActive: true
+      responses:
+        "200":
+          description: Name, note, active flag, and on a clinic code the faktur code
+            within its treatment. The treatment itself never changes. 409
+            `TAX_CODE_SYSTEM_LOCKED` for a system code faktur change; 409
+            `TAX_CODE_IN_USE` when deactivating a code a default or an item
+            still uses.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      code:
+                        type: string
+                      name:
+                        type: string
+                      ppnTreatment:
+                        type: string
+                      fakturTransactionCode:
+                        type: string
+                      isSystem:
+                        type: boolean
+                      isActive:
+                        type: boolean
+                      currentRate:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          ratePercent:
+                            type: integer
+                          dppNumerator:
+                            type: integer
+                          dppDenominator:
+                            type: integer
+                          effectiveRatePercent:
+                            type: integer
+                          effectiveFrom:
+                            type: string
+                        required:
+                          - id
+                          - ratePercent
+                          - dppNumerator
+                          - dppDenominator
+                          - effectiveRatePercent
+                          - effectiveFrom
+                      rates:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            ratePercent:
+                              type: integer
+                            dppNumerator:
+                              type: integer
+                            dppDenominator:
+                              type: integer
+                            effectiveRatePercent:
+                              type: integer
+                            effectiveFrom:
+                              type: string
+                          required:
+                            - id
+                            - ratePercent
+                            - dppNumerator
+                            - dppDenominator
+                            - effectiveRatePercent
+                            - effectiveFrom
+                      defaultTargets:
+                        type: array
+                        items:
+                          type: string
+                      overrideCount:
+                        type: integer
+                    required:
+                      - id
+                      - code
+                      - name
+                      - ppnTreatment
+                      - fakturTransactionCode
+                      - isSystem
+                      - isActive
+                      - currentRate
+                      - rates
+                      - defaultTargets
+                      - overrideCount
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 5f3c2b1a-0d9e-4c8b-a7f6-e5d4c3b2a190
+                    code: BARANG-PPN
+                    name: Barang kena pajak (obat, alat kesehatan)
+                    ppnTreatment: STANDARD
+                    fakturTransactionCode: "04"
+                    isSystem: true
+                    isActive: true
+                    currentRate:
+                      id: 7b5e4d3c-2f1a-4e0d-9c8b-a7f6e5d4c3b2
+                      ratePercent: 12
+                      dppNumerator: 11
+                      dppDenominator: 12
+                      effectiveRatePercent: 11
+                      effectiveFrom: 2025-01-01
+                    rates:
+                      - id: 7b5e4d3c-2f1a-4e0d-9c8b-a7f6e5d4c3b2
+                        ratePercent: 12
+                        dppNumerator: 11
+                        dppDenominator: 12
+                        effectiveRatePercent: 11
+                        effectiveFrom: 2025-01-01
+                    defaultTargets:
+                      - MEDICATION
+                    overrideCount: 3
+                  message: Tax code updated
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Change a tax code
+      tags: *a63
+  /api/v1/tax/codes/{id}/rates:
+    post:
+      operationId: TaxCodeController_addTaxCodeRate_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTaxCodeRateDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  ratePercent: 12
+                  dppNumerator: 11
+                  dppDenominator: 12
+                  effectiveFrom: 2027-01-01
+      responses:
+        "201":
+          description: Appends a rate in force from `effectiveFrom`, which must be after
+            the latest one (409 `TAX_RATE_NOT_AFTER_LATEST`). Only a STANDARD
+            code carries a rate (409 `TAX_RATE_NOT_APPLICABLE`). Invoices
+            already issued keep the rate they were issued with.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      code:
+                        type: string
+                      name:
+                        type: string
+                      ppnTreatment:
+                        type: string
+                      fakturTransactionCode:
+                        type: string
+                      isSystem:
+                        type: boolean
+                      isActive:
+                        type: boolean
+                      currentRate:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          ratePercent:
+                            type: integer
+                          dppNumerator:
+                            type: integer
+                          dppDenominator:
+                            type: integer
+                          effectiveRatePercent:
+                            type: integer
+                          effectiveFrom:
+                            type: string
+                        required:
+                          - id
+                          - ratePercent
+                          - dppNumerator
+                          - dppDenominator
+                          - effectiveRatePercent
+                          - effectiveFrom
+                      rates:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            ratePercent:
+                              type: integer
+                            dppNumerator:
+                              type: integer
+                            dppDenominator:
+                              type: integer
+                            effectiveRatePercent:
+                              type: integer
+                            effectiveFrom:
+                              type: string
+                          required:
+                            - id
+                            - ratePercent
+                            - dppNumerator
+                            - dppDenominator
+                            - effectiveRatePercent
+                            - effectiveFrom
+                      defaultTargets:
+                        type: array
+                        items:
+                          type: string
+                      overrideCount:
+                        type: integer
+                    required:
+                      - id
+                      - code
+                      - name
+                      - ppnTreatment
+                      - fakturTransactionCode
+                      - isSystem
+                      - isActive
+                      - currentRate
+                      - rates
+                      - defaultTargets
+                      - overrideCount
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 5f3c2b1a-0d9e-4c8b-a7f6-e5d4c3b2a190
+                    code: BARANG-PPN
+                    name: Barang kena pajak (obat, alat kesehatan)
+                    ppnTreatment: STANDARD
+                    fakturTransactionCode: "04"
+                    isSystem: true
+                    isActive: true
+                    currentRate:
+                      id: 7b5e4d3c-2f1a-4e0d-9c8b-a7f6e5d4c3b2
+                      ratePercent: 12
+                      dppNumerator: 11
+                      dppDenominator: 12
+                      effectiveRatePercent: 11
+                      effectiveFrom: 2025-01-01
+                    rates:
+                      - id: 7b5e4d3c-2f1a-4e0d-9c8b-a7f6e5d4c3b2
+                        ratePercent: 12
+                        dppNumerator: 11
+                        dppDenominator: 12
+                        effectiveRatePercent: 11
+                        effectiveFrom: 2025-01-01
+                    defaultTargets:
+                      - MEDICATION
+                    overrideCount: 3
+                  message: Tax rate added
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Add a rate to a tax code
+      tags: *a63
+  /api/v1/tax/category-defaults:
+    get:
+      operationId: TaxCategoryDefaultController_listCategoryDefaults_v1
+      parameters: []
+      responses:
+        "200":
+          description: One row per target that has a default. A target missing here
+            resolves to no code, which the assignment list counts as unresolved.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        target:
+                          type: string
+                        taxCodeId:
+                          type: string
+                        taxCode:
+                          type: string
+                      required:
+                        - target
+                        - taxCodeId
+                        - taxCode
+                required:
+                  - data
+                example:
+                  data:
+                    - target: CONSULTATION
+                      taxCodeId: 6a4d3c2b-1e0f-4d9c-b8a7-f6e5d4c3b2a1
+                      taxCode: JASA-MEDIS
+                    - target: MEDICATION
+                      taxCodeId: 5f3c2b1a-0d9e-4c8b-a7f6-e5d4c3b2a190
+                      taxCode: BARANG-PPN
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: List the tax code defaults
+      tags: &a64
+        - Tax Codes
+    put:
+      operationId: TaxCategoryDefaultController_updateCategoryDefaults_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateTaxCategoryDefaultsDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  defaults:
+                    - target: OTHER
+                      taxCodeId: 5f3c2b1a-0d9e-4c8b-a7f6-e5d4c3b2a190
+      responses:
+        "200":
+          description: "Sets the named targets in one transaction; targets left out keep
+            their default, and `taxCodeId: null` removes one. Each code must
+            exist and be active (409 `TAX_CODE_INACTIVE`)."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        target:
+                          type: string
+                        taxCodeId:
+                          type: string
+                        taxCode:
+                          type: string
+                      required:
+                        - target
+                        - taxCodeId
+                        - taxCode
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    - target: CONSULTATION
+                      taxCodeId: 6a4d3c2b-1e0f-4d9c-b8a7-f6e5d4c3b2a1
+                      taxCode: JASA-MEDIS
+                    - target: MEDICATION
+                      taxCodeId: 5f3c2b1a-0d9e-4c8b-a7f6-e5d4c3b2a190
+                      taxCode: BARANG-PPN
+                  message: Tax defaults updated
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Set tax code defaults
+      tags: *a64
+  /api/v1/tax/assignments:
+    get:
+      operationId: TaxAssignmentController_listAssignments_v1
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            exclusiveMinimum: false
+            default: 1
+            type: integer
+        - name: limit
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            exclusiveMaximum: false
+            exclusiveMinimum: false
+            default: 20
+            type: integer
+        - name: kind
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - SERVICE_TARIFF
+              - MEDICATION
+        - name: source
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - OVERRIDE
+              - CATEGORY_DEFAULT
+              - UNRESOLVED
+        - name: taxCodeId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: search
+          required: false
+          in: query
+          schema:
+            minLength: 1
+            maxLength: 100
+            type: string
+      responses:
+        "200":
+          description: Every active tariff and every medication, resolved override →
+            category default → unresolved, with `source` saying which.
+            `meta.unresolvedCount` covers everything, not the page.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        kind:
+                          type: string
+                        id:
+                          type: string
+                        code:
+                          type: string
+                        name:
+                          type: string
+                        category:
+                          type: string
+                        price:
+                          type: integer
+                        source:
+                          type: string
+                        effectiveTaxCode:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            code:
+                              type: string
+                            name:
+                              type: string
+                            ppnTreatment:
+                              type: string
+                          required:
+                            - id
+                            - code
+                            - name
+                            - ppnTreatment
+                      required:
+                        - kind
+                        - id
+                        - code
+                        - name
+                        - category
+                        - price
+                        - source
+                        - effectiveTaxCode
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                      unresolvedCount:
+                        type: integer
+                    required:
+                      - page
+                      - limit
+                      - total
+                      - unresolvedCount
+                required:
+                  - data
+                  - meta
+                example:
+                  data:
+                    - kind: MEDICATION
+                      id: 8c6f5e4d-3a2b-4f1e-8d9c-b8a7f6e5d4c3
+                      code: AMOX500
+                      name: Amoxicillin 500 mg
+                      category: OBAT_KERAS
+                      price: 1500
+                      source: CATEGORY_DEFAULT
+                      effectiveTaxCode:
+                        id: 5f3c2b1a-0d9e-4c8b-a7f6-e5d4c3b2a190
+                        code: BARANG-PPN
+                        name: Barang kena pajak (obat, alat kesehatan)
+                        ppnTreatment: STANDARD
+                  meta:
+                    page: 1
+                    limit: 20
+                    total: 1
+                    unresolvedCount: 0
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: List tariffs and medications with their tax code
+      tags: &a65
+        - Tax Codes
+  /api/v1/tax/assignments/bulk:
+    post:
+      operationId: TaxAssignmentController_bulkAssign_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BulkAssignTaxCodeDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  targets:
+                    - kind: SERVICE_TARIFF
+                      id: 9d7a6f5e-4b3c-4a2f-9e0d-c9b8a7f6e5d4
+                  taxCodeId: 1e8b7a6f-5c4d-4b3a-8f1e-d0c9b8a7f6e5
+      responses:
+        "200":
+          description: "Sets one code on every target in one transaction, or clears their
+            override with `taxCodeId: null` so they follow their category
+            default. 404 `TAX_ASSIGNMENT_TARGET_NOT_FOUND` names targets that no
+            longer exist; 409 `TAX_CODE_INACTIVE` for an inactive code. Issued
+            invoices are never touched."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      updatedCount:
+                        type: integer
+                    required:
+                      - updatedCount
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    updatedCount: 1
+                  message: Tax code assigned
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Assign a tax code to many tariffs and medications
+      tags: *a65
   /api/v1/satusehat/patients/{patientId}/link:
     post:
       operationId: SatusehatLinkController_linkPatient_v1
@@ -44943,7 +46014,7 @@ paths:
       security:
         - bearer: []
       summary: Link a patient to their SATUSEHAT IHS number
-      tags: &a63
+      tags: &a66
         - SATUSEHAT
   /api/v1/satusehat/doctors/{doctorId}/link:
     post:
@@ -45014,7 +46085,7 @@ paths:
       security:
         - bearer: []
       summary: Link a doctor to their SATUSEHAT IHS practitioner number
-      tags: *a63
+      tags: *a66
   /api/v1/satusehat/doctors/{doctorId}/link-by-ihs/preview:
     post:
       operationId: SatusehatLinkController_previewDoctorIhsLink_v1
@@ -45122,7 +46193,7 @@ paths:
       security:
         - bearer: []
       summary: Preview linking a doctor to a hand-typed SATUSEHAT IHS number
-      tags: *a63
+      tags: *a66
   /api/v1/satusehat/doctors/{doctorId}/link-by-ihs:
     post:
       operationId: SatusehatLinkController_linkDoctorByIhs_v1
@@ -45217,7 +46288,7 @@ paths:
       security:
         - bearer: []
       summary: Link a doctor to a hand-typed SATUSEHAT IHS number after confirmation
-      tags: *a63
+      tags: *a66
   /api/v1/satusehat/environment:
     get:
       operationId: SatusehatSubmissionController_getEnvironment_v1
@@ -45276,7 +46347,7 @@ paths:
       security:
         - bearer: []
       summary: Which SATUSEHAT environment this deployment reports to
-      tags: &a64
+      tags: &a67
         - SATUSEHAT
   /api/v1/satusehat/submissions:
     get:
@@ -45460,7 +46531,7 @@ paths:
       security:
         - bearer: []
       summary: List SATUSEHAT submission outbox entries
-      tags: *a64
+      tags: *a67
   /api/v1/satusehat/submissions/{id}:
     get:
       operationId: SatusehatSubmissionController_getSubmissionDetail_v1
@@ -45628,7 +46699,7 @@ paths:
       security:
         - bearer: []
       summary: One SATUSEHAT submission and what it sent
-      tags: *a64
+      tags: *a67
   /api/v1/satusehat/submissions/{id}/check:
     post:
       operationId: SatusehatSubmissionController_checkSubmission_v1
@@ -45732,7 +46803,7 @@ paths:
       security:
         - bearer: []
       summary: Check with SATUSEHAT whether it still holds what we sent
-      tags: *a64
+      tags: *a67
   /api/v1/satusehat/submissions/{id}/retry:
     post:
       operationId: SatusehatSubmissionController_retrySubmission_v1
@@ -45853,7 +46924,7 @@ paths:
       security:
         - bearer: []
       summary: Retry a failed SATUSEHAT submission
-      tags: *a64
+      tags: *a67
   /api/v1/satusehat/encounters/{encounterId}/record-comparison:
     get:
       operationId: SatusehatRecordController_compareEncounterRecord_v1
@@ -46127,7 +47198,7 @@ paths:
       security:
         - bearer: []
       summary: The clinic's SATUSEHAT Location tree
-      tags: &a65
+      tags: &a68
         - SATUSEHAT
   /api/v1/satusehat/locations/register:
     post:
@@ -46242,7 +47313,7 @@ paths:
       security:
         - bearer: []
       summary: Register clinic rows as SATUSEHAT Locations, or push their changes
-      tags: *a65
+      tags: *a68
   /api/v1/bpjs/config:
     get:
       operationId: BpjsPcareConfigController_getConfig_v1
@@ -46356,7 +47427,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS PCare bridging configuration
-      tags: &a66
+      tags: &a69
         - BPJS PCare
     put:
       operationId: BpjsPcareConfigController_upsertConfig_v1
@@ -46494,7 +47565,7 @@ paths:
       security:
         - bearer: []
       summary: Create or replace the BPJS PCare bridging configuration
-      tags: *a66
+      tags: *a69
     delete:
       operationId: BpjsPcareConfigController_deleteConfig_v1
       parameters: []
@@ -46553,7 +47624,7 @@ paths:
       security:
         - bearer: []
       summary: Delete the BPJS PCare bridging configuration
-      tags: *a66
+      tags: *a69
   /api/v1/bpjs/config/test-connection:
     post:
       operationId: BpjsPcareConfigController_testConnection_v1
@@ -46619,7 +47690,7 @@ paths:
       security:
         - bearer: []
       summary: Test the stored BPJS PCare credentials
-      tags: *a66
+      tags: *a69
   /api/v1/bpjs/reference/sync:
     post:
       operationId: BpjsReferenceController_syncCatalogs_v1
@@ -46707,7 +47778,7 @@ paths:
       security:
         - bearer: []
       summary: Sync the enumerable BPJS PCare reference catalogs
-      tags: &a67
+      tags: &a70
         - BPJS PCare
   /api/v1/bpjs/reference/status:
     get:
@@ -46774,7 +47845,7 @@ paths:
       security:
         - bearer: []
       summary: Read per-catalog BPJS reference sync status
-      tags: *a67
+      tags: *a70
   /api/v1/bpjs/reference/{catalog}:
     get:
       operationId: BpjsReferenceController_searchCatalog_v1
@@ -46868,7 +47939,7 @@ paths:
       security:
         - bearer: []
       summary: Search a synced BPJS reference catalog locally
-      tags: *a67
+      tags: *a70
   /api/v1/bpjs/reference/{catalog}/search:
     post:
       operationId: BpjsReferenceController_searchCatalogRemote_v1
@@ -46974,7 +48045,7 @@ paths:
       security:
         - bearer: []
       summary: Search a keyword-only BPJS catalog live and cache the results
-      tags: *a67
+      tags: *a70
   /api/v1/bpjs/mappings:
     get:
       operationId: BpjsMappingController_getOverview_v1
@@ -47062,7 +48133,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS mapping overview
-      tags: &a68
+      tags: &a71
         - BPJS PCare
   /api/v1/bpjs/mappings/doctors/{doctorId}:
     put:
@@ -47156,7 +48227,7 @@ paths:
       security:
         - bearer: []
       summary: Set or clear a doctor’s BPJS kdDokter mapping
-      tags: *a68
+      tags: *a71
   /api/v1/bpjs/mappings/specialties/{specialtyId}:
     put:
       operationId: BpjsMappingController_setSpecialtyMapping_v1
@@ -47245,7 +48316,7 @@ paths:
       security:
         - bearer: []
       summary: Set or clear a specialty’s BPJS kdPoli mapping
-      tags: *a68
+      tags: *a71
   /api/v1/bpjs/mappings/medications/{medicationId}:
     put:
       operationId: BpjsMappingController_setMedicationMapping_v1
@@ -47339,7 +48410,7 @@ paths:
       security:
         - bearer: []
       summary: Link or unlink a medication’s DPHO code
-      tags: *a68
+      tags: *a71
   /api/v1/bpjs/eligibility/patients/{patientId}/check:
     post:
       operationId: BpjsEligibilityController_checkEligibility_v1
@@ -47639,7 +48710,7 @@ paths:
       security:
         - bearer: []
       summary: List BPJS PCare submission outbox entries
-      tags: &a69
+      tags: &a72
         - BPJS PCare
   /api/v1/bpjs/submissions/{id}/retry:
     post:
@@ -47748,7 +48819,7 @@ paths:
       security:
         - bearer: []
       summary: Retry a failed BPJS PCare submission
-      tags: *a69
+      tags: *a72
   /api/v1/bpjs/reports/monthly:
     get:
       operationId: BpjsReportController_getMonthlyReport_v1
@@ -47995,7 +49066,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS Antrean Online bridging configuration
-      tags: &a70
+      tags: &a73
         - BPJS Antrean
     put:
       operationId: BpjsAntreanConfigController_upsertConfig_v1
@@ -48136,7 +49207,7 @@ paths:
       security:
         - bearer: []
       summary: Create or replace the BPJS Antrean Online bridging configuration
-      tags: *a70
+      tags: *a73
     delete:
       operationId: BpjsAntreanConfigController_deleteConfig_v1
       parameters: []
@@ -48195,7 +49266,7 @@ paths:
       security:
         - bearer: []
       summary: Delete the BPJS Antrean Online bridging configuration
-      tags: *a70
+      tags: *a73
   /api/v1/bpjs/antrean/config/test-connection:
     post:
       operationId: BpjsAntreanConfigController_testConnection_v1
@@ -48261,7 +49332,7 @@ paths:
       security:
         - bearer: []
       summary: Test the stored BPJS Antrean credentials
-      tags: *a70
+      tags: *a73
   /api/v1/bpjs/antrean/inbound-readiness:
     get:
       operationId: BpjsAntreanConfigController_getInboundReadiness_v1
@@ -48331,7 +49402,7 @@ paths:
       security:
         - bearer: []
       summary: Report whether the inbound Antrean web services can serve BPJS
-      tags: *a70
+      tags: *a73
   /api/v1/bpjs/antrean/hfis-reconciliation:
     get:
       operationId: BpjsAntreanConfigController_getHfisReconciliation_v1
@@ -48433,7 +49504,7 @@ paths:
       security:
         - bearer: []
       summary: Compare HFIS against HMS and report the disagreements
-      tags: *a70
+      tags: *a73
   /api/v1/admin/features:
     get:
       operationId: FeatureAdminController_getEntitlements_v1
@@ -48512,7 +49583,7 @@ paths:
       security:
         - bearer: []
       summary: List every feature and whether this client has it
-      tags: &a71
+      tags: &a74
         - Feature Entitlements
   /api/v1/admin/features/{key}:
     put:
@@ -48629,7 +49700,7 @@ paths:
       security:
         - bearer: []
       summary: Switch a feature on or off for this client
-      tags: *a71
+      tags: *a74
   /api/v1/features/availability:
     get:
       operationId: FeatureAvailabilityController_getAvailability_v1
@@ -48752,7 +49823,7 @@ paths:
       security:
         - bearer: []
       summary: List active roles
-      tags: &a72
+      tags: &a75
         - RBAC
     post:
       operationId: RbacController_createRole_v1
@@ -48839,7 +49910,7 @@ paths:
       security:
         - bearer: []
       summary: Create a custom role
-      tags: *a72
+      tags: *a75
   /api/v1/rbac/permissions:
     get:
       operationId: RbacController_getPermissionCatalog_v1
@@ -48919,7 +49990,7 @@ paths:
       security:
         - bearer: []
       summary: List the permission catalog
-      tags: *a72
+      tags: *a75
   /api/v1/rbac/roles/{id}:
     get:
       operationId: RbacController_getRoleById_v1
@@ -49038,7 +50109,7 @@ paths:
       security:
         - bearer: []
       summary: Get a role with its permissions and member count
-      tags: *a72
+      tags: *a75
     patch:
       operationId: RbacController_updateRole_v1
       parameters:
@@ -49137,7 +50208,7 @@ paths:
       security:
         - bearer: []
       summary: Update a role name or description
-      tags: *a72
+      tags: *a75
     delete:
       operationId: RbacController_deleteRole_v1
       parameters:
@@ -49213,7 +50284,7 @@ paths:
       security:
         - bearer: []
       summary: Soft-delete a role
-      tags: *a72
+      tags: *a75
   /api/v1/rbac/roles/{id}/permissions:
     put:
       operationId: RbacController_setRolePermissions_v1
@@ -49359,7 +50430,7 @@ paths:
       security:
         - bearer: []
       summary: Replace the permission set attached to a role
-      tags: *a72
+      tags: *a75
   /api/v1/rbac/assign-role:
     post:
       operationId: RbacController_assignRole_v1
@@ -49451,7 +50522,7 @@ paths:
       security:
         - bearer: []
       summary: Assign a role to a user
-      tags: *a72
+      tags: *a75
   /api/v1/rbac/unassign-role:
     post:
       operationId: RbacController_unassignRole_v1
@@ -49543,7 +50614,7 @@ paths:
       security:
         - bearer: []
       summary: Unassign a role from a user
-      tags: *a72
+      tags: *a75
   /api/v1/health:
     get:
       operationId: HealthController_getHealth_v1
@@ -53821,6 +54892,176 @@ components:
         nitku:
           type: string
           nullable: true
+    CreateTaxCodeDto:
+      type: object
+      properties:
+        code:
+          type: string
+          pattern: ^[A-Z0-9][A-Z0-9-]{1,39}$
+        name:
+          type: string
+          minLength: 1
+          maxLength: 120
+        ppnTreatment:
+          type: string
+          enum:
+            - EXEMPT_MEDICAL
+            - STANDARD
+            - EXEMPT_OTHER
+            - NOT_OBJECT
+        fakturTransactionCode:
+          type: string
+          enum:
+            - "01"
+            - "04"
+            - "08"
+          nullable: true
+        invoiceNote:
+          type: string
+          maxLength: 200
+          nullable: true
+        initialRate:
+          type: object
+          properties:
+            ratePercent:
+              type: number
+              minimum: 0
+              exclusiveMinimum: false
+              maximum: 100
+              exclusiveMaximum: false
+              multipleOf: 0.01
+            dppNumerator:
+              type: integer
+              minimum: 1
+              exclusiveMinimum: false
+              maximum: 1000
+              exclusiveMaximum: false
+            dppDenominator:
+              type: integer
+              minimum: 1
+              exclusiveMinimum: false
+              maximum: 1000
+              exclusiveMaximum: false
+            effectiveFrom:
+              type: string
+              pattern: ^\d{4}-\d{2}-\d{2}$
+          required:
+            - ratePercent
+            - dppNumerator
+            - dppDenominator
+            - effectiveFrom
+          x-nestjs_zod-self-required: false
+      required:
+        - code
+        - name
+        - ppnTreatment
+        - fakturTransactionCode
+    UpdateTaxCodeDto:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 120
+        fakturTransactionCode:
+          type: string
+          enum:
+            - "01"
+            - "04"
+            - "08"
+          nullable: true
+        invoiceNote:
+          type: string
+          maxLength: 200
+          nullable: true
+        isActive:
+          type: boolean
+    CreateTaxCodeRateDto:
+      type: object
+      properties:
+        ratePercent:
+          type: number
+          minimum: 0
+          exclusiveMinimum: false
+          maximum: 100
+          exclusiveMaximum: false
+          multipleOf: 0.01
+        dppNumerator:
+          type: integer
+          minimum: 1
+          exclusiveMinimum: false
+          maximum: 1000
+          exclusiveMaximum: false
+        dppDenominator:
+          type: integer
+          minimum: 1
+          exclusiveMinimum: false
+          maximum: 1000
+          exclusiveMaximum: false
+        effectiveFrom:
+          type: string
+          pattern: ^\d{4}-\d{2}-\d{2}$
+      required:
+        - ratePercent
+        - dppNumerator
+        - dppDenominator
+        - effectiveFrom
+    UpdateTaxCategoryDefaultsDto:
+      type: object
+      properties:
+        defaults:
+          type: array
+          minItems: 1
+          maxItems: 6
+          items:
+            type: object
+            properties:
+              target:
+                type: string
+                enum:
+                  - CONSULTATION
+                  - PROCEDURE
+                  - ACCOMMODATION
+                  - LAB
+                  - OTHER
+                  - MEDICATION
+              taxCodeId:
+                type: string
+                format: uuid
+                nullable: true
+            required:
+              - target
+              - taxCodeId
+      required:
+        - defaults
+    BulkAssignTaxCodeDto:
+      type: object
+      properties:
+        targets:
+          type: array
+          minItems: 1
+          maxItems: 500
+          items:
+            type: object
+            properties:
+              kind:
+                type: string
+                enum:
+                  - SERVICE_TARIFF
+                  - MEDICATION
+              id:
+                type: string
+                format: uuid
+            required:
+              - kind
+              - id
+        taxCodeId:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+        - targets
+        - taxCodeId
     LinkDoctorByIhsDto:
       type: object
       properties:

@@ -103,6 +103,11 @@ const GATED_CONTROLLERS: Readonly<Record<string, FeatureKey>> = {
   // P27-T02. The tax profile goes with the tax feature; a clinic without it
   // has no tax page and no tax endpoints.
   TaxSettingsController: 'taxes',
+  // P27-T03. Tax codes, their defaults and the code on each tariff and
+  // medication go with the rest of the tax module.
+  TaxCodeController: 'taxes',
+  TaxCategoryDefaultController: 'taxes',
+  TaxAssignmentController: 'taxes',
 };
 
 /**

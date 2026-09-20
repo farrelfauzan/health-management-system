@@ -84,3 +84,188 @@ export type TaxpayerTypeValue = z.infer<typeof taxpayerTypeSchema>;
 export type IncomeTaxRegimeValue = z.infer<typeof incomeTaxRegimeSchema>;
 export type NpwpStatusValue = z.infer<typeof npwpStatusSchema>;
 export type UpdateTaxSettingsInput = z.infer<typeof updateTaxSettingsSchema>;
+
+/**
+ * How PPN treats what a tax code covers (P27-T03). `EXEMPT_MEDICAL` is the
+ * PP 49/2022 Pasal 11 exemption for medical services, reported on faktur code
+ * 08; `STANDARD` is taxed (medicines, aesthetic and other non-medical services)
+ * at a rate the code carries; `EXEMPT_OTHER` is another facility such as a
+ * programme vaccine, also code 08; `NOT_OBJECT` is outside PPN altogether.
+ */
+export const ppnTreatmentSchema = z.enum([
+  'EXEMPT_MEDICAL',
+  'STANDARD',
+  'EXEMPT_OTHER',
+  'NOT_OBJECT',
+]);
+export const PPN_TREATMENTS = ppnTreatmentSchema.options;
+
+/** Coretax faktur transaction codes a clinic uses: 01 ordinary, 04 DPP nilai lain, 08 exempt. */
+export const fakturTransactionCodeSchema = z.enum(['01', '04', '08']);
+export const FAKTUR_TRANSACTION_CODES = fakturTransactionCodeSchema.options;
+
+/**
+ * What a category default is keyed by: each service-tariff category, and one
+ * row for every medication.
+ */
+export const taxDefaultTargetSchema = z.enum([
+  'CONSULTATION',
+  'PROCEDURE',
+  'ACCOMMODATION',
+  'LAB',
+  'OTHER',
+  'MEDICATION',
+]);
+export const TAX_DEFAULT_TARGETS = taxDefaultTargetSchema.options;
+
+/** What an assignment row is: a tariff or a medication. */
+export const taxAssignmentKindSchema = z.enum(['SERVICE_TARIFF', 'MEDICATION']);
+
+/** Where an item's effective tax code came from. */
+export const taxCodeSourceSchema = z.enum(['OVERRIDE', 'CATEGORY_DEFAULT', 'UNRESOLVED']);
+
+export const TAX_CODE_SYSTEM_LOCKED_ERROR_CODE = 'TAX_CODE_SYSTEM_LOCKED';
+export const TAX_CODE_IN_USE_ERROR_CODE = 'TAX_CODE_IN_USE';
+export const TAX_CODE_CONFLICT_ERROR_CODE = 'TAX_CODE_CONFLICT';
+export const TAX_CODE_INACTIVE_ERROR_CODE = 'TAX_CODE_INACTIVE';
+export const TAX_CODE_FAKTUR_MISMATCH_ERROR_CODE = 'TAX_CODE_FAKTUR_MISMATCH';
+export const TAX_RATE_NOT_AFTER_LATEST_ERROR_CODE = 'TAX_RATE_NOT_AFTER_LATEST';
+export const TAX_RATE_NOT_APPLICABLE_ERROR_CODE = 'TAX_RATE_NOT_APPLICABLE';
+export const TAX_ASSIGNMENT_TARGET_NOT_FOUND_ERROR_CODE = 'TAX_ASSIGNMENT_TARGET_NOT_FOUND';
+
+export const MAX_TAX_ASSIGNMENT_BATCH_SIZE = 500;
+
+/**
+ * The faktur code each treatment reports under. Kept as data so the Zod
+ * refinement, the service and the CHECK in the migration say the same thing.
+ */
+export const ALLOWED_FAKTUR_CODES_BY_TREATMENT: Readonly<
+  Record<
+    z.infer<typeof ppnTreatmentSchema>,
+    readonly (z.infer<typeof fakturTransactionCodeSchema> | null)[]
+  >
+> = {
+  EXEMPT_MEDICAL: ['08'],
+  STANDARD: ['01', '04'],
+  EXEMPT_OTHER: ['08'],
+  NOT_OBJECT: [null],
+};
+
+const taxCodeCodeSchema = z
+  .string()
+  .trim()
+  .toUpperCase()
+  .regex(/^[A-Z0-9][A-Z0-9-]{1,39}$/, 'Use 2–40 letters, digits or dashes');
+
+/**
+ * One rate: `ratePercent × dppNumerator / dppDenominator` is the effective rate
+ * (12 × 11/12 = 11% since PMK 131/2024). Effective from a calendar day; a new
+ * regulation is a new row, never an edit (D-038).
+ */
+export const createTaxCodeRateSchema = z
+  .object({
+    ratePercent: z.number().min(0).max(100).multipleOf(0.01),
+    dppNumerator: z.number().int().min(1).max(1000),
+    dppDenominator: z.number().int().min(1).max(1000),
+    effectiveFrom: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Use YYYY-MM-DD'),
+  })
+  .refine((input) => input.dppNumerator <= input.dppDenominator, {
+    message: 'The DPP fraction cannot exceed 1',
+    path: ['dppNumerator'],
+  });
+
+function isFakturCodeAllowed(input: {
+  ppnTreatment?: z.infer<typeof ppnTreatmentSchema>;
+  fakturTransactionCode?: z.infer<typeof fakturTransactionCodeSchema> | null;
+}): boolean {
+  if (input.ppnTreatment === undefined || input.fakturTransactionCode === undefined) {
+    return true;
+  }
+  return ALLOWED_FAKTUR_CODES_BY_TREATMENT[input.ppnTreatment].includes(
+    input.fakturTransactionCode,
+  );
+}
+
+const FAKTUR_CODE_MESSAGE =
+  'Faktur code does not match the treatment: 08 for exempt, 01 or 04 for standard, none for not an object';
+
+/**
+ * A clinic-defined tax code. A `STANDARD` code must arrive with its first rate:
+ * a taxed code without one would resolve to nothing on the next invoice.
+ */
+export const createTaxCodeSchema = z
+  .object({
+    code: taxCodeCodeSchema,
+    name: z.string().trim().min(1).max(120),
+    ppnTreatment: ppnTreatmentSchema,
+    fakturTransactionCode: fakturTransactionCodeSchema.nullable(),
+    invoiceNote: z.string().trim().max(200).nullable().optional(),
+    initialRate: createTaxCodeRateSchema.optional(),
+  })
+  .refine(isFakturCodeAllowed, { message: FAKTUR_CODE_MESSAGE, path: ['fakturTransactionCode'] })
+  .refine((input) => (input.ppnTreatment === 'STANDARD') === (input.initialRate !== undefined), {
+    message: 'A standard code needs its first rate, and only a standard code has one',
+    path: ['initialRate'],
+  });
+
+/**
+ * The treatment is fixed at creation: switching a code between exempt and
+ * taxed would silently re-tax every item that uses it, so a different
+ * treatment is a different code. The faktur code may move between 01 and 04 on
+ * a clinic's own standard code, judged by the service against the stored
+ * treatment. On a system code only the name, note and active flag change.
+ */
+export const updateTaxCodeSchema = z
+  .object({
+    name: z.string().trim().min(1).max(120).optional(),
+    fakturTransactionCode: fakturTransactionCodeSchema.nullable().optional(),
+    invoiceNote: z.string().trim().max(200).nullable().optional(),
+    isActive: z.boolean().optional(),
+  })
+  .refine((input) => Object.values(input).some((value) => value !== undefined), {
+    message: 'At least one field must be provided',
+  });
+
+/** Sets one or more category defaults; a target left out keeps its default. */
+export const updateTaxCategoryDefaultsSchema = z.object({
+  defaults: z
+    .array(z.object({ target: taxDefaultTargetSchema, taxCodeId: z.string().uuid().nullable() }))
+    .min(1)
+    .max(TAX_DEFAULT_TARGETS.length)
+    .refine((items) => new Set(items.map((item) => item.target)).size === items.length, {
+      message: 'Each target may appear once',
+    }),
+});
+
+/**
+ * Assigns one tax code to many tariffs and medications at once, or clears the
+ * override (`taxCodeId: null`) so they fall back to their category default.
+ */
+export const bulkAssignTaxCodeSchema = z.object({
+  targets: z
+    .array(z.object({ kind: taxAssignmentKindSchema, id: z.string().uuid() }))
+    .min(1)
+    .max(MAX_TAX_ASSIGNMENT_BATCH_SIZE),
+  taxCodeId: z.string().uuid().nullable(),
+});
+
+export const listTaxAssignmentsQuerySchema = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(20),
+  kind: taxAssignmentKindSchema.optional(),
+  source: taxCodeSourceSchema.optional(),
+  taxCodeId: z.string().uuid().optional(),
+  search: z.string().trim().min(1).max(100).optional(),
+});
+
+export type PpnTreatmentValue = z.infer<typeof ppnTreatmentSchema>;
+export type FakturTransactionCodeValue = z.infer<typeof fakturTransactionCodeSchema>;
+export type TaxDefaultTargetValue = z.infer<typeof taxDefaultTargetSchema>;
+export type TaxAssignmentKindValue = z.infer<typeof taxAssignmentKindSchema>;
+export type TaxCodeSourceValue = z.infer<typeof taxCodeSourceSchema>;
+export type CreateTaxCodeRateInput = z.infer<typeof createTaxCodeRateSchema>;
+export type CreateTaxCodeInput = z.infer<typeof createTaxCodeSchema>;
+export type UpdateTaxCodeInput = z.infer<typeof updateTaxCodeSchema>;
+export type UpdateTaxCategoryDefaultsInput = z.infer<typeof updateTaxCategoryDefaultsSchema>;
+export type BulkAssignTaxCodeInput = z.infer<typeof bulkAssignTaxCodeSchema>;
+export type ListTaxAssignmentsQuery = z.infer<typeof listTaxAssignmentsQuerySchema>;

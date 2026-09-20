@@ -10,9 +10,17 @@ import { PrismaService } from '../../common/prisma/prisma.service';
 import { AuthRepository } from '../auth/repository/auth.repository';
 import { ClinicProfileRepository } from '../billing/repository/clinic-profile.repository';
 import { FeatureAvailabilityCacheService } from '../feature-entitlement/service/feature-availability-cache.service';
+import { TaxAssignmentRepository } from './repository/tax-assignment.repository';
+import { TaxCodeRepository } from './repository/tax-code.repository';
 import { TaxSettingsRepository } from './repository/tax-settings.repository';
 
 const TAX_SETTINGS_PATH = '/api/v1/v1/tax/settings';
+const TAX_CODES_PATH = '/api/v1/v1/tax/codes';
+const TAX_ASSIGNMENTS_PATH = '/api/v1/v1/tax/assignments';
+const TAX_CODE_PERMISSIONS = [
+  { action: 'read', resource: 'TaxCode', scope: 'ANY' as const },
+  { action: 'write', resource: 'TaxCode', scope: 'ANY' as const },
+];
 const TAX_SETTINGS_PERMISSIONS = [
   { action: 'read', resource: 'TaxSettings', scope: 'ANY' as const },
   { action: 'write', resource: 'TaxSettings', scope: 'ANY' as const },
@@ -34,6 +42,21 @@ describe('Tax settings integration', () => {
     findProfile: jest.fn(),
     createProfile: jest.fn(),
     updateProfile: jest.fn(),
+  };
+  const taxCodeRepositoryMock = {
+    listTaxCodes: jest.fn(),
+    findTaxCodeById: jest.fn(),
+    createTaxCode: jest.fn(),
+    updateTaxCode: jest.fn(),
+    createTaxCodeRate: jest.fn(),
+    listTaxCodeUsage: jest.fn(),
+    listCategoryDefaults: jest.fn(),
+    saveCategoryDefaults: jest.fn(),
+  };
+  const taxAssignmentRepositoryMock = {
+    listActiveAssignmentTargets: jest.fn(),
+    findExistingTargetIds: jest.fn(),
+    assignTaxCode: jest.fn(),
   };
   const featureAvailabilityCacheMock = {
     isEnabled: jest.fn<Promise<boolean>, [string]>(async () => true),
@@ -65,6 +88,10 @@ describe('Tax settings integration', () => {
       .useValue(authRepositoryMock)
       .overrideProvider(TaxSettingsRepository)
       .useValue(taxSettingsRepositoryMock)
+      .overrideProvider(TaxCodeRepository)
+      .useValue(taxCodeRepositoryMock)
+      .overrideProvider(TaxAssignmentRepository)
+      .useValue(taxAssignmentRepositoryMock)
       .overrideProvider(ClinicProfileRepository)
       .useValue(clinicProfileRepositoryMock)
       .overrideProvider(FeatureAvailabilityCacheService)
@@ -190,5 +217,137 @@ describe('Tax settings integration', () => {
 
     expect(response.status).toBe(403);
     expect(response.body.error.code).toBe('FEATURE_DISABLED');
+  });
+
+  describe('tax codes (P27-T03)', () => {
+    const barangCode = {
+      id: '5f3c2b1a-0d9e-4c8b-a7f6-e5d4c3b2a190',
+      code: 'BARANG-PPN',
+      name: 'Barang kena pajak',
+      ppnTreatment: 'STANDARD',
+      fakturTransactionCode: '04',
+      invoiceNote: null,
+      isSystem: true,
+      isActive: true,
+      rates: [
+        {
+          id: 'r1',
+          ratePercent: 12,
+          dppNumerator: 11,
+          dppDenominator: 12,
+          effectiveFrom: '2025-01-01',
+        },
+      ],
+    };
+
+    beforeEach(() => {
+      taxCodeRepositoryMock.listTaxCodes.mockResolvedValue([barangCode]);
+      taxCodeRepositoryMock.listTaxCodeUsage.mockResolvedValue([]);
+      taxCodeRepositoryMock.listCategoryDefaults.mockResolvedValue([
+        { target: 'MEDICATION', taxCodeId: barangCode.id },
+      ]);
+    });
+
+    it('lists codes with the effective rate', async () => {
+      const token = await buildToken('admin-user', 'admin@hms.local');
+      mockActorWithPermissions('ADMIN', TAX_CODE_PERMISSIONS);
+
+      const response = await request(app.getHttpServer())
+        .get(TAX_CODES_PATH)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.data[0].rates[0].effectiveRatePercent).toBe(11);
+    });
+
+    it('refuses a code whose faktur code does not match its treatment at the pipe', async () => {
+      const token = await buildToken('admin-user', 'admin@hms.local');
+      mockActorWithPermissions('ADMIN', TAX_CODE_PERMISSIONS);
+
+      const response = await request(app.getHttpServer())
+        .post(TAX_CODES_PATH)
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          code: 'ESTETIKA',
+          name: 'Estetika',
+          ppnTreatment: 'STANDARD',
+          fakturTransactionCode: '08',
+        });
+
+      expect(response.status).toBe(400);
+      expect(taxCodeRepositoryMock.createTaxCode).not.toHaveBeenCalled();
+    });
+
+    it('resolves a medication through its category default on the assignment list', async () => {
+      const token = await buildToken('admin-user', 'admin@hms.local');
+      mockActorWithPermissions('ADMIN', TAX_CODE_PERMISSIONS);
+      taxAssignmentRepositoryMock.listActiveAssignmentTargets.mockResolvedValue([
+        {
+          kind: 'MEDICATION',
+          id: 'med-1',
+          code: 'AMOX500',
+          name: 'Amoxicillin 500 mg',
+          category: 'OBAT_KERAS',
+          price: 1500,
+          taxCodeId: null,
+        },
+      ]);
+
+      const response = await request(app.getHttpServer())
+        .get(TAX_ASSIGNMENTS_PATH)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.data[0]).toMatchObject({
+        source: 'CATEGORY_DEFAULT',
+        effectiveTaxCode: { code: 'BARANG-PPN' },
+      });
+      expect(response.body.meta.unresolvedCount).toBe(0);
+    });
+
+    it('answers 404 TAX_ASSIGNMENT_TARGET_NOT_FOUND for a stale selection', async () => {
+      const token = await buildToken('admin-user', 'admin@hms.local');
+      mockActorWithPermissions('ADMIN', TAX_CODE_PERMISSIONS);
+      taxAssignmentRepositoryMock.findExistingTargetIds.mockResolvedValue([]);
+
+      const response = await request(app.getHttpServer())
+        .post(`${TAX_ASSIGNMENTS_PATH}/bulk`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          targets: [{ kind: 'SERVICE_TARIFF', id: '9d7a6f5e-4b3c-4a2f-9e0d-c9b8a7f6e5d4' }],
+          taxCodeId: null,
+        });
+
+      expect(response.status).toBe(404);
+      expect(response.body.error.code).toBe('TAX_ASSIGNMENT_TARGET_NOT_FOUND');
+      expect(taxAssignmentRepositoryMock.assignTaxCode).not.toHaveBeenCalled();
+    });
+
+    it('answers 200 to a bulk apply, as the contract says', async () => {
+      const token = await buildToken('admin-user', 'admin@hms.local');
+      mockActorWithPermissions('ADMIN', TAX_CODE_PERMISSIONS);
+      const targetId = '9d7a6f5e-4b3c-4a2f-9e0d-c9b8a7f6e5d4';
+      taxAssignmentRepositoryMock.findExistingTargetIds.mockResolvedValue([targetId]);
+      taxAssignmentRepositoryMock.assignTaxCode.mockResolvedValue(1);
+
+      const response = await request(app.getHttpServer())
+        .post(`${TAX_ASSIGNMENTS_PATH}/bulk`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ targets: [{ kind: 'SERVICE_TARIFF', id: targetId }], taxCodeId: null });
+
+      expect(response.status).toBe(200);
+      expect(response.body.data).toEqual({ updatedCount: 1 });
+    });
+
+    it('refuses the tax code routes to a caller holding only the tax-settings keys', async () => {
+      const token = await buildToken('admin-user', 'admin@hms.local');
+      mockActorWithPermissions('ADMIN', TAX_SETTINGS_PERMISSIONS);
+
+      const response = await request(app.getHttpServer())
+        .get(TAX_CODES_PATH)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.status).toBe(403);
+    });
   });
 });

@@ -152,7 +152,11 @@
     "#taxes/normalize-npwp": "./src/taxes/normalize-npwp.ts",
     "#taxes/resolve-npwp-status": "./src/taxes/resolve-npwp-status.ts",
     "#taxes/resolve-tax-id-change": "./src/taxes/resolve-tax-id-change.ts",
-    "#taxes/resolve-pp55-eligibility": "./src/taxes/resolve-pp55-eligibility.ts"
+    "#taxes/resolve-pp55-eligibility": "./src/taxes/resolve-pp55-eligibility.ts",
+    "#taxes/resolve-effective-tax-code": "./src/taxes/resolve-effective-tax-code.ts",
+    "#taxes/resolve-tax-rate": "./src/taxes/resolve-tax-rate.ts",
+    "#taxes/to-tax-default-target": "./src/taxes/to-tax-default-target.ts",
+    "#taxes/is-faktur-code-allowed": "./src/taxes/is-faktur-code-allowed.ts"
   },
   "main": "./dist/index.cjs",
   "types": "./src/index.ts",

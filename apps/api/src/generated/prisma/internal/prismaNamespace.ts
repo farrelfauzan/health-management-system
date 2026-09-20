@@ -432,6 +432,9 @@ export const ModelName = {
   DispenseItemStockAllocation: 'DispenseItemStockAllocation',
   ClinicProfile: 'ClinicProfile',
   TaxSettings: 'TaxSettings',
+  TaxCode: 'TaxCode',
+  TaxCodeRate: 'TaxCodeRate',
+  TaxCategoryDefault: 'TaxCategoryDefault',
   ServiceTariff: 'ServiceTariff',
   InvoiceCounter: 'InvoiceCounter',
   Invoice: 'Invoice',
@@ -515,7 +518,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientDeliveryConsent" | "documentDelivery" | "documentDeliveryLink" | "patientAllergy" | "doctorCredentialOption" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorLicenseExpiryNotice" | "doctorAuthority" | "doctorAuthorityExpiryNotice" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "midwifeFormularyItem" | "prescription" | "prescriptionMedication" | "prescriptionItemComponent" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "taxSettings" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "satusehatSubmissionResource" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "vaultDocumentExpiryNotice" | "vaultDocumentShare" | "userOffboardingNotice" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit" | "documentType" | "documentTypeApprover" | "managedDocument" | "documentApprovalRequest" | "documentApprovalApprover" | "documentApprovalDecision" | "labTest" | "labReferenceRange" | "labPanel" | "labPanelMember" | "labOrderCounter" | "labOrder" | "labOrderItem" | "labSpecimenCounter" | "labSpecimen" | "labResult" | "laboratorySettings" | "labReport" | "immunization" | "province" | "regency" | "district" | "village" | "bugReport" | "bugReportCounter"
+    modelProps: "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientDeliveryConsent" | "documentDelivery" | "documentDeliveryLink" | "patientAllergy" | "doctorCredentialOption" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorLicenseExpiryNotice" | "doctorAuthority" | "doctorAuthorityExpiryNotice" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "midwifeFormularyItem" | "prescription" | "prescriptionMedication" | "prescriptionItemComponent" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "taxSettings" | "taxCode" | "taxCodeRate" | "taxCategoryDefault" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "satusehatSubmissionResource" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "vaultDocumentExpiryNotice" | "vaultDocumentShare" | "userOffboardingNotice" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit" | "documentType" | "documentTypeApprover" | "managedDocument" | "documentApprovalRequest" | "documentApprovalApprover" | "documentApprovalDecision" | "labTest" | "labReferenceRange" | "labPanel" | "labPanelMember" | "labOrderCounter" | "labOrder" | "labOrderItem" | "labSpecimenCounter" | "labSpecimen" | "labResult" | "laboratorySettings" | "labReport" | "immunization" | "province" | "regency" | "district" | "village" | "bugReport" | "bugReportCounter"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -4068,6 +4071,228 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.TaxSettingsCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.TaxSettingsCountAggregateOutputType> | number
+        }
+      }
+    }
+    TaxCode: {
+      payload: Prisma.$TaxCodePayload<ExtArgs>
+      fields: Prisma.TaxCodeFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.TaxCodeFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaxCodePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.TaxCodeFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaxCodePayload>
+        }
+        findFirst: {
+          args: Prisma.TaxCodeFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaxCodePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.TaxCodeFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaxCodePayload>
+        }
+        findMany: {
+          args: Prisma.TaxCodeFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaxCodePayload>[]
+        }
+        create: {
+          args: Prisma.TaxCodeCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaxCodePayload>
+        }
+        createMany: {
+          args: Prisma.TaxCodeCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.TaxCodeCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaxCodePayload>[]
+        }
+        delete: {
+          args: Prisma.TaxCodeDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaxCodePayload>
+        }
+        update: {
+          args: Prisma.TaxCodeUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaxCodePayload>
+        }
+        deleteMany: {
+          args: Prisma.TaxCodeDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.TaxCodeUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TaxCodeUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaxCodePayload>[]
+        }
+        upsert: {
+          args: Prisma.TaxCodeUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaxCodePayload>
+        }
+        aggregate: {
+          args: Prisma.TaxCodeAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTaxCode>
+        }
+        groupBy: {
+          args: Prisma.TaxCodeGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TaxCodeGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.TaxCodeCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TaxCodeCountAggregateOutputType> | number
+        }
+      }
+    }
+    TaxCodeRate: {
+      payload: Prisma.$TaxCodeRatePayload<ExtArgs>
+      fields: Prisma.TaxCodeRateFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.TaxCodeRateFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaxCodeRatePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.TaxCodeRateFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaxCodeRatePayload>
+        }
+        findFirst: {
+          args: Prisma.TaxCodeRateFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaxCodeRatePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.TaxCodeRateFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaxCodeRatePayload>
+        }
+        findMany: {
+          args: Prisma.TaxCodeRateFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaxCodeRatePayload>[]
+        }
+        create: {
+          args: Prisma.TaxCodeRateCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaxCodeRatePayload>
+        }
+        createMany: {
+          args: Prisma.TaxCodeRateCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.TaxCodeRateCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaxCodeRatePayload>[]
+        }
+        delete: {
+          args: Prisma.TaxCodeRateDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaxCodeRatePayload>
+        }
+        update: {
+          args: Prisma.TaxCodeRateUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaxCodeRatePayload>
+        }
+        deleteMany: {
+          args: Prisma.TaxCodeRateDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.TaxCodeRateUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TaxCodeRateUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaxCodeRatePayload>[]
+        }
+        upsert: {
+          args: Prisma.TaxCodeRateUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaxCodeRatePayload>
+        }
+        aggregate: {
+          args: Prisma.TaxCodeRateAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTaxCodeRate>
+        }
+        groupBy: {
+          args: Prisma.TaxCodeRateGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TaxCodeRateGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.TaxCodeRateCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TaxCodeRateCountAggregateOutputType> | number
+        }
+      }
+    }
+    TaxCategoryDefault: {
+      payload: Prisma.$TaxCategoryDefaultPayload<ExtArgs>
+      fields: Prisma.TaxCategoryDefaultFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.TaxCategoryDefaultFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaxCategoryDefaultPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.TaxCategoryDefaultFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaxCategoryDefaultPayload>
+        }
+        findFirst: {
+          args: Prisma.TaxCategoryDefaultFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaxCategoryDefaultPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.TaxCategoryDefaultFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaxCategoryDefaultPayload>
+        }
+        findMany: {
+          args: Prisma.TaxCategoryDefaultFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaxCategoryDefaultPayload>[]
+        }
+        create: {
+          args: Prisma.TaxCategoryDefaultCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaxCategoryDefaultPayload>
+        }
+        createMany: {
+          args: Prisma.TaxCategoryDefaultCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.TaxCategoryDefaultCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaxCategoryDefaultPayload>[]
+        }
+        delete: {
+          args: Prisma.TaxCategoryDefaultDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaxCategoryDefaultPayload>
+        }
+        update: {
+          args: Prisma.TaxCategoryDefaultUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaxCategoryDefaultPayload>
+        }
+        deleteMany: {
+          args: Prisma.TaxCategoryDefaultDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.TaxCategoryDefaultUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TaxCategoryDefaultUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaxCategoryDefaultPayload>[]
+        }
+        upsert: {
+          args: Prisma.TaxCategoryDefaultUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaxCategoryDefaultPayload>
+        }
+        aggregate: {
+          args: Prisma.TaxCategoryDefaultAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTaxCategoryDefault>
+        }
+        groupBy: {
+          args: Prisma.TaxCategoryDefaultGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TaxCategoryDefaultGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.TaxCategoryDefaultCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TaxCategoryDefaultCountAggregateOutputType> | number
         }
       }
     }
@@ -9786,6 +10011,7 @@ export const MedicationScalarFieldEnum = {
   unitPrice: 'unitPrice',
   isVaccine: 'isVaccine',
   isMidwifePrescribable: 'isMidwifePrescribable',
+  taxCodeId: 'taxCodeId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   deletedAt: 'deletedAt'
@@ -9958,6 +10184,48 @@ export const TaxSettingsScalarFieldEnum = {
 export type TaxSettingsScalarFieldEnum = (typeof TaxSettingsScalarFieldEnum)[keyof typeof TaxSettingsScalarFieldEnum]
 
 
+export const TaxCodeScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  name: 'name',
+  ppnTreatment: 'ppnTreatment',
+  fakturTransactionCode: 'fakturTransactionCode',
+  invoiceNote: 'invoiceNote',
+  isSystem: 'isSystem',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TaxCodeScalarFieldEnum = (typeof TaxCodeScalarFieldEnum)[keyof typeof TaxCodeScalarFieldEnum]
+
+
+export const TaxCodeRateScalarFieldEnum = {
+  id: 'id',
+  taxCodeId: 'taxCodeId',
+  ratePercent: 'ratePercent',
+  dppNumerator: 'dppNumerator',
+  dppDenominator: 'dppDenominator',
+  effectiveFrom: 'effectiveFrom',
+  createdById: 'createdById',
+  createdAt: 'createdAt'
+} as const
+
+export type TaxCodeRateScalarFieldEnum = (typeof TaxCodeRateScalarFieldEnum)[keyof typeof TaxCodeRateScalarFieldEnum]
+
+
+export const TaxCategoryDefaultScalarFieldEnum = {
+  id: 'id',
+  target: 'target',
+  taxCodeId: 'taxCodeId',
+  updatedById: 'updatedById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TaxCategoryDefaultScalarFieldEnum = (typeof TaxCategoryDefaultScalarFieldEnum)[keyof typeof TaxCategoryDefaultScalarFieldEnum]
+
+
 export const ServiceTariffScalarFieldEnum = {
   id: 'id',
   code: 'code',
@@ -9969,6 +10237,7 @@ export const ServiceTariffScalarFieldEnum = {
   profession: 'profession',
   price: 'price',
   isActive: 'isActive',
+  taxCodeId: 'taxCodeId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   deletedAt: 'deletedAt'
@@ -11848,6 +12117,34 @@ export type ListEnumIncomeTaxRegimeFieldRefInput<$PrismaModel> = FieldRefInputTy
 
 
 /**
+ * Reference to a field of type 'PpnTreatment'
+ */
+export type EnumPpnTreatmentFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PpnTreatment'>
+    
+
+
+/**
+ * Reference to a field of type 'PpnTreatment[]'
+ */
+export type ListEnumPpnTreatmentFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PpnTreatment[]'>
+    
+
+
+/**
+ * Reference to a field of type 'TaxDefaultTarget'
+ */
+export type EnumTaxDefaultTargetFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TaxDefaultTarget'>
+    
+
+
+/**
+ * Reference to a field of type 'TaxDefaultTarget[]'
+ */
+export type ListEnumTaxDefaultTargetFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TaxDefaultTarget[]'>
+    
+
+
+/**
  * Reference to a field of type 'ServiceTariffCategory'
  */
 export type EnumServiceTariffCategoryFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ServiceTariffCategory'>
@@ -12858,6 +13155,9 @@ export type GlobalOmitConfig = {
   dispenseItemStockAllocation?: Prisma.DispenseItemStockAllocationOmit
   clinicProfile?: Prisma.ClinicProfileOmit
   taxSettings?: Prisma.TaxSettingsOmit
+  taxCode?: Prisma.TaxCodeOmit
+  taxCodeRate?: Prisma.TaxCodeRateOmit
+  taxCategoryDefault?: Prisma.TaxCategoryDefaultOmit
   serviceTariff?: Prisma.ServiceTariffOmit
   invoiceCounter?: Prisma.InvoiceCounterOmit
   invoice?: Prisma.InvoiceOmit

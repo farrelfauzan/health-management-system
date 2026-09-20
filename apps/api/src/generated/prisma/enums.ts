@@ -158,7 +158,9 @@ export const AuditAction = {
   DOCTOR_AUTHORITY_UPDATED: 'DOCTOR_AUTHORITY_UPDATED',
   DOCTOR_AUTHORITY_REVOKED: 'DOCTOR_AUTHORITY_REVOKED',
   MIDWIFE_AUTHORITY_REFUSED: 'MIDWIFE_AUTHORITY_REFUSED',
-  TAX_SETTINGS_UPDATED: 'TAX_SETTINGS_UPDATED'
+  TAX_SETTINGS_UPDATED: 'TAX_SETTINGS_UPDATED',
+  TAX_CODE_CHANGED: 'TAX_CODE_CHANGED',
+  TAX_ASSIGNMENT_CHANGED: 'TAX_ASSIGNMENT_CHANGED'
 } as const
 
 export type AuditAction = (typeof AuditAction)[keyof typeof AuditAction]
@@ -802,6 +804,28 @@ export const IncomeTaxRegime = {
 } as const
 
 export type IncomeTaxRegime = (typeof IncomeTaxRegime)[keyof typeof IncomeTaxRegime]
+
+
+export const PpnTreatment = {
+  EXEMPT_MEDICAL: 'EXEMPT_MEDICAL',
+  STANDARD: 'STANDARD',
+  EXEMPT_OTHER: 'EXEMPT_OTHER',
+  NOT_OBJECT: 'NOT_OBJECT'
+} as const
+
+export type PpnTreatment = (typeof PpnTreatment)[keyof typeof PpnTreatment]
+
+
+export const TaxDefaultTarget = {
+  CONSULTATION: 'CONSULTATION',
+  PROCEDURE: 'PROCEDURE',
+  ACCOMMODATION: 'ACCOMMODATION',
+  LAB: 'LAB',
+  OTHER: 'OTHER',
+  MEDICATION: 'MEDICATION'
+} as const
+
+export type TaxDefaultTarget = (typeof TaxDefaultTarget)[keyof typeof TaxDefaultTarget]
 
 
 export const DocumentOwnerType = {

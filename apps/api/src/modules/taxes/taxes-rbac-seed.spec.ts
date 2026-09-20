@@ -51,6 +51,28 @@ describe('Tax settings RBAC seed', () => {
     },
   );
 
+  it.each(['tax-code.read:any', 'tax-code.write:any'])(
+    'defines %s on the TaxCode subject for ADMIN only',
+    (permissionKey) => {
+      expect(findPermissionRow(permissionKey)).toContain(`'TaxCode'`);
+      expect(hasBinding('ADMIN', permissionKey)).toBe(true);
+      expect(
+        ['DOCTOR', 'MIDWIFE', 'PHARMACIST', 'PATIENT'].filter((role) =>
+          hasBinding(role, permissionKey),
+        ),
+      ).toEqual([]);
+    },
+  );
+
+  it('seeds the system tax codes and a default for every target (P27-T03)', () => {
+    ['JASA-MEDIS', 'BARANG-PPN', 'JASA-NONMEDIS-PPN', 'BEBAS-PROGRAM', 'NON-OBJEK'].forEach(
+      (code) => expect(seedSql).toContain(`('${code}', '`),
+    );
+    ['CONSULTATION', 'PROCEDURE', 'ACCOMMODATION', 'LAB', 'OTHER', 'MEDICATION'].forEach((target) =>
+      expect(seedSql).toMatch(new RegExp(`\\('${target}', '(JASA-MEDIS|BARANG-PPN)'\\)`)),
+    );
+  });
+
   it('seeds the taxes entitlement on', () => {
     expect(seedSql).toContain(`('taxes', TRUE)`);
   });

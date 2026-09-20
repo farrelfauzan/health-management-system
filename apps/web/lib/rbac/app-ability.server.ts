@@ -112,6 +112,8 @@ const SUBJECT_BY_RESOURCE: Record<string, AppSubject> = {
   // `tax-settings`, action `write`. Without this row the Pajak card and page
   // never render for anyone.
   'tax-settings': 'TaxSettings',
+  // P27-T03. `tax-code.write:any` → resource `tax-code`, action `write`.
+  'tax-code': 'TaxCode',
   invoice: 'Invoice',
   payment: 'Payment',
   'chat.session': 'ChatSession',

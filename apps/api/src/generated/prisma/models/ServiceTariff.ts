@@ -52,6 +52,7 @@ export type ServiceTariffMinAggregateOutputType = {
   profession: $Enums.ClinicianProfession | null
   price: runtime.Decimal | null
   isActive: boolean | null
+  taxCodeId: string | null
   createdAt: Date | null
   updatedAt: Date | null
   deletedAt: Date | null
@@ -68,6 +69,7 @@ export type ServiceTariffMaxAggregateOutputType = {
   profession: $Enums.ClinicianProfession | null
   price: runtime.Decimal | null
   isActive: boolean | null
+  taxCodeId: string | null
   createdAt: Date | null
   updatedAt: Date | null
   deletedAt: Date | null
@@ -84,6 +86,7 @@ export type ServiceTariffCountAggregateOutputType = {
   profession: number
   price: number
   isActive: number
+  taxCodeId: number
   createdAt: number
   updatedAt: number
   deletedAt: number
@@ -110,6 +113,7 @@ export type ServiceTariffMinAggregateInputType = {
   profession?: true
   price?: true
   isActive?: true
+  taxCodeId?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -126,6 +130,7 @@ export type ServiceTariffMaxAggregateInputType = {
   profession?: true
   price?: true
   isActive?: true
+  taxCodeId?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -142,6 +147,7 @@ export type ServiceTariffCountAggregateInputType = {
   profession?: true
   price?: true
   isActive?: true
+  taxCodeId?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -245,6 +251,7 @@ export type ServiceTariffGroupByOutputType = {
   profession: $Enums.ClinicianProfession | null
   price: runtime.Decimal
   isActive: boolean
+  taxCodeId: string | null
   createdAt: Date
   updatedAt: Date
   deletedAt: Date | null
@@ -284,11 +291,13 @@ export type ServiceTariffWhereInput = {
   profession?: Prisma.EnumClinicianProfessionNullableFilter<"ServiceTariff"> | $Enums.ClinicianProfession | null
   price?: Prisma.DecimalFilter<"ServiceTariff"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: Prisma.BoolFilter<"ServiceTariff"> | boolean
+  taxCodeId?: Prisma.UuidNullableFilter<"ServiceTariff"> | string | null
   createdAt?: Prisma.DateTimeFilter<"ServiceTariff"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ServiceTariff"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"ServiceTariff"> | Date | string | null
   roomClass?: Prisma.XOR<Prisma.RoomClassNullableScalarRelationFilter, Prisma.RoomClassWhereInput> | null
   specialty?: Prisma.XOR<Prisma.SpecialtyNullableScalarRelationFilter, Prisma.SpecialtyWhereInput> | null
+  taxCode?: Prisma.XOR<Prisma.TaxCodeNullableScalarRelationFilter, Prisma.TaxCodeWhereInput> | null
   invoiceItems?: Prisma.InvoiceItemListRelationFilter
   labTests?: Prisma.LabTestListRelationFilter
   labPanels?: Prisma.LabPanelListRelationFilter
@@ -305,11 +314,13 @@ export type ServiceTariffOrderByWithRelationInput = {
   profession?: Prisma.SortOrderInput | Prisma.SortOrder
   price?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  taxCodeId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   roomClass?: Prisma.RoomClassOrderByWithRelationInput
   specialty?: Prisma.SpecialtyOrderByWithRelationInput
+  taxCode?: Prisma.TaxCodeOrderByWithRelationInput
   invoiceItems?: Prisma.InvoiceItemOrderByRelationAggregateInput
   labTests?: Prisma.LabTestOrderByRelationAggregateInput
   labPanels?: Prisma.LabPanelOrderByRelationAggregateInput
@@ -329,11 +340,13 @@ export type ServiceTariffWhereUniqueInput = Prisma.AtLeast<{
   profession?: Prisma.EnumClinicianProfessionNullableFilter<"ServiceTariff"> | $Enums.ClinicianProfession | null
   price?: Prisma.DecimalFilter<"ServiceTariff"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: Prisma.BoolFilter<"ServiceTariff"> | boolean
+  taxCodeId?: Prisma.UuidNullableFilter<"ServiceTariff"> | string | null
   createdAt?: Prisma.DateTimeFilter<"ServiceTariff"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ServiceTariff"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"ServiceTariff"> | Date | string | null
   roomClass?: Prisma.XOR<Prisma.RoomClassNullableScalarRelationFilter, Prisma.RoomClassWhereInput> | null
   specialty?: Prisma.XOR<Prisma.SpecialtyNullableScalarRelationFilter, Prisma.SpecialtyWhereInput> | null
+  taxCode?: Prisma.XOR<Prisma.TaxCodeNullableScalarRelationFilter, Prisma.TaxCodeWhereInput> | null
   invoiceItems?: Prisma.InvoiceItemListRelationFilter
   labTests?: Prisma.LabTestListRelationFilter
   labPanels?: Prisma.LabPanelListRelationFilter
@@ -350,6 +363,7 @@ export type ServiceTariffOrderByWithAggregationInput = {
   profession?: Prisma.SortOrderInput | Prisma.SortOrder
   price?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  taxCodeId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -374,6 +388,7 @@ export type ServiceTariffScalarWhereWithAggregatesInput = {
   profession?: Prisma.EnumClinicianProfessionNullableWithAggregatesFilter<"ServiceTariff"> | $Enums.ClinicianProfession | null
   price?: Prisma.DecimalWithAggregatesFilter<"ServiceTariff"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: Prisma.BoolWithAggregatesFilter<"ServiceTariff"> | boolean
+  taxCodeId?: Prisma.UuidNullableWithAggregatesFilter<"ServiceTariff"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"ServiceTariff"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"ServiceTariff"> | Date | string
   deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"ServiceTariff"> | Date | string | null
@@ -393,6 +408,7 @@ export type ServiceTariffCreateInput = {
   deletedAt?: Date | string | null
   roomClass?: Prisma.RoomClassCreateNestedOneWithoutServiceTariffsInput
   specialty?: Prisma.SpecialtyCreateNestedOneWithoutServiceTariffsInput
+  taxCode?: Prisma.TaxCodeCreateNestedOneWithoutServiceTariffsInput
   invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutServiceTariffInput
   labTests?: Prisma.LabTestCreateNestedManyWithoutServiceTariffInput
   labPanels?: Prisma.LabPanelCreateNestedManyWithoutServiceTariffInput
@@ -409,6 +425,7 @@ export type ServiceTariffUncheckedCreateInput = {
   profession?: $Enums.ClinicianProfession | null
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: boolean
+  taxCodeId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -431,6 +448,7 @@ export type ServiceTariffUpdateInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   roomClass?: Prisma.RoomClassUpdateOneWithoutServiceTariffsNestedInput
   specialty?: Prisma.SpecialtyUpdateOneWithoutServiceTariffsNestedInput
+  taxCode?: Prisma.TaxCodeUpdateOneWithoutServiceTariffsNestedInput
   invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutServiceTariffNestedInput
   labTests?: Prisma.LabTestUpdateManyWithoutServiceTariffNestedInput
   labPanels?: Prisma.LabPanelUpdateManyWithoutServiceTariffNestedInput
@@ -447,6 +465,7 @@ export type ServiceTariffUncheckedUpdateInput = {
   profession?: Prisma.NullableEnumClinicianProfessionFieldUpdateOperationsInput | $Enums.ClinicianProfession | null
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  taxCodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -466,6 +485,7 @@ export type ServiceTariffCreateManyInput = {
   profession?: $Enums.ClinicianProfession | null
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: boolean
+  taxCodeId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -496,6 +516,7 @@ export type ServiceTariffUncheckedUpdateManyInput = {
   profession?: Prisma.NullableEnumClinicianProfessionFieldUpdateOperationsInput | $Enums.ClinicianProfession | null
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  taxCodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -522,6 +543,7 @@ export type ServiceTariffCountOrderByAggregateInput = {
   profession?: Prisma.SortOrder
   price?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  taxCodeId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -542,6 +564,7 @@ export type ServiceTariffMaxOrderByAggregateInput = {
   profession?: Prisma.SortOrder
   price?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  taxCodeId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -558,6 +581,7 @@ export type ServiceTariffMinOrderByAggregateInput = {
   profession?: Prisma.SortOrder
   price?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  taxCodeId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -611,6 +635,48 @@ export type ServiceTariffUncheckedUpdateManyWithoutSpecialtyNestedInput = {
   connect?: Prisma.ServiceTariffWhereUniqueInput | Prisma.ServiceTariffWhereUniqueInput[]
   update?: Prisma.ServiceTariffUpdateWithWhereUniqueWithoutSpecialtyInput | Prisma.ServiceTariffUpdateWithWhereUniqueWithoutSpecialtyInput[]
   updateMany?: Prisma.ServiceTariffUpdateManyWithWhereWithoutSpecialtyInput | Prisma.ServiceTariffUpdateManyWithWhereWithoutSpecialtyInput[]
+  deleteMany?: Prisma.ServiceTariffScalarWhereInput | Prisma.ServiceTariffScalarWhereInput[]
+}
+
+export type ServiceTariffCreateNestedManyWithoutTaxCodeInput = {
+  create?: Prisma.XOR<Prisma.ServiceTariffCreateWithoutTaxCodeInput, Prisma.ServiceTariffUncheckedCreateWithoutTaxCodeInput> | Prisma.ServiceTariffCreateWithoutTaxCodeInput[] | Prisma.ServiceTariffUncheckedCreateWithoutTaxCodeInput[]
+  connectOrCreate?: Prisma.ServiceTariffCreateOrConnectWithoutTaxCodeInput | Prisma.ServiceTariffCreateOrConnectWithoutTaxCodeInput[]
+  createMany?: Prisma.ServiceTariffCreateManyTaxCodeInputEnvelope
+  connect?: Prisma.ServiceTariffWhereUniqueInput | Prisma.ServiceTariffWhereUniqueInput[]
+}
+
+export type ServiceTariffUncheckedCreateNestedManyWithoutTaxCodeInput = {
+  create?: Prisma.XOR<Prisma.ServiceTariffCreateWithoutTaxCodeInput, Prisma.ServiceTariffUncheckedCreateWithoutTaxCodeInput> | Prisma.ServiceTariffCreateWithoutTaxCodeInput[] | Prisma.ServiceTariffUncheckedCreateWithoutTaxCodeInput[]
+  connectOrCreate?: Prisma.ServiceTariffCreateOrConnectWithoutTaxCodeInput | Prisma.ServiceTariffCreateOrConnectWithoutTaxCodeInput[]
+  createMany?: Prisma.ServiceTariffCreateManyTaxCodeInputEnvelope
+  connect?: Prisma.ServiceTariffWhereUniqueInput | Prisma.ServiceTariffWhereUniqueInput[]
+}
+
+export type ServiceTariffUpdateManyWithoutTaxCodeNestedInput = {
+  create?: Prisma.XOR<Prisma.ServiceTariffCreateWithoutTaxCodeInput, Prisma.ServiceTariffUncheckedCreateWithoutTaxCodeInput> | Prisma.ServiceTariffCreateWithoutTaxCodeInput[] | Prisma.ServiceTariffUncheckedCreateWithoutTaxCodeInput[]
+  connectOrCreate?: Prisma.ServiceTariffCreateOrConnectWithoutTaxCodeInput | Prisma.ServiceTariffCreateOrConnectWithoutTaxCodeInput[]
+  upsert?: Prisma.ServiceTariffUpsertWithWhereUniqueWithoutTaxCodeInput | Prisma.ServiceTariffUpsertWithWhereUniqueWithoutTaxCodeInput[]
+  createMany?: Prisma.ServiceTariffCreateManyTaxCodeInputEnvelope
+  set?: Prisma.ServiceTariffWhereUniqueInput | Prisma.ServiceTariffWhereUniqueInput[]
+  disconnect?: Prisma.ServiceTariffWhereUniqueInput | Prisma.ServiceTariffWhereUniqueInput[]
+  delete?: Prisma.ServiceTariffWhereUniqueInput | Prisma.ServiceTariffWhereUniqueInput[]
+  connect?: Prisma.ServiceTariffWhereUniqueInput | Prisma.ServiceTariffWhereUniqueInput[]
+  update?: Prisma.ServiceTariffUpdateWithWhereUniqueWithoutTaxCodeInput | Prisma.ServiceTariffUpdateWithWhereUniqueWithoutTaxCodeInput[]
+  updateMany?: Prisma.ServiceTariffUpdateManyWithWhereWithoutTaxCodeInput | Prisma.ServiceTariffUpdateManyWithWhereWithoutTaxCodeInput[]
+  deleteMany?: Prisma.ServiceTariffScalarWhereInput | Prisma.ServiceTariffScalarWhereInput[]
+}
+
+export type ServiceTariffUncheckedUpdateManyWithoutTaxCodeNestedInput = {
+  create?: Prisma.XOR<Prisma.ServiceTariffCreateWithoutTaxCodeInput, Prisma.ServiceTariffUncheckedCreateWithoutTaxCodeInput> | Prisma.ServiceTariffCreateWithoutTaxCodeInput[] | Prisma.ServiceTariffUncheckedCreateWithoutTaxCodeInput[]
+  connectOrCreate?: Prisma.ServiceTariffCreateOrConnectWithoutTaxCodeInput | Prisma.ServiceTariffCreateOrConnectWithoutTaxCodeInput[]
+  upsert?: Prisma.ServiceTariffUpsertWithWhereUniqueWithoutTaxCodeInput | Prisma.ServiceTariffUpsertWithWhereUniqueWithoutTaxCodeInput[]
+  createMany?: Prisma.ServiceTariffCreateManyTaxCodeInputEnvelope
+  set?: Prisma.ServiceTariffWhereUniqueInput | Prisma.ServiceTariffWhereUniqueInput[]
+  disconnect?: Prisma.ServiceTariffWhereUniqueInput | Prisma.ServiceTariffWhereUniqueInput[]
+  delete?: Prisma.ServiceTariffWhereUniqueInput | Prisma.ServiceTariffWhereUniqueInput[]
+  connect?: Prisma.ServiceTariffWhereUniqueInput | Prisma.ServiceTariffWhereUniqueInput[]
+  update?: Prisma.ServiceTariffUpdateWithWhereUniqueWithoutTaxCodeInput | Prisma.ServiceTariffUpdateWithWhereUniqueWithoutTaxCodeInput[]
+  updateMany?: Prisma.ServiceTariffUpdateManyWithWhereWithoutTaxCodeInput | Prisma.ServiceTariffUpdateManyWithWhereWithoutTaxCodeInput[]
   deleteMany?: Prisma.ServiceTariffScalarWhereInput | Prisma.ServiceTariffScalarWhereInput[]
 }
 
@@ -725,6 +791,7 @@ export type ServiceTariffCreateWithoutSpecialtyInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   roomClass?: Prisma.RoomClassCreateNestedOneWithoutServiceTariffsInput
+  taxCode?: Prisma.TaxCodeCreateNestedOneWithoutServiceTariffsInput
   invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutServiceTariffInput
   labTests?: Prisma.LabTestCreateNestedManyWithoutServiceTariffInput
   labPanels?: Prisma.LabPanelCreateNestedManyWithoutServiceTariffInput
@@ -740,6 +807,7 @@ export type ServiceTariffUncheckedCreateWithoutSpecialtyInput = {
   profession?: $Enums.ClinicianProfession | null
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: boolean
+  taxCodeId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -788,9 +856,74 @@ export type ServiceTariffScalarWhereInput = {
   profession?: Prisma.EnumClinicianProfessionNullableFilter<"ServiceTariff"> | $Enums.ClinicianProfession | null
   price?: Prisma.DecimalFilter<"ServiceTariff"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: Prisma.BoolFilter<"ServiceTariff"> | boolean
+  taxCodeId?: Prisma.UuidNullableFilter<"ServiceTariff"> | string | null
   createdAt?: Prisma.DateTimeFilter<"ServiceTariff"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ServiceTariff"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"ServiceTariff"> | Date | string | null
+}
+
+export type ServiceTariffCreateWithoutTaxCodeInput = {
+  id?: string
+  code: string
+  name: string
+  category: $Enums.ServiceTariffCategory
+  icd9cmCode?: string | null
+  profession?: $Enums.ClinicianProfession | null
+  price: runtime.Decimal | runtime.DecimalJsLike | number | string
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  roomClass?: Prisma.RoomClassCreateNestedOneWithoutServiceTariffsInput
+  specialty?: Prisma.SpecialtyCreateNestedOneWithoutServiceTariffsInput
+  invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutServiceTariffInput
+  labTests?: Prisma.LabTestCreateNestedManyWithoutServiceTariffInput
+  labPanels?: Prisma.LabPanelCreateNestedManyWithoutServiceTariffInput
+}
+
+export type ServiceTariffUncheckedCreateWithoutTaxCodeInput = {
+  id?: string
+  code: string
+  name: string
+  category: $Enums.ServiceTariffCategory
+  icd9cmCode?: string | null
+  roomClassId?: string | null
+  specialtyId?: string | null
+  profession?: $Enums.ClinicianProfession | null
+  price: runtime.Decimal | runtime.DecimalJsLike | number | string
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  invoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutServiceTariffInput
+  labTests?: Prisma.LabTestUncheckedCreateNestedManyWithoutServiceTariffInput
+  labPanels?: Prisma.LabPanelUncheckedCreateNestedManyWithoutServiceTariffInput
+}
+
+export type ServiceTariffCreateOrConnectWithoutTaxCodeInput = {
+  where: Prisma.ServiceTariffWhereUniqueInput
+  create: Prisma.XOR<Prisma.ServiceTariffCreateWithoutTaxCodeInput, Prisma.ServiceTariffUncheckedCreateWithoutTaxCodeInput>
+}
+
+export type ServiceTariffCreateManyTaxCodeInputEnvelope = {
+  data: Prisma.ServiceTariffCreateManyTaxCodeInput | Prisma.ServiceTariffCreateManyTaxCodeInput[]
+  skipDuplicates?: boolean
+}
+
+export type ServiceTariffUpsertWithWhereUniqueWithoutTaxCodeInput = {
+  where: Prisma.ServiceTariffWhereUniqueInput
+  update: Prisma.XOR<Prisma.ServiceTariffUpdateWithoutTaxCodeInput, Prisma.ServiceTariffUncheckedUpdateWithoutTaxCodeInput>
+  create: Prisma.XOR<Prisma.ServiceTariffCreateWithoutTaxCodeInput, Prisma.ServiceTariffUncheckedCreateWithoutTaxCodeInput>
+}
+
+export type ServiceTariffUpdateWithWhereUniqueWithoutTaxCodeInput = {
+  where: Prisma.ServiceTariffWhereUniqueInput
+  data: Prisma.XOR<Prisma.ServiceTariffUpdateWithoutTaxCodeInput, Prisma.ServiceTariffUncheckedUpdateWithoutTaxCodeInput>
+}
+
+export type ServiceTariffUpdateManyWithWhereWithoutTaxCodeInput = {
+  where: Prisma.ServiceTariffScalarWhereInput
+  data: Prisma.XOR<Prisma.ServiceTariffUpdateManyMutationInput, Prisma.ServiceTariffUncheckedUpdateManyWithoutTaxCodeInput>
 }
 
 export type ServiceTariffCreateWithoutInvoiceItemsInput = {
@@ -807,6 +940,7 @@ export type ServiceTariffCreateWithoutInvoiceItemsInput = {
   deletedAt?: Date | string | null
   roomClass?: Prisma.RoomClassCreateNestedOneWithoutServiceTariffsInput
   specialty?: Prisma.SpecialtyCreateNestedOneWithoutServiceTariffsInput
+  taxCode?: Prisma.TaxCodeCreateNestedOneWithoutServiceTariffsInput
   labTests?: Prisma.LabTestCreateNestedManyWithoutServiceTariffInput
   labPanels?: Prisma.LabPanelCreateNestedManyWithoutServiceTariffInput
 }
@@ -822,6 +956,7 @@ export type ServiceTariffUncheckedCreateWithoutInvoiceItemsInput = {
   profession?: $Enums.ClinicianProfession | null
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: boolean
+  taxCodeId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -859,6 +994,7 @@ export type ServiceTariffUpdateWithoutInvoiceItemsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   roomClass?: Prisma.RoomClassUpdateOneWithoutServiceTariffsNestedInput
   specialty?: Prisma.SpecialtyUpdateOneWithoutServiceTariffsNestedInput
+  taxCode?: Prisma.TaxCodeUpdateOneWithoutServiceTariffsNestedInput
   labTests?: Prisma.LabTestUpdateManyWithoutServiceTariffNestedInput
   labPanels?: Prisma.LabPanelUpdateManyWithoutServiceTariffNestedInput
 }
@@ -874,6 +1010,7 @@ export type ServiceTariffUncheckedUpdateWithoutInvoiceItemsInput = {
   profession?: Prisma.NullableEnumClinicianProfessionFieldUpdateOperationsInput | $Enums.ClinicianProfession | null
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  taxCodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -894,6 +1031,7 @@ export type ServiceTariffCreateWithoutRoomClassInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   specialty?: Prisma.SpecialtyCreateNestedOneWithoutServiceTariffsInput
+  taxCode?: Prisma.TaxCodeCreateNestedOneWithoutServiceTariffsInput
   invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutServiceTariffInput
   labTests?: Prisma.LabTestCreateNestedManyWithoutServiceTariffInput
   labPanels?: Prisma.LabPanelCreateNestedManyWithoutServiceTariffInput
@@ -909,6 +1047,7 @@ export type ServiceTariffUncheckedCreateWithoutRoomClassInput = {
   profession?: $Enums.ClinicianProfession | null
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: boolean
+  taxCodeId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -957,6 +1096,7 @@ export type ServiceTariffCreateWithoutLabTestsInput = {
   deletedAt?: Date | string | null
   roomClass?: Prisma.RoomClassCreateNestedOneWithoutServiceTariffsInput
   specialty?: Prisma.SpecialtyCreateNestedOneWithoutServiceTariffsInput
+  taxCode?: Prisma.TaxCodeCreateNestedOneWithoutServiceTariffsInput
   invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutServiceTariffInput
   labPanels?: Prisma.LabPanelCreateNestedManyWithoutServiceTariffInput
 }
@@ -972,6 +1112,7 @@ export type ServiceTariffUncheckedCreateWithoutLabTestsInput = {
   profession?: $Enums.ClinicianProfession | null
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: boolean
+  taxCodeId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1009,6 +1150,7 @@ export type ServiceTariffUpdateWithoutLabTestsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   roomClass?: Prisma.RoomClassUpdateOneWithoutServiceTariffsNestedInput
   specialty?: Prisma.SpecialtyUpdateOneWithoutServiceTariffsNestedInput
+  taxCode?: Prisma.TaxCodeUpdateOneWithoutServiceTariffsNestedInput
   invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutServiceTariffNestedInput
   labPanels?: Prisma.LabPanelUpdateManyWithoutServiceTariffNestedInput
 }
@@ -1024,6 +1166,7 @@ export type ServiceTariffUncheckedUpdateWithoutLabTestsInput = {
   profession?: Prisma.NullableEnumClinicianProfessionFieldUpdateOperationsInput | $Enums.ClinicianProfession | null
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  taxCodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1045,6 +1188,7 @@ export type ServiceTariffCreateWithoutLabPanelsInput = {
   deletedAt?: Date | string | null
   roomClass?: Prisma.RoomClassCreateNestedOneWithoutServiceTariffsInput
   specialty?: Prisma.SpecialtyCreateNestedOneWithoutServiceTariffsInput
+  taxCode?: Prisma.TaxCodeCreateNestedOneWithoutServiceTariffsInput
   invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutServiceTariffInput
   labTests?: Prisma.LabTestCreateNestedManyWithoutServiceTariffInput
 }
@@ -1060,6 +1204,7 @@ export type ServiceTariffUncheckedCreateWithoutLabPanelsInput = {
   profession?: $Enums.ClinicianProfession | null
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: boolean
+  taxCodeId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1097,6 +1242,7 @@ export type ServiceTariffUpdateWithoutLabPanelsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   roomClass?: Prisma.RoomClassUpdateOneWithoutServiceTariffsNestedInput
   specialty?: Prisma.SpecialtyUpdateOneWithoutServiceTariffsNestedInput
+  taxCode?: Prisma.TaxCodeUpdateOneWithoutServiceTariffsNestedInput
   invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutServiceTariffNestedInput
   labTests?: Prisma.LabTestUpdateManyWithoutServiceTariffNestedInput
 }
@@ -1112,6 +1258,7 @@ export type ServiceTariffUncheckedUpdateWithoutLabPanelsInput = {
   profession?: Prisma.NullableEnumClinicianProfessionFieldUpdateOperationsInput | $Enums.ClinicianProfession | null
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  taxCodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1129,6 +1276,7 @@ export type ServiceTariffCreateManySpecialtyInput = {
   profession?: $Enums.ClinicianProfession | null
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: boolean
+  taxCodeId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1147,6 +1295,7 @@ export type ServiceTariffUpdateWithoutSpecialtyInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   roomClass?: Prisma.RoomClassUpdateOneWithoutServiceTariffsNestedInput
+  taxCode?: Prisma.TaxCodeUpdateOneWithoutServiceTariffsNestedInput
   invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutServiceTariffNestedInput
   labTests?: Prisma.LabTestUpdateManyWithoutServiceTariffNestedInput
   labPanels?: Prisma.LabPanelUpdateManyWithoutServiceTariffNestedInput
@@ -1162,6 +1311,7 @@ export type ServiceTariffUncheckedUpdateWithoutSpecialtyInput = {
   profession?: Prisma.NullableEnumClinicianProfessionFieldUpdateOperationsInput | $Enums.ClinicianProfession | null
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  taxCodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1180,6 +1330,77 @@ export type ServiceTariffUncheckedUpdateManyWithoutSpecialtyInput = {
   profession?: Prisma.NullableEnumClinicianProfessionFieldUpdateOperationsInput | $Enums.ClinicianProfession | null
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  taxCodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+}
+
+export type ServiceTariffCreateManyTaxCodeInput = {
+  id?: string
+  code: string
+  name: string
+  category: $Enums.ServiceTariffCategory
+  icd9cmCode?: string | null
+  roomClassId?: string | null
+  specialtyId?: string | null
+  profession?: $Enums.ClinicianProfession | null
+  price: runtime.Decimal | runtime.DecimalJsLike | number | string
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+}
+
+export type ServiceTariffUpdateWithoutTaxCodeInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.EnumServiceTariffCategoryFieldUpdateOperationsInput | $Enums.ServiceTariffCategory
+  icd9cmCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profession?: Prisma.NullableEnumClinicianProfessionFieldUpdateOperationsInput | $Enums.ClinicianProfession | null
+  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  roomClass?: Prisma.RoomClassUpdateOneWithoutServiceTariffsNestedInput
+  specialty?: Prisma.SpecialtyUpdateOneWithoutServiceTariffsNestedInput
+  invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutServiceTariffNestedInput
+  labTests?: Prisma.LabTestUpdateManyWithoutServiceTariffNestedInput
+  labPanels?: Prisma.LabPanelUpdateManyWithoutServiceTariffNestedInput
+}
+
+export type ServiceTariffUncheckedUpdateWithoutTaxCodeInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.EnumServiceTariffCategoryFieldUpdateOperationsInput | $Enums.ServiceTariffCategory
+  icd9cmCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  roomClassId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  specialtyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profession?: Prisma.NullableEnumClinicianProfessionFieldUpdateOperationsInput | $Enums.ClinicianProfession | null
+  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  invoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutServiceTariffNestedInput
+  labTests?: Prisma.LabTestUncheckedUpdateManyWithoutServiceTariffNestedInput
+  labPanels?: Prisma.LabPanelUncheckedUpdateManyWithoutServiceTariffNestedInput
+}
+
+export type ServiceTariffUncheckedUpdateManyWithoutTaxCodeInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.EnumServiceTariffCategoryFieldUpdateOperationsInput | $Enums.ServiceTariffCategory
+  icd9cmCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  roomClassId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  specialtyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profession?: Prisma.NullableEnumClinicianProfessionFieldUpdateOperationsInput | $Enums.ClinicianProfession | null
+  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1195,6 +1416,7 @@ export type ServiceTariffCreateManyRoomClassInput = {
   profession?: $Enums.ClinicianProfession | null
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: boolean
+  taxCodeId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1213,6 +1435,7 @@ export type ServiceTariffUpdateWithoutRoomClassInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   specialty?: Prisma.SpecialtyUpdateOneWithoutServiceTariffsNestedInput
+  taxCode?: Prisma.TaxCodeUpdateOneWithoutServiceTariffsNestedInput
   invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutServiceTariffNestedInput
   labTests?: Prisma.LabTestUpdateManyWithoutServiceTariffNestedInput
   labPanels?: Prisma.LabPanelUpdateManyWithoutServiceTariffNestedInput
@@ -1228,6 +1451,7 @@ export type ServiceTariffUncheckedUpdateWithoutRoomClassInput = {
   profession?: Prisma.NullableEnumClinicianProfessionFieldUpdateOperationsInput | $Enums.ClinicianProfession | null
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  taxCodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1246,6 +1470,7 @@ export type ServiceTariffUncheckedUpdateManyWithoutRoomClassInput = {
   profession?: Prisma.NullableEnumClinicianProfessionFieldUpdateOperationsInput | $Enums.ClinicianProfession | null
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  taxCodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1311,11 +1536,13 @@ export type ServiceTariffSelect<ExtArgs extends runtime.Types.Extensions.Interna
   profession?: boolean
   price?: boolean
   isActive?: boolean
+  taxCodeId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
   roomClass?: boolean | Prisma.ServiceTariff$roomClassArgs<ExtArgs>
   specialty?: boolean | Prisma.ServiceTariff$specialtyArgs<ExtArgs>
+  taxCode?: boolean | Prisma.ServiceTariff$taxCodeArgs<ExtArgs>
   invoiceItems?: boolean | Prisma.ServiceTariff$invoiceItemsArgs<ExtArgs>
   labTests?: boolean | Prisma.ServiceTariff$labTestsArgs<ExtArgs>
   labPanels?: boolean | Prisma.ServiceTariff$labPanelsArgs<ExtArgs>
@@ -1333,11 +1560,13 @@ export type ServiceTariffSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   profession?: boolean
   price?: boolean
   isActive?: boolean
+  taxCodeId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
   roomClass?: boolean | Prisma.ServiceTariff$roomClassArgs<ExtArgs>
   specialty?: boolean | Prisma.ServiceTariff$specialtyArgs<ExtArgs>
+  taxCode?: boolean | Prisma.ServiceTariff$taxCodeArgs<ExtArgs>
 }, ExtArgs["result"]["serviceTariff"]>
 
 export type ServiceTariffSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1351,11 +1580,13 @@ export type ServiceTariffSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   profession?: boolean
   price?: boolean
   isActive?: boolean
+  taxCodeId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
   roomClass?: boolean | Prisma.ServiceTariff$roomClassArgs<ExtArgs>
   specialty?: boolean | Prisma.ServiceTariff$specialtyArgs<ExtArgs>
+  taxCode?: boolean | Prisma.ServiceTariff$taxCodeArgs<ExtArgs>
 }, ExtArgs["result"]["serviceTariff"]>
 
 export type ServiceTariffSelectScalar = {
@@ -1369,15 +1600,17 @@ export type ServiceTariffSelectScalar = {
   profession?: boolean
   price?: boolean
   isActive?: boolean
+  taxCodeId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
 }
 
-export type ServiceTariffOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "name" | "category" | "icd9cmCode" | "roomClassId" | "specialtyId" | "profession" | "price" | "isActive" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["serviceTariff"]>
+export type ServiceTariffOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "name" | "category" | "icd9cmCode" | "roomClassId" | "specialtyId" | "profession" | "price" | "isActive" | "taxCodeId" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["serviceTariff"]>
 export type ServiceTariffInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   roomClass?: boolean | Prisma.ServiceTariff$roomClassArgs<ExtArgs>
   specialty?: boolean | Prisma.ServiceTariff$specialtyArgs<ExtArgs>
+  taxCode?: boolean | Prisma.ServiceTariff$taxCodeArgs<ExtArgs>
   invoiceItems?: boolean | Prisma.ServiceTariff$invoiceItemsArgs<ExtArgs>
   labTests?: boolean | Prisma.ServiceTariff$labTestsArgs<ExtArgs>
   labPanels?: boolean | Prisma.ServiceTariff$labPanelsArgs<ExtArgs>
@@ -1386,10 +1619,12 @@ export type ServiceTariffInclude<ExtArgs extends runtime.Types.Extensions.Intern
 export type ServiceTariffIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   roomClass?: boolean | Prisma.ServiceTariff$roomClassArgs<ExtArgs>
   specialty?: boolean | Prisma.ServiceTariff$specialtyArgs<ExtArgs>
+  taxCode?: boolean | Prisma.ServiceTariff$taxCodeArgs<ExtArgs>
 }
 export type ServiceTariffIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   roomClass?: boolean | Prisma.ServiceTariff$roomClassArgs<ExtArgs>
   specialty?: boolean | Prisma.ServiceTariff$specialtyArgs<ExtArgs>
+  taxCode?: boolean | Prisma.ServiceTariff$taxCodeArgs<ExtArgs>
 }
 
 export type $ServiceTariffPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1397,6 +1632,7 @@ export type $ServiceTariffPayload<ExtArgs extends runtime.Types.Extensions.Inter
   objects: {
     roomClass: Prisma.$RoomClassPayload<ExtArgs> | null
     specialty: Prisma.$SpecialtyPayload<ExtArgs> | null
+    taxCode: Prisma.$TaxCodePayload<ExtArgs> | null
     invoiceItems: Prisma.$InvoiceItemPayload<ExtArgs>[]
     labTests: Prisma.$LabTestPayload<ExtArgs>[]
     labPanels: Prisma.$LabPanelPayload<ExtArgs>[]
@@ -1440,6 +1676,11 @@ export type $ServiceTariffPayload<ExtArgs extends runtime.Types.Extensions.Inter
      */
     price: runtime.Decimal
     isActive: boolean
+    /**
+     * This tariff's own tax code (P27-T03). Null means it follows the default
+     * for its category in `tax_category_defaults`.
+     */
+    taxCodeId: string | null
     createdAt: Date
     updatedAt: Date
     deletedAt: Date | null
@@ -1839,6 +2080,7 @@ export interface Prisma__ServiceTariffClient<T, Null = never, ExtArgs extends ru
   readonly [Symbol.toStringTag]: "PrismaPromise"
   roomClass<T extends Prisma.ServiceTariff$roomClassArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ServiceTariff$roomClassArgs<ExtArgs>>): Prisma.Prisma__RoomClassClient<runtime.Types.Result.GetResult<Prisma.$RoomClassPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   specialty<T extends Prisma.ServiceTariff$specialtyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ServiceTariff$specialtyArgs<ExtArgs>>): Prisma.Prisma__SpecialtyClient<runtime.Types.Result.GetResult<Prisma.$SpecialtyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  taxCode<T extends Prisma.ServiceTariff$taxCodeArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ServiceTariff$taxCodeArgs<ExtArgs>>): Prisma.Prisma__TaxCodeClient<runtime.Types.Result.GetResult<Prisma.$TaxCodePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   invoiceItems<T extends Prisma.ServiceTariff$invoiceItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ServiceTariff$invoiceItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvoiceItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   labTests<T extends Prisma.ServiceTariff$labTestsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ServiceTariff$labTestsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LabTestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   labPanels<T extends Prisma.ServiceTariff$labPanelsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ServiceTariff$labPanelsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LabPanelPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -1881,6 +2123,7 @@ export interface ServiceTariffFieldRefs {
   readonly profession: Prisma.FieldRef<"ServiceTariff", 'ClinicianProfession'>
   readonly price: Prisma.FieldRef<"ServiceTariff", 'Decimal'>
   readonly isActive: Prisma.FieldRef<"ServiceTariff", 'Boolean'>
+  readonly taxCodeId: Prisma.FieldRef<"ServiceTariff", 'String'>
   readonly createdAt: Prisma.FieldRef<"ServiceTariff", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"ServiceTariff", 'DateTime'>
   readonly deletedAt: Prisma.FieldRef<"ServiceTariff", 'DateTime'>
@@ -2320,6 +2563,25 @@ export type ServiceTariff$specialtyArgs<ExtArgs extends runtime.Types.Extensions
    */
   include?: Prisma.SpecialtyInclude<ExtArgs> | null
   where?: Prisma.SpecialtyWhereInput
+}
+
+/**
+ * ServiceTariff.taxCode
+ */
+export type ServiceTariff$taxCodeArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TaxCode
+   */
+  select?: Prisma.TaxCodeSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TaxCode
+   */
+  omit?: Prisma.TaxCodeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TaxCodeInclude<ExtArgs> | null
+  where?: Prisma.TaxCodeWhereInput
 }
 
 /**

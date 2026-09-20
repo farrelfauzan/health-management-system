@@ -105,6 +105,9 @@ export type AppSubject =
   | 'LaboratorySettings'
   // P27-T02. The clinic's tax profile; administrators only.
   | 'TaxSettings'
+  // P27-T03. Tax codes, their rates and defaults, and the code on each tariff
+  // and medication.
+  | 'TaxCode'
   | 'Invoice'
   | 'Payment'
   | 'ChatSession'
