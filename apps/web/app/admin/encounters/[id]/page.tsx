@@ -22,6 +22,7 @@ export default async function AdminEncounterDetailPage({ params }: AdminEncounte
     <EncounterWorkspace
       encounterId={id}
       isLaboratoryEnabled={isFeatureEnabled(claims, 'laboratory')}
+      isMaternalCareEnabled={isFeatureEnabled(claims, 'maternal-care')}
     />
   );
 }

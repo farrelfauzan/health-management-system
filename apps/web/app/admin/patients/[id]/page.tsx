@@ -38,6 +38,7 @@ export default async function AdminPatientDetailPage({
       initialTab={parseTabSearchParam(query.tab, PATIENT_DETAIL_TABS)}
       isSatusehatEnabled={isFeatureEnabled(claims, 'satusehat')}
       isLaboratoryEnabled={isFeatureEnabled(claims, 'laboratory')}
+      isMaternalCareEnabled={isFeatureEnabled(claims, 'maternal-care')}
     />
   );
 }

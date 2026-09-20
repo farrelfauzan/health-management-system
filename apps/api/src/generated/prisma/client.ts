@@ -1573,3 +1573,37 @@ export type BugReport = Prisma.BugReportModel
  * deleted report leaves a gap — exactly like a torn paper receipt.
  */
 export type BugReportCounter = Prisma.BugReportCounterModel
+/**
+ * Model PregnancyEpisode
+ * One pregnancy, from HPHT to its end (P25-T06, FR-ANC-01).
+ * 
+ * A midwife's work is organised around this, not around single visits: the
+ * K-number of a visit, whether trimester 3 still owes two, and what SATUSEHAT
+ * hangs its ANC `EpisodeOfCare` on all come from here. Only one may be ACTIVE
+ * per patient, enforced by a hand-written partial unique index rather than by
+ * application code, because two tabs can open two episodes in the same
+ * millisecond.
+ */
+export type PregnancyEpisode = Prisma.PregnancyEpisodeModel
+/**
+ * Model PregnancyExternalDoctorVisit
+ * A doctor visit the mother made somewhere else (P25-T06, FR-ANC-07).
+ * 
+ * Permenkes 21/2021 Pasal 13(4)–(5) requires two doctor visits with
+ * ultrasound. A klinik bidan with no doctor of her own meets that by
+ * referring the mother out, and she comes back with the Buku KIA rather than
+ * with a record in this system — so without this row the midwife who did
+ * exactly the right thing reads as non-compliant. Only what the book can
+ * tell her is stored: where, when, and whether an ultrasound was done.
+ */
+export type PregnancyExternalDoctorVisit = Prisma.PregnancyExternalDoctorVisitModel
+/**
+ * Model AntenatalVisit
+ * One encounter counted as an antenatal visit of an episode (P25-T06).
+ * 
+ * A join row rather than a column on `Encounter`, because most encounters are
+ * not antenatal and the link is what makes a visit countable. `visit_code` is
+ * written only when the encounter closes: until then the number is derived on
+ * read, so a cancelled or backdated visit never leaves a gap in the sequence.
+ */
+export type AntenatalVisit = Prisma.AntenatalVisitModel

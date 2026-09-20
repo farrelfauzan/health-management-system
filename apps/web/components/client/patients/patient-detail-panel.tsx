@@ -15,6 +15,7 @@ import {
 import { useTranslations } from 'next-intl';
 
 import { PatientLabHistoryPanel } from '#components/client/laboratory/patient-lab-history-panel';
+import { PregnancyPanel } from '#components/client/maternal-care/pregnancy-panel';
 import { PatientDocumentsPanel } from '#components/client/patient-documents/patient-documents-panel';
 import { AssignDoctorDialog } from '#components/client/patients/assign-doctor-dialog';
 import { PatientActivityCard } from '#components/client/patients/patient-activity-card';
@@ -48,6 +49,12 @@ type PatientDetailPanelProps = {
    */
   isLaboratoryEnabled?: boolean;
   /**
+   * P25-T06. Visibility only, like the laboratory flag: the API's
+   * `@RequireFeature('maternal-care')` is what refuses the episode to a clinic
+   * without the entitlement.
+   */
+  isMaternalCareEnabled?: boolean;
+  /**
    * The list this record was opened from, for the trail's parent link: the
    * directory in the admin shell, the doctor's own panel in theirs.
    */
@@ -59,9 +66,11 @@ export function PatientDetailPanel({
   initialTab,
   isSatusehatEnabled,
   isLaboratoryEnabled = false,
+  isMaternalCareEnabled = false,
   patientsHref = DEFAULT_PATIENTS_HREF,
 }: PatientDetailPanelProps) {
   const t = useTranslations('clinical');
+  const tMaternal = useTranslations();
   const root = useShellBreadcrumbRoot();
   const ability = useAbility();
   // Visibility only. The tab hides for a role without the grant; the API's
@@ -71,8 +80,18 @@ export function PatientDetailPanel({
   // entitlement has no laboratory at all, and a person without the order key
   // has one they may not read.
   const canReadLabHistory = isLaboratoryEnabled && ability.can('read', 'LabOrder');
+  // P25-T06. Read before the tab strip is resolved, because the Kehamilan tab
+  // is shown for a female patient only and the record is what says so. Three
+  // gates: the clinic's entitlement, the patient, and the encounter grant the
+  // episode is authorised on.
+  const detailQuery = usePatientDetail(patientId);
+  const canReadPregnancy =
+    isMaternalCareEnabled &&
+    detailQuery.patient?.sex === 'FEMALE' &&
+    ability.can('read', 'Encounter');
   const readableTabs: Record<PatientDetailTab, boolean> = {
     overview: true,
+    pregnancy: canReadPregnancy,
     documents: canReadDocuments,
     laboratory: canReadLabHistory,
   };
@@ -81,7 +100,6 @@ export function PatientDetailPanel({
     fallback: 'overview',
     initialTab,
   });
-  const detailQuery = usePatientDetail(patientId);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState<boolean>(false);
   const [isAssignDialogOpen, setIsAssignDialogOpen] = useState<boolean>(false);
   const [isNewbornDialogOpen, setIsNewbornDialogOpen] = useState<boolean>(false);
@@ -157,6 +175,9 @@ export function PatientDetailPanel({
       >
         <TabsList>
           <TabsTrigger value="overview">{t('patients.tabs.overview')}</TabsTrigger>
+          {canReadPregnancy ? (
+            <TabsTrigger value="pregnancy">{tMaternal('maternalCare.tab')}</TabsTrigger>
+          ) : null}
           {canReadDocuments ? (
             <TabsTrigger value="documents">{t('patients.tabs.documents')}</TabsTrigger>
           ) : null}
@@ -183,6 +204,11 @@ export function PatientDetailPanel({
             </div>
           </div>
         </TabsContent>
+        {canReadPregnancy ? (
+          <TabsContent value="pregnancy">
+            <PregnancyPanel patientId={patient.id} />
+          </TabsContent>
+        ) : null}
         {canReadDocuments ? (
           <TabsContent value="documents">
             <PatientDocumentsPanel patientId={patient.id} />

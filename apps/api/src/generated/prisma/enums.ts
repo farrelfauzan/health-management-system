@@ -162,6 +162,10 @@ export const AuditAction = {
   MIDWIFE_AUTHORITY_REFUSED: 'MIDWIFE_AUTHORITY_REFUSED',
   DOCTOR_MANDATE_GRANTED: 'DOCTOR_MANDATE_GRANTED',
   DOCTOR_MANDATE_REVOKED: 'DOCTOR_MANDATE_REVOKED',
+  PREGNANCY_EPISODE_CREATED: 'PREGNANCY_EPISODE_CREATED',
+  PREGNANCY_EPISODE_UPDATED: 'PREGNANCY_EPISODE_UPDATED',
+  PREGNANCY_EPISODE_ENDED: 'PREGNANCY_EPISODE_ENDED',
+  ANTENATAL_VISIT_LINKED: 'ANTENATAL_VISIT_LINKED',
   TAX_SETTINGS_UPDATED: 'TAX_SETTINGS_UPDATED',
   TAX_CODE_CHANGED: 'TAX_CODE_CHANGED',
   TAX_ASSIGNMENT_CHANGED: 'TAX_ASSIGNMENT_CHANGED',
@@ -1247,3 +1251,43 @@ export const BugReportTriagedBy = {
 } as const
 
 export type BugReportTriagedBy = (typeof BugReportTriagedBy)[keyof typeof BugReportTriagedBy]
+
+
+export const PregnancyEpisodeStatus = {
+  ACTIVE: 'ACTIVE',
+  DELIVERED: 'DELIVERED',
+  ENDED: 'ENDED'
+} as const
+
+export type PregnancyEpisodeStatus = (typeof PregnancyEpisodeStatus)[keyof typeof PregnancyEpisodeStatus]
+
+
+export const PregnancyEndReason = {
+  DELIVERY: 'DELIVERY',
+  MISCARRIAGE: 'MISCARRIAGE',
+  LOST_TO_FOLLOW_UP: 'LOST_TO_FOLLOW_UP'
+} as const
+
+export type PregnancyEndReason = (typeof PregnancyEndReason)[keyof typeof PregnancyEndReason]
+
+
+export const EstimatedDeliveryDateSource = {
+  LMP: 'LMP',
+  ULTRASOUND: 'ULTRASOUND',
+  CLINICAL: 'CLINICAL'
+} as const
+
+export type EstimatedDeliveryDateSource = (typeof EstimatedDeliveryDateSource)[keyof typeof EstimatedDeliveryDateSource]
+
+
+export const AntenatalVisitCode = {
+  K1A: 'K1A',
+  K1M: 'K1M',
+  K2: 'K2',
+  K3: 'K3',
+  K4: 'K4',
+  K5: 'K5',
+  K6: 'K6'
+} as const
+
+export type AntenatalVisitCode = (typeof AntenatalVisitCode)[keyof typeof AntenatalVisitCode]

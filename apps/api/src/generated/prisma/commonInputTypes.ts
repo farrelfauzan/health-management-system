@@ -2434,6 +2434,74 @@ export type EnumBugReportTriagedByNullableWithAggregatesFilter<$PrismaModel = ne
   _max?: Prisma.NestedEnumBugReportTriagedByNullableFilter<$PrismaModel>
 }
 
+export type EnumPregnancyEpisodeStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.PregnancyEpisodeStatus | Prisma.EnumPregnancyEpisodeStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.PregnancyEpisodeStatus[] | Prisma.ListEnumPregnancyEpisodeStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PregnancyEpisodeStatus[] | Prisma.ListEnumPregnancyEpisodeStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPregnancyEpisodeStatusFilter<$PrismaModel> | $Enums.PregnancyEpisodeStatus
+}
+
+export type EnumEstimatedDeliveryDateSourceFilter<$PrismaModel = never> = {
+  equals?: $Enums.EstimatedDeliveryDateSource | Prisma.EnumEstimatedDeliveryDateSourceFieldRefInput<$PrismaModel>
+  in?: $Enums.EstimatedDeliveryDateSource[] | Prisma.ListEnumEstimatedDeliveryDateSourceFieldRefInput<$PrismaModel>
+  notIn?: $Enums.EstimatedDeliveryDateSource[] | Prisma.ListEnumEstimatedDeliveryDateSourceFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumEstimatedDeliveryDateSourceFilter<$PrismaModel> | $Enums.EstimatedDeliveryDateSource
+}
+
+export type EnumPregnancyEndReasonNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.PregnancyEndReason | Prisma.EnumPregnancyEndReasonFieldRefInput<$PrismaModel> | null
+  in?: $Enums.PregnancyEndReason[] | Prisma.ListEnumPregnancyEndReasonFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.PregnancyEndReason[] | Prisma.ListEnumPregnancyEndReasonFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumPregnancyEndReasonNullableFilter<$PrismaModel> | $Enums.PregnancyEndReason | null
+}
+
+export type EnumPregnancyEpisodeStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PregnancyEpisodeStatus | Prisma.EnumPregnancyEpisodeStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.PregnancyEpisodeStatus[] | Prisma.ListEnumPregnancyEpisodeStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PregnancyEpisodeStatus[] | Prisma.ListEnumPregnancyEpisodeStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPregnancyEpisodeStatusWithAggregatesFilter<$PrismaModel> | $Enums.PregnancyEpisodeStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPregnancyEpisodeStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPregnancyEpisodeStatusFilter<$PrismaModel>
+}
+
+export type EnumEstimatedDeliveryDateSourceWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.EstimatedDeliveryDateSource | Prisma.EnumEstimatedDeliveryDateSourceFieldRefInput<$PrismaModel>
+  in?: $Enums.EstimatedDeliveryDateSource[] | Prisma.ListEnumEstimatedDeliveryDateSourceFieldRefInput<$PrismaModel>
+  notIn?: $Enums.EstimatedDeliveryDateSource[] | Prisma.ListEnumEstimatedDeliveryDateSourceFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumEstimatedDeliveryDateSourceWithAggregatesFilter<$PrismaModel> | $Enums.EstimatedDeliveryDateSource
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumEstimatedDeliveryDateSourceFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumEstimatedDeliveryDateSourceFilter<$PrismaModel>
+}
+
+export type EnumPregnancyEndReasonNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PregnancyEndReason | Prisma.EnumPregnancyEndReasonFieldRefInput<$PrismaModel> | null
+  in?: $Enums.PregnancyEndReason[] | Prisma.ListEnumPregnancyEndReasonFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.PregnancyEndReason[] | Prisma.ListEnumPregnancyEndReasonFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumPregnancyEndReasonNullableWithAggregatesFilter<$PrismaModel> | $Enums.PregnancyEndReason | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPregnancyEndReasonNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPregnancyEndReasonNullableFilter<$PrismaModel>
+}
+
+export type EnumAntenatalVisitCodeNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.AntenatalVisitCode | Prisma.EnumAntenatalVisitCodeFieldRefInput<$PrismaModel> | null
+  in?: $Enums.AntenatalVisitCode[] | Prisma.ListEnumAntenatalVisitCodeFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.AntenatalVisitCode[] | Prisma.ListEnumAntenatalVisitCodeFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumAntenatalVisitCodeNullableFilter<$PrismaModel> | $Enums.AntenatalVisitCode | null
+}
+
+export type EnumAntenatalVisitCodeNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.AntenatalVisitCode | Prisma.EnumAntenatalVisitCodeFieldRefInput<$PrismaModel> | null
+  in?: $Enums.AntenatalVisitCode[] | Prisma.ListEnumAntenatalVisitCodeFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.AntenatalVisitCode[] | Prisma.ListEnumAntenatalVisitCodeFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumAntenatalVisitCodeNullableWithAggregatesFilter<$PrismaModel> | $Enums.AntenatalVisitCode | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumAntenatalVisitCodeNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumAntenatalVisitCodeNullableFilter<$PrismaModel>
+}
+
 export type NestedUuidFilter<$PrismaModel = never> = {
   equals?: string | Prisma.StringFieldRefInput<$PrismaModel>
   in?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
@@ -4807,6 +4875,74 @@ export type NestedEnumBugReportTriagedByNullableWithAggregatesFilter<$PrismaMode
   _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
   _min?: Prisma.NestedEnumBugReportTriagedByNullableFilter<$PrismaModel>
   _max?: Prisma.NestedEnumBugReportTriagedByNullableFilter<$PrismaModel>
+}
+
+export type NestedEnumPregnancyEpisodeStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.PregnancyEpisodeStatus | Prisma.EnumPregnancyEpisodeStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.PregnancyEpisodeStatus[] | Prisma.ListEnumPregnancyEpisodeStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PregnancyEpisodeStatus[] | Prisma.ListEnumPregnancyEpisodeStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPregnancyEpisodeStatusFilter<$PrismaModel> | $Enums.PregnancyEpisodeStatus
+}
+
+export type NestedEnumEstimatedDeliveryDateSourceFilter<$PrismaModel = never> = {
+  equals?: $Enums.EstimatedDeliveryDateSource | Prisma.EnumEstimatedDeliveryDateSourceFieldRefInput<$PrismaModel>
+  in?: $Enums.EstimatedDeliveryDateSource[] | Prisma.ListEnumEstimatedDeliveryDateSourceFieldRefInput<$PrismaModel>
+  notIn?: $Enums.EstimatedDeliveryDateSource[] | Prisma.ListEnumEstimatedDeliveryDateSourceFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumEstimatedDeliveryDateSourceFilter<$PrismaModel> | $Enums.EstimatedDeliveryDateSource
+}
+
+export type NestedEnumPregnancyEndReasonNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.PregnancyEndReason | Prisma.EnumPregnancyEndReasonFieldRefInput<$PrismaModel> | null
+  in?: $Enums.PregnancyEndReason[] | Prisma.ListEnumPregnancyEndReasonFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.PregnancyEndReason[] | Prisma.ListEnumPregnancyEndReasonFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumPregnancyEndReasonNullableFilter<$PrismaModel> | $Enums.PregnancyEndReason | null
+}
+
+export type NestedEnumPregnancyEpisodeStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PregnancyEpisodeStatus | Prisma.EnumPregnancyEpisodeStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.PregnancyEpisodeStatus[] | Prisma.ListEnumPregnancyEpisodeStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PregnancyEpisodeStatus[] | Prisma.ListEnumPregnancyEpisodeStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPregnancyEpisodeStatusWithAggregatesFilter<$PrismaModel> | $Enums.PregnancyEpisodeStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPregnancyEpisodeStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPregnancyEpisodeStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumEstimatedDeliveryDateSourceWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.EstimatedDeliveryDateSource | Prisma.EnumEstimatedDeliveryDateSourceFieldRefInput<$PrismaModel>
+  in?: $Enums.EstimatedDeliveryDateSource[] | Prisma.ListEnumEstimatedDeliveryDateSourceFieldRefInput<$PrismaModel>
+  notIn?: $Enums.EstimatedDeliveryDateSource[] | Prisma.ListEnumEstimatedDeliveryDateSourceFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumEstimatedDeliveryDateSourceWithAggregatesFilter<$PrismaModel> | $Enums.EstimatedDeliveryDateSource
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumEstimatedDeliveryDateSourceFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumEstimatedDeliveryDateSourceFilter<$PrismaModel>
+}
+
+export type NestedEnumPregnancyEndReasonNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PregnancyEndReason | Prisma.EnumPregnancyEndReasonFieldRefInput<$PrismaModel> | null
+  in?: $Enums.PregnancyEndReason[] | Prisma.ListEnumPregnancyEndReasonFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.PregnancyEndReason[] | Prisma.ListEnumPregnancyEndReasonFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumPregnancyEndReasonNullableWithAggregatesFilter<$PrismaModel> | $Enums.PregnancyEndReason | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPregnancyEndReasonNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPregnancyEndReasonNullableFilter<$PrismaModel>
+}
+
+export type NestedEnumAntenatalVisitCodeNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.AntenatalVisitCode | Prisma.EnumAntenatalVisitCodeFieldRefInput<$PrismaModel> | null
+  in?: $Enums.AntenatalVisitCode[] | Prisma.ListEnumAntenatalVisitCodeFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.AntenatalVisitCode[] | Prisma.ListEnumAntenatalVisitCodeFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumAntenatalVisitCodeNullableFilter<$PrismaModel> | $Enums.AntenatalVisitCode | null
+}
+
+export type NestedEnumAntenatalVisitCodeNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.AntenatalVisitCode | Prisma.EnumAntenatalVisitCodeFieldRefInput<$PrismaModel> | null
+  in?: $Enums.AntenatalVisitCode[] | Prisma.ListEnumAntenatalVisitCodeFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.AntenatalVisitCode[] | Prisma.ListEnumAntenatalVisitCodeFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumAntenatalVisitCodeNullableWithAggregatesFilter<$PrismaModel> | $Enums.AntenatalVisitCode | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumAntenatalVisitCodeNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumAntenatalVisitCodeNullableFilter<$PrismaModel>
 }
 
 

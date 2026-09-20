@@ -348,6 +348,14 @@ enum AuditAction {
   /// A doctor's pelimpahan to a midwife was recorded or ended (P25-T05).
   DOCTOR_MANDATE_GRANTED
   DOCTOR_MANDATE_REVOKED
+  /// A pregnancy episode was opened, edited or closed (P25-T06). The episode
+  /// is what every antenatal number is counted from, so a changed HPHT
+  /// renumbers visits and moves the schedule — the trail says who moved it.
+  PREGNANCY_EPISODE_CREATED
+  PREGNANCY_EPISODE_UPDATED
+  PREGNANCY_EPISODE_ENDED
+  /// An encounter was counted as an antenatal visit of an episode (P25-T06).
+  ANTENATAL_VISIT_LINKED
   /// The clinic's tax profile changed (P27-T02): taxpayer type, PP 55 regime,
   /// PKP status, NITKU or pricing mode. Carries each changed field's old and
   /// new value — every later tax computation reads this row, and a report is
@@ -1149,6 +1157,8 @@ model User {
   grantedDoctorAuthorities  DoctorAuthority[]          @relation("DoctorAuthorityCreatedBy")
   revokedDoctorAuthorities  DoctorAuthority[]          @relation("DoctorAuthorityRevokedBy")
   grantedDoctorMandates     DoctorMandate[]            @relation("DoctorMandateCreatedBy")
+  createdPregnancyEpisodes  PregnancyEpisode[]         @relation("PregnancyEpisodeCreatedBy")
+  recordedExternalDoctorVisits PregnancyExternalDoctorVisit[] @relation("PregnancyExternalDoctorVisitRecordedBy")
   revokedDoctorMandates     DoctorMandate[]            @relation("DoctorMandateRevokedBy")
 
   @@index([organizationUnitId])
@@ -1547,6 +1557,7 @@ model PatientProfile {
   prescriptions         Prescription[]
   allergies             PatientAllergy[]
   immunizations         Immunization[]
+  pregnancyEpisodes     PregnancyEpisode[]
   encounters            Encounter[]
   invoices              Invoice[]
   labOrders             LabOrder[]
@@ -2453,6 +2464,7 @@ model Encounter {
   admissions           Admission[]
   clinicalDocuments    Document[]
   labOrders            LabOrder[]
+  antenatalVisit       AntenatalVisit?
 
   @@index([patientId, startedAt])
   @@index([doctorId, startedAt])
@@ -6446,4 +6458,157 @@ model BugReportCounter {
   updatedAt DateTime @default(now()) @map("updated_at")
 
   @@map("bug_report_counters")
+}
+
+/// Where a pregnancy episode stands (P25-T06). `DELIVERED` is set only by the
+/// delivery record (P25-T09); `ENDED` covers every other way a pregnancy stops
+/// being followed.
+enum PregnancyEpisodeStatus {
+  ACTIVE
+  DELIVERED
+  ENDED
+
+  @@map("pregnancy_episode_status")
+}
+
+/// Why an episode ended. SATUSEHAT's ANC playbook closes `EpisodeOfCare.period`
+/// on the delivery, on a miscarriage or curettage, or — when contact is lost —
+/// at HPHT + 308 days (44 weeks).
+enum PregnancyEndReason {
+  DELIVERY
+  MISCARRIAGE
+  LOST_TO_FOLLOW_UP
+
+  @@map("pregnancy_end_reason")
+}
+
+/// What the estimated delivery date was worked out from. `LMP` is Naegele from
+/// the HPHT; the other two are a clinician overriding it, and the source is
+/// recorded because a date nobody can account for is a date nobody trusts.
+enum EstimatedDeliveryDateSource {
+  LMP
+  ULTRASOUND
+  CLINICAL
+
+  @@map("estimated_delivery_date_source")
+}
+
+/// The antenatal visit codes SATUSEHAT publishes
+/// (`terminology.kemkes.go.id/CodeSystem/episodeofcare/ANC`). The list stops at
+/// `K6`: a seventh visit is numbered internally and sent with no code, and `K6`
+/// is never reused (P25-T01 answer 4).
+enum AntenatalVisitCode {
+  K1A
+  K1M
+  K2
+  K3
+  K4
+  K5
+  K6
+
+  @@map("antenatal_visit_code")
+}
+
+/// One pregnancy, from HPHT to its end (P25-T06, FR-ANC-01).
+///
+/// A midwife's work is organised around this, not around single visits: the
+/// K-number of a visit, whether trimester 3 still owes two, and what SATUSEHAT
+/// hangs its ANC `EpisodeOfCare` on all come from here. Only one may be ACTIVE
+/// per patient, enforced by a hand-written partial unique index rather than by
+/// application code, because two tabs can open two episodes in the same
+/// millisecond.
+model PregnancyEpisode {
+  id        String                 @id @default(uuid()) @db.Uuid
+  patientId String                 @map("patient_id") @db.Uuid
+  status    PregnancyEpisodeStatus @default(ACTIVE)
+
+  /// HPHT. Nullable: a woman who books late often cannot say, and the HPL is
+  /// then set from an ultrasound instead.
+  lastMenstrualPeriodDate DateTime?                   @map("last_menstrual_period_date") @db.Date
+  /// HPL. Always present — every downstream number needs one date to count from.
+  estimatedDeliveryDate   DateTime                    @map("estimated_delivery_date") @db.Date
+  eddSource               EstimatedDeliveryDateSource @map("edd_source")
+
+  /// GPA. `para + abortus <= gravida - 1` is checked in the migration: this
+  /// pregnancy is itself counted in `gravida`.
+  gravida Int
+  para    Int
+  abortus Int
+
+  prePregnancyWeightKg Decimal? @map("pre_pregnancy_weight_kg") @db.Decimal(5, 2)
+  bloodType            String?  @map("blood_type")
+  rhesus               String?
+  riskNotes            String?  @map("risk_notes")
+
+  endedAt   DateTime?           @map("ended_at") @db.Timestamptz(3)
+  endReason PregnancyEndReason? @map("end_reason")
+
+  /// The ANC episode on SATUSEHAT (P25-T08) and the nifas one (P25-T12). Two
+  /// ids on one row, because locally it is one pregnancy.
+  satusehatEpisodeOfCareId          String? @map("satusehat_episode_of_care_id")
+  satusehatPostnatalEpisodeOfCareId String? @map("satusehat_postnatal_episode_of_care_id")
+
+  createdById String   @map("created_by_id") @db.Uuid
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+
+  patient   PatientProfile @relation(fields: [patientId], references: [id], onDelete: Restrict)
+  createdBy User           @relation("PregnancyEpisodeCreatedBy", fields: [createdById], references: [id], onDelete: Restrict)
+
+  antenatalVisits      AntenatalVisit[]
+  externalDoctorVisits PregnancyExternalDoctorVisit[]
+
+  @@index([patientId])
+  @@index([createdById])
+  @@index([deletedAt])
+  @@map("pregnancy_episodes")
+}
+
+/// A doctor visit the mother made somewhere else (P25-T06, FR-ANC-07).
+///
+/// Permenkes 21/2021 Pasal 13(4)–(5) requires two doctor visits with
+/// ultrasound. A klinik bidan with no doctor of her own meets that by
+/// referring the mother out, and she comes back with the Buku KIA rather than
+/// with a record in this system — so without this row the midwife who did
+/// exactly the right thing reads as non-compliant. Only what the book can
+/// tell her is stored: where, when, and whether an ultrasound was done.
+model PregnancyExternalDoctorVisit {
+  id                 String   @id @default(uuid()) @db.Uuid
+  pregnancyEpisodeId String   @map("pregnancy_episode_id") @db.Uuid
+  facilityName       String   @map("facility_name")
+  visitedAt          DateTime @map("visited_at") @db.Date
+  isUltrasoundDone   Boolean  @default(false) @map("is_ultrasound_done")
+  recordedById       String   @map("recorded_by_id") @db.Uuid
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+  deletedAt          DateTime? @map("deleted_at")
+
+  pregnancyEpisode PregnancyEpisode @relation(fields: [pregnancyEpisodeId], references: [id], onDelete: Cascade)
+  recordedBy       User             @relation("PregnancyExternalDoctorVisitRecordedBy", fields: [recordedById], references: [id], onDelete: Restrict)
+
+  @@index([pregnancyEpisodeId])
+  @@index([recordedById])
+  @@map("pregnancy_external_doctor_visits")
+}
+
+/// One encounter counted as an antenatal visit of an episode (P25-T06).
+///
+/// A join row rather than a column on `Encounter`, because most encounters are
+/// not antenatal and the link is what makes a visit countable. `visit_code` is
+/// written only when the encounter closes: until then the number is derived on
+/// read, so a cancelled or backdated visit never leaves a gap in the sequence.
+model AntenatalVisit {
+  id                 String              @id @default(uuid()) @db.Uuid
+  pregnancyEpisodeId String              @map("pregnancy_episode_id") @db.Uuid
+  encounterId        String              @unique @map("encounter_id") @db.Uuid
+  visitCode          AntenatalVisitCode? @map("visit_code")
+  createdAt          DateTime            @default(now()) @map("created_at")
+  updatedAt          DateTime            @updatedAt @map("updated_at")
+
+  pregnancyEpisode PregnancyEpisode @relation(fields: [pregnancyEpisodeId], references: [id], onDelete: Cascade)
+  encounter        Encounter        @relation(fields: [encounterId], references: [id], onDelete: Cascade)
+
+  @@index([pregnancyEpisodeId])
+  @@map("antenatal_visits")
 }

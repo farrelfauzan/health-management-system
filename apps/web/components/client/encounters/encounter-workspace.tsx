@@ -14,6 +14,7 @@ import { EncounterProceduresCard } from '#components/client/encounters/encounter
 import { EncounterReferralCard } from '#components/client/encounters/encounter-referral-card';
 import { EncounterSatusehatRecordCard } from '#components/client/encounters/encounter-satusehat-record-card';
 import { EncounterDocumentsPanel } from '#components/client/patient-documents/encounter-documents-panel';
+import { EncounterAntenatalCard } from '#components/client/maternal-care/encounter-antenatal-card';
 import { EncounterSoapCard } from '#components/client/encounters/encounter-soap-card';
 import { EncounterSummaryCard } from '#components/client/encounters/encounter-summary-card';
 import { EncounterTransitionDialog } from '#components/client/encounters/encounter-transition-dialog';
@@ -37,6 +38,11 @@ type EncounterWorkspaceProps = {
    */
   isLaboratoryEnabled?: boolean;
   /**
+   * P25-T06. Visibility only; the API's feature guard is what refuses the
+   * antenatal routes to a clinic without the entitlement.
+   */
+  isMaternalCareEnabled?: boolean;
+  /**
    * Whether this page offers the treating doctor's SATUSEHAT comparison
    * (P21-T04). Only the doctor shell passes it, resolved from the clinic's
    * `satusehat` entitlement; the admin shell renders the same workspace and must
@@ -59,6 +65,7 @@ export function EncounterWorkspace({
   encountersHref = '/admin/encounters',
   patientHrefPrefix = '/admin/patients',
   isLaboratoryEnabled = false,
+  isMaternalCareEnabled = false,
   isSatusehatRecordCheckEnabled = false,
 }: EncounterWorkspaceProps) {
   const encounterQuery = useEncounterDetail(encounterId);
@@ -160,6 +167,12 @@ export function EncounterWorkspace({
             vitalSigns={encounter.vitalSigns}
             isEditable={isEditable}
           />
+          {/* P25-T06. In the card stack rather than behind a tab: whether this
+              visit counts as K3 is read at the same moment as the vitals it is
+              recorded with, not looked up separately. */}
+          {isMaternalCareEnabled ? (
+            <EncounterAntenatalCard encounterId={encounter.id} isEditable={isEditable} />
+          ) : null}
           {/* P18-T07. Released values sit beside the vitals because that is
               how they are read — a haemoglobin next to a blood pressure, not
               filed behind the request that produced it. */}

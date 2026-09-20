@@ -1,0 +1,106 @@
+{
+  "maternalCare": {
+    "tab": "Kehamilan",
+    "title": "Episode kehamilan",
+    "empty": {
+      "title": "Belum ada episode kehamilan",
+      "description": "Mulai episode untuk mencatat HPHT, HPL, dan kunjungan ANC pasien ini."
+    },
+    "loadError": "Data kehamilan gagal dimuat.",
+    "header": {
+      "lastMenstrualPeriodDate": "HPHT",
+      "estimatedDeliveryDate": "HPL",
+      "gpa": "GPA",
+      "gestationalAge": "Usia kehamilan",
+      "eddSource": "Sumber HPL",
+      "bloodType": "Golongan darah",
+      "riskNotes": "Catatan risiko",
+      "notRecorded": "Belum dicatat"
+    },
+    "eddSources": {
+      "LMP": "HPHT (Naegele)",
+      "ULTRASOUND": "USG",
+      "CLINICAL": "Perkiraan klinis"
+    },
+    "gestationalAgeValue": "{weeks} minggu {days} hari",
+    "actions": {
+      "start": "Mulai episode kehamilan",
+      "end": "Akhiri episode",
+      "markAntenatalVisit": "Tandai sebagai kunjungan ANC",
+      "recordExternalDoctorVisit": "Catat kunjungan dokter di faskes lain"
+    },
+    "visits": {
+      "title": "Kunjungan ANC",
+      "empty": "Belum ada kunjungan yang dicatat pada episode ini.",
+      "columns": {
+        "code": "Kode",
+        "date": "Tanggal",
+        "gestationalAge": "Usia kehamilan",
+        "status": "Status"
+      },
+      "uncoded": "Tanpa kode"
+    },
+    "schedule": {
+      "title": "Jadwal per trimester",
+      "trimester": "Trimester {trimester}",
+      "count": "{completed} dari {required} kunjungan",
+      "states": {
+        "DONE": "Lengkap",
+        "DUE": "Belum lengkap",
+        "MISSED": "Terlewat"
+      },
+      "doctorVisit": {
+        "label": "Kunjungan dokter",
+        "met": "Sudah",
+        "notMet": "Belum",
+        "ultrasoundRecorded": "dengan USG",
+        "ultrasoundUnknown": "USG belum tercatat"
+      }
+    },
+    "externalDoctorVisits": {
+      "title": "Kunjungan dokter di faskes lain",
+      "empty": "Belum ada kunjungan dokter dari faskes lain.",
+      "facilityName": "Nama faskes",
+      "visitedAt": "Tanggal kunjungan",
+      "isUltrasoundDone": "USG dilakukan"
+    },
+    "form": {
+      "lastMenstrualPeriodDate": "HPHT",
+      "estimatedDeliveryDate": "HPL",
+      "eddSource": "Sumber HPL",
+      "gravida": "Gravida",
+      "para": "Para",
+      "abortus": "Abortus",
+      "prePregnancyWeightKg": "Berat badan sebelum hamil (kg)",
+      "bloodType": "Golongan darah",
+      "rhesus": "Rhesus",
+      "riskNotes": "Catatan risiko",
+      "eddHint": "Kosongkan HPL untuk dihitung otomatis dari HPHT (HPHT + 280 hari).",
+      "submit": "Simpan",
+      "cancel": "Batal"
+    },
+    "end": {
+      "title": "Akhiri episode kehamilan",
+      "reason": "Alasan",
+      "reasons": {
+        "MISCARRIAGE": "Keguguran",
+        "LOST_TO_FOLLOW_UP": "Putus kontak"
+      },
+      "endedAt": "Tanggal berakhir",
+      "endedAtHint": "Kosongkan untuk putus kontak agar diisi HPHT + 308 hari, sesuai penutupan periode ANC SATUSEHAT.",
+      "submit": "Akhiri episode"
+    },
+    "encounterCard": {
+      "title": "Kunjungan ANC",
+      "linked": "Kunjungan ANC: {code} · {weeks} mgg",
+      "uncodedLinked": "Kunjungan ANC ke-{ordinal} · {weeks} mgg",
+      "notLinked": "Kunjungan ini belum dihitung sebagai kunjungan ANC.",
+      "noActiveEpisode": "Pasien belum punya episode kehamilan aktif."
+    },
+    "status": {
+      "ACTIVE": "Berjalan",
+      "DELIVERED": "Sudah melahirkan",
+      "ENDED": "Berakhir"
+    }
+  }
+}

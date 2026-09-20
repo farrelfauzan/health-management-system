@@ -1306,6 +1306,11 @@ FROM (
     -- screen edits entitlements yet, so a FALSE seed would hide the tax page
     -- with no way back. Until an administrator saves a profile the clinic
     -- reads as general regime, not PKP — which charges nobody anything.
+    -- P25-T06: default FALSE. A clinic that does not follow pregnancies would
+    -- gain a Kehamilan tab it has no use for, and the pilot klinik bidan is
+    -- switched on deliberately. This is the "genuinely new, nobody is using
+    -- it yet" case the rule above allows.
+    ('maternal-care', FALSE),
     ('taxes', TRUE)
 ) AS seed_feature_entitlements(feature_key, is_enabled)
 ON CONFLICT ("feature_key") DO NOTHING;

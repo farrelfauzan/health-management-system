@@ -19,6 +19,7 @@ import { RetentionModule } from './common/retention/retention.module';
 import { StorageModule } from './common/storage/storage.module';
 import { AdminManagementModule } from './modules/admin-management/admin-management.module';
 import { AdmissionFlowModule } from './modules/admission-flow/admission-flow.module';
+import { MaternalCareModule } from './modules/maternal-care/maternal-care.module';
 import { NotificationModule } from './modules/notification/notification.module';
 import { NotionConnectorModule } from './modules/notion-connector/notion-connector.module';
 import { BugReportModule } from './modules/bug-report/bug-report.module';
@@ -94,6 +95,7 @@ import { UserInvitationModule } from './modules/user-invitation/user-invitation.
     RegistrationFlowModule,
     RoomManagementModule,
     AdmissionFlowModule,
+    MaternalCareModule,
     NotificationModule,
     NotionConnectorModule,
     BugReportModule,

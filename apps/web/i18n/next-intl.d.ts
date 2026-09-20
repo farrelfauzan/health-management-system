@@ -2,6 +2,7 @@ import type idMessages from '../messages/id.json';
 import type idAuthShellMessages from '../messages/id/auth-shell.json';
 import type idClinicalMessages from '../messages/id/clinical.json';
 import type idDashboardAiMessages from '../messages/id/dashboard-ai.json';
+import type idMaternalCareMessages from '../messages/id/maternal-care.json';
 import type idOperationsMessages from '../messages/id/operations.json';
 import type idPharmacyInventoryMessages from '../messages/id/pharmacy-inventory.json';
 import type idSharedMessages from '../messages/id/shared.json';
@@ -28,6 +29,7 @@ declare module 'next-intl' {
     Messages: typeof idMessages &
       typeof idAuthShellMessages &
       typeof idClinicalMessages &
+      typeof idMaternalCareMessages &
       typeof idDashboardAiMessages &
       typeof idOperationsMessages &
       typeof idPharmacyInventoryMessages &

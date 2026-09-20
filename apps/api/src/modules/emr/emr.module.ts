@@ -1,8 +1,9 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 
 import { AuthModule } from '../auth/auth.module';
 import { DoctorManagementModule } from '../doctor-management/doctor-management.module';
 import { LaboratoryModule } from '../laboratory/laboratory.module';
+import { MaternalCareModule } from '../maternal-care/maternal-care.module';
 import { PharmacyFlowModule } from '../pharmacy-flow/pharmacy-flow.module';
 import { TerminologyModule } from '../terminology/terminology.module';
 import { EncounterClinicalDataController } from './controller/encounter-clinical-data.controller';
@@ -33,6 +34,12 @@ import { MidwifeAuthorityEnforcementService } from './service/midwife-authority-
     PharmacyFlowModule,
     LaboratoryModule,
     DoctorManagementModule,
+    // `forwardRef` because P25-T06 genuinely runs both ways: a pregnancy
+    // episode is a view over encounters and reads this module's access rules,
+    // while closing an encounter has to freeze the K-code onto the visit it
+    // counts as. Both edges go through services, never the other module's
+    // repository.
+    forwardRef(() => MaternalCareModule),
   ],
   controllers: [
     EncounterController,
@@ -47,6 +54,9 @@ import { MidwifeAuthorityEnforcementService } from './service/midwife-authority-
     EncounterClinicalDataService,
     MidwifeAuthorityEnforcementService,
   ],
-  exports: [EncounterService],
+  // `EncounterAccessService` and the encounter lookup are exported for
+  // P25-T06: a pregnancy episode is a view over encounters, so it reuses this
+  // module's access rules rather than inventing a second own-scope rule.
+  exports: [EncounterService, EncounterAccessService],
 })
 export class EmrModule {}

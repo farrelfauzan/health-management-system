@@ -145,6 +145,17 @@ export const FEATURE_CATALOG: readonly FeatureCatalogEntry[] = [
     navHrefs: [],
   },
   {
+    // P25-T06. Named for the whole maternal pathway, not for this ticket:
+    // P25-T07's 10T examination, T08's SATUSEHAT episodes and T09's delivery
+    // all belong behind the same switch, because a clinic buys antenatal care
+    // as one capability or not at all.
+    key: 'maternal-care',
+    name: 'Maternal Care',
+    description:
+      'Pregnancy episodes, antenatal visit numbering and the ANC examination for midwife practice.',
+    navHrefs: [],
+  },
+  {
     // P27-T02. The tax profile, and in later P27 tickets the tax codes, the
     // tax on invoices and the monthly report drafts. Drafts only — the clinic
     // files in Coretax itself (D-038).

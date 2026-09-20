@@ -10,6 +10,7 @@ import { AuthRepository } from '../auth/repository/auth.repository';
 import { DoctorAuthorityRepository } from '../doctor-management/repository/doctor-authority.repository';
 import { DoctorMandateRepository } from '../doctor-management/repository/doctor-mandate.repository';
 import { LabOrderRepository } from '../laboratory/repository/lab-order.repository';
+import { MaternalCareRepository } from '../maternal-care/repository/maternal-care.repository';
 import { PharmacyFlowRepository } from '../pharmacy-flow/repository/pharmacy-flow.repository';
 import { Icd10CodeRepository } from '../terminology/repository/icd10-code.repository';
 import { EncounterRepository } from './repository/encounter.repository';
@@ -78,6 +79,13 @@ describe('EMR integration', () => {
   const labOrderRepositoryMock = {
     findLabOrdersByEncounterId: jest.fn(() => Promise.resolve([])),
   };
+
+  const maternalCareRepositoryMock = {
+    findVisitByEncounterId: jest.fn(() => Promise.resolve(null)),
+    findEpisodeById: jest.fn(() => Promise.resolve(null)),
+    listEpisodeVisits: jest.fn(() => Promise.resolve([])),
+    freezeVisitCode: jest.fn(() => Promise.resolve(undefined)),
+  } as unknown as MaternalCareRepository;
 
   const prismaServiceMock = {
     // SJ-4 writes one audit row per patient-data route, and the write is
@@ -161,6 +169,13 @@ describe('EMR integration', () => {
       .useValue(labOrderRepositoryMock)
       .overrideProvider(PharmacyFlowRepository)
       .useValue(pharmacyFlowRepositoryMock)
+      // P25-T06: closing an encounter asks the maternal module to freeze the
+      // K-code onto the antenatal visit it counts as. This spec replaces
+      // Prisma wholesale, so that repository has to be stubbed here too —
+      // otherwise a close reads 500 for a reason that has nothing to do with
+      // the encounter.
+      .overrideProvider(MaternalCareRepository)
+      .useValue(maternalCareRepositoryMock)
       .overrideProvider(PrismaService)
       .useValue(prismaServiceMock)
       .compile();

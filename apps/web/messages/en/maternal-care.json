@@ -1,0 +1,106 @@
+{
+  "maternalCare": {
+    "tab": "Pregnancy",
+    "title": "Pregnancy episode",
+    "empty": {
+      "title": "No pregnancy episode yet",
+      "description": "Open an episode to record this patient's LMP, due date and antenatal visits."
+    },
+    "loadError": "The pregnancy record could not be loaded.",
+    "header": {
+      "lastMenstrualPeriodDate": "LMP",
+      "estimatedDeliveryDate": "Due date",
+      "gpa": "GPA",
+      "gestationalAge": "Gestational age",
+      "eddSource": "Due date source",
+      "bloodType": "Blood type",
+      "riskNotes": "Risk notes",
+      "notRecorded": "Not recorded"
+    },
+    "eddSources": {
+      "LMP": "LMP (Naegele)",
+      "ULTRASOUND": "Ultrasound",
+      "CLINICAL": "Clinical estimate"
+    },
+    "gestationalAgeValue": "{weeks} weeks {days} days",
+    "actions": {
+      "start": "Open pregnancy episode",
+      "end": "End episode",
+      "markAntenatalVisit": "Count as an antenatal visit",
+      "recordExternalDoctorVisit": "Record a doctor visit made elsewhere"
+    },
+    "visits": {
+      "title": "Antenatal visits",
+      "empty": "No visits recorded on this episode yet.",
+      "columns": {
+        "code": "Code",
+        "date": "Date",
+        "gestationalAge": "Gestational age",
+        "status": "Status"
+      },
+      "uncoded": "No code"
+    },
+    "schedule": {
+      "title": "Schedule by trimester",
+      "trimester": "Trimester {trimester}",
+      "count": "{completed} of {required} visits",
+      "states": {
+        "DONE": "Complete",
+        "DUE": "Still due",
+        "MISSED": "Missed"
+      },
+      "doctorVisit": {
+        "label": "Doctor visit",
+        "met": "Done",
+        "notMet": "Still owed",
+        "ultrasoundRecorded": "with ultrasound",
+        "ultrasoundUnknown": "ultrasound not recorded"
+      }
+    },
+    "externalDoctorVisits": {
+      "title": "Doctor visits made elsewhere",
+      "empty": "No doctor visits from another facility recorded.",
+      "facilityName": "Facility name",
+      "visitedAt": "Visit date",
+      "isUltrasoundDone": "Ultrasound done"
+    },
+    "form": {
+      "lastMenstrualPeriodDate": "LMP",
+      "estimatedDeliveryDate": "Due date",
+      "eddSource": "Due date source",
+      "gravida": "Gravida",
+      "para": "Para",
+      "abortus": "Abortus",
+      "prePregnancyWeightKg": "Pre-pregnancy weight (kg)",
+      "bloodType": "Blood type",
+      "rhesus": "Rhesus",
+      "riskNotes": "Risk notes",
+      "eddHint": "Leave the due date empty to compute it from the LMP (LMP + 280 days).",
+      "submit": "Save",
+      "cancel": "Cancel"
+    },
+    "end": {
+      "title": "End pregnancy episode",
+      "reason": "Reason",
+      "reasons": {
+        "MISCARRIAGE": "Miscarriage",
+        "LOST_TO_FOLLOW_UP": "Lost to follow-up"
+      },
+      "endedAt": "End date",
+      "endedAtHint": "Leave empty for lost to follow-up to use LMP + 308 days, where SATUSEHAT closes the ANC period.",
+      "submit": "End episode"
+    },
+    "encounterCard": {
+      "title": "Antenatal visit",
+      "linked": "Antenatal visit: {code} · {weeks} wks",
+      "uncodedLinked": "Antenatal visit {ordinal} · {weeks} wks",
+      "notLinked": "This encounter is not counted as an antenatal visit yet.",
+      "noActiveEpisode": "This patient has no active pregnancy episode."
+    },
+    "status": {
+      "ACTIVE": "Active",
+      "DELIVERED": "Delivered",
+      "ENDED": "Ended"
+    }
+  }
+}
