@@ -16,6 +16,7 @@
     "#patient-management/format-patient-address": "./src/patient-management/format-patient-address.ts",
     "#patient-management/to-patient-age-in-months": "./src/patient-management/to-patient-age-in-months.ts",
     "#patient-management/to-patient-age-in-days": "./src/patient-management/to-patient-age-in-days.ts",
+    "#patient-management/resolve-satusehat-link-nik-effect": "./src/patient-management/resolve-satusehat-link-nik-effect.ts",
     "#regions/schemas": "./src/regions/schemas.ts",
     "#regions/contracts": "./src/regions/contracts.ts",
     "#regions/types": "./src/regions/types.ts",

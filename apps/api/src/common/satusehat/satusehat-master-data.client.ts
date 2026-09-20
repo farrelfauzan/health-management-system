@@ -2,7 +2,10 @@ import { SatusehatNewbornSearchCriteria, SatusehatPractitionerSummary } from '@h
 import { Injectable } from '@nestjs/common';
 
 import { readPractitionerSummary } from './read-practitioner-summary';
-import { SatusehatFhirNewbornPatient } from './satusehat-fhir.types';
+import {
+  SatusehatFhirJsonPatchOperation,
+  SatusehatFhirNewbornPatient,
+} from './satusehat-fhir.types';
 import { selectNewbornPatientEntry } from './select-newborn-patient-entry';
 import { SatusehatAmbiguousMatchError } from './satusehat-ambiguous-match.error';
 import { SatusehatHttpClient } from './satusehat-http.client';
@@ -80,6 +83,30 @@ export class SatusehatMasterDataClient {
       );
     }
     return ihsNumber;
+  }
+
+  /**
+   * Applies a JSON Patch to one Patient — the path a newborn's first NIK
+   * takes, which updates the record the platform already holds rather than
+   * replacing it (P24-T13, FR-NB-05).
+   *
+   * The platform answers a Dukcapil rejection with 4xx and an
+   * `OperationOutcome`, which the HTTP client maps to
+   * `SATUSEHAT_REQUEST_REJECTED` with the readable reason — that is what the
+   * admin is shown. The patch is **not retried** on a timeout (PATCH is
+   * absent from the client's idempotent-method list on purpose): it appends
+   * an identifier, so a retried patch that in fact landed the first time
+   * would add the NIK twice. An unconfirmed patch is surfaced instead.
+   */
+  async patchPatient(
+    ihsNumber: string,
+    operations: readonly SatusehatFhirJsonPatchOperation[],
+  ): Promise<void> {
+    await this.httpClient.sendRequest<unknown>({
+      method: 'PATCH',
+      path: `/Patient/${encodeURIComponent(ihsNumber)}`,
+      body: operations,
+    });
   }
 
   /** Resolves a practitioner IHS number by NIK; null when the index has no match. */

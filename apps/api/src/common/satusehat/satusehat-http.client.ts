@@ -9,6 +9,10 @@ import { SatusehatError } from './satusehat.error';
 import { resolveSatusehatConfig } from './satusehat.config';
 import { SatusehatConfig, SatusehatHttpMethod, SatusehatRequest } from './satusehat.types';
 
+// POST and PATCH are absent deliberately. A POST creates; a PATCH the
+// platform takes is an RFC 6902 operation list, and the one we send appends
+// an identifier (P24-T13) — replaying either after a timeout that in fact
+// landed would duplicate it. Both surface the timeout to the caller instead.
 const IDEMPOTENT_METHODS: readonly SatusehatHttpMethod[] = ['GET', 'PUT', 'DELETE'];
 const RETRYABLE_ERROR_CODES: readonly string[] = ['SATUSEHAT_TIMEOUT', 'SATUSEHAT_UNAVAILABLE'];
 /** A NIK is sixteen digits; a lookup rejection can echo the one it was asked about. */

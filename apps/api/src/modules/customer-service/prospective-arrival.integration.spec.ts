@@ -14,6 +14,7 @@ import { PrismaService } from '../../common/prisma/prisma.service';
 import { PrivacyNoticeRepository } from '../../common/privacy-notice/privacy-notice.repository';
 import { AuthRepository } from '../auth/repository/auth.repository';
 import { PatientManagementRepository } from '../patient-management/repository/patient-management.repository';
+import { NewbornSatusehatNikService } from '../patient-management/service/newborn-satusehat-nik.service';
 import { PatientManagementService } from '../patient-management/service/patient-management.service';
 import { RegionsRepository } from '../regions/repository/regions.repository';
 import { RegionsService } from '../regions/service/regions.service';
@@ -242,6 +243,9 @@ describe('prospective arrival conversion against Postgres', () => {
         { record: jest.fn() } as unknown as AuditService,
         privacyNoticeRepository,
         new RegionsService(new RegionsRepository(prisma)),
+        // A prospective arrival never becomes a newborn, so the upstream NIK
+        // patch (P24-T13) has nothing to do on this path.
+        { sendFirstNik: jest.fn() } as unknown as NewbornSatusehatNikService,
         configService,
       ),
       identifierCrypto,

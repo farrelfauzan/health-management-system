@@ -595,6 +595,28 @@ export type SatusehatFhirNewbornPatient = {
 };
 
 /**
+ * One RFC 6902 JSON Patch operation, which is the body shape the platform's
+ * `PATCH /Patient/{id}` takes — `[{ "op", "path", "value" }]`, sent as
+ * `application/json` (MPI ReST API reference, read 2026-09-20).
+ */
+export type SatusehatFhirJsonPatchOperation = {
+  op: 'add' | 'replace';
+  path: string;
+  value: unknown;
+};
+
+/**
+ * What the mapper needs to turn a newborn's first NIK into a patch (P24-T13).
+ * The name and birth date travel with it because Dukcapil validates all three
+ * together, not the NIK on its own.
+ */
+export type SatusehatNewbornNikPatchMapInput = {
+  nik: string;
+  fullName: string;
+  birthDate: string;
+};
+
+/**
  * What the mapper needs to build a patient's FHIR address: the street line
  * plus whatever of the structured address (P19-T10) the record holds. Codes
  * are the dotted Kemendagri form the registry stores; the mapper strips the

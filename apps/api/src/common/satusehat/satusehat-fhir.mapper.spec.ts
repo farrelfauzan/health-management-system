@@ -320,6 +320,39 @@ describe('SatusehatFhirMapper', () => {
     });
   });
 
+  describe('mapNewbornNikToPatientPatch (P24-T13)', () => {
+    const patchInput = {
+      nik: '3201010101260001',
+      fullName: 'Ayu Pratiwi',
+      birthDate: '2026-01-01',
+    };
+
+    it('appends her own NIK and restates what Dukcapil validates it against', () => {
+      const actualOperations = mapper.mapNewbornNikToPatientPatch(patchInput);
+
+      expect(actualOperations).toEqual([
+        {
+          op: 'add',
+          path: '/identifier/-',
+          value: {
+            system: 'https://fhir.kemkes.go.id/id/nik',
+            use: 'official',
+            value: '3201010101260001',
+          },
+        },
+        { op: 'replace', path: '/name/0/text', value: 'Ayu Pratiwi' },
+        { op: 'replace', path: '/birthDate', value: '2026-01-01' },
+      ]);
+    });
+
+    it("never withdraws her mother's nik-ibu identifier", () => {
+      const actualOperations = mapper.mapNewbornNikToPatientPatch(patchInput);
+
+      expect(actualOperations.some((operation) => operation.path === '/identifier')).toBe(false);
+      expect(JSON.stringify(actualOperations)).not.toContain('nik-ibu');
+    });
+  });
+
   describe('mapEncounter for an inpatient stay', () => {
     const admittedAt = new Date('2026-07-28T02:30:00.000Z');
     const dischargedAt = new Date('2026-07-30T04:00:00.000Z');

@@ -165,9 +165,29 @@ export type CreatePatientFromProspectiveResult = {
  * unlink: the repository is the only layer that can tell a real NIK change from
  * the same value re-encrypted, and the audit row belongs to the service.
  */
+/**
+ * What a NIK write did to the patient's SATUSEHAT link. `CLEARED` is D-035's
+ * unlink; `NEWBORN_NIK_ADDED` is its one exemption, where the IHS number is
+ * kept and the identifier is sent upstream instead (FR-NB-05, P24-T13).
+ */
+export type SatusehatLinkNikEffect = 'UNCHANGED' | 'CLEARED' | 'NEWBORN_NIK_ADDED';
+
 export type UpdatedPatient = {
   patient: PatientRecord;
-  clearedSatusehatLink: boolean;
+  satusehatLinkNikEffect: SatusehatLinkNikEffect;
+};
+
+/**
+ * What the newborn first-NIK PATCH needs about the baby (P24-T13). SATUSEHAT
+ * validates the NIK against Dukcapil together with the name and birth date,
+ * so all three travel, read from the record as it stands after the local
+ * write.
+ */
+export type NewbornSatusehatNikPatchTarget = {
+  ihsNumber: string;
+  nik: string;
+  fullName: string;
+  birthDate: string;
 };
 
 export type UpdatePatientRecordPayload = {

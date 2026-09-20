@@ -9,7 +9,10 @@ import {
   PatientIdentifierPlaintext,
   PatientPhoneMatch,
   PatientRecord,
+  NewbornSatusehatNikPatchTarget,
   PatientScopeActor,
+  resolveSatusehatLinkNikEffect,
+  SatusehatLinkNikEffect,
   UpdatedPatient,
   UpdatePatientRecordPayload,
 } from '@hms/shared-types';
@@ -21,6 +24,7 @@ import { MrnAllocatorRepository } from '../../../common/mrn/mrn-allocator.reposi
 import { PrivacyNoticeRepository } from '../../../common/privacy-notice/privacy-notice.repository';
 import { PrismaService } from '../../../common/prisma/prisma.service';
 import { PrismaTransactionClient } from '../../../common/prisma/prisma.types';
+import { toDateOnly } from '../to-date-only';
 import { buildPatientScopeWhere } from './build-patient-scope-where';
 import { PatientIdentifierConflictError } from './patient-identifier-conflict.error';
 
@@ -761,7 +765,7 @@ export class PatientManagementRepository {
   }
 
   async updatePatient(id: string, payload: UpdatePatientRecordPayload): Promise<UpdatedPatient> {
-    let clearedSatusehatLink = false;
+    let satusehatLinkNikEffect: SatusehatLinkNikEffect = 'UNCHANGED';
     const patient = await this.prisma
       .executeTransaction(async (tx) => {
         if (payload.allergies !== undefined) {
@@ -781,7 +785,7 @@ export class PatientManagementRepository {
           nik: payload.nik,
           bpjsNumber: payload.bpjsNumber,
         });
-        clearedSatusehatLink = await this.hasNikChanged(tx, id, identifierColumns);
+        satusehatLinkNikEffect = await this.resolveNikEffect(tx, id, identifierColumns);
 
         return tx.patientProfile.update({
           where: {
@@ -800,8 +804,10 @@ export class PatientManagementRepository {
             ...identifierColumns,
             // A changed NIK invalidates the IHS number resolved from it, so the
             // link goes in the same write (D-035). Clearing the NIK to null
-            // counts: the identifier the link was derived from is gone.
-            ...(clearedSatusehatLink
+            // counts: the identifier the link was derived from is gone. A
+            // newborn's *first* NIK is the exemption and keeps the link
+            // (P24-T13).
+            ...(satusehatLinkNikEffect === 'CLEARED'
               ? {
                   satusehatPatientIdCiphertext: null,
                   satusehatPatientIdKeyVersion: null,
@@ -819,40 +825,73 @@ export class PatientManagementRepository {
       })
       .catch(rethrowIdentifierConflict);
 
-    return { patient: toPatientRecord(patient), clearedSatusehatLink };
+    return { patient: toPatientRecord(patient), satusehatLinkNikEffect };
   }
 
   /**
-   * Whether this update actually changes the patient's NIK, and therefore
-   * invalidates the IHS number resolved from it (D-035).
+   * What this update does to the patient's SATUSEHAT link, by comparing the
+   * NIK **blind index** — never the ciphertext, which is re-derived on every
+   * write and would unlink a patient on an unrelated demographic edit.
    *
-   * Compared by **blind index**, never by ciphertext: identifiers are
-   * re-encrypted on every write, so ciphertext differs even when the value does
-   * not, and comparing it would unlink a patient on an unrelated demographic
-   * edit. Clearing the NIK to null is a change — the identifier the link came
-   * from is gone — which is why this reads the key out of the built columns
-   * rather than testing the payload for a truthy value.
-   *
-   * Returns false when the payload carries no NIK key at all, and when the
-   * patient holds no link to clear.
+   * Returns `UNCHANGED` when the payload carries no NIK key at all, and when
+   * the patient holds no link to clear. The rule itself lives in
+   * `resolveSatusehatLinkNikEffect` so the D-035 exemption is one testable
+   * function rather than a condition buried in a transaction.
    */
-  private async hasNikChanged(
+  private async resolveNikEffect(
     tx: PrismaTransactionClient,
     id: string,
     identifierColumns: Record<string, string | number | null>,
-  ): Promise<boolean> {
+  ): Promise<SatusehatLinkNikEffect> {
     if (!('nikIndex' in identifierColumns)) {
-      return false;
+      return 'UNCHANGED';
     }
-    const nextIndex = identifierColumns['nikIndex'];
+    const nextNikIndex = identifierColumns['nikIndex'];
     const existing = await tx.patientProfile.findUnique({
       where: { id },
-      select: { nikIndex: true, satusehatPatientIdCiphertext: true },
+      select: { nikIndex: true, satusehatPatientIdCiphertext: true, motherPatientId: true },
     });
-    if (existing === null || existing.satusehatPatientIdCiphertext === null) {
-      return false;
+    if (existing === null) {
+      return 'UNCHANGED';
     }
-    return existing.nikIndex !== nextIndex;
+    return resolveSatusehatLinkNikEffect({
+      hasSatusehatLink: existing.satusehatPatientIdCiphertext !== null,
+      motherPatientId: existing.motherPatientId,
+      currentNikIndex: existing.nikIndex,
+      nextNikIndex: typeof nextNikIndex === 'string' ? nextNikIndex : null,
+    });
+  }
+
+  /**
+   * The baby, her IHS number and the demographics Dukcapil validates the new
+   * NIK against (P24-T13). Read after the local write, so what goes upstream
+   * is the record as it now stands. Null when she is not linked or the NIK
+   * did not survive the write.
+   */
+  async findNewbornNikPatchTarget(id: string): Promise<NewbornSatusehatNikPatchTarget | null> {
+    const patient = await this.prisma.findFirstActive(this.prisma.patientProfile, {
+      where: { id },
+      select: {
+        fullName: true,
+        dateOfBirth: true,
+        nikCiphertext: true,
+        satusehatPatientIdCiphertext: true,
+      },
+    });
+    if (!patient || patient.dateOfBirth === null) {
+      return null;
+    }
+    const nik = this.decryptOptional(patient.nikCiphertext);
+    const ihsNumber = this.decryptOptional(patient.satusehatPatientIdCiphertext);
+    if (nik === null || ihsNumber === null) {
+      return null;
+    }
+    return {
+      ihsNumber,
+      nik,
+      fullName: patient.fullName,
+      birthDate: toDateOnly(patient.dateOfBirth),
+    };
   }
 
   /**

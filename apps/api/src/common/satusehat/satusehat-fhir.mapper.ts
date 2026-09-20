@@ -22,7 +22,9 @@ import {
   SatusehatFhirComposition,
   SatusehatFhirCompositionSection,
   SatusehatFhirEncounterHospitalization,
+  SatusehatFhirJsonPatchOperation,
   SatusehatFhirNewbornPatient,
+  SatusehatNewbornNikPatchMapInput,
   SatusehatNewbornPatientMapInput,
   SatusehatFhirEncounterLocation,
   SatusehatFhirCoding,
@@ -231,6 +233,8 @@ const OBSERVATION_CATEGORY_SYSTEM = 'http://terminology.hl7.org/CodeSystem/obser
  * patient index page spells this one that way.
  */
 const NIK_IBU_IDENTIFIER_SYSTEM = 'https://fhir.kemkes.go.id/id/nik-ibu';
+/** A person's own NIK, which a newborn receives weeks after birth (P24-T13). */
+const NIK_IDENTIFIER_SYSTEM = 'https://fhir.kemkes.go.id/id/nik';
 const KFA_SYSTEM = 'http://sys-ids.kemkes.go.id/kfa';
 const MEDICATION_IDENTIFIER_SYSTEM_PREFIX = 'http://sys-ids.kemkes.go.id/medication';
 const PRESCRIPTION_IDENTIFIER_SYSTEM_PREFIX = 'http://sys-ids.kemkes.go.id/prescription';
@@ -344,6 +348,38 @@ export class SatusehatFhirMapper {
       multipleBirthInteger: input.multipleBirthInteger,
       ...(input.address ? { address: [this.mapPatientAddress(input.address)] } : {}),
     };
+  }
+
+  /**
+   * A newborn's first NIK as a JSON Patch on her existing SATUSEHAT Patient
+   * (P24-T13, FR-NB-05).
+   *
+   * Three operations, because the platform validates the NIK against Dukcapil
+   * **together with** the full name and birth date: sending the identifier
+   * alone would be validated against whatever name the resource was created
+   * with, which for a baby is often a placeholder like "Bayi Ny. Sari". The
+   * name and birth date are therefore restated from the local record, so what
+   * is validated is the record as it now stands.
+   *
+   * Her mother's `nik-ibu` identifier is **appended to, not replaced**: the
+   * published pages say which fields may be updated and never say the
+   * mother's identifier is withdrawn, and dropping an identifier the platform
+   * still indexes her siblings by is not a guess worth making. That makes the
+   * patch non-idempotent, which is why {@link SatusehatHttpClient} must not
+   * retry it.
+   */
+  mapNewbornNikToPatientPatch(
+    input: SatusehatNewbornNikPatchMapInput,
+  ): SatusehatFhirJsonPatchOperation[] {
+    return [
+      {
+        op: 'add',
+        path: '/identifier/-',
+        value: { system: NIK_IDENTIFIER_SYSTEM, use: 'official', value: input.nik },
+      },
+      { op: 'replace', path: '/name/0/text', value: input.fullName },
+      { op: 'replace', path: '/birthDate', value: input.birthDate },
+    ];
   }
 
   /**

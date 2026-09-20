@@ -35,6 +35,7 @@ export * from '#patient-management/types';
 export * from '#patient-management/format-patient-address';
 export * from '#patient-management/to-patient-age-in-months';
 export * from '#patient-management/to-patient-age-in-days';
+export * from '#patient-management/resolve-satusehat-link-nik-effect';
 export * from '#regions/schemas';
 export * from '#regions/contracts';
 export * from '#regions/types';
