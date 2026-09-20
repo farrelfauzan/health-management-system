@@ -15,11 +15,21 @@ import {
 } from '#lib/api/generated/tax-settings/tax-settings';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { resolveApiErrorCode } from '#lib/api/resolve-api-error-code';
+import { resolveApiFieldErrors } from '#lib/api/resolve-api-field-errors';
 import { parseApiSuccess } from '#lib/api/response';
 import { TAX_SETTINGS_ERROR_CODES } from '#lib/taxes/tax-settings-error-codes';
 import type { TaxSettingsFormValues } from '#lib/taxes/tax-settings-form-values';
 import { toTaxSettingsFormValues } from '#lib/taxes/to-tax-settings-form-values';
 import { toUpdateTaxSettingsInput } from '#lib/taxes/to-update-tax-settings-input';
+
+const FORM_FIELDS: ReadonlyArray<keyof TaxSettingsFormValues> = [
+  'taxpayerType',
+  'incomeTaxRegime',
+  'pp55StartYear',
+  'isPkp',
+  'pkpSince',
+  'nitku',
+];
 
 type TaxSettingsFormProps = {
   settings: TaxSettingsView;
@@ -38,6 +48,7 @@ export function TaxSettingsForm({ settings, canWrite }: TaxSettingsFormProps) {
     toTaxSettingsFormValues(settings),
   );
   const [formError, setFormError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   // The server's answer is the starting position; resync when it changes.
   useEffect(() => {
@@ -54,6 +65,7 @@ export function TaxSettingsForm({ settings, canWrite }: TaxSettingsFormProps) {
 
   function handleChange(change: Partial<TaxSettingsFormValues>): void {
     setFormError(null);
+    setFieldErrors((current) => omitKeys(current, Object.keys(change)));
     setValues((current) => ({ ...current, ...change }));
   }
 
@@ -70,14 +82,35 @@ export function TaxSettingsForm({ settings, canWrite }: TaxSettingsFormProps) {
     }
   }
 
+  /**
+   * Refusals land under the input that caused them. The API names the field —
+   * in the validation pipe's issue list, or in the map a service throws — so a
+   * wrong NITKU is answered beside the NITKU box rather than by a toast that
+   * says only that something failed. A refusal this form has its own wording
+   * for replaces the API's English text; one that names no field, or none this
+   * form renders, stays a notice above the fields.
+   */
   function handleSaveError(caughtError: unknown): void {
     const code = resolveApiErrorCode(caughtError);
     const knownCode = TAX_SETTINGS_ERROR_CODES.find((candidate) => candidate === code);
-    if (knownCode) {
-      setFormError(t(`errors.${knownCode}`));
+    const apiFieldErrors = resolveApiFieldErrors(caughtError);
+    const fields = Object.keys(apiFieldErrors).filter(isFormField);
+    if (fields.length === 0) {
+      setFieldErrors({});
+      if (knownCode) {
+        setFormError(t(`errors.${knownCode}`));
+        return;
+      }
+      notifyApiError(caughtError, t('saveError'));
       return;
     }
-    notifyApiError(caughtError, t('saveError'));
+    // One known refusal is said in the reader's language under its own field;
+    // anything else keeps the API's wording, which names the rule.
+    const ownWording = knownCode && fields.length === 1 ? t(`errors.${knownCode}`) : undefined;
+    setFieldErrors(
+      Object.fromEntries(fields.map((field) => [field, ownWording ?? apiFieldErrors[field] ?? ''])),
+    );
+    setFormError(knownCode && fields.length > 1 ? t(`errors.${knownCode}`) : null);
   }
 
   return (
@@ -89,8 +122,18 @@ export function TaxSettingsForm({ settings, canWrite }: TaxSettingsFormProps) {
       }}
     >
       {formError ? <InlineNotice tone="error">{formError}</InlineNotice> : null}
-      <TaxIncomeRegimeFields values={values} disabled={isDisabled} onChange={handleChange} />
-      <TaxPpnFields values={values} disabled={isDisabled} onChange={handleChange} />
+      <TaxIncomeRegimeFields
+        values={values}
+        errors={fieldErrors}
+        disabled={isDisabled}
+        onChange={handleChange}
+      />
+      <TaxPpnFields
+        values={values}
+        errors={fieldErrors}
+        disabled={isDisabled}
+        onChange={handleChange}
+      />
       {canWrite ? (
         <Button
           type="submit"
@@ -102,4 +145,13 @@ export function TaxSettingsForm({ settings, canWrite }: TaxSettingsFormProps) {
       ) : null}
     </form>
   );
+}
+
+/** The form's own fields; anything else the API names is not ours to show. */
+function isFormField(field: string): field is keyof TaxSettingsFormValues {
+  return FORM_FIELDS.includes(field as keyof TaxSettingsFormValues);
+}
+
+function omitKeys(errors: Record<string, string>, keys: readonly string[]): Record<string, string> {
+  return Object.fromEntries(Object.entries(errors).filter(([field]) => !keys.includes(field)));
 }

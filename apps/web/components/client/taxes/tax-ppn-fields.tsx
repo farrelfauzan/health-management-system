@@ -4,11 +4,15 @@ import { Checkbox, DatePicker, Input, Label } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
 import { FieldDescription } from '#components/client/shared/field-description';
+import { FieldError } from '#components/client/shared/field-error';
+import { toFieldErrors } from '#lib/forms/to-field-errors';
 import { FormLabel } from '#components/client/shared/form-label';
 import type { TaxSettingsFormValues } from '#lib/taxes/tax-settings-form-values';
 
 type TaxPpnFieldsProps = {
   values: TaxSettingsFormValues;
+  /** Refusals the API named per field, shown under the input that caused them. */
+  errors: Record<string, string>;
   disabled: boolean;
   onChange: (change: Partial<TaxSettingsFormValues>) => void;
 };
@@ -21,7 +25,7 @@ const FIELD_ID_PREFIX = 'tax-ppn';
  * tax-inclusive (P27-T04), so there is no pricing-mode switch — only a line
  * saying so.
  */
-export function TaxPpnFields({ values, disabled, onChange }: TaxPpnFieldsProps) {
+export function TaxPpnFields({ values, errors, disabled, onChange }: TaxPpnFieldsProps) {
   const t = useTranslations('operations.taxes.settings');
 
   return (
@@ -57,8 +61,10 @@ export function TaxPpnFields({ values, disabled, onChange }: TaxPpnFieldsProps) 
               id={`${FIELD_ID_PREFIX}-pkp-since`}
               value={values.pkpSince}
               disabled={disabled}
+              aria-invalid={errors.pkpSince !== undefined}
               onValueChange={(value) => onChange({ pkpSince: value })}
             />
+            <FieldError errors={toFieldErrors(errors.pkpSince)} />
           </div>
         ) : null}
         <div className="space-y-1.5">
@@ -75,8 +81,10 @@ export function TaxPpnFields({ values, disabled, onChange }: TaxPpnFieldsProps) 
             value={values.nitku}
             disabled={disabled}
             aria-describedby={`${FIELD_ID_PREFIX}-nitku-hint`}
+            aria-invalid={errors.nitku !== undefined}
             onChange={(event) => onChange({ nitku: event.target.value })}
           />
+          <FieldError errors={toFieldErrors(errors.nitku)} />
           <FieldDescription id={`${FIELD_ID_PREFIX}-nitku-hint`}>
             {t('ppn.nitkuHint')}
           </FieldDescription>

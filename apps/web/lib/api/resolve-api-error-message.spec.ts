@@ -49,6 +49,35 @@ describe('resolveApiErrorMessage', () => {
     );
   });
 
+  it('states the rule each field broke instead of the generic validation message', () => {
+    const inputError = buildAxiosError({
+      error: {
+        code: 'BAD_REQUEST',
+        message: 'Validation failed',
+        details: [
+          { code: 'custom', message: 'NITKU must be 22 digits', path: ['nitku'] },
+          { code: 'custom', message: 'PKP date is required', path: ['pkpSince'] },
+        ],
+      },
+    });
+
+    expect(resolveApiErrorMessage(inputError, FALLBACK)).toBe(
+      'NITKU must be 22 digits; PKP date is required',
+    );
+  });
+
+  it('keeps the envelope message when details carry no field messages', () => {
+    const inputError = buildAxiosError({
+      error: {
+        code: 'TOO_MANY_REQUESTS',
+        message: 'Try again later',
+        details: { retryAfterSeconds: 30 },
+      },
+    });
+
+    expect(resolveApiErrorMessage(inputError, FALLBACK)).toBe('Try again later');
+  });
+
   it('falls back when the response has no message', () => {
     const inputError = buildAxiosError({ statusCode: 500 });
 
