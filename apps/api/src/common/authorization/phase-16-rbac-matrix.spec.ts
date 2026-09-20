@@ -49,15 +49,16 @@ describe('Phase 16 RBAC matrix', () => {
     ['document-template.read:any', ['ADMIN']],
     ['document-template.write:any', ['ADMIN']],
 
-    // E2 — patient documents. The only family in the phase with all three
-    // audiences, and the scopes are the whole rule: an admin reads any file,
-    // a doctor reads the files of patients they attend, a patient reads their
-    // own and nothing else.
-    ['patient-document.read:any', ['ADMIN']],
+    // E2 — patient documents. The scopes were the whole rule and still are,
+    // but P22-T02 enforcing D-033 removed the top row: a `PATIENT_CLINICAL`
+    // file is clinical record content, so **no role holds the `:any` keys**.
+    // A doctor reads the files of patients they attend, a patient reads her
+    // own, and the front desk reads none.
+    ['patient-document.read:any', []],
     ['patient-document.read:own', ['DOCTOR', 'PATIENT']],
-    ['patient-document.write:any', ['ADMIN']],
+    ['patient-document.write:any', []],
     ['patient-document.write:own', ['DOCTOR']],
-    ['patient-document.delete:any', ['ADMIN']],
+    ['patient-document.delete:any', []],
     // Releasing to the portal is the doctor's call, not the desk's: it is a
     // clinical judgement about whether a result should reach a patient
     // unaccompanied.
