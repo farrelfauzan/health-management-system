@@ -119,6 +119,13 @@ export const NOTIFICATION_TYPES = [
   'TAX_OBLIGATION_DUE',
   'TAX_TURNOVER_THRESHOLD',
   'TAX_PP55_LAST_YEAR',
+  /**
+   * An SHK sample came back RECALL or INVALID_SAMPLE and the baby has to be
+   * sampled again (P25-T10). Addressed to the delivery's attendant and to
+   * every holder of `encounter.write:own` — the clinicians, never the admin
+   * desk, because a recall is clinical content (D-033).
+   */
+  'SHK_RECALL',
 ] as const;
 export const notificationTypeSchema = z.enum(NOTIFICATION_TYPES);
 export type NotificationTypeValue = z.infer<typeof notificationTypeSchema>;

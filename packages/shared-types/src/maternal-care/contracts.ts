@@ -1,3 +1,4 @@
+import type { NewbornShkSummary } from '#shk-screening/contracts';
 import type {
   BirthOutcomeValue,
   DeliveryModeValue,
@@ -136,6 +137,8 @@ export type NewbornCareView = {
   hb0ImmunizationId: string | null;
   examinedAt: string | null;
   identityTagAt: string | null;
+  /** Her newest SHK sample (P25-T10); null for a stillbirth. */
+  shkScreening: NewbornShkSummary | null;
 };
 
 /** One recorded birth, with its babies (P25-T09, FR-INC-01). */

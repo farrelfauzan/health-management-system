@@ -12,6 +12,9 @@ const MATERNAL_CARE_QUERY_PREFIXES = [
   // delivery section all change together (P25-T09).
   '/api/v1/deliveries',
   '/api/v1/newborn-care-records',
+  // A heel prick, a card sent or a result changes the worklist and the chip
+  // on the newborn card together (P25-T10).
+  '/api/v1/shk-screenings',
 ];
 
 export async function invalidateMaternalCareQueries(queryClient: QueryClient): Promise<void> {

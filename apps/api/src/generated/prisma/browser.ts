@@ -1622,6 +1622,18 @@ export type DeliveryRecord = Prisma.DeliveryRecordModel
  */
 export type NewbornCareRecord = Prisma.NewbornCareRecordModel
 /**
+ * Model ShkScreening
+ * One SHK (congenital hypothyroidism) heel-prick sample of one live baby
+ * (P25-T10).
+ * 
+ * Sequence 1 is created with the baby's newborn care record, due 48 to 72
+ * hours after birth as absolute offsets. A RECALL or INVALID_SAMPLE result
+ * creates the next sequence, due at once. The status (DUE, OVERDUE, TAKEN…)
+ * is derived on read and never stored: the clock alone moves a sample from
+ * DUE to OVERDUE.
+ */
+export type ShkScreening = Prisma.ShkScreeningModel
+/**
  * Model AntenatalExamination
  * The integrated 10T examination of one antenatal visit (P25-T07, FR-ANC-03).
  * 
