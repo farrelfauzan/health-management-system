@@ -32,6 +32,7 @@ import { MaternalCareRepository } from '../repository/maternal-care.repository';
 import { PregnancyEpisodeConflictError } from '../repository/pregnancy-episode-conflict.error';
 import { toDateOnly } from '../to-date-only';
 import { toMaternalDate } from '../to-maternal-date';
+import { PostnatalVisitService } from './postnatal-visit.service';
 
 const AUDIT_RESOURCE = 'PregnancyEpisode';
 /**
@@ -61,6 +62,7 @@ export class MaternalCareService {
     // runs one way, through the gate.
     private readonly encounterAccessService: EncounterAccessService,
     private readonly auditService: AuditService,
+    private readonly postnatalVisitService: PostnatalVisitService,
   ) {}
 
   async createEpisode(
@@ -282,6 +284,9 @@ export class MaternalCareService {
    * backdated in between would otherwise leave the sequence wrong.
    */
   async freezeVisitCodeOnEncounterClose(encounterId: string): Promise<void> {
+    // A nifas or neonatal visit freezes its KF/KN code at the same moment
+    // (P25-T12). An encounter is at most one of the two kinds.
+    await this.postnatalVisitService.freezeVisitCodeOnEncounterClose(encounterId);
     const visit = await this.maternalCareRepository.findVisitByEncounterId(encounterId);
     if (visit === null || visit.frozenVisitCode !== null || visit.pregnancyEpisodeId === undefined) {
       return;

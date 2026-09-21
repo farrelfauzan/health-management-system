@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import {
   ConsumeRefreshTokenResult,
   RefreshTokenRecordPayload,
+  resolveUserFullName,
   SessionIdentity,
 } from '@hms/shared-types';
 
@@ -104,34 +105,44 @@ export class AuthRepository {
    * to greet them by, and the kind of clinician they are — or nulls when no
    * record says anything.
    *
-   * Two reads rather than a relation on the user lookups, and sequential
+   * The name follows D-027 (P20-T08): the account's own `fullName` first, then
+   * the doctor profile's, through the same {@link resolveUserFullName} every
+   * other display site uses; only then the patient record, which is the one
+   * place a portal account's name has ever lived. The profession comes off the
+   * doctor profile alone, whatever answered the name.
+   *
+   * Separate reads rather than a relation on the user lookups, and sequential
    * rather than parallel, for the reason spelled out on
    * {@link findDoctorProfileCompleteness}: a sibling relation there let two
    * concurrent refreshes overlap inside `consumeRefreshToken` and read as
-   * token reuse. The doctor profile is asked first because a clinician who is
-   * also a patient is greeted in the role they signed in to work in, and the
-   * patient side takes the oldest owned record — a guardian may own their
-   * children's records too, and the account holder's own is the one created
-   * with the account. A retired profile is skipped on both sides; a name on a
-   * soft-deleted record is a name the clinic has stopped standing behind.
+   * token reuse. The patient side takes the oldest owned record — a guardian
+   * may own their children's records too, and the account holder's own is the
+   * one created with the account. A retired profile is skipped on both sides;
+   * a name on a soft-deleted record is a name the clinic has stopped standing
+   * behind.
    */
   async findSessionIdentity(userId: string): Promise<SessionIdentity> {
-    const doctorProfile = await this.prisma.doctorProfile.findUnique({
+    const account = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { fullName: true },
+    });
+    const storedDoctorProfile = await this.prisma.doctorProfile.findUnique({
       where: { ownerUserId: userId },
       select: { fullName: true, profession: true, deletedAt: true },
     });
-    if (doctorProfile && !doctorProfile.deletedAt) {
-      return {
-        displayName: doctorProfile.fullName,
-        clinicianProfession: doctorProfile.profession,
-      };
+    const doctorProfile =
+      storedDoctorProfile && !storedDoctorProfile.deletedAt ? storedDoctorProfile : null;
+    const clinicianProfession = doctorProfile?.profession ?? null;
+    const accountName = resolveUserFullName({ fullName: account?.fullName, doctorProfile });
+    if (accountName) {
+      return { displayName: accountName, clinicianProfession };
     }
     const patientProfile = await this.prisma.patientProfile.findFirst({
       where: { ownerUserId: userId, deletedAt: null },
       orderBy: { createdAt: 'asc' },
       select: { fullName: true },
     });
-    return { displayName: patientProfile?.fullName ?? null, clinicianProfession: null };
+    return { displayName: patientProfile?.fullName.trim() || null, clinicianProfession };
   }
 
   async createRefreshToken(payload: RefreshTokenRecordPayload): Promise<void> {

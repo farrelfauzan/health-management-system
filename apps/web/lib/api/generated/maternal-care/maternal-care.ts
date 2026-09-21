@@ -43,6 +43,11 @@ import type {
   FamilyPlanningControllerRecordServiceV1200,
   FamilyPlanningControllerStartCourseV1200,
   IssueAntenatalReferralLetterDto,
+  LinkPostnatalVisitDto,
+  PostnatalVisitControllerGetEncounterVisitV1200,
+  PostnatalVisitControllerGetScheduleV1200,
+  PostnatalVisitControllerLinkVisitV1200,
+  PostnatalVisitControllerUpsertExaminationV1200,
   PregnancyEpisodeControllerCreateEpisodeV1200,
   PregnancyEpisodeControllerEndEpisodeV1200,
   PregnancyEpisodeControllerGetActiveEpisodeV1200,
@@ -55,11 +60,20 @@ import type {
   RecordExternalDoctorVisitDto,
   RecordFamilyPlanningServiceDto,
   RecordNewbornCareDto,
+  RecordShkResultDto,
+  RecordShkSampleDto,
+  RecordShkSentDto,
+  ShkScreeningControllerListWorklistV1200,
+  ShkScreeningControllerListWorklistV1Params,
+  ShkScreeningControllerRecordResultV1200,
+  ShkScreeningControllerRecordSampleV1200,
+  ShkScreeningControllerRecordSentV1200,
   StartFamilyPlanningDto,
   UpdateDeliveryDto,
   UpdateNewbornCareDto,
   UpdatePregnancyEpisodeDto,
-  UpsertAntenatalExaminationDto
+  UpsertAntenatalExaminationDto,
+  UpsertPostnatalExaminationDto
 } from '../model';
 
 import { orvalAxiosMutator } from '../../http';
@@ -2406,6 +2420,788 @@ export function useFamilyPlanningControllerDiscontinueCourseV1<TData = Awaited<R
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getFamilyPlanningControllerDiscontinueCourseV1QueryOptions(id,discontinueFamilyPlanningDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Read the nifas and neonatal schedule of a birth
+ */
+export const postnatalVisitControllerGetScheduleV1 = (
+    id: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<PostnatalVisitControllerGetScheduleV1200>(
+      {url: `/api/v1/pregnancy-episodes/${id}/postnatal-schedule`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getPostnatalVisitControllerGetScheduleV1QueryKey = (id: string,) => {
+    return [
+    `/api/v1/pregnancy-episodes/${id}/postnatal-schedule`
+    ] as const;
+    }
+
+
+export const getPostnatalVisitControllerGetScheduleV1QueryOptions = <TData = Awaited<ReturnType<typeof postnatalVisitControllerGetScheduleV1>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof postnatalVisitControllerGetScheduleV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getPostnatalVisitControllerGetScheduleV1QueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof postnatalVisitControllerGetScheduleV1>>> = ({ signal }) => postnatalVisitControllerGetScheduleV1(id, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof postnatalVisitControllerGetScheduleV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type PostnatalVisitControllerGetScheduleV1QueryResult = NonNullable<Awaited<ReturnType<typeof postnatalVisitControllerGetScheduleV1>>>
+export type PostnatalVisitControllerGetScheduleV1QueryError = unknown
+
+
+export function usePostnatalVisitControllerGetScheduleV1<TData = Awaited<ReturnType<typeof postnatalVisitControllerGetScheduleV1>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof postnatalVisitControllerGetScheduleV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof postnatalVisitControllerGetScheduleV1>>,
+          TError,
+          Awaited<ReturnType<typeof postnatalVisitControllerGetScheduleV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePostnatalVisitControllerGetScheduleV1<TData = Awaited<ReturnType<typeof postnatalVisitControllerGetScheduleV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof postnatalVisitControllerGetScheduleV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof postnatalVisitControllerGetScheduleV1>>,
+          TError,
+          Awaited<ReturnType<typeof postnatalVisitControllerGetScheduleV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePostnatalVisitControllerGetScheduleV1<TData = Awaited<ReturnType<typeof postnatalVisitControllerGetScheduleV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof postnatalVisitControllerGetScheduleV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Read the nifas and neonatal schedule of a birth
+ */
+
+export function usePostnatalVisitControllerGetScheduleV1<TData = Awaited<ReturnType<typeof postnatalVisitControllerGetScheduleV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof postnatalVisitControllerGetScheduleV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getPostnatalVisitControllerGetScheduleV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Read this encounter's nifas or neonatal visit
+ */
+export const postnatalVisitControllerGetEncounterVisitV1 = (
+    encounterId: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<PostnatalVisitControllerGetEncounterVisitV1200>(
+      {url: `/api/v1/encounters/${encounterId}/postnatal-visit`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getPostnatalVisitControllerGetEncounterVisitV1QueryKey = (encounterId: string,) => {
+    return [
+    `/api/v1/encounters/${encounterId}/postnatal-visit`
+    ] as const;
+    }
+
+
+export const getPostnatalVisitControllerGetEncounterVisitV1QueryOptions = <TData = Awaited<ReturnType<typeof postnatalVisitControllerGetEncounterVisitV1>>, TError = unknown>(encounterId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof postnatalVisitControllerGetEncounterVisitV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getPostnatalVisitControllerGetEncounterVisitV1QueryKey(encounterId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof postnatalVisitControllerGetEncounterVisitV1>>> = ({ signal }) => postnatalVisitControllerGetEncounterVisitV1(encounterId, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: encounterId !== null && encounterId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof postnatalVisitControllerGetEncounterVisitV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type PostnatalVisitControllerGetEncounterVisitV1QueryResult = NonNullable<Awaited<ReturnType<typeof postnatalVisitControllerGetEncounterVisitV1>>>
+export type PostnatalVisitControllerGetEncounterVisitV1QueryError = unknown
+
+
+export function usePostnatalVisitControllerGetEncounterVisitV1<TData = Awaited<ReturnType<typeof postnatalVisitControllerGetEncounterVisitV1>>, TError = unknown>(
+ encounterId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof postnatalVisitControllerGetEncounterVisitV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof postnatalVisitControllerGetEncounterVisitV1>>,
+          TError,
+          Awaited<ReturnType<typeof postnatalVisitControllerGetEncounterVisitV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePostnatalVisitControllerGetEncounterVisitV1<TData = Awaited<ReturnType<typeof postnatalVisitControllerGetEncounterVisitV1>>, TError = unknown>(
+ encounterId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof postnatalVisitControllerGetEncounterVisitV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof postnatalVisitControllerGetEncounterVisitV1>>,
+          TError,
+          Awaited<ReturnType<typeof postnatalVisitControllerGetEncounterVisitV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePostnatalVisitControllerGetEncounterVisitV1<TData = Awaited<ReturnType<typeof postnatalVisitControllerGetEncounterVisitV1>>, TError = unknown>(
+ encounterId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof postnatalVisitControllerGetEncounterVisitV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Read this encounter's nifas or neonatal visit
+ */
+
+export function usePostnatalVisitControllerGetEncounterVisitV1<TData = Awaited<ReturnType<typeof postnatalVisitControllerGetEncounterVisitV1>>, TError = unknown>(
+ encounterId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof postnatalVisitControllerGetEncounterVisitV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getPostnatalVisitControllerGetEncounterVisitV1QueryOptions(encounterId,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Count this encounter as a nifas or neonatal visit
+ */
+export const postnatalVisitControllerLinkVisitV1 = (
+    encounterId: string,
+    linkPostnatalVisitDto: LinkPostnatalVisitDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<PostnatalVisitControllerLinkVisitV1200>(
+      {url: `/api/v1/encounters/${encounterId}/postnatal-visit`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: linkPostnatalVisitDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getPostnatalVisitControllerLinkVisitV1QueryKey = (encounterId: string,
+    linkPostnatalVisitDto?: LinkPostnatalVisitDto,) => {
+    return [
+    'POST', `/api/v1/encounters/${encounterId}/postnatal-visit`, linkPostnatalVisitDto
+    ] as const;
+    }
+
+
+export const getPostnatalVisitControllerLinkVisitV1QueryOptions = <TData = Awaited<ReturnType<typeof postnatalVisitControllerLinkVisitV1>>, TError = unknown>(encounterId: string,
+    linkPostnatalVisitDto: LinkPostnatalVisitDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof postnatalVisitControllerLinkVisitV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getPostnatalVisitControllerLinkVisitV1QueryKey(encounterId,linkPostnatalVisitDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof postnatalVisitControllerLinkVisitV1>>> = ({ signal }) => postnatalVisitControllerLinkVisitV1(encounterId,linkPostnatalVisitDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: encounterId !== null && encounterId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof postnatalVisitControllerLinkVisitV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type PostnatalVisitControllerLinkVisitV1QueryResult = NonNullable<Awaited<ReturnType<typeof postnatalVisitControllerLinkVisitV1>>>
+export type PostnatalVisitControllerLinkVisitV1QueryError = unknown
+
+
+export function usePostnatalVisitControllerLinkVisitV1<TData = Awaited<ReturnType<typeof postnatalVisitControllerLinkVisitV1>>, TError = unknown>(
+ encounterId: string,
+    linkPostnatalVisitDto: LinkPostnatalVisitDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof postnatalVisitControllerLinkVisitV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof postnatalVisitControllerLinkVisitV1>>,
+          TError,
+          Awaited<ReturnType<typeof postnatalVisitControllerLinkVisitV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePostnatalVisitControllerLinkVisitV1<TData = Awaited<ReturnType<typeof postnatalVisitControllerLinkVisitV1>>, TError = unknown>(
+ encounterId: string,
+    linkPostnatalVisitDto: LinkPostnatalVisitDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof postnatalVisitControllerLinkVisitV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof postnatalVisitControllerLinkVisitV1>>,
+          TError,
+          Awaited<ReturnType<typeof postnatalVisitControllerLinkVisitV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePostnatalVisitControllerLinkVisitV1<TData = Awaited<ReturnType<typeof postnatalVisitControllerLinkVisitV1>>, TError = unknown>(
+ encounterId: string,
+    linkPostnatalVisitDto: LinkPostnatalVisitDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof postnatalVisitControllerLinkVisitV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Count this encounter as a nifas or neonatal visit
+ */
+
+export function usePostnatalVisitControllerLinkVisitV1<TData = Awaited<ReturnType<typeof postnatalVisitControllerLinkVisitV1>>, TError = unknown>(
+ encounterId: string,
+    linkPostnatalVisitDto: LinkPostnatalVisitDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof postnatalVisitControllerLinkVisitV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getPostnatalVisitControllerLinkVisitV1QueryOptions(encounterId,linkPostnatalVisitDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Record this nifas visit's examination
+ */
+export const postnatalVisitControllerUpsertExaminationV1 = (
+    encounterId: string,
+    upsertPostnatalExaminationDto: UpsertPostnatalExaminationDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<PostnatalVisitControllerUpsertExaminationV1200>(
+      {url: `/api/v1/encounters/${encounterId}/postnatal-examination`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: upsertPostnatalExaminationDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getPostnatalVisitControllerUpsertExaminationV1QueryKey = (encounterId: string,
+    upsertPostnatalExaminationDto?: UpsertPostnatalExaminationDto,) => {
+    return [
+    'PUT', `/api/v1/encounters/${encounterId}/postnatal-examination`, upsertPostnatalExaminationDto
+    ] as const;
+    }
+
+
+export const getPostnatalVisitControllerUpsertExaminationV1QueryOptions = <TData = Awaited<ReturnType<typeof postnatalVisitControllerUpsertExaminationV1>>, TError = unknown>(encounterId: string,
+    upsertPostnatalExaminationDto: UpsertPostnatalExaminationDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof postnatalVisitControllerUpsertExaminationV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getPostnatalVisitControllerUpsertExaminationV1QueryKey(encounterId,upsertPostnatalExaminationDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof postnatalVisitControllerUpsertExaminationV1>>> = ({ signal }) => postnatalVisitControllerUpsertExaminationV1(encounterId,upsertPostnatalExaminationDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: encounterId !== null && encounterId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof postnatalVisitControllerUpsertExaminationV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type PostnatalVisitControllerUpsertExaminationV1QueryResult = NonNullable<Awaited<ReturnType<typeof postnatalVisitControllerUpsertExaminationV1>>>
+export type PostnatalVisitControllerUpsertExaminationV1QueryError = unknown
+
+
+export function usePostnatalVisitControllerUpsertExaminationV1<TData = Awaited<ReturnType<typeof postnatalVisitControllerUpsertExaminationV1>>, TError = unknown>(
+ encounterId: string,
+    upsertPostnatalExaminationDto: UpsertPostnatalExaminationDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof postnatalVisitControllerUpsertExaminationV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof postnatalVisitControllerUpsertExaminationV1>>,
+          TError,
+          Awaited<ReturnType<typeof postnatalVisitControllerUpsertExaminationV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePostnatalVisitControllerUpsertExaminationV1<TData = Awaited<ReturnType<typeof postnatalVisitControllerUpsertExaminationV1>>, TError = unknown>(
+ encounterId: string,
+    upsertPostnatalExaminationDto: UpsertPostnatalExaminationDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof postnatalVisitControllerUpsertExaminationV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof postnatalVisitControllerUpsertExaminationV1>>,
+          TError,
+          Awaited<ReturnType<typeof postnatalVisitControllerUpsertExaminationV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePostnatalVisitControllerUpsertExaminationV1<TData = Awaited<ReturnType<typeof postnatalVisitControllerUpsertExaminationV1>>, TError = unknown>(
+ encounterId: string,
+    upsertPostnatalExaminationDto: UpsertPostnatalExaminationDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof postnatalVisitControllerUpsertExaminationV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Record this nifas visit's examination
+ */
+
+export function usePostnatalVisitControllerUpsertExaminationV1<TData = Awaited<ReturnType<typeof postnatalVisitControllerUpsertExaminationV1>>, TError = unknown>(
+ encounterId: string,
+    upsertPostnatalExaminationDto: UpsertPostnatalExaminationDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof postnatalVisitControllerUpsertExaminationV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getPostnatalVisitControllerUpsertExaminationV1QueryOptions(encounterId,upsertPostnatalExaminationDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary List the SHK sample worklist
+ */
+export const shkScreeningControllerListWorklistV1 = (
+    params?: ShkScreeningControllerListWorklistV1Params,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<ShkScreeningControllerListWorklistV1200>(
+      {url: `/api/v1/shk-screenings`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+
+
+
+
+export const getShkScreeningControllerListWorklistV1QueryKey = (params?: ShkScreeningControllerListWorklistV1Params,) => {
+    return [
+    `/api/v1/shk-screenings`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getShkScreeningControllerListWorklistV1QueryOptions = <TData = Awaited<ReturnType<typeof shkScreeningControllerListWorklistV1>>, TError = unknown>(params?: ShkScreeningControllerListWorklistV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof shkScreeningControllerListWorklistV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getShkScreeningControllerListWorklistV1QueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof shkScreeningControllerListWorklistV1>>> = ({ signal }) => shkScreeningControllerListWorklistV1(params, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof shkScreeningControllerListWorklistV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ShkScreeningControllerListWorklistV1QueryResult = NonNullable<Awaited<ReturnType<typeof shkScreeningControllerListWorklistV1>>>
+export type ShkScreeningControllerListWorklistV1QueryError = unknown
+
+
+export function useShkScreeningControllerListWorklistV1<TData = Awaited<ReturnType<typeof shkScreeningControllerListWorklistV1>>, TError = unknown>(
+ params: undefined |  ShkScreeningControllerListWorklistV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof shkScreeningControllerListWorklistV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof shkScreeningControllerListWorklistV1>>,
+          TError,
+          Awaited<ReturnType<typeof shkScreeningControllerListWorklistV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useShkScreeningControllerListWorklistV1<TData = Awaited<ReturnType<typeof shkScreeningControllerListWorklistV1>>, TError = unknown>(
+ params?: ShkScreeningControllerListWorklistV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof shkScreeningControllerListWorklistV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof shkScreeningControllerListWorklistV1>>,
+          TError,
+          Awaited<ReturnType<typeof shkScreeningControllerListWorklistV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useShkScreeningControllerListWorklistV1<TData = Awaited<ReturnType<typeof shkScreeningControllerListWorklistV1>>, TError = unknown>(
+ params?: ShkScreeningControllerListWorklistV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof shkScreeningControllerListWorklistV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List the SHK sample worklist
+ */
+
+export function useShkScreeningControllerListWorklistV1<TData = Awaited<ReturnType<typeof shkScreeningControllerListWorklistV1>>, TError = unknown>(
+ params?: ShkScreeningControllerListWorklistV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof shkScreeningControllerListWorklistV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getShkScreeningControllerListWorklistV1QueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Record the heel prick
+ */
+export const shkScreeningControllerRecordSampleV1 = (
+    id: string,
+    recordShkSampleDto: RecordShkSampleDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<ShkScreeningControllerRecordSampleV1200>(
+      {url: `/api/v1/shk-screenings/${id}/sample`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: recordShkSampleDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getShkScreeningControllerRecordSampleV1QueryKey = (id: string,
+    recordShkSampleDto?: RecordShkSampleDto,) => {
+    return [
+    'POST', `/api/v1/shk-screenings/${id}/sample`, recordShkSampleDto
+    ] as const;
+    }
+
+
+export const getShkScreeningControllerRecordSampleV1QueryOptions = <TData = Awaited<ReturnType<typeof shkScreeningControllerRecordSampleV1>>, TError = unknown>(id: string,
+    recordShkSampleDto: RecordShkSampleDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof shkScreeningControllerRecordSampleV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getShkScreeningControllerRecordSampleV1QueryKey(id,recordShkSampleDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof shkScreeningControllerRecordSampleV1>>> = ({ signal }) => shkScreeningControllerRecordSampleV1(id,recordShkSampleDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof shkScreeningControllerRecordSampleV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ShkScreeningControllerRecordSampleV1QueryResult = NonNullable<Awaited<ReturnType<typeof shkScreeningControllerRecordSampleV1>>>
+export type ShkScreeningControllerRecordSampleV1QueryError = unknown
+
+
+export function useShkScreeningControllerRecordSampleV1<TData = Awaited<ReturnType<typeof shkScreeningControllerRecordSampleV1>>, TError = unknown>(
+ id: string,
+    recordShkSampleDto: RecordShkSampleDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof shkScreeningControllerRecordSampleV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof shkScreeningControllerRecordSampleV1>>,
+          TError,
+          Awaited<ReturnType<typeof shkScreeningControllerRecordSampleV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useShkScreeningControllerRecordSampleV1<TData = Awaited<ReturnType<typeof shkScreeningControllerRecordSampleV1>>, TError = unknown>(
+ id: string,
+    recordShkSampleDto: RecordShkSampleDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof shkScreeningControllerRecordSampleV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof shkScreeningControllerRecordSampleV1>>,
+          TError,
+          Awaited<ReturnType<typeof shkScreeningControllerRecordSampleV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useShkScreeningControllerRecordSampleV1<TData = Awaited<ReturnType<typeof shkScreeningControllerRecordSampleV1>>, TError = unknown>(
+ id: string,
+    recordShkSampleDto: RecordShkSampleDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof shkScreeningControllerRecordSampleV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Record the heel prick
+ */
+
+export function useShkScreeningControllerRecordSampleV1<TData = Awaited<ReturnType<typeof shkScreeningControllerRecordSampleV1>>, TError = unknown>(
+ id: string,
+    recordShkSampleDto: RecordShkSampleDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof shkScreeningControllerRecordSampleV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getShkScreeningControllerRecordSampleV1QueryOptions(id,recordShkSampleDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Record the card sent to the laboratory
+ */
+export const shkScreeningControllerRecordSentV1 = (
+    id: string,
+    recordShkSentDto: RecordShkSentDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<ShkScreeningControllerRecordSentV1200>(
+      {url: `/api/v1/shk-screenings/${id}/sent`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: recordShkSentDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getShkScreeningControllerRecordSentV1QueryKey = (id: string,
+    recordShkSentDto?: RecordShkSentDto,) => {
+    return [
+    'POST', `/api/v1/shk-screenings/${id}/sent`, recordShkSentDto
+    ] as const;
+    }
+
+
+export const getShkScreeningControllerRecordSentV1QueryOptions = <TData = Awaited<ReturnType<typeof shkScreeningControllerRecordSentV1>>, TError = unknown>(id: string,
+    recordShkSentDto: RecordShkSentDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof shkScreeningControllerRecordSentV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getShkScreeningControllerRecordSentV1QueryKey(id,recordShkSentDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof shkScreeningControllerRecordSentV1>>> = ({ signal }) => shkScreeningControllerRecordSentV1(id,recordShkSentDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof shkScreeningControllerRecordSentV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ShkScreeningControllerRecordSentV1QueryResult = NonNullable<Awaited<ReturnType<typeof shkScreeningControllerRecordSentV1>>>
+export type ShkScreeningControllerRecordSentV1QueryError = unknown
+
+
+export function useShkScreeningControllerRecordSentV1<TData = Awaited<ReturnType<typeof shkScreeningControllerRecordSentV1>>, TError = unknown>(
+ id: string,
+    recordShkSentDto: RecordShkSentDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof shkScreeningControllerRecordSentV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof shkScreeningControllerRecordSentV1>>,
+          TError,
+          Awaited<ReturnType<typeof shkScreeningControllerRecordSentV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useShkScreeningControllerRecordSentV1<TData = Awaited<ReturnType<typeof shkScreeningControllerRecordSentV1>>, TError = unknown>(
+ id: string,
+    recordShkSentDto: RecordShkSentDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof shkScreeningControllerRecordSentV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof shkScreeningControllerRecordSentV1>>,
+          TError,
+          Awaited<ReturnType<typeof shkScreeningControllerRecordSentV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useShkScreeningControllerRecordSentV1<TData = Awaited<ReturnType<typeof shkScreeningControllerRecordSentV1>>, TError = unknown>(
+ id: string,
+    recordShkSentDto: RecordShkSentDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof shkScreeningControllerRecordSentV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Record the card sent to the laboratory
+ */
+
+export function useShkScreeningControllerRecordSentV1<TData = Awaited<ReturnType<typeof shkScreeningControllerRecordSentV1>>, TError = unknown>(
+ id: string,
+    recordShkSentDto: RecordShkSentDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof shkScreeningControllerRecordSentV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getShkScreeningControllerRecordSentV1QueryOptions(id,recordShkSentDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Record the laboratory's answer
+ */
+export const shkScreeningControllerRecordResultV1 = (
+    id: string,
+    recordShkResultDto: RecordShkResultDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<ShkScreeningControllerRecordResultV1200>(
+      {url: `/api/v1/shk-screenings/${id}/result`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: recordShkResultDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getShkScreeningControllerRecordResultV1QueryKey = (id: string,
+    recordShkResultDto?: RecordShkResultDto,) => {
+    return [
+    'POST', `/api/v1/shk-screenings/${id}/result`, recordShkResultDto
+    ] as const;
+    }
+
+
+export const getShkScreeningControllerRecordResultV1QueryOptions = <TData = Awaited<ReturnType<typeof shkScreeningControllerRecordResultV1>>, TError = unknown>(id: string,
+    recordShkResultDto: RecordShkResultDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof shkScreeningControllerRecordResultV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getShkScreeningControllerRecordResultV1QueryKey(id,recordShkResultDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof shkScreeningControllerRecordResultV1>>> = ({ signal }) => shkScreeningControllerRecordResultV1(id,recordShkResultDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof shkScreeningControllerRecordResultV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ShkScreeningControllerRecordResultV1QueryResult = NonNullable<Awaited<ReturnType<typeof shkScreeningControllerRecordResultV1>>>
+export type ShkScreeningControllerRecordResultV1QueryError = unknown
+
+
+export function useShkScreeningControllerRecordResultV1<TData = Awaited<ReturnType<typeof shkScreeningControllerRecordResultV1>>, TError = unknown>(
+ id: string,
+    recordShkResultDto: RecordShkResultDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof shkScreeningControllerRecordResultV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof shkScreeningControllerRecordResultV1>>,
+          TError,
+          Awaited<ReturnType<typeof shkScreeningControllerRecordResultV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useShkScreeningControllerRecordResultV1<TData = Awaited<ReturnType<typeof shkScreeningControllerRecordResultV1>>, TError = unknown>(
+ id: string,
+    recordShkResultDto: RecordShkResultDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof shkScreeningControllerRecordResultV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof shkScreeningControllerRecordResultV1>>,
+          TError,
+          Awaited<ReturnType<typeof shkScreeningControllerRecordResultV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useShkScreeningControllerRecordResultV1<TData = Awaited<ReturnType<typeof shkScreeningControllerRecordResultV1>>, TError = unknown>(
+ id: string,
+    recordShkResultDto: RecordShkResultDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof shkScreeningControllerRecordResultV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Record the laboratory's answer
+ */
+
+export function useShkScreeningControllerRecordResultV1<TData = Awaited<ReturnType<typeof shkScreeningControllerRecordResultV1>>, TError = unknown>(
+ id: string,
+    recordShkResultDto: RecordShkResultDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof shkScreeningControllerRecordResultV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getShkScreeningControllerRecordResultV1QueryOptions(id,recordShkResultDto,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

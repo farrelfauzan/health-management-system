@@ -60,9 +60,10 @@ export function resolveSessionClaims({
       // And the profile-completion flag (P20-T02), for the same reason: a
       // fresh token would otherwise let an incomplete doctor past the gate.
       ...(hintClaims?.isProfileIncomplete ? { isProfileIncomplete: true } : {}),
-      // And the display name, for the same reason once more: the token carries
-      // the email address and never the person's name, so without this merge
-      // every fresh session would be greeted by the local part of its address.
+      // And the display name. Since P20-T08 a fresh token carries it too, as
+      // `name`, and the spread above keeps it; the hint's copy — written at the
+      // same issuance — still wins when present, so a token minted by an older
+      // API does not blank a name the hint already knows.
       ...(hintClaims?.name === undefined ? {} : { name: hintClaims.name }),
       // And the clinician profession, which the token likewise never carries.
       ...(hintClaims?.clinicianProfession === undefined

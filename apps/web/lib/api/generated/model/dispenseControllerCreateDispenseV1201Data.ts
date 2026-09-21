@@ -12,6 +12,7 @@ export type DispenseControllerCreateDispenseV1201Data = {
   prescriptionId: string;
   prescriptionStatus: string;
   pharmacistId: string;
+  pharmacistName: string;
   status: string;
   dispensedAt: string;
   notes: string;

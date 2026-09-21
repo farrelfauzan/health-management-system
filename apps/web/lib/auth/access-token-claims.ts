@@ -31,14 +31,14 @@ export type AccessTokenClaims = {
    */
   isProfileIncomplete?: boolean;
   /**
-   * The signed-in person's own name, as their doctor or patient record spells
-   * it. Carried by the session-hint cookie only — the access token is a signed
-   * credential the API validates, and a greeting has no business inside one.
+   * The signed-in person's name (P20-T08): the account's own, else their
+   * doctor or patient record's, as the API resolved it at issuance. Carried
+   * by the access token and by the session-hint cookie, which covers the
+   * window after the token expires and before the client refreshes.
    *
-   * Absent for an account no clinical record names (a receptionist, an
-   * administrator) and for every hint written before this field existed; the
-   * shell falls back to the local part of the email address, exactly as it did
-   * before. Rendering input only.
+   * Absent for an account nothing names and for every session issued before
+   * the claim existed, until its next refresh; the shell then shows the email
+   * address verbatim and never derives a name from it. Rendering input only.
    */
   name?: string;
   /**

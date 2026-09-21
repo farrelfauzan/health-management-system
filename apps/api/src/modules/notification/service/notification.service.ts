@@ -84,6 +84,15 @@ export class NotificationService {
     return this.notificationRepository.createForUsers(userIds, payload);
   }
 
+  /**
+   * The live human accounts holding the permission, for a producer that must
+   * merge them with a named recipient before writing — so a person who is
+   * both is told once (P25-T10's SHK recall).
+   */
+  async listUserIdsWithPermission(permissionKey: string): Promise<string[]> {
+    return this.notificationRepository.findUserIdsWithPermissionKey(permissionKey);
+  }
+
   private toNotificationView(record: NotificationRecord): NotificationView {
     return {
       id: record.id,

@@ -63,6 +63,18 @@ export function EncounterImmunizationRow({
           })}
           {details.length > 0 ? ` · ${details.join(' · ')}` : null}
         </p>
+        {immunization.performedByName ? (
+          // Who gave it — or, for a dose copied from a KIA book, who entered
+          // it (P20-T07). The id was on the response all along; nothing named it.
+          <p className="text-xs text-slate-500">
+            {t(
+              immunization.isHistorical
+                ? 'encounters.immunization.enteredBy'
+                : 'encounters.immunization.performedBy',
+              { name: immunization.performedByName },
+            )}
+          </p>
+        ) : null}
         {immunization.kfaCode ? null : (
           // Worth saying on the row: the vaccination is recorded either way,
           // but without a KFA code it never reaches the national record.

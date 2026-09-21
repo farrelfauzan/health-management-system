@@ -14,6 +14,7 @@ export type ShellNavigationKey =
   | 'appointments'
   | 'registration'
   | 'encounters'
+  | 'shkScreening'
   | 'rooms'
   | 'admissions'
   | 'pharmacy'
@@ -107,6 +108,15 @@ export const ADMIN_NAV_SECTIONS: AdminNavSection[] = [
         label: 'Encounters',
         labelKey: 'encounters',
         icon: 'clinical_notes',
+        ability: { action: 'read', subject: 'Encounter' },
+      },
+      {
+        // P25-T10. The SHK sample worklist, mirroring the clinician page.
+        // Hidden with the `maternal-care` entitlement (catalog navHrefs).
+        href: '/admin/shk',
+        label: 'SHK Screening',
+        labelKey: 'shkScreening',
+        icon: 'child_care',
         ability: { action: 'read', subject: 'Encounter' },
       },
       {

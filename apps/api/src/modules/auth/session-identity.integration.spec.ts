@@ -6,9 +6,10 @@ import { AuthRepository } from './repository/auth.repository';
 /**
  * The shell header's one database question, against real Postgres.
  *
- * The rules it encodes are all about *which* record answers, so a unit test
- * with a stubbed Prisma would only restate the query back to itself: a
- * clinician who is also a patient is greeted as the clinician, a guardian who
+ * The rules it encodes are all about *which* record answers — since P20-T08
+ * the account's own name first, then the doctor profile, then the patient
+ * record — so a unit test with a stubbed Prisma would only restate the query
+ * back to itself: a clinician who is also a patient is greeted as the clinician, a guardian who
  * owns their children's records is greeted as themselves, and a retired
  * profile is no name at all. Each of those is an ordering or a filter the
  * database applies, so the database has to be the one asked.
@@ -20,11 +21,12 @@ describe('Session identity against Postgres', () => {
   let authRepository: AuthRepository;
   let specialtyId: string;
 
-  async function createUser(suffix: string): Promise<string> {
+  async function createUser(suffix: string, fullName?: string): Promise<string> {
     const user = await prisma.user.create({
       data: {
         email: `${TEST_MARKER}-${suffix}@example.test`,
         passwordHash: 'not-a-real-hash',
+        ...(fullName === undefined ? {} : { fullName }),
       },
     });
     return user.id;
@@ -175,6 +177,59 @@ describe('Session identity against Postgres', () => {
     await expect(authRepository.findSessionIdentity(userId)).resolves.toEqual({
       displayName: 'Olivia Kirana',
       clinicianProfession: 'DOCTOR',
+    });
+  });
+
+  it("answers with the account's own name before the doctor profile's (D-027, P20-T08)", async () => {
+    const userId = await createUser('account-named-doctor', 'Siti Nurhaliza');
+    await createDoctorProfile({
+      ownerUserId: userId,
+      fullName: 'dr. Siti Nurhaliza, Sp.OG',
+      suffix: 'account-named-doctor',
+    });
+
+    await expect(authRepository.findSessionIdentity(userId)).resolves.toEqual({
+      displayName: 'Siti Nurhaliza',
+      clinicianProfession: 'DOCTOR',
+    });
+  });
+
+  it('answers with the account name for a staff account no clinical record names', async () => {
+    const userId = await createUser('pharmacist', 'Rina Apoteker');
+
+    await expect(authRepository.findSessionIdentity(userId)).resolves.toEqual({
+      displayName: 'Rina Apoteker',
+      clinicianProfession: null,
+    });
+  });
+
+  it("answers with the account's own name before the patient record's", async () => {
+    const userId = await createUser('account-named-patient', 'Ratna Sari');
+    await createPatientProfile({
+      ownerUserId: userId,
+      fullName: 'Ibu Ratna',
+      suffix: 'account-named-patient',
+      createdAt: new Date('2026-01-01T00:00:00.000Z'),
+    });
+
+    await expect(authRepository.findSessionIdentity(userId)).resolves.toEqual({
+      displayName: 'Ratna Sari',
+      clinicianProfession: null,
+    });
+  });
+
+  it('treats a blank account name as no name and falls through to the profile', async () => {
+    const userId = await createUser('blank-account-name', '   ');
+    await createDoctorProfile({
+      ownerUserId: userId,
+      fullName: 'Bidan Sari',
+      suffix: 'blank-account-name',
+      profession: 'MIDWIFE',
+    });
+
+    await expect(authRepository.findSessionIdentity(userId)).resolves.toEqual({
+      displayName: 'Bidan Sari',
+      clinicianProfession: 'MIDWIFE',
     });
   });
 

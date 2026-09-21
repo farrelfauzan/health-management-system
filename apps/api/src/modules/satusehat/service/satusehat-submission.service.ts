@@ -42,6 +42,8 @@ import {
 import { SatusehatAmbiguousMatchError } from '../../../common/satusehat/satusehat-ambiguous-match.error';
 import { SATUSEHAT_ANTENATAL_EPISODE_TYPE_CODE } from '../../../common/satusehat/satusehat-episode-of-care-coding';
 import { SatusehatEpisodeOfCareClient } from '../../../common/satusehat/satusehat-episode-of-care.client';
+import { SatusehatPostnatalRepository } from '../repository/satusehat-postnatal.repository';
+import { SatusehatPostnatalSubmissionService } from './satusehat-postnatal-submission.service';
 import { SatusehatHttpClient } from '../../../common/satusehat/satusehat-http.client';
 import { SatusehatMasterDataClient } from '../../../common/satusehat/satusehat-master-data.client';
 import { SatusehatError } from '../../../common/satusehat/satusehat.error';
@@ -168,6 +170,8 @@ export class SatusehatSubmissionService {
     private readonly httpClient: SatusehatHttpClient,
     private readonly episodeOfCareClient: SatusehatEpisodeOfCareClient,
     private readonly auditService: AuditService,
+    private readonly postnatalSubmissionService: SatusehatPostnatalSubmissionService,
+    private readonly postnatalRepository: SatusehatPostnatalRepository,
   ) {
     this.satusehatConfig = resolveSatusehatConfig(configService);
     this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
@@ -182,6 +186,10 @@ export class SatusehatSubmissionService {
       }
       if (submission.kind === 'EPISODE_OF_CARE_FINISH') {
         await this.processEpisodeOfCareFinishSubmission(submission);
+        return;
+      }
+      if (submission.kind === 'POSTNATAL_EPISODE_FINISH') {
+        await this.processPostnatalEpisodeFinishSubmission(submission);
         return;
       }
       if (submission.encounterId === null) {
@@ -270,7 +278,17 @@ export class SatusehatSubmissionService {
     // — the Encounter references it by id, so the id has to exist first
     // (P25-T08).
     const antenatalVisit = await this.ensureAntenatalEpisode(bundleData, patientIhsNumber);
-    const episodeBundleData: SatusehatSubmissionBundleData = { ...bundleData, antenatalVisit };
+    // The PNC episode is ensured the same way, for the same reason (P25-T12).
+    const postnatalVisit = await this.postnatalSubmissionService.ensurePostnatalEpisode({
+      postnatalVisit: bundleData.postnatalVisit,
+      patientIhsNumber,
+      patientName: bundleData.patientName,
+    });
+    const episodeBundleData: SatusehatSubmissionBundleData = {
+      ...bundleData,
+      antenatalVisit,
+      postnatalVisit,
+    };
     const allergyFullUrls = new Map<string, string>();
     const immunizationFullUrls = new Map<string, string>();
     const resourceList = new SatusehatResourceListBuilder();
@@ -306,6 +324,13 @@ export class SatusehatSubmissionService {
         resourceType: 'EpisodeOfCare',
         localRecordId: antenatalVisit.pregnancyEpisodeId,
         satusehatId: antenatalVisit.satusehatEpisodeOfCareId,
+      });
+    }
+    if (postnatalVisit?.satusehatPostnatalEpisodeOfCareId && postnatalVisit.visitCode !== null) {
+      resourceList.recordExternalResource({
+        resourceType: 'EpisodeOfCare',
+        localRecordId: postnatalVisit.pregnancyEpisodeId,
+        satusehatId: postnatalVisit.satusehatPostnatalEpisodeOfCareId,
       });
     }
     return {
@@ -880,6 +905,58 @@ export class SatusehatSubmissionService {
   }
 
   /**
+   * Closes a birth's PNC episode (P25-T12): one PATCH, no bundle. A row whose
+   * pregnancy lost its episode id or its birth settles rather than retrying,
+   * the ANC close's rule.
+   */
+  private async processPostnatalEpisodeFinishSubmission(
+    submission: SatusehatSubmissionRecord,
+  ): Promise<void> {
+    if (submission.pregnancyEpisodeId === null) {
+      throw new SatusehatSubmissionDataError('PNC episode close carries no pregnancy');
+    }
+    const finishData = await this.postnatalRepository.findPostnatalEpisodeFinishData(
+      submission.pregnancyEpisodeId,
+    );
+    if (finishData === null) {
+      throw new SatusehatSubmissionDataError('Pregnancy no longer exists');
+    }
+    const episodeId = finishData.satusehatPostnatalEpisodeOfCareId;
+    const birthAt = finishData.birthAt;
+    if (episodeId !== null && birthAt !== null) {
+      const patientIhsNumber = await this.resolvePatientIhsNumber(finishData);
+      await this.postnatalSubmissionService.finishPostnatalEpisode({
+        finishData: { ...finishData, satusehatPostnatalEpisodeOfCareId: episodeId, birthAt },
+        patientIhsNumber,
+      });
+    } else {
+      this.logger.warn(
+        'SATUSEHAT PNC episode close settled with nothing to send: no episode id or no birth',
+      );
+    }
+    await this.submissionRepository.markSubmitted({
+      id: submission.id,
+      satusehatEncounterId: null,
+      locationFallbackReason: null,
+    });
+    if (episodeId !== null && birthAt !== null) {
+      await this.submissionRepository.saveSubmissionResources({
+        submissionId: submission.id,
+        resources: [
+          {
+            resourceType: 'EpisodeOfCare',
+            outcome: 'SENT',
+            skipReason: null,
+            satusehatId: episodeId,
+            localRecordId: finishData.pregnancyEpisodeId,
+            isBackfilled: false,
+          },
+        ],
+      });
+    }
+  }
+
+  /**
    * `EpisodeOfCare.period.start`: the HPHT when the pregnancy has one, else
    * the visit that opened the episode.
    *
@@ -1064,6 +1141,18 @@ export class SatusehatSubmissionService {
       practitionerIhsNumber,
       endedAt,
     ));
+    // The nifas findings join them the same way (P25-T12). Blood pressure,
+    // pulse, temperature and respiration are the vital signs above.
+    observationEntries.push(
+      ...this.postnatalSubmissionService.buildObservationEntries({
+        visit: bundleData.postnatalVisit,
+        encounterFullUrl,
+        patientIhsNumber,
+        patientName: bundleData.patientName,
+        practitionerIhsNumber,
+        recordedAt: endedAt,
+      }),
+    );
     const medicationEntries = this.buildMedicationEntries(
       bundleData,
       encounterFullUrl,
@@ -1096,6 +1185,7 @@ export class SatusehatSubmissionService {
             },
           }
         : {}),
+      ...this.postnatalSubmissionService.buildEncounterPostnatalInput(bundleData.postnatalVisit),
     });
     const clinicalImpressionEntry = this.buildClinicalImpressionEntry(
       bundleData,

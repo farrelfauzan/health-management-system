@@ -266,7 +266,7 @@ export class AuthService {
     isProfileIncomplete: boolean,
     identity: SessionIdentity,
   ): Promise<IssuedSession> {
-    const accessToken = await this.issueAccessToken(claims);
+    const accessToken = await this.issueAccessToken(claims, identity.displayName);
     const issuedRefreshToken = this.issueRefreshToken({
       userId: claims.sub,
       familyId: randomUUID(),
@@ -372,7 +372,13 @@ export class AuthService {
       permissions: this.resolveSessionPermissionCodes(user),
     };
     await this.assertSecondFactorSatisfied(user.id, claims.permissions);
-    const accessToken = await this.issueAccessToken(claims);
+    // Re-read on every refresh, so renaming an account or a profile — or
+    // correcting a profession — reaches the token and the shell at the next
+    // refresh instead of waiting for the next sign-in. Sequential and after the
+    // token is consumed, like the completion read below, so it never widens
+    // the race `consumeRefreshToken` has to serialise.
+    const identity = await this.authRepository.findSessionIdentity(user.id);
+    const accessToken = await this.issueAccessToken(claims, identity.displayName);
     await this.auditService.record({
       action: AuditAction.TOKEN_REFRESHED,
       resource: 'auth',
@@ -397,11 +403,7 @@ export class AuthService {
       // Read only here, after the token is consumed, so it never widens the
       // race `consumeRefreshToken` has to serialise.
       isProfileIncomplete: await this.isProfileIncomplete(user),
-      // Re-read here too, so renaming a profile — or correcting its profession
-      // — reaches the shell at the next refresh instead of waiting for the
-      // next sign-in. Sequential and after the token is consumed, like the
-      // read above, for the same reason.
-      ...(await this.authRepository.findSessionIdentity(user.id)),
+      ...identity,
       sessionExpiresAt: nextToken.record.expiresAt,
     };
   }
@@ -704,13 +706,21 @@ export class AuthService {
    * every request and has never trusted this claim. The web tier reads the
    * full set from the session hint, which exists precisely to carry rendering
    * hints — see `packPermissionHint`.
+   *
+   * The person's name rides along (P20-T08) as `name`, when there is one. It
+   * is at most 120 characters by every schema that writes it, a few hundred
+   * bytes at worst, against a portal-only token that is a fraction of the
+   * limit above.
    */
-  private async issueAccessToken(claims: JwtPayload): Promise<string> {
+  private async issueAccessToken(claims: JwtPayload, displayName: string | null): Promise<string> {
     const portalClaims: JwtPayload = {
       ...claims,
       permissions: claims.permissions.filter((permissionKey) =>
         permissionKey.startsWith(PORTAL_PERMISSION_PREFIX),
       ),
+      // P20-T08. Only when something names the person: an absent claim is how
+      // the shell knows to show the email address rather than invent a name.
+      ...(displayName ? { name: displayName } : {}),
     };
     return this.jwtService.signAsync(portalClaims, {
       secret: this.jwtSecrets.getAccessSigningSecret(),

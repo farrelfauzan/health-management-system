@@ -121,6 +121,7 @@ describe('PharmacyFlow integration', () => {
     id: 'd4e5f6a7-2222-4333-8444-af6a1de1a007',
     prescriptionId,
     pharmacistId: 'pharmacist-user',
+    pharmacistName: 'Rani Putri, S.Farm., Apt.',
     status: 'DISPENSED',
     dispensedAt: new Date('2026-07-19T09:00:00.000Z'),
     notes: null,
@@ -738,6 +739,11 @@ describe('PharmacyFlow integration', () => {
 
       expect(response.status).toBe(201);
       expect(response.body.data.prescriptionStatus).toBe('DISPENSED');
+      // P20-T07: the dispenser is named, and the id is still there beside it.
+      expect(response.body.data).toMatchObject({
+        pharmacistId: 'pharmacist-user',
+        pharmacistName: 'Rani Putri, S.Farm., Apt.',
+      });
       expect(pharmacyRepositoryMock.createDispense).toHaveBeenCalledWith(
         expect.objectContaining({ pharmacistId: 'pharmacist-user' }),
       );

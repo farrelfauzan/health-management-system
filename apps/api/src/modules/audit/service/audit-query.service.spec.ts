@@ -1,4 +1,4 @@
-import { AuditEventRecord, ListAuditEventsParams } from '@hms/shared-types';
+import { AuditActorNameRecord, AuditEventRecord, ListAuditEventsParams } from '@hms/shared-types';
 import { BadRequestException } from '@nestjs/common';
 
 import { AuditQueryRepository } from '../repository/audit-query.repository';
@@ -6,6 +6,12 @@ import { AuditQueryService } from './audit-query.service';
 
 const PATIENT_ID = '11111111-1111-4111-8111-111111111111';
 const ACTOR_ID = '33333333-3333-4333-8333-333333333333';
+const OTHER_ACTOR_ID = '44444444-4444-4444-8444-444444444444';
+const DELETED_ACTOR_ID = '55555555-5555-4555-8555-555555555555';
+const ACTOR_NAMES: AuditActorNameRecord[] = [
+  { id: ACTOR_ID, name: 'Rani Putri' },
+  { id: OTHER_ACTOR_ID, name: 'dr. Sari Wulandari' },
+];
 
 function buildRecord(overrides: Partial<AuditEventRecord> = {}): AuditEventRecord {
   return {
@@ -26,6 +32,7 @@ function buildRecord(overrides: Partial<AuditEventRecord> = {}): AuditEventRecor
 
 describe('AuditQueryService', () => {
   let requestedParams: ListAuditEventsParams | undefined;
+  let requestedActorIdBatches: string[][];
 
   function buildService(records: AuditEventRecord[], total = records.length): AuditQueryService {
     const repository = {
@@ -33,12 +40,17 @@ describe('AuditQueryService', () => {
         requestedParams = params;
         return { records, total };
       },
+      listActorNames: async (actorUserIds: readonly string[]) => {
+        requestedActorIdBatches.push([...actorUserIds]);
+        return ACTOR_NAMES.filter((entry) => actorUserIds.includes(entry.id));
+      },
     } as unknown as AuditQueryRepository;
     return new AuditQueryService(repository);
   }
 
   beforeEach(() => {
     requestedParams = undefined;
+    requestedActorIdBatches = [];
   });
 
   it('maps a row to the response contract and serialises the timestamp', async () => {
@@ -48,6 +60,7 @@ describe('AuditQueryService', () => {
       {
         id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
         actorUserId: ACTOR_ID,
+        actorName: 'Rani Putri',
         actorRole: 'DOCTOR',
         action: 'READ',
         resource: 'patient',
@@ -80,6 +93,42 @@ describe('AuditQueryService', () => {
       resource: 'patient',
       occurredAt: '2026-07-20T08:00:00.000Z',
     });
+  });
+
+  /**
+   * P20-T07: the name is added beside the id, never in place of it, and one
+   * page costs one lookup however many rows the same person produced.
+   */
+  it('names every actor on the page with a single batched lookup', async () => {
+    const inputRecords = [
+      buildRecord({ id: 'row-1', actorUserId: ACTOR_ID }),
+      buildRecord({ id: 'row-2', actorUserId: OTHER_ACTOR_ID }),
+      buildRecord({ id: 'row-3', actorUserId: ACTOR_ID }),
+      buildRecord({ id: 'row-4', actorUserId: null }),
+    ];
+
+    const actual = await buildService(inputRecords).listAuditEvents({ page: 1, limit: 50 });
+
+    expect(requestedActorIdBatches).toEqual([[ACTOR_ID, OTHER_ACTOR_ID]]);
+    expect(actual.data.map((event) => [event.actorUserId, event.actorName])).toEqual([
+      [ACTOR_ID, 'Rani Putri'],
+      [OTHER_ACTOR_ID, 'dr. Sari Wulandari'],
+      [ACTOR_ID, 'Rani Putri'],
+      [undefined, undefined],
+    ]);
+  });
+
+  /**
+   * `actor_user_id` has no foreign key, so a hard-deleted account leaves an id
+   * nothing resolves. The row still answers with the id; it just has no name.
+   */
+  it('keeps the id and omits the name when the account no longer exists', async () => {
+    const inputRecord = buildRecord({ actorUserId: DELETED_ACTOR_ID });
+
+    const actual = await buildService([inputRecord]).listAuditEvents({ page: 1, limit: 50 });
+
+    expect(actual.data[0]?.actorUserId).toBe(DELETED_ACTOR_ID);
+    expect(actual.data[0]).not.toHaveProperty('actorName');
   });
 
   it('reports the page, limit and total the repository counted', async () => {

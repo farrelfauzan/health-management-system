@@ -5,6 +5,7 @@
  * Health Management System API
  * OpenAPI spec version: 1.0.0
  */
+import type { DeliveryRecordControllerRecordNewbornV1200DataShkScreening } from './deliveryRecordControllerRecordNewbornV1200DataShkScreening';
 
 export type DeliveryRecordControllerRecordNewbornV1200Data = {
   id: string;
@@ -26,4 +27,5 @@ export type DeliveryRecordControllerRecordNewbornV1200Data = {
   hb0ImmunizationId: unknown | null;
   examinedAt: unknown | null;
   identityTagAt: unknown | null;
+  shkScreening: DeliveryRecordControllerRecordNewbornV1200DataShkScreening;
 };

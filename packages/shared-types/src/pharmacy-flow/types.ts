@@ -314,6 +314,8 @@ export type DispenseRecordDetailRecord = {
   id: string;
   prescriptionId: string;
   pharmacistId: string;
+  /** The pharmacist's display name (D-027, P20-T07); never blank. */
+  pharmacistName: string;
   status: DispenseStatusValue;
   dispensedAt: Date;
   notes: string | null;

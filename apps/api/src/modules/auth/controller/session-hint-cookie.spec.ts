@@ -123,7 +123,9 @@ describe('setSessionHintCookie', () => {
       disabledFeatures: [],
       offboardingDeadline: null,
       isProfileIncomplete: false,
-      displayName: null,
+      // The longest name the schemas accept (P20-T08), every character a
+      // three-byte UTF-8 sequence, so the budget holds in the worst case.
+      displayName: 'ꦱ'.repeat(120),
       clinicianProfession: null,
       expiresAt,
     });
@@ -195,9 +197,9 @@ describe('setSessionHintCookie', () => {
   });
 
   it("carries the holder's name, and omits it for an account no record names", () => {
-    // The shell greets people by the name on their own record; without this
-    // field it falls back to the local part of their email address, which is
-    // also what a hint written before the field existed must keep doing.
+    // The shell greets people by their name; without this field it shows
+    // their email address verbatim (P20-T08), which is also what a hint
+    // written before the field existed must keep doing.
     const { response, captured } = buildResponse();
 
     setSessionHintCookie(response, {

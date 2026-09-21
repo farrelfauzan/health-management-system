@@ -1,6 +1,8 @@
 import type { DischargeDispositionValue } from '#admission-flow/schemas';
 import type { ImmunizationReasonValue } from '#emr/schemas';
 import type { LabResultFlagValue, LabSpecimenTypeValue } from '#laboratory/schemas';
+import type { PostnatalSubjectValue, PostnatalVisitCodeValue } from '#maternal-care/schemas';
+import type { PostnatalExaminationRecord } from '#maternal-care/types';
 import type { SatusehatLocationRegistrationOutcomeView } from '#satusehat/contracts';
 import type {
   SatusehatLocationBlockReasonValue,
@@ -383,6 +385,37 @@ export type SatusehatSubmissionBundleData = {
    * obstetric and foetal Observations are added.
    */
   antenatalVisit: SatusehatAntenatalVisit | null;
+  /**
+   * Set when this encounter is a nifas or neonatal visit (P25-T12), null for
+   * every other. A mother's visit inside a KF window turns the PNC use case
+   * on; a baby's visit inside a KN window only adds its KN identifier.
+   */
+  postnatalVisit: SatusehatPostnatalVisit | null;
+};
+
+/** One nifas or neonatal visit as the PNC chain reports it (P25-T12). */
+export type SatusehatPostnatalVisit = {
+  subject: PostnatalSubjectValue;
+  /** The code frozen at close; null when the visit fell outside every window. */
+  visitCode: PostnatalVisitCodeValue | null;
+  /** The mother's pregnancy, which holds the PNC episode id on both kinds. */
+  pregnancyEpisodeId: string;
+  satusehatPostnatalEpisodeOfCareId: string | null;
+  birthAt: Date;
+  /** The nifas examination; always null on a baby's visit. */
+  examination: PostnatalExaminationRecord | null;
+};
+
+/**
+ * What closing one birth's PNC episode needs (P25-T12). Read when the worker
+ * picks the row up, so a corrected birth time is the one sent.
+ */
+export type SatusehatPostnatalEpisodeFinish = {
+  pregnancyEpisodeId: string;
+  patientId: string;
+  patientIhsNumber: string | null;
+  satusehatPostnatalEpisodeOfCareId: string | null;
+  birthAt: Date | null;
 };
 
 /**
