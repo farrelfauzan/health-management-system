@@ -6,6 +6,11 @@ import {
   MarkSubmissionFailedPayload,
   MarkSubmissionRetryPayload,
   MarkSubmissionSubmittedPayload,
+  computeGestationalAge,
+  FetalHeadEngagementValue,
+  FetalPresentationValue,
+  SatusehatAntenatalVisit,
+  SatusehatEpisodeOfCareFinish,
   SatusehatSubmissionAllergy,
   SatusehatSubmissionBundleData,
   SatusehatSubmissionDispenseItem,
@@ -41,6 +46,7 @@ function toSubmissionRecord(row: ClaimedSubmissionRow): SatusehatSubmissionRecor
     kind: row.kind,
     encounterId: row.encounter_id,
     labOrderId: row.lab_order_id,
+    pregnancyEpisodeId: row.pregnancy_episode_id,
     labOrderNumber: row.lab_order_number,
     status: row.status,
     attempts: row.attempts,
@@ -69,6 +75,7 @@ type SubmissionRowWithOrderNumber = {
   kind: SatusehatSubmissionKindValue;
   encounterId: string | null;
   labOrderId: string | null;
+  pregnancyEpisodeId: string | null;
   status: SatusehatSubmissionStatusValue;
   attempts: number;
   lastError: string | null;
@@ -89,6 +96,34 @@ function toSubmissionRecordFromRow(
   const { labOrder, ...rest } = row;
   return { ...rest, labOrderNumber: labOrder?.orderNumber ?? null };
 }
+
+/** The antenatal visit one bundle reports, as the encounter read returns it. */
+type AntenatalVisitBundleRow = {
+  visitCode: string | null;
+  pregnancyEpisode: {
+    id: string;
+    lastMenstrualPeriodDate: Date | null;
+    estimatedDeliveryDate: Date;
+    gravida: number;
+    para: number;
+    abortus: number;
+    // `unknown` rather than `Prisma.Decimal`: `toNumberOrNull` takes it from
+    // here, and no Prisma type is meant to escape this repository.
+    prePregnancyWeightKg: unknown;
+    bloodType: string | null;
+    rhesus: string | null;
+    satusehatEpisodeOfCareId: string | null;
+  };
+  examination: {
+    muacCm: unknown;
+    fundalHeightCm: unknown;
+    fetalHeartRateBpm: number | null;
+    fetalPresentation: FetalPresentationValue | null;
+    fetalHeadEngagement: FetalHeadEngagementValue | null;
+    fetalCount: number | null;
+    estimatedFetalWeightGrams: number | null;
+  } | null;
+};
 
 /** The discharged stay one bundle reports, with the beds it passed through. */
 type AdmissionBundleRow = {
@@ -265,6 +300,7 @@ export class SatusehatSubmissionRepository {
       )
       RETURNING "claimed"."id", "claimed"."kind", "claimed"."encounter_id",
                 "claimed"."lab_order_id",
+                "claimed"."pregnancy_episode_id",
                 (
                   SELECT "numbered"."order_number"
                   FROM "lab_orders" AS "numbered"
@@ -522,6 +558,39 @@ export class SatusehatSubmissionRepository {
           orderBy: { recordedAt: 'desc' },
           take: 1,
         },
+        // Present only when the visit is an antenatal one (P25-T08). Read
+        // together with everything else so the episode, the pregnancy's
+        // numbers and the 10T measurements come from one snapshot.
+        antenatalVisit: {
+          select: {
+            visitCode: true,
+            pregnancyEpisode: {
+              select: {
+                id: true,
+                lastMenstrualPeriodDate: true,
+                estimatedDeliveryDate: true,
+                gravida: true,
+                para: true,
+                abortus: true,
+                prePregnancyWeightKg: true,
+                bloodType: true,
+                rhesus: true,
+                satusehatEpisodeOfCareId: true,
+              },
+            },
+            examination: {
+              select: {
+                muacCm: true,
+                fundalHeightCm: true,
+                fetalHeartRateBpm: true,
+                fetalPresentation: true,
+                fetalHeadEngagement: true,
+                fetalCount: true,
+                estimatedFetalWeightGrams: true,
+              },
+            },
+          },
+        },
         prescriptions: {
           where: {
             deletedAt: null,
@@ -653,6 +722,51 @@ export class SatusehatSubmissionRepository {
         specialtyLocationId: encounter.registration.specialty?.satusehatLocationId ?? null,
         registeredRootLocationId: registeredRootLocationId,
       },
+      antenatalVisit: this.toAntenatalVisit(encounter.antenatalVisit, encounter.startedAt),
+    };
+  }
+
+  /**
+   * The antenatal shape of one visit, or null when the visit is an ordinary
+   * one. Gestational age is computed here rather than stored: it is a function
+   * of the HPHT and the visit's own date, and a stored copy would age.
+   */
+  private toAntenatalVisit(
+    antenatalVisit: AntenatalVisitBundleRow | null,
+    visitedAt: Date,
+  ): SatusehatAntenatalVisit | null {
+    if (antenatalVisit === null) {
+      return null;
+    }
+    const episode = antenatalVisit.pregnancyEpisode;
+    return {
+      pregnancyEpisodeId: episode.id,
+      visitCode: antenatalVisit.visitCode,
+      satusehatEpisodeOfCareId: episode.satusehatEpisodeOfCareId,
+      lastMenstrualPeriodDate: episode.lastMenstrualPeriodDate,
+      estimatedDeliveryDate: episode.estimatedDeliveryDate,
+      gravida: episode.gravida,
+      para: episode.para,
+      abortus: episode.abortus,
+      prePregnancyWeightKg: this.toNumberOrNull(episode.prePregnancyWeightKg),
+      bloodType: episode.bloodType,
+      rhesus: episode.rhesus,
+      gestationalAgeWeeks: computeGestationalAge({
+        lastMenstrualPeriodDate: episode.lastMenstrualPeriodDate,
+        estimatedDeliveryDate: episode.estimatedDeliveryDate,
+        asOf: visitedAt,
+      }).weeks,
+      examination: antenatalVisit.examination
+        ? {
+            muacCm: this.toNumberOrNull(antenatalVisit.examination.muacCm),
+            fundalHeightCm: this.toNumberOrNull(antenatalVisit.examination.fundalHeightCm),
+            fetalHeartRateBpm: antenatalVisit.examination.fetalHeartRateBpm,
+            fetalPresentation: antenatalVisit.examination.fetalPresentation,
+            fetalHeadEngagement: antenatalVisit.examination.fetalHeadEngagement,
+            fetalCount: antenatalVisit.examination.fetalCount,
+            estimatedFetalWeightGrams: antenatalVisit.examination.estimatedFetalWeightGrams,
+          }
+        : null,
     };
   }
 
@@ -1044,6 +1158,55 @@ export class SatusehatSubmissionRepository {
         })),
       });
     });
+  }
+
+  /**
+   * Records the episode id SATUSEHAT assigned this pregnancy (P25-T08).
+   *
+   * Written the moment the id is known, before the bundle that needed it goes
+   * out: a failure in between would otherwise leave an episode on the platform
+   * that nothing here can name, and the next attempt would search for it by
+   * identifier and adopt it — which works, but only because this write is the
+   * thing that usually makes the search unnecessary.
+   */
+  async saveAntenatalEpisodeOfCareId(payload: {
+    pregnancyEpisodeId: string;
+    satusehatEpisodeOfCareId: string;
+  }): Promise<void> {
+    await this.prisma.pregnancyEpisode.update({
+      where: { id: payload.pregnancyEpisodeId },
+      data: { satusehatEpisodeOfCareId: payload.satusehatEpisodeOfCareId },
+    });
+  }
+
+  /** What closing one pregnancy's episode needs, read at send time (P25-T08). */
+  async findEpisodeOfCareFinishData(
+    pregnancyEpisodeId: string,
+  ): Promise<SatusehatEpisodeOfCareFinish | null> {
+    const episode = await this.prisma.pregnancyEpisode.findFirst({
+      where: { id: pregnancyEpisodeId, deletedAt: null },
+      select: {
+        id: true,
+        patientId: true,
+        lastMenstrualPeriodDate: true,
+        estimatedDeliveryDate: true,
+        endedAt: true,
+        satusehatEpisodeOfCareId: true,
+        patient: { select: { satusehatPatientIdCiphertext: true } },
+      },
+    });
+    if (episode === null) {
+      return null;
+    }
+    return {
+      pregnancyEpisodeId: episode.id,
+      patientId: episode.patientId,
+      patientIhsNumber: this.decryptOptional(episode.patient.satusehatPatientIdCiphertext),
+      satusehatEpisodeOfCareId: episode.satusehatEpisodeOfCareId,
+      lastMenstrualPeriodDate: episode.lastMenstrualPeriodDate,
+      estimatedDeliveryDate: episode.estimatedDeliveryDate,
+      endedAt: episode.endedAt,
+    };
   }
 
   async markSubmitted(payload: MarkSubmissionSubmittedPayload): Promise<void> {

@@ -95,6 +95,8 @@ export type SatusehatFhirEncounter = {
   statusHistory: SatusehatEncounterStatusHistoryEntry[];
   hospitalization?: SatusehatFhirEncounterHospitalization;
   diagnosis?: SatusehatFhirEncounterDiagnosis[];
+  /** Set on an antenatal visit, pointing at the pregnancy's episode (P25-T08). */
+  episodeOfCare?: SatusehatFhirReference[];
   serviceProvider: SatusehatFhirReference;
 };
 
@@ -198,6 +200,8 @@ export type SatusehatFhirObservation = {
   /** Exactly one of the three value forms is set, decided by the test. */
   valueQuantity?: SatusehatFhirQuantity;
   valueString?: string;
+  /** Used by the two antenatal date observations, HPHT and HPL (P25-T08). */
+  valueDateTime?: string;
   valueCodeableConcept?: SatusehatFhirCodeableConceptWithText;
   interpretation?: SatusehatFhirCodeableConcept[];
   referenceRange?: SatusehatFhirObservationReferenceRange[];
@@ -320,6 +324,39 @@ export type SatusehatEncounterMapInput = {
   endedAt: Date;
   admission?: SatusehatEncounterAdmission;
   conditionReferences?: ReadonlyArray<{ reference: string; rank: number }>;
+  /**
+   * Set when this visit is an antenatal one (P25-T08). The episode id adds an
+   * `episodeOfCare` reference; the K code adds a second identifier beside the
+   * encounter's own. Order does not matter to the platform and the K code may
+   * be absent, so a visit recorded without one is simply reported without it.
+   */
+  antenatalEpisode?: { satusehatEpisodeOfCareId: string; visitCode: string | null };
+};
+
+/** What {@link SatusehatFhirMapper.mapAntenatalEpisodeOfCare} needs (P25-T08). */
+export type SatusehatAntenatalEpisodeMapInput = {
+  pregnancyEpisodeId: string;
+  patientIhsNumber: string;
+  patientName?: string;
+  /** `EpisodeOfCare.period.start` — HPHT when known, else the first visit. */
+  startedAt: Date;
+};
+
+/** What closing one episode needs (P25-T08). */
+export type SatusehatAntenatalEpisodeFinishMapInput = {
+  patientIhsNumber: string;
+  startedAt: Date;
+  endedAt: Date;
+};
+
+/** What {@link SatusehatFhirMapper.mapAntenatalObservations} needs (P25-T08). */
+export type SatusehatAntenatalObservationMapInput = {
+  patientIhsNumber: string;
+  patientName?: string;
+  practitionerIhsNumber?: string;
+  encounterReference: string;
+  recordedAt: Date;
+  values: Readonly<Partial<Record<SatusehatAntenatalObservationField, number | string | Date>>>;
 };
 
 export type SatusehatConditionMapInput = {
@@ -922,6 +959,64 @@ export type SatusehatVitalSignDefinition = {
   loincDisplay: string;
   unit: string;
   ucumCode: string;
+};
+
+/** The antenatal measurements that carry a coding (P25-T08). */
+export type SatusehatAntenatalObservationField =
+  | 'gravida'
+  | 'para'
+  | 'abortus'
+  | 'lastMenstrualPeriodDate'
+  | 'estimatedDeliveryDate'
+  | 'prePregnancyWeightKg'
+  | 'gestationalAgeWeeks'
+  | 'trimester'
+  | 'muacCm'
+  | 'fundalHeightCm'
+  | 'bloodType'
+  | 'rhesus'
+  | 'fetalHeartRateBpm'
+  | 'fetalHeadEngagement'
+  | 'estimatedFetalWeightGrams'
+  | 'fetalPresentation'
+  | 'fetalCount';
+
+/**
+ * How one antenatal measurement is coded, and the unit it is sent in when it
+ * is a quantity (P25-T08). `unit` and `ucumCode` are absent together for the
+ * measurements sent as a date or a string.
+ */
+export type SatusehatAntenatalObservationDefinition = {
+  system: string;
+  code: string;
+  display: string;
+  category: 'survey' | 'exam' | 'vital-signs' | 'laboratory';
+  unit?: string;
+  ucumCode?: string;
+};
+
+/** A FHIR EpisodeOfCare as SATUSEHAT accepts it (P25-T08). */
+export type SatusehatFhirEpisodeOfCare = {
+  resourceType: 'EpisodeOfCare';
+  id?: string;
+  identifier: SatusehatFhirIdentifier[];
+  status: 'active' | 'finished';
+  type: SatusehatFhirCodeableConcept[];
+  patient: SatusehatFhirReference;
+  managingOrganization: SatusehatFhirReference;
+  period: { start: string; end?: string };
+  statusHistory?: { status: 'active' | 'finished'; period: { start: string; end?: string } }[];
+};
+
+/**
+ * One RFC 6902 operation. The gateway takes a patch as an operation list and
+ * validates the list alone, so the list the close sends always carries the
+ * patient as well as the change (P25-T08).
+ */
+export type SatusehatJsonPatchOperation = {
+  op: 'add' | 'replace';
+  path: string;
+  value: unknown;
 };
 
 /** A FHIR Location as SATUSEHAT accepts it (P24-T06). */

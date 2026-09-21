@@ -93,6 +93,7 @@ describe('SatusehatRecordComparisonService', () => {
         specialtyLocationId: null,
         registeredRootLocationId: null,
       },
+      antenatalVisit: null,
     } as SatusehatSubmissionBundleData;
   }
 
@@ -104,6 +105,7 @@ describe('SatusehatRecordComparisonService', () => {
       kind: 'ENCOUNTER',
       encounterId: ENCOUNTER_ID,
       labOrderId: null,
+      pregnancyEpisodeId: null,
       labOrderNumber: null,
       status,
       attempts: 1,

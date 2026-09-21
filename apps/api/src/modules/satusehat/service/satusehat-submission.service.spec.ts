@@ -5,6 +5,7 @@ import { AuditService } from '../../../common/audit/audit.service';
 import { SatusehatAmbiguousMatchError } from '../../../common/satusehat/satusehat-ambiguous-match.error';
 import { SatusehatFhirMapper } from '../../../common/satusehat/satusehat-fhir.mapper';
 import { SatusehatFhirTransactionBundle } from '../../../common/satusehat/satusehat-fhir.types';
+import { SatusehatEpisodeOfCareClient } from '../../../common/satusehat/satusehat-episode-of-care.client';
 import { SatusehatHttpClient } from '../../../common/satusehat/satusehat-http.client';
 import { SatusehatMasterDataClient } from '../../../common/satusehat/satusehat-master-data.client';
 import { SatusehatError } from '../../../common/satusehat/satusehat.error';
@@ -37,6 +38,7 @@ function buildSubmission(overrides: Partial<SatusehatSubmissionRecord> = {}): Sa
     kind: 'ENCOUNTER',
     encounterId,
     labOrderId: null,
+    pregnancyEpisodeId: null,
     labOrderNumber: null,
     status: 'PENDING',
     attempts: 0,
@@ -109,6 +111,7 @@ function buildBundleData(overrides: Record<string, unknown> = {}) {
       specialtyLocationId: 'poli-kia-location-id',
       registeredRootLocationId: null,
     },
+    antenatalVisit: null,
     ...overrides,
   };
 }
@@ -348,6 +351,8 @@ describe('SatusehatSubmissionService', () => {
     saveImmunizationIhsIds: jest.fn(),
     saveLabReportIhsIds: jest.fn(),
     saveSubmissionResources: jest.fn(),
+    saveAntenatalEpisodeOfCareId: jest.fn(),
+    findEpisodeOfCareFinishData: jest.fn(),
     markSubmitted: jest.fn(),
     scheduleRetry: jest.fn(),
     markFailed: jest.fn(),
@@ -371,6 +376,12 @@ describe('SatusehatSubmissionService', () => {
   const auditServiceMock = {
     record: jest.fn(),
   };
+  const episodeOfCareClientMock = {
+    findEpisodeIdByIdentifier: jest.fn(),
+    findActiveEpisodeIdByPatient: jest.fn(),
+    createEpisodeOfCare: jest.fn(),
+    patchEpisodeOfCare: jest.fn(),
+  };
 
   function buildService(): SatusehatSubmissionService {
     const configService = buildConfigService();
@@ -381,6 +392,7 @@ describe('SatusehatSubmissionService', () => {
       masterDataClientMock as unknown as SatusehatMasterDataClient,
       new SatusehatFhirMapper(configService),
       httpClientMock as unknown as SatusehatHttpClient,
+      episodeOfCareClientMock as unknown as SatusehatEpisodeOfCareClient,
       auditServiceMock as unknown as AuditService,
     );
   }
@@ -2166,6 +2178,185 @@ describe('SatusehatSubmissionService', () => {
       // submission: the laboratory is the performer either way.
       expect((serviceRequest?.resource as { requester?: unknown }).requester).toBeUndefined();
       expect(submissionRepositoryMock.markSubmitted).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('the ANC episode (P25-T08)', () => {
+    const PREGNANCY_EPISODE_ID = 'b4d5e6f7-a8b9-4c0d-8e1f-2a3b4c5d6e7f';
+
+    function buildAntenatalVisit(overrides: Record<string, unknown> = {}) {
+      return {
+        pregnancyEpisodeId: PREGNANCY_EPISODE_ID,
+        visitCode: 'K3',
+        satusehatEpisodeOfCareId: null,
+        lastMenstrualPeriodDate: new Date('2026-03-01T00:00:00.000Z'),
+        estimatedDeliveryDate: new Date('2026-12-06T00:00:00.000Z'),
+        gravida: 2,
+        para: 1,
+        abortus: 0,
+        prePregnancyWeightKg: 52,
+        bloodType: 'O',
+        rhesus: 'Positive',
+        gestationalAgeWeeks: 21,
+        examination: {
+          muacCm: 25,
+          fundalHeightCm: 21,
+          fetalHeartRateBpm: 140,
+          fetalPresentation: 'CEPHALIC',
+          fetalHeadEngagement: 'NOT_ENGAGED',
+          fetalCount: 1,
+          estimatedFetalWeightGrams: 1200,
+        },
+        ...overrides,
+      };
+    }
+
+    function arrangeAntenatalVisit(overrides: Record<string, unknown> = {}): void {
+      submissionRepositoryMock.findBundleData.mockResolvedValue(
+        buildBundleData({ antenatalVisit: buildAntenatalVisit(overrides) }),
+      );
+      httpClientMock.sendRequest.mockResolvedValue({
+        entry: [
+          { response: { status: '201 Created', location: 'Encounter/ihs-enc-1/_history/1' } },
+        ],
+      });
+    }
+
+    it('creates the episode, stores its id, and references it from the Encounter', async () => {
+      arrangeAntenatalVisit();
+      episodeOfCareClientMock.findEpisodeIdByIdentifier.mockResolvedValue(null);
+      episodeOfCareClientMock.findActiveEpisodeIdByPatient.mockResolvedValue(null);
+      episodeOfCareClientMock.createEpisodeOfCare.mockResolvedValue('new-episode-id');
+
+      await buildService().processSubmission(buildSubmission());
+
+      expect(episodeOfCareClientMock.createEpisodeOfCare).toHaveBeenCalledTimes(1);
+      // Stored before the bundle goes: an episode the platform holds and we
+      // cannot name is the one failure mode this order exists to prevent.
+      expect(submissionRepositoryMock.saveAntenatalEpisodeOfCareId).toHaveBeenCalledWith({
+        pregnancyEpisodeId: PREGNANCY_EPISODE_ID,
+        satusehatEpisodeOfCareId: 'new-episode-id',
+      });
+      const bundle = httpClientMock.sendRequest.mock.calls[0]?.[0]?.body as {
+        entry: Array<{ resource: { resourceType: string; episodeOfCare?: unknown } }>;
+      };
+      const encounter = bundle.entry.find((entry) => entry.resource.resourceType === 'Encounter');
+      expect(encounter?.resource.episodeOfCare).toEqual([
+        { reference: 'EpisodeOfCare/new-episode-id' },
+      ]);
+    });
+
+    it('adopts the episode a timed-out create already made, and posts no second one', async () => {
+      arrangeAntenatalVisit();
+      episodeOfCareClientMock.findEpisodeIdByIdentifier.mockResolvedValue('adopted-episode-id');
+
+      await buildService().processSubmission(buildSubmission());
+
+      expect(episodeOfCareClientMock.createEpisodeOfCare).not.toHaveBeenCalled();
+      expect(episodeOfCareClientMock.findActiveEpisodeIdByPatient).not.toHaveBeenCalled();
+      expect(submissionRepositoryMock.saveAntenatalEpisodeOfCareId).toHaveBeenCalledWith({
+        pregnancyEpisodeId: PREGNANCY_EPISODE_ID,
+        satusehatEpisodeOfCareId: 'adopted-episode-id',
+      });
+    });
+
+    it("adopts another clinic's open ANC episode, which the platform would not let us duplicate", async () => {
+      arrangeAntenatalVisit();
+      episodeOfCareClientMock.findEpisodeIdByIdentifier.mockResolvedValue(null);
+      episodeOfCareClientMock.findActiveEpisodeIdByPatient.mockResolvedValue('their-episode-id');
+
+      await buildService().processSubmission(buildSubmission());
+
+      expect(episodeOfCareClientMock.findActiveEpisodeIdByPatient).toHaveBeenCalledWith(
+        'P02478375538',
+        'ANC',
+      );
+      expect(episodeOfCareClientMock.createEpisodeOfCare).not.toHaveBeenCalled();
+    });
+
+    it('searches for nothing when the pregnancy already holds an episode id', async () => {
+      arrangeAntenatalVisit({ satusehatEpisodeOfCareId: 'known-episode-id' });
+
+      await buildService().processSubmission(buildSubmission());
+
+      expect(episodeOfCareClientMock.findEpisodeIdByIdentifier).not.toHaveBeenCalled();
+      expect(episodeOfCareClientMock.createEpisodeOfCare).not.toHaveBeenCalled();
+      expect(submissionRepositoryMock.saveAntenatalEpisodeOfCareId).not.toHaveBeenCalled();
+    });
+
+    it('touches no episode at all for an ordinary visit', async () => {
+      submissionRepositoryMock.findBundleData.mockResolvedValue(buildBundleData());
+      httpClientMock.sendRequest.mockResolvedValue({
+        entry: [
+          { response: { status: '201 Created', location: 'Encounter/ihs-enc-1/_history/1' } },
+        ],
+      });
+
+      await buildService().processSubmission(buildSubmission());
+
+      expect(episodeOfCareClientMock.findEpisodeIdByIdentifier).not.toHaveBeenCalled();
+      expect(episodeOfCareClientMock.createEpisodeOfCare).not.toHaveBeenCalled();
+    });
+
+    it('closes the episode with one PATCH and records it against the row', async () => {
+      submissionRepositoryMock.findEpisodeOfCareFinishData.mockResolvedValue({
+        pregnancyEpisodeId: PREGNANCY_EPISODE_ID,
+        patientId,
+        patientIhsNumber: 'P02478375538',
+        satusehatEpisodeOfCareId: 'episode-to-close',
+        lastMenstrualPeriodDate: new Date('2026-03-01T00:00:00.000Z'),
+        estimatedDeliveryDate: new Date('2026-12-06T00:00:00.000Z'),
+        endedAt: new Date('2026-12-06T22:10:00.000Z'),
+      });
+
+      await buildService().processSubmission(
+        buildSubmission({
+          kind: 'EPISODE_OF_CARE_FINISH',
+          encounterId: null,
+          pregnancyEpisodeId: PREGNANCY_EPISODE_ID,
+        }),
+      );
+
+      expect(episodeOfCareClientMock.patchEpisodeOfCare).toHaveBeenCalledTimes(1);
+      const [episodeId, operations] = episodeOfCareClientMock.patchEpisodeOfCare.mock.calls[0] as [
+        string,
+        Array<{ op: string; path: string; value: unknown }>,
+      ];
+      expect(episodeId).toBe('episode-to-close');
+      expect(operations.map((operation) => operation.path)).toEqual([
+        '/patient',
+        '/status',
+        '/period/end',
+        '/statusHistory',
+      ]);
+      // No bundle: the close is a PATCH, so nothing goes through the HTTP
+      // client the transaction bundle uses.
+      expect(httpClientMock.sendRequest).not.toHaveBeenCalled();
+      expect(submissionRepositoryMock.markSubmitted).toHaveBeenCalledTimes(1);
+    });
+
+    it('settles a close whose pregnancy has lost its episode id rather than retrying for ever', async () => {
+      submissionRepositoryMock.findEpisodeOfCareFinishData.mockResolvedValue({
+        pregnancyEpisodeId: PREGNANCY_EPISODE_ID,
+        patientId,
+        patientIhsNumber: 'P02478375538',
+        satusehatEpisodeOfCareId: null,
+        lastMenstrualPeriodDate: null,
+        estimatedDeliveryDate: new Date('2026-12-06T00:00:00.000Z'),
+        endedAt: new Date('2026-12-06T22:10:00.000Z'),
+      });
+
+      await buildService().processSubmission(
+        buildSubmission({
+          kind: 'EPISODE_OF_CARE_FINISH',
+          encounterId: null,
+          pregnancyEpisodeId: PREGNANCY_EPISODE_ID,
+        }),
+      );
+
+      expect(episodeOfCareClientMock.patchEpisodeOfCare).not.toHaveBeenCalled();
+      expect(submissionRepositoryMock.markSubmitted).toHaveBeenCalledTimes(1);
+      expect(submissionRepositoryMock.markFailed).not.toHaveBeenCalled();
     });
   });
 });
