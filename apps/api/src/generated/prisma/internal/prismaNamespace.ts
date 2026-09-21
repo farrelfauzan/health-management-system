@@ -436,6 +436,7 @@ export const ModelName = {
   TaxCode: 'TaxCode',
   TaxCodeRate: 'TaxCodeRate',
   TaxCategoryDefault: 'TaxCategoryDefault',
+  TaxReminderNotice: 'TaxReminderNotice',
   TaxReportDraft: 'TaxReportDraft',
   TaxReportDocument: 'TaxReportDocument',
   ServiceTariff: 'ServiceTariff',
@@ -528,7 +529,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "doctorMandate" | "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientDeliveryConsent" | "documentDelivery" | "documentDeliveryLink" | "patientAllergy" | "doctorCredentialOption" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorLicenseExpiryNotice" | "doctorAuthority" | "doctorAuthorityExpiryNotice" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "midwifeFormularyItem" | "prescription" | "prescriptionMedication" | "prescriptionItemComponent" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "taxSettings" | "taxCode" | "taxCodeRate" | "taxCategoryDefault" | "taxReportDraft" | "taxReportDocument" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "satusehatSubmissionResource" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "vaultDocumentExpiryNotice" | "vaultDocumentShare" | "userOffboardingNotice" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit" | "documentType" | "documentTypeApprover" | "managedDocument" | "documentApprovalRequest" | "documentApprovalApprover" | "documentApprovalDecision" | "labTest" | "labReferenceRange" | "labPanel" | "labPanelMember" | "labOrderCounter" | "labOrder" | "labOrderItem" | "labSpecimenCounter" | "labSpecimen" | "labResult" | "laboratorySettings" | "labReport" | "immunization" | "province" | "regency" | "district" | "village" | "bugReport" | "bugReportCounter" | "pregnancyEpisode" | "pregnancyExternalDoctorVisit" | "antenatalVisit" | "deliveryRecord" | "newbornCareRecord" | "antenatalExamination" | "antenatalReferralDismissal"
+    modelProps: "doctorMandate" | "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientDeliveryConsent" | "documentDelivery" | "documentDeliveryLink" | "patientAllergy" | "doctorCredentialOption" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorLicenseExpiryNotice" | "doctorAuthority" | "doctorAuthorityExpiryNotice" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "midwifeFormularyItem" | "prescription" | "prescriptionMedication" | "prescriptionItemComponent" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "taxSettings" | "taxCode" | "taxCodeRate" | "taxCategoryDefault" | "taxReminderNotice" | "taxReportDraft" | "taxReportDocument" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "satusehatSubmissionResource" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "vaultDocumentExpiryNotice" | "vaultDocumentShare" | "userOffboardingNotice" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit" | "documentType" | "documentTypeApprover" | "managedDocument" | "documentApprovalRequest" | "documentApprovalApprover" | "documentApprovalDecision" | "labTest" | "labReferenceRange" | "labPanel" | "labPanelMember" | "labOrderCounter" | "labOrder" | "labOrderItem" | "labSpecimenCounter" | "labSpecimen" | "labResult" | "laboratorySettings" | "labReport" | "immunization" | "province" | "regency" | "district" | "village" | "bugReport" | "bugReportCounter" | "pregnancyEpisode" | "pregnancyExternalDoctorVisit" | "antenatalVisit" | "deliveryRecord" | "newbornCareRecord" | "antenatalExamination" | "antenatalReferralDismissal"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -4377,6 +4378,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.TaxCategoryDefaultCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.TaxCategoryDefaultCountAggregateOutputType> | number
+        }
+      }
+    }
+    TaxReminderNotice: {
+      payload: Prisma.$TaxReminderNoticePayload<ExtArgs>
+      fields: Prisma.TaxReminderNoticeFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.TaxReminderNoticeFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaxReminderNoticePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.TaxReminderNoticeFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaxReminderNoticePayload>
+        }
+        findFirst: {
+          args: Prisma.TaxReminderNoticeFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaxReminderNoticePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.TaxReminderNoticeFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaxReminderNoticePayload>
+        }
+        findMany: {
+          args: Prisma.TaxReminderNoticeFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaxReminderNoticePayload>[]
+        }
+        create: {
+          args: Prisma.TaxReminderNoticeCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaxReminderNoticePayload>
+        }
+        createMany: {
+          args: Prisma.TaxReminderNoticeCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.TaxReminderNoticeCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaxReminderNoticePayload>[]
+        }
+        delete: {
+          args: Prisma.TaxReminderNoticeDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaxReminderNoticePayload>
+        }
+        update: {
+          args: Prisma.TaxReminderNoticeUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaxReminderNoticePayload>
+        }
+        deleteMany: {
+          args: Prisma.TaxReminderNoticeDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.TaxReminderNoticeUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TaxReminderNoticeUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaxReminderNoticePayload>[]
+        }
+        upsert: {
+          args: Prisma.TaxReminderNoticeUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaxReminderNoticePayload>
+        }
+        aggregate: {
+          args: Prisma.TaxReminderNoticeAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTaxReminderNotice>
+        }
+        groupBy: {
+          args: Prisma.TaxReminderNoticeGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TaxReminderNoticeGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.TaxReminderNoticeCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TaxReminderNoticeCountAggregateOutputType> | number
         }
       }
     }
@@ -11007,6 +11082,16 @@ export const TaxCategoryDefaultScalarFieldEnum = {
 export type TaxCategoryDefaultScalarFieldEnum = (typeof TaxCategoryDefaultScalarFieldEnum)[keyof typeof TaxCategoryDefaultScalarFieldEnum]
 
 
+export const TaxReminderNoticeScalarFieldEnum = {
+  id: 'id',
+  kind: 'kind',
+  noticeKey: 'noticeKey',
+  raisedAt: 'raisedAt'
+} as const
+
+export type TaxReminderNoticeScalarFieldEnum = (typeof TaxReminderNoticeScalarFieldEnum)[keyof typeof TaxReminderNoticeScalarFieldEnum]
+
+
 export const TaxReportDraftScalarFieldEnum = {
   id: 'id',
   period: 'period',
@@ -13131,6 +13216,20 @@ export type ListEnumTaxDefaultTargetFieldRefInput<$PrismaModel> = FieldRefInputT
 
 
 /**
+ * Reference to a field of type 'TaxReminderKind'
+ */
+export type EnumTaxReminderKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TaxReminderKind'>
+    
+
+
+/**
+ * Reference to a field of type 'TaxReminderKind[]'
+ */
+export type ListEnumTaxReminderKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TaxReminderKind[]'>
+    
+
+
+/**
  * Reference to a field of type 'TaxReportKind'
  */
 export type EnumTaxReportKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TaxReportKind'>
@@ -14355,6 +14454,7 @@ export type GlobalOmitConfig = {
   taxCode?: Prisma.TaxCodeOmit
   taxCodeRate?: Prisma.TaxCodeRateOmit
   taxCategoryDefault?: Prisma.TaxCategoryDefaultOmit
+  taxReminderNotice?: Prisma.TaxReminderNoticeOmit
   taxReportDraft?: Prisma.TaxReportDraftOmit
   taxReportDocument?: Prisma.TaxReportDocumentOmit
   serviceTariff?: Prisma.ServiceTariffOmit

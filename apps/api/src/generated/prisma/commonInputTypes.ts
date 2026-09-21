@@ -1146,6 +1146,23 @@ export type EnumTaxDefaultTargetWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumTaxDefaultTargetFilter<$PrismaModel>
 }
 
+export type EnumTaxReminderKindFilter<$PrismaModel = never> = {
+  equals?: $Enums.TaxReminderKind | Prisma.EnumTaxReminderKindFieldRefInput<$PrismaModel>
+  in?: $Enums.TaxReminderKind[] | Prisma.ListEnumTaxReminderKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.TaxReminderKind[] | Prisma.ListEnumTaxReminderKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumTaxReminderKindFilter<$PrismaModel> | $Enums.TaxReminderKind
+}
+
+export type EnumTaxReminderKindWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.TaxReminderKind | Prisma.EnumTaxReminderKindFieldRefInput<$PrismaModel>
+  in?: $Enums.TaxReminderKind[] | Prisma.ListEnumTaxReminderKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.TaxReminderKind[] | Prisma.ListEnumTaxReminderKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumTaxReminderKindWithAggregatesFilter<$PrismaModel> | $Enums.TaxReminderKind
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumTaxReminderKindFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumTaxReminderKindFilter<$PrismaModel>
+}
+
 export type EnumTaxReportKindFilter<$PrismaModel = never> = {
   equals?: $Enums.TaxReportKind | Prisma.EnumTaxReportKindFieldRefInput<$PrismaModel>
   in?: $Enums.TaxReportKind[] | Prisma.ListEnumTaxReportKindFieldRefInput<$PrismaModel>
@@ -3743,6 +3760,23 @@ export type NestedEnumTaxDefaultTargetWithAggregatesFilter<$PrismaModel = never>
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumTaxDefaultTargetFilter<$PrismaModel>
   _max?: Prisma.NestedEnumTaxDefaultTargetFilter<$PrismaModel>
+}
+
+export type NestedEnumTaxReminderKindFilter<$PrismaModel = never> = {
+  equals?: $Enums.TaxReminderKind | Prisma.EnumTaxReminderKindFieldRefInput<$PrismaModel>
+  in?: $Enums.TaxReminderKind[] | Prisma.ListEnumTaxReminderKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.TaxReminderKind[] | Prisma.ListEnumTaxReminderKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumTaxReminderKindFilter<$PrismaModel> | $Enums.TaxReminderKind
+}
+
+export type NestedEnumTaxReminderKindWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.TaxReminderKind | Prisma.EnumTaxReminderKindFieldRefInput<$PrismaModel>
+  in?: $Enums.TaxReminderKind[] | Prisma.ListEnumTaxReminderKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.TaxReminderKind[] | Prisma.ListEnumTaxReminderKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumTaxReminderKindWithAggregatesFilter<$PrismaModel> | $Enums.TaxReminderKind
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumTaxReminderKindFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumTaxReminderKindFilter<$PrismaModel>
 }
 
 export type NestedEnumTaxReportKindFilter<$PrismaModel = never> = {
