@@ -69,7 +69,11 @@ export type LabOrderRow = {
   cancelledAt: Date | null;
   cancelReason: string | null;
   releasedAt: Date | null;
-  orderedBy: { fullName: string; licenseNumber?: string | null } | null;
+  orderedBy: {
+    fullName: string;
+    licenseNumber?: string | null;
+    ownerUser?: { fullName: string | null } | null;
+  } | null;
   items: LabOrderItemRow[];
   specimens: LabSpecimenRow[];
 };

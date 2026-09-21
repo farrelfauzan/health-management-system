@@ -219,6 +219,11 @@ export type DispenseRecordResponse = {
   prescriptionId: string;
   prescriptionStatus: PrescriptionStatusValue;
   pharmacistId: string;
+  /**
+   * Who handed the medicine over, as a person (P20-T07). The id stays beside
+   * it; the name is resolved through the account, so it is never blank.
+   */
+  pharmacistName: string;
   status: DispenseStatusValue;
   dispensedAt: string;
   notes?: string;

@@ -30,6 +30,7 @@ export * from '#admin-management/schemas';
 export * from '#admin-management/contracts';
 export * from '#admin-management/resolve-user-full-name';
 export * from '#admin-management/resolve-user-display-name';
+export * from '#admin-management/resolve-clinician-name';
 export * from '#admin-management/types';
 export * from '#patient-management/schemas';
 export * from '#patient-management/contracts';
