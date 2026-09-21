@@ -181,4 +181,41 @@ describe('resolveSessionClaims', () => {
 
     expect(claims).not.toHaveProperty('isProfileIncomplete');
   });
+
+  it('keeps the name claim a fresh access token carries (P20-T08)', () => {
+    const claims = resolveSessionClaims({
+      accessToken: buildToken({
+        email: 'apotek1@klinik.id',
+        name: 'Rina Apoteker',
+        roles: ['PHARMACIST'],
+        exp: futureExp,
+      }),
+      sessionHint: buildHint({ roles: ['PHARMACIST'], exp: futureExp }),
+    });
+
+    expect(claims?.name).toBe('Rina Apoteker');
+  });
+
+  it('takes the name from the hint once the access token has expired', () => {
+    const claims = resolveSessionClaims({
+      accessToken: buildToken({ name: 'Rina Apoteker', roles: ['PHARMACIST'], exp: pastExp }),
+      sessionHint: buildHint({ roles: ['PHARMACIST'], name: 'Rina Apoteker', exp: futureExp }),
+    });
+
+    expect(claims?.name).toBe('Rina Apoteker');
+  });
+
+  it('carries no name for a session issued before the claim existed', () => {
+    const claims = resolveSessionClaims({
+      accessToken: buildToken({
+        email: 'apotek1@klinik.id',
+        roles: ['PHARMACIST'],
+        exp: futureExp,
+      }),
+      sessionHint: buildHint({ roles: ['PHARMACIST'], exp: futureExp }),
+    });
+
+    expect(claims).not.toHaveProperty('name');
+    expect(claims?.email).toBe('apotek1@klinik.id');
+  });
 });
