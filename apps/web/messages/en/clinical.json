@@ -241,6 +241,7 @@
           "DISCHARGE_SUMMARY": "Discharge summary",
           "MEDICAL_CERTIFICATE": "Medical certificate",
           "PREGNANCY_CERTIFICATE": "Pregnancy certificate",
+          "BIRTH_CERTIFICATE": "Birth certificate",
           "INSURANCE": "Insurance",
           "IDENTITY": "Identity",
           "OTHER": "Other"
@@ -971,6 +972,7 @@
           "DISCHARGE_SUMMARY": "Discharge summary",
           "MEDICAL_CERTIFICATE": "Medical certificate",
           "PREGNANCY_CERTIFICATE": "Pregnancy certificate",
+          "BIRTH_CERTIFICATE": "Birth certificate",
           "INSURANCE": "Insurance",
           "IDENTITY": "Identity",
           "OTHER": "Other"

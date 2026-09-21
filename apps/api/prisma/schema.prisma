@@ -360,6 +360,11 @@ enum AuditAction {
   /// FR-ANC-04). Nothing is blocked by a prompt, so the dismissal is the only
   /// record that the midwife saw it and judged otherwise.
   ANTENATAL_REFERRAL_DISMISSED
+  /// A birth was recorded, or a recorded one corrected (P25-T09). Recording
+  /// one ends the pregnancy and, through it, the national episode; correcting
+  /// the birth time moves that ending. Both are worth a name of their own.
+  DELIVERY_RECORDED
+  DELIVERY_UPDATED
   /// The clinic's tax profile changed (P27-T02): taxpayer type, PP 55 regime,
   /// PKP status, NITKU or pricing mode. Carries each changed field's old and
   /// new value — every later tax computation reads this row, and a report is
@@ -1015,6 +1020,9 @@ enum DocumentTemplateKind {
   /// The surat keterangan hamil, issued from the episode rather than from a
   /// single visit (P25-T07, FR-ANC-06).
   PREGNANCY_CERTIFICATE
+  /// The surat keterangan lahir (P25-T09, FR-INC-05). Rendered from the
+  /// delivery and the baby, and filed on the **baby**, not the mother.
+  BIRTH_CERTIFICATE
 }
 
 /// Where a template sits in its lifecycle. DRAFT until the first immutable
@@ -1181,6 +1189,7 @@ model User {
   /// The offboarding sweep's one read: everyone currently in a window.
   @@index([offboardedAt])
   @@map("users")
+  recordedDeliveries DeliveryRecord[] @relation("DeliveryRecordedBy")
 }
 
 /// One issued refresh token (SJ-6). The token itself is opaque 256-bit random
@@ -1609,6 +1618,7 @@ model PatientProfile {
   @@index([villageCode])
   @@index([motherPatientId])
   @@map("patient_profiles")
+  newbornCareRecord NewbornCareRecord? @relation("NewbornCarePatient")
 }
 
 /// Published privacy notices are immutable legal evidence. A correction is a
@@ -2013,6 +2023,7 @@ model DoctorProfile {
   @@index([fullName])
   @@index([specialtyId])
   @@map("doctor_profiles")
+  attendedDeliveries DeliveryRecord[] @relation("DeliveryAttendant")
 }
 
 /// Academic qualifications mapped later to SATUSEHAT Practitioner.qualification
@@ -2729,6 +2740,9 @@ model Medication {
   @@index([taxCodeId])
   @@index([deletedAt])
   @@map("medications")
+  deliveryUterotonics   DeliveryRecord[]    @relation("DeliveryUterotonic")
+  newbornVitaminK1Doses NewbornCareRecord[] @relation("NewbornVitaminK1")
+  newbornEyeProphylaxis NewbornCareRecord[] @relation("NewbornEyeProphylaxis")
 }
 
 /// The midwife formulary template (P25-T04, FR-FORM-01/02): what Permenkes
@@ -4251,6 +4265,11 @@ enum DocumentCategory {
   /// episode, and a clinic looking for "her pregnancy letter" should not have
   /// to read every certificate she has ever been given.
   PREGNANCY_CERTIFICATE
+  /// A surat keterangan lahir (P25-T09). Its own category for the same reason
+  /// the pregnancy letter has one: it is the document a family is asked for
+  /// at the dukcapil counter, and it should not be buried among every other
+  /// certificate the baby will ever be given.
+  BIRTH_CERTIFICATE
   INSURANCE
   IDENTITY
   OTHER
@@ -5114,6 +5133,7 @@ model Admission {
   @@index([sourceEncounterId])
   @@index([deletedAt])
   @@map("admissions")
+  deliveryRecords DeliveryRecord[]
 }
 
 /// Which bed an admission held, and when. A transfer closes one row and opens
@@ -6292,6 +6312,7 @@ model Immunization {
   @@index([encounterId])
   @@index([deletedAt])
   @@map("immunizations")
+  newbornCareRecords NewbornCareRecord[] @relation("NewbornHb0")
 }
 
 /// Indonesian administrative regions (P19-T10), keyed by the Kemendagri
@@ -6587,6 +6608,7 @@ model PregnancyEpisode {
   antenatalVisits      AntenatalVisit[]
   externalDoctorVisits PregnancyExternalDoctorVisit[]
   satusehatSubmissions SatusehatSubmission[]
+  deliveryRecord       DeliveryRecord?
 
   @@index([patientId])
   @@index([createdById])
@@ -6643,6 +6665,164 @@ model AntenatalVisit {
 
   @@index([pregnancyEpisodeId])
   @@map("antenatal_visits")
+}
+
+/// How the baby was born (P25-T09, FR-INC-01).
+///
+/// A midwife's authority stops at a spontaneous vaginal birth; the other two
+/// are recorded when a doctor attended, or after the fact for a transfer.
+enum DeliveryMode {
+  SPONTANEOUS_VAGINAL
+  ASSISTED_VAGINAL
+  CAESAREAN
+
+  @@map("delivery_mode")
+}
+
+/// Perineal tear, by degree (P25-T09). Grades 3 and 4 are recorded like any
+/// other — they happen — but they oblige a referral, which the service
+/// enforces rather than the enum.
+enum PerinealTearGrade {
+  NONE
+  GRADE_1
+  GRADE_2
+  GRADE_3
+  GRADE_4
+
+  @@map("perineal_tear_grade")
+}
+
+/// Whether a baby was born alive (P25-T09, FR-INC-03).
+enum BirthOutcome {
+  LIVE_BIRTH
+  STILLBIRTH
+
+  @@map("birth_outcome")
+}
+
+/// One birth, from the onset of labour to the end of the fourth stage
+/// (P25-T09, FR-INC-01).
+///
+/// One row per pregnancy, not per baby: twins are one labour with two
+/// `newborn_care_records`. Every timing is nullable because a woman who
+/// arrives pushing has no recorded onset, and the checks in the migration
+/// order only the columns that are set.
+model DeliveryRecord {
+  id                 String @id @default(uuid()) @db.Uuid
+  pregnancyEpisodeId String @unique @map("pregnancy_episode_id") @db.Uuid
+  /// The stay this birth happened in, when the mother was admitted in labour
+  /// (P24-T09). Null for a birth that never became an admission.
+  admissionId        String? @map("admission_id") @db.Uuid
+  attendantDoctorId  String  @map("attendant_doctor_id") @db.Uuid
+
+  /// Kala I — the onset of labour.
+  labourOnsetAt              DateTime? @map("labour_onset_at") @db.Timestamptz(3)
+  /// Kala II begins at full dilatation.
+  fullDilatationAt           DateTime? @map("full_dilatation_at") @db.Timestamptz(3)
+  /// The last baby's birth. This is what ends the pregnancy episode.
+  birthAt                    DateTime  @map("birth_at") @db.Timestamptz(3)
+  /// Kala III ends when the placenta is delivered.
+  placentaDeliveredAt        DateTime? @map("placenta_delivered_at") @db.Timestamptz(3)
+  /// Kala IV ends after the two hours of postpartum observation.
+  postpartumMonitoringEndedAt DateTime? @map("postpartum_monitoring_ended_at") @db.Timestamptz(3)
+
+  mode              DeliveryMode
+  episiotomy        Boolean            @default(false)
+  perinealTearGrade PerinealTearGrade  @default(NONE) @map("perineal_tear_grade")
+
+  /// The uterotonic given for the active management of the third stage —
+  /// oxytocin, in almost every case — and when.
+  uterotonicMedicationId String?   @map("uterotonic_medication_id") @db.Uuid
+  uterotonicGivenAt      DateTime? @map("uterotonic_given_at") @db.Timestamptz(3)
+
+  bloodLossMl      Int?     @map("blood_loss_ml")
+  placentaComplete Boolean? @map("placenta_complete")
+
+  /// Set when the mother was sent on. Required by the service for a grade 3 or
+  /// 4 tear: such a tear is recorded, never refused, but it may not be left
+  /// as though the clinic handled it alone.
+  referredOut    Boolean @default(false) @map("referred_out")
+  referralReason String? @map("referral_reason")
+  notes          String?
+
+  recordedById String   @map("recorded_by_id") @db.Uuid
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  pregnancyEpisode PregnancyEpisode @relation(fields: [pregnancyEpisodeId], references: [id], onDelete: Restrict)
+  admission        Admission?       @relation(fields: [admissionId], references: [id], onDelete: Restrict)
+  attendantDoctor  DoctorProfile    @relation("DeliveryAttendant", fields: [attendantDoctorId], references: [id], onDelete: Restrict)
+  uterotonic       Medication?      @relation("DeliveryUterotonic", fields: [uterotonicMedicationId], references: [id], onDelete: Restrict)
+  recordedBy       User             @relation("DeliveryRecordedBy", fields: [recordedById], references: [id], onDelete: Restrict)
+
+  newbornCareRecords NewbornCareRecord[]
+
+  @@index([admissionId])
+  @@index([attendantDoctorId])
+  @@index([recordedById])
+  @@map("delivery_records")
+}
+
+/// One baby of one birth, and the essentials done for her in the first hour
+/// (P25-T09, FR-INC-03/05).
+///
+/// A live baby's birth order is **not** stored here: it lives once, on
+/// `patient_profiles.birth_order` (P24-T10), read through `newbornPatientId`.
+/// Two copies would eventually disagree, and the one on the patient is the one
+/// SATUSEHAT sends as `multipleBirthInteger`. A stillborn baby has no patient
+/// record at all, so she carries `stillbirthOrder` instead — the CHECK in the
+/// migration ties each to its outcome.
+model NewbornCareRecord {
+  id               String       @id @default(uuid()) @db.Uuid
+  deliveryRecordId String       @map("delivery_record_id") @db.Uuid
+  outcome          BirthOutcome
+  /// Position among the babies of this birth, for a stillbirth only.
+  stillbirthOrder  Int?         @map("stillbirth_order")
+  /// The registered patient this baby became (P24-T10's "Daftarkan bayi").
+  /// Null until she is registered, which is why the essentials below can be
+  /// recorded before anyone has filled in a registration form.
+  newbornPatientId String?      @map("newborn_patient_id") @db.Uuid
+  sex              PatientSex
+
+  birthWeightGrams     Int?     @map("birth_weight_grams")
+  lengthCm             Decimal? @map("length_cm") @db.Decimal(4, 1)
+  headCircumferenceCm  Decimal? @map("head_circumference_cm") @db.Decimal(4, 1)
+
+  apgar1Min Int? @map("apgar_1_min")
+  apgar5Min Int? @map("apgar_5_min")
+
+  /// Inisiasi menyusu dini.
+  imdStartedAt        DateTime? @map("imd_started_at") @db.Timestamptz(3)
+  imdDurationMinutes  Int?      @map("imd_duration_minutes")
+  cordCareAt          DateTime? @map("cord_care_at") @db.Timestamptz(3)
+
+  /// Vitamin K1 and the eye ointment are a time and a medication, not
+  /// Immunizations: neither is a vaccine, and filing them as one would put
+  /// them in an immunisation history that is read as a vaccination record.
+  vitaminK1GivenAt        DateTime? @map("vitamin_k1_given_at") @db.Timestamptz(3)
+  vitaminK1MedicationId   String?   @map("vitamin_k1_medication_id") @db.Uuid
+  eyeProphylaxisGivenAt   DateTime? @map("eye_prophylaxis_given_at") @db.Timestamptz(3)
+  eyeProphylaxisMedicationId String? @map("eye_prophylaxis_medication_id") @db.Uuid
+
+  /// HB0 **is** a vaccination, so it goes through the ordinary immunisation
+  /// path on the newborn's own encounter and is linked here.
+  hb0ImmunizationId String?   @map("hb0_immunization_id") @db.Uuid
+  examinedAt        DateTime? @map("examined_at") @db.Timestamptz(3)
+  identityTagAt     DateTime? @map("identity_tag_at") @db.Timestamptz(3)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  deliveryRecord      DeliveryRecord @relation(fields: [deliveryRecordId], references: [id], onDelete: Cascade)
+  newbornPatient      PatientProfile? @relation("NewbornCarePatient", fields: [newbornPatientId], references: [id], onDelete: Restrict)
+  vitaminK1Medication Medication?    @relation("NewbornVitaminK1", fields: [vitaminK1MedicationId], references: [id], onDelete: Restrict)
+  eyeProphylaxisMedication Medication? @relation("NewbornEyeProphylaxis", fields: [eyeProphylaxisMedicationId], references: [id], onDelete: Restrict)
+  hb0Immunization     Immunization?  @relation("NewbornHb0", fields: [hb0ImmunizationId], references: [id], onDelete: SetNull)
+
+  @@unique([newbornPatientId])
+  @@unique([deliveryRecordId, stillbirthOrder])
+  @@index([deliveryRecordId])
+  @@map("newborn_care_records")
 }
 
 /// How the baby lies (P25-T07). `UNKNOWN` is a real answer early in pregnancy,

@@ -292,6 +292,7 @@ export type UserWhereInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationListRelationFilter
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalListRelationFilter
   revokedDoctorMandates?: Prisma.DoctorMandateListRelationFilter
+  recordedDeliveries?: Prisma.DeliveryRecordListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -375,6 +376,7 @@ export type UserOrderByWithRelationInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationOrderByRelationAggregateInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalOrderByRelationAggregateInput
   revokedDoctorMandates?: Prisma.DoctorMandateOrderByRelationAggregateInput
+  recordedDeliveries?: Prisma.DeliveryRecordOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -461,6 +463,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationListRelationFilter
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalListRelationFilter
   revokedDoctorMandates?: Prisma.DoctorMandateListRelationFilter
+  recordedDeliveries?: Prisma.DeliveryRecordListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -575,6 +578,7 @@ export type UserCreateInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -657,6 +661,7 @@ export type UserUncheckedCreateInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUpdateInput = {
@@ -739,6 +744,7 @@ export type UserUpdateInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -821,6 +827,7 @@ export type UserUncheckedUpdateInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -1982,6 +1989,20 @@ export type UserUpdateOneRequiredWithoutRecordedExternalDoctorVisitsNestedInput 
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutRecordedExternalDoctorVisitsInput, Prisma.UserUpdateWithoutRecordedExternalDoctorVisitsInput>, Prisma.UserUncheckedUpdateWithoutRecordedExternalDoctorVisitsInput>
 }
 
+export type UserCreateNestedOneWithoutRecordedDeliveriesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutRecordedDeliveriesInput, Prisma.UserUncheckedCreateWithoutRecordedDeliveriesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutRecordedDeliveriesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutRecordedDeliveriesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutRecordedDeliveriesInput, Prisma.UserUncheckedCreateWithoutRecordedDeliveriesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutRecordedDeliveriesInput
+  upsert?: Prisma.UserUpsertWithoutRecordedDeliveriesInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutRecordedDeliveriesInput, Prisma.UserUpdateWithoutRecordedDeliveriesInput>, Prisma.UserUncheckedUpdateWithoutRecordedDeliveriesInput>
+}
+
 export type UserCreateNestedOneWithoutRecordedAntenatalExaminationsInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutRecordedAntenatalExaminationsInput, Prisma.UserUncheckedCreateWithoutRecordedAntenatalExaminationsInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutRecordedAntenatalExaminationsInput
@@ -2089,6 +2110,7 @@ export type UserCreateWithoutGrantedDoctorMandatesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutGrantedDoctorMandatesInput = {
@@ -2170,6 +2192,7 @@ export type UserUncheckedCreateWithoutGrantedDoctorMandatesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutGrantedDoctorMandatesInput = {
@@ -2256,6 +2279,7 @@ export type UserCreateWithoutRevokedDoctorMandatesInput = {
   recordedExternalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitCreateNestedManyWithoutRecordedByInput
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutRevokedDoctorMandatesInput = {
@@ -2337,6 +2361,7 @@ export type UserUncheckedCreateWithoutRevokedDoctorMandatesInput = {
   recordedExternalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitUncheckedCreateNestedManyWithoutRecordedByInput
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutRevokedDoctorMandatesInput = {
@@ -2434,6 +2459,7 @@ export type UserUpdateWithoutGrantedDoctorMandatesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutGrantedDoctorMandatesInput = {
@@ -2515,6 +2541,7 @@ export type UserUncheckedUpdateWithoutGrantedDoctorMandatesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUpsertWithoutRevokedDoctorMandatesInput = {
@@ -2607,6 +2634,7 @@ export type UserUpdateWithoutRevokedDoctorMandatesInput = {
   recordedExternalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitUpdateManyWithoutRecordedByNestedInput
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRevokedDoctorMandatesInput = {
@@ -2688,6 +2716,7 @@ export type UserUncheckedUpdateWithoutRevokedDoctorMandatesInput = {
   recordedExternalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserCreateWithoutRefreshTokensInput = {
@@ -2769,6 +2798,7 @@ export type UserCreateWithoutRefreshTokensInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutRefreshTokensInput = {
@@ -2850,6 +2880,7 @@ export type UserUncheckedCreateWithoutRefreshTokensInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutRefreshTokensInput = {
@@ -2947,6 +2978,7 @@ export type UserUpdateWithoutRefreshTokensInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRefreshTokensInput = {
@@ -3028,6 +3060,7 @@ export type UserUncheckedUpdateWithoutRefreshTokensInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserCreateWithoutSentInvitationsInput = {
@@ -3109,6 +3142,7 @@ export type UserCreateWithoutSentInvitationsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutSentInvitationsInput = {
@@ -3190,6 +3224,7 @@ export type UserUncheckedCreateWithoutSentInvitationsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutSentInvitationsInput = {
@@ -3287,6 +3322,7 @@ export type UserUpdateWithoutSentInvitationsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSentInvitationsInput = {
@@ -3368,6 +3404,7 @@ export type UserUncheckedUpdateWithoutSentInvitationsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserCreateWithoutMfaCredentialInput = {
@@ -3449,6 +3486,7 @@ export type UserCreateWithoutMfaCredentialInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutMfaCredentialInput = {
@@ -3530,6 +3568,7 @@ export type UserUncheckedCreateWithoutMfaCredentialInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutMfaCredentialInput = {
@@ -3627,6 +3666,7 @@ export type UserUpdateWithoutMfaCredentialInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMfaCredentialInput = {
@@ -3708,6 +3748,7 @@ export type UserUncheckedUpdateWithoutMfaCredentialInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserCreateWithoutMfaRecoveryCodesInput = {
@@ -3789,6 +3830,7 @@ export type UserCreateWithoutMfaRecoveryCodesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutMfaRecoveryCodesInput = {
@@ -3870,6 +3912,7 @@ export type UserUncheckedCreateWithoutMfaRecoveryCodesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutMfaRecoveryCodesInput = {
@@ -3967,6 +4010,7 @@ export type UserUpdateWithoutMfaRecoveryCodesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMfaRecoveryCodesInput = {
@@ -4048,6 +4092,7 @@ export type UserUncheckedUpdateWithoutMfaRecoveryCodesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserCreateWithoutUpdatedFeatureEntitlementsInput = {
@@ -4129,6 +4174,7 @@ export type UserCreateWithoutUpdatedFeatureEntitlementsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutUpdatedFeatureEntitlementsInput = {
@@ -4210,6 +4256,7 @@ export type UserUncheckedCreateWithoutUpdatedFeatureEntitlementsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutUpdatedFeatureEntitlementsInput = {
@@ -4307,6 +4354,7 @@ export type UserUpdateWithoutUpdatedFeatureEntitlementsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutUpdatedFeatureEntitlementsInput = {
@@ -4388,6 +4436,7 @@ export type UserUncheckedUpdateWithoutUpdatedFeatureEntitlementsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserCreateWithoutPatientProfilesInput = {
@@ -4469,6 +4518,7 @@ export type UserCreateWithoutPatientProfilesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutPatientProfilesInput = {
@@ -4550,6 +4600,7 @@ export type UserUncheckedCreateWithoutPatientProfilesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutPatientProfilesInput = {
@@ -4647,6 +4698,7 @@ export type UserUpdateWithoutPatientProfilesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPatientProfilesInput = {
@@ -4728,6 +4780,7 @@ export type UserUncheckedUpdateWithoutPatientProfilesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserCreateWithoutPrivacyNoticeRecordsInput = {
@@ -4809,6 +4862,7 @@ export type UserCreateWithoutPrivacyNoticeRecordsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutPrivacyNoticeRecordsInput = {
@@ -4890,6 +4944,7 @@ export type UserUncheckedCreateWithoutPrivacyNoticeRecordsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutPrivacyNoticeRecordsInput = {
@@ -4987,6 +5042,7 @@ export type UserUpdateWithoutPrivacyNoticeRecordsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPrivacyNoticeRecordsInput = {
@@ -5068,6 +5124,7 @@ export type UserUncheckedUpdateWithoutPrivacyNoticeRecordsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserCreateWithoutGrantedDeliveryConsentsInput = {
@@ -5149,6 +5206,7 @@ export type UserCreateWithoutGrantedDeliveryConsentsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutGrantedDeliveryConsentsInput = {
@@ -5230,6 +5288,7 @@ export type UserUncheckedCreateWithoutGrantedDeliveryConsentsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutGrantedDeliveryConsentsInput = {
@@ -5327,6 +5386,7 @@ export type UserUpdateWithoutGrantedDeliveryConsentsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutGrantedDeliveryConsentsInput = {
@@ -5408,6 +5468,7 @@ export type UserUncheckedUpdateWithoutGrantedDeliveryConsentsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserCreateWithoutRequestedDeliveriesInput = {
@@ -5489,6 +5550,7 @@ export type UserCreateWithoutRequestedDeliveriesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutRequestedDeliveriesInput = {
@@ -5570,6 +5632,7 @@ export type UserUncheckedCreateWithoutRequestedDeliveriesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutRequestedDeliveriesInput = {
@@ -5667,6 +5730,7 @@ export type UserUpdateWithoutRequestedDeliveriesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRequestedDeliveriesInput = {
@@ -5748,6 +5812,7 @@ export type UserUncheckedUpdateWithoutRequestedDeliveriesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserCreateWithoutDoctorProfileInput = {
@@ -5829,6 +5894,7 @@ export type UserCreateWithoutDoctorProfileInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutDoctorProfileInput = {
@@ -5910,6 +5976,7 @@ export type UserUncheckedCreateWithoutDoctorProfileInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutDoctorProfileInput = {
@@ -6007,6 +6074,7 @@ export type UserUpdateWithoutDoctorProfileInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutDoctorProfileInput = {
@@ -6088,6 +6156,7 @@ export type UserUncheckedUpdateWithoutDoctorProfileInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserCreateWithoutGrantedDoctorAuthoritiesInput = {
@@ -6169,6 +6238,7 @@ export type UserCreateWithoutGrantedDoctorAuthoritiesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutGrantedDoctorAuthoritiesInput = {
@@ -6250,6 +6320,7 @@ export type UserUncheckedCreateWithoutGrantedDoctorAuthoritiesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutGrantedDoctorAuthoritiesInput = {
@@ -6336,6 +6407,7 @@ export type UserCreateWithoutRevokedDoctorAuthoritiesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutRevokedDoctorAuthoritiesInput = {
@@ -6417,6 +6489,7 @@ export type UserUncheckedCreateWithoutRevokedDoctorAuthoritiesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutRevokedDoctorAuthoritiesInput = {
@@ -6514,6 +6587,7 @@ export type UserUpdateWithoutGrantedDoctorAuthoritiesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutGrantedDoctorAuthoritiesInput = {
@@ -6595,6 +6669,7 @@ export type UserUncheckedUpdateWithoutGrantedDoctorAuthoritiesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUpsertWithoutRevokedDoctorAuthoritiesInput = {
@@ -6687,6 +6762,7 @@ export type UserUpdateWithoutRevokedDoctorAuthoritiesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRevokedDoctorAuthoritiesInput = {
@@ -6768,6 +6844,7 @@ export type UserUncheckedUpdateWithoutRevokedDoctorAuthoritiesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserCreateWithoutAssignedDoctorPatientsInput = {
@@ -6849,6 +6926,7 @@ export type UserCreateWithoutAssignedDoctorPatientsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutAssignedDoctorPatientsInput = {
@@ -6930,6 +7008,7 @@ export type UserUncheckedCreateWithoutAssignedDoctorPatientsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutAssignedDoctorPatientsInput = {
@@ -7016,6 +7095,7 @@ export type UserCreateWithoutUnassignedDoctorPatientsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutUnassignedDoctorPatientsInput = {
@@ -7097,6 +7177,7 @@ export type UserUncheckedCreateWithoutUnassignedDoctorPatientsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutUnassignedDoctorPatientsInput = {
@@ -7194,6 +7275,7 @@ export type UserUpdateWithoutAssignedDoctorPatientsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAssignedDoctorPatientsInput = {
@@ -7275,6 +7357,7 @@ export type UserUncheckedUpdateWithoutAssignedDoctorPatientsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUpsertWithoutUnassignedDoctorPatientsInput = {
@@ -7367,6 +7450,7 @@ export type UserUpdateWithoutUnassignedDoctorPatientsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutUnassignedDoctorPatientsInput = {
@@ -7448,6 +7532,7 @@ export type UserUncheckedUpdateWithoutUnassignedDoctorPatientsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserCreateWithoutDoctorPatientActivitiesInput = {
@@ -7529,6 +7614,7 @@ export type UserCreateWithoutDoctorPatientActivitiesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutDoctorPatientActivitiesInput = {
@@ -7610,6 +7696,7 @@ export type UserUncheckedCreateWithoutDoctorPatientActivitiesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutDoctorPatientActivitiesInput = {
@@ -7707,6 +7794,7 @@ export type UserUpdateWithoutDoctorPatientActivitiesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutDoctorPatientActivitiesInput = {
@@ -7788,6 +7876,7 @@ export type UserUncheckedUpdateWithoutDoctorPatientActivitiesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserCreateWithoutCreatedAppointmentsInput = {
@@ -7869,6 +7958,7 @@ export type UserCreateWithoutCreatedAppointmentsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutCreatedAppointmentsInput = {
@@ -7950,6 +8040,7 @@ export type UserUncheckedCreateWithoutCreatedAppointmentsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutCreatedAppointmentsInput = {
@@ -8047,6 +8138,7 @@ export type UserUpdateWithoutCreatedAppointmentsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCreatedAppointmentsInput = {
@@ -8128,6 +8220,7 @@ export type UserUncheckedUpdateWithoutCreatedAppointmentsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserCreateWithoutCreatedRegistrationsInput = {
@@ -8209,6 +8302,7 @@ export type UserCreateWithoutCreatedRegistrationsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutCreatedRegistrationsInput = {
@@ -8290,6 +8384,7 @@ export type UserUncheckedCreateWithoutCreatedRegistrationsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutCreatedRegistrationsInput = {
@@ -8387,6 +8482,7 @@ export type UserUpdateWithoutCreatedRegistrationsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCreatedRegistrationsInput = {
@@ -8468,6 +8564,7 @@ export type UserUncheckedUpdateWithoutCreatedRegistrationsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserCreateWithoutCreatedEncountersInput = {
@@ -8549,6 +8646,7 @@ export type UserCreateWithoutCreatedEncountersInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutCreatedEncountersInput = {
@@ -8630,6 +8728,7 @@ export type UserUncheckedCreateWithoutCreatedEncountersInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutCreatedEncountersInput = {
@@ -8727,6 +8826,7 @@ export type UserUpdateWithoutCreatedEncountersInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCreatedEncountersInput = {
@@ -8808,6 +8908,7 @@ export type UserUncheckedUpdateWithoutCreatedEncountersInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserCreateWithoutRecordedVitalSignsInput = {
@@ -8889,6 +8990,7 @@ export type UserCreateWithoutRecordedVitalSignsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutRecordedVitalSignsInput = {
@@ -8970,6 +9072,7 @@ export type UserUncheckedCreateWithoutRecordedVitalSignsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutRecordedVitalSignsInput = {
@@ -9067,6 +9170,7 @@ export type UserUpdateWithoutRecordedVitalSignsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRecordedVitalSignsInput = {
@@ -9148,6 +9252,7 @@ export type UserUncheckedUpdateWithoutRecordedVitalSignsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserCreateWithoutRecordedDiagnosesInput = {
@@ -9229,6 +9334,7 @@ export type UserCreateWithoutRecordedDiagnosesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutRecordedDiagnosesInput = {
@@ -9310,6 +9416,7 @@ export type UserUncheckedCreateWithoutRecordedDiagnosesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutRecordedDiagnosesInput = {
@@ -9407,6 +9514,7 @@ export type UserUpdateWithoutRecordedDiagnosesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRecordedDiagnosesInput = {
@@ -9488,6 +9596,7 @@ export type UserUncheckedUpdateWithoutRecordedDiagnosesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserCreateWithoutRecordedProceduresInput = {
@@ -9569,6 +9678,7 @@ export type UserCreateWithoutRecordedProceduresInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutRecordedProceduresInput = {
@@ -9650,6 +9760,7 @@ export type UserUncheckedCreateWithoutRecordedProceduresInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutRecordedProceduresInput = {
@@ -9747,6 +9858,7 @@ export type UserUpdateWithoutRecordedProceduresInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRecordedProceduresInput = {
@@ -9828,6 +9940,7 @@ export type UserUncheckedUpdateWithoutRecordedProceduresInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserCreateWithoutDispensedByRecordsInput = {
@@ -9909,6 +10022,7 @@ export type UserCreateWithoutDispensedByRecordsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutDispensedByRecordsInput = {
@@ -9990,6 +10104,7 @@ export type UserUncheckedCreateWithoutDispensedByRecordsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutDispensedByRecordsInput = {
@@ -10087,6 +10202,7 @@ export type UserUpdateWithoutDispensedByRecordsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutDispensedByRecordsInput = {
@@ -10168,6 +10284,7 @@ export type UserUncheckedUpdateWithoutDispensedByRecordsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserCreateWithoutMedicationStockReceiptsInput = {
@@ -10249,6 +10366,7 @@ export type UserCreateWithoutMedicationStockReceiptsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutMedicationStockReceiptsInput = {
@@ -10330,6 +10448,7 @@ export type UserUncheckedCreateWithoutMedicationStockReceiptsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutMedicationStockReceiptsInput = {
@@ -10427,6 +10546,7 @@ export type UserUpdateWithoutMedicationStockReceiptsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMedicationStockReceiptsInput = {
@@ -10508,6 +10628,7 @@ export type UserUncheckedUpdateWithoutMedicationStockReceiptsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserCreateWithoutUpdatedTaxSettingsInput = {
@@ -10589,6 +10710,7 @@ export type UserCreateWithoutUpdatedTaxSettingsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutUpdatedTaxSettingsInput = {
@@ -10670,6 +10792,7 @@ export type UserUncheckedCreateWithoutUpdatedTaxSettingsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutUpdatedTaxSettingsInput = {
@@ -10767,6 +10890,7 @@ export type UserUpdateWithoutUpdatedTaxSettingsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutUpdatedTaxSettingsInput = {
@@ -10848,6 +10972,7 @@ export type UserUncheckedUpdateWithoutUpdatedTaxSettingsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserCreateWithoutCreatedTaxCodeRatesInput = {
@@ -10929,6 +11054,7 @@ export type UserCreateWithoutCreatedTaxCodeRatesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutCreatedTaxCodeRatesInput = {
@@ -11010,6 +11136,7 @@ export type UserUncheckedCreateWithoutCreatedTaxCodeRatesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutCreatedTaxCodeRatesInput = {
@@ -11107,6 +11234,7 @@ export type UserUpdateWithoutCreatedTaxCodeRatesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCreatedTaxCodeRatesInput = {
@@ -11188,6 +11316,7 @@ export type UserUncheckedUpdateWithoutCreatedTaxCodeRatesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserCreateWithoutUpdatedTaxCategoryDefaultsInput = {
@@ -11269,6 +11398,7 @@ export type UserCreateWithoutUpdatedTaxCategoryDefaultsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutUpdatedTaxCategoryDefaultsInput = {
@@ -11350,6 +11480,7 @@ export type UserUncheckedCreateWithoutUpdatedTaxCategoryDefaultsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutUpdatedTaxCategoryDefaultsInput = {
@@ -11447,6 +11578,7 @@ export type UserUpdateWithoutUpdatedTaxCategoryDefaultsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutUpdatedTaxCategoryDefaultsInput = {
@@ -11528,6 +11660,7 @@ export type UserUncheckedUpdateWithoutUpdatedTaxCategoryDefaultsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserCreateWithoutGeneratedTaxReportsInput = {
@@ -11609,6 +11742,7 @@ export type UserCreateWithoutGeneratedTaxReportsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutGeneratedTaxReportsInput = {
@@ -11690,6 +11824,7 @@ export type UserUncheckedCreateWithoutGeneratedTaxReportsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutGeneratedTaxReportsInput = {
@@ -11776,6 +11911,7 @@ export type UserCreateWithoutFinalizedTaxReportsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutFinalizedTaxReportsInput = {
@@ -11857,6 +11993,7 @@ export type UserUncheckedCreateWithoutFinalizedTaxReportsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutFinalizedTaxReportsInput = {
@@ -11954,6 +12091,7 @@ export type UserUpdateWithoutGeneratedTaxReportsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutGeneratedTaxReportsInput = {
@@ -12035,6 +12173,7 @@ export type UserUncheckedUpdateWithoutGeneratedTaxReportsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUpsertWithoutFinalizedTaxReportsInput = {
@@ -12127,6 +12266,7 @@ export type UserUpdateWithoutFinalizedTaxReportsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutFinalizedTaxReportsInput = {
@@ -12208,6 +12348,7 @@ export type UserUncheckedUpdateWithoutFinalizedTaxReportsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserCreateWithoutVoidedInvoicesInput = {
@@ -12289,6 +12430,7 @@ export type UserCreateWithoutVoidedInvoicesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutVoidedInvoicesInput = {
@@ -12370,6 +12512,7 @@ export type UserUncheckedCreateWithoutVoidedInvoicesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutVoidedInvoicesInput = {
@@ -12456,6 +12599,7 @@ export type UserCreateWithoutCreatedInvoicesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutCreatedInvoicesInput = {
@@ -12537,6 +12681,7 @@ export type UserUncheckedCreateWithoutCreatedInvoicesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutCreatedInvoicesInput = {
@@ -12634,6 +12779,7 @@ export type UserUpdateWithoutVoidedInvoicesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutVoidedInvoicesInput = {
@@ -12715,6 +12861,7 @@ export type UserUncheckedUpdateWithoutVoidedInvoicesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUpsertWithoutCreatedInvoicesInput = {
@@ -12807,6 +12954,7 @@ export type UserUpdateWithoutCreatedInvoicesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCreatedInvoicesInput = {
@@ -12888,6 +13036,7 @@ export type UserUncheckedUpdateWithoutCreatedInvoicesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserCreateWithoutReceivedPaymentsInput = {
@@ -12969,6 +13118,7 @@ export type UserCreateWithoutReceivedPaymentsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutReceivedPaymentsInput = {
@@ -13050,6 +13200,7 @@ export type UserUncheckedCreateWithoutReceivedPaymentsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutReceivedPaymentsInput = {
@@ -13147,6 +13298,7 @@ export type UserUpdateWithoutReceivedPaymentsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutReceivedPaymentsInput = {
@@ -13228,6 +13380,7 @@ export type UserUncheckedUpdateWithoutReceivedPaymentsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserCreateWithoutCreatedDocumentTemplatesInput = {
@@ -13309,6 +13462,7 @@ export type UserCreateWithoutCreatedDocumentTemplatesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutCreatedDocumentTemplatesInput = {
@@ -13390,6 +13544,7 @@ export type UserUncheckedCreateWithoutCreatedDocumentTemplatesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutCreatedDocumentTemplatesInput = {
@@ -13487,6 +13642,7 @@ export type UserUpdateWithoutCreatedDocumentTemplatesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCreatedDocumentTemplatesInput = {
@@ -13568,6 +13724,7 @@ export type UserUncheckedUpdateWithoutCreatedDocumentTemplatesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserCreateWithoutPublishedTemplateVersionsInput = {
@@ -13649,6 +13806,7 @@ export type UserCreateWithoutPublishedTemplateVersionsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutPublishedTemplateVersionsInput = {
@@ -13730,6 +13888,7 @@ export type UserUncheckedCreateWithoutPublishedTemplateVersionsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutPublishedTemplateVersionsInput = {
@@ -13827,6 +13986,7 @@ export type UserUpdateWithoutPublishedTemplateVersionsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPublishedTemplateVersionsInput = {
@@ -13908,6 +14068,7 @@ export type UserUncheckedUpdateWithoutPublishedTemplateVersionsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserCreateWithoutRolesInput = {
@@ -13989,6 +14150,7 @@ export type UserCreateWithoutRolesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutRolesInput = {
@@ -14070,6 +14232,7 @@ export type UserUncheckedCreateWithoutRolesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutRolesInput = {
@@ -14156,6 +14319,7 @@ export type UserCreateWithoutAssignedRolesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutAssignedRolesInput = {
@@ -14237,6 +14401,7 @@ export type UserUncheckedCreateWithoutAssignedRolesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutAssignedRolesInput = {
@@ -14323,6 +14488,7 @@ export type UserCreateWithoutUnassignedRolesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutUnassignedRolesInput = {
@@ -14404,6 +14570,7 @@ export type UserUncheckedCreateWithoutUnassignedRolesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutUnassignedRolesInput = {
@@ -14501,6 +14668,7 @@ export type UserUpdateWithoutRolesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRolesInput = {
@@ -14582,6 +14750,7 @@ export type UserUncheckedUpdateWithoutRolesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUpsertWithoutAssignedRolesInput = {
@@ -14674,6 +14843,7 @@ export type UserUpdateWithoutAssignedRolesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAssignedRolesInput = {
@@ -14755,6 +14925,7 @@ export type UserUncheckedUpdateWithoutAssignedRolesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUpsertWithoutUnassignedRolesInput = {
@@ -14847,6 +15018,7 @@ export type UserUpdateWithoutUnassignedRolesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutUnassignedRolesInput = {
@@ -14928,6 +15100,7 @@ export type UserUncheckedUpdateWithoutUnassignedRolesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserCreateWithoutRecordedBpjsReferralsInput = {
@@ -15009,6 +15182,7 @@ export type UserCreateWithoutRecordedBpjsReferralsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutRecordedBpjsReferralsInput = {
@@ -15090,6 +15264,7 @@ export type UserUncheckedCreateWithoutRecordedBpjsReferralsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutRecordedBpjsReferralsInput = {
@@ -15187,6 +15362,7 @@ export type UserUpdateWithoutRecordedBpjsReferralsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRecordedBpjsReferralsInput = {
@@ -15268,6 +15444,7 @@ export type UserUncheckedUpdateWithoutRecordedBpjsReferralsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserCreateWithoutCreatedAiProviderConfigsInput = {
@@ -15349,6 +15526,7 @@ export type UserCreateWithoutCreatedAiProviderConfigsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutCreatedAiProviderConfigsInput = {
@@ -15430,6 +15608,7 @@ export type UserUncheckedCreateWithoutCreatedAiProviderConfigsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutCreatedAiProviderConfigsInput = {
@@ -15516,6 +15695,7 @@ export type UserCreateWithoutUpdatedAiProviderConfigsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutUpdatedAiProviderConfigsInput = {
@@ -15597,6 +15777,7 @@ export type UserUncheckedCreateWithoutUpdatedAiProviderConfigsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutUpdatedAiProviderConfigsInput = {
@@ -15694,6 +15875,7 @@ export type UserUpdateWithoutCreatedAiProviderConfigsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCreatedAiProviderConfigsInput = {
@@ -15775,6 +15957,7 @@ export type UserUncheckedUpdateWithoutCreatedAiProviderConfigsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUpsertWithoutUpdatedAiProviderConfigsInput = {
@@ -15867,6 +16050,7 @@ export type UserUpdateWithoutUpdatedAiProviderConfigsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutUpdatedAiProviderConfigsInput = {
@@ -15948,6 +16132,7 @@ export type UserUncheckedUpdateWithoutUpdatedAiProviderConfigsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserCreateWithoutChatSessionsInput = {
@@ -16029,6 +16214,7 @@ export type UserCreateWithoutChatSessionsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutChatSessionsInput = {
@@ -16110,6 +16296,7 @@ export type UserUncheckedCreateWithoutChatSessionsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutChatSessionsInput = {
@@ -16207,6 +16394,7 @@ export type UserUpdateWithoutChatSessionsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutChatSessionsInput = {
@@ -16288,6 +16476,7 @@ export type UserUncheckedUpdateWithoutChatSessionsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserCreateWithoutChatMessagesInput = {
@@ -16369,6 +16558,7 @@ export type UserCreateWithoutChatMessagesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutChatMessagesInput = {
@@ -16450,6 +16640,7 @@ export type UserUncheckedCreateWithoutChatMessagesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutChatMessagesInput = {
@@ -16547,6 +16738,7 @@ export type UserUpdateWithoutChatMessagesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutChatMessagesInput = {
@@ -16628,6 +16820,7 @@ export type UserUncheckedUpdateWithoutChatMessagesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserCreateWithoutUploadedDocumentsInput = {
@@ -16709,6 +16902,7 @@ export type UserCreateWithoutUploadedDocumentsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutUploadedDocumentsInput = {
@@ -16790,6 +16984,7 @@ export type UserUncheckedCreateWithoutUploadedDocumentsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutUploadedDocumentsInput = {
@@ -16876,6 +17071,7 @@ export type UserCreateWithoutOwnedDocumentsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutOwnedDocumentsInput = {
@@ -16957,6 +17153,7 @@ export type UserUncheckedCreateWithoutOwnedDocumentsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutOwnedDocumentsInput = {
@@ -17043,6 +17240,7 @@ export type UserCreateWithoutReleasedDocumentsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutReleasedDocumentsInput = {
@@ -17124,6 +17322,7 @@ export type UserUncheckedCreateWithoutReleasedDocumentsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutReleasedDocumentsInput = {
@@ -17221,6 +17420,7 @@ export type UserUpdateWithoutUploadedDocumentsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutUploadedDocumentsInput = {
@@ -17302,6 +17502,7 @@ export type UserUncheckedUpdateWithoutUploadedDocumentsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUpsertWithoutOwnedDocumentsInput = {
@@ -17394,6 +17595,7 @@ export type UserUpdateWithoutOwnedDocumentsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutOwnedDocumentsInput = {
@@ -17475,6 +17677,7 @@ export type UserUncheckedUpdateWithoutOwnedDocumentsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUpsertWithoutReleasedDocumentsInput = {
@@ -17567,6 +17770,7 @@ export type UserUpdateWithoutReleasedDocumentsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutReleasedDocumentsInput = {
@@ -17648,6 +17852,7 @@ export type UserUncheckedUpdateWithoutReleasedDocumentsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserCreateWithoutReceivedVaultSharesInput = {
@@ -17729,6 +17934,7 @@ export type UserCreateWithoutReceivedVaultSharesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutReceivedVaultSharesInput = {
@@ -17810,6 +18016,7 @@ export type UserUncheckedCreateWithoutReceivedVaultSharesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutReceivedVaultSharesInput = {
@@ -17896,6 +18103,7 @@ export type UserCreateWithoutGrantedVaultSharesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutGrantedVaultSharesInput = {
@@ -17977,6 +18185,7 @@ export type UserUncheckedCreateWithoutGrantedVaultSharesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutGrantedVaultSharesInput = {
@@ -18074,6 +18283,7 @@ export type UserUpdateWithoutReceivedVaultSharesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutReceivedVaultSharesInput = {
@@ -18155,6 +18365,7 @@ export type UserUncheckedUpdateWithoutReceivedVaultSharesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUpsertWithoutGrantedVaultSharesInput = {
@@ -18247,6 +18458,7 @@ export type UserUpdateWithoutGrantedVaultSharesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutGrantedVaultSharesInput = {
@@ -18328,6 +18540,7 @@ export type UserUncheckedUpdateWithoutGrantedVaultSharesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserCreateWithoutOffboardingNoticesInput = {
@@ -18409,6 +18622,7 @@ export type UserCreateWithoutOffboardingNoticesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutOffboardingNoticesInput = {
@@ -18490,6 +18704,7 @@ export type UserUncheckedCreateWithoutOffboardingNoticesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutOffboardingNoticesInput = {
@@ -18587,6 +18802,7 @@ export type UserUpdateWithoutOffboardingNoticesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutOffboardingNoticesInput = {
@@ -18668,6 +18884,7 @@ export type UserUncheckedUpdateWithoutOffboardingNoticesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserCreateWithoutBlockedConversationsInput = {
@@ -18749,6 +18966,7 @@ export type UserCreateWithoutBlockedConversationsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutBlockedConversationsInput = {
@@ -18830,6 +19048,7 @@ export type UserUncheckedCreateWithoutBlockedConversationsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutBlockedConversationsInput = {
@@ -18927,6 +19146,7 @@ export type UserUpdateWithoutBlockedConversationsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutBlockedConversationsInput = {
@@ -19008,6 +19228,7 @@ export type UserUncheckedUpdateWithoutBlockedConversationsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserCreateWithoutConversationMessagesInput = {
@@ -19089,6 +19310,7 @@ export type UserCreateWithoutConversationMessagesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutConversationMessagesInput = {
@@ -19170,6 +19392,7 @@ export type UserUncheckedCreateWithoutConversationMessagesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutConversationMessagesInput = {
@@ -19267,6 +19490,7 @@ export type UserUpdateWithoutConversationMessagesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutConversationMessagesInput = {
@@ -19348,6 +19572,7 @@ export type UserUncheckedUpdateWithoutConversationMessagesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserCreateWithoutCreatedAdmissionsInput = {
@@ -19429,6 +19654,7 @@ export type UserCreateWithoutCreatedAdmissionsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutCreatedAdmissionsInput = {
@@ -19510,6 +19736,7 @@ export type UserUncheckedCreateWithoutCreatedAdmissionsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutCreatedAdmissionsInput = {
@@ -19607,6 +19834,7 @@ export type UserUpdateWithoutCreatedAdmissionsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCreatedAdmissionsInput = {
@@ -19688,6 +19916,7 @@ export type UserUncheckedUpdateWithoutCreatedAdmissionsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserCreateWithoutCreatedBedAssignmentsInput = {
@@ -19769,6 +19998,7 @@ export type UserCreateWithoutCreatedBedAssignmentsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutCreatedBedAssignmentsInput = {
@@ -19850,6 +20080,7 @@ export type UserUncheckedCreateWithoutCreatedBedAssignmentsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutCreatedBedAssignmentsInput = {
@@ -19947,6 +20178,7 @@ export type UserUpdateWithoutCreatedBedAssignmentsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCreatedBedAssignmentsInput = {
@@ -20028,6 +20260,7 @@ export type UserUncheckedUpdateWithoutCreatedBedAssignmentsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserCreateWithoutNotificationsInput = {
@@ -20109,6 +20342,7 @@ export type UserCreateWithoutNotificationsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutNotificationsInput = {
@@ -20190,6 +20424,7 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutNotificationsInput = {
@@ -20287,6 +20522,7 @@ export type UserUpdateWithoutNotificationsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutNotificationsInput = {
@@ -20368,6 +20604,7 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserCreateWithoutOrganizationUnitInput = {
@@ -20449,6 +20686,7 @@ export type UserCreateWithoutOrganizationUnitInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutOrganizationUnitInput = {
@@ -20530,6 +20768,7 @@ export type UserUncheckedCreateWithoutOrganizationUnitInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutOrganizationUnitInput = {
@@ -20653,6 +20892,7 @@ export type UserCreateWithoutDefaultApproverForTypesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutDefaultApproverForTypesInput = {
@@ -20734,6 +20974,7 @@ export type UserUncheckedCreateWithoutDefaultApproverForTypesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutDefaultApproverForTypesInput = {
@@ -20831,6 +21072,7 @@ export type UserUpdateWithoutDefaultApproverForTypesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutDefaultApproverForTypesInput = {
@@ -20912,6 +21154,7 @@ export type UserUncheckedUpdateWithoutDefaultApproverForTypesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserCreateWithoutDraftedManagedDocumentsInput = {
@@ -20993,6 +21236,7 @@ export type UserCreateWithoutDraftedManagedDocumentsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutDraftedManagedDocumentsInput = {
@@ -21074,6 +21318,7 @@ export type UserUncheckedCreateWithoutDraftedManagedDocumentsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutDraftedManagedDocumentsInput = {
@@ -21171,6 +21416,7 @@ export type UserUpdateWithoutDraftedManagedDocumentsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutDraftedManagedDocumentsInput = {
@@ -21252,6 +21498,7 @@ export type UserUncheckedUpdateWithoutDraftedManagedDocumentsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserCreateWithoutSubmittedApprovalRequestsInput = {
@@ -21333,6 +21580,7 @@ export type UserCreateWithoutSubmittedApprovalRequestsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutSubmittedApprovalRequestsInput = {
@@ -21414,6 +21662,7 @@ export type UserUncheckedCreateWithoutSubmittedApprovalRequestsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutSubmittedApprovalRequestsInput = {
@@ -21511,6 +21760,7 @@ export type UserUpdateWithoutSubmittedApprovalRequestsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSubmittedApprovalRequestsInput = {
@@ -21592,6 +21842,7 @@ export type UserUncheckedUpdateWithoutSubmittedApprovalRequestsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserCreateWithoutNamedApprovalRoundsInput = {
@@ -21673,6 +21924,7 @@ export type UserCreateWithoutNamedApprovalRoundsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutNamedApprovalRoundsInput = {
@@ -21754,6 +22006,7 @@ export type UserUncheckedCreateWithoutNamedApprovalRoundsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutNamedApprovalRoundsInput = {
@@ -21851,6 +22104,7 @@ export type UserUpdateWithoutNamedApprovalRoundsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutNamedApprovalRoundsInput = {
@@ -21932,6 +22186,7 @@ export type UserUncheckedUpdateWithoutNamedApprovalRoundsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserCreateWithoutApprovalDecisionsInput = {
@@ -22013,6 +22268,7 @@ export type UserCreateWithoutApprovalDecisionsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutApprovalDecisionsInput = {
@@ -22094,6 +22350,7 @@ export type UserUncheckedCreateWithoutApprovalDecisionsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutApprovalDecisionsInput = {
@@ -22191,6 +22448,7 @@ export type UserUpdateWithoutApprovalDecisionsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutApprovalDecisionsInput = {
@@ -22272,6 +22530,7 @@ export type UserUncheckedUpdateWithoutApprovalDecisionsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserCreateWithoutCollectedLabSpecimensInput = {
@@ -22353,6 +22612,7 @@ export type UserCreateWithoutCollectedLabSpecimensInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutCollectedLabSpecimensInput = {
@@ -22434,6 +22694,7 @@ export type UserUncheckedCreateWithoutCollectedLabSpecimensInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutCollectedLabSpecimensInput = {
@@ -22531,6 +22792,7 @@ export type UserUpdateWithoutCollectedLabSpecimensInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCollectedLabSpecimensInput = {
@@ -22612,6 +22874,7 @@ export type UserUncheckedUpdateWithoutCollectedLabSpecimensInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserCreateWithoutEnteredLabResultsInput = {
@@ -22693,6 +22956,7 @@ export type UserCreateWithoutEnteredLabResultsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutEnteredLabResultsInput = {
@@ -22774,6 +23038,7 @@ export type UserUncheckedCreateWithoutEnteredLabResultsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutEnteredLabResultsInput = {
@@ -22860,6 +23125,7 @@ export type UserCreateWithoutVerifiedLabResultsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutVerifiedLabResultsInput = {
@@ -22941,6 +23207,7 @@ export type UserUncheckedCreateWithoutVerifiedLabResultsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutVerifiedLabResultsInput = {
@@ -23038,6 +23305,7 @@ export type UserUpdateWithoutEnteredLabResultsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutEnteredLabResultsInput = {
@@ -23119,6 +23387,7 @@ export type UserUncheckedUpdateWithoutEnteredLabResultsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUpsertWithoutVerifiedLabResultsInput = {
@@ -23211,6 +23480,7 @@ export type UserUpdateWithoutVerifiedLabResultsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutVerifiedLabResultsInput = {
@@ -23292,6 +23562,7 @@ export type UserUncheckedUpdateWithoutVerifiedLabResultsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserCreateWithoutUpdatedLaboratorySettingsInput = {
@@ -23373,6 +23644,7 @@ export type UserCreateWithoutUpdatedLaboratorySettingsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutUpdatedLaboratorySettingsInput = {
@@ -23454,6 +23726,7 @@ export type UserUncheckedCreateWithoutUpdatedLaboratorySettingsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutUpdatedLaboratorySettingsInput = {
@@ -23551,6 +23824,7 @@ export type UserUpdateWithoutUpdatedLaboratorySettingsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutUpdatedLaboratorySettingsInput = {
@@ -23632,6 +23906,7 @@ export type UserUncheckedUpdateWithoutUpdatedLaboratorySettingsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserCreateWithoutRequestedLabReportsInput = {
@@ -23713,6 +23988,7 @@ export type UserCreateWithoutRequestedLabReportsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutRequestedLabReportsInput = {
@@ -23794,6 +24070,7 @@ export type UserUncheckedCreateWithoutRequestedLabReportsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutRequestedLabReportsInput = {
@@ -23891,6 +24168,7 @@ export type UserUpdateWithoutRequestedLabReportsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRequestedLabReportsInput = {
@@ -23972,6 +24250,7 @@ export type UserUncheckedUpdateWithoutRequestedLabReportsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserCreateWithoutFiledBugReportsInput = {
@@ -24053,6 +24332,7 @@ export type UserCreateWithoutFiledBugReportsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutFiledBugReportsInput = {
@@ -24134,6 +24414,7 @@ export type UserUncheckedCreateWithoutFiledBugReportsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutFiledBugReportsInput = {
@@ -24231,6 +24512,7 @@ export type UserUpdateWithoutFiledBugReportsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutFiledBugReportsInput = {
@@ -24312,6 +24594,7 @@ export type UserUncheckedUpdateWithoutFiledBugReportsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserCreateWithoutCreatedPregnancyEpisodesInput = {
@@ -24393,6 +24676,7 @@ export type UserCreateWithoutCreatedPregnancyEpisodesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutCreatedPregnancyEpisodesInput = {
@@ -24474,6 +24758,7 @@ export type UserUncheckedCreateWithoutCreatedPregnancyEpisodesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutCreatedPregnancyEpisodesInput = {
@@ -24571,6 +24856,7 @@ export type UserUpdateWithoutCreatedPregnancyEpisodesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCreatedPregnancyEpisodesInput = {
@@ -24652,6 +24938,7 @@ export type UserUncheckedUpdateWithoutCreatedPregnancyEpisodesInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserCreateWithoutRecordedExternalDoctorVisitsInput = {
@@ -24733,6 +25020,7 @@ export type UserCreateWithoutRecordedExternalDoctorVisitsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutRecordedExternalDoctorVisitsInput = {
@@ -24814,6 +25102,7 @@ export type UserUncheckedCreateWithoutRecordedExternalDoctorVisitsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutRecordedExternalDoctorVisitsInput = {
@@ -24911,6 +25200,7 @@ export type UserUpdateWithoutRecordedExternalDoctorVisitsInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRecordedExternalDoctorVisitsInput = {
@@ -24989,6 +25279,351 @@ export type UserUncheckedUpdateWithoutRecordedExternalDoctorVisitsInput = {
   revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
   grantedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutCreatedByNestedInput
   createdPregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedUpdateManyWithoutCreatedByNestedInput
+  recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
+  dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
+  revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
+}
+
+export type UserCreateWithoutRecordedDeliveriesInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  isActive?: boolean
+  isSystem?: boolean
+  offboardedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitCreateNestedOneWithoutMembersInput
+  roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
+  assignedRoles?: Prisma.UserRoleCreateNestedManyWithoutAssignedByInput
+  unassignedRoles?: Prisma.UserRoleCreateNestedManyWithoutUnassignedByInput
+  patientProfiles?: Prisma.PatientProfileCreateNestedManyWithoutOwnerUserInput
+  doctorProfile?: Prisma.DoctorProfileCreateNestedOneWithoutOwnerUserInput
+  assignedDoctorPatients?: Prisma.DoctorPatientCreateNestedManyWithoutAssignedByInput
+  unassignedDoctorPatients?: Prisma.DoctorPatientCreateNestedManyWithoutUnassignedByInput
+  doctorPatientActivities?: Prisma.DoctorPatientActivityCreateNestedManyWithoutActorInput
+  createdAppointments?: Prisma.AppointmentCreateNestedManyWithoutCreatedByInput
+  createdRegistrations?: Prisma.RegistrationCreateNestedManyWithoutCreatedByInput
+  createdEncounters?: Prisma.EncounterCreateNestedManyWithoutCreatedByInput
+  recordedVitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutRecordedByInput
+  recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
+  recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
+  recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
+  medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
+  createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
+  voidedInvoices?: Prisma.InvoiceCreateNestedManyWithoutVoidedByInput
+  receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
+  refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeCreateNestedManyWithoutUserInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
+  chatSessions?: Prisma.ChatSessionCreateNestedManyWithoutOwnerUserInput
+  chatMessages?: Prisma.ChatMessageCreateNestedManyWithoutAuthorUserInput
+  createdAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutCreatedByInput
+  updatedAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutUpdatedByInput
+  uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
+  ownedDocuments?: Prisma.DocumentCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentCreateNestedManyWithoutReleasedByInput
+  blockedConversations?: Prisma.ConversationCreateNestedManyWithoutBlockedByInput
+  conversationMessages?: Prisma.ConversationMessageCreateNestedManyWithoutAuthorInput
+  updatedFeatureEntitlements?: Prisma.FeatureEntitlementCreateNestedManyWithoutUpdatedByInput
+  createdAdmissions?: Prisma.AdmissionCreateNestedManyWithoutCreatedByInput
+  createdBedAssignments?: Prisma.BedAssignmentCreateNestedManyWithoutCreatedByInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
+  sentInvitations?: Prisma.UserInvitationCreateNestedManyWithoutInvitedByInput
+  createdDocumentTemplates?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  publishedTemplateVersions?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutPublishedByInput
+  receivedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGranteeInput
+  grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
+  offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
+  grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
+  defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
+  filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
+  draftedManagedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutDraftedByInput
+  submittedApprovalRequests?: Prisma.DocumentApprovalRequestCreateNestedManyWithoutSubmittedByInput
+  namedApprovalRounds?: Prisma.DocumentApprovalApproverCreateNestedManyWithoutApproverInput
+  approvalDecisions?: Prisma.DocumentApprovalDecisionCreateNestedManyWithoutApproverInput
+  collectedLabSpecimens?: Prisma.LabSpecimenCreateNestedManyWithoutCollectedByInput
+  enteredLabResults?: Prisma.LabResultCreateNestedManyWithoutEnteredByInput
+  verifiedLabResults?: Prisma.LabResultCreateNestedManyWithoutVerifiedByInput
+  requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
+  updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
+  updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
+  generatedTaxReports?: Prisma.TaxReportDraftCreateNestedManyWithoutGeneratedByInput
+  finalizedTaxReports?: Prisma.TaxReportDraftCreateNestedManyWithoutFinalizedByInput
+  grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
+  revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
+  grantedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutCreatedByInput
+  createdPregnancyEpisodes?: Prisma.PregnancyEpisodeCreateNestedManyWithoutCreatedByInput
+  recordedExternalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitCreateNestedManyWithoutRecordedByInput
+  recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
+  dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
+  revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+}
+
+export type UserUncheckedCreateWithoutRecordedDeliveriesInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  isActive?: boolean
+  isSystem?: boolean
+  offboardedAt?: Date | string | null
+  organizationUnitId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  roles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUserInput
+  assignedRoles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutAssignedByInput
+  unassignedRoles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUnassignedByInput
+  patientProfiles?: Prisma.PatientProfileUncheckedCreateNestedManyWithoutOwnerUserInput
+  doctorProfile?: Prisma.DoctorProfileUncheckedCreateNestedOneWithoutOwnerUserInput
+  assignedDoctorPatients?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutAssignedByInput
+  unassignedDoctorPatients?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutUnassignedByInput
+  doctorPatientActivities?: Prisma.DoctorPatientActivityUncheckedCreateNestedManyWithoutActorInput
+  createdAppointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutCreatedByInput
+  createdRegistrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutCreatedByInput
+  createdEncounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutCreatedByInput
+  recordedVitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
+  medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
+  createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  voidedInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutVoidedByInput
+  receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
+  refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
+  chatSessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutOwnerUserInput
+  chatMessages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutAuthorUserInput
+  createdAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutUpdatedByInput
+  uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
+  ownedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutReleasedByInput
+  blockedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutBlockedByInput
+  conversationMessages?: Prisma.ConversationMessageUncheckedCreateNestedManyWithoutAuthorInput
+  updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdAdmissions?: Prisma.AdmissionUncheckedCreateNestedManyWithoutCreatedByInput
+  createdBedAssignments?: Prisma.BedAssignmentUncheckedCreateNestedManyWithoutCreatedByInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
+  sentInvitations?: Prisma.UserInvitationUncheckedCreateNestedManyWithoutInvitedByInput
+  createdDocumentTemplates?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  publishedTemplateVersions?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutPublishedByInput
+  receivedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGranteeInput
+  grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
+  offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
+  grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
+  defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
+  filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
+  draftedManagedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutDraftedByInput
+  submittedApprovalRequests?: Prisma.DocumentApprovalRequestUncheckedCreateNestedManyWithoutSubmittedByInput
+  namedApprovalRounds?: Prisma.DocumentApprovalApproverUncheckedCreateNestedManyWithoutApproverInput
+  approvalDecisions?: Prisma.DocumentApprovalDecisionUncheckedCreateNestedManyWithoutApproverInput
+  collectedLabSpecimens?: Prisma.LabSpecimenUncheckedCreateNestedManyWithoutCollectedByInput
+  enteredLabResults?: Prisma.LabResultUncheckedCreateNestedManyWithoutEnteredByInput
+  verifiedLabResults?: Prisma.LabResultUncheckedCreateNestedManyWithoutVerifiedByInput
+  requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
+  updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
+  generatedTaxReports?: Prisma.TaxReportDraftUncheckedCreateNestedManyWithoutGeneratedByInput
+  finalizedTaxReports?: Prisma.TaxReportDraftUncheckedCreateNestedManyWithoutFinalizedByInput
+  grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
+  revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
+  grantedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutCreatedByInput
+  createdPregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedCreateNestedManyWithoutCreatedByInput
+  recordedExternalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
+  dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
+  revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+}
+
+export type UserCreateOrConnectWithoutRecordedDeliveriesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutRecordedDeliveriesInput, Prisma.UserUncheckedCreateWithoutRecordedDeliveriesInput>
+}
+
+export type UserUpsertWithoutRecordedDeliveriesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutRecordedDeliveriesInput, Prisma.UserUncheckedUpdateWithoutRecordedDeliveriesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutRecordedDeliveriesInput, Prisma.UserUncheckedCreateWithoutRecordedDeliveriesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutRecordedDeliveriesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutRecordedDeliveriesInput, Prisma.UserUncheckedUpdateWithoutRecordedDeliveriesInput>
+}
+
+export type UserUpdateWithoutRecordedDeliveriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  offboardedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitUpdateOneWithoutMembersNestedInput
+  roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
+  assignedRoles?: Prisma.UserRoleUpdateManyWithoutAssignedByNestedInput
+  unassignedRoles?: Prisma.UserRoleUpdateManyWithoutUnassignedByNestedInput
+  patientProfiles?: Prisma.PatientProfileUpdateManyWithoutOwnerUserNestedInput
+  doctorProfile?: Prisma.DoctorProfileUpdateOneWithoutOwnerUserNestedInput
+  assignedDoctorPatients?: Prisma.DoctorPatientUpdateManyWithoutAssignedByNestedInput
+  unassignedDoctorPatients?: Prisma.DoctorPatientUpdateManyWithoutUnassignedByNestedInput
+  doctorPatientActivities?: Prisma.DoctorPatientActivityUpdateManyWithoutActorNestedInput
+  createdAppointments?: Prisma.AppointmentUpdateManyWithoutCreatedByNestedInput
+  createdRegistrations?: Prisma.RegistrationUpdateManyWithoutCreatedByNestedInput
+  createdEncounters?: Prisma.EncounterUpdateManyWithoutCreatedByNestedInput
+  recordedVitalSigns?: Prisma.VitalSignsUpdateManyWithoutRecordedByNestedInput
+  recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
+  recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
+  recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
+  medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
+  createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
+  voidedInvoices?: Prisma.InvoiceUpdateManyWithoutVoidedByNestedInput
+  receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
+  refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUpdateManyWithoutUserNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
+  chatSessions?: Prisma.ChatSessionUpdateManyWithoutOwnerUserNestedInput
+  chatMessages?: Prisma.ChatMessageUpdateManyWithoutAuthorUserNestedInput
+  createdAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutCreatedByNestedInput
+  updatedAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutUpdatedByNestedInput
+  uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
+  ownedDocuments?: Prisma.DocumentUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUpdateManyWithoutReleasedByNestedInput
+  blockedConversations?: Prisma.ConversationUpdateManyWithoutBlockedByNestedInput
+  conversationMessages?: Prisma.ConversationMessageUpdateManyWithoutAuthorNestedInput
+  updatedFeatureEntitlements?: Prisma.FeatureEntitlementUpdateManyWithoutUpdatedByNestedInput
+  createdAdmissions?: Prisma.AdmissionUpdateManyWithoutCreatedByNestedInput
+  createdBedAssignments?: Prisma.BedAssignmentUpdateManyWithoutCreatedByNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
+  sentInvitations?: Prisma.UserInvitationUpdateManyWithoutInvitedByNestedInput
+  createdDocumentTemplates?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  publishedTemplateVersions?: Prisma.DocumentTemplateVersionUpdateManyWithoutPublishedByNestedInput
+  receivedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGranteeNestedInput
+  grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
+  offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
+  grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
+  defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
+  filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
+  draftedManagedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutDraftedByNestedInput
+  submittedApprovalRequests?: Prisma.DocumentApprovalRequestUpdateManyWithoutSubmittedByNestedInput
+  namedApprovalRounds?: Prisma.DocumentApprovalApproverUpdateManyWithoutApproverNestedInput
+  approvalDecisions?: Prisma.DocumentApprovalDecisionUpdateManyWithoutApproverNestedInput
+  collectedLabSpecimens?: Prisma.LabSpecimenUpdateManyWithoutCollectedByNestedInput
+  enteredLabResults?: Prisma.LabResultUpdateManyWithoutEnteredByNestedInput
+  verifiedLabResults?: Prisma.LabResultUpdateManyWithoutVerifiedByNestedInput
+  requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
+  updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
+  updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
+  generatedTaxReports?: Prisma.TaxReportDraftUpdateManyWithoutGeneratedByNestedInput
+  finalizedTaxReports?: Prisma.TaxReportDraftUpdateManyWithoutFinalizedByNestedInput
+  grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
+  revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
+  grantedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutCreatedByNestedInput
+  createdPregnancyEpisodes?: Prisma.PregnancyEpisodeUpdateManyWithoutCreatedByNestedInput
+  recordedExternalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitUpdateManyWithoutRecordedByNestedInput
+  recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
+  dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
+  revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutRecordedDeliveriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  offboardedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organizationUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  roles?: Prisma.UserRoleUncheckedUpdateManyWithoutUserNestedInput
+  assignedRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutAssignedByNestedInput
+  unassignedRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutUnassignedByNestedInput
+  patientProfiles?: Prisma.PatientProfileUncheckedUpdateManyWithoutOwnerUserNestedInput
+  doctorProfile?: Prisma.DoctorProfileUncheckedUpdateOneWithoutOwnerUserNestedInput
+  assignedDoctorPatients?: Prisma.DoctorPatientUncheckedUpdateManyWithoutAssignedByNestedInput
+  unassignedDoctorPatients?: Prisma.DoctorPatientUncheckedUpdateManyWithoutUnassignedByNestedInput
+  doctorPatientActivities?: Prisma.DoctorPatientActivityUncheckedUpdateManyWithoutActorNestedInput
+  createdAppointments?: Prisma.AppointmentUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdRegistrations?: Prisma.RegistrationUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdEncounters?: Prisma.EncounterUncheckedUpdateManyWithoutCreatedByNestedInput
+  recordedVitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
+  medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
+  createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  voidedInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutVoidedByNestedInput
+  receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
+  refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
+  chatSessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutOwnerUserNestedInput
+  chatMessages?: Prisma.ChatMessageUncheckedUpdateManyWithoutAuthorUserNestedInput
+  createdAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutUpdatedByNestedInput
+  uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
+  ownedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutReleasedByNestedInput
+  blockedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutBlockedByNestedInput
+  conversationMessages?: Prisma.ConversationMessageUncheckedUpdateManyWithoutAuthorNestedInput
+  updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdAdmissions?: Prisma.AdmissionUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdBedAssignments?: Prisma.BedAssignmentUncheckedUpdateManyWithoutCreatedByNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
+  sentInvitations?: Prisma.UserInvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+  createdDocumentTemplates?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  publishedTemplateVersions?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutPublishedByNestedInput
+  receivedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGranteeNestedInput
+  grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
+  offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
+  grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
+  defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
+  filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
+  draftedManagedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutDraftedByNestedInput
+  submittedApprovalRequests?: Prisma.DocumentApprovalRequestUncheckedUpdateManyWithoutSubmittedByNestedInput
+  namedApprovalRounds?: Prisma.DocumentApprovalApproverUncheckedUpdateManyWithoutApproverNestedInput
+  approvalDecisions?: Prisma.DocumentApprovalDecisionUncheckedUpdateManyWithoutApproverNestedInput
+  collectedLabSpecimens?: Prisma.LabSpecimenUncheckedUpdateManyWithoutCollectedByNestedInput
+  enteredLabResults?: Prisma.LabResultUncheckedUpdateManyWithoutEnteredByNestedInput
+  verifiedLabResults?: Prisma.LabResultUncheckedUpdateManyWithoutVerifiedByNestedInput
+  requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
+  updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
+  generatedTaxReports?: Prisma.TaxReportDraftUncheckedUpdateManyWithoutGeneratedByNestedInput
+  finalizedTaxReports?: Prisma.TaxReportDraftUncheckedUpdateManyWithoutFinalizedByNestedInput
+  grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
+  revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
+  grantedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdPregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedUpdateManyWithoutCreatedByNestedInput
+  recordedExternalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
@@ -25073,6 +25708,7 @@ export type UserCreateWithoutRecordedAntenatalExaminationsInput = {
   recordedExternalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutRecordedAntenatalExaminationsInput = {
@@ -25154,6 +25790,7 @@ export type UserUncheckedCreateWithoutRecordedAntenatalExaminationsInput = {
   recordedExternalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitUncheckedCreateNestedManyWithoutRecordedByInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutRecordedAntenatalExaminationsInput = {
@@ -25251,6 +25888,7 @@ export type UserUpdateWithoutRecordedAntenatalExaminationsInput = {
   recordedExternalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRecordedAntenatalExaminationsInput = {
@@ -25332,6 +25970,7 @@ export type UserUncheckedUpdateWithoutRecordedAntenatalExaminationsInput = {
   recordedExternalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserCreateWithoutDismissedAntenatalReferralsInput = {
@@ -25413,6 +26052,7 @@ export type UserCreateWithoutDismissedAntenatalReferralsInput = {
   recordedExternalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitCreateNestedManyWithoutRecordedByInput
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserUncheckedCreateWithoutDismissedAntenatalReferralsInput = {
@@ -25494,6 +26134,7 @@ export type UserUncheckedCreateWithoutDismissedAntenatalReferralsInput = {
   recordedExternalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitUncheckedCreateNestedManyWithoutRecordedByInput
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
 }
 
 export type UserCreateOrConnectWithoutDismissedAntenatalReferralsInput = {
@@ -25591,6 +26232,7 @@ export type UserUpdateWithoutDismissedAntenatalReferralsInput = {
   recordedExternalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitUpdateManyWithoutRecordedByNestedInput
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutDismissedAntenatalReferralsInput = {
@@ -25672,6 +26314,7 @@ export type UserUncheckedUpdateWithoutDismissedAntenatalReferralsInput = {
   recordedExternalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserCreateManyOrganizationUnitInput = {
@@ -25765,6 +26408,7 @@ export type UserUpdateWithoutOrganizationUnitInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutOrganizationUnitInput = {
@@ -25846,6 +26490,7 @@ export type UserUncheckedUpdateWithoutOrganizationUnitInput = {
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
 }
 
 export type UserUncheckedUpdateManyWithoutOrganizationUnitInput = {
@@ -25933,6 +26578,7 @@ export type UserCountOutputType = {
   recordedAntenatalExaminations: number
   dismissedAntenatalReferrals: number
   revokedDoctorMandates: number
+  recordedDeliveries: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -26003,6 +26649,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   recordedAntenatalExaminations?: boolean | UserCountOutputTypeCountRecordedAntenatalExaminationsArgs
   dismissedAntenatalReferrals?: boolean | UserCountOutputTypeCountDismissedAntenatalReferralsArgs
   revokedDoctorMandates?: boolean | UserCountOutputTypeCountRevokedDoctorMandatesArgs
+  recordedDeliveries?: boolean | UserCountOutputTypeCountRecordedDeliveriesArgs
 }
 
 /**
@@ -26484,6 +27131,13 @@ export type UserCountOutputTypeCountRevokedDoctorMandatesArgs<ExtArgs extends ru
   where?: Prisma.DoctorMandateWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountRecordedDeliveriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.DeliveryRecordWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -26566,6 +27220,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   recordedAntenatalExaminations?: boolean | Prisma.User$recordedAntenatalExaminationsArgs<ExtArgs>
   dismissedAntenatalReferrals?: boolean | Prisma.User$dismissedAntenatalReferralsArgs<ExtArgs>
   revokedDoctorMandates?: boolean | Prisma.User$revokedDoctorMandatesArgs<ExtArgs>
+  recordedDeliveries?: boolean | Prisma.User$recordedDeliveriesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -26682,6 +27337,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   recordedAntenatalExaminations?: boolean | Prisma.User$recordedAntenatalExaminationsArgs<ExtArgs>
   dismissedAntenatalReferrals?: boolean | Prisma.User$dismissedAntenatalReferralsArgs<ExtArgs>
   revokedDoctorMandates?: boolean | Prisma.User$revokedDoctorMandatesArgs<ExtArgs>
+  recordedDeliveries?: boolean | Prisma.User$recordedDeliveriesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -26764,6 +27420,10 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     recordedAntenatalExaminations: Prisma.$AntenatalExaminationPayload<ExtArgs>[]
     dismissedAntenatalReferrals: Prisma.$AntenatalReferralDismissalPayload<ExtArgs>[]
     revokedDoctorMandates: Prisma.$DoctorMandatePayload<ExtArgs>[]
+    /**
+     * The offboarding sweep's one read: everyone currently in a window.
+     */
+    recordedDeliveries: Prisma.$DeliveryRecordPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -27266,6 +27926,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   recordedAntenatalExaminations<T extends Prisma.User$recordedAntenatalExaminationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$recordedAntenatalExaminationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AntenatalExaminationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   dismissedAntenatalReferrals<T extends Prisma.User$dismissedAntenatalReferralsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$dismissedAntenatalReferralsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AntenatalReferralDismissalPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   revokedDoctorMandates<T extends Prisma.User$revokedDoctorMandatesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$revokedDoctorMandatesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DoctorMandatePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  recordedDeliveries<T extends Prisma.User$recordedDeliveriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$recordedDeliveriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DeliveryRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -29368,6 +30029,30 @@ export type User$revokedDoctorMandatesArgs<ExtArgs extends runtime.Types.Extensi
   take?: number
   skip?: number
   distinct?: Prisma.DoctorMandateScalarFieldEnum | Prisma.DoctorMandateScalarFieldEnum[]
+}
+
+/**
+ * User.recordedDeliveries
+ */
+export type User$recordedDeliveriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the DeliveryRecord
+   */
+  select?: Prisma.DeliveryRecordSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the DeliveryRecord
+   */
+  omit?: Prisma.DeliveryRecordOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DeliveryRecordInclude<ExtArgs> | null
+  where?: Prisma.DeliveryRecordWhereInput
+  orderBy?: Prisma.DeliveryRecordOrderByWithRelationInput | Prisma.DeliveryRecordOrderByWithRelationInput[]
+  cursor?: Prisma.DeliveryRecordWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.DeliveryRecordScalarFieldEnum | Prisma.DeliveryRecordScalarFieldEnum[]
 }
 
 /**

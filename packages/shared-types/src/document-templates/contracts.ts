@@ -140,7 +140,12 @@ export type ClinicalRequestLine = Readonly<Record<string, string>>;
  */
 export type ClinicalRequestDocumentView = {
   documentId: string;
-  kind: 'LAB_REQUEST' | 'PRESCRIPTION' | 'REFERRAL_LETTER' | 'PREGNANCY_CERTIFICATE';
+  kind:
+    | 'LAB_REQUEST'
+    | 'PRESCRIPTION'
+    | 'REFERRAL_LETTER'
+    | 'PREGNANCY_CERTIFICATE'
+    | 'BIRTH_CERTIFICATE';
   title: string;
   /** Bumped on every reprint, so "which copy is this" is answerable. */
   printCount: number;

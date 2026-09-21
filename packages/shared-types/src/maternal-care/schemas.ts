@@ -145,3 +145,217 @@ export const issueAntenatalReferralLetterSchema = z.object({
 export type IssueAntenatalReferralLetterInput = z.infer<
   typeof issueAntenatalReferralLetterSchema
 >;
+
+type DeliveryStageTimes = {
+  labourOnsetAt?: string | null;
+  fullDilatationAt?: string | null;
+  birthAt?: string | null;
+  placentaDeliveredAt?: string | null;
+  postpartumMonitoringEndedAt?: string | null;
+};
+
+/**
+ * Kala I to IV happen in order. Each pair is judged only when both ends are
+ * present, because a missing stage is a stage nobody recorded rather than one
+ * that happened out of sequence.
+ */
+function assertDeliveryStagesInOrder(
+  payload: DeliveryStageTimes,
+  context: z.RefinementCtx,
+): void {
+  const ordered: ReadonlyArray<readonly [keyof DeliveryStageTimes, keyof DeliveryStageTimes]> = [
+    ['labourOnsetAt', 'fullDilatationAt'],
+    ['fullDilatationAt', 'birthAt'],
+    ['labourOnsetAt', 'birthAt'],
+    ['birthAt', 'placentaDeliveredAt'],
+    ['placentaDeliveredAt', 'postpartumMonitoringEndedAt'],
+    ['birthAt', 'postpartumMonitoringEndedAt'],
+  ];
+  for (const [earlier, later] of ordered) {
+    const earlierAt = payload[earlier];
+    const laterAt = payload[later];
+    // Parsed rather than compared as strings: two valid ISO instants can carry
+    // different offsets, and `+07:00` sorts after `Z` for the same moment.
+    if (
+      !earlierAt ||
+      !laterAt ||
+      new Date(earlierAt).getTime() <= new Date(laterAt).getTime()
+    ) {
+      continue;
+    }
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: [later],
+      message: `${later} cannot be before ${earlier}`,
+    });
+  }
+}
+
+/** A uterotonic is a drug and a time together; half of that says nothing. */
+function assertUterotonicIsComplete(
+  payload: { uterotonicMedicationId?: string | null; uterotonicGivenAt?: string | null },
+  context: z.RefinementCtx,
+): void {
+  const hasMedication = Boolean(payload.uterotonicMedicationId);
+  const hasTime = Boolean(payload.uterotonicGivenAt);
+  if (hasMedication === hasTime) {
+    return;
+  }
+  context.addIssue({
+    code: z.ZodIssueCode.custom,
+    path: [hasMedication ? 'uterotonicGivenAt' : 'uterotonicMedicationId'],
+    message: 'Record the uterotonic and the time it was given together',
+  });
+}
+
+/**
+ * A stillborn baby carries her position among the babies of this birth; a live
+ * one carries her patient record, whose `birthOrder` holds that position once
+ * she is registered. Neither ever carries the other's.
+ */
+function assertOutcomeMatchesIdentity(
+  payload: {
+    outcome?: 'LIVE_BIRTH' | 'STILLBIRTH';
+    stillbirthOrder?: number | null;
+    newbornPatientId?: string | null;
+  },
+  context: z.RefinementCtx,
+): void {
+  if (payload.outcome === undefined) {
+    return;
+  }
+  const isStillbirth = payload.outcome === 'STILLBIRTH';
+  if (isStillbirth && !payload.stillbirthOrder) {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ['stillbirthOrder'],
+      message: 'A stillbirth needs its position among the babies of this birth',
+    });
+  }
+  if (!isStillbirth && payload.stillbirthOrder) {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ['stillbirthOrder'],
+      message: "A live baby's birth order lives on her patient record",
+    });
+  }
+  if (isStillbirth && payload.newbornPatientId) {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ['newbornPatientId'],
+      message: 'A stillborn baby is never registered as a patient',
+    });
+  }
+}
+
+export const deliveryModeSchema = z.enum([
+  'SPONTANEOUS_VAGINAL',
+  'ASSISTED_VAGINAL',
+  'CAESAREAN',
+]);
+
+export const perinealTearGradeSchema = z.enum([
+  'NONE',
+  'GRADE_1',
+  'GRADE_2',
+  'GRADE_3',
+  'GRADE_4',
+]);
+
+export const birthOutcomeSchema = z.enum(['LIVE_BIRTH', 'STILLBIRTH']);
+
+export type DeliveryModeValue = z.infer<typeof deliveryModeSchema>;
+export type PerinealTearGradeValue = z.infer<typeof perinealTearGradeSchema>;
+export type BirthOutcomeValue = z.infer<typeof birthOutcomeSchema>;
+
+/**
+ * Recording a birth (P25-T09, FR-INC-01).
+ *
+ * `birthAt` is the only required timing: it is the last baby's birth, it is
+ * what ends the pregnancy, and a record without it could not say when the
+ * pregnancy ended. Every other stage is optional because a woman who arrives
+ * pushing has no recorded onset, and a half-filled partograf is the ordinary
+ * case rather than an invalid one.
+ *
+ * The stage ordering is checked here as well as by the database: a 422 naming
+ * the field is a better answer than a constraint violation.
+ */
+export const recordDeliverySchema = z
+  .object({
+    attendantDoctorId: z.string().uuid(),
+    admissionId: z.string().uuid().nullish(),
+    labourOnsetAt: z.string().datetime().nullish(),
+    fullDilatationAt: z.string().datetime().nullish(),
+    birthAt: z.string().datetime(),
+    placentaDeliveredAt: z.string().datetime().nullish(),
+    postpartumMonitoringEndedAt: z.string().datetime().nullish(),
+    mode: deliveryModeSchema,
+    episiotomy: z.boolean().default(false),
+    perinealTearGrade: perinealTearGradeSchema.default('NONE'),
+    uterotonicMedicationId: z.string().uuid().nullish(),
+    uterotonicGivenAt: z.string().datetime().nullish(),
+    bloodLossMl: z.number().int().min(0).max(10_000).nullish(),
+    placentaComplete: z.boolean().nullish(),
+    referredOut: z.boolean().default(false),
+    referralReason: z.string().trim().min(1).max(500).nullish(),
+    notes: z.string().trim().max(2000).nullish(),
+  })
+  .superRefine((payload, context) => {
+    assertDeliveryStagesInOrder(payload, context);
+    assertUterotonicIsComplete(payload, context);
+  });
+
+export type RecordDeliveryInput = z.infer<typeof recordDeliverySchema>;
+
+/** Correcting a recorded birth. Every field optional; the same rules apply. */
+export const updateDeliverySchema = recordDeliverySchema.innerType()
+  .partial()
+  .superRefine((payload, context) => {
+    assertDeliveryStagesInOrder(payload, context);
+    assertUterotonicIsComplete(payload, context);
+  });
+
+export type UpdateDeliveryInput = z.infer<typeof updateDeliverySchema>;
+
+/**
+ * One baby of a birth, and the essentials done for her (FR-INC-03/05).
+ *
+ * `newbornPatientId` is optional on purpose: the midwife records the first
+ * hour while it is happening, and the registration form (P24-T10) is filled in
+ * afterwards. A stillbirth never gets one and carries `stillbirthOrder`
+ * instead.
+ */
+export const recordNewbornCareSchema = z
+  .object({
+    outcome: birthOutcomeSchema,
+    stillbirthOrder: z.number().int().min(1).max(10).nullish(),
+    newbornPatientId: z.string().uuid().nullish(),
+    sex: z.enum(['MALE', 'FEMALE']),
+    birthWeightGrams: z.number().int().min(200).max(8000).nullish(),
+    lengthCm: z.number().min(15).max(70).nullish(),
+    headCircumferenceCm: z.number().min(15).max(60).nullish(),
+    apgar1Min: z.number().int().min(0).max(10).nullish(),
+    apgar5Min: z.number().int().min(0).max(10).nullish(),
+    imdStartedAt: z.string().datetime().nullish(),
+    imdDurationMinutes: z.number().int().min(0).max(240).nullish(),
+    cordCareAt: z.string().datetime().nullish(),
+    vitaminK1GivenAt: z.string().datetime().nullish(),
+    vitaminK1MedicationId: z.string().uuid().nullish(),
+    eyeProphylaxisGivenAt: z.string().datetime().nullish(),
+    eyeProphylaxisMedicationId: z.string().uuid().nullish(),
+    examinedAt: z.string().datetime().nullish(),
+    identityTagAt: z.string().datetime().nullish(),
+  })
+  .superRefine((payload, context) => {
+    assertOutcomeMatchesIdentity(payload, context);
+  });
+
+export type RecordNewbornCareInput = z.infer<typeof recordNewbornCareSchema>;
+
+export const updateNewbornCareSchema = recordNewbornCareSchema.innerType()
+  .partial()
+  .superRefine((payload, context) => {
+    assertOutcomeMatchesIdentity(payload, context);
+  });
+
+export type UpdateNewbornCareInput = z.infer<typeof updateNewbornCareSchema>;

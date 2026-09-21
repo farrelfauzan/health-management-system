@@ -1,5 +1,8 @@
 import type {
+  BirthOutcomeValue,
+  DeliveryModeValue,
   EstimatedDeliveryDateSourceValue,
+  PerinealTearGradeValue,
   PregnancyEndReasonValue,
   PregnancyEpisodeStatusValue,
 } from '#maternal-care/schemas';
@@ -106,7 +109,57 @@ export type AntenatalExaminationResponse = {
 /** A maternal document that was rendered and filed (FR-ANC-04, FR-ANC-06). */
 export type MaternalDocumentResponse = {
   documentId: string;
-  kind: 'REFERRAL_LETTER' | 'PREGNANCY_CERTIFICATE';
+  kind: 'REFERRAL_LETTER' | 'PREGNANCY_CERTIFICATE' | 'BIRTH_CERTIFICATE';
   title: string;
   renderedAt: string;
+};
+
+/** One baby of a birth, as the pregnancy tab shows her (P25-T09). */
+export type NewbornCareView = {
+  id: string;
+  outcome: BirthOutcomeValue;
+  /** Her position among the babies of this birth, whichever column it came from. */
+  birthOrder: number | null;
+  newbornPatientId: string | null;
+  newbornName: string | null;
+  sex: 'MALE' | 'FEMALE';
+  birthWeightGrams: number | null;
+  lengthCm: number | null;
+  headCircumferenceCm: number | null;
+  apgar1Min: number | null;
+  apgar5Min: number | null;
+  imdStartedAt: string | null;
+  imdDurationMinutes: number | null;
+  cordCareAt: string | null;
+  vitaminK1GivenAt: string | null;
+  eyeProphylaxisGivenAt: string | null;
+  hb0ImmunizationId: string | null;
+  examinedAt: string | null;
+  identityTagAt: string | null;
+};
+
+/** One recorded birth, with its babies (P25-T09, FR-INC-01). */
+export type DeliveryRecordView = {
+  id: string;
+  pregnancyEpisodeId: string;
+  admissionId: string | null;
+  attendantDoctorId: string;
+  attendantName: string;
+  labourOnsetAt: string | null;
+  fullDilatationAt: string | null;
+  birthAt: string;
+  placentaDeliveredAt: string | null;
+  postpartumMonitoringEndedAt: string | null;
+  mode: DeliveryModeValue;
+  episiotomy: boolean;
+  perinealTearGrade: PerinealTearGradeValue;
+  uterotonicMedicationId: string | null;
+  uterotonicName: string | null;
+  uterotonicGivenAt: string | null;
+  bloodLossMl: number | null;
+  placentaComplete: boolean | null;
+  referredOut: boolean;
+  referralReason: string | null;
+  notes: string | null;
+  newborns: NewbornCareView[];
 };

@@ -126,9 +126,51 @@ const PREGNANCY_CERTIFICATE_CONTENT_HTML = [
   SIGNATURE_BLOCK,
 ].join('');
 
+/**
+ * The surat keterangan lahir (P25-T09, FR-INC-05).
+ *
+ * Signed by the attendant of *this birth*, not by the doctor who happens to be
+ * issuing the document: the person who catches the baby is the person whose
+ * STR belongs on it. That is why it carries its own signature block instead of
+ * the shared one, which names the requesting doctor's SIP.
+ */
+const BIRTH_CERTIFICATE_CONTENT_HTML = [
+  LETTERHEAD,
+  '<h3 style="text-align:center;margin:4mm 0">SURAT KETERANGAN LAHIR</h3>',
+  '<p style="font-size:10pt;margin:0 0 2mm 0">Yang bertanda tangan di bawah ini menerangkan bahwa telah lahir seorang bayi:</p>',
+  '<table width="100%" style="border-collapse:collapse;font-size:10pt;margin-bottom:3mm"><tbody>',
+  '<tr><td style="width:28%">Nama bayi</td><td>: <span data-hms-var="baby.fullName"></span></td></tr>',
+  '<tr><td>Jenis kelamin</td><td>: <span data-hms-var="baby.sex"></span></td></tr>',
+  '<tr><td>Hari/tanggal lahir</td><td>: <span data-hms-var="baby.birthDate"></span></td></tr>',
+  '<tr><td>Pukul</td><td>: <span data-hms-var="baby.birthTime"></span> WIB</td></tr>',
+  '<tr><td>Berat lahir</td><td>: <span data-hms-var="baby.birthWeight"></span></td></tr>',
+  '<tr><td>Panjang badan</td><td>: <span data-hms-var="baby.birthLength"></span></td></tr>',
+  '<tr><td>Anak ke-</td><td>: <span data-hms-var="baby.birthOrder"></span></td></tr>',
+  '</tbody></table>',
+  '<p style="font-size:10pt;margin:0 0 2mm 0">dari seorang ibu:</p>',
+  '<table width="100%" style="border-collapse:collapse;font-size:10pt;margin-bottom:3mm"><tbody>',
+  '<tr><td style="width:28%">Nama ibu</td><td>: <span data-hms-var="mother.fullName"></span></td></tr>',
+  '<tr><td>NIK</td><td>: <span data-hms-var="mother.nikMasked"></span></td></tr>',
+  '<tr><td>Tempat kelahiran</td><td>: <span data-hms-var="clinic.name"></span>, <span data-hms-var="clinic.address"></span></td></tr>',
+  '</tbody></table>',
+  '<p style="font-size:10pt;margin:2mm 0 0 0">Surat keterangan ini dibuat untuk dipergunakan sebagaimana mestinya.</p>',
+  '<table width="100%" style="border-collapse:collapse;font-size:10pt;margin-top:10mm"><tbody><tr>',
+  '<td style="width:60%"></td>',
+  '<td style="width:40%;text-align:center">',
+  '<p style="margin:0">Penolong persalinan,</p>',
+  '<div style="height:18mm"></div>',
+  '<p style="margin:0;font-weight:bold"><span data-hms-var="attendant.fullName"></span></p>',
+  '<p style="margin:0;font-size:9pt">STR: <span data-hms-var="attendant.strNumber"></span></p>',
+  '</td></tr></tbody></table>',
+].join('');
+
 export const BUILT_IN_CLINICAL_REQUEST_TEMPLATES: Readonly<
   Record<
-    'LAB_REQUEST' | 'PRESCRIPTION' | 'REFERRAL_LETTER' | 'PREGNANCY_CERTIFICATE',
+    | 'LAB_REQUEST'
+    | 'PRESCRIPTION'
+    | 'REFERRAL_LETTER'
+    | 'PREGNANCY_CERTIFICATE'
+    | 'BIRTH_CERTIFICATE',
     { contentHtml: string; settings: TemplateSettingsValue }
   >
 > = {
@@ -146,6 +188,10 @@ export const BUILT_IN_CLINICAL_REQUEST_TEMPLATES: Readonly<
   },
   PREGNANCY_CERTIFICATE: {
     contentHtml: PREGNANCY_CERTIFICATE_CONTENT_HTML,
+    settings: resolveDefaultTemplateSettings(),
+  },
+  BIRTH_CERTIFICATE: {
+    contentHtml: BIRTH_CERTIFICATE_CONTENT_HTML,
     settings: resolveDefaultTemplateSettings(),
   },
 };

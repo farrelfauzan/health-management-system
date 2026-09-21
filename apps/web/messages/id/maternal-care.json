@@ -170,6 +170,65 @@
         "issued": "Dokumen diterbitkan",
         "reissueHint": "Menerbitkan ulang membuat dokumen baru; dokumen lama tetap tersimpan."
       }
+    },
+    "delivery": {
+      "title": "Persalinan",
+      "empty": "Belum ada persalinan yang dicatat untuk kehamilan ini.",
+      "birthAt": "Lahir pukul",
+      "labourOnsetAt": "Mulai inpartu",
+      "fullDilatationAt": "Pembukaan lengkap",
+      "placentaDeliveredAt": "Plasenta lahir",
+      "mode": "Cara persalinan",
+      "attendant": "Penolong",
+      "tear": "Robekan perineum",
+      "bloodLoss": "Perdarahan (mL)",
+      "uterotonic": "Uterotonika",
+      "episiotomy": "Dilakukan episiotomi",
+      "referredOutLabel": "Dirujuk",
+      "referralReason": "Dirujuk ke mana",
+      "referralRequired": "Robekan derajat 3 atau 4 wajib dirujuk — catat tujuan rujukannya.",
+      "referredOut": "Dirujuk: {reason}",
+      "given": "Diberikan",
+      "modes": {
+        "SPONTANEOUS_VAGINAL": "Spontan pervaginam",
+        "ASSISTED_VAGINAL": "Pervaginam dengan bantuan",
+        "CAESAREAN": "Sectio caesarea"
+      },
+      "tears": {
+        "NONE": "Tidak ada",
+        "GRADE_1": "Derajat 1",
+        "GRADE_2": "Derajat 2",
+        "GRADE_3": "Derajat 3",
+        "GRADE_4": "Derajat 4"
+      },
+      "outcome": {
+        "LIVE_BIRTH": "Lahir hidup",
+        "STILLBIRTH": "Lahir mati"
+      },
+      "sex": {
+        "FEMALE": "Perempuan",
+        "MALE": "Laki-laki"
+      },
+      "actions": {
+        "record": "Catat persalinan",
+        "recordNewborn": "Tambah bayi",
+        "registerNewborn": "Daftarkan bayi",
+        "issueBirthCertificate": "Surat keterangan lahir"
+      },
+      "newborns": {
+        "empty": "Belum ada bayi yang dicatat untuk persalinan ini.",
+        "unnamed": "Bayi {order}",
+        "outcome": "Keadaan lahir",
+        "sex": "Jenis kelamin",
+        "weight": "Berat lahir",
+        "grams": "{grams} g",
+        "length": "Panjang badan",
+        "apgar": "APGAR 1'/5'",
+        "apgar1": "APGAR 1'",
+        "apgar5": "APGAR 5'",
+        "vitaminK1": "Vitamin K1",
+        "registerHint": "Anak ke- diisi saat bayi didaftarkan sebagai pasien, supaya tersimpan di satu tempat saja."
+      }
     }
   }
 }

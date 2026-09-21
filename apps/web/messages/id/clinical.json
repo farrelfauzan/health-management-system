@@ -241,6 +241,7 @@
           "DISCHARGE_SUMMARY": "Resume pulang",
           "MEDICAL_CERTIFICATE": "Surat keterangan dokter",
           "PREGNANCY_CERTIFICATE": "Surat keterangan hamil",
+          "BIRTH_CERTIFICATE": "Surat keterangan lahir",
           "INSURANCE": "Asuransi",
           "IDENTITY": "Identitas",
           "OTHER": "Lainnya"
@@ -971,6 +972,7 @@
           "DISCHARGE_SUMMARY": "Ringkasan pulang",
           "MEDICAL_CERTIFICATE": "Surat keterangan sehat",
           "PREGNANCY_CERTIFICATE": "Surat keterangan hamil",
+          "BIRTH_CERTIFICATE": "Surat keterangan lahir",
           "INSURANCE": "Asuransi",
           "IDENTITY": "Identitas",
           "OTHER": "Lainnya"
