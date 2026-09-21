@@ -73,17 +73,15 @@ export function setSessionHintCookie(
      */
     isProfileIncomplete: boolean;
     /**
-     * The person's own name as their clinical record spells it, or null when
-     * no record carries one — a receptionist has an account and no profile.
-     * Written as `name` only when there is one, so the web tier keeps its
-     * existing derive-from-the-email-address fallback for everyone else and
-     * for every hint written by an older API.
+     * The person's name — the account's own, else their doctor or patient
+     * record's (D-027, P20-T08) — or null when nothing names them. Written as
+     * `name` only when there is one, so the web tier shows the plain email
+     * address for everyone else and for every hint written by an older API.
      *
-     * It belongs here rather than in the access token for the same reason the
-     * feature keys do: the token is a signed credential the API validates,
-     * and a greeting is presentation. It is also the cheaper place — the
-     * token is already close enough to the browser's 4096-byte cookie limit
-     * that the full permission set had to be moved out of it.
+     * The access token carries the same value as its `name` claim. The hint
+     * needs its own copy regardless: it is what the shell renders from in the
+     * window after the token has expired and before the client refreshes, the
+     * same reason the completion flag rides here (P20-T02).
      */
     displayName: string | null;
     /**

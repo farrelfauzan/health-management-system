@@ -549,4 +549,62 @@ describe('AuthService', () => {
       expect(actualSession.isProfileIncomplete).toBe(false);
     });
   });
+
+  describe('name claim (P20-T08)', () => {
+    async function decodeAccessToken(accessToken: string): Promise<JwtPayload> {
+      return jwtService.verifyAsync<JwtPayload>(accessToken, { secret: 'test-access-secret' });
+    }
+
+    it('carries the resolved name on the access token and in the session', async () => {
+      (authRepositoryMock.findSessionIdentity as jest.Mock).mockResolvedValueOnce({
+        displayName: 'Rina Apoteker',
+        clinicianProfession: null,
+      });
+
+      const actualSession = await loginForSession();
+
+      const actualPayload = await decodeAccessToken(actualSession.tokens.accessToken);
+      expect(actualPayload.name).toBe('Rina Apoteker');
+      expect(actualSession.displayName).toBe('Rina Apoteker');
+    });
+
+    it('writes no name claim at all for an account nothing names', async () => {
+      const actualSession = await loginForSession();
+
+      const actualPayload = await decodeAccessToken(actualSession.tokens.accessToken);
+      expect(actualPayload).not.toHaveProperty('name');
+    });
+
+    it('re-reads the name on refresh, so a rename reaches the next token', async () => {
+      (authRepositoryMock.findSessionIdentity as jest.Mock).mockResolvedValueOnce({
+        displayName: 'Rina Kusuma',
+        clinicianProfession: null,
+      });
+
+      const actualSession = await service.refresh('any-opaque-token', TEST_ORIGIN);
+
+      const actualPayload = await decodeAccessToken(actualSession.tokens.accessToken);
+      expect(actualPayload.name).toBe('Rina Kusuma');
+      expect(actualSession.displayName).toBe('Rina Kusuma');
+      expect(authRepositoryMock.findSessionIdentity).toHaveBeenCalledTimes(1);
+    });
+
+    it('keeps the access token under the cookie limit with the longest name the schemas allow', async () => {
+      // 120 characters, every one a three-byte UTF-8 sequence: the worst case
+      // for a JSON payload that is base64url-encoded without escaping.
+      const expectedLongestName = 'ꦱ'.repeat(120);
+      (authRepositoryMock.findSessionIdentity as jest.Mock).mockResolvedValueOnce({
+        displayName: expectedLongestName,
+        clinicianProfession: null,
+      });
+
+      const actualSession = await loginForSession();
+
+      const actualPayload = await decodeAccessToken(actualSession.tokens.accessToken);
+      const cookieBytes =
+        'hms_access_token='.length + encodeURIComponent(actualSession.tokens.accessToken).length;
+      expect(actualPayload.name).toBe(expectedLongestName);
+      expect(cookieBytes).toBeLessThan(4096);
+    });
+  });
 });

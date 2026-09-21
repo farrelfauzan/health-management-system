@@ -3,35 +3,62 @@ import { describe, expect, it } from 'vitest';
 import { resolveShellProfile } from './shell-profile';
 
 describe('resolveShellProfile', () => {
-  it('derives the display name from the email local part and formats the primary role', () => {
+  it('greets a named pharmacist by the name claim, verbatim (P20-T08)', () => {
     const actualProfile = resolveShellProfile({
       sub: 'user-id',
-      email: 'admin@salingjaga.com',
-      roles: ['SUPER_ADMIN'],
+      email: 'apotek1@klinik.id',
+      name: 'Rina Apoteker',
+      roles: ['PHARMACIST'],
     });
 
     expect(actualProfile).toEqual({
-      displayName: 'Admin',
+      displayName: 'Rina Apoteker',
       isFallbackName: false,
-      roleLabel: 'Super Admin',
-      roleKey: 'superAdmin',
-      email: 'admin@salingjaga.com',
+      roleLabel: 'Pharmacist',
+      roleKey: 'pharmacist',
+      email: 'apotek1@klinik.id',
     });
   });
 
-  it('formats dotted email local parts as separate words', () => {
+  it('shows the email address verbatim when nothing names the account, never a title-cased guess', () => {
     const actualProfile = resolveShellProfile({
+      email: 'apotek1@klinik.id',
+      roles: ['PHARMACIST'],
+    });
+
+    expect(actualProfile.displayName).toBe('apotek1@klinik.id');
+    expect(actualProfile.isFallbackName).toBe(true);
+  });
+
+  it('degrades a session issued before the name claim existed to its email address', () => {
+    // An access token minted by an older API carries no `name`, and neither
+    // does a hint written before the field existed; both resolve to the
+    // address until the next refresh writes the claim.
+    const actualProfile = resolveShellProfile({
+      sub: 'user-id',
       email: 'sarah.chen@salingjaga.com',
       roles: ['ADMIN'],
+      exp: 1_900_000_000,
     });
 
     expect(actualProfile).toEqual({
-      displayName: 'Sarah Chen',
-      isFallbackName: false,
+      displayName: 'sarah.chen@salingjaga.com',
+      isFallbackName: true,
       roleLabel: 'Admin',
       roleKey: 'admin',
       email: 'sarah.chen@salingjaga.com',
     });
+  });
+
+  it('treats a blank name claim as no name', () => {
+    const actualProfile = resolveShellProfile({
+      email: 'front.desk@clinic.local',
+      name: '   ',
+      roles: ['ADMIN'],
+    });
+
+    expect(actualProfile.displayName).toBe('front.desk@clinic.local');
+    expect(actualProfile.isFallbackName).toBe(true);
   });
 
   it('falls back to defaults when claims are missing', () => {
@@ -44,7 +71,14 @@ describe('resolveShellProfile', () => {
     });
   });
 
-  it("prefers the name on the person's own record over their email address", () => {
+  it('uses the placeholder only when there is neither a name nor an address', () => {
+    const actualProfile = resolveShellProfile({ roles: ['ADMIN'] });
+
+    expect(actualProfile.displayName).toBe('Saling Jaga User');
+    expect(actualProfile.isFallbackName).toBe(true);
+  });
+
+  it("uses the person's name as written, without re-casing it", () => {
     const actualProfile = resolveShellProfile({
       email: 'bidan.sari@clinic.local',
       name: 'Siti Nurhaliza binti Abdullah',
@@ -59,15 +93,6 @@ describe('resolveShellProfile', () => {
       roleKey: 'midwife',
       email: 'bidan.sari@clinic.local',
     });
-  });
-
-  it('keeps the email fallback for an account no record names', () => {
-    const actualProfile = resolveShellProfile({
-      email: 'front.desk@clinic.local',
-      roles: ['ADMIN'],
-    });
-
-    expect(actualProfile.displayName).toBe('Front Desk');
   });
 
   it('labels a clinician by the profession on their profile, not by their role code', () => {
