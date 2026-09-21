@@ -16,6 +16,7 @@ export const SATUSEHAT_SUBMISSION_KINDS = [
   'ENCOUNTER',
   'LAB_REPORT',
   'EPISODE_OF_CARE_FINISH',
+  'POSTNATAL_EPISODE_FINISH',
 ] as const;
 
 export const satusehatSubmissionKindSchema = z.enum(SATUSEHAT_SUBMISSION_KINDS);

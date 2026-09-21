@@ -5,17 +5,23 @@ import { ClinicalRequestDocumentModule } from '../clinical-request-document/clin
 import { EmrModule } from '../emr/emr.module';
 import { AntenatalExaminationController } from './controller/antenatal-examination.controller';
 import { DeliveryRecordController } from './controller/delivery-record.controller';
+import { PostnatalVisitController } from './controller/postnatal-visit.controller';
 import { PregnancyEpisodeController } from './controller/pregnancy-episode.controller';
 import { DeliveryRecordRepository } from './repository/delivery-record.repository';
 import { MaternalCareRepository } from './repository/maternal-care.repository';
+import { PostnatalVisitRepository } from './repository/postnatal-visit.repository';
 import { AntenatalExaminationService } from './service/antenatal-examination.service';
 import { DeliveryRecordService } from './service/delivery-record.service';
 import { MaternalCareService } from './service/maternal-care.service';
+import { PostnatalEpisodeCloseService } from './service/postnatal-episode-close.service';
+import { PostnatalEpisodeCloseWorker } from './service/postnatal-episode-close.worker';
+import { PostnatalVisitService } from './service/postnatal-visit.service';
 
 /**
  * The midwife's maternal work: the pregnancy episode, K-visit numbering and
  * the trimester schedule (P25-T06), the 10T examination and its letters
- * (P25-T07), and the birth that ends the pregnancy (P25-T09).
+ * (P25-T07), the birth that ends the pregnancy (P25-T09), and the nifas and
+ * neonatal visits after it (P25-T12).
  *
  * `EmrModule` is imported for `EncounterAccessService` and the encounter
  * lookup, because an episode is a view over encounters and must not invent a
@@ -32,6 +38,7 @@ import { MaternalCareService } from './service/maternal-care.service';
     PregnancyEpisodeController,
     AntenatalExaminationController,
     DeliveryRecordController,
+    PostnatalVisitController,
   ],
   providers: [
     MaternalCareRepository,
@@ -39,6 +46,10 @@ import { MaternalCareService } from './service/maternal-care.service';
     MaternalCareService,
     AntenatalExaminationService,
     DeliveryRecordService,
+    PostnatalVisitRepository,
+    PostnatalVisitService,
+    PostnatalEpisodeCloseService,
+    PostnatalEpisodeCloseWorker,
   ],
   exports: [MaternalCareService],
 })

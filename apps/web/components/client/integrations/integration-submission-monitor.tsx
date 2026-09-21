@@ -99,6 +99,8 @@ const SATUSEHAT_KIND_OPTIONS: Array<'ALL' | SatusehatSubmissionKindValue> = [
   // episode (P25-T08). It is listed here because an operator chasing a
   // maternity record needs to see whether the close landed.
   'EPISODE_OF_CARE_FINISH',
+  // The PNC episode's close, enqueued after day 42 of nifas (P25-T12).
+  'POSTNATAL_EPISODE_FINISH',
 ];
 // Both BPJS integrations drain through one outbox, so this filter spans them:
 // the first four are PCare claims (P11-T05), the ANTREAN_* three are Antrean
@@ -138,6 +140,7 @@ export function IntegrationSubmissionMonitor() {
     encounter: tSatusehatKinds('encounter'),
     lab_report: tSatusehatKinds('lab_report'),
     episode_of_care_finish: tSatusehatKinds('episode_of_care_finish'),
+    postnatal_episode_finish: tSatusehatKinds('postnatal_episode_finish'),
   };
   const tDetail = useTranslations('operations.integrations.satusehatDetail');
   const format = useFormatter();

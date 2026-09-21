@@ -134,6 +134,7 @@ describe('SATUSEHAT record comparison integration', () => {
         registeredRootLocationId: null,
       },
       antenatalVisit: null,
+      postnatalVisit: null,
     };
   }
 

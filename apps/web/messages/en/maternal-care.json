@@ -229,6 +229,77 @@
         "vitaminK1": "Vitamin K1",
         "registerHint": "Her birth order is set when she is registered as a patient, so it lives in one place."
       }
+    },
+    "postnatal": {
+      "title": "Postnatal & neonatal",
+      "windowHint": "Hour windows count from the time of birth; day windows use clinic calendar days, with the birth date as day 0.",
+      "motherHeading": "Mother's postnatal visits (KF)",
+      "newbornHeading": "Neonatal visits (KN)",
+      "windowRange": "{start} – {end}",
+      "fulfilledAt": "Fulfilled by the visit at {at}",
+      "statuses": {
+        "FULFILLED": "Fulfilled",
+        "DUE": "Due",
+        "UPCOMING": "Upcoming",
+        "MISSED": "Missed"
+      },
+      "encounterCard": {
+        "title": "Postnatal / neonatal visit",
+        "notLinked": "This visit is not counted as a postnatal or neonatal visit.",
+        "linkMother": "Count as the mother's postnatal visit",
+        "linkNewborn": "Count as a neonatal visit",
+        "linkedToast": "Visit counted",
+        "linkFailed": "The visit could not be counted",
+        "outsideWindow": "outside every window",
+        "provisional": "The code can still change until the visit is closed.",
+        "frozen": "The code was locked when the visit closed.",
+        "subjects": {
+          "MOTHER": "Mother (nifas)",
+          "NEWBORN": "Newborn"
+        }
+      },
+      "form": {
+        "vitalsHint": "Blood pressure, pulse, temperature and respiration are recorded on the vitals card.",
+        "notExamined": "Not examined",
+        "yes": "Yes",
+        "no": "No",
+        "save": "Save postnatal examination",
+        "saved": "Postnatal examination saved",
+        "fields": {
+          "vaginalBleeding": "Vaginal bleeding",
+          "perinealInfectionSigns": "Signs of perineal infection",
+          "caesareanWoundInfectionSigns": "Signs of caesarean wound infection",
+          "uterineContraction": "Uterus well contracted",
+          "lochiaOdour": "Foul-smelling lochia",
+          "urination": "Normal urination",
+          "defecation": "Normal defecation",
+          "newbornCareCounselling": "Newborn care counselling",
+          "familyPlanningCounselling": "Family planning counselling",
+          "bloodLossMl": "Blood loss (mL)",
+          "perineumCondition": "Perineum",
+          "breastCondition": "Breasts",
+          "lochiaColour": "Lochia colour",
+          "breastMilkProduction": "Breast milk production",
+          "vitaminAGiven": "Vitamin A given"
+        },
+        "breastConditions": {
+          "NORMAL": "Normal",
+          "SWELLING": "Swollen",
+          "REDNESS": "Red",
+          "NIPPLE_DISCHARGE": "Nipple discharge",
+          "PAIN": "Painful"
+        },
+        "lochiaColours": {
+          "RUBRA": "Rubra",
+          "SEROSA": "Serosa",
+          "ALBA": "Alba"
+        },
+        "breastMilkProductions": {
+          "PRESENT": "Present",
+          "LOW": "Present but low",
+          "ABSENT": "Absent"
+        }
+      }
     }
   }
 }

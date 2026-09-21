@@ -180,7 +180,9 @@ export const ModelName = {
   DeliveryRecord: 'DeliveryRecord',
   NewbornCareRecord: 'NewbornCareRecord',
   AntenatalExamination: 'AntenatalExamination',
-  AntenatalReferralDismissal: 'AntenatalReferralDismissal'
+  AntenatalReferralDismissal: 'AntenatalReferralDismissal',
+  PostnatalVisit: 'PostnatalVisit',
+  PostnatalExamination: 'PostnatalExamination'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -2459,6 +2461,47 @@ export const AntenatalReferralDismissalScalarFieldEnum = {
 } as const
 
 export type AntenatalReferralDismissalScalarFieldEnum = (typeof AntenatalReferralDismissalScalarFieldEnum)[keyof typeof AntenatalReferralDismissalScalarFieldEnum]
+
+
+export const PostnatalVisitScalarFieldEnum = {
+  id: 'id',
+  encounterId: 'encounterId',
+  subject: 'subject',
+  pregnancyEpisodeId: 'pregnancyEpisodeId',
+  newbornCareRecordId: 'newbornCareRecordId',
+  visitCode: 'visitCode',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PostnatalVisitScalarFieldEnum = (typeof PostnatalVisitScalarFieldEnum)[keyof typeof PostnatalVisitScalarFieldEnum]
+
+
+export const PostnatalExaminationScalarFieldEnum = {
+  id: 'id',
+  postnatalVisitId: 'postnatalVisitId',
+  vaginalBleeding: 'vaginalBleeding',
+  bloodLossMl: 'bloodLossMl',
+  perineumCondition: 'perineumCondition',
+  perinealInfectionSigns: 'perinealInfectionSigns',
+  caesareanWoundInfectionSigns: 'caesareanWoundInfectionSigns',
+  breastCondition: 'breastCondition',
+  uterineContraction: 'uterineContraction',
+  lochiaColour: 'lochiaColour',
+  lochiaOdour: 'lochiaOdour',
+  breastMilkProduction: 'breastMilkProduction',
+  urination: 'urination',
+  defecation: 'defecation',
+  newbornCareCounselling: 'newbornCareCounselling',
+  vitaminAGivenAt: 'vitaminAGivenAt',
+  vitaminAMedicationId: 'vitaminAMedicationId',
+  familyPlanningCounselling: 'familyPlanningCounselling',
+  recordedById: 'recordedById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PostnatalExaminationScalarFieldEnum = (typeof PostnatalExaminationScalarFieldEnum)[keyof typeof PostnatalExaminationScalarFieldEnum]
 
 
 export const SortOrder = {

@@ -229,6 +229,77 @@
         "vitaminK1": "Vitamin K1",
         "registerHint": "Anak ke- diisi saat bayi didaftarkan sebagai pasien, supaya tersimpan di satu tempat saja."
       }
+    },
+    "postnatal": {
+      "title": "Nifas & neonatus",
+      "windowHint": "Jendela berjam dihitung dari waktu lahir; jendela berhari memakai hari kalender klinik, dengan tanggal lahir sebagai hari ke-0.",
+      "motherHeading": "Kunjungan nifas ibu (KF)",
+      "newbornHeading": "Kunjungan neonatus (KN)",
+      "windowRange": "{start} – {end}",
+      "fulfilledAt": "Dipenuhi kunjungan {at}",
+      "statuses": {
+        "FULFILLED": "Terpenuhi",
+        "DUE": "Jatuh tempo",
+        "UPCOMING": "Mendatang",
+        "MISSED": "Terlewat"
+      },
+      "encounterCard": {
+        "title": "Kunjungan nifas / neonatus",
+        "notLinked": "Kunjungan ini belum dihitung sebagai kunjungan nifas atau neonatus.",
+        "linkMother": "Hitung sebagai kunjungan nifas ibu",
+        "linkNewborn": "Hitung sebagai kunjungan neonatus",
+        "linkedToast": "Kunjungan dihitung",
+        "linkFailed": "Kunjungan tidak dapat dihitung",
+        "outsideWindow": "di luar jendela",
+        "provisional": "Kode masih bisa berubah sampai kunjungan ditutup.",
+        "frozen": "Kode dikunci saat kunjungan ditutup.",
+        "subjects": {
+          "MOTHER": "Nifas ibu",
+          "NEWBORN": "Neonatus"
+        }
+      },
+      "form": {
+        "vitalsHint": "Tekanan darah, nadi, suhu, dan napas dicatat di kartu tanda vital.",
+        "notExamined": "Tidak diperiksa",
+        "yes": "Ya",
+        "no": "Tidak",
+        "save": "Simpan pemeriksaan nifas",
+        "saved": "Pemeriksaan nifas tersimpan",
+        "fields": {
+          "vaginalBleeding": "Perdarahan pervaginam",
+          "perinealInfectionSigns": "Tanda infeksi perineum",
+          "caesareanWoundInfectionSigns": "Tanda infeksi luka jahitan SC",
+          "uterineContraction": "Kontraksi uteri baik",
+          "lochiaOdour": "Lokhia berbau",
+          "urination": "BAK normal",
+          "defecation": "BAB normal",
+          "newbornCareCounselling": "Konseling perawatan bayi",
+          "familyPlanningCounselling": "Konseling KB",
+          "bloodLossMl": "Jumlah perdarahan (mL)",
+          "perineumCondition": "Kondisi perineum",
+          "breastCondition": "Kondisi payudara",
+          "lochiaColour": "Warna lokhia",
+          "breastMilkProduction": "Produksi ASI",
+          "vitaminAGiven": "Vitamin A diberikan"
+        },
+        "breastConditions": {
+          "NORMAL": "Normal",
+          "SWELLING": "Bengkak",
+          "REDNESS": "Kemerahan",
+          "NIPPLE_DISCHARGE": "Keluar cairan dari puting",
+          "PAIN": "Nyeri"
+        },
+        "lochiaColours": {
+          "RUBRA": "Rubra",
+          "SEROSA": "Serosa",
+          "ALBA": "Alba"
+        },
+        "breastMilkProductions": {
+          "PRESENT": "Ada",
+          "LOW": "Ada tapi sedikit",
+          "ABSENT": "Tidak ada"
+        }
+      }
     }
   }
 }

@@ -576,7 +576,8 @@
       "satusehatKinds": {
         "encounter": "Kunjungan",
         "lab_report": "Hasil lab",
-        "episode_of_care_finish": "Penutupan episode kehamilan"
+        "episode_of_care_finish": "Penutupan episode kehamilan",
+        "postnatal_episode_finish": "Penutupan episode nifas"
       },
       "submissionStatus": "Status pengiriman",
       "submissionType": "Jenis pengiriman BPJS",
