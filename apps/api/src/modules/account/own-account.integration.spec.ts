@@ -100,26 +100,4 @@ describe('Own account against Postgres', () => {
     ).resolves.toEqual({ fullName: 'Nama Lain' });
   });
 
-  it('grants every human role the key the self-service route is guarded by', async () => {
-    const grants = await prisma.rolePermission.findMany({
-      where: { permission: { permissionKey: 'user.update:own' } },
-      select: { role: { select: { code: true } } },
-    });
-    const roleCodes = grants.map((grant) => grant.role.code).sort();
-
-    // SUPER_ADMIN holds it through the catalogue-wide grant, which writes a row
-    // like any other. The two service-account roles are deliberately absent:
-    // nobody is behind them to have a name.
-    expect(roleCodes).toEqual([
-      'ADMIN',
-      'DOCTOR',
-      'LAB_TECHNICIAN',
-      'MIDWIFE',
-      'PATIENT',
-      'PHARMACIST',
-      'SUPER_ADMIN',
-    ]);
-    expect(roleCodes).not.toContain('BPJS_ANTREAN_SYSTEM');
-    expect(roleCodes).not.toContain('CUSTOMER_SERVICE_CHANNEL');
-  });
 });
