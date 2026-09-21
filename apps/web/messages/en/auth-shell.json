@@ -243,6 +243,22 @@
         "doctorAuthorityExpired": {
           "title": "Midwife authority expired",
           "body": "{doctorName}'s {kind} authority (no. {grantReference}) ended on {validUntil}."
+        },
+        "taxObligationDue": {
+          "title": "Tax due date approaching",
+          "body": "The {obligation} for {period} is due on {dueDate}, in {daysUntilDue} day(s), and the report is not finalized yet."
+        },
+        "taxTurnoverNearing": {
+          "title": "Turnover nearing the PKP threshold",
+          "body": "{year} turnover has reached {percent}% of Rp {threshold} (Rp {turnover}). Prepare to register as a PKP."
+        },
+        "taxTurnoverReached": {
+          "title": "PKP threshold reached",
+          "body": "{year} turnover has reached Rp {turnover}, at or past the Rp {threshold} threshold. Registering as a PKP is now obligatory, and PP 55 does not apply next year."
+        },
+        "taxPp55LastYear": {
+          "title": "Last year on PP 55",
+          "body": "{lastEligibleYear} is the last tax year this clinic may use the 0.5% PP 55 rate. Plan for the general regime from the year after."
         }
       },
       "profile": {
