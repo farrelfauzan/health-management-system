@@ -694,6 +694,34 @@ export type InvoiceItem = Prisma.InvoiceItemModel
  */
 export type Payment = Prisma.PaymentModel
 /**
+ * Model ClinicianFeeRule
+ * A jasa medis rule (P27-T06): what share of a priced service goes to the
+ * clinician who delivered it. The target is exactly one of a tariff or a
+ * tariff category (CHECK in the migration); a null `doctorId` makes the rule
+ * the clinic-wide default for that target. The most specific rule in force on
+ * the payment day wins: clinician + tariff, tariff, clinician + category,
+ * category. Rules of the same target and clinician may not overlap in time
+ * (checked by the service).
+ * 
+ * Deleting a rule is a soft delete: the entries it produced snapshot its mode
+ * and value, so history never depends on the rule surviving.
+ */
+export type ClinicianFeeRule = Prisma.ClinicianFeeRuleModel
+/**
+ * Model ClinicianFeeEntry
+ * One line of the jasa medis ledger (P27-T06). Written inside the payment
+ * transaction for every paid line whose clinician has a rule in force, and
+ * reversed inside the void transaction. `@@unique([invoiceItemId, kind])` is
+ * the idempotency key: paying or voiding twice can never double-write.
+ * 
+ * Amounts are signed: an ACCRUAL is positive, a REVERSAL negative (CHECK in
+ * the migration), so a period's total is a plain sum. `lineAmount` is what
+ * the patient paid for the line, `grossFee` the clinician's share of it and
+ * `clinicShare` the rest. The rule's mode and value are snapshots. Entries
+ * cascade with their invoice and line, which are never hard-deleted once paid.
+ */
+export type ClinicianFeeEntry = Prisma.ClinicianFeeEntryModel
+/**
  * Model DocumentTemplate
  * The editable working copy of a printable document layout (P16-T05). A
  * rendered invoice never points here — it points at the immutable

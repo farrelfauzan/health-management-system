@@ -338,6 +338,7 @@ export type InvoiceWhereInput = {
   payment?: Prisma.XOR<Prisma.PaymentNullableScalarRelationFilter, Prisma.PaymentWhereInput> | null
   documents?: Prisma.InvoiceDocumentListRelationFilter
   deliveries?: Prisma.DocumentDeliveryListRelationFilter
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryListRelationFilter
   managedDocuments?: Prisma.ManagedDocumentListRelationFilter
 }
 
@@ -369,6 +370,7 @@ export type InvoiceOrderByWithRelationInput = {
   payment?: Prisma.PaymentOrderByWithRelationInput
   documents?: Prisma.InvoiceDocumentOrderByRelationAggregateInput
   deliveries?: Prisma.DocumentDeliveryOrderByRelationAggregateInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryOrderByRelationAggregateInput
   managedDocuments?: Prisma.ManagedDocumentOrderByRelationAggregateInput
 }
 
@@ -403,6 +405,7 @@ export type InvoiceWhereUniqueInput = Prisma.AtLeast<{
   payment?: Prisma.XOR<Prisma.PaymentNullableScalarRelationFilter, Prisma.PaymentWhereInput> | null
   documents?: Prisma.InvoiceDocumentListRelationFilter
   deliveries?: Prisma.DocumentDeliveryListRelationFilter
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryListRelationFilter
   managedDocuments?: Prisma.ManagedDocumentListRelationFilter
 }, "id" | "invoiceNumber">
 
@@ -476,6 +479,7 @@ export type InvoiceCreateInput = {
   payment?: Prisma.PaymentCreateNestedOneWithoutInvoiceInput
   documents?: Prisma.InvoiceDocumentCreateNestedManyWithoutInvoiceInput
   deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutInvoiceInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryCreateNestedManyWithoutInvoiceInput
   managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutSubjectInvoiceInput
 }
 
@@ -501,6 +505,7 @@ export type InvoiceUncheckedCreateInput = {
   payment?: Prisma.PaymentUncheckedCreateNestedOneWithoutInvoiceInput
   documents?: Prisma.InvoiceDocumentUncheckedCreateNestedManyWithoutInvoiceInput
   deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutInvoiceInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedCreateNestedManyWithoutInvoiceInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutSubjectInvoiceInput
 }
 
@@ -526,6 +531,7 @@ export type InvoiceUpdateInput = {
   payment?: Prisma.PaymentUpdateOneWithoutInvoiceNestedInput
   documents?: Prisma.InvoiceDocumentUpdateManyWithoutInvoiceNestedInput
   deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutInvoiceNestedInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryUpdateManyWithoutInvoiceNestedInput
   managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutSubjectInvoiceNestedInput
 }
 
@@ -551,6 +557,7 @@ export type InvoiceUncheckedUpdateInput = {
   payment?: Prisma.PaymentUncheckedUpdateOneWithoutInvoiceNestedInput
   documents?: Prisma.InvoiceDocumentUncheckedUpdateManyWithoutInvoiceNestedInput
   deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutInvoiceNestedInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedUpdateManyWithoutInvoiceNestedInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutSubjectInvoiceNestedInput
 }
 
@@ -956,6 +963,20 @@ export type InvoiceUpdateOneRequiredWithoutPaymentNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.InvoiceUpdateToOneWithWhereWithoutPaymentInput, Prisma.InvoiceUpdateWithoutPaymentInput>, Prisma.InvoiceUncheckedUpdateWithoutPaymentInput>
 }
 
+export type InvoiceCreateNestedOneWithoutClinicianFeeEntriesInput = {
+  create?: Prisma.XOR<Prisma.InvoiceCreateWithoutClinicianFeeEntriesInput, Prisma.InvoiceUncheckedCreateWithoutClinicianFeeEntriesInput>
+  connectOrCreate?: Prisma.InvoiceCreateOrConnectWithoutClinicianFeeEntriesInput
+  connect?: Prisma.InvoiceWhereUniqueInput
+}
+
+export type InvoiceUpdateOneRequiredWithoutClinicianFeeEntriesNestedInput = {
+  create?: Prisma.XOR<Prisma.InvoiceCreateWithoutClinicianFeeEntriesInput, Prisma.InvoiceUncheckedCreateWithoutClinicianFeeEntriesInput>
+  connectOrCreate?: Prisma.InvoiceCreateOrConnectWithoutClinicianFeeEntriesInput
+  upsert?: Prisma.InvoiceUpsertWithoutClinicianFeeEntriesInput
+  connect?: Prisma.InvoiceWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.InvoiceUpdateToOneWithWhereWithoutClinicianFeeEntriesInput, Prisma.InvoiceUpdateWithoutClinicianFeeEntriesInput>, Prisma.InvoiceUncheckedUpdateWithoutClinicianFeeEntriesInput>
+}
+
 export type InvoiceCreateNestedOneWithoutDocumentsInput = {
   create?: Prisma.XOR<Prisma.InvoiceCreateWithoutDocumentsInput, Prisma.InvoiceUncheckedCreateWithoutDocumentsInput>
   connectOrCreate?: Prisma.InvoiceCreateOrConnectWithoutDocumentsInput
@@ -1049,6 +1070,7 @@ export type InvoiceCreateWithoutCreatedByInput = {
   payment?: Prisma.PaymentCreateNestedOneWithoutInvoiceInput
   documents?: Prisma.InvoiceDocumentCreateNestedManyWithoutInvoiceInput
   deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutInvoiceInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryCreateNestedManyWithoutInvoiceInput
   managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutSubjectInvoiceInput
 }
 
@@ -1073,6 +1095,7 @@ export type InvoiceUncheckedCreateWithoutCreatedByInput = {
   payment?: Prisma.PaymentUncheckedCreateNestedOneWithoutInvoiceInput
   documents?: Prisma.InvoiceDocumentUncheckedCreateNestedManyWithoutInvoiceInput
   deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutInvoiceInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedCreateNestedManyWithoutInvoiceInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutSubjectInvoiceInput
 }
 
@@ -1107,6 +1130,7 @@ export type InvoiceCreateWithoutVoidedByInput = {
   payment?: Prisma.PaymentCreateNestedOneWithoutInvoiceInput
   documents?: Prisma.InvoiceDocumentCreateNestedManyWithoutInvoiceInput
   deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutInvoiceInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryCreateNestedManyWithoutInvoiceInput
   managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutSubjectInvoiceInput
 }
 
@@ -1131,6 +1155,7 @@ export type InvoiceUncheckedCreateWithoutVoidedByInput = {
   payment?: Prisma.PaymentUncheckedCreateNestedOneWithoutInvoiceInput
   documents?: Prisma.InvoiceDocumentUncheckedCreateNestedManyWithoutInvoiceInput
   deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutInvoiceInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedCreateNestedManyWithoutInvoiceInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutSubjectInvoiceInput
 }
 
@@ -1220,6 +1245,7 @@ export type InvoiceCreateWithoutPatientInput = {
   payment?: Prisma.PaymentCreateNestedOneWithoutInvoiceInput
   documents?: Prisma.InvoiceDocumentCreateNestedManyWithoutInvoiceInput
   deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutInvoiceInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryCreateNestedManyWithoutInvoiceInput
   managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutSubjectInvoiceInput
 }
 
@@ -1244,6 +1270,7 @@ export type InvoiceUncheckedCreateWithoutPatientInput = {
   payment?: Prisma.PaymentUncheckedCreateNestedOneWithoutInvoiceInput
   documents?: Prisma.InvoiceDocumentUncheckedCreateNestedManyWithoutInvoiceInput
   deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutInvoiceInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedCreateNestedManyWithoutInvoiceInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutSubjectInvoiceInput
 }
 
@@ -1294,6 +1321,7 @@ export type InvoiceCreateWithoutDeliveriesInput = {
   items?: Prisma.InvoiceItemCreateNestedManyWithoutInvoiceInput
   payment?: Prisma.PaymentCreateNestedOneWithoutInvoiceInput
   documents?: Prisma.InvoiceDocumentCreateNestedManyWithoutInvoiceInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryCreateNestedManyWithoutInvoiceInput
   managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutSubjectInvoiceInput
 }
 
@@ -1318,6 +1346,7 @@ export type InvoiceUncheckedCreateWithoutDeliveriesInput = {
   items?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutInvoiceInput
   payment?: Prisma.PaymentUncheckedCreateNestedOneWithoutInvoiceInput
   documents?: Prisma.InvoiceDocumentUncheckedCreateNestedManyWithoutInvoiceInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedCreateNestedManyWithoutInvoiceInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutSubjectInvoiceInput
 }
 
@@ -1358,6 +1387,7 @@ export type InvoiceUpdateWithoutDeliveriesInput = {
   items?: Prisma.InvoiceItemUpdateManyWithoutInvoiceNestedInput
   payment?: Prisma.PaymentUpdateOneWithoutInvoiceNestedInput
   documents?: Prisma.InvoiceDocumentUpdateManyWithoutInvoiceNestedInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryUpdateManyWithoutInvoiceNestedInput
   managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutSubjectInvoiceNestedInput
 }
 
@@ -1382,6 +1412,7 @@ export type InvoiceUncheckedUpdateWithoutDeliveriesInput = {
   items?: Prisma.InvoiceItemUncheckedUpdateManyWithoutInvoiceNestedInput
   payment?: Prisma.PaymentUncheckedUpdateOneWithoutInvoiceNestedInput
   documents?: Prisma.InvoiceDocumentUncheckedUpdateManyWithoutInvoiceNestedInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedUpdateManyWithoutInvoiceNestedInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutSubjectInvoiceNestedInput
 }
 
@@ -1406,6 +1437,7 @@ export type InvoiceCreateWithoutRegistrationInput = {
   payment?: Prisma.PaymentCreateNestedOneWithoutInvoiceInput
   documents?: Prisma.InvoiceDocumentCreateNestedManyWithoutInvoiceInput
   deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutInvoiceInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryCreateNestedManyWithoutInvoiceInput
   managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutSubjectInvoiceInput
 }
 
@@ -1430,6 +1462,7 @@ export type InvoiceUncheckedCreateWithoutRegistrationInput = {
   payment?: Prisma.PaymentUncheckedCreateNestedOneWithoutInvoiceInput
   documents?: Prisma.InvoiceDocumentUncheckedCreateNestedManyWithoutInvoiceInput
   deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutInvoiceInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedCreateNestedManyWithoutInvoiceInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutSubjectInvoiceInput
 }
 
@@ -1480,6 +1513,7 @@ export type InvoiceCreateWithoutEncounterInput = {
   payment?: Prisma.PaymentCreateNestedOneWithoutInvoiceInput
   documents?: Prisma.InvoiceDocumentCreateNestedManyWithoutInvoiceInput
   deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutInvoiceInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryCreateNestedManyWithoutInvoiceInput
   managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutSubjectInvoiceInput
 }
 
@@ -1504,6 +1538,7 @@ export type InvoiceUncheckedCreateWithoutEncounterInput = {
   payment?: Prisma.PaymentUncheckedCreateNestedOneWithoutInvoiceInput
   documents?: Prisma.InvoiceDocumentUncheckedCreateNestedManyWithoutInvoiceInput
   deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutInvoiceInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedCreateNestedManyWithoutInvoiceInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutSubjectInvoiceInput
 }
 
@@ -1554,6 +1589,7 @@ export type InvoiceCreateWithoutItemsInput = {
   payment?: Prisma.PaymentCreateNestedOneWithoutInvoiceInput
   documents?: Prisma.InvoiceDocumentCreateNestedManyWithoutInvoiceInput
   deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutInvoiceInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryCreateNestedManyWithoutInvoiceInput
   managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutSubjectInvoiceInput
 }
 
@@ -1578,6 +1614,7 @@ export type InvoiceUncheckedCreateWithoutItemsInput = {
   payment?: Prisma.PaymentUncheckedCreateNestedOneWithoutInvoiceInput
   documents?: Prisma.InvoiceDocumentUncheckedCreateNestedManyWithoutInvoiceInput
   deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutInvoiceInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedCreateNestedManyWithoutInvoiceInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutSubjectInvoiceInput
 }
 
@@ -1618,6 +1655,7 @@ export type InvoiceUpdateWithoutItemsInput = {
   payment?: Prisma.PaymentUpdateOneWithoutInvoiceNestedInput
   documents?: Prisma.InvoiceDocumentUpdateManyWithoutInvoiceNestedInput
   deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutInvoiceNestedInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryUpdateManyWithoutInvoiceNestedInput
   managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutSubjectInvoiceNestedInput
 }
 
@@ -1642,6 +1680,7 @@ export type InvoiceUncheckedUpdateWithoutItemsInput = {
   payment?: Prisma.PaymentUncheckedUpdateOneWithoutInvoiceNestedInput
   documents?: Prisma.InvoiceDocumentUncheckedUpdateManyWithoutInvoiceNestedInput
   deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutInvoiceNestedInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedUpdateManyWithoutInvoiceNestedInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutSubjectInvoiceNestedInput
 }
 
@@ -1666,6 +1705,7 @@ export type InvoiceCreateWithoutPaymentInput = {
   items?: Prisma.InvoiceItemCreateNestedManyWithoutInvoiceInput
   documents?: Prisma.InvoiceDocumentCreateNestedManyWithoutInvoiceInput
   deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutInvoiceInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryCreateNestedManyWithoutInvoiceInput
   managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutSubjectInvoiceInput
 }
 
@@ -1690,6 +1730,7 @@ export type InvoiceUncheckedCreateWithoutPaymentInput = {
   items?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutInvoiceInput
   documents?: Prisma.InvoiceDocumentUncheckedCreateNestedManyWithoutInvoiceInput
   deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutInvoiceInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedCreateNestedManyWithoutInvoiceInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutSubjectInvoiceInput
 }
 
@@ -1730,6 +1771,7 @@ export type InvoiceUpdateWithoutPaymentInput = {
   items?: Prisma.InvoiceItemUpdateManyWithoutInvoiceNestedInput
   documents?: Prisma.InvoiceDocumentUpdateManyWithoutInvoiceNestedInput
   deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutInvoiceNestedInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryUpdateManyWithoutInvoiceNestedInput
   managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutSubjectInvoiceNestedInput
 }
 
@@ -1752,6 +1794,123 @@ export type InvoiceUncheckedUpdateWithoutPaymentInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   items?: Prisma.InvoiceItemUncheckedUpdateManyWithoutInvoiceNestedInput
+  documents?: Prisma.InvoiceDocumentUncheckedUpdateManyWithoutInvoiceNestedInput
+  deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutInvoiceNestedInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedUpdateManyWithoutInvoiceNestedInput
+  managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutSubjectInvoiceNestedInput
+}
+
+export type InvoiceCreateWithoutClinicianFeeEntriesInput = {
+  id?: string
+  invoiceNumber: string
+  status?: $Enums.InvoiceStatus
+  totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  issuedAt?: Date | string | null
+  voidedAt?: Date | string | null
+  voidReason?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  encounter?: Prisma.EncounterCreateNestedOneWithoutInvoicesInput
+  admission?: Prisma.AdmissionCreateNestedOneWithoutInvoicesInput
+  registration?: Prisma.RegistrationCreateNestedOneWithoutInvoicesInput
+  patient: Prisma.PatientProfileCreateNestedOneWithoutInvoicesInput
+  voidedBy?: Prisma.UserCreateNestedOneWithoutVoidedInvoicesInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutCreatedInvoicesInput
+  items?: Prisma.InvoiceItemCreateNestedManyWithoutInvoiceInput
+  payment?: Prisma.PaymentCreateNestedOneWithoutInvoiceInput
+  documents?: Prisma.InvoiceDocumentCreateNestedManyWithoutInvoiceInput
+  deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutInvoiceInput
+  managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutSubjectInvoiceInput
+}
+
+export type InvoiceUncheckedCreateWithoutClinicianFeeEntriesInput = {
+  id?: string
+  invoiceNumber: string
+  encounterId?: string | null
+  admissionId?: string | null
+  registrationId?: string | null
+  patientId: string
+  status?: $Enums.InvoiceStatus
+  totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  issuedAt?: Date | string | null
+  voidedAt?: Date | string | null
+  voidReason?: string | null
+  voidedById?: string | null
+  createdById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  items?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutInvoiceInput
+  payment?: Prisma.PaymentUncheckedCreateNestedOneWithoutInvoiceInput
+  documents?: Prisma.InvoiceDocumentUncheckedCreateNestedManyWithoutInvoiceInput
+  deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutInvoiceInput
+  managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutSubjectInvoiceInput
+}
+
+export type InvoiceCreateOrConnectWithoutClinicianFeeEntriesInput = {
+  where: Prisma.InvoiceWhereUniqueInput
+  create: Prisma.XOR<Prisma.InvoiceCreateWithoutClinicianFeeEntriesInput, Prisma.InvoiceUncheckedCreateWithoutClinicianFeeEntriesInput>
+}
+
+export type InvoiceUpsertWithoutClinicianFeeEntriesInput = {
+  update: Prisma.XOR<Prisma.InvoiceUpdateWithoutClinicianFeeEntriesInput, Prisma.InvoiceUncheckedUpdateWithoutClinicianFeeEntriesInput>
+  create: Prisma.XOR<Prisma.InvoiceCreateWithoutClinicianFeeEntriesInput, Prisma.InvoiceUncheckedCreateWithoutClinicianFeeEntriesInput>
+  where?: Prisma.InvoiceWhereInput
+}
+
+export type InvoiceUpdateToOneWithWhereWithoutClinicianFeeEntriesInput = {
+  where?: Prisma.InvoiceWhereInput
+  data: Prisma.XOR<Prisma.InvoiceUpdateWithoutClinicianFeeEntriesInput, Prisma.InvoiceUncheckedUpdateWithoutClinicianFeeEntriesInput>
+}
+
+export type InvoiceUpdateWithoutClinicianFeeEntriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
+  totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  encounter?: Prisma.EncounterUpdateOneWithoutInvoicesNestedInput
+  admission?: Prisma.AdmissionUpdateOneWithoutInvoicesNestedInput
+  registration?: Prisma.RegistrationUpdateOneWithoutInvoicesNestedInput
+  patient?: Prisma.PatientProfileUpdateOneRequiredWithoutInvoicesNestedInput
+  voidedBy?: Prisma.UserUpdateOneWithoutVoidedInvoicesNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutCreatedInvoicesNestedInput
+  items?: Prisma.InvoiceItemUpdateManyWithoutInvoiceNestedInput
+  payment?: Prisma.PaymentUpdateOneWithoutInvoiceNestedInput
+  documents?: Prisma.InvoiceDocumentUpdateManyWithoutInvoiceNestedInput
+  deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutInvoiceNestedInput
+  managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutSubjectInvoiceNestedInput
+}
+
+export type InvoiceUncheckedUpdateWithoutClinicianFeeEntriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  invoiceNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  encounterId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  admissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  registrationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  patientId?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
+  totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  issuedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  voidReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  voidedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  items?: Prisma.InvoiceItemUncheckedUpdateManyWithoutInvoiceNestedInput
+  payment?: Prisma.PaymentUncheckedUpdateOneWithoutInvoiceNestedInput
   documents?: Prisma.InvoiceDocumentUncheckedUpdateManyWithoutInvoiceNestedInput
   deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutInvoiceNestedInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutSubjectInvoiceNestedInput
@@ -1778,6 +1937,7 @@ export type InvoiceCreateWithoutDocumentsInput = {
   items?: Prisma.InvoiceItemCreateNestedManyWithoutInvoiceInput
   payment?: Prisma.PaymentCreateNestedOneWithoutInvoiceInput
   deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutInvoiceInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryCreateNestedManyWithoutInvoiceInput
   managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutSubjectInvoiceInput
 }
 
@@ -1802,6 +1962,7 @@ export type InvoiceUncheckedCreateWithoutDocumentsInput = {
   items?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutInvoiceInput
   payment?: Prisma.PaymentUncheckedCreateNestedOneWithoutInvoiceInput
   deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutInvoiceInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedCreateNestedManyWithoutInvoiceInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutSubjectInvoiceInput
 }
 
@@ -1842,6 +2003,7 @@ export type InvoiceUpdateWithoutDocumentsInput = {
   items?: Prisma.InvoiceItemUpdateManyWithoutInvoiceNestedInput
   payment?: Prisma.PaymentUpdateOneWithoutInvoiceNestedInput
   deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutInvoiceNestedInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryUpdateManyWithoutInvoiceNestedInput
   managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutSubjectInvoiceNestedInput
 }
 
@@ -1866,6 +2028,7 @@ export type InvoiceUncheckedUpdateWithoutDocumentsInput = {
   items?: Prisma.InvoiceItemUncheckedUpdateManyWithoutInvoiceNestedInput
   payment?: Prisma.PaymentUncheckedUpdateOneWithoutInvoiceNestedInput
   deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutInvoiceNestedInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedUpdateManyWithoutInvoiceNestedInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutSubjectInvoiceNestedInput
 }
 
@@ -1890,6 +2053,7 @@ export type InvoiceCreateWithoutAdmissionInput = {
   payment?: Prisma.PaymentCreateNestedOneWithoutInvoiceInput
   documents?: Prisma.InvoiceDocumentCreateNestedManyWithoutInvoiceInput
   deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutInvoiceInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryCreateNestedManyWithoutInvoiceInput
   managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutSubjectInvoiceInput
 }
 
@@ -1914,6 +2078,7 @@ export type InvoiceUncheckedCreateWithoutAdmissionInput = {
   payment?: Prisma.PaymentUncheckedCreateNestedOneWithoutInvoiceInput
   documents?: Prisma.InvoiceDocumentUncheckedCreateNestedManyWithoutInvoiceInput
   deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutInvoiceInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedCreateNestedManyWithoutInvoiceInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutSubjectInvoiceInput
 }
 
@@ -1965,6 +2130,7 @@ export type InvoiceCreateWithoutManagedDocumentsInput = {
   payment?: Prisma.PaymentCreateNestedOneWithoutInvoiceInput
   documents?: Prisma.InvoiceDocumentCreateNestedManyWithoutInvoiceInput
   deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutInvoiceInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryCreateNestedManyWithoutInvoiceInput
 }
 
 export type InvoiceUncheckedCreateWithoutManagedDocumentsInput = {
@@ -1989,6 +2155,7 @@ export type InvoiceUncheckedCreateWithoutManagedDocumentsInput = {
   payment?: Prisma.PaymentUncheckedCreateNestedOneWithoutInvoiceInput
   documents?: Prisma.InvoiceDocumentUncheckedCreateNestedManyWithoutInvoiceInput
   deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutInvoiceInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedCreateNestedManyWithoutInvoiceInput
 }
 
 export type InvoiceCreateOrConnectWithoutManagedDocumentsInput = {
@@ -2029,6 +2196,7 @@ export type InvoiceUpdateWithoutManagedDocumentsInput = {
   payment?: Prisma.PaymentUpdateOneWithoutInvoiceNestedInput
   documents?: Prisma.InvoiceDocumentUpdateManyWithoutInvoiceNestedInput
   deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutInvoiceNestedInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryUpdateManyWithoutInvoiceNestedInput
 }
 
 export type InvoiceUncheckedUpdateWithoutManagedDocumentsInput = {
@@ -2053,6 +2221,7 @@ export type InvoiceUncheckedUpdateWithoutManagedDocumentsInput = {
   payment?: Prisma.PaymentUncheckedUpdateOneWithoutInvoiceNestedInput
   documents?: Prisma.InvoiceDocumentUncheckedUpdateManyWithoutInvoiceNestedInput
   deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutInvoiceNestedInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedUpdateManyWithoutInvoiceNestedInput
 }
 
 export type InvoiceCreateManyCreatedByInput = {
@@ -2114,6 +2283,7 @@ export type InvoiceUpdateWithoutCreatedByInput = {
   payment?: Prisma.PaymentUpdateOneWithoutInvoiceNestedInput
   documents?: Prisma.InvoiceDocumentUpdateManyWithoutInvoiceNestedInput
   deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutInvoiceNestedInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryUpdateManyWithoutInvoiceNestedInput
   managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutSubjectInvoiceNestedInput
 }
 
@@ -2138,6 +2308,7 @@ export type InvoiceUncheckedUpdateWithoutCreatedByInput = {
   payment?: Prisma.PaymentUncheckedUpdateOneWithoutInvoiceNestedInput
   documents?: Prisma.InvoiceDocumentUncheckedUpdateManyWithoutInvoiceNestedInput
   deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutInvoiceNestedInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedUpdateManyWithoutInvoiceNestedInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutSubjectInvoiceNestedInput
 }
 
@@ -2181,6 +2352,7 @@ export type InvoiceUpdateWithoutVoidedByInput = {
   payment?: Prisma.PaymentUpdateOneWithoutInvoiceNestedInput
   documents?: Prisma.InvoiceDocumentUpdateManyWithoutInvoiceNestedInput
   deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutInvoiceNestedInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryUpdateManyWithoutInvoiceNestedInput
   managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutSubjectInvoiceNestedInput
 }
 
@@ -2205,6 +2377,7 @@ export type InvoiceUncheckedUpdateWithoutVoidedByInput = {
   payment?: Prisma.PaymentUncheckedUpdateOneWithoutInvoiceNestedInput
   documents?: Prisma.InvoiceDocumentUncheckedUpdateManyWithoutInvoiceNestedInput
   deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutInvoiceNestedInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedUpdateManyWithoutInvoiceNestedInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutSubjectInvoiceNestedInput
 }
 
@@ -2267,6 +2440,7 @@ export type InvoiceUpdateWithoutPatientInput = {
   payment?: Prisma.PaymentUpdateOneWithoutInvoiceNestedInput
   documents?: Prisma.InvoiceDocumentUpdateManyWithoutInvoiceNestedInput
   deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutInvoiceNestedInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryUpdateManyWithoutInvoiceNestedInput
   managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutSubjectInvoiceNestedInput
 }
 
@@ -2291,6 +2465,7 @@ export type InvoiceUncheckedUpdateWithoutPatientInput = {
   payment?: Prisma.PaymentUncheckedUpdateOneWithoutInvoiceNestedInput
   documents?: Prisma.InvoiceDocumentUncheckedUpdateManyWithoutInvoiceNestedInput
   deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutInvoiceNestedInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedUpdateManyWithoutInvoiceNestedInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutSubjectInvoiceNestedInput
 }
 
@@ -2353,6 +2528,7 @@ export type InvoiceUpdateWithoutRegistrationInput = {
   payment?: Prisma.PaymentUpdateOneWithoutInvoiceNestedInput
   documents?: Prisma.InvoiceDocumentUpdateManyWithoutInvoiceNestedInput
   deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutInvoiceNestedInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryUpdateManyWithoutInvoiceNestedInput
   managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutSubjectInvoiceNestedInput
 }
 
@@ -2377,6 +2553,7 @@ export type InvoiceUncheckedUpdateWithoutRegistrationInput = {
   payment?: Prisma.PaymentUncheckedUpdateOneWithoutInvoiceNestedInput
   documents?: Prisma.InvoiceDocumentUncheckedUpdateManyWithoutInvoiceNestedInput
   deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutInvoiceNestedInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedUpdateManyWithoutInvoiceNestedInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutSubjectInvoiceNestedInput
 }
 
@@ -2439,6 +2616,7 @@ export type InvoiceUpdateWithoutEncounterInput = {
   payment?: Prisma.PaymentUpdateOneWithoutInvoiceNestedInput
   documents?: Prisma.InvoiceDocumentUpdateManyWithoutInvoiceNestedInput
   deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutInvoiceNestedInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryUpdateManyWithoutInvoiceNestedInput
   managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutSubjectInvoiceNestedInput
 }
 
@@ -2463,6 +2641,7 @@ export type InvoiceUncheckedUpdateWithoutEncounterInput = {
   payment?: Prisma.PaymentUncheckedUpdateOneWithoutInvoiceNestedInput
   documents?: Prisma.InvoiceDocumentUncheckedUpdateManyWithoutInvoiceNestedInput
   deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutInvoiceNestedInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedUpdateManyWithoutInvoiceNestedInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutSubjectInvoiceNestedInput
 }
 
@@ -2525,6 +2704,7 @@ export type InvoiceUpdateWithoutAdmissionInput = {
   payment?: Prisma.PaymentUpdateOneWithoutInvoiceNestedInput
   documents?: Prisma.InvoiceDocumentUpdateManyWithoutInvoiceNestedInput
   deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutInvoiceNestedInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryUpdateManyWithoutInvoiceNestedInput
   managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutSubjectInvoiceNestedInput
 }
 
@@ -2549,6 +2729,7 @@ export type InvoiceUncheckedUpdateWithoutAdmissionInput = {
   payment?: Prisma.PaymentUncheckedUpdateOneWithoutInvoiceNestedInput
   documents?: Prisma.InvoiceDocumentUncheckedUpdateManyWithoutInvoiceNestedInput
   deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutInvoiceNestedInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedUpdateManyWithoutInvoiceNestedInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutSubjectInvoiceNestedInput
 }
 
@@ -2580,6 +2761,7 @@ export type InvoiceCountOutputType = {
   items: number
   documents: number
   deliveries: number
+  clinicianFeeEntries: number
   managedDocuments: number
 }
 
@@ -2587,6 +2769,7 @@ export type InvoiceCountOutputTypeSelect<ExtArgs extends runtime.Types.Extension
   items?: boolean | InvoiceCountOutputTypeCountItemsArgs
   documents?: boolean | InvoiceCountOutputTypeCountDocumentsArgs
   deliveries?: boolean | InvoiceCountOutputTypeCountDeliveriesArgs
+  clinicianFeeEntries?: boolean | InvoiceCountOutputTypeCountClinicianFeeEntriesArgs
   managedDocuments?: boolean | InvoiceCountOutputTypeCountManagedDocumentsArgs
 }
 
@@ -2619,6 +2802,13 @@ export type InvoiceCountOutputTypeCountDocumentsArgs<ExtArgs extends runtime.Typ
  */
 export type InvoiceCountOutputTypeCountDeliveriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.DocumentDeliveryWhereInput
+}
+
+/**
+ * InvoiceCountOutputType without action
+ */
+export type InvoiceCountOutputTypeCountClinicianFeeEntriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ClinicianFeeEntryWhereInput
 }
 
 /**
@@ -2657,6 +2847,7 @@ export type InvoiceSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   payment?: boolean | Prisma.Invoice$paymentArgs<ExtArgs>
   documents?: boolean | Prisma.Invoice$documentsArgs<ExtArgs>
   deliveries?: boolean | Prisma.Invoice$deliveriesArgs<ExtArgs>
+  clinicianFeeEntries?: boolean | Prisma.Invoice$clinicianFeeEntriesArgs<ExtArgs>
   managedDocuments?: boolean | Prisma.Invoice$managedDocumentsArgs<ExtArgs>
   _count?: boolean | Prisma.InvoiceCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["invoice"]>
@@ -2745,6 +2936,7 @@ export type InvoiceInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   payment?: boolean | Prisma.Invoice$paymentArgs<ExtArgs>
   documents?: boolean | Prisma.Invoice$documentsArgs<ExtArgs>
   deliveries?: boolean | Prisma.Invoice$deliveriesArgs<ExtArgs>
+  clinicianFeeEntries?: boolean | Prisma.Invoice$clinicianFeeEntriesArgs<ExtArgs>
   managedDocuments?: boolean | Prisma.Invoice$managedDocumentsArgs<ExtArgs>
   _count?: boolean | Prisma.InvoiceCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -2778,6 +2970,7 @@ export type $InvoicePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     payment: Prisma.$PaymentPayload<ExtArgs> | null
     documents: Prisma.$InvoiceDocumentPayload<ExtArgs>[]
     deliveries: Prisma.$DocumentDeliveryPayload<ExtArgs>[]
+    clinicianFeeEntries: Prisma.$ClinicianFeeEntryPayload<ExtArgs>[]
     managedDocuments: Prisma.$ManagedDocumentPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -3224,6 +3417,7 @@ export interface Prisma__InvoiceClient<T, Null = never, ExtArgs extends runtime.
   payment<T extends Prisma.Invoice$paymentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Invoice$paymentArgs<ExtArgs>>): Prisma.Prisma__PaymentClient<runtime.Types.Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   documents<T extends Prisma.Invoice$documentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Invoice$documentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvoiceDocumentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   deliveries<T extends Prisma.Invoice$deliveriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Invoice$deliveriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DocumentDeliveryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  clinicianFeeEntries<T extends Prisma.Invoice$clinicianFeeEntriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Invoice$clinicianFeeEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ClinicianFeeEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   managedDocuments<T extends Prisma.Invoice$managedDocumentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Invoice$managedDocumentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ManagedDocumentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -3855,6 +4049,30 @@ export type Invoice$deliveriesArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   distinct?: Prisma.DocumentDeliveryScalarFieldEnum | Prisma.DocumentDeliveryScalarFieldEnum[]
+}
+
+/**
+ * Invoice.clinicianFeeEntries
+ */
+export type Invoice$clinicianFeeEntriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ClinicianFeeEntry
+   */
+  select?: Prisma.ClinicianFeeEntrySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ClinicianFeeEntry
+   */
+  omit?: Prisma.ClinicianFeeEntryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ClinicianFeeEntryInclude<ExtArgs> | null
+  where?: Prisma.ClinicianFeeEntryWhereInput
+  orderBy?: Prisma.ClinicianFeeEntryOrderByWithRelationInput | Prisma.ClinicianFeeEntryOrderByWithRelationInput[]
+  cursor?: Prisma.ClinicianFeeEntryWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ClinicianFeeEntryScalarFieldEnum | Prisma.ClinicianFeeEntryScalarFieldEnum[]
 }
 
 /**

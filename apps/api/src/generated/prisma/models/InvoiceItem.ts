@@ -373,6 +373,7 @@ export type InvoiceItemWhereInput = {
   medication?: Prisma.XOR<Prisma.MedicationNullableScalarRelationFilter, Prisma.MedicationWhereInput> | null
   labOrder?: Prisma.XOR<Prisma.LabOrderNullableScalarRelationFilter, Prisma.LabOrderWhereInput> | null
   prescriptionItem?: Prisma.XOR<Prisma.PrescriptionMedicationNullableScalarRelationFilter, Prisma.PrescriptionMedicationWhereInput> | null
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryListRelationFilter
 }
 
 export type InvoiceItemOrderByWithRelationInput = {
@@ -401,6 +402,7 @@ export type InvoiceItemOrderByWithRelationInput = {
   medication?: Prisma.MedicationOrderByWithRelationInput
   labOrder?: Prisma.LabOrderOrderByWithRelationInput
   prescriptionItem?: Prisma.PrescriptionMedicationOrderByWithRelationInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryOrderByRelationAggregateInput
 }
 
 export type InvoiceItemWhereUniqueInput = Prisma.AtLeast<{
@@ -432,6 +434,7 @@ export type InvoiceItemWhereUniqueInput = Prisma.AtLeast<{
   medication?: Prisma.XOR<Prisma.MedicationNullableScalarRelationFilter, Prisma.MedicationWhereInput> | null
   labOrder?: Prisma.XOR<Prisma.LabOrderNullableScalarRelationFilter, Prisma.LabOrderWhereInput> | null
   prescriptionItem?: Prisma.XOR<Prisma.PrescriptionMedicationNullableScalarRelationFilter, Prisma.PrescriptionMedicationWhereInput> | null
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryListRelationFilter
 }, "id">
 
 export type InvoiceItemOrderByWithAggregationInput = {
@@ -509,6 +512,7 @@ export type InvoiceItemCreateInput = {
   medication?: Prisma.MedicationCreateNestedOneWithoutInvoiceItemsInput
   labOrder?: Prisma.LabOrderCreateNestedOneWithoutInvoiceItemsInput
   prescriptionItem?: Prisma.PrescriptionMedicationCreateNestedOneWithoutInvoiceItemsInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryCreateNestedManyWithoutInvoiceItemInput
 }
 
 export type InvoiceItemUncheckedCreateInput = {
@@ -532,6 +536,7 @@ export type InvoiceItemUncheckedCreateInput = {
   taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedCreateNestedManyWithoutInvoiceItemInput
 }
 
 export type InvoiceItemUpdateInput = {
@@ -555,6 +560,7 @@ export type InvoiceItemUpdateInput = {
   medication?: Prisma.MedicationUpdateOneWithoutInvoiceItemsNestedInput
   labOrder?: Prisma.LabOrderUpdateOneWithoutInvoiceItemsNestedInput
   prescriptionItem?: Prisma.PrescriptionMedicationUpdateOneWithoutInvoiceItemsNestedInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryUpdateManyWithoutInvoiceItemNestedInput
 }
 
 export type InvoiceItemUncheckedUpdateInput = {
@@ -578,6 +584,7 @@ export type InvoiceItemUncheckedUpdateInput = {
   taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedUpdateManyWithoutInvoiceItemNestedInput
 }
 
 export type InvoiceItemCreateManyInput = {
@@ -741,6 +748,11 @@ export type InvoiceItemSumOrderByAggregateInput = {
   taxBase?: Prisma.SortOrder
   taxRatePercent?: Prisma.SortOrder
   taxAmount?: Prisma.SortOrder
+}
+
+export type InvoiceItemScalarRelationFilter = {
+  is?: Prisma.InvoiceItemWhereInput
+  isNot?: Prisma.InvoiceItemWhereInput
 }
 
 export type InvoiceItemCreateNestedManyWithoutMedicationInput = {
@@ -919,6 +931,20 @@ export type NullableEnumPpnTreatmentFieldUpdateOperationsInput = {
   set?: $Enums.PpnTreatment | null
 }
 
+export type InvoiceItemCreateNestedOneWithoutClinicianFeeEntriesInput = {
+  create?: Prisma.XOR<Prisma.InvoiceItemCreateWithoutClinicianFeeEntriesInput, Prisma.InvoiceItemUncheckedCreateWithoutClinicianFeeEntriesInput>
+  connectOrCreate?: Prisma.InvoiceItemCreateOrConnectWithoutClinicianFeeEntriesInput
+  connect?: Prisma.InvoiceItemWhereUniqueInput
+}
+
+export type InvoiceItemUpdateOneRequiredWithoutClinicianFeeEntriesNestedInput = {
+  create?: Prisma.XOR<Prisma.InvoiceItemCreateWithoutClinicianFeeEntriesInput, Prisma.InvoiceItemUncheckedCreateWithoutClinicianFeeEntriesInput>
+  connectOrCreate?: Prisma.InvoiceItemCreateOrConnectWithoutClinicianFeeEntriesInput
+  upsert?: Prisma.InvoiceItemUpsertWithoutClinicianFeeEntriesInput
+  connect?: Prisma.InvoiceItemWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.InvoiceItemUpdateToOneWithWhereWithoutClinicianFeeEntriesInput, Prisma.InvoiceItemUpdateWithoutClinicianFeeEntriesInput>, Prisma.InvoiceItemUncheckedUpdateWithoutClinicianFeeEntriesInput>
+}
+
 export type InvoiceItemCreateNestedManyWithoutLabOrderInput = {
   create?: Prisma.XOR<Prisma.InvoiceItemCreateWithoutLabOrderInput, Prisma.InvoiceItemUncheckedCreateWithoutLabOrderInput> | Prisma.InvoiceItemCreateWithoutLabOrderInput[] | Prisma.InvoiceItemUncheckedCreateWithoutLabOrderInput[]
   connectOrCreate?: Prisma.InvoiceItemCreateOrConnectWithoutLabOrderInput | Prisma.InvoiceItemCreateOrConnectWithoutLabOrderInput[]
@@ -981,6 +1007,7 @@ export type InvoiceItemCreateWithoutMedicationInput = {
   serviceTariff?: Prisma.ServiceTariffCreateNestedOneWithoutInvoiceItemsInput
   labOrder?: Prisma.LabOrderCreateNestedOneWithoutInvoiceItemsInput
   prescriptionItem?: Prisma.PrescriptionMedicationCreateNestedOneWithoutInvoiceItemsInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryCreateNestedManyWithoutInvoiceItemInput
 }
 
 export type InvoiceItemUncheckedCreateWithoutMedicationInput = {
@@ -1003,6 +1030,7 @@ export type InvoiceItemUncheckedCreateWithoutMedicationInput = {
   taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedCreateNestedManyWithoutInvoiceItemInput
 }
 
 export type InvoiceItemCreateOrConnectWithoutMedicationInput = {
@@ -1077,6 +1105,7 @@ export type InvoiceItemCreateWithoutPrescriptionItemInput = {
   serviceTariff?: Prisma.ServiceTariffCreateNestedOneWithoutInvoiceItemsInput
   medication?: Prisma.MedicationCreateNestedOneWithoutInvoiceItemsInput
   labOrder?: Prisma.LabOrderCreateNestedOneWithoutInvoiceItemsInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryCreateNestedManyWithoutInvoiceItemInput
 }
 
 export type InvoiceItemUncheckedCreateWithoutPrescriptionItemInput = {
@@ -1099,6 +1128,7 @@ export type InvoiceItemUncheckedCreateWithoutPrescriptionItemInput = {
   taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedCreateNestedManyWithoutInvoiceItemInput
 }
 
 export type InvoiceItemCreateOrConnectWithoutPrescriptionItemInput = {
@@ -1147,6 +1177,7 @@ export type InvoiceItemCreateWithoutServiceTariffInput = {
   medication?: Prisma.MedicationCreateNestedOneWithoutInvoiceItemsInput
   labOrder?: Prisma.LabOrderCreateNestedOneWithoutInvoiceItemsInput
   prescriptionItem?: Prisma.PrescriptionMedicationCreateNestedOneWithoutInvoiceItemsInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryCreateNestedManyWithoutInvoiceItemInput
 }
 
 export type InvoiceItemUncheckedCreateWithoutServiceTariffInput = {
@@ -1169,6 +1200,7 @@ export type InvoiceItemUncheckedCreateWithoutServiceTariffInput = {
   taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedCreateNestedManyWithoutInvoiceItemInput
 }
 
 export type InvoiceItemCreateOrConnectWithoutServiceTariffInput = {
@@ -1217,6 +1249,7 @@ export type InvoiceItemCreateWithoutInvoiceInput = {
   medication?: Prisma.MedicationCreateNestedOneWithoutInvoiceItemsInput
   labOrder?: Prisma.LabOrderCreateNestedOneWithoutInvoiceItemsInput
   prescriptionItem?: Prisma.PrescriptionMedicationCreateNestedOneWithoutInvoiceItemsInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryCreateNestedManyWithoutInvoiceItemInput
 }
 
 export type InvoiceItemUncheckedCreateWithoutInvoiceInput = {
@@ -1239,6 +1272,7 @@ export type InvoiceItemUncheckedCreateWithoutInvoiceInput = {
   taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedCreateNestedManyWithoutInvoiceItemInput
 }
 
 export type InvoiceItemCreateOrConnectWithoutInvoiceInput = {
@@ -1267,6 +1301,114 @@ export type InvoiceItemUpdateManyWithWhereWithoutInvoiceInput = {
   data: Prisma.XOR<Prisma.InvoiceItemUpdateManyMutationInput, Prisma.InvoiceItemUncheckedUpdateManyWithoutInvoiceInput>
 }
 
+export type InvoiceItemCreateWithoutClinicianFeeEntriesInput = {
+  id?: string
+  itemType: $Enums.InvoiceItemType
+  description: string
+  quantity: number
+  unitPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxCode?: string | null
+  ppnTreatment?: $Enums.PpnTreatment | null
+  fakturTransactionCode?: string | null
+  taxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  taxBase?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  taxRatePercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  invoice: Prisma.InvoiceCreateNestedOneWithoutItemsInput
+  serviceTariff?: Prisma.ServiceTariffCreateNestedOneWithoutInvoiceItemsInput
+  medication?: Prisma.MedicationCreateNestedOneWithoutInvoiceItemsInput
+  labOrder?: Prisma.LabOrderCreateNestedOneWithoutInvoiceItemsInput
+  prescriptionItem?: Prisma.PrescriptionMedicationCreateNestedOneWithoutInvoiceItemsInput
+}
+
+export type InvoiceItemUncheckedCreateWithoutClinicianFeeEntriesInput = {
+  id?: string
+  invoiceId: string
+  itemType: $Enums.InvoiceItemType
+  serviceTariffId?: string | null
+  medicationId?: string | null
+  labOrderId?: string | null
+  prescriptionItemId?: string | null
+  description: string
+  quantity: number
+  unitPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxCode?: string | null
+  ppnTreatment?: $Enums.PpnTreatment | null
+  fakturTransactionCode?: string | null
+  taxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  taxBase?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  taxRatePercent?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type InvoiceItemCreateOrConnectWithoutClinicianFeeEntriesInput = {
+  where: Prisma.InvoiceItemWhereUniqueInput
+  create: Prisma.XOR<Prisma.InvoiceItemCreateWithoutClinicianFeeEntriesInput, Prisma.InvoiceItemUncheckedCreateWithoutClinicianFeeEntriesInput>
+}
+
+export type InvoiceItemUpsertWithoutClinicianFeeEntriesInput = {
+  update: Prisma.XOR<Prisma.InvoiceItemUpdateWithoutClinicianFeeEntriesInput, Prisma.InvoiceItemUncheckedUpdateWithoutClinicianFeeEntriesInput>
+  create: Prisma.XOR<Prisma.InvoiceItemCreateWithoutClinicianFeeEntriesInput, Prisma.InvoiceItemUncheckedCreateWithoutClinicianFeeEntriesInput>
+  where?: Prisma.InvoiceItemWhereInput
+}
+
+export type InvoiceItemUpdateToOneWithWhereWithoutClinicianFeeEntriesInput = {
+  where?: Prisma.InvoiceItemWhereInput
+  data: Prisma.XOR<Prisma.InvoiceItemUpdateWithoutClinicianFeeEntriesInput, Prisma.InvoiceItemUncheckedUpdateWithoutClinicianFeeEntriesInput>
+}
+
+export type InvoiceItemUpdateWithoutClinicianFeeEntriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  itemType?: Prisma.EnumInvoiceItemTypeFieldUpdateOperationsInput | $Enums.InvoiceItemType
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  unitPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ppnTreatment?: Prisma.NullableEnumPpnTreatmentFieldUpdateOperationsInput | $Enums.PpnTreatment | null
+  fakturTransactionCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  taxableAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  taxBase?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  taxRatePercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  invoice?: Prisma.InvoiceUpdateOneRequiredWithoutItemsNestedInput
+  serviceTariff?: Prisma.ServiceTariffUpdateOneWithoutInvoiceItemsNestedInput
+  medication?: Prisma.MedicationUpdateOneWithoutInvoiceItemsNestedInput
+  labOrder?: Prisma.LabOrderUpdateOneWithoutInvoiceItemsNestedInput
+  prescriptionItem?: Prisma.PrescriptionMedicationUpdateOneWithoutInvoiceItemsNestedInput
+}
+
+export type InvoiceItemUncheckedUpdateWithoutClinicianFeeEntriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  invoiceId?: Prisma.StringFieldUpdateOperationsInput | string
+  itemType?: Prisma.EnumInvoiceItemTypeFieldUpdateOperationsInput | $Enums.InvoiceItemType
+  serviceTariffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  medicationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  labOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prescriptionItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  unitPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ppnTreatment?: Prisma.NullableEnumPpnTreatmentFieldUpdateOperationsInput | $Enums.PpnTreatment | null
+  fakturTransactionCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  taxableAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  taxBase?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  taxRatePercent?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type InvoiceItemCreateWithoutLabOrderInput = {
   id?: string
   itemType: $Enums.InvoiceItemType
@@ -1287,6 +1429,7 @@ export type InvoiceItemCreateWithoutLabOrderInput = {
   serviceTariff?: Prisma.ServiceTariffCreateNestedOneWithoutInvoiceItemsInput
   medication?: Prisma.MedicationCreateNestedOneWithoutInvoiceItemsInput
   prescriptionItem?: Prisma.PrescriptionMedicationCreateNestedOneWithoutInvoiceItemsInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryCreateNestedManyWithoutInvoiceItemInput
 }
 
 export type InvoiceItemUncheckedCreateWithoutLabOrderInput = {
@@ -1309,6 +1452,7 @@ export type InvoiceItemUncheckedCreateWithoutLabOrderInput = {
   taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedCreateNestedManyWithoutInvoiceItemInput
 }
 
 export type InvoiceItemCreateOrConnectWithoutLabOrderInput = {
@@ -1379,6 +1523,7 @@ export type InvoiceItemUpdateWithoutMedicationInput = {
   serviceTariff?: Prisma.ServiceTariffUpdateOneWithoutInvoiceItemsNestedInput
   labOrder?: Prisma.LabOrderUpdateOneWithoutInvoiceItemsNestedInput
   prescriptionItem?: Prisma.PrescriptionMedicationUpdateOneWithoutInvoiceItemsNestedInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryUpdateManyWithoutInvoiceItemNestedInput
 }
 
 export type InvoiceItemUncheckedUpdateWithoutMedicationInput = {
@@ -1401,6 +1546,7 @@ export type InvoiceItemUncheckedUpdateWithoutMedicationInput = {
   taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedUpdateManyWithoutInvoiceItemNestedInput
 }
 
 export type InvoiceItemUncheckedUpdateManyWithoutMedicationInput = {
@@ -1467,6 +1613,7 @@ export type InvoiceItemUpdateWithoutPrescriptionItemInput = {
   serviceTariff?: Prisma.ServiceTariffUpdateOneWithoutInvoiceItemsNestedInput
   medication?: Prisma.MedicationUpdateOneWithoutInvoiceItemsNestedInput
   labOrder?: Prisma.LabOrderUpdateOneWithoutInvoiceItemsNestedInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryUpdateManyWithoutInvoiceItemNestedInput
 }
 
 export type InvoiceItemUncheckedUpdateWithoutPrescriptionItemInput = {
@@ -1489,6 +1636,7 @@ export type InvoiceItemUncheckedUpdateWithoutPrescriptionItemInput = {
   taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedUpdateManyWithoutInvoiceItemNestedInput
 }
 
 export type InvoiceItemUncheckedUpdateManyWithoutPrescriptionItemInput = {
@@ -1555,6 +1703,7 @@ export type InvoiceItemUpdateWithoutServiceTariffInput = {
   medication?: Prisma.MedicationUpdateOneWithoutInvoiceItemsNestedInput
   labOrder?: Prisma.LabOrderUpdateOneWithoutInvoiceItemsNestedInput
   prescriptionItem?: Prisma.PrescriptionMedicationUpdateOneWithoutInvoiceItemsNestedInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryUpdateManyWithoutInvoiceItemNestedInput
 }
 
 export type InvoiceItemUncheckedUpdateWithoutServiceTariffInput = {
@@ -1577,6 +1726,7 @@ export type InvoiceItemUncheckedUpdateWithoutServiceTariffInput = {
   taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedUpdateManyWithoutInvoiceItemNestedInput
 }
 
 export type InvoiceItemUncheckedUpdateManyWithoutServiceTariffInput = {
@@ -1643,6 +1793,7 @@ export type InvoiceItemUpdateWithoutInvoiceInput = {
   medication?: Prisma.MedicationUpdateOneWithoutInvoiceItemsNestedInput
   labOrder?: Prisma.LabOrderUpdateOneWithoutInvoiceItemsNestedInput
   prescriptionItem?: Prisma.PrescriptionMedicationUpdateOneWithoutInvoiceItemsNestedInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryUpdateManyWithoutInvoiceItemNestedInput
 }
 
 export type InvoiceItemUncheckedUpdateWithoutInvoiceInput = {
@@ -1665,6 +1816,7 @@ export type InvoiceItemUncheckedUpdateWithoutInvoiceInput = {
   taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedUpdateManyWithoutInvoiceItemNestedInput
 }
 
 export type InvoiceItemUncheckedUpdateManyWithoutInvoiceInput = {
@@ -1731,6 +1883,7 @@ export type InvoiceItemUpdateWithoutLabOrderInput = {
   serviceTariff?: Prisma.ServiceTariffUpdateOneWithoutInvoiceItemsNestedInput
   medication?: Prisma.MedicationUpdateOneWithoutInvoiceItemsNestedInput
   prescriptionItem?: Prisma.PrescriptionMedicationUpdateOneWithoutInvoiceItemsNestedInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryUpdateManyWithoutInvoiceItemNestedInput
 }
 
 export type InvoiceItemUncheckedUpdateWithoutLabOrderInput = {
@@ -1753,6 +1906,7 @@ export type InvoiceItemUncheckedUpdateWithoutLabOrderInput = {
   taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedUpdateManyWithoutInvoiceItemNestedInput
 }
 
 export type InvoiceItemUncheckedUpdateManyWithoutLabOrderInput = {
@@ -1777,6 +1931,35 @@ export type InvoiceItemUncheckedUpdateManyWithoutLabOrderInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
+
+/**
+ * Count Type InvoiceItemCountOutputType
+ */
+
+export type InvoiceItemCountOutputType = {
+  clinicianFeeEntries: number
+}
+
+export type InvoiceItemCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  clinicianFeeEntries?: boolean | InvoiceItemCountOutputTypeCountClinicianFeeEntriesArgs
+}
+
+/**
+ * InvoiceItemCountOutputType without action
+ */
+export type InvoiceItemCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the InvoiceItemCountOutputType
+   */
+  select?: Prisma.InvoiceItemCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * InvoiceItemCountOutputType without action
+ */
+export type InvoiceItemCountOutputTypeCountClinicianFeeEntriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ClinicianFeeEntryWhereInput
+}
 
 
 export type InvoiceItemSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1805,6 +1988,8 @@ export type InvoiceItemSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   medication?: boolean | Prisma.InvoiceItem$medicationArgs<ExtArgs>
   labOrder?: boolean | Prisma.InvoiceItem$labOrderArgs<ExtArgs>
   prescriptionItem?: boolean | Prisma.InvoiceItem$prescriptionItemArgs<ExtArgs>
+  clinicianFeeEntries?: boolean | Prisma.InvoiceItem$clinicianFeeEntriesArgs<ExtArgs>
+  _count?: boolean | Prisma.InvoiceItemCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["invoiceItem"]>
 
 export type InvoiceItemSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1893,6 +2078,8 @@ export type InvoiceItemInclude<ExtArgs extends runtime.Types.Extensions.Internal
   medication?: boolean | Prisma.InvoiceItem$medicationArgs<ExtArgs>
   labOrder?: boolean | Prisma.InvoiceItem$labOrderArgs<ExtArgs>
   prescriptionItem?: boolean | Prisma.InvoiceItem$prescriptionItemArgs<ExtArgs>
+  clinicianFeeEntries?: boolean | Prisma.InvoiceItem$clinicianFeeEntriesArgs<ExtArgs>
+  _count?: boolean | Prisma.InvoiceItemCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type InvoiceItemIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   invoice?: boolean | Prisma.InvoiceDefaultArgs<ExtArgs>
@@ -1917,6 +2104,7 @@ export type $InvoiceItemPayload<ExtArgs extends runtime.Types.Extensions.Interna
     medication: Prisma.$MedicationPayload<ExtArgs> | null
     labOrder: Prisma.$LabOrderPayload<ExtArgs> | null
     prescriptionItem: Prisma.$PrescriptionMedicationPayload<ExtArgs> | null
+    clinicianFeeEntries: Prisma.$ClinicianFeeEntryPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2363,6 +2551,7 @@ export interface Prisma__InvoiceItemClient<T, Null = never, ExtArgs extends runt
   medication<T extends Prisma.InvoiceItem$medicationArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.InvoiceItem$medicationArgs<ExtArgs>>): Prisma.Prisma__MedicationClient<runtime.Types.Result.GetResult<Prisma.$MedicationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   labOrder<T extends Prisma.InvoiceItem$labOrderArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.InvoiceItem$labOrderArgs<ExtArgs>>): Prisma.Prisma__LabOrderClient<runtime.Types.Result.GetResult<Prisma.$LabOrderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   prescriptionItem<T extends Prisma.InvoiceItem$prescriptionItemArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.InvoiceItem$prescriptionItemArgs<ExtArgs>>): Prisma.Prisma__PrescriptionMedicationClient<runtime.Types.Result.GetResult<Prisma.$PrescriptionMedicationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  clinicianFeeEntries<T extends Prisma.InvoiceItem$clinicianFeeEntriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.InvoiceItem$clinicianFeeEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ClinicianFeeEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2886,6 +3075,30 @@ export type InvoiceItem$prescriptionItemArgs<ExtArgs extends runtime.Types.Exten
    */
   include?: Prisma.PrescriptionMedicationInclude<ExtArgs> | null
   where?: Prisma.PrescriptionMedicationWhereInput
+}
+
+/**
+ * InvoiceItem.clinicianFeeEntries
+ */
+export type InvoiceItem$clinicianFeeEntriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ClinicianFeeEntry
+   */
+  select?: Prisma.ClinicianFeeEntrySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ClinicianFeeEntry
+   */
+  omit?: Prisma.ClinicianFeeEntryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ClinicianFeeEntryInclude<ExtArgs> | null
+  where?: Prisma.ClinicianFeeEntryWhereInput
+  orderBy?: Prisma.ClinicianFeeEntryOrderByWithRelationInput | Prisma.ClinicianFeeEntryOrderByWithRelationInput[]
+  cursor?: Prisma.ClinicianFeeEntryWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ClinicianFeeEntryScalarFieldEnum | Prisma.ClinicianFeeEntryScalarFieldEnum[]
 }
 
 /**

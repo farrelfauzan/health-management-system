@@ -895,6 +895,22 @@ export const TaxReportDocumentStatus = {
 export type TaxReportDocumentStatus = (typeof TaxReportDocumentStatus)[keyof typeof TaxReportDocumentStatus]
 
 
+export const ClinicianFeeRuleMode = {
+  PERCENT: 'PERCENT',
+  FIXED: 'FIXED'
+} as const
+
+export type ClinicianFeeRuleMode = (typeof ClinicianFeeRuleMode)[keyof typeof ClinicianFeeRuleMode]
+
+
+export const ClinicianFeeEntryKind = {
+  ACCRUAL: 'ACCRUAL',
+  REVERSAL: 'REVERSAL'
+} as const
+
+export type ClinicianFeeEntryKind = (typeof ClinicianFeeEntryKind)[keyof typeof ClinicianFeeEntryKind]
+
+
 export const DocumentOwnerType = {
   CLINIC: 'CLINIC',
   PATIENT: 'PATIENT',

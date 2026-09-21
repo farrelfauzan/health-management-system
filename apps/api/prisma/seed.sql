@@ -130,6 +130,11 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     -- read and export, and create, recompute and finalize. Administrators only.
     ('tax-report.read:any', 'TaxReport', 'read', 'ANY', 'Read and export monthly tax report drafts'),
     ('tax-report.write:any', 'TaxReport', 'write', 'ANY', 'Create, recompute and finalize monthly tax report drafts'),
+    -- P27-T06. Jasa medis: the fee rules and the monthly statement per
+    -- clinician. Administrators only, like the billing keys; a clinician
+    -- reading their own statement is a follow-up (`:own`).
+    ('clinician-fee.read:any', 'ClinicianFee', 'read', 'ANY', 'Read jasa medis rules and monthly clinician fee statements'),
+    ('clinician-fee.write:any', 'ClinicianFee', 'write', 'ANY', 'Create, change and delete jasa medis rules'),
     ('portal.patient-access:own', 'Portal', 'patient-access', 'OWN', 'Access the patient portal'),
     ('role.assign:any', 'Role', 'assign', 'ANY', 'Assign roles to users'),
     ('role.read:any', 'Role', 'read', 'ANY', 'Read role catalog'),
@@ -598,6 +603,8 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('ADMIN', 'tax-code.write:any'),
     ('ADMIN', 'tax-report.read:any'),
     ('ADMIN', 'tax-report.write:any'),
+    ('ADMIN', 'clinician-fee.read:any'),
+    ('ADMIN', 'clinician-fee.write:any'),
     ('ADMIN', 'invoice.read:any'),
     ('ADMIN', 'invoice.write:any'),
     ('ADMIN', 'invoice.deliver:any'),

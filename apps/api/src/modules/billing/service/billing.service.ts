@@ -39,6 +39,7 @@ import { GenerateLabOnlyInvoiceDto } from '../dto/generate-lab-only-invoice.dto'
 import { ListInvoicesQueryDto } from '../dto/list-invoices-query.dto';
 import { RecordPaymentDto } from '../dto/record-payment.dto';
 import { VoidInvoiceDto } from '../dto/void-invoice.dto';
+import { ClinicianFeeLedgerService } from '../../clinician-fee/service/clinician-fee-ledger.service';
 import { InvoiceTaxService } from '../../tax-core/service/invoice-tax.service';
 import { BillingRepository } from '../repository/billing.repository';
 import { ServiceTariffRepository } from '../repository/service-tariff.repository';
@@ -104,6 +105,7 @@ export class BillingService {
     private readonly auditService: AuditService,
     private readonly invoiceDocumentService: InvoiceDocumentService,
     private readonly invoiceTaxService: InvoiceTaxService,
+    private readonly clinicianFeeLedgerService: ClinicianFeeLedgerService,
     configService: ConfigService,
   ) {
     this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
@@ -276,15 +278,25 @@ export class BillingService {
       );
     }
 
-    const paid = await this.billingRepository.recordPayment({
-      invoiceId: invoice.id,
-      method: payload.method,
-      amount: payload.amount,
-      referenceNumber: payload.referenceNumber,
-      notes: payload.notes,
-      paidAt: new Date(),
-      cashierId: currentUser.sub,
-    });
+    const paidAt = new Date();
+    // P27-T06: the jasa medis ledger is written in the payment's transaction,
+    // so a settled bill never exists without the fees it earned.
+    const paid = await this.billingRepository.recordPayment(
+      {
+        invoiceId: invoice.id,
+        method: payload.method,
+        amount: payload.amount,
+        referenceNumber: payload.referenceNumber,
+        notes: payload.notes,
+        paidAt,
+        cashierId: currentUser.sub,
+      },
+      (tx) =>
+        this.clinicianFeeLedgerService.recordAccrualsForPaidInvoice(tx, {
+          invoiceId: invoice.id,
+          paidAt,
+        }),
+    );
 
     return this.toInvoiceDetail(paid);
   }
@@ -301,12 +313,23 @@ export class BillingService {
   ): Promise<InvoiceDetail> {
     const invoice = await this.findInvoiceOrThrow(id);
     this.assertAllowedStatusTransition(invoice.status, 'VOID');
-    const voided = await this.billingRepository.voidInvoice({
-      id: invoice.id,
-      voidedAt: new Date(),
-      voidReason: payload.reason,
-      voidedById: currentUser.sub,
-    });
+    const voidedAt = new Date();
+    // P27-T06: reverses any jasa medis accrued on this invoice. A no-op today —
+    // only an unpaid invoice can be voided (PAID is terminal), and unpaid ones
+    // have no accruals — but it keeps the ledger right the day refunds exist.
+    const voided = await this.billingRepository.voidInvoice(
+      {
+        id: invoice.id,
+        voidedAt,
+        voidReason: payload.reason,
+        voidedById: currentUser.sub,
+      },
+      (tx) =>
+        this.clinicianFeeLedgerService.recordReversalsForVoidedInvoice(tx, {
+          invoiceId: invoice.id,
+          voidedAt,
+        }),
+    );
     await this.auditService.record({
       action: 'INVOICE_VOIDED',
       resource: 'Invoice',

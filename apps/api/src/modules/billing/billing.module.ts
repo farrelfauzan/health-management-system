@@ -22,13 +22,15 @@ import { InvoiceDocumentMapper } from './service/invoice-document.mapper';
 import { InvoiceDocumentService } from './service/invoice-document.service';
 import { ServiceTariffService } from './service/service-tariff.service';
 import { TaxCoreModule } from '../tax-core/tax-core.module';
+import { ClinicianFeeModule } from '../clinician-fee/clinician-fee.module';
 
 @Module({
   // StorageModule for the clinic logo (P16-T02) and rendered invoice PDFs
   // (P16-T06); PdfModule for the render sidecar port; DocumentTemplateModule
   // because the render service resolves the default template's published
   // version through that module's service.
-  imports: [StorageModule, PdfModule, DocumentTemplateModule, TaxCoreModule],
+  // ClinicianFeeModule (P27-T06) for the jasa medis ledger written on payment.
+  imports: [StorageModule, PdfModule, DocumentTemplateModule, TaxCoreModule, ClinicianFeeModule],
   controllers: [
     ServiceTariffController,
     InvoiceController,

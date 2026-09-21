@@ -5,6 +5,12 @@ export type PrismaTransactionClient = Omit<
   '$connect' | '$disconnect' | '$on' | '$transaction' | '$extends'
 >;
 
+/**
+ * Work another module adds to a transaction it does not own (P27-T06): the
+ * owner runs it before commit, so both writes land or neither does.
+ */
+export type PrismaTransactionHook = (tx: PrismaTransactionClient) => Promise<unknown>;
+
 export type FindManyDelegate = {
   findMany(args?: unknown): Promise<unknown>;
 };

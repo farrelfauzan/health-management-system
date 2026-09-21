@@ -114,6 +114,9 @@ export const ADMIN_PORTAL_ADMIN_RULES: AppRule[] = [
   // P27-T05. `seed.sql` grants ADMIN both tax-report keys.
   { action: 'read', subject: 'TaxReport' },
   { action: 'write', subject: 'TaxReport' },
+  // P27-T06. `seed.sql` grants ADMIN both clinician-fee keys.
+  { action: 'read', subject: 'ClinicianFee' },
+  { action: 'write', subject: 'ClinicianFee' },
   { action: 'read', subject: 'Invoice' },
   { action: 'write', subject: 'Invoice' },
   // P16-T25. `seed.sql` gives ADMIN the deliver key; an admin whose hint

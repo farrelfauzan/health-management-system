@@ -301,6 +301,7 @@ export type ServiceTariffWhereInput = {
   invoiceItems?: Prisma.InvoiceItemListRelationFilter
   labTests?: Prisma.LabTestListRelationFilter
   labPanels?: Prisma.LabPanelListRelationFilter
+  clinicianFeeRules?: Prisma.ClinicianFeeRuleListRelationFilter
 }
 
 export type ServiceTariffOrderByWithRelationInput = {
@@ -324,6 +325,7 @@ export type ServiceTariffOrderByWithRelationInput = {
   invoiceItems?: Prisma.InvoiceItemOrderByRelationAggregateInput
   labTests?: Prisma.LabTestOrderByRelationAggregateInput
   labPanels?: Prisma.LabPanelOrderByRelationAggregateInput
+  clinicianFeeRules?: Prisma.ClinicianFeeRuleOrderByRelationAggregateInput
 }
 
 export type ServiceTariffWhereUniqueInput = Prisma.AtLeast<{
@@ -350,6 +352,7 @@ export type ServiceTariffWhereUniqueInput = Prisma.AtLeast<{
   invoiceItems?: Prisma.InvoiceItemListRelationFilter
   labTests?: Prisma.LabTestListRelationFilter
   labPanels?: Prisma.LabPanelListRelationFilter
+  clinicianFeeRules?: Prisma.ClinicianFeeRuleListRelationFilter
 }, "id" | "code" | "icd9cmCode">
 
 export type ServiceTariffOrderByWithAggregationInput = {
@@ -412,6 +415,7 @@ export type ServiceTariffCreateInput = {
   invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutServiceTariffInput
   labTests?: Prisma.LabTestCreateNestedManyWithoutServiceTariffInput
   labPanels?: Prisma.LabPanelCreateNestedManyWithoutServiceTariffInput
+  clinicianFeeRules?: Prisma.ClinicianFeeRuleCreateNestedManyWithoutServiceTariffInput
 }
 
 export type ServiceTariffUncheckedCreateInput = {
@@ -432,6 +436,7 @@ export type ServiceTariffUncheckedCreateInput = {
   invoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutServiceTariffInput
   labTests?: Prisma.LabTestUncheckedCreateNestedManyWithoutServiceTariffInput
   labPanels?: Prisma.LabPanelUncheckedCreateNestedManyWithoutServiceTariffInput
+  clinicianFeeRules?: Prisma.ClinicianFeeRuleUncheckedCreateNestedManyWithoutServiceTariffInput
 }
 
 export type ServiceTariffUpdateInput = {
@@ -452,6 +457,7 @@ export type ServiceTariffUpdateInput = {
   invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutServiceTariffNestedInput
   labTests?: Prisma.LabTestUpdateManyWithoutServiceTariffNestedInput
   labPanels?: Prisma.LabPanelUpdateManyWithoutServiceTariffNestedInput
+  clinicianFeeRules?: Prisma.ClinicianFeeRuleUpdateManyWithoutServiceTariffNestedInput
 }
 
 export type ServiceTariffUncheckedUpdateInput = {
@@ -472,6 +478,7 @@ export type ServiceTariffUncheckedUpdateInput = {
   invoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutServiceTariffNestedInput
   labTests?: Prisma.LabTestUncheckedUpdateManyWithoutServiceTariffNestedInput
   labPanels?: Prisma.LabPanelUncheckedUpdateManyWithoutServiceTariffNestedInput
+  clinicianFeeRules?: Prisma.ClinicianFeeRuleUncheckedUpdateManyWithoutServiceTariffNestedInput
 }
 
 export type ServiceTariffCreateManyInput = {
@@ -704,6 +711,22 @@ export type ServiceTariffUpdateOneWithoutInvoiceItemsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ServiceTariffUpdateToOneWithWhereWithoutInvoiceItemsInput, Prisma.ServiceTariffUpdateWithoutInvoiceItemsInput>, Prisma.ServiceTariffUncheckedUpdateWithoutInvoiceItemsInput>
 }
 
+export type ServiceTariffCreateNestedOneWithoutClinicianFeeRulesInput = {
+  create?: Prisma.XOR<Prisma.ServiceTariffCreateWithoutClinicianFeeRulesInput, Prisma.ServiceTariffUncheckedCreateWithoutClinicianFeeRulesInput>
+  connectOrCreate?: Prisma.ServiceTariffCreateOrConnectWithoutClinicianFeeRulesInput
+  connect?: Prisma.ServiceTariffWhereUniqueInput
+}
+
+export type ServiceTariffUpdateOneWithoutClinicianFeeRulesNestedInput = {
+  create?: Prisma.XOR<Prisma.ServiceTariffCreateWithoutClinicianFeeRulesInput, Prisma.ServiceTariffUncheckedCreateWithoutClinicianFeeRulesInput>
+  connectOrCreate?: Prisma.ServiceTariffCreateOrConnectWithoutClinicianFeeRulesInput
+  upsert?: Prisma.ServiceTariffUpsertWithoutClinicianFeeRulesInput
+  disconnect?: Prisma.ServiceTariffWhereInput | boolean
+  delete?: Prisma.ServiceTariffWhereInput | boolean
+  connect?: Prisma.ServiceTariffWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ServiceTariffUpdateToOneWithWhereWithoutClinicianFeeRulesInput, Prisma.ServiceTariffUpdateWithoutClinicianFeeRulesInput>, Prisma.ServiceTariffUncheckedUpdateWithoutClinicianFeeRulesInput>
+}
+
 export type ServiceTariffCreateNestedManyWithoutRoomClassInput = {
   create?: Prisma.XOR<Prisma.ServiceTariffCreateWithoutRoomClassInput, Prisma.ServiceTariffUncheckedCreateWithoutRoomClassInput> | Prisma.ServiceTariffCreateWithoutRoomClassInput[] | Prisma.ServiceTariffUncheckedCreateWithoutRoomClassInput[]
   connectOrCreate?: Prisma.ServiceTariffCreateOrConnectWithoutRoomClassInput | Prisma.ServiceTariffCreateOrConnectWithoutRoomClassInput[]
@@ -795,6 +818,7 @@ export type ServiceTariffCreateWithoutSpecialtyInput = {
   invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutServiceTariffInput
   labTests?: Prisma.LabTestCreateNestedManyWithoutServiceTariffInput
   labPanels?: Prisma.LabPanelCreateNestedManyWithoutServiceTariffInput
+  clinicianFeeRules?: Prisma.ClinicianFeeRuleCreateNestedManyWithoutServiceTariffInput
 }
 
 export type ServiceTariffUncheckedCreateWithoutSpecialtyInput = {
@@ -814,6 +838,7 @@ export type ServiceTariffUncheckedCreateWithoutSpecialtyInput = {
   invoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutServiceTariffInput
   labTests?: Prisma.LabTestUncheckedCreateNestedManyWithoutServiceTariffInput
   labPanels?: Prisma.LabPanelUncheckedCreateNestedManyWithoutServiceTariffInput
+  clinicianFeeRules?: Prisma.ClinicianFeeRuleUncheckedCreateNestedManyWithoutServiceTariffInput
 }
 
 export type ServiceTariffCreateOrConnectWithoutSpecialtyInput = {
@@ -879,6 +904,7 @@ export type ServiceTariffCreateWithoutTaxCodeInput = {
   invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutServiceTariffInput
   labTests?: Prisma.LabTestCreateNestedManyWithoutServiceTariffInput
   labPanels?: Prisma.LabPanelCreateNestedManyWithoutServiceTariffInput
+  clinicianFeeRules?: Prisma.ClinicianFeeRuleCreateNestedManyWithoutServiceTariffInput
 }
 
 export type ServiceTariffUncheckedCreateWithoutTaxCodeInput = {
@@ -898,6 +924,7 @@ export type ServiceTariffUncheckedCreateWithoutTaxCodeInput = {
   invoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutServiceTariffInput
   labTests?: Prisma.LabTestUncheckedCreateNestedManyWithoutServiceTariffInput
   labPanels?: Prisma.LabPanelUncheckedCreateNestedManyWithoutServiceTariffInput
+  clinicianFeeRules?: Prisma.ClinicianFeeRuleUncheckedCreateNestedManyWithoutServiceTariffInput
 }
 
 export type ServiceTariffCreateOrConnectWithoutTaxCodeInput = {
@@ -943,6 +970,7 @@ export type ServiceTariffCreateWithoutInvoiceItemsInput = {
   taxCode?: Prisma.TaxCodeCreateNestedOneWithoutServiceTariffsInput
   labTests?: Prisma.LabTestCreateNestedManyWithoutServiceTariffInput
   labPanels?: Prisma.LabPanelCreateNestedManyWithoutServiceTariffInput
+  clinicianFeeRules?: Prisma.ClinicianFeeRuleCreateNestedManyWithoutServiceTariffInput
 }
 
 export type ServiceTariffUncheckedCreateWithoutInvoiceItemsInput = {
@@ -962,6 +990,7 @@ export type ServiceTariffUncheckedCreateWithoutInvoiceItemsInput = {
   deletedAt?: Date | string | null
   labTests?: Prisma.LabTestUncheckedCreateNestedManyWithoutServiceTariffInput
   labPanels?: Prisma.LabPanelUncheckedCreateNestedManyWithoutServiceTariffInput
+  clinicianFeeRules?: Prisma.ClinicianFeeRuleUncheckedCreateNestedManyWithoutServiceTariffInput
 }
 
 export type ServiceTariffCreateOrConnectWithoutInvoiceItemsInput = {
@@ -997,6 +1026,7 @@ export type ServiceTariffUpdateWithoutInvoiceItemsInput = {
   taxCode?: Prisma.TaxCodeUpdateOneWithoutServiceTariffsNestedInput
   labTests?: Prisma.LabTestUpdateManyWithoutServiceTariffNestedInput
   labPanels?: Prisma.LabPanelUpdateManyWithoutServiceTariffNestedInput
+  clinicianFeeRules?: Prisma.ClinicianFeeRuleUpdateManyWithoutServiceTariffNestedInput
 }
 
 export type ServiceTariffUncheckedUpdateWithoutInvoiceItemsInput = {
@@ -1014,6 +1044,103 @@ export type ServiceTariffUncheckedUpdateWithoutInvoiceItemsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  labTests?: Prisma.LabTestUncheckedUpdateManyWithoutServiceTariffNestedInput
+  labPanels?: Prisma.LabPanelUncheckedUpdateManyWithoutServiceTariffNestedInput
+  clinicianFeeRules?: Prisma.ClinicianFeeRuleUncheckedUpdateManyWithoutServiceTariffNestedInput
+}
+
+export type ServiceTariffCreateWithoutClinicianFeeRulesInput = {
+  id?: string
+  code: string
+  name: string
+  category: $Enums.ServiceTariffCategory
+  icd9cmCode?: string | null
+  profession?: $Enums.ClinicianProfession | null
+  price: runtime.Decimal | runtime.DecimalJsLike | number | string
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  roomClass?: Prisma.RoomClassCreateNestedOneWithoutServiceTariffsInput
+  specialty?: Prisma.SpecialtyCreateNestedOneWithoutServiceTariffsInput
+  taxCode?: Prisma.TaxCodeCreateNestedOneWithoutServiceTariffsInput
+  invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutServiceTariffInput
+  labTests?: Prisma.LabTestCreateNestedManyWithoutServiceTariffInput
+  labPanels?: Prisma.LabPanelCreateNestedManyWithoutServiceTariffInput
+}
+
+export type ServiceTariffUncheckedCreateWithoutClinicianFeeRulesInput = {
+  id?: string
+  code: string
+  name: string
+  category: $Enums.ServiceTariffCategory
+  icd9cmCode?: string | null
+  roomClassId?: string | null
+  specialtyId?: string | null
+  profession?: $Enums.ClinicianProfession | null
+  price: runtime.Decimal | runtime.DecimalJsLike | number | string
+  isActive?: boolean
+  taxCodeId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  invoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutServiceTariffInput
+  labTests?: Prisma.LabTestUncheckedCreateNestedManyWithoutServiceTariffInput
+  labPanels?: Prisma.LabPanelUncheckedCreateNestedManyWithoutServiceTariffInput
+}
+
+export type ServiceTariffCreateOrConnectWithoutClinicianFeeRulesInput = {
+  where: Prisma.ServiceTariffWhereUniqueInput
+  create: Prisma.XOR<Prisma.ServiceTariffCreateWithoutClinicianFeeRulesInput, Prisma.ServiceTariffUncheckedCreateWithoutClinicianFeeRulesInput>
+}
+
+export type ServiceTariffUpsertWithoutClinicianFeeRulesInput = {
+  update: Prisma.XOR<Prisma.ServiceTariffUpdateWithoutClinicianFeeRulesInput, Prisma.ServiceTariffUncheckedUpdateWithoutClinicianFeeRulesInput>
+  create: Prisma.XOR<Prisma.ServiceTariffCreateWithoutClinicianFeeRulesInput, Prisma.ServiceTariffUncheckedCreateWithoutClinicianFeeRulesInput>
+  where?: Prisma.ServiceTariffWhereInput
+}
+
+export type ServiceTariffUpdateToOneWithWhereWithoutClinicianFeeRulesInput = {
+  where?: Prisma.ServiceTariffWhereInput
+  data: Prisma.XOR<Prisma.ServiceTariffUpdateWithoutClinicianFeeRulesInput, Prisma.ServiceTariffUncheckedUpdateWithoutClinicianFeeRulesInput>
+}
+
+export type ServiceTariffUpdateWithoutClinicianFeeRulesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.EnumServiceTariffCategoryFieldUpdateOperationsInput | $Enums.ServiceTariffCategory
+  icd9cmCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profession?: Prisma.NullableEnumClinicianProfessionFieldUpdateOperationsInput | $Enums.ClinicianProfession | null
+  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  roomClass?: Prisma.RoomClassUpdateOneWithoutServiceTariffsNestedInput
+  specialty?: Prisma.SpecialtyUpdateOneWithoutServiceTariffsNestedInput
+  taxCode?: Prisma.TaxCodeUpdateOneWithoutServiceTariffsNestedInput
+  invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutServiceTariffNestedInput
+  labTests?: Prisma.LabTestUpdateManyWithoutServiceTariffNestedInput
+  labPanels?: Prisma.LabPanelUpdateManyWithoutServiceTariffNestedInput
+}
+
+export type ServiceTariffUncheckedUpdateWithoutClinicianFeeRulesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.EnumServiceTariffCategoryFieldUpdateOperationsInput | $Enums.ServiceTariffCategory
+  icd9cmCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  roomClassId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  specialtyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profession?: Prisma.NullableEnumClinicianProfessionFieldUpdateOperationsInput | $Enums.ClinicianProfession | null
+  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  taxCodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  invoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutServiceTariffNestedInput
   labTests?: Prisma.LabTestUncheckedUpdateManyWithoutServiceTariffNestedInput
   labPanels?: Prisma.LabPanelUncheckedUpdateManyWithoutServiceTariffNestedInput
 }
@@ -1035,6 +1162,7 @@ export type ServiceTariffCreateWithoutRoomClassInput = {
   invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutServiceTariffInput
   labTests?: Prisma.LabTestCreateNestedManyWithoutServiceTariffInput
   labPanels?: Prisma.LabPanelCreateNestedManyWithoutServiceTariffInput
+  clinicianFeeRules?: Prisma.ClinicianFeeRuleCreateNestedManyWithoutServiceTariffInput
 }
 
 export type ServiceTariffUncheckedCreateWithoutRoomClassInput = {
@@ -1054,6 +1182,7 @@ export type ServiceTariffUncheckedCreateWithoutRoomClassInput = {
   invoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutServiceTariffInput
   labTests?: Prisma.LabTestUncheckedCreateNestedManyWithoutServiceTariffInput
   labPanels?: Prisma.LabPanelUncheckedCreateNestedManyWithoutServiceTariffInput
+  clinicianFeeRules?: Prisma.ClinicianFeeRuleUncheckedCreateNestedManyWithoutServiceTariffInput
 }
 
 export type ServiceTariffCreateOrConnectWithoutRoomClassInput = {
@@ -1099,6 +1228,7 @@ export type ServiceTariffCreateWithoutLabTestsInput = {
   taxCode?: Prisma.TaxCodeCreateNestedOneWithoutServiceTariffsInput
   invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutServiceTariffInput
   labPanels?: Prisma.LabPanelCreateNestedManyWithoutServiceTariffInput
+  clinicianFeeRules?: Prisma.ClinicianFeeRuleCreateNestedManyWithoutServiceTariffInput
 }
 
 export type ServiceTariffUncheckedCreateWithoutLabTestsInput = {
@@ -1118,6 +1248,7 @@ export type ServiceTariffUncheckedCreateWithoutLabTestsInput = {
   deletedAt?: Date | string | null
   invoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutServiceTariffInput
   labPanels?: Prisma.LabPanelUncheckedCreateNestedManyWithoutServiceTariffInput
+  clinicianFeeRules?: Prisma.ClinicianFeeRuleUncheckedCreateNestedManyWithoutServiceTariffInput
 }
 
 export type ServiceTariffCreateOrConnectWithoutLabTestsInput = {
@@ -1153,6 +1284,7 @@ export type ServiceTariffUpdateWithoutLabTestsInput = {
   taxCode?: Prisma.TaxCodeUpdateOneWithoutServiceTariffsNestedInput
   invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutServiceTariffNestedInput
   labPanels?: Prisma.LabPanelUpdateManyWithoutServiceTariffNestedInput
+  clinicianFeeRules?: Prisma.ClinicianFeeRuleUpdateManyWithoutServiceTariffNestedInput
 }
 
 export type ServiceTariffUncheckedUpdateWithoutLabTestsInput = {
@@ -1172,6 +1304,7 @@ export type ServiceTariffUncheckedUpdateWithoutLabTestsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   invoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutServiceTariffNestedInput
   labPanels?: Prisma.LabPanelUncheckedUpdateManyWithoutServiceTariffNestedInput
+  clinicianFeeRules?: Prisma.ClinicianFeeRuleUncheckedUpdateManyWithoutServiceTariffNestedInput
 }
 
 export type ServiceTariffCreateWithoutLabPanelsInput = {
@@ -1191,6 +1324,7 @@ export type ServiceTariffCreateWithoutLabPanelsInput = {
   taxCode?: Prisma.TaxCodeCreateNestedOneWithoutServiceTariffsInput
   invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutServiceTariffInput
   labTests?: Prisma.LabTestCreateNestedManyWithoutServiceTariffInput
+  clinicianFeeRules?: Prisma.ClinicianFeeRuleCreateNestedManyWithoutServiceTariffInput
 }
 
 export type ServiceTariffUncheckedCreateWithoutLabPanelsInput = {
@@ -1210,6 +1344,7 @@ export type ServiceTariffUncheckedCreateWithoutLabPanelsInput = {
   deletedAt?: Date | string | null
   invoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutServiceTariffInput
   labTests?: Prisma.LabTestUncheckedCreateNestedManyWithoutServiceTariffInput
+  clinicianFeeRules?: Prisma.ClinicianFeeRuleUncheckedCreateNestedManyWithoutServiceTariffInput
 }
 
 export type ServiceTariffCreateOrConnectWithoutLabPanelsInput = {
@@ -1245,6 +1380,7 @@ export type ServiceTariffUpdateWithoutLabPanelsInput = {
   taxCode?: Prisma.TaxCodeUpdateOneWithoutServiceTariffsNestedInput
   invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutServiceTariffNestedInput
   labTests?: Prisma.LabTestUpdateManyWithoutServiceTariffNestedInput
+  clinicianFeeRules?: Prisma.ClinicianFeeRuleUpdateManyWithoutServiceTariffNestedInput
 }
 
 export type ServiceTariffUncheckedUpdateWithoutLabPanelsInput = {
@@ -1264,6 +1400,7 @@ export type ServiceTariffUncheckedUpdateWithoutLabPanelsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   invoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutServiceTariffNestedInput
   labTests?: Prisma.LabTestUncheckedUpdateManyWithoutServiceTariffNestedInput
+  clinicianFeeRules?: Prisma.ClinicianFeeRuleUncheckedUpdateManyWithoutServiceTariffNestedInput
 }
 
 export type ServiceTariffCreateManySpecialtyInput = {
@@ -1299,6 +1436,7 @@ export type ServiceTariffUpdateWithoutSpecialtyInput = {
   invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutServiceTariffNestedInput
   labTests?: Prisma.LabTestUpdateManyWithoutServiceTariffNestedInput
   labPanels?: Prisma.LabPanelUpdateManyWithoutServiceTariffNestedInput
+  clinicianFeeRules?: Prisma.ClinicianFeeRuleUpdateManyWithoutServiceTariffNestedInput
 }
 
 export type ServiceTariffUncheckedUpdateWithoutSpecialtyInput = {
@@ -1318,6 +1456,7 @@ export type ServiceTariffUncheckedUpdateWithoutSpecialtyInput = {
   invoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutServiceTariffNestedInput
   labTests?: Prisma.LabTestUncheckedUpdateManyWithoutServiceTariffNestedInput
   labPanels?: Prisma.LabPanelUncheckedUpdateManyWithoutServiceTariffNestedInput
+  clinicianFeeRules?: Prisma.ClinicianFeeRuleUncheckedUpdateManyWithoutServiceTariffNestedInput
 }
 
 export type ServiceTariffUncheckedUpdateManyWithoutSpecialtyInput = {
@@ -1369,6 +1508,7 @@ export type ServiceTariffUpdateWithoutTaxCodeInput = {
   invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutServiceTariffNestedInput
   labTests?: Prisma.LabTestUpdateManyWithoutServiceTariffNestedInput
   labPanels?: Prisma.LabPanelUpdateManyWithoutServiceTariffNestedInput
+  clinicianFeeRules?: Prisma.ClinicianFeeRuleUpdateManyWithoutServiceTariffNestedInput
 }
 
 export type ServiceTariffUncheckedUpdateWithoutTaxCodeInput = {
@@ -1388,6 +1528,7 @@ export type ServiceTariffUncheckedUpdateWithoutTaxCodeInput = {
   invoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutServiceTariffNestedInput
   labTests?: Prisma.LabTestUncheckedUpdateManyWithoutServiceTariffNestedInput
   labPanels?: Prisma.LabPanelUncheckedUpdateManyWithoutServiceTariffNestedInput
+  clinicianFeeRules?: Prisma.ClinicianFeeRuleUncheckedUpdateManyWithoutServiceTariffNestedInput
 }
 
 export type ServiceTariffUncheckedUpdateManyWithoutTaxCodeInput = {
@@ -1439,6 +1580,7 @@ export type ServiceTariffUpdateWithoutRoomClassInput = {
   invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutServiceTariffNestedInput
   labTests?: Prisma.LabTestUpdateManyWithoutServiceTariffNestedInput
   labPanels?: Prisma.LabPanelUpdateManyWithoutServiceTariffNestedInput
+  clinicianFeeRules?: Prisma.ClinicianFeeRuleUpdateManyWithoutServiceTariffNestedInput
 }
 
 export type ServiceTariffUncheckedUpdateWithoutRoomClassInput = {
@@ -1458,6 +1600,7 @@ export type ServiceTariffUncheckedUpdateWithoutRoomClassInput = {
   invoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutServiceTariffNestedInput
   labTests?: Prisma.LabTestUncheckedUpdateManyWithoutServiceTariffNestedInput
   labPanels?: Prisma.LabPanelUncheckedUpdateManyWithoutServiceTariffNestedInput
+  clinicianFeeRules?: Prisma.ClinicianFeeRuleUncheckedUpdateManyWithoutServiceTariffNestedInput
 }
 
 export type ServiceTariffUncheckedUpdateManyWithoutRoomClassInput = {
@@ -1485,12 +1628,14 @@ export type ServiceTariffCountOutputType = {
   invoiceItems: number
   labTests: number
   labPanels: number
+  clinicianFeeRules: number
 }
 
 export type ServiceTariffCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   invoiceItems?: boolean | ServiceTariffCountOutputTypeCountInvoiceItemsArgs
   labTests?: boolean | ServiceTariffCountOutputTypeCountLabTestsArgs
   labPanels?: boolean | ServiceTariffCountOutputTypeCountLabPanelsArgs
+  clinicianFeeRules?: boolean | ServiceTariffCountOutputTypeCountClinicianFeeRulesArgs
 }
 
 /**
@@ -1524,6 +1669,13 @@ export type ServiceTariffCountOutputTypeCountLabPanelsArgs<ExtArgs extends runti
   where?: Prisma.LabPanelWhereInput
 }
 
+/**
+ * ServiceTariffCountOutputType without action
+ */
+export type ServiceTariffCountOutputTypeCountClinicianFeeRulesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ClinicianFeeRuleWhereInput
+}
+
 
 export type ServiceTariffSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1546,6 +1698,7 @@ export type ServiceTariffSelect<ExtArgs extends runtime.Types.Extensions.Interna
   invoiceItems?: boolean | Prisma.ServiceTariff$invoiceItemsArgs<ExtArgs>
   labTests?: boolean | Prisma.ServiceTariff$labTestsArgs<ExtArgs>
   labPanels?: boolean | Prisma.ServiceTariff$labPanelsArgs<ExtArgs>
+  clinicianFeeRules?: boolean | Prisma.ServiceTariff$clinicianFeeRulesArgs<ExtArgs>
   _count?: boolean | Prisma.ServiceTariffCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["serviceTariff"]>
 
@@ -1614,6 +1767,7 @@ export type ServiceTariffInclude<ExtArgs extends runtime.Types.Extensions.Intern
   invoiceItems?: boolean | Prisma.ServiceTariff$invoiceItemsArgs<ExtArgs>
   labTests?: boolean | Prisma.ServiceTariff$labTestsArgs<ExtArgs>
   labPanels?: boolean | Prisma.ServiceTariff$labPanelsArgs<ExtArgs>
+  clinicianFeeRules?: boolean | Prisma.ServiceTariff$clinicianFeeRulesArgs<ExtArgs>
   _count?: boolean | Prisma.ServiceTariffCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ServiceTariffIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1636,6 +1790,7 @@ export type $ServiceTariffPayload<ExtArgs extends runtime.Types.Extensions.Inter
     invoiceItems: Prisma.$InvoiceItemPayload<ExtArgs>[]
     labTests: Prisma.$LabTestPayload<ExtArgs>[]
     labPanels: Prisma.$LabPanelPayload<ExtArgs>[]
+    clinicianFeeRules: Prisma.$ClinicianFeeRulePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2084,6 +2239,7 @@ export interface Prisma__ServiceTariffClient<T, Null = never, ExtArgs extends ru
   invoiceItems<T extends Prisma.ServiceTariff$invoiceItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ServiceTariff$invoiceItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvoiceItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   labTests<T extends Prisma.ServiceTariff$labTestsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ServiceTariff$labTestsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LabTestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   labPanels<T extends Prisma.ServiceTariff$labPanelsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ServiceTariff$labPanelsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LabPanelPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  clinicianFeeRules<T extends Prisma.ServiceTariff$clinicianFeeRulesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ServiceTariff$clinicianFeeRulesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ClinicianFeeRulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2654,6 +2810,30 @@ export type ServiceTariff$labPanelsArgs<ExtArgs extends runtime.Types.Extensions
   take?: number
   skip?: number
   distinct?: Prisma.LabPanelScalarFieldEnum | Prisma.LabPanelScalarFieldEnum[]
+}
+
+/**
+ * ServiceTariff.clinicianFeeRules
+ */
+export type ServiceTariff$clinicianFeeRulesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ClinicianFeeRule
+   */
+  select?: Prisma.ClinicianFeeRuleSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ClinicianFeeRule
+   */
+  omit?: Prisma.ClinicianFeeRuleOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ClinicianFeeRuleInclude<ExtArgs> | null
+  where?: Prisma.ClinicianFeeRuleWhereInput
+  orderBy?: Prisma.ClinicianFeeRuleOrderByWithRelationInput | Prisma.ClinicianFeeRuleOrderByWithRelationInput[]
+  cursor?: Prisma.ClinicianFeeRuleWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ClinicianFeeRuleScalarFieldEnum | Prisma.ClinicianFeeRuleScalarFieldEnum[]
 }
 
 /**
