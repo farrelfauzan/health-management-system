@@ -47,6 +47,7 @@ describe('AdminManagementService', () => {
 
   const createPayload = {
     email: 'new-admin@hms.local',
+    fullName: 'Admin Baru',
     // Not on the SJ-7 denylist; `password123` is, which is the point.
     password: 'a-perfectly-good-passphrase',
     isActive: true,

@@ -13,6 +13,13 @@ const INVITATION_INCLUDE = {
       email: true,
     },
   },
+  // A doctor invitation carries no `fullName` of its own — the name is on the
+  // profile it was raised for, and the accept copies it from here (P20-T05).
+  doctorProfile: {
+    select: {
+      fullName: true,
+    },
+  },
 } as const;
 
 @Injectable()
@@ -41,6 +48,7 @@ export class UserInvitationRepository {
     return this.prisma.userInvitation.create({
       data: {
         email: payload.email,
+        fullName: payload.fullName ?? null,
         tokenHash: payload.tokenHash,
         roleCodes: payload.roleCodes,
         invitedById: payload.invitedById,
@@ -148,6 +156,12 @@ export class UserInvitationRepository {
   async acceptInvitation(payload: {
     invitationId: string;
     email: string;
+    /**
+     * The invitation's own name, or — for a doctor invitation, which carries
+     * none — the name already on the profile being claimed (P20-T05). Null
+     * only for an invitation raised before the column existed.
+     */
+    fullName: string | null;
     passwordHash: string;
     roleIds: string[];
     assignedById: string;
@@ -158,6 +172,7 @@ export class UserInvitationRepository {
       const user = await tx.user.create({
         data: {
           email: payload.email,
+          fullName: payload.fullName,
           passwordHash: payload.passwordHash,
           isActive: true,
         },

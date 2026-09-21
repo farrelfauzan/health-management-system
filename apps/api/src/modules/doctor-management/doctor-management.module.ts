@@ -1,6 +1,7 @@
 import { Module, forwardRef } from '@nestjs/common';
 
 import { StorageModule } from '../../common/storage/storage.module';
+import { AccountModule } from '../account/account.module';
 import { AdminManagementModule } from '../admin-management/admin-management.module';
 import { AuthModule } from '../auth/auth.module';
 import { NotificationModule } from '../notification/notification.module';
@@ -45,6 +46,7 @@ import { DoctorProfileCompletionService } from './service/doctor-profile-complet
  */
 @Module({
   imports: [
+    AccountModule,
     AuthModule,
     NotificationModule,
     StorageModule,

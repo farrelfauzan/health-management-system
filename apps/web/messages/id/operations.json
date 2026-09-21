@@ -837,7 +837,9 @@
           "ACCEPTED": "Diterima",
           "REVOKED": "Dicabut",
           "EXPIRED": "Kedaluwarsa"
-        }
+        },
+        "fullNameLabel": "Nama lengkap",
+        "fullNamePlaceholder": "Rani Putri, S.Farm., Apt."
       },
       "roles": {
         "title": "Peran",
@@ -958,7 +960,9 @@
         "cancel": "Batal",
         "pending": "Memproses…",
         "error": "Offboarding pengguna ini tidak dapat diperbarui. Silakan coba lagi."
-      }
+      },
+      "fullName": "Nama lengkap",
+      "fullNamePlaceholder": "Rani Putri, S.Farm., Apt."
     },
     "rooms": {
       "title": "Kamar & Tempat Tidur",

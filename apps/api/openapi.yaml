@@ -28381,6 +28381,141 @@ paths:
         - bearer: []
       summary: Sign a download of the written instruction
       tags: *a37
+  /api/v1/me/account:
+    get:
+      operationId: OwnAccountController_getOwnAccount_v1
+      parameters: []
+      responses:
+        "200":
+          description: "The signed-in account: its id, sign-in address and name. The name
+            is null for an account created before names were collected, which is
+            not an error."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      email:
+                        type: string
+                      fullName:
+                        type: string
+                    required:
+                      - id
+                      - email
+                      - fullName
+                required:
+                  - data
+                example:
+                  data:
+                    id: 7f3a9c62-1d54-4c8b-9f2e-6b0a1d3c5e7f
+                    email: apoteker@klinik.id
+                    fullName: Rani Putri, S.Farm., Apt.
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Get my account
+      tags: &a38
+        - Account
+    patch:
+      operationId: OwnAccountController_updateOwnAccount_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateOwnAccountDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  fullName: Rani Putri, S.Farm., Apt.
+      responses:
+        "200":
+          description: Sets the caller's own name. Roles, status, organisation unit and
+            the sign-in address are administrative and cannot be changed here.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      email:
+                        type: string
+                      fullName:
+                        type: string
+                    required:
+                      - id
+                      - email
+                      - fullName
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 7f3a9c62-1d54-4c8b-9f2e-6b0a1d3c5e7f
+                    email: apoteker@klinik.id
+                    fullName: Rani Putri, S.Farm., Apt.
+                  message: Name updated
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Correct the name on my account
+      tags: *a38
   /api/v1/users/invitations:
     get:
       operationId: UserInvitationAdminController_listInvitations_v1
@@ -28530,7 +28665,7 @@ paths:
       security:
         - bearer: []
       summary: List staff invitations
-      tags: &a38
+      tags: &a39
         - Admin Management
     post:
       operationId: UserInvitationAdminController_createInvitation_v1
@@ -28648,7 +28783,7 @@ paths:
       security:
         - bearer: []
       summary: Invite a staff user by email
-      tags: *a38
+      tags: *a39
   /api/v1/users/invitations/{id}/resend:
     post:
       operationId: UserInvitationAdminController_resendInvitation_v1
@@ -28757,7 +28892,7 @@ paths:
       security:
         - bearer: []
       summary: Resend a staff invitation
-      tags: *a38
+      tags: *a39
   /api/v1/users/invitations/{id}:
     delete:
       operationId: UserInvitationAdminController_revokeInvitation_v1
@@ -28866,7 +29001,7 @@ paths:
       security:
         - bearer: []
       summary: Revoke a staff invitation
-      tags: *a38
+      tags: *a39
   /api/v1/invitations/{token}:
     get:
       operationId: UserInvitationPublicController_previewInvitation_v1
@@ -28913,7 +29048,7 @@ paths:
                     code: NOT_FOUND
                     message: No invitation matches this link.
       summary: Validate an invitation link
-      tags: &a39
+      tags: &a40
         - Admin Management
   /api/v1/invitations/{token}/accept:
     post:
@@ -28979,7 +29114,7 @@ paths:
                     code: NOT_FOUND
                     message: No invitation matches this link.
       summary: Accept an invitation and set a password
-      tags: *a39
+      tags: *a40
   /api/v1/doctor-patient-assignments:
     post:
       operationId: DoctorPatientController_assignDoctorToPatient_v1
@@ -29074,7 +29209,7 @@ paths:
       security:
         - bearer: []
       summary: Assign a doctor to a patient
-      tags: &a40
+      tags: &a41
         - Doctor Patient
   /api/v1/doctor-patient-assignments/activity:
     get:
@@ -29221,7 +29356,7 @@ paths:
       security:
         - bearer: []
       summary: List doctor-patient assignment activity
-      tags: *a40
+      tags: *a41
   /api/v1/doctor-patient-assignments/{id}:
     delete:
       operationId: DoctorPatientController_unassignDoctorFromPatient_v1
@@ -29317,7 +29452,7 @@ paths:
       security:
         - bearer: []
       summary: Unassign a doctor from a patient
-      tags: *a40
+      tags: *a41
   /api/v1/registrations:
     get:
       operationId: RegistrationFlowController_listRegistrations_v1
@@ -29575,7 +29710,7 @@ paths:
       security:
         - bearer: []
       summary: List registrations
-      tags: &a41
+      tags: &a42
         - Registration Flow
     post:
       operationId: RegistrationFlowController_createRegistration_v1
@@ -29722,7 +29857,7 @@ paths:
       security:
         - bearer: []
       summary: Create a registration
-      tags: *a41
+      tags: *a42
   /api/v1/registrations/queue-board:
     get:
       operationId: RegistrationFlowController_getQueueBoard_v1
@@ -29938,7 +30073,7 @@ paths:
       security:
         - bearer: []
       summary: Get a day's queue board
-      tags: *a41
+      tags: *a42
   /api/v1/registrations/{id}:
     get:
       operationId: RegistrationFlowController_getRegistrationById_v1
@@ -30074,7 +30209,7 @@ paths:
       security:
         - bearer: []
       summary: Get a registration
-      tags: *a41
+      tags: *a42
     patch:
       operationId: RegistrationFlowController_updateRegistration_v1
       parameters:
@@ -30237,7 +30372,7 @@ paths:
       security:
         - bearer: []
       summary: Update a registration
-      tags: *a41
+      tags: *a42
   /api/v1/medications:
     get:
       operationId: MedicationController_listMedications_v1
@@ -30406,7 +30541,7 @@ paths:
       security:
         - bearer: []
       summary: List medications
-      tags: &a42
+      tags: &a43
         - Pharmacy Flow
     post:
       operationId: MedicationController_createMedication_v1
@@ -30531,7 +30666,7 @@ paths:
       security:
         - bearer: []
       summary: Create a medication
-      tags: *a42
+      tags: *a43
   /api/v1/medications/kfa-products:
     get:
       operationId: MedicationController_searchKfaProducts_v1
@@ -30622,7 +30757,7 @@ paths:
       security:
         - bearer: []
       summary: Search the KFA product dictionary
-      tags: *a42
+      tags: *a43
   /api/v1/medications/midwife-formulary/preview:
     get:
       operationId: MedicationController_previewMidwifeFormulary_v1
@@ -30822,7 +30957,7 @@ paths:
       security:
         - bearer: []
       summary: Preview the midwife formulary template against the catalog
-      tags: *a42
+      tags: *a43
   /api/v1/medications/midwife-formulary/apply:
     post:
       operationId: MedicationController_applyMidwifeFormulary_v1
@@ -30917,7 +31052,7 @@ paths:
       security:
         - bearer: []
       summary: Flag the chosen matched medications as midwife-prescribable
-      tags: *a42
+      tags: *a43
   /api/v1/medications/{id}:
     patch:
       operationId: MedicationController_updateMedication_v1
@@ -31051,7 +31186,7 @@ paths:
       security:
         - bearer: []
       summary: Update a medication
-      tags: *a42
+      tags: *a43
   /api/v1/prescriptions:
     get:
       operationId: PrescriptionController_listPrescriptions_v1
@@ -31272,7 +31407,7 @@ paths:
       security:
         - bearer: []
       summary: List prescriptions
-      tags: &a43
+      tags: &a44
         - Pharmacy Flow
     post:
       operationId: PrescriptionController_createPrescription_v1
@@ -31464,7 +31599,7 @@ paths:
       security:
         - bearer: []
       summary: Create a prescription
-      tags: *a43
+      tags: *a44
   /api/v1/prescriptions/{id}/document:
     post:
       operationId: PrescriptionController_printPrescriptionDocument_v1
@@ -31547,7 +31682,7 @@ paths:
       security:
         - bearer: []
       summary: Print the resep for a prescription
-      tags: *a43
+      tags: *a44
   /api/v1/dispenses:
     post:
       operationId: DispenseController_createDispense_v1
@@ -31821,7 +31956,7 @@ paths:
       security:
         - bearer: []
       summary: List stock receipts
-      tags: &a44
+      tags: &a45
         - Pharmacy Inventory
     post:
       operationId: InventoryController_createReceipt_v1
@@ -31944,7 +32079,7 @@ paths:
       security:
         - bearer: []
       summary: Record a stock receipt
-      tags: *a44
+      tags: *a45
   /api/v1/inventory/summary:
     get:
       operationId: InventoryController_getSummary_v1
@@ -32043,7 +32178,7 @@ paths:
       security:
         - bearer: []
       summary: Get inventory summary
-      tags: *a44
+      tags: *a45
   /api/v1/inventory/expiry-report:
     get:
       operationId: InventoryController_getExpiryReport_v1
@@ -32171,7 +32306,7 @@ paths:
       security:
         - bearer: []
       summary: Get medication expiry report
-      tags: *a44
+      tags: *a45
   /api/v1/organization-units/tree:
     get:
       operationId: OrganizationUnitController_getTree_v1
@@ -32331,7 +32466,7 @@ paths:
       security:
         - bearer: []
       summary: Read the organization structure tree
-      tags: &a45
+      tags: &a46
         - Organization Structure
   /api/v1/organization-units:
     post:
@@ -32447,7 +32582,7 @@ paths:
       security:
         - bearer: []
       summary: Create an organization unit
-      tags: *a45
+      tags: *a46
   /api/v1/organization-units/{id}:
     patch:
       operationId: OrganizationUnitController_updateUnit_v1
@@ -32566,7 +32701,7 @@ paths:
       security:
         - bearer: []
       summary: Rename or re-kind an organization unit
-      tags: *a45
+      tags: *a46
     delete:
       operationId: OrganizationUnitController_deleteUnit_v1
       parameters:
@@ -32621,7 +32756,7 @@ paths:
       security:
         - bearer: []
       summary: Permanently delete an organization unit
-      tags: *a45
+      tags: *a46
   /api/v1/organization-units/{id}/move:
     patch:
       operationId: OrganizationUnitController_moveUnit_v1
@@ -32741,7 +32876,7 @@ paths:
       security:
         - bearer: []
       summary: Move an organization unit to a new parent
-      tags: *a45
+      tags: *a46
   /api/v1/organization-units/{id}/archive:
     post:
       operationId: OrganizationUnitController_archiveUnit_v1
@@ -32798,7 +32933,7 @@ paths:
       security:
         - bearer: []
       summary: Archive an organization unit
-      tags: *a45
+      tags: *a46
   /api/v1/organization-units/{id}/members:
     get:
       operationId: OrganizationUnitMemberController_listMembers_v1
@@ -32924,7 +33059,7 @@ paths:
       security:
         - bearer: []
       summary: List the staff assigned to an organization unit
-      tags: &a46
+      tags: &a47
         - Organization Structure
   /api/v1/organization-units/{id}/members/{userId}:
     put:
@@ -33016,7 +33151,7 @@ paths:
       security:
         - bearer: []
       summary: Assign a person to an organization unit
-      tags: *a46
+      tags: *a47
     delete:
       operationId: OrganizationUnitMemberController_unassignMember_v1
       parameters:
@@ -33076,7 +33211,7 @@ paths:
       security:
         - bearer: []
       summary: Remove a person from an organization unit
-      tags: *a46
+      tags: *a47
   /api/v1/audit:
     get:
       operationId: AuditController_listAuditEvents_v1
@@ -33681,7 +33816,7 @@ paths:
       security:
         - bearer: []
       summary: List room classes
-      tags: &a47
+      tags: &a48
         - Room Management
     post:
       operationId: RoomClassController_createRoomClass_v1
@@ -33787,7 +33922,7 @@ paths:
       security:
         - bearer: []
       summary: Create a room class
-      tags: *a47
+      tags: *a48
   /api/v1/room-classes/{id}:
     get:
       operationId: RoomClassController_getRoomClass_v1
@@ -33879,7 +34014,7 @@ paths:
       security:
         - bearer: []
       summary: Get a room class
-      tags: *a47
+      tags: *a48
     patch:
       operationId: RoomClassController_updateRoomClass_v1
       parameters:
@@ -33998,7 +34133,7 @@ paths:
       security:
         - bearer: []
       summary: Update a room class
-      tags: *a47
+      tags: *a48
     delete:
       operationId: RoomClassController_retireRoomClass_v1
       parameters:
@@ -34052,7 +34187,7 @@ paths:
       security:
         - bearer: []
       summary: Retire a room class
-      tags: *a47
+      tags: *a48
   /api/v1/wards:
     get:
       operationId: WardController_listWards_v1
@@ -34175,7 +34310,7 @@ paths:
       security:
         - bearer: []
       summary: List wards
-      tags: &a48
+      tags: &a49
         - Room Management
     post:
       operationId: WardController_createWard_v1
@@ -34271,7 +34406,7 @@ paths:
       security:
         - bearer: []
       summary: Create a ward
-      tags: *a48
+      tags: *a49
   /api/v1/wards/{id}:
     get:
       operationId: WardController_getWard_v1
@@ -34355,7 +34490,7 @@ paths:
       security:
         - bearer: []
       summary: Get a ward
-      tags: *a48
+      tags: *a49
     patch:
       operationId: WardController_updateWard_v1
       parameters:
@@ -34464,7 +34599,7 @@ paths:
       security:
         - bearer: []
       summary: Update a ward
-      tags: *a48
+      tags: *a49
     delete:
       operationId: WardController_retireWard_v1
       parameters:
@@ -34519,7 +34654,7 @@ paths:
       security:
         - bearer: []
       summary: Retire a ward
-      tags: *a48
+      tags: *a49
   /api/v1/rooms:
     get:
       operationId: RoomController_listRooms_v1
@@ -34699,7 +34834,7 @@ paths:
       security:
         - bearer: []
       summary: List rooms
-      tags: &a49
+      tags: &a50
         - Room Management
     post:
       operationId: RoomController_createRoom_v1
@@ -34840,7 +34975,7 @@ paths:
       security:
         - bearer: []
       summary: Create a room
-      tags: *a49
+      tags: *a50
   /api/v1/rooms/{id}:
     get:
       operationId: RoomController_getRoom_v1
@@ -34968,7 +35103,7 @@ paths:
       security:
         - bearer: []
       summary: Get a room
-      tags: *a49
+      tags: *a50
     patch:
       operationId: RoomController_updateRoom_v1
       parameters:
@@ -35120,7 +35255,7 @@ paths:
       security:
         - bearer: []
       summary: Update a room
-      tags: *a49
+      tags: *a50
     delete:
       operationId: RoomController_retireRoom_v1
       parameters:
@@ -35174,7 +35309,7 @@ paths:
       security:
         - bearer: []
       summary: Retire a room
-      tags: *a49
+      tags: *a50
   /api/v1/beds:
     get:
       operationId: BedController_listBeds_v1
@@ -35366,7 +35501,7 @@ paths:
       security:
         - bearer: []
       summary: List beds
-      tags: &a50
+      tags: &a51
         - Room Management
     post:
       operationId: BedController_createBed_v1
@@ -35515,7 +35650,7 @@ paths:
       security:
         - bearer: []
       summary: Create a bed
-      tags: *a50
+      tags: *a51
   /api/v1/beds/{id}:
     get:
       operationId: BedController_getBed_v1
@@ -35653,7 +35788,7 @@ paths:
       security:
         - bearer: []
       summary: Get a bed
-      tags: *a50
+      tags: *a51
     patch:
       operationId: BedController_updateBed_v1
       parameters:
@@ -35817,7 +35952,7 @@ paths:
       security:
         - bearer: []
       summary: Update a bed
-      tags: *a50
+      tags: *a51
     delete:
       operationId: BedController_retireBed_v1
       parameters:
@@ -35871,7 +36006,7 @@ paths:
       security:
         - bearer: []
       summary: Retire a bed
-      tags: *a50
+      tags: *a51
   /api/v1/room-occupancy:
     get:
       operationId: RoomOccupancyController_getOccupancy_v1
@@ -36347,7 +36482,7 @@ paths:
       security:
         - bearer: []
       summary: List admissions
-      tags: &a51
+      tags: &a52
         - Admission Flow
     post:
       operationId: AdmissionFlowController_admitPatient_v1
@@ -36640,7 +36775,7 @@ paths:
       security:
         - bearer: []
       summary: Admit a patient
-      tags: *a51
+      tags: *a52
   /api/v1/admissions/{id}:
     get:
       operationId: AdmissionFlowController_getAdmission_v1
@@ -36916,7 +37051,7 @@ paths:
       security:
         - bearer: []
       summary: Get an admission
-      tags: *a51
+      tags: *a52
     patch:
       operationId: AdmissionFlowController_updateAdmission_v1
       parameters:
@@ -37216,7 +37351,7 @@ paths:
       security:
         - bearer: []
       summary: Correct an open admission
-      tags: *a51
+      tags: *a52
   /api/v1/admissions/{id}/transfer:
     post:
       operationId: AdmissionFlowController_transferAdmission_v1
@@ -37517,7 +37652,7 @@ paths:
       security:
         - bearer: []
       summary: Transfer an admitted patient to another bed
-      tags: *a51
+      tags: *a52
   /api/v1/admissions/{id}/discharge:
     post:
       operationId: AdmissionFlowController_dischargeAdmission_v1
@@ -37810,7 +37945,7 @@ paths:
       security:
         - bearer: []
       summary: Discharge an admitted patient
-      tags: *a51
+      tags: *a52
   /api/v1/admissions/{id}/cancel:
     post:
       operationId: AdmissionFlowController_cancelAdmission_v1
@@ -38112,7 +38247,7 @@ paths:
       security:
         - bearer: []
       summary: Cancel an admission opened in error
-      tags: *a51
+      tags: *a52
   /api/v1/patients/{patientId}/pregnancy-episodes:
     post:
       operationId: PregnancyEpisodeController_createEpisode_v1
@@ -38250,7 +38385,7 @@ paths:
       security:
         - bearer: []
       summary: Open a pregnancy episode
-      tags: &a52
+      tags: &a53
         - Maternal Care
     get:
       operationId: PregnancyEpisodeController_listEpisodes_v1
@@ -38367,7 +38502,7 @@ paths:
       security:
         - bearer: []
       summary: List a patient's pregnancy episodes
-      tags: *a52
+      tags: *a53
   /api/v1/patients/{patientId}/pregnancy-episodes/active:
     get:
       operationId: PregnancyEpisodeController_getActiveEpisode_v1
@@ -38637,7 +38772,7 @@ paths:
       security:
         - bearer: []
       summary: Get the active pregnancy episode
-      tags: *a52
+      tags: *a53
   /api/v1/pregnancy-episodes/{id}:
     patch:
       operationId: PregnancyEpisodeController_updateEpisode_v1
@@ -38773,7 +38908,7 @@ paths:
       security:
         - bearer: []
       summary: Edit a pregnancy episode
-      tags: *a52
+      tags: *a53
   /api/v1/pregnancy-episodes/{id}/end:
     post:
       operationId: PregnancyEpisodeController_endEpisode_v1
@@ -38910,7 +39045,7 @@ paths:
       security:
         - bearer: []
       summary: End a pregnancy episode
-      tags: *a52
+      tags: *a53
   /api/v1/pregnancy-episodes/{id}/external-doctor-visits:
     post:
       operationId: PregnancyEpisodeController_recordExternalDoctorVisit_v1
@@ -38995,7 +39130,7 @@ paths:
       security:
         - bearer: []
       summary: Record a doctor visit made elsewhere
-      tags: *a52
+      tags: *a53
   /api/v1/encounters/{encounterId}/antenatal-visit:
     get:
       operationId: PregnancyEpisodeController_getEncounterVisit_v1
@@ -39082,7 +39217,7 @@ paths:
       security:
         - bearer: []
       summary: Read this encounter's antenatal visit
-      tags: *a52
+      tags: *a53
     post:
       operationId: PregnancyEpisodeController_linkEncounterVisit_v1
       parameters:
@@ -39173,7 +39308,7 @@ paths:
       security:
         - bearer: []
       summary: Count this encounter as an antenatal visit
-      tags: *a52
+      tags: *a53
   /api/v1/encounters/{encounterId}/antenatal-examination:
     get:
       operationId: AntenatalExaminationController_getExamination_v1
@@ -39338,7 +39473,7 @@ paths:
       security:
         - bearer: []
       summary: Read this visit's 10T examination
-      tags: &a53
+      tags: &a54
         - Maternal Care
     put:
       operationId: AntenatalExaminationController_upsertExamination_v1
@@ -39514,7 +39649,7 @@ paths:
       security:
         - bearer: []
       summary: Record this visit's 10T examination
-      tags: *a53
+      tags: *a54
   /api/v1/encounters/{encounterId}/antenatal-referral-dismissals:
     post:
       operationId: AntenatalExaminationController_dismissReferralRule_v1
@@ -39685,7 +39820,7 @@ paths:
       security:
         - bearer: []
       summary: Set a referral prompt aside
-      tags: *a53
+      tags: *a54
   /api/v1/encounters/{encounterId}/antenatal-referral-letter:
     post:
       operationId: AntenatalExaminationController_issueReferralLetter_v1
@@ -39770,7 +39905,7 @@ paths:
       security:
         - bearer: []
       summary: Issue the surat rujukan
-      tags: *a53
+      tags: *a54
   /api/v1/pregnancy-episodes/{id}/pregnancy-certificate:
     post:
       operationId: AntenatalExaminationController_issuePregnancyCertificate_v1
@@ -39848,7 +39983,7 @@ paths:
       security:
         - bearer: []
       summary: Issue the surat keterangan hamil
-      tags: *a53
+      tags: *a54
   /api/v1/pregnancy-episodes/{pregnancyEpisodeId}/delivery:
     get:
       operationId: DeliveryRecordController_getDelivery_v1
@@ -39985,7 +40120,7 @@ paths:
       security:
         - bearer: []
       summary: Read this pregnancy's birth record
-      tags: &a54
+      tags: &a55
         - Maternal Care
     post:
       operationId: DeliveryRecordController_recordDelivery_v1
@@ -40171,7 +40306,7 @@ paths:
       security:
         - bearer: []
       summary: Record the birth
-      tags: *a54
+      tags: *a55
   /api/v1/deliveries/{deliveryRecordId}:
     patch:
       operationId: DeliveryRecordController_updateDelivery_v1
@@ -40342,7 +40477,7 @@ paths:
       security:
         - bearer: []
       summary: Correct a recorded birth
-      tags: *a54
+      tags: *a55
   /api/v1/deliveries/{deliveryRecordId}/newborns:
     post:
       operationId: DeliveryRecordController_recordNewborn_v1
@@ -40508,7 +40643,7 @@ paths:
       security:
         - bearer: []
       summary: Record a baby of this birth
-      tags: *a54
+      tags: *a55
   /api/v1/newborn-care-records/{newbornCareRecordId}:
     patch:
       operationId: DeliveryRecordController_updateNewborn_v1
@@ -40666,7 +40801,7 @@ paths:
       security:
         - bearer: []
       summary: Correct a baby's essentials
-      tags: *a54
+      tags: *a55
   /api/v1/newborn-care-records/{newbornCareRecordId}/birth-certificate:
     post:
       operationId: DeliveryRecordController_issueBirthCertificate_v1
@@ -40746,7 +40881,7 @@ paths:
       security:
         - bearer: []
       summary: Issue the surat keterangan lahir
-      tags: *a54
+      tags: *a55
   /api/v1/encounters:
     get:
       operationId: EncounterController_listEncounters_v1
@@ -40969,7 +41104,7 @@ paths:
       security:
         - bearer: []
       summary: List clinical encounters
-      tags: &a55
+      tags: &a56
         - Encounters
     post:
       operationId: EncounterController_openEncounter_v1
@@ -41140,7 +41275,7 @@ paths:
       security:
         - bearer: []
       summary: Open a clinical encounter
-      tags: *a55
+      tags: *a56
   /api/v1/encounters/{id}:
     get:
       operationId: EncounterController_getEncounterById_v1
@@ -41553,7 +41688,7 @@ paths:
       security:
         - bearer: []
       summary: Get a clinical encounter
-      tags: *a55
+      tags: *a56
     patch:
       operationId: EncounterController_updateEncounterSoap_v1
       parameters:
@@ -41740,7 +41875,7 @@ paths:
       security:
         - bearer: []
       summary: Write the SOAP note
-      tags: *a55
+      tags: *a56
   /api/v1/encounters/{id}/close:
     post:
       operationId: EncounterController_closeEncounter_v1
@@ -41912,7 +42047,7 @@ paths:
       security:
         - bearer: []
       summary: Close a clinical encounter
-      tags: *a55
+      tags: *a56
   /api/v1/encounters/{id}/cancel:
     post:
       operationId: EncounterController_cancelEncounter_v1
@@ -42081,7 +42216,7 @@ paths:
       security:
         - bearer: []
       summary: Cancel a clinical encounter
-      tags: *a55
+      tags: *a56
   /api/v1/encounters/{encounterId}/vital-signs:
     post:
       operationId: EncounterClinicalDataController_recordVitalSigns_v1
@@ -42230,7 +42365,7 @@ paths:
       security:
         - bearer: []
       summary: Record a vital-signs measurement
-      tags: &a56
+      tags: &a57
         - Encounters
   /api/v1/encounters/{encounterId}/diagnoses:
     post:
@@ -42354,7 +42489,7 @@ paths:
       security:
         - bearer: []
       summary: Code a diagnosis
-      tags: *a56
+      tags: *a57
   /api/v1/encounters/{encounterId}/diagnoses/{diagnosisId}:
     delete:
       operationId: EncounterClinicalDataController_removeDiagnosis_v1
@@ -42414,7 +42549,7 @@ paths:
       security:
         - bearer: []
       summary: Retract a diagnosis
-      tags: *a56
+      tags: *a57
   /api/v1/encounters/{encounterId}/procedures:
     post:
       operationId: EncounterClinicalDataController_addProcedure_v1
@@ -42532,7 +42667,7 @@ paths:
       security:
         - bearer: []
       summary: Code a procedure
-      tags: *a56
+      tags: *a57
   /api/v1/encounters/{encounterId}/procedures/{procedureId}:
     delete:
       operationId: EncounterClinicalDataController_removeProcedure_v1
@@ -42591,7 +42726,7 @@ paths:
       security:
         - bearer: []
       summary: Retract a procedure
-      tags: *a56
+      tags: *a57
   /api/v1/encounters/{encounterId}/immunizations:
     post:
       operationId: EncounterClinicalDataController_addImmunization_v1
@@ -42752,7 +42887,7 @@ paths:
       security:
         - bearer: []
       summary: Record a vaccination
-      tags: *a56
+      tags: *a57
   /api/v1/encounters/{encounterId}/immunizations/{immunizationId}:
     delete:
       operationId: EncounterClinicalDataController_removeImmunization_v1
@@ -42811,7 +42946,7 @@ paths:
       security:
         - bearer: []
       summary: Retract a vaccination
-      tags: *a56
+      tags: *a57
   /api/v1/encounters/{encounterId}/bpjs-referral:
     put:
       operationId: EncounterClinicalDataController_saveBpjsReferral_v1
@@ -42935,7 +43070,7 @@ paths:
       security:
         - bearer: []
       summary: Record or replace the encounter’s BPJS rujukan
-      tags: *a56
+      tags: *a57
     get:
       operationId: EncounterClinicalDataController_getBpjsReferral_v1
       parameters:
@@ -43026,7 +43161,7 @@ paths:
       security:
         - bearer: []
       summary: Read the encounter’s recorded BPJS rujukan
-      tags: *a56
+      tags: *a57
     delete:
       operationId: EncounterClinicalDataController_removeBpjsReferral_v1
       parameters:
@@ -43080,7 +43215,7 @@ paths:
       security:
         - bearer: []
       summary: Retract the encounter’s BPJS rujukan
-      tags: *a56
+      tags: *a57
   /api/v1/patients/{patientId}/immunizations:
     get:
       operationId: PatientImmunizationController_listPatientImmunizations_v1
@@ -43352,7 +43487,7 @@ paths:
       security:
         - bearer: []
       summary: List laboratory tests
-      tags: &a57
+      tags: &a58
         - Laboratory Catalog
     post:
       operationId: LabTestController_createLabTest_v1
@@ -43519,7 +43654,7 @@ paths:
       security:
         - bearer: []
       summary: Create a laboratory test
-      tags: *a57
+      tags: *a58
   /api/v1/lab-tests/{id}:
     patch:
       operationId: LabTestController_updateLabTest_v1
@@ -43694,7 +43829,7 @@ paths:
       security:
         - bearer: []
       summary: Update a laboratory test
-      tags: *a57
+      tags: *a58
   /api/v1/lab-tests/{id}/reference-ranges:
     put:
       operationId: LabTestController_replaceReferenceRanges_v1
@@ -43879,7 +44014,7 @@ paths:
       security:
         - bearer: []
       summary: Replace a test’s reference ranges
-      tags: *a57
+      tags: *a58
   /api/v1/lab-panels:
     get:
       operationId: LabPanelController_listLabPanels_v1
@@ -43999,7 +44134,7 @@ paths:
       security:
         - bearer: []
       summary: List laboratory panels
-      tags: &a58
+      tags: &a59
         - Laboratory Catalog
     post:
       operationId: LabPanelController_createLabPanel_v1
@@ -44142,7 +44277,7 @@ paths:
       security:
         - bearer: []
       summary: Create a laboratory panel
-      tags: *a58
+      tags: *a59
   /api/v1/lab-panels/{id}:
     patch:
       operationId: LabPanelController_updateLabPanel_v1
@@ -44287,7 +44422,7 @@ paths:
       security:
         - bearer: []
       summary: Update a laboratory panel
-      tags: *a58
+      tags: *a59
   /api/v1/encounters/{encounterId}/lab-orders:
     post:
       operationId: EncounterLabOrderController_createLabOrder_v1
@@ -44483,7 +44618,7 @@ paths:
       security:
         - bearer: []
       summary: Order laboratory tests on an encounter
-      tags: &a59
+      tags: &a60
         - Laboratory Orders
     get:
       operationId: EncounterLabOrderController_listEncounterLabOrders_v1
@@ -44648,7 +44783,7 @@ paths:
       security:
         - bearer: []
       summary: List an encounter’s laboratory orders
-      tags: *a59
+      tags: *a60
   /api/v1/lab-orders/intake:
     post:
       operationId: LabOrderController_createWalkInLabOrder_v1
@@ -44811,7 +44946,7 @@ paths:
       security:
         - bearer: []
       summary: Register a walk-in or external lab request
-      tags: &a60
+      tags: &a61
         - Laboratory Orders
   /api/v1/lab-orders:
     get:
@@ -44995,7 +45130,7 @@ paths:
       security:
         - bearer: []
       summary: List laboratory orders
-      tags: *a60
+      tags: *a61
   /api/v1/lab-orders/{id}:
     get:
       operationId: LabOrderController_getLabOrderById_v1
@@ -45156,7 +45291,7 @@ paths:
       security:
         - bearer: []
       summary: Read one laboratory order
-      tags: *a60
+      tags: *a61
   /api/v1/lab-orders/{id}/cancel:
     post:
       operationId: LabOrderController_cancelLabOrder_v1
@@ -45356,7 +45491,7 @@ paths:
       security:
         - bearer: []
       summary: Cancel a laboratory order
-      tags: *a60
+      tags: *a61
   /api/v1/lab-orders/{id}/disposition:
     patch:
       operationId: LabOrderController_updateDisposition_v1
@@ -45553,7 +45688,7 @@ paths:
       security:
         - bearer: []
       summary: Change where a laboratory order is filled and who pays
-      tags: *a60
+      tags: *a61
   /api/v1/lab-orders/{id}/request-document:
     post:
       operationId: LabOrderController_printRequestLetter_v1
@@ -45636,7 +45771,7 @@ paths:
       security:
         - bearer: []
       summary: Print the surat pengantar for a laboratory order
-      tags: *a60
+      tags: *a61
   /api/v1/lab-orders/{id}/collect:
     post:
       operationId: LabSpecimenController_collectLabSpecimens_v1
@@ -45752,7 +45887,7 @@ paths:
       security:
         - bearer: []
       summary: Collect the specimens an order needs
-      tags: &a61
+      tags: &a62
         - Laboratory Specimens
   /api/v1/lab-specimens/{id}/receive:
     post:
@@ -45842,7 +45977,7 @@ paths:
       security:
         - bearer: []
       summary: Mark a specimen as arrived in the lab
-      tags: *a61
+      tags: *a62
   /api/v1/lab-specimens/{id}/reject:
     post:
       operationId: LabSpecimenController_rejectLabSpecimen_v1
@@ -45954,7 +46089,7 @@ paths:
       security:
         - bearer: []
       summary: Reject a specimen and ask for a fresh draw
-      tags: *a61
+      tags: *a62
   /api/v1/lab-specimens/{id}/label:
     get:
       operationId: LabSpecimenController_getSpecimenLabel_v1
@@ -46057,7 +46192,7 @@ paths:
       security:
         - bearer: []
       summary: Read a specimen label payload
-      tags: *a61
+      tags: *a62
   /api/v1/lab-worklist:
     get:
       operationId: LabWorklistController_listWorklist_v1
@@ -46409,7 +46544,7 @@ paths:
       security:
         - bearer: []
       summary: Read the values entered on a laboratory order
-      tags: &a62
+      tags: &a63
         - Laboratory Results
     put:
       operationId: LabResultController_enterLabResults_v1
@@ -46669,7 +46804,7 @@ paths:
       security:
         - bearer: []
       summary: Enter results for a laboratory order
-      tags: *a62
+      tags: *a63
   /api/v1/lab-orders/{id}/release:
     post:
       operationId: LabResultController_releaseLabOrder_v1
@@ -46938,7 +47073,7 @@ paths:
       security:
         - bearer: []
       summary: Release a laboratory order
-      tags: *a62
+      tags: *a63
   /api/v1/lab-results/{id}/amend:
     post:
       operationId: LabResultController_amendLabResult_v1
@@ -47096,7 +47231,7 @@ paths:
       security:
         - bearer: []
       summary: Amend a released laboratory result
-      tags: *a62
+      tags: *a63
   /api/v1/patients/{id}/lab-results:
     get:
       operationId: PatientLabResultController_listPatientLabResults_v1
@@ -47335,7 +47470,7 @@ paths:
       security:
         - bearer: []
       summary: Read the laboratory verification settings
-      tags: &a63
+      tags: &a64
         - Laboratory Settings
     patch:
       operationId: LaboratorySettingsController_updateLaboratorySettings_v1
@@ -47421,7 +47556,7 @@ paths:
       security:
         - bearer: []
       summary: Change the laboratory verification settings
-      tags: *a63
+      tags: *a64
   /api/v1/lab-orders/{id}/report:
     get:
       operationId: LabReportController_downloadReport_v1
@@ -47510,7 +47645,7 @@ paths:
       security:
         - bearer: []
       summary: Download the current laboratory report
-      tags: &a64
+      tags: &a65
         - Laboratory Orders
   /api/v1/lab-orders/{id}/reports:
     get:
@@ -47710,7 +47845,7 @@ paths:
       security:
         - bearer: []
       summary: List the versions of a laboratory report
-      tags: *a64
+      tags: *a65
   /api/v1/lab-orders/{id}/reports/{reportId}/retry:
     post:
       operationId: LabReportController_retryReport_v1
@@ -47919,7 +48054,7 @@ paths:
       security:
         - bearer: []
       summary: Render a laboratory report version again
-      tags: *a64
+      tags: *a65
   /api/v1/admin/integrations/notion/status:
     get:
       operationId: NotionConnectorController_getStatus_v1
@@ -47985,7 +48120,7 @@ paths:
       security:
         - bearer: []
       summary: Read the Notion bug-report connector status
-      tags: &a65
+      tags: &a66
         - Notion Connector
   /api/v1/admin/integrations/notion/test-connection:
     post:
@@ -48066,7 +48201,7 @@ paths:
       security:
         - bearer: []
       summary: Test the Notion connection and check the Bug Board schema
-      tags: *a65
+      tags: *a66
   /api/v1/bug-reports:
     post:
       operationId: BugReportController_submitReport_v1
@@ -48244,7 +48379,7 @@ paths:
       security:
         - bearer: []
       summary: Read the clinic's tax profile
-      tags: &a66
+      tags: &a67
         - Tax Settings
     patch:
       operationId: TaxSettingsController_updateTaxSettings_v1
@@ -48354,7 +48489,7 @@ paths:
       security:
         - bearer: []
       summary: Change the clinic's tax profile
-      tags: *a66
+      tags: *a67
   /api/v1/tax/codes:
     get:
       operationId: TaxCodeController_listTaxCodes_v1
@@ -48501,7 +48636,7 @@ paths:
       security:
         - bearer: []
       summary: List tax codes with their rates
-      tags: &a67
+      tags: &a68
         - Tax Codes
     post:
       operationId: TaxCodeController_createTaxCode_v1
@@ -48679,7 +48814,7 @@ paths:
       security:
         - bearer: []
       summary: Create a tax code
-      tags: *a67
+      tags: *a68
   /api/v1/tax/codes/{id}:
     patch:
       operationId: TaxCodeController_updateTaxCode_v1
@@ -48856,7 +48991,7 @@ paths:
       security:
         - bearer: []
       summary: Change a tax code
-      tags: *a67
+      tags: *a68
   /api/v1/tax/codes/{id}/rates:
     post:
       operationId: TaxCodeController_addTaxCodeRate_v1
@@ -49034,7 +49169,7 @@ paths:
       security:
         - bearer: []
       summary: Add a rate to a tax code
-      tags: *a67
+      tags: *a68
   /api/v1/tax/category-defaults:
     get:
       operationId: TaxCategoryDefaultController_listCategoryDefaults_v1
@@ -49094,7 +49229,7 @@ paths:
       security:
         - bearer: []
       summary: List the tax code defaults
-      tags: &a68
+      tags: &a69
         - Tax Codes
     put:
       operationId: TaxCategoryDefaultController_updateCategoryDefaults_v1
@@ -49181,7 +49316,7 @@ paths:
       security:
         - bearer: []
       summary: Set tax code defaults
-      tags: *a68
+      tags: *a69
   /api/v1/tax/assignments:
     get:
       operationId: TaxAssignmentController_listAssignments_v1
@@ -49347,7 +49482,7 @@ paths:
       security:
         - bearer: []
       summary: List tariffs and medications with their tax code
-      tags: &a69
+      tags: &a70
         - Tax Codes
   /api/v1/tax/assignments/bulk:
     post:
@@ -49425,7 +49560,7 @@ paths:
       security:
         - bearer: []
       summary: Assign a tax code to many tariffs and medications
-      tags: *a69
+      tags: *a70
   /api/v1/tax/price-breakdowns:
     get:
       operationId: TaxPriceBreakdownController_listPriceBreakdowns_v1
@@ -49617,7 +49752,7 @@ paths:
       security:
         - bearer: []
       summary: List a year's monthly tax reports
-      tags: &a70
+      tags: &a71
         - Tax Reports
     post:
       operationId: TaxReportController_createReport_v1
@@ -49808,7 +49943,7 @@ paths:
       security:
         - bearer: []
       summary: Create the draft for a month
-      tags: *a70
+      tags: *a71
   /api/v1/tax/reports/{id}:
     get:
       operationId: TaxReportController_getReport_v1
@@ -49979,7 +50114,7 @@ paths:
       security:
         - bearer: []
       summary: Read one monthly tax report
-      tags: *a70
+      tags: *a71
   /api/v1/tax/reports/{id}/recompute:
     post:
       operationId: TaxReportController_recomputeReport_v1
@@ -50151,7 +50286,7 @@ paths:
       security:
         - bearer: []
       summary: Recompute a draft from the books
-      tags: *a70
+      tags: *a71
   /api/v1/tax/reports/{id}/finalize:
     post:
       operationId: TaxReportController_finalizeReport_v1
@@ -50326,7 +50461,7 @@ paths:
       security:
         - bearer: []
       summary: Finalize a monthly tax report
-      tags: *a70
+      tags: *a71
   /api/v1/tax/reports/{id}/export:
     get:
       operationId: TaxReportController_exportReport_v1
@@ -50342,7 +50477,7 @@ paths:
             and due dates, then one row per payment or invoice. Totals equal the
             report to the rupiah. Audited as an export."
       summary: Export one monthly tax report as CSV
-      tags: *a70
+      tags: *a71
   /api/v1/tax/reports/{id}/pdf:
     post:
       description: P27-T12. A DRAFT is rendered on every request with a DRAFT
@@ -50366,7 +50501,7 @@ paths:
                 type: string
                 format: binary
       summary: Download one monthly tax report as PDF
-      tags: *a70
+      tags: *a71
   /api/v1/tax/reports/{id}/pdf/download-url:
     get:
       operationId: TaxReportController_createPdfDownloadUrl_v1
@@ -50427,7 +50562,7 @@ paths:
       security:
         - bearer: []
       summary: A signed link to a finalized report's PDF
-      tags: *a70
+      tags: *a71
   /api/v1/satusehat/patients/{patientId}/link:
     post:
       operationId: SatusehatLinkController_linkPatient_v1
@@ -50497,7 +50632,7 @@ paths:
       security:
         - bearer: []
       summary: Link a patient to their SATUSEHAT IHS number
-      tags: &a71
+      tags: &a72
         - SATUSEHAT
   /api/v1/satusehat/doctors/{doctorId}/link:
     post:
@@ -50568,7 +50703,7 @@ paths:
       security:
         - bearer: []
       summary: Link a doctor to their SATUSEHAT IHS practitioner number
-      tags: *a71
+      tags: *a72
   /api/v1/satusehat/doctors/{doctorId}/link-by-ihs/preview:
     post:
       operationId: SatusehatLinkController_previewDoctorIhsLink_v1
@@ -50676,7 +50811,7 @@ paths:
       security:
         - bearer: []
       summary: Preview linking a doctor to a hand-typed SATUSEHAT IHS number
-      tags: *a71
+      tags: *a72
   /api/v1/satusehat/doctors/{doctorId}/link-by-ihs:
     post:
       operationId: SatusehatLinkController_linkDoctorByIhs_v1
@@ -50771,7 +50906,7 @@ paths:
       security:
         - bearer: []
       summary: Link a doctor to a hand-typed SATUSEHAT IHS number after confirmation
-      tags: *a71
+      tags: *a72
   /api/v1/satusehat/environment:
     get:
       operationId: SatusehatSubmissionController_getEnvironment_v1
@@ -50830,7 +50965,7 @@ paths:
       security:
         - bearer: []
       summary: Which SATUSEHAT environment this deployment reports to
-      tags: &a72
+      tags: &a73
         - SATUSEHAT
   /api/v1/satusehat/submissions:
     get:
@@ -51020,7 +51155,7 @@ paths:
       security:
         - bearer: []
       summary: List SATUSEHAT submission outbox entries
-      tags: *a72
+      tags: *a73
   /api/v1/satusehat/submissions/{id}:
     get:
       operationId: SatusehatSubmissionController_getSubmissionDetail_v1
@@ -51192,7 +51327,7 @@ paths:
       security:
         - bearer: []
       summary: One SATUSEHAT submission and what it sent
-      tags: *a72
+      tags: *a73
   /api/v1/satusehat/submissions/{id}/check:
     post:
       operationId: SatusehatSubmissionController_checkSubmission_v1
@@ -51296,7 +51431,7 @@ paths:
       security:
         - bearer: []
       summary: Check with SATUSEHAT whether it still holds what we sent
-      tags: *a72
+      tags: *a73
   /api/v1/satusehat/submissions/{id}/retry:
     post:
       operationId: SatusehatSubmissionController_retrySubmission_v1
@@ -51421,7 +51556,7 @@ paths:
       security:
         - bearer: []
       summary: Retry a failed SATUSEHAT submission
-      tags: *a72
+      tags: *a73
   /api/v1/satusehat/encounters/{encounterId}/record-comparison:
     get:
       operationId: SatusehatRecordController_compareEncounterRecord_v1
@@ -51695,7 +51830,7 @@ paths:
       security:
         - bearer: []
       summary: The clinic's SATUSEHAT Location tree
-      tags: &a73
+      tags: &a74
         - SATUSEHAT
   /api/v1/satusehat/locations/register:
     post:
@@ -51810,7 +51945,7 @@ paths:
       security:
         - bearer: []
       summary: Register clinic rows as SATUSEHAT Locations, or push their changes
-      tags: *a73
+      tags: *a74
   /api/v1/bpjs/config:
     get:
       operationId: BpjsPcareConfigController_getConfig_v1
@@ -51924,7 +52059,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS PCare bridging configuration
-      tags: &a74
+      tags: &a75
         - BPJS PCare
     put:
       operationId: BpjsPcareConfigController_upsertConfig_v1
@@ -52062,7 +52197,7 @@ paths:
       security:
         - bearer: []
       summary: Create or replace the BPJS PCare bridging configuration
-      tags: *a74
+      tags: *a75
     delete:
       operationId: BpjsPcareConfigController_deleteConfig_v1
       parameters: []
@@ -52121,7 +52256,7 @@ paths:
       security:
         - bearer: []
       summary: Delete the BPJS PCare bridging configuration
-      tags: *a74
+      tags: *a75
   /api/v1/bpjs/config/test-connection:
     post:
       operationId: BpjsPcareConfigController_testConnection_v1
@@ -52187,7 +52322,7 @@ paths:
       security:
         - bearer: []
       summary: Test the stored BPJS PCare credentials
-      tags: *a74
+      tags: *a75
   /api/v1/bpjs/reference/sync:
     post:
       operationId: BpjsReferenceController_syncCatalogs_v1
@@ -52275,7 +52410,7 @@ paths:
       security:
         - bearer: []
       summary: Sync the enumerable BPJS PCare reference catalogs
-      tags: &a75
+      tags: &a76
         - BPJS PCare
   /api/v1/bpjs/reference/status:
     get:
@@ -52342,7 +52477,7 @@ paths:
       security:
         - bearer: []
       summary: Read per-catalog BPJS reference sync status
-      tags: *a75
+      tags: *a76
   /api/v1/bpjs/reference/{catalog}:
     get:
       operationId: BpjsReferenceController_searchCatalog_v1
@@ -52436,7 +52571,7 @@ paths:
       security:
         - bearer: []
       summary: Search a synced BPJS reference catalog locally
-      tags: *a75
+      tags: *a76
   /api/v1/bpjs/reference/{catalog}/search:
     post:
       operationId: BpjsReferenceController_searchCatalogRemote_v1
@@ -52542,7 +52677,7 @@ paths:
       security:
         - bearer: []
       summary: Search a keyword-only BPJS catalog live and cache the results
-      tags: *a75
+      tags: *a76
   /api/v1/bpjs/mappings:
     get:
       operationId: BpjsMappingController_getOverview_v1
@@ -52630,7 +52765,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS mapping overview
-      tags: &a76
+      tags: &a77
         - BPJS PCare
   /api/v1/bpjs/mappings/doctors/{doctorId}:
     put:
@@ -52724,7 +52859,7 @@ paths:
       security:
         - bearer: []
       summary: Set or clear a doctor’s BPJS kdDokter mapping
-      tags: *a76
+      tags: *a77
   /api/v1/bpjs/mappings/specialties/{specialtyId}:
     put:
       operationId: BpjsMappingController_setSpecialtyMapping_v1
@@ -52813,7 +52948,7 @@ paths:
       security:
         - bearer: []
       summary: Set or clear a specialty’s BPJS kdPoli mapping
-      tags: *a76
+      tags: *a77
   /api/v1/bpjs/mappings/medications/{medicationId}:
     put:
       operationId: BpjsMappingController_setMedicationMapping_v1
@@ -52907,7 +53042,7 @@ paths:
       security:
         - bearer: []
       summary: Link or unlink a medication’s DPHO code
-      tags: *a76
+      tags: *a77
   /api/v1/bpjs/eligibility/patients/{patientId}/check:
     post:
       operationId: BpjsEligibilityController_checkEligibility_v1
@@ -53207,7 +53342,7 @@ paths:
       security:
         - bearer: []
       summary: List BPJS PCare submission outbox entries
-      tags: &a77
+      tags: &a78
         - BPJS PCare
   /api/v1/bpjs/submissions/{id}/retry:
     post:
@@ -53316,7 +53451,7 @@ paths:
       security:
         - bearer: []
       summary: Retry a failed BPJS PCare submission
-      tags: *a77
+      tags: *a78
   /api/v1/bpjs/reports/monthly:
     get:
       operationId: BpjsReportController_getMonthlyReport_v1
@@ -53563,7 +53698,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS Antrean Online bridging configuration
-      tags: &a78
+      tags: &a79
         - BPJS Antrean
     put:
       operationId: BpjsAntreanConfigController_upsertConfig_v1
@@ -53704,7 +53839,7 @@ paths:
       security:
         - bearer: []
       summary: Create or replace the BPJS Antrean Online bridging configuration
-      tags: *a78
+      tags: *a79
     delete:
       operationId: BpjsAntreanConfigController_deleteConfig_v1
       parameters: []
@@ -53763,7 +53898,7 @@ paths:
       security:
         - bearer: []
       summary: Delete the BPJS Antrean Online bridging configuration
-      tags: *a78
+      tags: *a79
   /api/v1/bpjs/antrean/config/test-connection:
     post:
       operationId: BpjsAntreanConfigController_testConnection_v1
@@ -53829,7 +53964,7 @@ paths:
       security:
         - bearer: []
       summary: Test the stored BPJS Antrean credentials
-      tags: *a78
+      tags: *a79
   /api/v1/bpjs/antrean/inbound-readiness:
     get:
       operationId: BpjsAntreanConfigController_getInboundReadiness_v1
@@ -53899,7 +54034,7 @@ paths:
       security:
         - bearer: []
       summary: Report whether the inbound Antrean web services can serve BPJS
-      tags: *a78
+      tags: *a79
   /api/v1/bpjs/antrean/hfis-reconciliation:
     get:
       operationId: BpjsAntreanConfigController_getHfisReconciliation_v1
@@ -54001,7 +54136,7 @@ paths:
       security:
         - bearer: []
       summary: Compare HFIS against HMS and report the disagreements
-      tags: *a78
+      tags: *a79
   /api/v1/admin/features:
     get:
       operationId: FeatureAdminController_getEntitlements_v1
@@ -54080,7 +54215,7 @@ paths:
       security:
         - bearer: []
       summary: List every feature and whether this client has it
-      tags: &a79
+      tags: &a80
         - Feature Entitlements
   /api/v1/admin/features/{key}:
     put:
@@ -54197,7 +54332,7 @@ paths:
       security:
         - bearer: []
       summary: Switch a feature on or off for this client
-      tags: *a79
+      tags: *a80
   /api/v1/features/availability:
     get:
       operationId: FeatureAvailabilityController_getAvailability_v1
@@ -54320,7 +54455,7 @@ paths:
       security:
         - bearer: []
       summary: List active roles
-      tags: &a80
+      tags: &a81
         - RBAC
     post:
       operationId: RbacController_createRole_v1
@@ -54407,7 +54542,7 @@ paths:
       security:
         - bearer: []
       summary: Create a custom role
-      tags: *a80
+      tags: *a81
   /api/v1/rbac/permissions:
     get:
       operationId: RbacController_getPermissionCatalog_v1
@@ -54487,7 +54622,7 @@ paths:
       security:
         - bearer: []
       summary: List the permission catalog
-      tags: *a80
+      tags: *a81
   /api/v1/rbac/roles/{id}:
     get:
       operationId: RbacController_getRoleById_v1
@@ -54606,7 +54741,7 @@ paths:
       security:
         - bearer: []
       summary: Get a role with its permissions and member count
-      tags: *a80
+      tags: *a81
     patch:
       operationId: RbacController_updateRole_v1
       parameters:
@@ -54705,7 +54840,7 @@ paths:
       security:
         - bearer: []
       summary: Update a role name or description
-      tags: *a80
+      tags: *a81
     delete:
       operationId: RbacController_deleteRole_v1
       parameters:
@@ -54781,7 +54916,7 @@ paths:
       security:
         - bearer: []
       summary: Soft-delete a role
-      tags: *a80
+      tags: *a81
   /api/v1/rbac/roles/{id}/permissions:
     put:
       operationId: RbacController_setRolePermissions_v1
@@ -54927,7 +55062,7 @@ paths:
       security:
         - bearer: []
       summary: Replace the permission set attached to a role
-      tags: *a80
+      tags: *a81
   /api/v1/rbac/assign-role:
     post:
       operationId: RbacController_assignRole_v1
@@ -55019,7 +55154,7 @@ paths:
       security:
         - bearer: []
       summary: Assign a role to a user
-      tags: *a80
+      tags: *a81
   /api/v1/rbac/unassign-role:
     post:
       operationId: RbacController_unassignRole_v1
@@ -55111,7 +55246,7 @@ paths:
       security:
         - bearer: []
       summary: Unassign a role from a user
-      tags: *a80
+      tags: *a81
   /api/v1/health:
     get:
       operationId: HealthController_getHealth_v1
@@ -55211,6 +55346,10 @@ components:
         email:
           type: string
           format: email
+        fullName:
+          type: string
+          minLength: 2
+          maxLength: 120
         password:
           type: string
           minLength: 12
@@ -55226,6 +55365,7 @@ components:
             minLength: 1
       required:
         - email
+        - fullName
         - password
         - roleCodes
     UpdateAdminUserDto:
@@ -55234,6 +55374,10 @@ components:
         email:
           type: string
           format: email
+        fullName:
+          type: string
+          minLength: 2
+          maxLength: 120
         password:
           type: string
           minLength: 12
@@ -57954,12 +58098,25 @@ components:
           maxLength: 500
       required:
         - reason
+    UpdateOwnAccountDto:
+      type: object
+      properties:
+        fullName:
+          type: string
+          minLength: 2
+          maxLength: 120
+      required:
+        - fullName
     CreateUserInvitationDto:
       type: object
       properties:
         email:
           type: string
           format: email
+        fullName:
+          type: string
+          minLength: 2
+          maxLength: 120
         roleCodes:
           type: array
           minItems: 1
@@ -57968,6 +58125,7 @@ components:
             minLength: 1
       required:
         - email
+        - fullName
         - roleCodes
     AcceptUserInvitationDto:
       type: object

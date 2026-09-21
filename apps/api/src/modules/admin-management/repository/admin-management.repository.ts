@@ -52,11 +52,10 @@ export class AdminManagementRepository {
               role: true,
             },
           },
-          // SJ-89. `users` carries no name of its own, so the only name a staff
-          // account can have comes from the DoctorProfile that owns it. Joined
-          // here so a picker can label a clinician by name; absent for every
-          // other account, which is a fact about the data model rather than a
-          // gap to paper over.
+          // The account's own name is selected by the query above; this join
+          // is the fallback behind it (D-027): the name an administrator typed
+          // onto a doctor profile before that doctor had an account. It stays
+          // until P20-T08 retires the column.
           doctorProfile: {
             select: {
               fullName: true,
@@ -127,17 +126,19 @@ export class AdminManagementRepository {
 
   async createUserWithRoles(payload: {
     email: string;
+    fullName: string;
     passwordHash: string;
     isActive: boolean;
     roleIds: string[];
     assignedById: string;
   }) {
-    const { email, passwordHash, isActive, roleIds, assignedById } = payload;
+    const { email, fullName, passwordHash, isActive, roleIds, assignedById } = payload;
 
     const created = await this.prisma.executeTransaction(async (tx) => {
       const user = await tx.user.create({
         data: {
           email,
+          fullName,
           passwordHash,
           isActive,
         },
@@ -202,12 +203,13 @@ export class AdminManagementRepository {
   async updateUserWithRoles(payload: {
     userId: string;
     email?: string;
+    fullName?: string;
     passwordHash?: string;
     isActive?: boolean;
     roleIds?: string[];
     updatedById: string;
   }) {
-    const { userId, email, passwordHash, isActive, roleIds, updatedById } = payload;
+    const { userId, email, fullName, passwordHash, isActive, roleIds, updatedById } = payload;
 
     await this.prisma.executeTransaction(async (tx) => {
       await tx.user.update({
@@ -216,6 +218,7 @@ export class AdminManagementRepository {
         },
         data: {
           ...(email !== undefined ? { email } : {}),
+          ...(fullName !== undefined ? { fullName } : {}),
           ...(passwordHash !== undefined ? { passwordHash } : {}),
           ...(isActive !== undefined ? { isActive } : {}),
         },
