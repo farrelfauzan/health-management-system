@@ -8,11 +8,13 @@ import {
   ManagedDocumentPage,
   ManagedDocumentRecord,
   ManagedDocumentSubjectRef,
+  resolveUserDisplayName,
   TransitionManagedDocumentPayload,
   UpdateManagedDocumentRecordPayload,
 } from '@hms/shared-types';
 
 import { PrismaService } from '../../../common/prisma/prisma.service';
+import { USER_DISPLAY_NAME_SELECT } from '../../../common/prisma/user-display-name-select';
 import { PrismaTransactionClient } from '../../../common/prisma/prisma.types';
 import { Prisma } from '../../../generated/prisma/client';
 
@@ -42,7 +44,7 @@ const DOCUMENT_INCLUDE = {
   },
   patient: { select: { id: true, fullName: true } },
   doctor: { select: { id: true, fullName: true } },
-  draftedBy: { select: { id: true, email: true } },
+  draftedBy: { select: { id: true, ...USER_DISPLAY_NAME_SELECT } },
   subjectDocument: { select: { purpose: true, ownerId: true } },
 } satisfies Prisma.ManagedDocumentInclude;
 
@@ -262,10 +264,15 @@ export class ManagedDocumentRepository {
     const actors = actorIds.length
       ? await this.prismaService.user.findMany({
           where: { id: { in: actorIds } },
-          select: { id: true, email: true },
+          select: { id: true, ...USER_DISPLAY_NAME_SELECT },
         })
       : [];
-    const actorById = new Map(actors.map((actor) => [actor.id, actor]));
+    const actorById = new Map(
+      actors.map((actor) => [
+        actor.id,
+        { id: actor.id, email: actor.email, name: resolveUserDisplayName(actor) },
+      ]),
+    );
     return rows.map((row) => ({
       id: row.id,
       action: row.action,
@@ -398,7 +405,11 @@ function toRecord(row: DocumentRow): ManagedDocumentRecord {
     subjectDocumentId: row.subjectDocumentId,
     subjectInvoiceId: row.subjectInvoiceId,
     subjectDocument: row.subjectDocument,
-    draftedBy: row.draftedBy,
+    draftedBy: {
+      id: row.draftedBy.id,
+      email: row.draftedBy.email,
+      name: resolveUserDisplayName(row.draftedBy),
+    },
     issuedAt: row.issuedAt,
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,

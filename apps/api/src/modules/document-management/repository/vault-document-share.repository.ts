@@ -1,4 +1,5 @@
 import {
+  resolveUserDisplayName,
   SharedWithMeDocumentPage,
   UpsertVaultDocumentShareData,
   VaultDocumentShareRecipientRecord,
@@ -7,6 +8,7 @@ import {
 import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from '../../../common/prisma/prisma.service';
+import { USER_DISPLAY_NAME_SELECT } from '../../../common/prisma/user-display-name-select';
 import { Prisma } from '../../../generated/prisma/client';
 
 /**
@@ -23,8 +25,8 @@ const SHARE_SELECT = {
   lastAccessedAt: true,
   accessCount: true,
   createdAt: true,
-  grantee: { select: { email: true, isActive: true, deletedAt: true } },
-  grantedBy: { select: { email: true } },
+  grantee: { select: { ...USER_DISPLAY_NAME_SELECT, isActive: true, deletedAt: true } },
+  grantedBy: { select: USER_DISPLAY_NAME_SELECT },
 } satisfies Prisma.VaultDocumentShareSelect;
 
 type ShareRow = Prisma.VaultDocumentShareGetPayload<{ select: typeof SHARE_SELECT }>;
@@ -172,7 +174,7 @@ export class VaultDocumentShareRepository {
         documentId: true,
         expiresAt: true,
         createdAt: true,
-        grantedBy: { select: { email: true } },
+        grantedBy: { select: USER_DISPLAY_NAME_SELECT },
         document: {
           select: { title: true, mimeType: true, sizeBytes: true, storageKey: true },
         },
@@ -188,6 +190,7 @@ export class VaultDocumentShareRepository {
         sizeBytes: row.document.sizeBytes,
         storageKey: row.document.storageKey,
         sharedByEmail: row.grantedBy.email,
+        sharedByName: resolveUserDisplayName(row.grantedBy),
         sharedAt: row.createdAt,
         expiresAt: row.expiresAt,
       })),
@@ -289,7 +292,7 @@ export class VaultDocumentShareRepository {
       take: params.limit,
       select: {
         id: true,
-        email: true,
+        ...USER_DISPLAY_NAME_SELECT,
         roles: {
           where: { deletedAt: null, unassignedAt: null },
           select: { role: { select: { code: true } } },
@@ -299,6 +302,7 @@ export class VaultDocumentShareRepository {
     return rows.map((row) => ({
       id: row.id,
       email: row.email,
+      name: resolveUserDisplayName(row),
       roleCodes: row.roles.map((userRole) => userRole.role.code),
     }));
   }
@@ -346,9 +350,11 @@ export class VaultDocumentShareRepository {
       documentId: row.documentId,
       granteeId: row.granteeId,
       granteeEmail: row.grantee.email,
+      granteeName: resolveUserDisplayName(row.grantee),
       isGranteeActive: row.grantee.isActive && row.grantee.deletedAt === null,
       grantedById: row.grantedById,
       grantedByEmail: row.grantedBy.email,
+      grantedByName: resolveUserDisplayName(row.grantedBy),
       expiresAt: row.expiresAt,
       revokedAt: row.revokedAt,
       lastAccessedAt: row.lastAccessedAt,

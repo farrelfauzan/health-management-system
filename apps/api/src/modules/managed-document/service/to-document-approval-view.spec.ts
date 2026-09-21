@@ -26,13 +26,13 @@ function buildRound(
       approverIds: [],
       frozenAt: '2026-09-30T01:00:00.000Z',
     },
-    submittedBy: { id: 'u1', email: 'drafter@klinik.example' },
+    submittedBy: { id: 'u1', email: 'drafter@klinik.example', name: 'Rani Putri' },
     submittedAt: new Date('2026-09-30T01:00:00Z'),
     dueAt: null,
     resolvedAt: null,
     dueSoonNotifiedAt: null,
     overdueNotifiedAt: null,
-    approvers: [{ approverId: 'a1', email: 'approver@klinik.example', isEligible: true }],
+    approvers: [{ approverId: 'a1', email: 'approver@klinik.example', name: 'Rani Putri', isEligible: true }],
     decisions: [],
     ...overrides,
   };
@@ -68,7 +68,7 @@ describe('toDocumentApprovalRoundView', () => {
   it('flags a round nobody can decide any more', () => {
     const actual = toDocumentApprovalRoundView(
       buildRound({
-        approvers: [{ approverId: 'a1', email: 'gone@klinik.example', isEligible: false }],
+        approvers: [{ approverId: 'a1', email: 'gone@klinik.example', name: 'Rani Putri', isEligible: false }],
       }),
       1,
       NOW,
@@ -81,8 +81,8 @@ describe('toDocumentApprovalRoundView', () => {
     const actual = toDocumentApprovalRoundView(
       buildRound({
         approvers: [
-          { approverId: 'a1', email: 'gone@klinik.example', isEligible: false },
-          { approverId: 'a2', email: 'here@klinik.example', isEligible: true },
+          { approverId: 'a1', email: 'gone@klinik.example', name: 'Rani Putri', isEligible: false },
+          { approverId: 'a2', email: 'here@klinik.example', name: 'Rani Putri', isEligible: true },
         ],
       }),
       1,
@@ -100,6 +100,7 @@ describe('toDocumentApprovalRoundView', () => {
             id: 'd1',
             approverId: 'a1',
             approverEmail: 'approver@klinik.example',
+            approverName: 'Rani Putri',
             isApproved: true,
             reason: null,
             decidedAt: new Date('2026-10-02T00:00:00Z'),
@@ -123,6 +124,7 @@ describe('toDocumentApprovalRoundView', () => {
             id: 'd1',
             approverId: 'a1',
             approverEmail: 'approver@klinik.example',
+            approverName: 'Rani Putri',
             isApproved: false,
             reason: 'Pasal 4 salah',
             decidedAt: new Date('2026-10-02T00:00:00Z'),
@@ -142,7 +144,7 @@ describe('toManagedDocumentApprovalSummaryView', () => {
   it('agrees with the full round view on the two derived flags', () => {
     const inputRound = buildRound({
       dueAt: new Date('2026-10-01T00:00:00Z'),
-      approvers: [{ approverId: 'a1', email: 'gone@klinik.example', isEligible: false }],
+      approvers: [{ approverId: 'a1', email: 'gone@klinik.example', name: 'Rani Putri', isEligible: false }],
     });
 
     const actualSummary = toManagedDocumentApprovalSummaryView(inputRound, 1, NOW);

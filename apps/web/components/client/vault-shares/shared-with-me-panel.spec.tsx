@@ -22,6 +22,7 @@ function buildSharedDocument(overrides: Record<string, unknown> = {}): Record<st
     mimeType: 'application/pdf',
     sizeBytes: 148480,
     sharedByEmail: 'dokter@example.test',
+    sharedByName: 'dr. Olivia',
     sharedAt: '2026-09-03T09:10:00.000Z',
     expiresAt: null,
     ...overrides,
@@ -65,7 +66,7 @@ describe('SharedWithMePanel', () => {
   it('shows who shared it and nothing about how they file their own paperwork', async () => {
     renderPanel();
 
-    expect(await screen.findByText('dokter@example.test')).toBeInTheDocument();
+    expect(await screen.findByText('dr. Olivia')).toBeInTheDocument();
     // The owner's private notes to themselves never travel with a shared
     // document.
     expect(

@@ -28,6 +28,7 @@ export type DocumentApprovalFrozenPayload = {
 export type DocumentApprovalApproverRecord = {
   approverId: string;
   email: string;
+  name: string;
   isEligible: boolean;
 };
 
@@ -35,6 +36,7 @@ export type DocumentApprovalDecisionRecord = {
   id: string;
   approverId: string;
   approverEmail: string;
+  approverName: string;
   isApproved: boolean;
   reason: string | null;
   decidedAt: Date;
@@ -46,7 +48,7 @@ export type DocumentApprovalRequestRecord = {
   documentId: string;
   status: DocumentApprovalStatusValue;
   frozenPayload: DocumentApprovalFrozenPayload;
-  submittedBy: { id: string; email: string };
+  submittedBy: { id: string; email: string; name: string };
   submittedAt: Date;
   dueAt: Date | null;
   resolvedAt: Date | null;
@@ -124,6 +126,7 @@ export type ListEligibleApproversParams = {
 export type EligibleApproverRecord = {
   id: string;
   email: string;
+  name: string;
   roleCodes: string[];
 };
 

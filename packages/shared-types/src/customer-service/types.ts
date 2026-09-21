@@ -499,6 +499,7 @@ export type AdminConversationMessageRecord = {
   content: string;
   authorUserId: string | null;
   authorEmail: string | null;
+  authorName: string | null;
   safetyTags: string[];
   createdAt: string;
 };

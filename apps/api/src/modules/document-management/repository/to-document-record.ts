@@ -1,4 +1,7 @@
-import { DocumentRecord } from '@hms/shared-types';
+import {
+  DocumentRecord,
+  resolveUserDisplayName,
+} from '@hms/shared-types';
 
 import { Document } from '../../../generated/prisma/client';
 
@@ -22,7 +25,13 @@ import { Document } from '../../../generated/prisma/client';
  * and "no uploader" both read as null here.
  */
 export function toDocumentRecord(
-  row: Document & { uploadedBy?: { email: string } | null },
+  row: Document & {
+    uploadedBy?: {
+      email: string;
+      fullName: string | null;
+      doctorProfile: { fullName: string } | null;
+    } | null;
+  },
   chunkCount: number,
 ): DocumentRecord {
   return {
@@ -42,6 +51,7 @@ export function toDocumentRecord(
     chunkCount,
     uploadedById: row.uploadedById,
     uploadedByEmail: row.uploadedBy?.email ?? null,
+    uploadedByName: row.uploadedBy ? resolveUserDisplayName(row.uploadedBy) : null,
     patientId: row.patientId,
     encounterId: row.encounterId,
     admissionId: row.admissionId,

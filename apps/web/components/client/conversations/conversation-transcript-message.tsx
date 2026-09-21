@@ -41,7 +41,7 @@ export function ConversationTranscriptMessage({ message }: ConversationTranscrip
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <span className="text-xs font-semibold uppercase tracking-wide text-slate-600">
           {t(`roles.${message.role}`)}
-          {message.authorEmail === null ? '' : ` · ${message.authorEmail}`}
+          {message.authorName === null ? '' : ` · ${message.authorName}`}
         </span>
         <span className="text-xs text-slate-500">
           {format.dateTime(new Date(message.createdAt), { timeStyle: 'short' })}

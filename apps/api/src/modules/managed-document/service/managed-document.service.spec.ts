@@ -88,7 +88,7 @@ function buildRecord(overrides: Partial<ManagedDocumentRecord> = {}): ManagedDoc
     subjectDocumentId: null,
     subjectInvoiceId: null,
     subjectDocument: null,
-    draftedBy: { id: 'user-1', email: 'admin@hms.local' },
+    draftedBy: { id: 'user-1', email: 'admin@hms.local', name: 'Rani Putri' },
     issuedAt: null,
     createdAt: new Date('2026-09-30T02:00:00Z'),
     updatedAt: new Date('2026-09-30T02:00:00Z'),
@@ -590,7 +590,7 @@ describe('ManagedDocumentService', () => {
         {
           id: 'audit-1',
           action: 'CREATE',
-          actor: { id: 'user-1', email: 'admin@hms.local' },
+          actor: { id: 'user-1', email: 'admin@hms.local', name: 'Rani Putri' },
           metadata: { typeCode: 'LETTER' },
           occurredAt: new Date('2026-09-30T02:00:00Z'),
         },
@@ -602,7 +602,7 @@ describe('ManagedDocumentService', () => {
         {
           id: 'audit-1',
           action: 'CREATE',
-          actor: { id: 'user-1', email: 'admin@hms.local' },
+          actor: { id: 'user-1', email: 'admin@hms.local', name: 'Rani Putri' },
           metadata: { typeCode: 'LETTER' },
           occurredAt: '2026-09-30T02:00:00.000Z',
         },

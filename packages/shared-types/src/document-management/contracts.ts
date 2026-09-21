@@ -188,13 +188,17 @@ export type PatientDocumentView = {
   releasedById: string | null;
   uploadedById: string;
   /**
-   * Who scanned the file in, as an email (`P16-T14`, FR-E2-05). `User` carries
-   * no display name, so this follows `invitedByEmail`: the only
-   * human-readable identifier an account has. Staff-facing only — the portal's
-   * narrowed view carries neither this nor `uploadedById`, because who filed a
-   * document is clinic-internal.
+   * Who scanned the file in (`P16-T14`, FR-E2-05). Staff-facing only — the
+   * portal's narrowed view carries neither this nor `uploadedById`, because
+   * who filed a document is clinic-internal.
    */
   uploadedByEmail: string | null;
+  /**
+   * The same person, by name (D-027, P20-T06): the account's own name, then
+   * the doctor profile's, then the address for an account nobody has named.
+   * This is what to show; the email is what to contact them at.
+   */
+  uploadedByName: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -356,8 +360,10 @@ export type VaultDocumentShareView = {
   id: string;
   documentId: string;
   granteeId: string;
-  /** The recipient's sign-in address — `User` carries no display name. */
+  /** The recipient's sign-in address. */
   granteeEmail: string;
+  /** The recipient by name (D-027, P20-T06); falls back to the address. */
+  granteeName: string;
   /** ISO instant, or null for an open-ended share. */
   expiresAt: string | null;
   revokedAt: string | null;
@@ -394,6 +400,8 @@ export type SharedWithMeDocumentView = {
   sizeBytes: number;
   /** Who handed it over — the one fact about the owner a recipient needs. */
   sharedByEmail: string;
+  /** The same person by name (D-027, P20-T06); falls back to the address. */
+  sharedByName: string;
   sharedAt: string;
   /** When this key stops working, or null if it was given open-ended. */
   expiresAt: string | null;
@@ -407,13 +415,16 @@ export type SharedWithMeDocumentListView = {
 /**
  * One person the caller could share a document with (`P16-T34`).
  *
- * Email and role codes only. `User` has no name field, and the role codes are
- * here so an owner can tell an administrator from another clinician before
- * handing over their KTP — not so the lookup can be used to profile staff.
+ * A name, the address and role codes. The name (D-027, P20-T06) is what an
+ * owner recognises; the address tells two people of the same name apart; the
+ * role codes are there so an owner can tell an administrator from another
+ * clinician before handing over their KTP — not so the lookup can be used to
+ * profile staff.
  */
 export type VaultDocumentShareRecipientView = {
   id: string;
   email: string;
+  name: string;
   roleCodes: string[];
 };
 

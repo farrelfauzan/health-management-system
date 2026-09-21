@@ -32,7 +32,7 @@ function buildConsent(
     isGranted: true,
     noticeVersion: NOTICE,
     grantedAt: new Date('2026-09-28T02:15:00.000Z'),
-    grantedBy: { id: ACTOR.sub, email: ACTOR.email },
+    grantedBy: { id: ACTOR.sub, email: ACTOR.email, name: 'Rani Putri' },
     revokedAt: null,
     revokedReason: null,
     ...overrides,

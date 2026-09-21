@@ -32,17 +32,23 @@ export function DefaultApproverPicker({ selected, onChange }: DefaultApproverPic
   const eligible = approversQuery.approvers;
   const options: MultiComboboxOption[] = eligible.map((approver) => ({
     value: approver.id,
-    label: approver.email,
-    description: approver.roleCodes.join(', '),
+    // The name first (P20-T06); the address and roles second, so two people of
+    // the same name are still told apart.
+    label: approver.name,
+    description: [approver.email, ...approver.roleCodes].join(' · '),
   }));
   const knownApprovers = new Map<string, DocumentTypeApproverView>(
     [
       ...selected,
-      ...eligible.map((approver) => ({ id: approver.id, email: approver.email })),
+      ...eligible.map((approver) => ({
+        id: approver.id,
+        email: approver.email,
+        name: approver.name,
+      })),
     ].map((approver) => [approver.id, approver]),
   );
   const selectedLabels = Object.fromEntries(
-    selected.map((approver) => [approver.id, approver.email]),
+    selected.map((approver) => [approver.id, approver.name]),
   );
 
   function handleChange(ids: string[]): void {

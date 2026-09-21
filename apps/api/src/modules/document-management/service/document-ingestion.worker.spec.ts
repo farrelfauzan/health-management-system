@@ -36,6 +36,7 @@ function buildDocumentRecord(id: string): DocumentRecord {
     chunkCount: 0,
     uploadedById: 'a3c9b2e1-4d5f-4a6b-8c7d-9e0f1a2b3c4d',
     uploadedByEmail: null,
+    uploadedByName: null,
     patientId: null,
     encounterId: null,
     admissionId: null,

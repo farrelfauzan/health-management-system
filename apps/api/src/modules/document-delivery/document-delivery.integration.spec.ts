@@ -295,7 +295,12 @@ describe('Document delivery integration', () => {
       expect.objectContaining({
         isGranted: true,
         noticeVersion: currentNotice,
-        grantedBy: { id: ADMIN_USER_ID, email: `${TEST_MARKER}-admin@example.test` },
+        // The account carries no name, so the address stands in for it (P20-T06).
+        grantedBy: {
+          id: ADMIN_USER_ID,
+          email: `${TEST_MARKER}-admin@example.test`,
+          name: `${TEST_MARKER}-admin@example.test`,
+        },
         revokedAt: null,
         revokedReason: null,
       }),

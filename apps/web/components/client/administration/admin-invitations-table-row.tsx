@@ -52,7 +52,7 @@ export function AdminInvitationsTableRow({
       <TableCell className="px-4 py-3">
         <p className="text-sm font-medium text-slate-900">{invitation.email}</p>
         <p className="text-xs text-slate-500">
-          {t('invitedBy', { email: invitation.invitedByEmail ?? t('unknownInviter') })}
+          {t('invitedBy', { name: invitation.invitedByName ?? t('unknownInviter') })}
         </p>
       </TableCell>
       <TableCell className="px-4">

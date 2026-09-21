@@ -135,14 +135,23 @@ describe('ClinicCorpusPanel', () => {
           isApprovalRequired: true,
           allowSelfApproval: false,
           requiredApprovals: 1,
-          defaultApprovers: [{ id: APPROVER_ID, email: 'kepala.klinik@salingjaga.id' }],
+          defaultApprovers: [
+            { id: APPROVER_ID, email: 'kepala.klinik@salingjaga.id', name: 'dr. Kepala Klinik' },
+          ],
         },
       },
     });
     eligibleApproversMock.mockResolvedValue({
       status: 200,
       data: {
-        data: [{ id: APPROVER_ID, email: 'kepala.klinik@salingjaga.id', roleCodes: ['ADMIN'] }],
+        data: [
+          {
+            id: APPROVER_ID,
+            email: 'kepala.klinik@salingjaga.id',
+            name: 'dr. Kepala Klinik',
+            roleCodes: ['ADMIN'],
+          },
+        ],
       },
     });
     submitForApprovalMock.mockResolvedValue({
@@ -320,7 +329,7 @@ describe('ClinicCorpusPanel', () => {
         idOperationsMessages.operations.documents.approvals.picker.eligibleOnlyHint,
       ),
     ).toBeInTheDocument();
-    expect(within(dialog).getAllByText('kepala.klinik@salingjaga.id').length).toBeGreaterThan(0);
+    expect(within(dialog).getAllByText('dr. Kepala Klinik').length).toBeGreaterThan(0);
   });
 
   it('opens with the type’s default approvers already chosen', async () => {

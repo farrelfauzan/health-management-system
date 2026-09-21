@@ -587,6 +587,13 @@ describe('Document management integration', () => {
         id: '44444444-4444-4444-8444-444444444444',
         status: 'ISSUED',
         typeId: '55555555-5555-4555-8555-555555555555',
+        // Prisma always loads the drafter; the row mapper now reads its name.
+        draftedBy: {
+          id: ADMIN_USER_ID,
+          email: 'admin@hms.test',
+          fullName: null,
+          doctorProfile: null,
+        },
         type: {
           id: '55555555-5555-4555-8555-555555555555',
           code: 'CLINIC_CORPUS_DOCUMENT',

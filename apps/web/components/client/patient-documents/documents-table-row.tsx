@@ -96,8 +96,8 @@ export function DocumentsTableRow({
         )}
       </TableCell>
       <TableCell>
-        {document.uploadedByEmail ? (
-          <span className="text-xs text-slate-500">{document.uploadedByEmail}</span>
+        {document.uploadedByName ? (
+          <span className="text-xs text-slate-500">{document.uploadedByName}</span>
         ) : (
           <span className="font-mono text-xs text-slate-500" title={document.uploadedById}>
             {document.uploadedById.slice(0, SHORT_ID_LENGTH)}…

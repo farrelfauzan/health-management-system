@@ -7,6 +7,7 @@ import type { NotificationView } from '@hms/shared-types';
 import { DropdownMenuItem, Icon, cn } from '@hms/ui';
 
 import { invalidateEncounterQueries } from '#lib/encounters/invalidate-encounter-queries';
+import { withDisplayNameFallbacks } from '#lib/notifications/with-display-name-fallbacks';
 
 const NOTIFICATION_TYPE_ICONS: Record<string, string> = {
   APPOINTMENT_APPROVED: 'event_available',
@@ -69,7 +70,7 @@ export function NotificationsMenuItem({ notification }: NotificationsMenuItemPro
       has: (key: string) => boolean;
     };
     return untypedTranslate.has(messageKey)
-      ? untypedTranslate(messageKey, notification.params)
+      ? untypedTranslate(messageKey, withDisplayNameFallbacks(notification.params))
       : messageKey;
   }
   function handleSelect(): void {

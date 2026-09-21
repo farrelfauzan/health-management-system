@@ -56,8 +56,10 @@ export function ShareRecipientPicker({ selected, onChange }: ShareRecipientPicke
   const results: VaultDocumentShareRecipientView[] = recipientsQuery.data ?? [];
   const options: MultiComboboxOption[] = results.map((recipient) => ({
     value: recipient.id,
-    label: recipient.email,
-    description: recipient.roleCodes.join(', '),
+    label: recipient.name,
+    // The address beside the roles, so two people of the same name are still
+    // told apart before the owner hands over a document.
+    description: [recipient.email, ...recipient.roleCodes].join(' · '),
   }));
   // Earlier picks drop out of `results` as soon as the search changes; this
   // keeps their labels on the chips and their records available to `onChange`.
@@ -65,7 +67,7 @@ export function ShareRecipientPicker({ selected, onChange }: ShareRecipientPicke
     [...selected, ...results].map((recipient) => [recipient.id, recipient]),
   );
   const selectedLabels = Object.fromEntries(
-    selected.map((recipient) => [recipient.id, recipient.email]),
+    selected.map((recipient) => [recipient.id, recipient.name]),
   );
 
   function handleChange(ids: string[]): void {

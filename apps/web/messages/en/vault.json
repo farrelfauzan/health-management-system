@@ -189,7 +189,7 @@
         "until": "Until {expiresAt}",
         "revoke": "Revoke",
         "success": {
-          "revoke": "Access revoked for {email}."
+          "revoke": "Access revoked for {name}."
         },
         "errors": {
           "revoke": "Could not revoke this share."

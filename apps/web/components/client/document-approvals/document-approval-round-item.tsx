@@ -20,7 +20,7 @@ export function DocumentApprovalRoundItem({ round }: DocumentApprovalRoundItemPr
       <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="text-sm font-medium text-slate-900">
           {t('submittedBy', {
-            email: round.submittedBy.email,
+            name: round.submittedBy.name,
             date: format.dateTime(new Date(round.submittedAt), { dateStyle: 'medium' }),
           })}
         </p>
@@ -30,7 +30,7 @@ export function DocumentApprovalRoundItem({ round }: DocumentApprovalRoundItemPr
         </div>
       </div>
       <p className="text-xs text-slate-500">
-        {t('approvers', { emails: round.approvers.map((approver) => approver.email).join(', ') })}
+        {t('approvers', { names: round.approvers.map((approver) => approver.name).join(', ') })}
         {round.dueAt === null
           ? ''
           : ` · ${t('dueAt', {

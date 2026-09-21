@@ -53,7 +53,7 @@ export function EncounterDocumentRow({
           {t(`categories.${document.category}`)}
           {' · '}
           {document.documentDate ?? t('noDate')}
-          {document.uploadedByEmail ? ` · ${document.uploadedByEmail}` : ''}
+          {document.uploadedByName ? ` · ${document.uploadedByName}` : ''}
         </p>
         {/* Released state where the doctor is deciding, not only on the
             patient tab: the release control sits beside it (P16-T15). */}

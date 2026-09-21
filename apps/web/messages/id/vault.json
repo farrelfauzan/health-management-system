@@ -189,7 +189,7 @@
         "until": "Sampai {expiresAt}",
         "revoke": "Cabut",
         "success": {
-          "revoke": "Akses {email} dicabut."
+          "revoke": "Akses {name} dicabut."
         },
         "errors": {
           "revoke": "Gagal mencabut pembagian ini."

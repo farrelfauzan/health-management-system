@@ -72,7 +72,7 @@ export function PatientDeliveryConsentRow({
       {consent?.isGranted && consent.grantedAt ? (
         <p className="text-xs text-slate-500">
           {t('grantedBy', {
-            email: consent.grantedBy?.email ?? '—',
+            name: consent.grantedBy?.name ?? '—',
             date: formatDate(consent.grantedAt),
           })}
           {consent.noticeVersion

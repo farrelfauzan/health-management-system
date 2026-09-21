@@ -13,9 +13,11 @@ import {
   EligibleApproverRecord,
   ListDocumentApprovalsParams,
   ListEligibleApproversParams,
+  resolveUserDisplayName,
 } from '@hms/shared-types';
 
 import { PrismaService } from '../../../common/prisma/prisma.service';
+import { USER_DISPLAY_NAME_SELECT } from '../../../common/prisma/user-display-name-select';
 import { PrismaTransactionClient } from '../../../common/prisma/prisma.types';
 import { Prisma } from '../../../generated/prisma/client';
 
@@ -45,10 +47,10 @@ export type DocumentApprovalIssueContent = {
 export const DOCUMENT_APPROVAL_DECIDE_PERMISSION_KEY = 'document-approval.decide:any';
 
 const REQUEST_INCLUDE = {
-  submittedBy: { select: { id: true, email: true } },
+  submittedBy: { select: { id: true, ...USER_DISPLAY_NAME_SELECT } },
   approvers: {
     orderBy: { approver: { email: 'asc' as const } },
-    select: { approverId: true, approver: { select: { id: true, email: true } } },
+    select: { approverId: true, approver: { select: { id: true, ...USER_DISPLAY_NAME_SELECT } } },
   },
   decisions: {
     orderBy: { decidedAt: 'asc' as const },
@@ -58,7 +60,7 @@ const REQUEST_INCLUDE = {
       isApproved: true,
       reason: true,
       decidedAt: true,
-      approver: { select: { email: true } },
+      approver: { select: USER_DISPLAY_NAME_SELECT },
     },
   },
 } satisfies Prisma.DocumentApprovalRequestInclude;
@@ -435,9 +437,21 @@ export class DocumentApprovalRepository {
         isActive: true,
         isSystem: false,
         deletedAt: null,
+        // By name as well as address (P20-T06): an administrator building a
+        // panel looks for the person, not the string they sign in with.
         ...(params.search === undefined
           ? {}
-          : { email: { contains: params.search, mode: 'insensitive' as const } }),
+          : {
+              OR: [
+                { email: { contains: params.search, mode: 'insensitive' as const } },
+                { fullName: { contains: params.search, mode: 'insensitive' as const } },
+                {
+                  doctorProfile: {
+                    fullName: { contains: params.search, mode: 'insensitive' as const },
+                  },
+                },
+              ],
+            }),
         roles: {
           some: {
             deletedAt: null,
@@ -456,7 +470,7 @@ export class DocumentApprovalRepository {
       take: params.limit,
       select: {
         id: true,
-        email: true,
+        ...USER_DISPLAY_NAME_SELECT,
         roles: {
           where: { deletedAt: null, unassignedAt: null },
           select: { role: { select: { code: true } } },
@@ -466,6 +480,7 @@ export class DocumentApprovalRepository {
     return rows.map((row) => ({
       id: row.id,
       email: row.email,
+      name: resolveUserDisplayName(row),
       roleCodes: [...new Set(row.roles.map((assignment) => assignment.role.code))],
     }));
   }
@@ -560,7 +575,11 @@ export class DocumentApprovalRepository {
       documentId: row.documentId,
       status: row.status,
       frozenPayload: row.frozenPayload as unknown as DocumentApprovalFrozenPayload,
-      submittedBy: row.submittedBy,
+      submittedBy: {
+        id: row.submittedBy.id,
+        email: row.submittedBy.email,
+        name: resolveUserDisplayName(row.submittedBy),
+      },
       submittedAt: row.submittedAt,
       dueAt: row.dueAt,
       resolvedAt: row.resolvedAt,
@@ -569,12 +588,14 @@ export class DocumentApprovalRepository {
       approvers: row.approvers.map((approver) => ({
         approverId: approver.approverId,
         email: approver.approver.email,
+        name: resolveUserDisplayName(approver.approver),
         isEligible: eligibleIds.has(approver.approverId),
       })),
       decisions: row.decisions.map((decision) => ({
         id: decision.id,
         approverId: decision.approverId,
         approverEmail: decision.approver.email,
+        approverName: resolveUserDisplayName(decision.approver),
         isApproved: decision.isApproved,
         reason: decision.reason,
         decidedAt: decision.decidedAt,

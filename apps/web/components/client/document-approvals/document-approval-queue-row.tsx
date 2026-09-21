@@ -54,7 +54,7 @@ export function DocumentApprovalQueueRow({
         )}
       </TableCell>
       <TableCell className="px-4 text-sm text-slate-600">{item.document.type.name}</TableCell>
-      <TableCell className="px-4 text-sm text-slate-600">{item.round.submittedBy.email}</TableCell>
+      <TableCell className="px-4 text-sm text-slate-600">{item.round.submittedBy.name}</TableCell>
       <TableCell className="px-4">
         <div className="flex flex-wrap items-center gap-1.5">
           <span className="text-sm text-slate-600">

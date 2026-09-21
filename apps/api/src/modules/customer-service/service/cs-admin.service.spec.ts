@@ -66,6 +66,7 @@ describe('CsAdminService', () => {
         content: 'Selamat siang',
         authorUserId: 'admin-user-1',
         authorEmail: 'admin@salingjaga.com',
+        authorName: 'Rani Putri',
         safetyTags: [],
         createdAt: '2026-08-09T02:05:00.000Z',
       }),
@@ -225,6 +226,7 @@ describe('CsAdminService', () => {
           content: 'Halo',
           authorUserId: 'admin-user-1',
           authorEmail: 'admin@salingjaga.com',
+          authorName: 'Rani Putri',
           safetyTags: [],
           createdAt: '2026-08-09T02:05:00.000Z',
         };

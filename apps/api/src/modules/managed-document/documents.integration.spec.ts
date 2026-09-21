@@ -237,7 +237,7 @@ class InMemoryManagedDocumentRepository {
       subjectDocumentId: payload.subjectDocumentId,
       subjectInvoiceId: payload.subjectInvoiceId,
       subjectDocument: payload.subjectDocument ?? null,
-      draftedBy: { id: payload.draftedById, email: 'drafter@hms.local' },
+      draftedBy: { id: payload.draftedById, email: 'drafter@hms.local', name: 'Drafter' },
       issuedAt: payload.issuedAt,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -295,7 +295,11 @@ class InMemoryDocumentApprovalRepository {
       documentId: payload.documentId,
       status: 'PENDING',
       frozenPayload: payload.frozenPayload,
-      submittedBy: { id: payload.submittedById, email: `${payload.submittedById}@hms.local` },
+      submittedBy: {
+        id: payload.submittedById,
+        email: `${payload.submittedById}@hms.local`,
+        name: `${payload.submittedById}@hms.local`,
+      },
       submittedAt: new Date(),
       dueAt: payload.dueAt,
       resolvedAt: null,
@@ -304,6 +308,7 @@ class InMemoryDocumentApprovalRepository {
       approvers: payload.approverIds.map((approverId) => ({
         approverId,
         email: `${approverId}@hms.local`,
+        name: `${approverId}@hms.local`,
         isEligible: true,
       })),
       decisions: [],
@@ -399,6 +404,7 @@ class InMemoryDocumentApprovalRepository {
       id: decisionId,
       approverId: params.approverId,
       approverEmail: `${params.approverId}@hms.local`,
+      approverName: `${params.approverId}@hms.local`,
       isApproved: params.isApproved,
       reason: params.reason,
       decidedAt: new Date(),
@@ -478,7 +484,14 @@ class InMemoryDocumentApprovalRepository {
   }
 
   async listEligibleApprovers(params: { search?: string; limit: number }) {
-    return [{ id: APPROVER_USER_ID, email: `${APPROVER_USER_ID}@hms.local`, roleCodes: ['ADMIN'] }]
+    return [
+      {
+        id: APPROVER_USER_ID,
+        email: `${APPROVER_USER_ID}@hms.local`,
+        name: 'dr. Penyetuju',
+        roleCodes: ['ADMIN'],
+      },
+    ]
       .filter((row) => params.search === undefined || row.email.includes(params.search))
       .slice(0, params.limit);
   }
@@ -1087,7 +1100,12 @@ describe('Documents registry integration', () => {
 
       expect(response.status).toBe(200);
       expect(response.body.data).toEqual([
-        { id: APPROVER_USER_ID, email: `${APPROVER_USER_ID}@hms.local`, roleCodes: ['ADMIN'] },
+        {
+          id: APPROVER_USER_ID,
+          email: `${APPROVER_USER_ID}@hms.local`,
+          name: 'dr. Penyetuju',
+          roleCodes: ['ADMIN'],
+        },
       ]);
     });
 
@@ -1330,5 +1348,4 @@ describe('Documents registry integration', () => {
       expect(history.body.data.rounds[0].decisions).toEqual([]);
     });
   });
-
 });

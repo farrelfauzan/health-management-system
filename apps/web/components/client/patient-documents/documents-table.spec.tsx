@@ -37,6 +37,8 @@ function buildDocument(overrides: Partial<PatientDocumentView> = {}): PatientDoc
     releasedById: null,
     uploadedById: 'user-abcdef123456',
     uploadedByEmail: null,
+
+    uploadedByName: null,
     createdAt: '2026-08-30T09:00:00.000Z',
     updatedAt: '2026-08-30T09:00:00.000Z',
     ...overrides,

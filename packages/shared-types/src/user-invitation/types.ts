@@ -75,4 +75,9 @@ export type InvitationEmailPayload = {
   invitationUrl: string;
   expiresAt: Date;
   invitedByEmail: string | null;
+  /**
+   * The inviter by name (D-027, P20-T06), which is what the letter says. The
+   * address is kept for the line an invitee can reply to.
+   */
+  invitedByName: string | null;
 };

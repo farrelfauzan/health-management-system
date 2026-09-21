@@ -193,6 +193,7 @@ export class VaultDocumentShareService {
         mimeType: record.mimeType,
         sizeBytes: record.sizeBytes,
         sharedByEmail: record.sharedByEmail,
+        sharedByName: record.sharedByName,
         sharedAt: record.sharedAt.toISOString(),
         expiresAt: record.expiresAt === null ? null : record.expiresAt.toISOString(),
       })),
@@ -296,7 +297,11 @@ export class VaultDocumentShareService {
         type: 'VAULT_DOCUMENT_SHARED',
         titleKey: 'vaultDocumentShared.title',
         bodyKey: 'vaultDocumentShared.body',
-        params: { documentTitle, sharedByEmail: share.grantedByEmail },
+        params: {
+          documentTitle,
+          sharedByEmail: share.grantedByEmail,
+          sharedByName: share.grantedByName,
+        },
         // The recipient's own vault page, where "shared with me" is a panel —
         // there is no `/vault/shared-with-me` route to land on, and no
         // shell-less `/vault` either, so this is resolved per recipient.
@@ -321,7 +326,11 @@ export class VaultDocumentShareService {
         type: 'VAULT_DOCUMENT_OPENED',
         titleKey: 'vaultDocumentOpened.title',
         bodyKey: 'vaultDocumentOpened.body',
-        params: { documentTitle, granteeEmail: share.granteeEmail },
+        params: {
+          documentTitle,
+          granteeEmail: share.granteeEmail,
+          granteeName: share.granteeName,
+        },
         href: await this.notificationHrefService.buildVaultHref(share.grantedById),
       });
     } catch (caughtError) {
@@ -349,6 +358,7 @@ export class VaultDocumentShareService {
       documentId: share.documentId,
       granteeId: share.granteeId,
       granteeEmail: share.granteeEmail,
+      granteeName: share.granteeName,
       expiresAt: share.expiresAt === null ? null : share.expiresAt.toISOString(),
       revokedAt: share.revokedAt === null ? null : share.revokedAt.toISOString(),
       lastAccessedAt: share.lastAccessedAt === null ? null : share.lastAccessedAt.toISOString(),

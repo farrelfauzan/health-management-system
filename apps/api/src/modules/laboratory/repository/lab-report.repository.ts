@@ -6,10 +6,12 @@ import {
   LabReportRecord,
   LabReportVerifierRecord,
   RescheduleLabReportPayload,
+  resolveUserDisplayName,
 } from '@hms/shared-types';
 import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from '../../../common/prisma/prisma.service';
+import { USER_DISPLAY_NAME_SELECT } from '../../../common/prisma/user-display-name-select';
 import { LabReportFileRow, LabReportRow } from './lab-report-row.types';
 
 const MILLISECONDS_PER_SECOND = 1_000;
@@ -252,7 +254,7 @@ export class LabReportRepository {
   async findVerifier(userId: string): Promise<LabReportVerifierRecord | null> {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      select: { id: true, email: true, doctorProfile: { select: { fullName: true } } },
+      select: { id: true, ...USER_DISPLAY_NAME_SELECT },
     });
     if (user === null) {
       return null;
@@ -260,7 +262,9 @@ export class LabReportRepository {
     return {
       userId: user.id,
       email: user.email,
-      displayName: user.doctorProfile?.fullName ?? user.email,
+      // Printed bold in the signature block of a document the patient takes
+      // home, so it is the verifier's name wherever one exists (P20-T06).
+      displayName: resolveUserDisplayName(user),
     };
   }
 }

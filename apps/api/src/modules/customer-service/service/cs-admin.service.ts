@@ -315,6 +315,7 @@ export class CsAdminService {
       content: record.content,
       authorUserId: record.authorUserId,
       authorEmail: record.authorEmail,
+      authorName: record.authorName,
       safetyTags: record.safetyTags,
       createdAt: record.createdAt,
     };

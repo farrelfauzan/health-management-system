@@ -25,7 +25,7 @@ function buildDocument(
     patient: null,
     doctor: null,
     subject: null,
-    draftedBy: { id: '00000000-0000-4000-8000-0000000000bb', email: 'drafter@hms.local' },
+    draftedBy: { id: '00000000-0000-4000-8000-0000000000bb', email: 'drafter@hms.local', name: 'Rani Putri' },
     approval: null,
     issuedAt: null,
     createdAt: '2026-09-10T02:00:00.000Z',

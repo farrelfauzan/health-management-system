@@ -8,9 +8,11 @@ import {
   ConversationMessageRoleValue,
   ConversationStateValue,
   ListAdminConversationsParams,
+  resolveUserDisplayName,
 } from '@hms/shared-types';
 
 import { PrismaService } from '../../../common/prisma/prisma.service';
+import { USER_DISPLAY_NAME_SELECT } from '../../../common/prisma/user-display-name-select';
 
 type ConversationRow = {
   id: string;
@@ -32,7 +34,11 @@ type ConversationMessageRow = {
   authorUserId: string | null;
   safetyTags: string[];
   createdAt: Date;
-  author: { email: string } | null;
+  author: {
+    email: string;
+    fullName: string | null;
+    doctorProfile: { fullName: string } | null;
+  } | null;
 };
 
 /**
@@ -135,7 +141,7 @@ export class AdminConversationRepository {
       },
       orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
       take: params.limit + 1,
-      include: { author: { select: { email: true } } },
+      include: { author: { select: USER_DISPLAY_NAME_SELECT } },
     });
     const items = rows.slice(0, params.limit).map((row) => this.toMessageRecord(row));
     const nextCursor = rows.length > params.limit ? (items.at(-1)?.id ?? null) : null;
@@ -193,7 +199,7 @@ export class AdminConversationRepository {
         authorUserId: params.authorUserId,
         safetyTags: [],
       },
-      include: { author: { select: { email: true } } },
+      include: { author: { select: USER_DISPLAY_NAME_SELECT } },
     });
     return this.toMessageRecord(row);
   }
@@ -249,6 +255,7 @@ export class AdminConversationRepository {
       content: row.content,
       authorUserId: row.authorUserId,
       authorEmail: row.author?.email ?? null,
+      authorName: row.author ? resolveUserDisplayName(row.author) : null,
       safetyTags: row.safetyTags,
       createdAt: row.createdAt.toISOString(),
     };

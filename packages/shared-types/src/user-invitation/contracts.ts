@@ -17,6 +17,8 @@ export type UserInvitationView = {
   status: UserInvitationStatusValue;
   roles: UserInvitationRole[];
   invitedByEmail: string | null;
+  /** Resolved for display (D-027, P20-T06); falls back to the address. */
+  invitedByName: string | null;
   expiresAt: string;
   createdAt: string;
   consumedAt: string | null;

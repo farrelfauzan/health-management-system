@@ -9,7 +9,7 @@ import { useEligibleApprovers } from '#lib/document-approvals/use-eligible-appro
 
 const SEARCH_DEBOUNCE_MS = 300;
 
-export type ApproverOption = { id: string; email: string };
+export type ApproverOption = { id: string; email: string; name: string };
 
 type ApproverPickerProps = {
   selected: ApproverOption[];
@@ -38,13 +38,17 @@ export function ApproverPicker({ selected, onChange }: ApproverPickerProps) {
   const eligible = approversQuery.approvers;
   const options: MultiComboboxOption[] = eligible.map((approver) => ({
     value: approver.id,
-    label: approver.email,
+    label: approver.name,
     description: approver.roleCodes.join(', '),
   }));
   const knownApprovers = new Map<string, ApproverOption>(
     [
       ...selected,
-      ...eligible.map((approver) => ({ id: approver.id, email: approver.email })),
+      ...eligible.map((approver) => ({
+        id: approver.id,
+        email: approver.email,
+        name: approver.name,
+      })),
     ].map((approver) => [approver.id, approver]),
   );
 
@@ -71,7 +75,7 @@ export function ApproverPicker({ selected, onChange }: ApproverPickerProps) {
         options={options}
         values={selected.map((approver) => approver.id)}
         selectedLabels={Object.fromEntries(
-          selected.map((approver) => [approver.id, approver.email]),
+          selected.map((approver) => [approver.id, approver.name]),
         )}
         placeholder={t('placeholder')}
         searchPlaceholder={t('searchPlaceholder')}

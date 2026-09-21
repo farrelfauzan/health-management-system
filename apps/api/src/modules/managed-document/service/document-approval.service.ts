@@ -336,6 +336,7 @@ export class DocumentApprovalService {
     return records.map((record) => ({
       id: record.id,
       email: record.email,
+      name: record.name,
       roleCodes: record.roleCodes,
     }));
   }
