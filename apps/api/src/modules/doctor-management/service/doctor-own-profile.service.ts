@@ -1,6 +1,7 @@
 import { DoctorRecord, joinDegreeCodes, splitDegreeCodes } from '@hms/shared-types';
 import { Injectable, NotFoundException } from '@nestjs/common';
 
+import { OwnAccountService } from '../../account/service/own-account.service';
 import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
 import { UpdateOwnDoctorProfileDto } from '../dto/update-own-doctor-profile.dto';
@@ -29,6 +30,7 @@ export class DoctorOwnProfileService {
     private readonly doctorManagementRepository: DoctorManagementRepository,
     private readonly doctorManagementService: DoctorManagementService,
     private readonly doctorCredentialOptionService: DoctorCredentialOptionService,
+    private readonly ownAccountService: OwnAccountService,
     private readonly auditService: AuditService,
   ) {}
 
@@ -67,8 +69,14 @@ export class DoctorOwnProfileService {
       throw new NotFoundException('Doctor not found');
     }
     await this.assertUsableCredentials(payload, doctor);
+    // The name goes through the account (D-027, P20-T05), which writes
+    // `users.full_name` and mirrors it onto this profile in one transaction.
+    // Writing it here as well would be a second copy of the mirroring rule,
+    // and the two would eventually disagree.
+    if (payload.fullName !== undefined) {
+      await this.ownAccountService.renameOwnAccount(currentUser.sub, payload.fullName);
+    }
     await this.doctorManagementRepository.updateDoctor(doctorId, {
-      fullName: payload.fullName,
       phoneNumber: payload.phoneNumber,
       title: payload.title,
       degrees: payload.degrees === undefined ? undefined : joinDegreeCodes(payload.degrees ?? []),

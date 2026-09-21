@@ -36,8 +36,18 @@ export const listUsersQuerySchema = z.object({
  */
 export const adminUserEmailSchema = z.string().email();
 
+/**
+ * The name a human account carries (D-027, P20-T05).
+ *
+ * The same bounds `createDoctorSchema` has used since D-024, so a doctor's
+ * name does not change shape when it moves onto the account, and named here so
+ * every screen that collects one validates against one rule.
+ */
+export const userFullNameSchema = z.string().trim().min(2).max(120);
+
 export const createAdminUserSchema = z.object({
   email: adminUserEmailSchema,
+  fullName: userFullNameSchema,
   password: passwordPolicySchema,
   isActive: z.boolean().optional().default(true),
   roleCodes: z.array(z.string().min(1)).min(1),
@@ -46,6 +56,7 @@ export const createAdminUserSchema = z.object({
 export const updateAdminUserSchema = z
   .object({
     email: adminUserEmailSchema.optional(),
+    fullName: userFullNameSchema.optional(),
     password: passwordPolicySchema.optional(),
     isActive: z.boolean().optional(),
     roleCodes: z.array(z.string().min(1)).min(1).optional(),
@@ -54,6 +65,16 @@ export const updateAdminUserSchema = z
     message: 'At least one field is required',
   });
 
+/**
+ * What a person may correct about their own account: the name, and nothing
+ * else. Roles, status, organisation unit and the sign-in address stay
+ * administrative — the same split D-025 made for doctors.
+ */
+export const updateOwnAccountSchema = z.object({
+  fullName: userFullNameSchema,
+});
+
 export type ListUsersQueryInput = z.infer<typeof listUsersQuerySchema>;
+export type UpdateOwnAccountInput = z.infer<typeof updateOwnAccountSchema>;
 export type CreateAdminUserInput = z.infer<typeof createAdminUserSchema>;
 export type UpdateAdminUserInput = z.infer<typeof updateAdminUserSchema>;

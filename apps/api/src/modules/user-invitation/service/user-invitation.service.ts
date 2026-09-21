@@ -83,6 +83,7 @@ export class UserInvitationService {
     const token = this.mintToken();
     const invitation = await this.userInvitationRepository.createInvitation({
       email: payload.email,
+      fullName: payload.fullName,
       tokenHash: this.hashToken(token),
       roleCodes: payload.roleCodes,
       invitedById: currentUserId,
@@ -269,6 +270,11 @@ export class UserInvitationService {
     const user = await this.userInvitationRepository.acceptInvitation({
       invitationId: invitation.id,
       email: invitation.email,
+      // A doctor invitation carries no name of its own: the administrator
+      // typed one onto the profile when the doctor was created (D-024), and
+      // asking the invitee to type it again would replace a name the clinic
+      // vouches for with one nobody checked.
+      fullName: invitation.fullName ?? invitation.doctorProfile?.fullName ?? null,
       passwordHash,
       roleIds: roles.map((role) => role.id),
       assignedById: invitation.invitedById,

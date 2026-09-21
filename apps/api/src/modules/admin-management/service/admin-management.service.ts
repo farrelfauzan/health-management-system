@@ -83,7 +83,13 @@ export class AdminManagementService {
       items: result.items.map((user) => ({
         id: user.id,
         email: user.email,
-        ...(user.doctorProfile?.fullName ? { fullName: user.doctorProfile.fullName } : {}),
+        // D-027's order, account first: the name on the account is the one its
+        // owner can correct, and the profile's is what an administrator typed
+        // before the account existed. P20-T06 moves this into one resolver and
+        // adopts it at every other display site.
+        ...(user.fullName ?? user.doctorProfile?.fullName
+          ? { fullName: user.fullName ?? user.doctorProfile?.fullName }
+          : {}),
         isActive: user.isActive,
         ...(user.offboardedAt ? { offboardedAt: user.offboardedAt.toISOString() } : {}),
         createdAt: user.createdAt,
@@ -121,6 +127,7 @@ export class AdminManagementService {
 
     const createdUser = await this.adminManagementRepository.createUserWithRoles({
       email: payload.email,
+      fullName: payload.fullName,
       passwordHash,
       isActive: payload.isActive,
       roleIds: roles.map((role) => role.id),
@@ -142,6 +149,7 @@ export class AdminManagementService {
     return {
       id: createdUser.id,
       email: createdUser.email,
+      fullName: createdUser.fullName,
       isActive: createdUser.isActive,
       ...(createdUser.offboardedAt ? { offboardedAt: createdUser.offboardedAt.toISOString() } : {}),
       createdAt: createdUser.createdAt,
@@ -194,6 +202,7 @@ export class AdminManagementService {
     const updatedUser = await this.adminManagementRepository.updateUserWithRoles({
       userId: id,
       email: payload.email,
+      fullName: payload.fullName,
       passwordHash,
       isActive: payload.isActive,
       roleIds: nextRoleIds,
@@ -215,6 +224,7 @@ export class AdminManagementService {
     return {
       id: updatedUser.id,
       email: updatedUser.email,
+      fullName: updatedUser.fullName,
       isActive: updatedUser.isActive,
       ...(updatedUser.offboardedAt ? { offboardedAt: updatedUser.offboardedAt.toISOString() } : {}),
       createdAt: updatedUser.createdAt,
