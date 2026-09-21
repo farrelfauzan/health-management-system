@@ -229,6 +229,67 @@
         "vitaminK1": "Vitamin K1",
         "registerHint": "Anak ke- diisi saat bayi didaftarkan sebagai pasien, supaya tersimpan di satu tempat saja."
       }
+    },
+    "shk": {
+      "title": "Skrining SHK",
+      "subtitle": "Sampel tumit bayi diambil 48–72 jam setelah lahir. Daftar ini menunjukkan bayi yang jatuh tempo, terlambat, menunggu hasil, atau dipanggil ulang.",
+      "loadError": "Daftar skrining SHK gagal dimuat.",
+      "saveError": "Skrining SHK gagal disimpan.",
+      "empty": "Tidak ada sampel SHK di daftar ini.",
+      "tabs": {
+        "DUE": "Jatuh tempo",
+        "OVERDUE": "Terlambat",
+        "AWAITING_RESULT": "Menunggu hasil",
+        "RECALL": "Panggil ulang",
+        "ALL": "Semua terbuka"
+      },
+      "statuses": {
+        "UPCOMING": "Belum waktunya",
+        "DUE": "Jatuh tempo",
+        "OVERDUE": "Terlambat",
+        "TAKEN": "Sampel diambil",
+        "SENT": "Dikirim ke lab",
+        "RESULTED": "Ada hasil"
+      },
+      "results": {
+        "NORMAL": "Normal",
+        "RECALL": "Panggil ulang",
+        "INVALID_SAMPLE": "Sampel tidak layak"
+      },
+      "chip": "SHK: {label}",
+      "sequence": "(sampel ke-{sequence})",
+      "babyOf": "Bayi Ny. {motherName}",
+      "bornAt": "Lahir {birthAt}",
+      "window": "{dueFrom} – {dueUntil}",
+      "columns": {
+        "baby": "Bayi",
+        "window": "Jendela pengambilan",
+        "status": "Status",
+        "laboratory": "Laboratorium",
+        "attendant": "Penolong persalinan",
+        "actions": "Tindakan"
+      },
+      "actions": {
+        "sample": "Catat pengambilan sampel",
+        "sent": "Catat pengiriman",
+        "result": "Catat hasil"
+      },
+      "fields": {
+        "sampleAt": "Waktu pengambilan",
+        "sentAt": "Waktu pengiriman",
+        "resultAt": "Waktu hasil diterima",
+        "laboratoryName": "Laboratorium rujukan",
+        "result": "Hasil",
+        "notes": "Catatan"
+      },
+      "repeatHint": "Hasil ini membuka pengambilan sampel berikutnya dan memberi tahu tenaga klinis.",
+      "saved": {
+        "sample": "Pengambilan sampel SHK dicatat",
+        "sent": "Pengiriman sampel SHK dicatat",
+        "result": "Hasil SHK dicatat"
+      },
+      "save": "Simpan",
+      "cancel": "Batal"
     }
   }
 }
