@@ -1367,6 +1367,57 @@ export type EnumPaymentMethodWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumPaymentMethodFilter<$PrismaModel>
 }
 
+export type EnumServiceTariffCategoryNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.ServiceTariffCategory | Prisma.EnumServiceTariffCategoryFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ServiceTariffCategory[] | Prisma.ListEnumServiceTariffCategoryFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ServiceTariffCategory[] | Prisma.ListEnumServiceTariffCategoryFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumServiceTariffCategoryNullableFilter<$PrismaModel> | $Enums.ServiceTariffCategory | null
+}
+
+export type EnumClinicianFeeRuleModeFilter<$PrismaModel = never> = {
+  equals?: $Enums.ClinicianFeeRuleMode | Prisma.EnumClinicianFeeRuleModeFieldRefInput<$PrismaModel>
+  in?: $Enums.ClinicianFeeRuleMode[] | Prisma.ListEnumClinicianFeeRuleModeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ClinicianFeeRuleMode[] | Prisma.ListEnumClinicianFeeRuleModeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumClinicianFeeRuleModeFilter<$PrismaModel> | $Enums.ClinicianFeeRuleMode
+}
+
+export type EnumServiceTariffCategoryNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ServiceTariffCategory | Prisma.EnumServiceTariffCategoryFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ServiceTariffCategory[] | Prisma.ListEnumServiceTariffCategoryFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ServiceTariffCategory[] | Prisma.ListEnumServiceTariffCategoryFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumServiceTariffCategoryNullableWithAggregatesFilter<$PrismaModel> | $Enums.ServiceTariffCategory | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumServiceTariffCategoryNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumServiceTariffCategoryNullableFilter<$PrismaModel>
+}
+
+export type EnumClinicianFeeRuleModeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ClinicianFeeRuleMode | Prisma.EnumClinicianFeeRuleModeFieldRefInput<$PrismaModel>
+  in?: $Enums.ClinicianFeeRuleMode[] | Prisma.ListEnumClinicianFeeRuleModeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ClinicianFeeRuleMode[] | Prisma.ListEnumClinicianFeeRuleModeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumClinicianFeeRuleModeWithAggregatesFilter<$PrismaModel> | $Enums.ClinicianFeeRuleMode
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumClinicianFeeRuleModeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumClinicianFeeRuleModeFilter<$PrismaModel>
+}
+
+export type EnumClinicianFeeEntryKindFilter<$PrismaModel = never> = {
+  equals?: $Enums.ClinicianFeeEntryKind | Prisma.EnumClinicianFeeEntryKindFieldRefInput<$PrismaModel>
+  in?: $Enums.ClinicianFeeEntryKind[] | Prisma.ListEnumClinicianFeeEntryKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ClinicianFeeEntryKind[] | Prisma.ListEnumClinicianFeeEntryKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumClinicianFeeEntryKindFilter<$PrismaModel> | $Enums.ClinicianFeeEntryKind
+}
+
+export type EnumClinicianFeeEntryKindWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ClinicianFeeEntryKind | Prisma.EnumClinicianFeeEntryKindFieldRefInput<$PrismaModel>
+  in?: $Enums.ClinicianFeeEntryKind[] | Prisma.ListEnumClinicianFeeEntryKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ClinicianFeeEntryKind[] | Prisma.ListEnumClinicianFeeEntryKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumClinicianFeeEntryKindWithAggregatesFilter<$PrismaModel> | $Enums.ClinicianFeeEntryKind
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumClinicianFeeEntryKindFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumClinicianFeeEntryKindFilter<$PrismaModel>
+}
+
 export type EnumDocumentTemplateKindFilter<$PrismaModel = never> = {
   equals?: $Enums.DocumentTemplateKind | Prisma.EnumDocumentTemplateKindFieldRefInput<$PrismaModel>
   in?: $Enums.DocumentTemplateKind[] | Prisma.ListEnumDocumentTemplateKindFieldRefInput<$PrismaModel>
@@ -4107,6 +4158,57 @@ export type NestedEnumPaymentMethodWithAggregatesFilter<$PrismaModel = never> = 
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumPaymentMethodFilter<$PrismaModel>
   _max?: Prisma.NestedEnumPaymentMethodFilter<$PrismaModel>
+}
+
+export type NestedEnumServiceTariffCategoryNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.ServiceTariffCategory | Prisma.EnumServiceTariffCategoryFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ServiceTariffCategory[] | Prisma.ListEnumServiceTariffCategoryFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ServiceTariffCategory[] | Prisma.ListEnumServiceTariffCategoryFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumServiceTariffCategoryNullableFilter<$PrismaModel> | $Enums.ServiceTariffCategory | null
+}
+
+export type NestedEnumClinicianFeeRuleModeFilter<$PrismaModel = never> = {
+  equals?: $Enums.ClinicianFeeRuleMode | Prisma.EnumClinicianFeeRuleModeFieldRefInput<$PrismaModel>
+  in?: $Enums.ClinicianFeeRuleMode[] | Prisma.ListEnumClinicianFeeRuleModeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ClinicianFeeRuleMode[] | Prisma.ListEnumClinicianFeeRuleModeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumClinicianFeeRuleModeFilter<$PrismaModel> | $Enums.ClinicianFeeRuleMode
+}
+
+export type NestedEnumServiceTariffCategoryNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ServiceTariffCategory | Prisma.EnumServiceTariffCategoryFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ServiceTariffCategory[] | Prisma.ListEnumServiceTariffCategoryFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ServiceTariffCategory[] | Prisma.ListEnumServiceTariffCategoryFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumServiceTariffCategoryNullableWithAggregatesFilter<$PrismaModel> | $Enums.ServiceTariffCategory | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumServiceTariffCategoryNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumServiceTariffCategoryNullableFilter<$PrismaModel>
+}
+
+export type NestedEnumClinicianFeeRuleModeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ClinicianFeeRuleMode | Prisma.EnumClinicianFeeRuleModeFieldRefInput<$PrismaModel>
+  in?: $Enums.ClinicianFeeRuleMode[] | Prisma.ListEnumClinicianFeeRuleModeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ClinicianFeeRuleMode[] | Prisma.ListEnumClinicianFeeRuleModeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumClinicianFeeRuleModeWithAggregatesFilter<$PrismaModel> | $Enums.ClinicianFeeRuleMode
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumClinicianFeeRuleModeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumClinicianFeeRuleModeFilter<$PrismaModel>
+}
+
+export type NestedEnumClinicianFeeEntryKindFilter<$PrismaModel = never> = {
+  equals?: $Enums.ClinicianFeeEntryKind | Prisma.EnumClinicianFeeEntryKindFieldRefInput<$PrismaModel>
+  in?: $Enums.ClinicianFeeEntryKind[] | Prisma.ListEnumClinicianFeeEntryKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ClinicianFeeEntryKind[] | Prisma.ListEnumClinicianFeeEntryKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumClinicianFeeEntryKindFilter<$PrismaModel> | $Enums.ClinicianFeeEntryKind
+}
+
+export type NestedEnumClinicianFeeEntryKindWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ClinicianFeeEntryKind | Prisma.EnumClinicianFeeEntryKindFieldRefInput<$PrismaModel>
+  in?: $Enums.ClinicianFeeEntryKind[] | Prisma.ListEnumClinicianFeeEntryKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ClinicianFeeEntryKind[] | Prisma.ListEnumClinicianFeeEntryKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumClinicianFeeEntryKindWithAggregatesFilter<$PrismaModel> | $Enums.ClinicianFeeEntryKind
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumClinicianFeeEntryKindFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumClinicianFeeEntryKindFilter<$PrismaModel>
 }
 
 export type NestedEnumDocumentTemplateKindFilter<$PrismaModel = never> = {

@@ -444,6 +444,8 @@ export const ModelName = {
   Invoice: 'Invoice',
   InvoiceItem: 'InvoiceItem',
   Payment: 'Payment',
+  ClinicianFeeRule: 'ClinicianFeeRule',
+  ClinicianFeeEntry: 'ClinicianFeeEntry',
   DocumentTemplate: 'DocumentTemplate',
   DocumentTemplateVersion: 'DocumentTemplateVersion',
   InvoiceDocument: 'InvoiceDocument',
@@ -534,7 +536,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "doctorMandate" | "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientDeliveryConsent" | "documentDelivery" | "documentDeliveryLink" | "patientAllergy" | "doctorCredentialOption" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorLicenseExpiryNotice" | "doctorAuthority" | "doctorAuthorityExpiryNotice" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "midwifeFormularyItem" | "prescription" | "prescriptionMedication" | "prescriptionItemComponent" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "taxSettings" | "taxCode" | "taxCodeRate" | "taxCategoryDefault" | "taxReminderNotice" | "taxReportDraft" | "taxReportDocument" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "satusehatSubmissionResource" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "vaultDocumentExpiryNotice" | "vaultDocumentShare" | "userOffboardingNotice" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit" | "documentType" | "documentTypeApprover" | "managedDocument" | "documentApprovalRequest" | "documentApprovalApprover" | "documentApprovalDecision" | "labTest" | "labReferenceRange" | "labPanel" | "labPanelMember" | "labOrderCounter" | "labOrder" | "labOrderItem" | "labSpecimenCounter" | "labSpecimen" | "labResult" | "laboratorySettings" | "labReport" | "immunization" | "province" | "regency" | "district" | "village" | "bugReport" | "bugReportCounter" | "pregnancyEpisode" | "pregnancyExternalDoctorVisit" | "antenatalVisit" | "deliveryRecord" | "newbornCareRecord" | "familyPlanningRecord" | "familyPlanningService" | "shkScreening" | "antenatalExamination" | "antenatalReferralDismissal" | "postnatalVisit" | "postnatalExamination"
+    modelProps: "doctorMandate" | "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientDeliveryConsent" | "documentDelivery" | "documentDeliveryLink" | "patientAllergy" | "doctorCredentialOption" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorLicenseExpiryNotice" | "doctorAuthority" | "doctorAuthorityExpiryNotice" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "midwifeFormularyItem" | "prescription" | "prescriptionMedication" | "prescriptionItemComponent" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "taxSettings" | "taxCode" | "taxCodeRate" | "taxCategoryDefault" | "taxReminderNotice" | "taxReportDraft" | "taxReportDocument" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "clinicianFeeRule" | "clinicianFeeEntry" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "satusehatSubmissionResource" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "vaultDocumentExpiryNotice" | "vaultDocumentShare" | "userOffboardingNotice" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit" | "documentType" | "documentTypeApprover" | "managedDocument" | "documentApprovalRequest" | "documentApprovalApprover" | "documentApprovalDecision" | "labTest" | "labReferenceRange" | "labPanel" | "labPanelMember" | "labOrderCounter" | "labOrder" | "labOrderItem" | "labSpecimenCounter" | "labSpecimen" | "labResult" | "laboratorySettings" | "labReport" | "immunization" | "province" | "regency" | "district" | "village" | "bugReport" | "bugReportCounter" | "pregnancyEpisode" | "pregnancyExternalDoctorVisit" | "antenatalVisit" | "deliveryRecord" | "newbornCareRecord" | "familyPlanningRecord" | "familyPlanningService" | "shkScreening" | "antenatalExamination" | "antenatalReferralDismissal" | "postnatalVisit" | "postnatalExamination"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -4975,6 +4977,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.PaymentCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.PaymentCountAggregateOutputType> | number
+        }
+      }
+    }
+    ClinicianFeeRule: {
+      payload: Prisma.$ClinicianFeeRulePayload<ExtArgs>
+      fields: Prisma.ClinicianFeeRuleFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ClinicianFeeRuleFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClinicianFeeRulePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ClinicianFeeRuleFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClinicianFeeRulePayload>
+        }
+        findFirst: {
+          args: Prisma.ClinicianFeeRuleFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClinicianFeeRulePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ClinicianFeeRuleFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClinicianFeeRulePayload>
+        }
+        findMany: {
+          args: Prisma.ClinicianFeeRuleFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClinicianFeeRulePayload>[]
+        }
+        create: {
+          args: Prisma.ClinicianFeeRuleCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClinicianFeeRulePayload>
+        }
+        createMany: {
+          args: Prisma.ClinicianFeeRuleCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ClinicianFeeRuleCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClinicianFeeRulePayload>[]
+        }
+        delete: {
+          args: Prisma.ClinicianFeeRuleDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClinicianFeeRulePayload>
+        }
+        update: {
+          args: Prisma.ClinicianFeeRuleUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClinicianFeeRulePayload>
+        }
+        deleteMany: {
+          args: Prisma.ClinicianFeeRuleDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ClinicianFeeRuleUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ClinicianFeeRuleUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClinicianFeeRulePayload>[]
+        }
+        upsert: {
+          args: Prisma.ClinicianFeeRuleUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClinicianFeeRulePayload>
+        }
+        aggregate: {
+          args: Prisma.ClinicianFeeRuleAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateClinicianFeeRule>
+        }
+        groupBy: {
+          args: Prisma.ClinicianFeeRuleGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ClinicianFeeRuleGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ClinicianFeeRuleCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ClinicianFeeRuleCountAggregateOutputType> | number
+        }
+      }
+    }
+    ClinicianFeeEntry: {
+      payload: Prisma.$ClinicianFeeEntryPayload<ExtArgs>
+      fields: Prisma.ClinicianFeeEntryFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ClinicianFeeEntryFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClinicianFeeEntryPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ClinicianFeeEntryFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClinicianFeeEntryPayload>
+        }
+        findFirst: {
+          args: Prisma.ClinicianFeeEntryFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClinicianFeeEntryPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ClinicianFeeEntryFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClinicianFeeEntryPayload>
+        }
+        findMany: {
+          args: Prisma.ClinicianFeeEntryFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClinicianFeeEntryPayload>[]
+        }
+        create: {
+          args: Prisma.ClinicianFeeEntryCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClinicianFeeEntryPayload>
+        }
+        createMany: {
+          args: Prisma.ClinicianFeeEntryCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ClinicianFeeEntryCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClinicianFeeEntryPayload>[]
+        }
+        delete: {
+          args: Prisma.ClinicianFeeEntryDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClinicianFeeEntryPayload>
+        }
+        update: {
+          args: Prisma.ClinicianFeeEntryUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClinicianFeeEntryPayload>
+        }
+        deleteMany: {
+          args: Prisma.ClinicianFeeEntryDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ClinicianFeeEntryUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ClinicianFeeEntryUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClinicianFeeEntryPayload>[]
+        }
+        upsert: {
+          args: Prisma.ClinicianFeeEntryUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClinicianFeeEntryPayload>
+        }
+        aggregate: {
+          args: Prisma.ClinicianFeeEntryAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateClinicianFeeEntry>
+        }
+        groupBy: {
+          args: Prisma.ClinicianFeeEntryGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ClinicianFeeEntryGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ClinicianFeeEntryCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ClinicianFeeEntryCountAggregateOutputType> | number
         }
       }
     }
@@ -11595,6 +11745,43 @@ export const PaymentScalarFieldEnum = {
 export type PaymentScalarFieldEnum = (typeof PaymentScalarFieldEnum)[keyof typeof PaymentScalarFieldEnum]
 
 
+export const ClinicianFeeRuleScalarFieldEnum = {
+  id: 'id',
+  serviceTariffId: 'serviceTariffId',
+  category: 'category',
+  doctorId: 'doctorId',
+  mode: 'mode',
+  value: 'value',
+  effectiveFrom: 'effectiveFrom',
+  effectiveTo: 'effectiveTo',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type ClinicianFeeRuleScalarFieldEnum = (typeof ClinicianFeeRuleScalarFieldEnum)[keyof typeof ClinicianFeeRuleScalarFieldEnum]
+
+
+export const ClinicianFeeEntryScalarFieldEnum = {
+  id: 'id',
+  kind: 'kind',
+  invoiceId: 'invoiceId',
+  invoiceItemId: 'invoiceItemId',
+  doctorId: 'doctorId',
+  ruleId: 'ruleId',
+  ruleMode: 'ruleMode',
+  ruleValue: 'ruleValue',
+  lineAmount: 'lineAmount',
+  grossFee: 'grossFee',
+  clinicShare: 'clinicShare',
+  period: 'period',
+  occurredAt: 'occurredAt',
+  createdAt: 'createdAt'
+} as const
+
+export type ClinicianFeeEntryScalarFieldEnum = (typeof ClinicianFeeEntryScalarFieldEnum)[keyof typeof ClinicianFeeEntryScalarFieldEnum]
+
+
 export const DocumentTemplateScalarFieldEnum = {
   id: 'id',
   kind: 'kind',
@@ -13813,6 +14000,34 @@ export type ListEnumPaymentMethodFieldRefInput<$PrismaModel> = FieldRefInputType
 
 
 /**
+ * Reference to a field of type 'ClinicianFeeRuleMode'
+ */
+export type EnumClinicianFeeRuleModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ClinicianFeeRuleMode'>
+    
+
+
+/**
+ * Reference to a field of type 'ClinicianFeeRuleMode[]'
+ */
+export type ListEnumClinicianFeeRuleModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ClinicianFeeRuleMode[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ClinicianFeeEntryKind'
+ */
+export type EnumClinicianFeeEntryKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ClinicianFeeEntryKind'>
+    
+
+
+/**
+ * Reference to a field of type 'ClinicianFeeEntryKind[]'
+ */
+export type ListEnumClinicianFeeEntryKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ClinicianFeeEntryKind[]'>
+    
+
+
+/**
  * Reference to a field of type 'DocumentTemplateKind'
  */
 export type EnumDocumentTemplateKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DocumentTemplateKind'>
@@ -15059,6 +15274,8 @@ export type GlobalOmitConfig = {
   invoice?: Prisma.InvoiceOmit
   invoiceItem?: Prisma.InvoiceItemOmit
   payment?: Prisma.PaymentOmit
+  clinicianFeeRule?: Prisma.ClinicianFeeRuleOmit
+  clinicianFeeEntry?: Prisma.ClinicianFeeEntryOmit
   documentTemplate?: Prisma.DocumentTemplateOmit
   documentTemplateVersion?: Prisma.DocumentTemplateVersionOmit
   invoiceDocument?: Prisma.InvoiceDocumentOmit

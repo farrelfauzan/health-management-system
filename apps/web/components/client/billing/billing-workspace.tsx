@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger, useAbility } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
 import { CashierReportPanel } from '#components/client/billing/cashier-report-panel';
+import { ClinicianFeesPanel } from '#components/client/billing/clinician-fees-panel';
 import { InvoicesPanel } from '#components/client/billing/invoices-panel';
 import { ServiceTariffsPanel } from '#components/client/billing/service-tariffs-panel';
 import { DocumentTemplatesPanel } from '#components/client/document-templates/document-templates-panel';
@@ -21,19 +22,27 @@ type BillingWorkspaceProps = {
   currentUserId: string | null;
   /** A tab asked for by the URL (SJ-156); honoured only when this person may read it. */
   initialTab?: BillingTab;
+  /** The clinic-local current month, `YYYY-MM`, for the jasa medis statement (P27-T06). */
+  currentPeriod: string;
 };
 
-export function BillingWorkspace({ currentUserId, initialTab }: BillingWorkspaceProps) {
+export function BillingWorkspace({
+  currentUserId,
+  initialTab,
+  currentPeriod,
+}: BillingWorkspaceProps) {
   const t = useTranslations('operations.billing');
   const root = useShellBreadcrumbRoot();
   const ability = useAbility();
   const canReadInvoices = ability.can('read', 'Invoice');
   const canReadTariffs = ability.can('read', 'ServiceTariff');
   const canReadTemplates = ability.can('read', 'DocumentTemplate');
+  const canReadFees = ability.can('read', 'ClinicianFee');
   const readableTabs: Record<BillingTab, boolean> = {
     invoices: canReadInvoices,
     tariffs: canReadTariffs,
     report: canReadInvoices,
+    fees: canReadFees,
     templates: canReadTemplates,
   };
   const allowedTabs = BILLING_TABS.filter((tab) => readableTabs[tab]);
@@ -59,6 +68,7 @@ export function BillingWorkspace({ currentUserId, initialTab }: BillingWorkspace
           {canReadInvoices ? <TabsTrigger value="invoices">{t('invoices')}</TabsTrigger> : null}
           {canReadTariffs ? <TabsTrigger value="tariffs">{t('tariffs')}</TabsTrigger> : null}
           {canReadInvoices ? <TabsTrigger value="report">{t('dailyReport')}</TabsTrigger> : null}
+          {canReadFees ? <TabsTrigger value="fees">{t('fees.tab')}</TabsTrigger> : null}
           {canReadTemplates ? (
             <TabsTrigger value="templates">{t('templates.tab')}</TabsTrigger>
           ) : null}
@@ -76,6 +86,11 @@ export function BillingWorkspace({ currentUserId, initialTab }: BillingWorkspace
         {canReadInvoices ? (
           <TabsContent value="report">
             <CashierReportPanel />
+          </TabsContent>
+        ) : null}
+        {canReadFees ? (
+          <TabsContent value="fees">
+            <ClinicianFeesPanel currentPeriod={currentPeriod} />
           </TabsContent>
         ) : null}
         {canReadTemplates ? (

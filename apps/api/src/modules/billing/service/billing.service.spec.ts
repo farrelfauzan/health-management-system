@@ -3,6 +3,7 @@ import { BadRequestException, ConflictException, NotFoundException } from '@nest
 import { ConfigService } from '@nestjs/config';
 
 import { AuditService } from '../../../common/audit/audit.service';
+import { ClinicianFeeLedgerService } from '../../clinician-fee/service/clinician-fee-ledger.service';
 import { InvoiceTaxService } from '../../tax-core/service/invoice-tax.service';
 import { AddInvoiceItemDto } from '../dto/add-invoice-item.dto';
 import { GenerateInvoiceDto } from '../dto/generate-invoice.dto';
@@ -74,6 +75,11 @@ describe('BillingService', () => {
     computeLineTaxes: jest.fn(),
   };
 
+  const clinicianFeeLedgerServiceMock = {
+    recordAccrualsForPaidInvoice: jest.fn().mockResolvedValue(1),
+    recordReversalsForVoidedInvoice: jest.fn().mockResolvedValue(0),
+  };
+
   const service = new BillingService(
     billingRepositoryMock as unknown as BillingRepository,
     serviceTariffRepositoryMock as unknown as ServiceTariffRepository,
@@ -81,6 +87,7 @@ describe('BillingService', () => {
     auditServiceMock as unknown as AuditService,
     invoiceDocumentServiceMock as unknown as InvoiceDocumentService,
     invoiceTaxServiceMock as unknown as InvoiceTaxService,
+    clinicianFeeLedgerServiceMock as unknown as ClinicianFeeLedgerService,
     configServiceMock as unknown as ConfigService,
   );
 
@@ -868,6 +875,29 @@ describe('BillingService', () => {
           amount: 156500,
           cashierId: cashierUser.sub,
         }),
+        expect.any(Function),
+      );
+    });
+
+    it('writes the jasa medis accruals inside the payment transaction (P27-T06)', async () => {
+      const mockTransaction = { marker: 'payment-tx' };
+      billingRepositoryMock.findInvoiceWithRelationsById.mockResolvedValue({
+        ...invoiceWithRelationsRecord,
+        status: 'ISSUED',
+      });
+      billingRepositoryMock.recordPayment.mockImplementation(
+        async (_payload: unknown, afterPaid: (tx: unknown) => Promise<unknown>) => {
+          await afterPaid(mockTransaction);
+          return { ...invoiceDetailRecord, status: 'PAID' };
+        },
+      );
+
+      await service.recordPayment(invoiceId, inputPayload, cashierUser);
+
+      const [actualPayload] = billingRepositoryMock.recordPayment.mock.calls[0] as [{ paidAt: Date }];
+      expect(clinicianFeeLedgerServiceMock.recordAccrualsForPaidInvoice).toHaveBeenCalledWith(
+        mockTransaction,
+        { invoiceId, paidAt: actualPayload.paidAt },
       );
     });
 
@@ -930,6 +960,28 @@ describe('BillingService', () => {
         invoiceWithRelationsRecord.invoiceNumber,
       );
       expect(JSON.stringify(auditServiceMock.record.mock.calls)).not.toContain(inputPayload.reason);
+    });
+
+    it('asks the jasa medis ledger to reverse inside the void transaction (P27-T06)', async () => {
+      const mockTransaction = { marker: 'void-tx' };
+      billingRepositoryMock.findInvoiceWithRelationsById.mockResolvedValue({
+        ...invoiceWithRelationsRecord,
+        status: 'ISSUED',
+      });
+      billingRepositoryMock.voidInvoice.mockImplementation(
+        async (payload: { voidedAt: Date }, afterVoided: (tx: unknown) => Promise<unknown>) => {
+          await afterVoided(mockTransaction);
+          return { ...invoiceDetailRecord, status: 'VOID', voidedAt: payload.voidedAt };
+        },
+      );
+
+      await service.voidInvoice(invoiceId, inputPayload, cashierUser);
+
+      const [actualPayload] = billingRepositoryMock.voidInvoice.mock.calls[0] as [{ voidedAt: Date }];
+      expect(clinicianFeeLedgerServiceMock.recordReversalsForVoidedInvoice).toHaveBeenCalledWith(
+        mockTransaction,
+        { invoiceId, voidedAt: actualPayload.voidedAt },
+      );
     });
 
     it('rejects voiding a PAID invoice — refunds are out of scope in v1', async () => {

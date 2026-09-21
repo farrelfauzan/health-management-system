@@ -27,7 +27,10 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '../../../generated/prisma/client';
 import { Decimal } from '../../../generated/prisma/internal/prismaNamespace';
 import { PrismaService } from '../../../common/prisma/prisma.service';
-import { PrismaTransactionClient } from '../../../common/prisma/prisma.types';
+import {
+  PrismaTransactionClient,
+  PrismaTransactionHook,
+} from '../../../common/prisma/prisma.types';
 import { InvoiceNumberAllocatorRepository } from './invoice-number-allocator.repository';
 
 const INVOICE_PATIENT_SELECT = {
@@ -378,7 +381,10 @@ export class BillingRepository {
    * against a non-PAID invoice and a PAID invoice with no payment are both
    * states the cashier report cannot explain.
    */
-  async recordPayment(payload: RecordPaymentRecordPayload): Promise<InvoiceDetailRecord> {
+  async recordPayment(
+    payload: RecordPaymentRecordPayload,
+    afterPaid?: PrismaTransactionHook,
+  ): Promise<InvoiceDetailRecord> {
     return this.prisma.executeTransaction(async (tx) => {
       await tx.payment.create({
         data: {
@@ -396,6 +402,7 @@ export class BillingRepository {
         data: { status: 'PAID' },
         include: INVOICE_DETAIL_INCLUDE,
       });
+      await afterPaid?.(tx);
       return this.toInvoiceDetailRecord(updated);
     });
   }
@@ -433,18 +440,28 @@ export class BillingRepository {
     });
   }
 
-  async voidInvoice(payload: VoidInvoiceRecordPayload): Promise<InvoiceDetailRecord> {
-    const updated = await this.prisma.invoice.update({
-      where: { id: payload.id },
-      data: {
-        status: 'VOID',
-        voidedAt: payload.voidedAt,
-        voidReason: payload.voidReason,
-        voidedById: payload.voidedById,
-      },
-      include: INVOICE_DETAIL_INCLUDE,
+  /**
+   * The void and whatever it must undo elsewhere (the jasa medis reversal,
+   * P27-T06) commit together.
+   */
+  async voidInvoice(
+    payload: VoidInvoiceRecordPayload,
+    afterVoided?: PrismaTransactionHook,
+  ): Promise<InvoiceDetailRecord> {
+    return this.prisma.executeTransaction(async (tx) => {
+      const updated = await tx.invoice.update({
+        where: { id: payload.id },
+        data: {
+          status: 'VOID',
+          voidedAt: payload.voidedAt,
+          voidReason: payload.voidReason,
+          voidedById: payload.voidedById,
+        },
+        include: INVOICE_DETAIL_INCLUDE,
+      });
+      await afterVoided?.(tx);
+      return this.toInvoiceDetailRecord(updated);
     });
-    return this.toInvoiceDetailRecord(updated);
   }
 
   /**

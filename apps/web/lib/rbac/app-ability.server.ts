@@ -123,6 +123,8 @@ const SUBJECT_BY_RESOURCE: Record<string, AppSubject> = {
   'tax-code': 'TaxCode',
   // P27-T05. `tax-report.write:any` → resource `tax-report`, action `write`.
   'tax-report': 'TaxReport',
+  // P27-T06. `clinician-fee.read:any` → resource `clinician-fee`, action `read`.
+  'clinician-fee': 'ClinicianFee',
   invoice: 'Invoice',
   payment: 'Payment',
   'chat.session': 'ChatSession',

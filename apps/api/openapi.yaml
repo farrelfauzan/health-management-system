@@ -18730,6 +18730,707 @@ paths:
         - bearer: []
       summary: Reject a document
       tags: *a24
+  /api/v1/clinician-fee-rules:
+    get:
+      operationId: ClinicianFeeRuleController_listRules_v1
+      parameters: []
+      responses:
+        "200":
+          description: "Every live rule. `level` is where the rule sits in the precedence:
+            CLINICIAN_TARIFF, TARIFF, CLINICIAN_CATEGORY, CATEGORY — the first
+            level with a rule in force on the payment day prices the line."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        level:
+                          type: string
+                        serviceTariffId:
+                          type: string
+                        serviceTariffCode:
+                          type: string
+                        serviceTariffName:
+                          type: string
+                        category:
+                          type: string
+                        doctorId:
+                          type: string
+                        doctorName:
+                          type: string
+                        doctorProfession:
+                          type: string
+                        mode:
+                          type: string
+                        value:
+                          type: integer
+                        effectiveFrom:
+                          type: string
+                        effectiveTo:
+                          type: string
+                        createdAt:
+                          type: string
+                        updatedAt:
+                          type: string
+                      required:
+                        - id
+                        - level
+                        - mode
+                        - value
+                        - effectiveFrom
+                        - createdAt
+                        - updatedAt
+                required:
+                  - data
+                example:
+                  data:
+                    - id: 3c1d2e4f-5a6b-4c7d-8e9f-0a1b2c3d4e5f
+                      level: CLINICIAN_CATEGORY
+                      serviceTariffId: 4d2e3f5a-6b7c-4d8e-9f0a-1b2c3d4e5f60
+                      serviceTariffCode: KONS-UMUM
+                      serviceTariffName: Konsultasi dokter umum
+                      category: CONSULTATION
+                      doctorId: 5e3f4a6b-7c8d-4e9f-a0b1-2c3d4e5f6a71
+                      doctorName: dr. Andi Pratama
+                      doctorProfession: DOCTOR
+                      mode: PERCENT
+                      value: 60
+                      effectiveFrom: 2026-10-01
+                      effectiveTo: 2026-12-31
+                      createdAt: 2026-10-01T03:00:00.000Z
+                      updatedAt: 2026-10-01T03:00:00.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: List jasa medis rules
+      tags: &a25
+        - Clinician Fees
+    post:
+      operationId: ClinicianFeeRuleController_createRule_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateClinicianFeeRuleDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  category: CONSULTATION
+                  doctorId: 5e3f4a6b-7c8d-4e9f-a0b1-2c3d4e5f6a71
+                  mode: PERCENT
+                  value: 60
+                  effectiveFrom: 2026-10-01
+      responses:
+        "201":
+          description: Exactly one of `serviceTariffId` and `category`; without `doctorId`
+            the rule applies to every clinician. PERCENT is 0–100 of the line,
+            FIXED is rupiah per unit. 409 `CLINICIAN_FEE_RULE_OVERLAP` when a
+            rule for the same target and clinician is in force on any of the
+            dates; 400 `CLINICIAN_FEE_RULE_TARGET_INVALID` for an unknown tariff
+            or clinician.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      level:
+                        type: string
+                      serviceTariffId:
+                        type: string
+                      serviceTariffCode:
+                        type: string
+                      serviceTariffName:
+                        type: string
+                      category:
+                        type: string
+                      doctorId:
+                        type: string
+                      doctorName:
+                        type: string
+                      doctorProfession:
+                        type: string
+                      mode:
+                        type: string
+                      value:
+                        type: integer
+                      effectiveFrom:
+                        type: string
+                      effectiveTo:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - level
+                      - mode
+                      - value
+                      - effectiveFrom
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 3c1d2e4f-5a6b-4c7d-8e9f-0a1b2c3d4e5f
+                    level: CLINICIAN_CATEGORY
+                    serviceTariffId: 4d2e3f5a-6b7c-4d8e-9f0a-1b2c3d4e5f60
+                    serviceTariffCode: KONS-UMUM
+                    serviceTariffName: Konsultasi dokter umum
+                    category: CONSULTATION
+                    doctorId: 5e3f4a6b-7c8d-4e9f-a0b1-2c3d4e5f6a71
+                    doctorName: dr. Andi Pratama
+                    doctorProfession: DOCTOR
+                    mode: PERCENT
+                    value: 60
+                    effectiveFrom: 2026-10-01
+                    effectiveTo: 2026-12-31
+                    createdAt: 2026-10-01T03:00:00.000Z
+                    updatedAt: 2026-10-01T03:00:00.000Z
+                  message: Clinician fee rule created
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Create a jasa medis rule
+      tags: *a25
+  /api/v1/clinician-fee-rules/{id}:
+    patch:
+      operationId: ClinicianFeeRuleController_updateRule_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateClinicianFeeRuleDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  mode: PERCENT
+                  value: 65
+                  effectiveFrom: 2026-10-01
+                  effectiveTo: 2026-12-31
+      responses:
+        "200":
+          description: Replaces mode, value and dates; target and clinician are fixed.
+            Only later payments are affected — written entries keep their own
+            snapshot. 409 `CLINICIAN_FEE_RULE_OVERLAP` as on create.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      level:
+                        type: string
+                      serviceTariffId:
+                        type: string
+                      serviceTariffCode:
+                        type: string
+                      serviceTariffName:
+                        type: string
+                      category:
+                        type: string
+                      doctorId:
+                        type: string
+                      doctorName:
+                        type: string
+                      doctorProfession:
+                        type: string
+                      mode:
+                        type: string
+                      value:
+                        type: integer
+                      effectiveFrom:
+                        type: string
+                      effectiveTo:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - level
+                      - mode
+                      - value
+                      - effectiveFrom
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 3c1d2e4f-5a6b-4c7d-8e9f-0a1b2c3d4e5f
+                    level: CLINICIAN_CATEGORY
+                    serviceTariffId: 4d2e3f5a-6b7c-4d8e-9f0a-1b2c3d4e5f60
+                    serviceTariffCode: KONS-UMUM
+                    serviceTariffName: Konsultasi dokter umum
+                    category: CONSULTATION
+                    doctorId: 5e3f4a6b-7c8d-4e9f-a0b1-2c3d4e5f6a71
+                    doctorName: dr. Andi Pratama
+                    doctorProfession: DOCTOR
+                    mode: PERCENT
+                    value: 60
+                    effectiveFrom: 2026-10-01
+                    effectiveTo: 2026-12-31
+                    createdAt: 2026-10-01T03:00:00.000Z
+                    updatedAt: 2026-10-01T03:00:00.000Z
+                  message: Clinician fee rule updated
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Change the terms of a jasa medis rule
+      tags: *a25
+    delete:
+      operationId: ClinicianFeeRuleController_deleteRule_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Soft delete: later payments no longer use it; entries already
+            written are untouched."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                    required:
+                      - id
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 3c1d2e4f-5a6b-4c7d-8e9f-0a1b2c3d4e5f
+                  message: Clinician fee rule deleted
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Delete a jasa medis rule
+      tags: *a25
+  /api/v1/clinician-fees/statements:
+    get:
+      operationId: ClinicianFeeStatementController_getPeriodSummary_v1
+      parameters:
+        - name: period
+          required: true
+          in: query
+          schema:
+            pattern: ^\d{4}-(0[1-9]|1[0-2])$
+            type: string
+      responses:
+        "200":
+          description: Every clinician with ledger entries in the month, sorted by name,
+            with the sum of what patients paid for their lines, their gross fee
+            and the clinic share. Reversals count negative.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      period:
+                        type: string
+                      clinicians:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            doctorId:
+                              type: string
+                            doctorName:
+                              type: string
+                            profession:
+                              type: string
+                            totals:
+                              type: object
+                              properties:
+                                entryCount:
+                                  type: integer
+                                lineAmount:
+                                  type: integer
+                                grossFee:
+                                  type: integer
+                                clinicShare:
+                                  type: integer
+                              required:
+                                - entryCount
+                                - lineAmount
+                                - grossFee
+                                - clinicShare
+                          required:
+                            - doctorId
+                            - doctorName
+                            - profession
+                            - totals
+                      totals:
+                        type: object
+                        properties:
+                          entryCount:
+                            type: integer
+                          lineAmount:
+                            type: integer
+                          grossFee:
+                            type: integer
+                          clinicShare:
+                            type: integer
+                        required:
+                          - entryCount
+                          - lineAmount
+                          - grossFee
+                          - clinicShare
+                    required:
+                      - period
+                      - clinicians
+                      - totals
+                required:
+                  - data
+                example:
+                  data:
+                    period: 2026-10
+                    clinicians:
+                      - doctorId: 5e3f4a6b-7c8d-4e9f-a0b1-2c3d4e5f6a71
+                        doctorName: dr. Andi Pratama
+                        profession: DOCTOR
+                        totals:
+                          entryCount: 1
+                          lineAmount: 150000
+                          grossFee: 90000
+                          clinicShare: 60000
+                    totals:
+                      entryCount: 1
+                      lineAmount: 150000
+                      grossFee: 90000
+                      clinicShare: 60000
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: A month's jasa medis totals per clinician
+      tags: &a26
+        - Clinician Fees
+  /api/v1/clinician-fees/statements/{doctorId}:
+    get:
+      operationId: ClinicianFeeStatementController_getStatement_v1
+      parameters:
+        - name: doctorId
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: period
+          required: true
+          in: query
+          schema:
+            pattern: ^\d{4}-(0[1-9]|1[0-2])$
+            type: string
+      responses:
+        "200":
+          description: Every ledger entry of the month in time order and their totals. 404
+            for an unknown clinician; a clinician with no entries gets an empty
+            statement.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      period:
+                        type: string
+                      doctorId:
+                        type: string
+                      doctorName:
+                        type: string
+                      profession:
+                        type: string
+                      totals:
+                        type: object
+                        properties:
+                          entryCount:
+                            type: integer
+                          lineAmount:
+                            type: integer
+                          grossFee:
+                            type: integer
+                          clinicShare:
+                            type: integer
+                        required:
+                          - entryCount
+                          - lineAmount
+                          - grossFee
+                          - clinicShare
+                      entries:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            kind:
+                              type: string
+                            invoiceId:
+                              type: string
+                            invoiceNumber:
+                              type: string
+                            description:
+                              type: string
+                            itemType:
+                              type: string
+                            quantity:
+                              type: integer
+                            occurredAt:
+                              type: string
+                            ruleMode:
+                              type: string
+                            ruleValue:
+                              type: integer
+                            lineAmount:
+                              type: integer
+                            grossFee:
+                              type: integer
+                            clinicShare:
+                              type: integer
+                          required:
+                            - id
+                            - kind
+                            - invoiceId
+                            - invoiceNumber
+                            - description
+                            - itemType
+                            - quantity
+                            - occurredAt
+                            - ruleMode
+                            - ruleValue
+                            - lineAmount
+                            - grossFee
+                            - clinicShare
+                    required:
+                      - period
+                      - doctorId
+                      - doctorName
+                      - profession
+                      - totals
+                      - entries
+                required:
+                  - data
+                example:
+                  data:
+                    period: 2026-10
+                    doctorId: 5e3f4a6b-7c8d-4e9f-a0b1-2c3d4e5f6a71
+                    doctorName: dr. Andi Pratama
+                    profession: DOCTOR
+                    totals:
+                      entryCount: 1
+                      lineAmount: 150000
+                      grossFee: 90000
+                      clinicShare: 60000
+                    entries:
+                      - id: 7a5b6c8d-9eaf-40b1-c2d3-4e5f6a7b8c93
+                        kind: ACCRUAL
+                        invoiceId: 6f4a5b7c-8d9e-4fa0-b1c2-3d4e5f6a7b82
+                        invoiceNumber: INV/20261001/0001
+                        description: Konsultasi dokter umum
+                        itemType: CONSULTATION
+                        quantity: 1
+                        occurredAt: 2026-10-01T03:00:00.000Z
+                        ruleMode: PERCENT
+                        ruleValue: 60
+                        lineAmount: 150000
+                        grossFee: 90000
+                        clinicShare: 60000
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: One clinician's monthly jasa medis statement
+      tags: *a26
+  /api/v1/clinician-fees/statements/{doctorId}/export:
+    get:
+      operationId: ClinicianFeeStatementController_exportStatement_v1
+      parameters:
+        - name: doctorId
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: period
+          required: true
+          in: query
+          schema:
+            pattern: ^\d{4}-(0[1-9]|1[0-2])$
+            type: string
+      responses:
+        "200":
+          description: A header block with the totals, then one row per ledger entry.
+            Totals equal the on-screen statement. Audited as an export.
+      summary: Export one clinician's monthly jasa medis statement as CSV
+      tags: *a26
   /api/v1/admin/channel-gateway/whatsapp/session:
     get:
       operationId: ChannelGatewayAdminController_getSessionHealth_v1
@@ -18798,7 +19499,7 @@ paths:
       security:
         - bearer: []
       summary: Read the WhatsApp session’s health
-      tags: &a25
+      tags: &a27
         - Channel Gateway
   /api/v1/admin/channel-gateway/whatsapp/session/pairing:
     post:
@@ -18859,7 +19560,7 @@ paths:
       security:
         - bearer: []
       summary: Start a QR pairing for the WhatsApp session
-      tags: *a25
+      tags: *a27
   /api/v1/admin/channel-gateway/telegram/webhook:
     get:
       operationId: ChannelGatewayAdminController_getTelegramWebhookHealth_v1
@@ -18950,7 +19651,7 @@ paths:
       security:
         - bearer: []
       summary: Read the Telegram webhook’s registration health
-      tags: *a25
+      tags: *a27
     post:
       operationId: ChannelGatewayAdminController_registerTelegramWebhook_v1
       parameters: []
@@ -19042,7 +19743,7 @@ paths:
       security:
         - bearer: []
       summary: Point Telegram at this deployment
-      tags: *a25
+      tags: *a27
   /api/v1/admin/conversations:
     get:
       operationId: CsAdminController_listConversations_v1
@@ -19192,7 +19893,7 @@ paths:
       security:
         - bearer: []
       summary: List channel conversations
-      tags: &a26
+      tags: &a28
         - Customer Service
   /api/v1/admin/conversations/handoff-summary:
     get:
@@ -19253,7 +19954,7 @@ paths:
       security:
         - bearer: []
       summary: Count the conversations waiting for a human
-      tags: *a26
+      tags: *a28
   /api/v1/admin/conversations/metrics:
     get:
       operationId: CsAdminController_getMetrics_v1
@@ -19400,7 +20101,7 @@ paths:
       security:
         - bearer: []
       summary: Read the channel’s operating metrics (§8.4)
-      tags: *a26
+      tags: *a28
   /api/v1/admin/conversations/{id}:
     get:
       operationId: CsAdminController_getTranscript_v1
@@ -19575,7 +20276,7 @@ paths:
       security:
         - bearer: []
       summary: Read one conversation transcript
-      tags: *a26
+      tags: *a28
   /api/v1/admin/conversations/{id}/takeover:
     post:
       operationId: CsAdminController_takeOver_v1
@@ -19685,7 +20386,7 @@ paths:
       security:
         - bearer: []
       summary: Take a conversation over from the bot
-      tags: *a26
+      tags: *a28
   /api/v1/admin/conversations/{id}/release:
     post:
       operationId: CsAdminController_release_v1
@@ -19793,7 +20494,7 @@ paths:
       security:
         - bearer: []
       summary: Hand a conversation back to the bot
-      tags: *a26
+      tags: *a28
   /api/v1/admin/conversations/{id}/reply:
     post:
       operationId: CsAdminController_reply_v1
@@ -19909,7 +20610,7 @@ paths:
       security:
         - bearer: []
       summary: Reply to the customer on their original channel
-      tags: *a26
+      tags: *a28
   /api/v1/admin/conversations/{id}/block:
     post:
       operationId: CsAdminController_block_v1
@@ -20037,7 +20738,7 @@ paths:
       security:
         - bearer: []
       summary: Block a chat (§8.3 abuse control)
-      tags: *a26
+      tags: *a28
     delete:
       operationId: CsAdminController_unblock_v1
       parameters:
@@ -20143,7 +20844,7 @@ paths:
       security:
         - bearer: []
       summary: Unblock a chat
-      tags: *a26
+      tags: *a28
   /api/v1/admin/channel-arrivals:
     get:
       operationId: ChannelArrivalController_listArrivals_v1
@@ -20313,7 +21014,7 @@ paths:
       security:
         - bearer: []
       summary: List channel-sourced bookings for the check-in desk
-      tags: &a27
+      tags: &a29
         - Customer Service
   /api/v1/admin/channel-arrivals/merge-candidates:
     get:
@@ -20400,7 +21101,7 @@ paths:
       security:
         - bearer: []
       summary: Find the records a chat-created draft could be merged into
-      tags: *a27
+      tags: *a29
   /api/v1/admin/channel-arrivals/patients/{draftPatientId}/merge:
     post:
       operationId: ChannelArrivalController_mergeDraftPatient_v1
@@ -20508,7 +21209,7 @@ paths:
       security:
         - bearer: []
       summary: Merge a chat-created draft into an existing patient
-      tags: *a27
+      tags: *a29
   /api/v1/prospective-patients:
     get:
       operationId: ProspectivePatientController_listProspectivePatients_v1
@@ -20698,7 +21399,7 @@ paths:
       security:
         - bearer: []
       summary: List people who booked through a channel and have not been registered
-      tags: &a28
+      tags: &a30
         - Customer Service
   /api/v1/prospective-patients/{prospectivePatientId}/match-candidates:
     get:
@@ -20821,7 +21522,7 @@ paths:
       security:
         - bearer: []
       summary: Search the registry before spending an MRN on this person
-      tags: *a28
+      tags: *a30
   /api/v1/prospective-patients/{prospectivePatientId}/link:
     post:
       operationId: ProspectivePatientController_linkToExistingPatient_v1
@@ -20931,7 +21632,7 @@ paths:
         - bearer: []
       summary: The arriving person is already a patient — point the booking at their
         record
-      tags: *a28
+      tags: *a30
   /api/v1/prospective-patients/{prospectivePatientId}/convert:
     post:
       operationId: ProspectivePatientController_convertToNewPatient_v1
@@ -21083,7 +21784,7 @@ paths:
       security:
         - bearer: []
       summary: The arriving person is new — register them and allocate their MRN
-      tags: *a28
+      tags: *a30
   /api/v1/admin/ai-providers:
     get:
       operationId: AiProviderController_listConfigs_v1
@@ -21205,7 +21906,7 @@ paths:
       security:
         - bearer: []
       summary: List the clinic’s AI provider configurations
-      tags: &a29
+      tags: &a31
         - AI Chatbot
     post:
       operationId: AiProviderController_createConfig_v1
@@ -21341,7 +22042,7 @@ paths:
       security:
         - bearer: []
       summary: Create an AI provider configuration
-      tags: *a29
+      tags: *a31
   /api/v1/admin/ai-providers/{id}:
     patch:
       operationId: AiProviderController_updateConfig_v1
@@ -21487,7 +22188,7 @@ paths:
       security:
         - bearer: []
       summary: Update an AI provider configuration
-      tags: *a29
+      tags: *a31
     delete:
       operationId: AiProviderController_deleteConfig_v1
       parameters:
@@ -21552,7 +22253,7 @@ paths:
       security:
         - bearer: []
       summary: Retire an AI provider configuration
-      tags: *a29
+      tags: *a31
   /api/v1/admin/ai-providers/{id}/activate:
     post:
       operationId: AiProviderController_activateConfig_v1
@@ -21677,7 +22378,7 @@ paths:
       security:
         - bearer: []
       summary: Route chat traffic to an AI provider configuration
-      tags: *a29
+      tags: *a31
   /api/v1/admin/ai-providers/{id}/test:
     post:
       operationId: AiProviderController_testConnection_v1
@@ -21750,7 +22451,7 @@ paths:
       security:
         - bearer: []
       summary: Test the stored AI provider credentials
-      tags: *a29
+      tags: *a31
   /api/v1/chat/availability:
     get:
       operationId: ChatController_getAvailability_v1
@@ -21810,7 +22511,7 @@ paths:
       security:
         - bearer: []
       summary: Check whether chat can answer right now
-      tags: &a30
+      tags: &a32
         - AI Chatbot
   /api/v1/chat/sessions:
     post:
@@ -21908,7 +22609,7 @@ paths:
       security:
         - bearer: []
       summary: Start a chat session
-      tags: *a30
+      tags: *a32
     get:
       operationId: ChatController_listSessions_v1
       parameters:
@@ -22012,7 +22713,7 @@ paths:
       security:
         - bearer: []
       summary: List your own chat sessions
-      tags: *a30
+      tags: *a32
   /api/v1/chat/admin/sessions:
     get:
       operationId: ChatController_listAllSessions_v1
@@ -22123,7 +22824,7 @@ paths:
       security:
         - bearer: []
       summary: List every chat session (admin support view)
-      tags: *a30
+      tags: *a32
   /api/v1/chat/sessions/{id}:
     get:
       operationId: ChatController_getSession_v1
@@ -22205,7 +22906,7 @@ paths:
       security:
         - bearer: []
       summary: Read one of your chat sessions
-      tags: *a30
+      tags: *a32
     delete:
       operationId: ChatController_deleteSession_v1
       parameters:
@@ -22271,7 +22972,7 @@ paths:
       security:
         - bearer: []
       summary: Delete one of your chat sessions
-      tags: *a30
+      tags: *a32
   /api/v1/chat/sessions/{id}/messages:
     post:
       operationId: ChatController_sendMessage_v1
@@ -22498,7 +23199,7 @@ paths:
       security:
         - bearer: []
       summary: Send a message and receive the assistant’s reply
-      tags: *a30
+      tags: *a32
     get:
       operationId: ChatController_listMessages_v1
       parameters:
@@ -22625,7 +23326,7 @@ paths:
       security:
         - bearer: []
       summary: Read a session transcript
-      tags: *a30
+      tags: *a32
   /api/v1/appointments:
     get:
       operationId: AppointmentManagementController_listAppointments_v1
@@ -22835,7 +23536,7 @@ paths:
       security:
         - bearer: []
       summary: List appointments
-      tags: &a31
+      tags: &a33
         - Appointment Management
     post:
       operationId: AppointmentManagementController_createAppointment_v1
@@ -22961,7 +23662,7 @@ paths:
       security:
         - bearer: []
       summary: Create an appointment
-      tags: *a31
+      tags: *a33
   /api/v1/appointments/{id}:
     get:
       operationId: AppointmentManagementController_getAppointmentById_v1
@@ -23071,7 +23772,7 @@ paths:
       security:
         - bearer: []
       summary: Get an appointment
-      tags: *a31
+      tags: *a33
     patch:
       operationId: AppointmentManagementController_updateAppointment_v1
       parameters:
@@ -23205,7 +23906,7 @@ paths:
       security:
         - bearer: []
       summary: Update an appointment
-      tags: *a31
+      tags: *a33
   /api/v1/appointments/{id}/approve:
     post:
       operationId: AppointmentManagementController_approveAppointment_v1
@@ -23339,7 +24040,7 @@ paths:
       security:
         - bearer: []
       summary: Approve a special appointment request
-      tags: *a31
+      tags: *a33
   /api/v1/appointments/{id}/reject:
     post:
       operationId: AppointmentManagementController_rejectAppointment_v1
@@ -23473,7 +24174,7 @@ paths:
       security:
         - bearer: []
       summary: Reject a special appointment request
-      tags: *a31
+      tags: *a33
   /api/v1/appointments/{id}/cancel:
     post:
       operationId: AppointmentManagementController_cancelAppointment_v1
@@ -23607,7 +24308,7 @@ paths:
       security:
         - bearer: []
       summary: Cancel an appointment
-      tags: *a31
+      tags: *a33
   /api/v1/doctors/{doctorId}/sessions:
     get:
       operationId: AppointmentSessionController_listDoctorSessions_v1
@@ -23724,7 +24425,7 @@ paths:
       security:
         - bearer: []
       summary: List bookable sessions for a doctor
-      tags: &a32
+      tags: &a34
         - Appointment Management
   /api/v1/appointment-sessions:
     get:
@@ -23848,7 +24549,7 @@ paths:
       security:
         - bearer: []
       summary: List sessions across all doctors
-      tags: *a32
+      tags: *a34
   /api/v1/appointment-sessions/{id}/queue:
     get:
       operationId: AppointmentSessionController_getSessionQueue_v1
@@ -23999,7 +24700,7 @@ paths:
       security:
         - bearer: []
       summary: Get the patient queue for a session
-      tags: *a32
+      tags: *a34
   /api/v1/appointment-sessions/{id}:
     patch:
       operationId: AppointmentSessionController_updateSession_v1
@@ -24117,7 +24818,7 @@ paths:
       security:
         - bearer: []
       summary: Update a session
-      tags: *a32
+      tags: *a34
   /api/v1/doctors:
     get:
       operationId: DoctorManagementController_listDoctors_v1
@@ -24381,7 +25082,7 @@ paths:
       security:
         - bearer: []
       summary: List doctors
-      tags: &a33
+      tags: &a35
         - Doctor Management
     post:
       operationId: DoctorManagementController_createDoctor_v1
@@ -24584,7 +25285,7 @@ paths:
       security:
         - bearer: []
       summary: Create a doctor
-      tags: *a33
+      tags: *a35
   /api/v1/doctors/{id}:
     get:
       operationId: DoctorManagementController_getDoctorById_v1
@@ -24910,7 +25611,7 @@ paths:
       security:
         - bearer: []
       summary: Get a doctor
-      tags: *a33
+      tags: *a35
     patch:
       operationId: DoctorManagementController_updateDoctor_v1
       parameters:
@@ -25104,7 +25805,7 @@ paths:
       security:
         - bearer: []
       summary: Update a doctor
-      tags: *a33
+      tags: *a35
   /api/v1/doctors/{id}/identifiers:
     get:
       operationId: DoctorManagementController_getDoctorIdentifiers_v1
@@ -25171,7 +25872,7 @@ paths:
       security:
         - bearer: []
       summary: Reveal a practitioner national identifier
-      tags: *a33
+      tags: *a35
   /api/v1/doctors/{id}/invitation:
     post:
       operationId: DoctorManagementController_inviteDoctorAccount_v1
@@ -25365,7 +26066,7 @@ paths:
       security:
         - bearer: []
       summary: Invite a doctor who has no account
-      tags: *a33
+      tags: *a35
   /api/v1/doctors/{id}/schedule:
     patch:
       operationId: DoctorManagementController_updateDoctorSchedule_v1
@@ -25471,7 +26172,7 @@ paths:
       security:
         - bearer: []
       summary: Replace a doctor schedule
-      tags: *a33
+      tags: *a35
   /api/v1/me/doctor-profile:
     get:
       operationId: DoctorOwnProfileController_getOwnDoctorProfile_v1
@@ -25793,7 +26494,7 @@ paths:
       security:
         - bearer: []
       summary: Get my doctor profile
-      tags: &a34
+      tags: &a36
         - Doctor Management
     patch:
       operationId: DoctorOwnProfileController_updateOwnDoctorProfile_v1
@@ -26144,7 +26845,7 @@ paths:
       security:
         - bearer: []
       summary: Update my doctor profile
-      tags: *a34
+      tags: *a36
   /api/v1/me/doctor-profile/completion:
     post:
       operationId: DoctorOwnProfileController_completeOwnDoctorProfile_v1
@@ -26493,7 +27194,7 @@ paths:
       security:
         - bearer: []
       summary: Complete my doctor profile
-      tags: *a34
+      tags: *a36
   /api/v1/doctor-licenses/expiry:
     get:
       operationId: DoctorLicenseExpiryController_listExpiryBuckets_v1
@@ -26773,7 +27474,7 @@ paths:
       security:
         - bearer: []
       summary: List doctor credential options
-      tags: &a35
+      tags: &a37
         - Doctor Credential Options
     post:
       operationId: DoctorCredentialOptionController_createDoctorCredentialOption_v1
@@ -26876,7 +27577,7 @@ paths:
       security:
         - bearer: []
       summary: Add a doctor credential option
-      tags: *a35
+      tags: *a37
   /api/v1/doctor-credential-options/{id}:
     patch:
       operationId: DoctorCredentialOptionController_updateDoctorCredentialOption_v1
@@ -26993,7 +27694,7 @@ paths:
       security:
         - bearer: []
       summary: Edit or deactivate a doctor credential option
-      tags: *a35
+      tags: *a37
   /api/v1/doctors/{doctorId}/authorities:
     get:
       operationId: DoctorAuthorityController_listAuthorities_v1
@@ -27117,7 +27818,7 @@ paths:
       security:
         - bearer: []
       summary: List a clinician’s delegated authorities
-      tags: &a36
+      tags: &a38
         - Doctor Authorities
     post:
       operationId: DoctorAuthorityController_createAuthority_v1
@@ -27275,7 +27976,7 @@ paths:
       security:
         - bearer: []
       summary: Grant a delegated authority
-      tags: *a36
+      tags: *a38
   /api/v1/doctors/{doctorId}/authorities/upload-url:
     post:
       operationId: DoctorAuthorityController_createGrantDocumentUploadUrl_v1
@@ -27376,7 +28077,7 @@ paths:
       security:
         - bearer: []
       summary: Sign an upload of a grant document
-      tags: *a36
+      tags: *a38
   /api/v1/doctors/{doctorId}/authorities/{id}:
     patch:
       operationId: DoctorAuthorityController_updateAuthority_v1
@@ -27530,7 +28231,7 @@ paths:
       security:
         - bearer: []
       summary: Edit a delegated authority
-      tags: *a36
+      tags: *a38
   /api/v1/doctors/{doctorId}/authorities/{id}/revoke:
     post:
       operationId: DoctorAuthorityController_revokeAuthority_v1
@@ -27681,7 +28382,7 @@ paths:
       security:
         - bearer: []
       summary: Revoke a delegated authority
-      tags: *a36
+      tags: *a38
   /api/v1/doctors/{doctorId}/authorities/{id}/grant-document/download:
     get:
       operationId: DoctorAuthorityController_getGrantDocumentDownloadUrl_v1
@@ -27751,7 +28452,7 @@ paths:
       security:
         - bearer: []
       summary: Sign a download of the grant document
-      tags: *a36
+      tags: *a38
   /api/v1/doctors/{doctorId}/mandates:
     get:
       operationId: DoctorMandateController_listMandates_v1
@@ -27884,7 +28585,7 @@ paths:
       security:
         - bearer: []
       summary: List the pelimpahan a midwife works under
-      tags: &a37
+      tags: &a39
         - Doctor Mandates
     post:
       operationId: DoctorMandateController_createMandate_v1
@@ -28051,7 +28752,7 @@ paths:
       security:
         - bearer: []
       summary: Record a pelimpahan
-      tags: *a37
+      tags: *a39
   /api/v1/doctors/{doctorId}/mandates/upload-url:
     post:
       operationId: DoctorMandateController_createInstructionUploadUrl_v1
@@ -28152,7 +28853,7 @@ paths:
       security:
         - bearer: []
       summary: Sign an upload of the written instruction
-      tags: *a37
+      tags: *a39
   /api/v1/doctors/{doctorId}/mandates/{id}/revoke:
     post:
       operationId: DoctorMandateController_revokeMandate_v1
@@ -28310,7 +29011,7 @@ paths:
       security:
         - bearer: []
       summary: Revoke a pelimpahan
-      tags: *a37
+      tags: *a39
   /api/v1/doctors/{doctorId}/mandates/{id}/instruction/download:
     get:
       operationId: DoctorMandateController_getInstructionDownloadUrl_v1
@@ -28380,7 +29081,7 @@ paths:
       security:
         - bearer: []
       summary: Sign a download of the written instruction
-      tags: *a37
+      tags: *a39
   /api/v1/me/account:
     get:
       operationId: OwnAccountController_getOwnAccount_v1
@@ -28436,7 +29137,7 @@ paths:
       security:
         - bearer: []
       summary: Get my account
-      tags: &a38
+      tags: &a40
         - Account
     patch:
       operationId: OwnAccountController_updateOwnAccount_v1
@@ -28515,7 +29216,7 @@ paths:
       security:
         - bearer: []
       summary: Correct the name on my account
-      tags: *a38
+      tags: *a40
   /api/v1/users/invitations:
     get:
       operationId: UserInvitationAdminController_listInvitations_v1
@@ -28665,7 +29366,7 @@ paths:
       security:
         - bearer: []
       summary: List staff invitations
-      tags: &a39
+      tags: &a41
         - Admin Management
     post:
       operationId: UserInvitationAdminController_createInvitation_v1
@@ -28783,7 +29484,7 @@ paths:
       security:
         - bearer: []
       summary: Invite a staff user by email
-      tags: *a39
+      tags: *a41
   /api/v1/users/invitations/{id}/resend:
     post:
       operationId: UserInvitationAdminController_resendInvitation_v1
@@ -28892,7 +29593,7 @@ paths:
       security:
         - bearer: []
       summary: Resend a staff invitation
-      tags: *a39
+      tags: *a41
   /api/v1/users/invitations/{id}:
     delete:
       operationId: UserInvitationAdminController_revokeInvitation_v1
@@ -29001,7 +29702,7 @@ paths:
       security:
         - bearer: []
       summary: Revoke a staff invitation
-      tags: *a39
+      tags: *a41
   /api/v1/invitations/{token}:
     get:
       operationId: UserInvitationPublicController_previewInvitation_v1
@@ -29048,7 +29749,7 @@ paths:
                     code: NOT_FOUND
                     message: No invitation matches this link.
       summary: Validate an invitation link
-      tags: &a40
+      tags: &a42
         - Admin Management
   /api/v1/invitations/{token}/accept:
     post:
@@ -29114,7 +29815,7 @@ paths:
                     code: NOT_FOUND
                     message: No invitation matches this link.
       summary: Accept an invitation and set a password
-      tags: *a40
+      tags: *a42
   /api/v1/doctor-patient-assignments:
     post:
       operationId: DoctorPatientController_assignDoctorToPatient_v1
@@ -29209,7 +29910,7 @@ paths:
       security:
         - bearer: []
       summary: Assign a doctor to a patient
-      tags: &a41
+      tags: &a43
         - Doctor Patient
   /api/v1/doctor-patient-assignments/activity:
     get:
@@ -29356,7 +30057,7 @@ paths:
       security:
         - bearer: []
       summary: List doctor-patient assignment activity
-      tags: *a41
+      tags: *a43
   /api/v1/doctor-patient-assignments/{id}:
     delete:
       operationId: DoctorPatientController_unassignDoctorFromPatient_v1
@@ -29452,7 +30153,7 @@ paths:
       security:
         - bearer: []
       summary: Unassign a doctor from a patient
-      tags: *a41
+      tags: *a43
   /api/v1/registrations:
     get:
       operationId: RegistrationFlowController_listRegistrations_v1
@@ -29710,7 +30411,7 @@ paths:
       security:
         - bearer: []
       summary: List registrations
-      tags: &a42
+      tags: &a44
         - Registration Flow
     post:
       operationId: RegistrationFlowController_createRegistration_v1
@@ -29857,7 +30558,7 @@ paths:
       security:
         - bearer: []
       summary: Create a registration
-      tags: *a42
+      tags: *a44
   /api/v1/registrations/queue-board:
     get:
       operationId: RegistrationFlowController_getQueueBoard_v1
@@ -30073,7 +30774,7 @@ paths:
       security:
         - bearer: []
       summary: Get a day's queue board
-      tags: *a42
+      tags: *a44
   /api/v1/registrations/{id}:
     get:
       operationId: RegistrationFlowController_getRegistrationById_v1
@@ -30209,7 +30910,7 @@ paths:
       security:
         - bearer: []
       summary: Get a registration
-      tags: *a42
+      tags: *a44
     patch:
       operationId: RegistrationFlowController_updateRegistration_v1
       parameters:
@@ -30372,7 +31073,7 @@ paths:
       security:
         - bearer: []
       summary: Update a registration
-      tags: *a42
+      tags: *a44
   /api/v1/medications:
     get:
       operationId: MedicationController_listMedications_v1
@@ -30541,7 +31242,7 @@ paths:
       security:
         - bearer: []
       summary: List medications
-      tags: &a43
+      tags: &a45
         - Pharmacy Flow
     post:
       operationId: MedicationController_createMedication_v1
@@ -30666,7 +31367,7 @@ paths:
       security:
         - bearer: []
       summary: Create a medication
-      tags: *a43
+      tags: *a45
   /api/v1/medications/kfa-products:
     get:
       operationId: MedicationController_searchKfaProducts_v1
@@ -30757,7 +31458,7 @@ paths:
       security:
         - bearer: []
       summary: Search the KFA product dictionary
-      tags: *a43
+      tags: *a45
   /api/v1/medications/midwife-formulary/preview:
     get:
       operationId: MedicationController_previewMidwifeFormulary_v1
@@ -30957,7 +31658,7 @@ paths:
       security:
         - bearer: []
       summary: Preview the midwife formulary template against the catalog
-      tags: *a43
+      tags: *a45
   /api/v1/medications/midwife-formulary/apply:
     post:
       operationId: MedicationController_applyMidwifeFormulary_v1
@@ -31052,7 +31753,7 @@ paths:
       security:
         - bearer: []
       summary: Flag the chosen matched medications as midwife-prescribable
-      tags: *a43
+      tags: *a45
   /api/v1/medications/{id}:
     patch:
       operationId: MedicationController_updateMedication_v1
@@ -31186,7 +31887,7 @@ paths:
       security:
         - bearer: []
       summary: Update a medication
-      tags: *a43
+      tags: *a45
   /api/v1/prescriptions:
     get:
       operationId: PrescriptionController_listPrescriptions_v1
@@ -31407,7 +32108,7 @@ paths:
       security:
         - bearer: []
       summary: List prescriptions
-      tags: &a44
+      tags: &a46
         - Pharmacy Flow
     post:
       operationId: PrescriptionController_createPrescription_v1
@@ -31599,7 +32300,7 @@ paths:
       security:
         - bearer: []
       summary: Create a prescription
-      tags: *a44
+      tags: *a46
   /api/v1/prescriptions/{id}/document:
     post:
       operationId: PrescriptionController_printPrescriptionDocument_v1
@@ -31682,7 +32383,7 @@ paths:
       security:
         - bearer: []
       summary: Print the resep for a prescription
-      tags: *a44
+      tags: *a46
   /api/v1/dispenses:
     post:
       operationId: DispenseController_createDispense_v1
@@ -31960,7 +32661,7 @@ paths:
       security:
         - bearer: []
       summary: List stock receipts
-      tags: &a45
+      tags: &a47
         - Pharmacy Inventory
     post:
       operationId: InventoryController_createReceipt_v1
@@ -32083,7 +32784,7 @@ paths:
       security:
         - bearer: []
       summary: Record a stock receipt
-      tags: *a45
+      tags: *a47
   /api/v1/inventory/summary:
     get:
       operationId: InventoryController_getSummary_v1
@@ -32182,7 +32883,7 @@ paths:
       security:
         - bearer: []
       summary: Get inventory summary
-      tags: *a45
+      tags: *a47
   /api/v1/inventory/expiry-report:
     get:
       operationId: InventoryController_getExpiryReport_v1
@@ -32310,7 +33011,7 @@ paths:
       security:
         - bearer: []
       summary: Get medication expiry report
-      tags: *a45
+      tags: *a47
   /api/v1/organization-units/tree:
     get:
       operationId: OrganizationUnitController_getTree_v1
@@ -32470,7 +33171,7 @@ paths:
       security:
         - bearer: []
       summary: Read the organization structure tree
-      tags: &a46
+      tags: &a48
         - Organization Structure
   /api/v1/organization-units:
     post:
@@ -32586,7 +33287,7 @@ paths:
       security:
         - bearer: []
       summary: Create an organization unit
-      tags: *a46
+      tags: *a48
   /api/v1/organization-units/{id}:
     patch:
       operationId: OrganizationUnitController_updateUnit_v1
@@ -32705,7 +33406,7 @@ paths:
       security:
         - bearer: []
       summary: Rename or re-kind an organization unit
-      tags: *a46
+      tags: *a48
     delete:
       operationId: OrganizationUnitController_deleteUnit_v1
       parameters:
@@ -32760,7 +33461,7 @@ paths:
       security:
         - bearer: []
       summary: Permanently delete an organization unit
-      tags: *a46
+      tags: *a48
   /api/v1/organization-units/{id}/move:
     patch:
       operationId: OrganizationUnitController_moveUnit_v1
@@ -32880,7 +33581,7 @@ paths:
       security:
         - bearer: []
       summary: Move an organization unit to a new parent
-      tags: *a46
+      tags: *a48
   /api/v1/organization-units/{id}/archive:
     post:
       operationId: OrganizationUnitController_archiveUnit_v1
@@ -32937,7 +33638,7 @@ paths:
       security:
         - bearer: []
       summary: Archive an organization unit
-      tags: *a46
+      tags: *a48
   /api/v1/organization-units/{id}/members:
     get:
       operationId: OrganizationUnitMemberController_listMembers_v1
@@ -33063,7 +33764,7 @@ paths:
       security:
         - bearer: []
       summary: List the staff assigned to an organization unit
-      tags: &a47
+      tags: &a49
         - Organization Structure
   /api/v1/organization-units/{id}/members/{userId}:
     put:
@@ -33155,7 +33856,7 @@ paths:
       security:
         - bearer: []
       summary: Assign a person to an organization unit
-      tags: *a47
+      tags: *a49
     delete:
       operationId: OrganizationUnitMemberController_unassignMember_v1
       parameters:
@@ -33215,7 +33916,7 @@ paths:
       security:
         - bearer: []
       summary: Remove a person from an organization unit
-      tags: *a47
+      tags: *a49
   /api/v1/audit:
     get:
       operationId: AuditController_listAuditEvents_v1
@@ -33824,7 +34525,7 @@ paths:
       security:
         - bearer: []
       summary: List room classes
-      tags: &a48
+      tags: &a50
         - Room Management
     post:
       operationId: RoomClassController_createRoomClass_v1
@@ -33930,7 +34631,7 @@ paths:
       security:
         - bearer: []
       summary: Create a room class
-      tags: *a48
+      tags: *a50
   /api/v1/room-classes/{id}:
     get:
       operationId: RoomClassController_getRoomClass_v1
@@ -34022,7 +34723,7 @@ paths:
       security:
         - bearer: []
       summary: Get a room class
-      tags: *a48
+      tags: *a50
     patch:
       operationId: RoomClassController_updateRoomClass_v1
       parameters:
@@ -34141,7 +34842,7 @@ paths:
       security:
         - bearer: []
       summary: Update a room class
-      tags: *a48
+      tags: *a50
     delete:
       operationId: RoomClassController_retireRoomClass_v1
       parameters:
@@ -34195,7 +34896,7 @@ paths:
       security:
         - bearer: []
       summary: Retire a room class
-      tags: *a48
+      tags: *a50
   /api/v1/wards:
     get:
       operationId: WardController_listWards_v1
@@ -34318,7 +35019,7 @@ paths:
       security:
         - bearer: []
       summary: List wards
-      tags: &a49
+      tags: &a51
         - Room Management
     post:
       operationId: WardController_createWard_v1
@@ -34414,7 +35115,7 @@ paths:
       security:
         - bearer: []
       summary: Create a ward
-      tags: *a49
+      tags: *a51
   /api/v1/wards/{id}:
     get:
       operationId: WardController_getWard_v1
@@ -34498,7 +35199,7 @@ paths:
       security:
         - bearer: []
       summary: Get a ward
-      tags: *a49
+      tags: *a51
     patch:
       operationId: WardController_updateWard_v1
       parameters:
@@ -34607,7 +35308,7 @@ paths:
       security:
         - bearer: []
       summary: Update a ward
-      tags: *a49
+      tags: *a51
     delete:
       operationId: WardController_retireWard_v1
       parameters:
@@ -34662,7 +35363,7 @@ paths:
       security:
         - bearer: []
       summary: Retire a ward
-      tags: *a49
+      tags: *a51
   /api/v1/rooms:
     get:
       operationId: RoomController_listRooms_v1
@@ -34842,7 +35543,7 @@ paths:
       security:
         - bearer: []
       summary: List rooms
-      tags: &a50
+      tags: &a52
         - Room Management
     post:
       operationId: RoomController_createRoom_v1
@@ -34983,7 +35684,7 @@ paths:
       security:
         - bearer: []
       summary: Create a room
-      tags: *a50
+      tags: *a52
   /api/v1/rooms/{id}:
     get:
       operationId: RoomController_getRoom_v1
@@ -35111,7 +35812,7 @@ paths:
       security:
         - bearer: []
       summary: Get a room
-      tags: *a50
+      tags: *a52
     patch:
       operationId: RoomController_updateRoom_v1
       parameters:
@@ -35263,7 +35964,7 @@ paths:
       security:
         - bearer: []
       summary: Update a room
-      tags: *a50
+      tags: *a52
     delete:
       operationId: RoomController_retireRoom_v1
       parameters:
@@ -35317,7 +36018,7 @@ paths:
       security:
         - bearer: []
       summary: Retire a room
-      tags: *a50
+      tags: *a52
   /api/v1/beds:
     get:
       operationId: BedController_listBeds_v1
@@ -35509,7 +36210,7 @@ paths:
       security:
         - bearer: []
       summary: List beds
-      tags: &a51
+      tags: &a53
         - Room Management
     post:
       operationId: BedController_createBed_v1
@@ -35658,7 +36359,7 @@ paths:
       security:
         - bearer: []
       summary: Create a bed
-      tags: *a51
+      tags: *a53
   /api/v1/beds/{id}:
     get:
       operationId: BedController_getBed_v1
@@ -35796,7 +36497,7 @@ paths:
       security:
         - bearer: []
       summary: Get a bed
-      tags: *a51
+      tags: *a53
     patch:
       operationId: BedController_updateBed_v1
       parameters:
@@ -35960,7 +36661,7 @@ paths:
       security:
         - bearer: []
       summary: Update a bed
-      tags: *a51
+      tags: *a53
     delete:
       operationId: BedController_retireBed_v1
       parameters:
@@ -36014,7 +36715,7 @@ paths:
       security:
         - bearer: []
       summary: Retire a bed
-      tags: *a51
+      tags: *a53
   /api/v1/room-occupancy:
     get:
       operationId: RoomOccupancyController_getOccupancy_v1
@@ -36490,7 +37191,7 @@ paths:
       security:
         - bearer: []
       summary: List admissions
-      tags: &a52
+      tags: &a54
         - Admission Flow
     post:
       operationId: AdmissionFlowController_admitPatient_v1
@@ -36783,7 +37484,7 @@ paths:
       security:
         - bearer: []
       summary: Admit a patient
-      tags: *a52
+      tags: *a54
   /api/v1/admissions/{id}:
     get:
       operationId: AdmissionFlowController_getAdmission_v1
@@ -37059,7 +37760,7 @@ paths:
       security:
         - bearer: []
       summary: Get an admission
-      tags: *a52
+      tags: *a54
     patch:
       operationId: AdmissionFlowController_updateAdmission_v1
       parameters:
@@ -37359,7 +38060,7 @@ paths:
       security:
         - bearer: []
       summary: Correct an open admission
-      tags: *a52
+      tags: *a54
   /api/v1/admissions/{id}/transfer:
     post:
       operationId: AdmissionFlowController_transferAdmission_v1
@@ -37660,7 +38361,7 @@ paths:
       security:
         - bearer: []
       summary: Transfer an admitted patient to another bed
-      tags: *a52
+      tags: *a54
   /api/v1/admissions/{id}/discharge:
     post:
       operationId: AdmissionFlowController_dischargeAdmission_v1
@@ -37953,7 +38654,7 @@ paths:
       security:
         - bearer: []
       summary: Discharge an admitted patient
-      tags: *a52
+      tags: *a54
   /api/v1/admissions/{id}/cancel:
     post:
       operationId: AdmissionFlowController_cancelAdmission_v1
@@ -38255,7 +38956,7 @@ paths:
       security:
         - bearer: []
       summary: Cancel an admission opened in error
-      tags: *a52
+      tags: *a54
   /api/v1/patients/{patientId}/pregnancy-episodes:
     post:
       operationId: PregnancyEpisodeController_createEpisode_v1
@@ -38393,7 +39094,7 @@ paths:
       security:
         - bearer: []
       summary: Open a pregnancy episode
-      tags: &a53
+      tags: &a55
         - Maternal Care
     get:
       operationId: PregnancyEpisodeController_listEpisodes_v1
@@ -38510,7 +39211,7 @@ paths:
       security:
         - bearer: []
       summary: List a patient's pregnancy episodes
-      tags: *a53
+      tags: *a55
   /api/v1/patients/{patientId}/pregnancy-episodes/active:
     get:
       operationId: PregnancyEpisodeController_getActiveEpisode_v1
@@ -38780,7 +39481,7 @@ paths:
       security:
         - bearer: []
       summary: Get the active pregnancy episode
-      tags: *a53
+      tags: *a55
   /api/v1/pregnancy-episodes/{id}:
     patch:
       operationId: PregnancyEpisodeController_updateEpisode_v1
@@ -38916,7 +39617,7 @@ paths:
       security:
         - bearer: []
       summary: Edit a pregnancy episode
-      tags: *a53
+      tags: *a55
   /api/v1/pregnancy-episodes/{id}/end:
     post:
       operationId: PregnancyEpisodeController_endEpisode_v1
@@ -39053,7 +39754,7 @@ paths:
       security:
         - bearer: []
       summary: End a pregnancy episode
-      tags: *a53
+      tags: *a55
   /api/v1/pregnancy-episodes/{id}/external-doctor-visits:
     post:
       operationId: PregnancyEpisodeController_recordExternalDoctorVisit_v1
@@ -39138,7 +39839,7 @@ paths:
       security:
         - bearer: []
       summary: Record a doctor visit made elsewhere
-      tags: *a53
+      tags: *a55
   /api/v1/encounters/{encounterId}/antenatal-visit:
     get:
       operationId: PregnancyEpisodeController_getEncounterVisit_v1
@@ -39225,7 +39926,7 @@ paths:
       security:
         - bearer: []
       summary: Read this encounter's antenatal visit
-      tags: *a53
+      tags: *a55
     post:
       operationId: PregnancyEpisodeController_linkEncounterVisit_v1
       parameters:
@@ -39316,7 +40017,7 @@ paths:
       security:
         - bearer: []
       summary: Count this encounter as an antenatal visit
-      tags: *a53
+      tags: *a55
   /api/v1/encounters/{encounterId}/antenatal-examination:
     get:
       operationId: AntenatalExaminationController_getExamination_v1
@@ -39481,7 +40182,7 @@ paths:
       security:
         - bearer: []
       summary: Read this visit's 10T examination
-      tags: &a54
+      tags: &a56
         - Maternal Care
     put:
       operationId: AntenatalExaminationController_upsertExamination_v1
@@ -39657,7 +40358,7 @@ paths:
       security:
         - bearer: []
       summary: Record this visit's 10T examination
-      tags: *a54
+      tags: *a56
   /api/v1/encounters/{encounterId}/antenatal-referral-dismissals:
     post:
       operationId: AntenatalExaminationController_dismissReferralRule_v1
@@ -39828,7 +40529,7 @@ paths:
       security:
         - bearer: []
       summary: Set a referral prompt aside
-      tags: *a54
+      tags: *a56
   /api/v1/encounters/{encounterId}/antenatal-referral-letter:
     post:
       operationId: AntenatalExaminationController_issueReferralLetter_v1
@@ -39913,7 +40614,7 @@ paths:
       security:
         - bearer: []
       summary: Issue the surat rujukan
-      tags: *a54
+      tags: *a56
   /api/v1/pregnancy-episodes/{id}/pregnancy-certificate:
     post:
       operationId: AntenatalExaminationController_issuePregnancyCertificate_v1
@@ -39991,7 +40692,7 @@ paths:
       security:
         - bearer: []
       summary: Issue the surat keterangan hamil
-      tags: *a54
+      tags: *a56
   /api/v1/pregnancy-episodes/{pregnancyEpisodeId}/delivery:
     get:
       operationId: DeliveryRecordController_getDelivery_v1
@@ -40128,7 +40829,7 @@ paths:
       security:
         - bearer: []
       summary: Read this pregnancy's birth record
-      tags: &a55
+      tags: &a57
         - Maternal Care
     post:
       operationId: DeliveryRecordController_recordDelivery_v1
@@ -40314,7 +41015,7 @@ paths:
       security:
         - bearer: []
       summary: Record the birth
-      tags: *a55
+      tags: *a57
   /api/v1/deliveries/{deliveryRecordId}:
     patch:
       operationId: DeliveryRecordController_updateDelivery_v1
@@ -40485,7 +41186,7 @@ paths:
       security:
         - bearer: []
       summary: Correct a recorded birth
-      tags: *a55
+      tags: *a57
   /api/v1/deliveries/{deliveryRecordId}/newborns:
     post:
       operationId: DeliveryRecordController_recordNewborn_v1
@@ -40685,7 +41386,7 @@ paths:
       security:
         - bearer: []
       summary: Record a baby of this birth
-      tags: *a55
+      tags: *a57
   /api/v1/newborn-care-records/{newbornCareRecordId}:
     patch:
       operationId: DeliveryRecordController_updateNewborn_v1
@@ -40877,7 +41578,7 @@ paths:
       security:
         - bearer: []
       summary: Correct a baby's essentials
-      tags: *a55
+      tags: *a57
   /api/v1/newborn-care-records/{newbornCareRecordId}/birth-certificate:
     post:
       operationId: DeliveryRecordController_issueBirthCertificate_v1
@@ -40957,7 +41658,7 @@ paths:
       security:
         - bearer: []
       summary: Issue the surat keterangan lahir
-      tags: *a55
+      tags: *a57
   /api/v1/family-planning/due:
     get:
       operationId: FamilyPlanningController_listDue_v1
@@ -41042,7 +41743,7 @@ paths:
       security:
         - bearer: []
       summary: List family planning courses due soon or overdue
-      tags: &a56
+      tags: &a58
         - Maternal Care
   /api/v1/patients/{patientId}/family-planning:
     get:
@@ -41249,7 +41950,7 @@ paths:
       security:
         - bearer: []
       summary: Read a patient's family planning record
-      tags: *a56
+      tags: *a58
     post:
       operationId: FamilyPlanningController_startCourse_v1
       parameters:
@@ -41403,7 +42104,7 @@ paths:
       security:
         - bearer: []
       summary: Start a family planning course
-      tags: *a56
+      tags: *a58
   /api/v1/family-planning/{id}/services:
     post:
       operationId: FamilyPlanningController_recordService_v1
@@ -41575,7 +42276,7 @@ paths:
       security:
         - bearer: []
       summary: Record a family planning follow-up
-      tags: *a56
+      tags: *a58
   /api/v1/family-planning/{id}/discontinue:
     post:
       operationId: FamilyPlanningController_discontinueCourse_v1
@@ -41723,7 +42424,7 @@ paths:
       security:
         - bearer: []
       summary: Discontinue a family planning course
-      tags: *a56
+      tags: *a58
   /api/v1/pregnancy-episodes/{id}/postnatal-schedule:
     get:
       operationId: PostnatalVisitController_getSchedule_v1
@@ -41831,7 +42532,7 @@ paths:
       security:
         - bearer: []
       summary: Read the nifas and neonatal schedule of a birth
-      tags: &a57
+      tags: &a59
         - Maternal Care
   /api/v1/encounters/{encounterId}/postnatal-visit:
     get:
@@ -41993,7 +42694,7 @@ paths:
       security:
         - bearer: []
       summary: Read this encounter's nifas or neonatal visit
-      tags: *a57
+      tags: *a59
     post:
       operationId: PostnatalVisitController_linkVisit_v1
       parameters:
@@ -42179,7 +42880,7 @@ paths:
       security:
         - bearer: []
       summary: Count this encounter as a nifas or neonatal visit
-      tags: *a57
+      tags: *a59
   /api/v1/encounters/{encounterId}/postnatal-examination:
     put:
       operationId: PostnatalVisitController_upsertExamination_v1
@@ -42380,7 +43081,7 @@ paths:
       security:
         - bearer: []
       summary: Record this nifas visit's examination
-      tags: *a57
+      tags: *a59
   /api/v1/shk-screenings:
     get:
       operationId: ShkScreeningController_listWorklist_v1
@@ -42522,7 +43223,7 @@ paths:
       security:
         - bearer: []
       summary: List the SHK sample worklist
-      tags: &a58
+      tags: &a60
         - Maternal Care
   /api/v1/shk-screenings/{id}/sample:
     post:
@@ -42689,7 +43390,7 @@ paths:
       security:
         - bearer: []
       summary: Record the heel prick
-      tags: *a58
+      tags: *a60
   /api/v1/shk-screenings/{id}/sent:
     post:
       operationId: ShkScreeningController_recordSent_v1
@@ -42855,7 +43556,7 @@ paths:
       security:
         - bearer: []
       summary: Record the card sent to the laboratory
-      tags: *a58
+      tags: *a60
   /api/v1/shk-screenings/{id}/result:
     post:
       operationId: ShkScreeningController_recordResult_v1
@@ -43024,7 +43725,7 @@ paths:
       security:
         - bearer: []
       summary: Record the laboratory's answer
-      tags: *a58
+      tags: *a60
   /api/v1/encounters:
     get:
       operationId: EncounterController_listEncounters_v1
@@ -43247,7 +43948,7 @@ paths:
       security:
         - bearer: []
       summary: List clinical encounters
-      tags: &a59
+      tags: &a61
         - Encounters
     post:
       operationId: EncounterController_openEncounter_v1
@@ -43418,7 +44119,7 @@ paths:
       security:
         - bearer: []
       summary: Open a clinical encounter
-      tags: *a59
+      tags: *a61
   /api/v1/encounters/{id}:
     get:
       operationId: EncounterController_getEncounterById_v1
@@ -43831,7 +44532,7 @@ paths:
       security:
         - bearer: []
       summary: Get a clinical encounter
-      tags: *a59
+      tags: *a61
     patch:
       operationId: EncounterController_updateEncounterSoap_v1
       parameters:
@@ -44018,7 +44719,7 @@ paths:
       security:
         - bearer: []
       summary: Write the SOAP note
-      tags: *a59
+      tags: *a61
   /api/v1/encounters/{id}/close:
     post:
       operationId: EncounterController_closeEncounter_v1
@@ -44190,7 +44891,7 @@ paths:
       security:
         - bearer: []
       summary: Close a clinical encounter
-      tags: *a59
+      tags: *a61
   /api/v1/encounters/{id}/cancel:
     post:
       operationId: EncounterController_cancelEncounter_v1
@@ -44359,7 +45060,7 @@ paths:
       security:
         - bearer: []
       summary: Cancel a clinical encounter
-      tags: *a59
+      tags: *a61
   /api/v1/encounters/{encounterId}/vital-signs:
     post:
       operationId: EncounterClinicalDataController_recordVitalSigns_v1
@@ -44508,7 +45209,7 @@ paths:
       security:
         - bearer: []
       summary: Record a vital-signs measurement
-      tags: &a60
+      tags: &a62
         - Encounters
   /api/v1/encounters/{encounterId}/diagnoses:
     post:
@@ -44632,7 +45333,7 @@ paths:
       security:
         - bearer: []
       summary: Code a diagnosis
-      tags: *a60
+      tags: *a62
   /api/v1/encounters/{encounterId}/diagnoses/{diagnosisId}:
     delete:
       operationId: EncounterClinicalDataController_removeDiagnosis_v1
@@ -44692,7 +45393,7 @@ paths:
       security:
         - bearer: []
       summary: Retract a diagnosis
-      tags: *a60
+      tags: *a62
   /api/v1/encounters/{encounterId}/procedures:
     post:
       operationId: EncounterClinicalDataController_addProcedure_v1
@@ -44810,7 +45511,7 @@ paths:
       security:
         - bearer: []
       summary: Code a procedure
-      tags: *a60
+      tags: *a62
   /api/v1/encounters/{encounterId}/procedures/{procedureId}:
     delete:
       operationId: EncounterClinicalDataController_removeProcedure_v1
@@ -44869,7 +45570,7 @@ paths:
       security:
         - bearer: []
       summary: Retract a procedure
-      tags: *a60
+      tags: *a62
   /api/v1/encounters/{encounterId}/immunizations:
     post:
       operationId: EncounterClinicalDataController_addImmunization_v1
@@ -45030,7 +45731,7 @@ paths:
       security:
         - bearer: []
       summary: Record a vaccination
-      tags: *a60
+      tags: *a62
   /api/v1/encounters/{encounterId}/immunizations/{immunizationId}:
     delete:
       operationId: EncounterClinicalDataController_removeImmunization_v1
@@ -45089,7 +45790,7 @@ paths:
       security:
         - bearer: []
       summary: Retract a vaccination
-      tags: *a60
+      tags: *a62
   /api/v1/encounters/{encounterId}/bpjs-referral:
     put:
       operationId: EncounterClinicalDataController_saveBpjsReferral_v1
@@ -45213,7 +45914,7 @@ paths:
       security:
         - bearer: []
       summary: Record or replace the encounter’s BPJS rujukan
-      tags: *a60
+      tags: *a62
     get:
       operationId: EncounterClinicalDataController_getBpjsReferral_v1
       parameters:
@@ -45304,7 +46005,7 @@ paths:
       security:
         - bearer: []
       summary: Read the encounter’s recorded BPJS rujukan
-      tags: *a60
+      tags: *a62
     delete:
       operationId: EncounterClinicalDataController_removeBpjsReferral_v1
       parameters:
@@ -45358,7 +46059,7 @@ paths:
       security:
         - bearer: []
       summary: Retract the encounter’s BPJS rujukan
-      tags: *a60
+      tags: *a62
   /api/v1/patients/{patientId}/immunizations:
     get:
       operationId: PatientImmunizationController_listPatientImmunizations_v1
@@ -45630,7 +46331,7 @@ paths:
       security:
         - bearer: []
       summary: List laboratory tests
-      tags: &a61
+      tags: &a63
         - Laboratory Catalog
     post:
       operationId: LabTestController_createLabTest_v1
@@ -45797,7 +46498,7 @@ paths:
       security:
         - bearer: []
       summary: Create a laboratory test
-      tags: *a61
+      tags: *a63
   /api/v1/lab-tests/{id}:
     patch:
       operationId: LabTestController_updateLabTest_v1
@@ -45972,7 +46673,7 @@ paths:
       security:
         - bearer: []
       summary: Update a laboratory test
-      tags: *a61
+      tags: *a63
   /api/v1/lab-tests/{id}/reference-ranges:
     put:
       operationId: LabTestController_replaceReferenceRanges_v1
@@ -46157,7 +46858,7 @@ paths:
       security:
         - bearer: []
       summary: Replace a test’s reference ranges
-      tags: *a61
+      tags: *a63
   /api/v1/lab-panels:
     get:
       operationId: LabPanelController_listLabPanels_v1
@@ -46277,7 +46978,7 @@ paths:
       security:
         - bearer: []
       summary: List laboratory panels
-      tags: &a62
+      tags: &a64
         - Laboratory Catalog
     post:
       operationId: LabPanelController_createLabPanel_v1
@@ -46420,7 +47121,7 @@ paths:
       security:
         - bearer: []
       summary: Create a laboratory panel
-      tags: *a62
+      tags: *a64
   /api/v1/lab-panels/{id}:
     patch:
       operationId: LabPanelController_updateLabPanel_v1
@@ -46565,7 +47266,7 @@ paths:
       security:
         - bearer: []
       summary: Update a laboratory panel
-      tags: *a62
+      tags: *a64
   /api/v1/encounters/{encounterId}/lab-orders:
     post:
       operationId: EncounterLabOrderController_createLabOrder_v1
@@ -46761,7 +47462,7 @@ paths:
       security:
         - bearer: []
       summary: Order laboratory tests on an encounter
-      tags: &a63
+      tags: &a65
         - Laboratory Orders
     get:
       operationId: EncounterLabOrderController_listEncounterLabOrders_v1
@@ -46926,7 +47627,7 @@ paths:
       security:
         - bearer: []
       summary: List an encounter’s laboratory orders
-      tags: *a63
+      tags: *a65
   /api/v1/lab-orders/intake:
     post:
       operationId: LabOrderController_createWalkInLabOrder_v1
@@ -47089,7 +47790,7 @@ paths:
       security:
         - bearer: []
       summary: Register a walk-in or external lab request
-      tags: &a64
+      tags: &a66
         - Laboratory Orders
   /api/v1/lab-orders:
     get:
@@ -47273,7 +47974,7 @@ paths:
       security:
         - bearer: []
       summary: List laboratory orders
-      tags: *a64
+      tags: *a66
   /api/v1/lab-orders/{id}:
     get:
       operationId: LabOrderController_getLabOrderById_v1
@@ -47434,7 +48135,7 @@ paths:
       security:
         - bearer: []
       summary: Read one laboratory order
-      tags: *a64
+      tags: *a66
   /api/v1/lab-orders/{id}/cancel:
     post:
       operationId: LabOrderController_cancelLabOrder_v1
@@ -47634,7 +48335,7 @@ paths:
       security:
         - bearer: []
       summary: Cancel a laboratory order
-      tags: *a64
+      tags: *a66
   /api/v1/lab-orders/{id}/disposition:
     patch:
       operationId: LabOrderController_updateDisposition_v1
@@ -47831,7 +48532,7 @@ paths:
       security:
         - bearer: []
       summary: Change where a laboratory order is filled and who pays
-      tags: *a64
+      tags: *a66
   /api/v1/lab-orders/{id}/request-document:
     post:
       operationId: LabOrderController_printRequestLetter_v1
@@ -47914,7 +48615,7 @@ paths:
       security:
         - bearer: []
       summary: Print the surat pengantar for a laboratory order
-      tags: *a64
+      tags: *a66
   /api/v1/lab-orders/{id}/collect:
     post:
       operationId: LabSpecimenController_collectLabSpecimens_v1
@@ -48030,7 +48731,7 @@ paths:
       security:
         - bearer: []
       summary: Collect the specimens an order needs
-      tags: &a65
+      tags: &a67
         - Laboratory Specimens
   /api/v1/lab-specimens/{id}/receive:
     post:
@@ -48120,7 +48821,7 @@ paths:
       security:
         - bearer: []
       summary: Mark a specimen as arrived in the lab
-      tags: *a65
+      tags: *a67
   /api/v1/lab-specimens/{id}/reject:
     post:
       operationId: LabSpecimenController_rejectLabSpecimen_v1
@@ -48232,7 +48933,7 @@ paths:
       security:
         - bearer: []
       summary: Reject a specimen and ask for a fresh draw
-      tags: *a65
+      tags: *a67
   /api/v1/lab-specimens/{id}/label:
     get:
       operationId: LabSpecimenController_getSpecimenLabel_v1
@@ -48335,7 +49036,7 @@ paths:
       security:
         - bearer: []
       summary: Read a specimen label payload
-      tags: *a65
+      tags: *a67
   /api/v1/lab-worklist:
     get:
       operationId: LabWorklistController_listWorklist_v1
@@ -48687,7 +49388,7 @@ paths:
       security:
         - bearer: []
       summary: Read the values entered on a laboratory order
-      tags: &a66
+      tags: &a68
         - Laboratory Results
     put:
       operationId: LabResultController_enterLabResults_v1
@@ -48947,7 +49648,7 @@ paths:
       security:
         - bearer: []
       summary: Enter results for a laboratory order
-      tags: *a66
+      tags: *a68
   /api/v1/lab-orders/{id}/release:
     post:
       operationId: LabResultController_releaseLabOrder_v1
@@ -49216,7 +49917,7 @@ paths:
       security:
         - bearer: []
       summary: Release a laboratory order
-      tags: *a66
+      tags: *a68
   /api/v1/lab-results/{id}/amend:
     post:
       operationId: LabResultController_amendLabResult_v1
@@ -49374,7 +50075,7 @@ paths:
       security:
         - bearer: []
       summary: Amend a released laboratory result
-      tags: *a66
+      tags: *a68
   /api/v1/patients/{id}/lab-results:
     get:
       operationId: PatientLabResultController_listPatientLabResults_v1
@@ -49613,7 +50314,7 @@ paths:
       security:
         - bearer: []
       summary: Read the laboratory verification settings
-      tags: &a67
+      tags: &a69
         - Laboratory Settings
     patch:
       operationId: LaboratorySettingsController_updateLaboratorySettings_v1
@@ -49699,7 +50400,7 @@ paths:
       security:
         - bearer: []
       summary: Change the laboratory verification settings
-      tags: *a67
+      tags: *a69
   /api/v1/lab-orders/{id}/report:
     get:
       operationId: LabReportController_downloadReport_v1
@@ -49788,7 +50489,7 @@ paths:
       security:
         - bearer: []
       summary: Download the current laboratory report
-      tags: &a68
+      tags: &a70
         - Laboratory Orders
   /api/v1/lab-orders/{id}/reports:
     get:
@@ -49988,7 +50689,7 @@ paths:
       security:
         - bearer: []
       summary: List the versions of a laboratory report
-      tags: *a68
+      tags: *a70
   /api/v1/lab-orders/{id}/reports/{reportId}/retry:
     post:
       operationId: LabReportController_retryReport_v1
@@ -50197,7 +50898,7 @@ paths:
       security:
         - bearer: []
       summary: Render a laboratory report version again
-      tags: *a68
+      tags: *a70
   /api/v1/admin/integrations/notion/status:
     get:
       operationId: NotionConnectorController_getStatus_v1
@@ -50263,7 +50964,7 @@ paths:
       security:
         - bearer: []
       summary: Read the Notion bug-report connector status
-      tags: &a69
+      tags: &a71
         - Notion Connector
   /api/v1/admin/integrations/notion/test-connection:
     post:
@@ -50344,7 +51045,7 @@ paths:
       security:
         - bearer: []
       summary: Test the Notion connection and check the Bug Board schema
-      tags: *a69
+      tags: *a71
   /api/v1/bug-reports:
     post:
       operationId: BugReportController_submitReport_v1
@@ -50522,7 +51223,7 @@ paths:
       security:
         - bearer: []
       summary: Read the clinic's tax profile
-      tags: &a70
+      tags: &a72
         - Tax Settings
     patch:
       operationId: TaxSettingsController_updateTaxSettings_v1
@@ -50632,7 +51333,7 @@ paths:
       security:
         - bearer: []
       summary: Change the clinic's tax profile
-      tags: *a70
+      tags: *a72
   /api/v1/tax/codes:
     get:
       operationId: TaxCodeController_listTaxCodes_v1
@@ -50779,7 +51480,7 @@ paths:
       security:
         - bearer: []
       summary: List tax codes with their rates
-      tags: &a71
+      tags: &a73
         - Tax Codes
     post:
       operationId: TaxCodeController_createTaxCode_v1
@@ -50957,7 +51658,7 @@ paths:
       security:
         - bearer: []
       summary: Create a tax code
-      tags: *a71
+      tags: *a73
   /api/v1/tax/codes/{id}:
     patch:
       operationId: TaxCodeController_updateTaxCode_v1
@@ -51134,7 +51835,7 @@ paths:
       security:
         - bearer: []
       summary: Change a tax code
-      tags: *a71
+      tags: *a73
   /api/v1/tax/codes/{id}/rates:
     post:
       operationId: TaxCodeController_addTaxCodeRate_v1
@@ -51312,7 +52013,7 @@ paths:
       security:
         - bearer: []
       summary: Add a rate to a tax code
-      tags: *a71
+      tags: *a73
   /api/v1/tax/category-defaults:
     get:
       operationId: TaxCategoryDefaultController_listCategoryDefaults_v1
@@ -51372,7 +52073,7 @@ paths:
       security:
         - bearer: []
       summary: List the tax code defaults
-      tags: &a72
+      tags: &a74
         - Tax Codes
     put:
       operationId: TaxCategoryDefaultController_updateCategoryDefaults_v1
@@ -51459,7 +52160,7 @@ paths:
       security:
         - bearer: []
       summary: Set tax code defaults
-      tags: *a72
+      tags: *a74
   /api/v1/tax/assignments:
     get:
       operationId: TaxAssignmentController_listAssignments_v1
@@ -51625,7 +52326,7 @@ paths:
       security:
         - bearer: []
       summary: List tariffs and medications with their tax code
-      tags: &a73
+      tags: &a75
         - Tax Codes
   /api/v1/tax/assignments/bulk:
     post:
@@ -51703,7 +52404,7 @@ paths:
       security:
         - bearer: []
       summary: Assign a tax code to many tariffs and medications
-      tags: *a73
+      tags: *a75
   /api/v1/tax/price-breakdowns:
     get:
       operationId: TaxPriceBreakdownController_listPriceBreakdowns_v1
@@ -51895,7 +52596,7 @@ paths:
       security:
         - bearer: []
       summary: List a year's monthly tax reports
-      tags: &a74
+      tags: &a76
         - Tax Reports
     post:
       operationId: TaxReportController_createReport_v1
@@ -52086,7 +52787,7 @@ paths:
       security:
         - bearer: []
       summary: Create the draft for a month
-      tags: *a74
+      tags: *a76
   /api/v1/tax/reports/{id}:
     get:
       operationId: TaxReportController_getReport_v1
@@ -52257,7 +52958,7 @@ paths:
       security:
         - bearer: []
       summary: Read one monthly tax report
-      tags: *a74
+      tags: *a76
   /api/v1/tax/reports/{id}/recompute:
     post:
       operationId: TaxReportController_recomputeReport_v1
@@ -52429,7 +53130,7 @@ paths:
       security:
         - bearer: []
       summary: Recompute a draft from the books
-      tags: *a74
+      tags: *a76
   /api/v1/tax/reports/{id}/finalize:
     post:
       operationId: TaxReportController_finalizeReport_v1
@@ -52604,7 +53305,7 @@ paths:
       security:
         - bearer: []
       summary: Finalize a monthly tax report
-      tags: *a74
+      tags: *a76
   /api/v1/tax/reports/{id}/export:
     get:
       operationId: TaxReportController_exportReport_v1
@@ -52620,7 +53321,7 @@ paths:
             and due dates, then one row per payment or invoice. Totals equal the
             report to the rupiah. Audited as an export."
       summary: Export one monthly tax report as CSV
-      tags: *a74
+      tags: *a76
   /api/v1/tax/reports/{id}/pdf:
     post:
       description: P27-T12. A DRAFT is rendered on every request with a DRAFT
@@ -52644,7 +53345,7 @@ paths:
                 type: string
                 format: binary
       summary: Download one monthly tax report as PDF
-      tags: *a74
+      tags: *a76
   /api/v1/tax/reports/{id}/pdf/download-url:
     get:
       operationId: TaxReportController_createPdfDownloadUrl_v1
@@ -52705,7 +53406,7 @@ paths:
       security:
         - bearer: []
       summary: A signed link to a finalized report's PDF
-      tags: *a74
+      tags: *a76
   /api/v1/satusehat/patients/{patientId}/link:
     post:
       operationId: SatusehatLinkController_linkPatient_v1
@@ -52775,7 +53476,7 @@ paths:
       security:
         - bearer: []
       summary: Link a patient to their SATUSEHAT IHS number
-      tags: &a75
+      tags: &a77
         - SATUSEHAT
   /api/v1/satusehat/doctors/{doctorId}/link:
     post:
@@ -52846,7 +53547,7 @@ paths:
       security:
         - bearer: []
       summary: Link a doctor to their SATUSEHAT IHS practitioner number
-      tags: *a75
+      tags: *a77
   /api/v1/satusehat/doctors/{doctorId}/link-by-ihs/preview:
     post:
       operationId: SatusehatLinkController_previewDoctorIhsLink_v1
@@ -52954,7 +53655,7 @@ paths:
       security:
         - bearer: []
       summary: Preview linking a doctor to a hand-typed SATUSEHAT IHS number
-      tags: *a75
+      tags: *a77
   /api/v1/satusehat/doctors/{doctorId}/link-by-ihs:
     post:
       operationId: SatusehatLinkController_linkDoctorByIhs_v1
@@ -53049,7 +53750,7 @@ paths:
       security:
         - bearer: []
       summary: Link a doctor to a hand-typed SATUSEHAT IHS number after confirmation
-      tags: *a75
+      tags: *a77
   /api/v1/satusehat/environment:
     get:
       operationId: SatusehatSubmissionController_getEnvironment_v1
@@ -53108,7 +53809,7 @@ paths:
       security:
         - bearer: []
       summary: Which SATUSEHAT environment this deployment reports to
-      tags: &a76
+      tags: &a78
         - SATUSEHAT
   /api/v1/satusehat/submissions:
     get:
@@ -53299,7 +54000,7 @@ paths:
       security:
         - bearer: []
       summary: List SATUSEHAT submission outbox entries
-      tags: *a76
+      tags: *a78
   /api/v1/satusehat/submissions/{id}:
     get:
       operationId: SatusehatSubmissionController_getSubmissionDetail_v1
@@ -53471,7 +54172,7 @@ paths:
       security:
         - bearer: []
       summary: One SATUSEHAT submission and what it sent
-      tags: *a76
+      tags: *a78
   /api/v1/satusehat/submissions/{id}/check:
     post:
       operationId: SatusehatSubmissionController_checkSubmission_v1
@@ -53575,7 +54276,7 @@ paths:
       security:
         - bearer: []
       summary: Check with SATUSEHAT whether it still holds what we sent
-      tags: *a76
+      tags: *a78
   /api/v1/satusehat/submissions/{id}/retry:
     post:
       operationId: SatusehatSubmissionController_retrySubmission_v1
@@ -53700,7 +54401,7 @@ paths:
       security:
         - bearer: []
       summary: Retry a failed SATUSEHAT submission
-      tags: *a76
+      tags: *a78
   /api/v1/satusehat/encounters/{encounterId}/record-comparison:
     get:
       operationId: SatusehatRecordController_compareEncounterRecord_v1
@@ -53974,7 +54675,7 @@ paths:
       security:
         - bearer: []
       summary: The clinic's SATUSEHAT Location tree
-      tags: &a77
+      tags: &a79
         - SATUSEHAT
   /api/v1/satusehat/locations/register:
     post:
@@ -54089,7 +54790,7 @@ paths:
       security:
         - bearer: []
       summary: Register clinic rows as SATUSEHAT Locations, or push their changes
-      tags: *a77
+      tags: *a79
   /api/v1/bpjs/config:
     get:
       operationId: BpjsPcareConfigController_getConfig_v1
@@ -54203,7 +54904,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS PCare bridging configuration
-      tags: &a78
+      tags: &a80
         - BPJS PCare
     put:
       operationId: BpjsPcareConfigController_upsertConfig_v1
@@ -54341,7 +55042,7 @@ paths:
       security:
         - bearer: []
       summary: Create or replace the BPJS PCare bridging configuration
-      tags: *a78
+      tags: *a80
     delete:
       operationId: BpjsPcareConfigController_deleteConfig_v1
       parameters: []
@@ -54400,7 +55101,7 @@ paths:
       security:
         - bearer: []
       summary: Delete the BPJS PCare bridging configuration
-      tags: *a78
+      tags: *a80
   /api/v1/bpjs/config/test-connection:
     post:
       operationId: BpjsPcareConfigController_testConnection_v1
@@ -54466,7 +55167,7 @@ paths:
       security:
         - bearer: []
       summary: Test the stored BPJS PCare credentials
-      tags: *a78
+      tags: *a80
   /api/v1/bpjs/reference/sync:
     post:
       operationId: BpjsReferenceController_syncCatalogs_v1
@@ -54554,7 +55255,7 @@ paths:
       security:
         - bearer: []
       summary: Sync the enumerable BPJS PCare reference catalogs
-      tags: &a79
+      tags: &a81
         - BPJS PCare
   /api/v1/bpjs/reference/status:
     get:
@@ -54621,7 +55322,7 @@ paths:
       security:
         - bearer: []
       summary: Read per-catalog BPJS reference sync status
-      tags: *a79
+      tags: *a81
   /api/v1/bpjs/reference/{catalog}:
     get:
       operationId: BpjsReferenceController_searchCatalog_v1
@@ -54715,7 +55416,7 @@ paths:
       security:
         - bearer: []
       summary: Search a synced BPJS reference catalog locally
-      tags: *a79
+      tags: *a81
   /api/v1/bpjs/reference/{catalog}/search:
     post:
       operationId: BpjsReferenceController_searchCatalogRemote_v1
@@ -54821,7 +55522,7 @@ paths:
       security:
         - bearer: []
       summary: Search a keyword-only BPJS catalog live and cache the results
-      tags: *a79
+      tags: *a81
   /api/v1/bpjs/mappings:
     get:
       operationId: BpjsMappingController_getOverview_v1
@@ -54909,7 +55610,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS mapping overview
-      tags: &a80
+      tags: &a82
         - BPJS PCare
   /api/v1/bpjs/mappings/doctors/{doctorId}:
     put:
@@ -55003,7 +55704,7 @@ paths:
       security:
         - bearer: []
       summary: Set or clear a doctor’s BPJS kdDokter mapping
-      tags: *a80
+      tags: *a82
   /api/v1/bpjs/mappings/specialties/{specialtyId}:
     put:
       operationId: BpjsMappingController_setSpecialtyMapping_v1
@@ -55092,7 +55793,7 @@ paths:
       security:
         - bearer: []
       summary: Set or clear a specialty’s BPJS kdPoli mapping
-      tags: *a80
+      tags: *a82
   /api/v1/bpjs/mappings/medications/{medicationId}:
     put:
       operationId: BpjsMappingController_setMedicationMapping_v1
@@ -55186,7 +55887,7 @@ paths:
       security:
         - bearer: []
       summary: Link or unlink a medication’s DPHO code
-      tags: *a80
+      tags: *a82
   /api/v1/bpjs/eligibility/patients/{patientId}/check:
     post:
       operationId: BpjsEligibilityController_checkEligibility_v1
@@ -55486,7 +56187,7 @@ paths:
       security:
         - bearer: []
       summary: List BPJS PCare submission outbox entries
-      tags: &a81
+      tags: &a83
         - BPJS PCare
   /api/v1/bpjs/submissions/{id}/retry:
     post:
@@ -55595,7 +56296,7 @@ paths:
       security:
         - bearer: []
       summary: Retry a failed BPJS PCare submission
-      tags: *a81
+      tags: *a83
   /api/v1/bpjs/reports/monthly:
     get:
       operationId: BpjsReportController_getMonthlyReport_v1
@@ -55842,7 +56543,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS Antrean Online bridging configuration
-      tags: &a82
+      tags: &a84
         - BPJS Antrean
     put:
       operationId: BpjsAntreanConfigController_upsertConfig_v1
@@ -55983,7 +56684,7 @@ paths:
       security:
         - bearer: []
       summary: Create or replace the BPJS Antrean Online bridging configuration
-      tags: *a82
+      tags: *a84
     delete:
       operationId: BpjsAntreanConfigController_deleteConfig_v1
       parameters: []
@@ -56042,7 +56743,7 @@ paths:
       security:
         - bearer: []
       summary: Delete the BPJS Antrean Online bridging configuration
-      tags: *a82
+      tags: *a84
   /api/v1/bpjs/antrean/config/test-connection:
     post:
       operationId: BpjsAntreanConfigController_testConnection_v1
@@ -56108,7 +56809,7 @@ paths:
       security:
         - bearer: []
       summary: Test the stored BPJS Antrean credentials
-      tags: *a82
+      tags: *a84
   /api/v1/bpjs/antrean/inbound-readiness:
     get:
       operationId: BpjsAntreanConfigController_getInboundReadiness_v1
@@ -56178,7 +56879,7 @@ paths:
       security:
         - bearer: []
       summary: Report whether the inbound Antrean web services can serve BPJS
-      tags: *a82
+      tags: *a84
   /api/v1/bpjs/antrean/hfis-reconciliation:
     get:
       operationId: BpjsAntreanConfigController_getHfisReconciliation_v1
@@ -56280,7 +56981,7 @@ paths:
       security:
         - bearer: []
       summary: Compare HFIS against HMS and report the disagreements
-      tags: *a82
+      tags: *a84
   /api/v1/admin/features:
     get:
       operationId: FeatureAdminController_getEntitlements_v1
@@ -56359,7 +57060,7 @@ paths:
       security:
         - bearer: []
       summary: List every feature and whether this client has it
-      tags: &a83
+      tags: &a85
         - Feature Entitlements
   /api/v1/admin/features/{key}:
     put:
@@ -56476,7 +57177,7 @@ paths:
       security:
         - bearer: []
       summary: Switch a feature on or off for this client
-      tags: *a83
+      tags: *a85
   /api/v1/features/availability:
     get:
       operationId: FeatureAvailabilityController_getAvailability_v1
@@ -56599,7 +57300,7 @@ paths:
       security:
         - bearer: []
       summary: List active roles
-      tags: &a84
+      tags: &a86
         - RBAC
     post:
       operationId: RbacController_createRole_v1
@@ -56686,7 +57387,7 @@ paths:
       security:
         - bearer: []
       summary: Create a custom role
-      tags: *a84
+      tags: *a86
   /api/v1/rbac/permissions:
     get:
       operationId: RbacController_getPermissionCatalog_v1
@@ -56766,7 +57467,7 @@ paths:
       security:
         - bearer: []
       summary: List the permission catalog
-      tags: *a84
+      tags: *a86
   /api/v1/rbac/roles/{id}:
     get:
       operationId: RbacController_getRoleById_v1
@@ -56885,7 +57586,7 @@ paths:
       security:
         - bearer: []
       summary: Get a role with its permissions and member count
-      tags: *a84
+      tags: *a86
     patch:
       operationId: RbacController_updateRole_v1
       parameters:
@@ -56984,7 +57685,7 @@ paths:
       security:
         - bearer: []
       summary: Update a role name or description
-      tags: *a84
+      tags: *a86
     delete:
       operationId: RbacController_deleteRole_v1
       parameters:
@@ -57060,7 +57761,7 @@ paths:
       security:
         - bearer: []
       summary: Soft-delete a role
-      tags: *a84
+      tags: *a86
   /api/v1/rbac/roles/{id}/permissions:
     put:
       operationId: RbacController_setRolePermissions_v1
@@ -57206,7 +57907,7 @@ paths:
       security:
         - bearer: []
       summary: Replace the permission set attached to a role
-      tags: *a84
+      tags: *a86
   /api/v1/rbac/assign-role:
     post:
       operationId: RbacController_assignRole_v1
@@ -57298,7 +57999,7 @@ paths:
       security:
         - bearer: []
       summary: Assign a role to a user
-      tags: *a84
+      tags: *a86
   /api/v1/rbac/unassign-role:
     post:
       operationId: RbacController_unassignRole_v1
@@ -57390,7 +58091,7 @@ paths:
       security:
         - bearer: []
       summary: Unassign a role from a user
-      tags: *a84
+      tags: *a86
   /api/v1/health:
     get:
       operationId: HealthController_getHealth_v1
@@ -59257,6 +59958,68 @@ components:
           maxLength: 1000
       required:
         - reason
+    CreateClinicianFeeRuleDto:
+      type: object
+      properties:
+        mode:
+          type: string
+          enum:
+            - PERCENT
+            - FIXED
+        value:
+          type: number
+          minimum: 0
+          exclusiveMinimum: false
+          maximum: 9999999999.99
+          exclusiveMaximum: false
+        effectiveFrom:
+          type: string
+          pattern: ^\d{4}-\d{2}-\d{2}$
+        effectiveTo:
+          type: string
+          pattern: ^\d{4}-\d{2}-\d{2}$
+        serviceTariffId:
+          type: string
+          format: uuid
+        category:
+          type: string
+          enum:
+            - CONSULTATION
+            - PROCEDURE
+            - ACCOMMODATION
+            - LAB
+            - OTHER
+        doctorId:
+          type: string
+          format: uuid
+      required:
+        - mode
+        - value
+        - effectiveFrom
+    UpdateClinicianFeeRuleDto:
+      type: object
+      properties:
+        mode:
+          type: string
+          enum:
+            - PERCENT
+            - FIXED
+        value:
+          type: number
+          minimum: 0
+          exclusiveMinimum: false
+          maximum: 9999999999.99
+          exclusiveMaximum: false
+        effectiveFrom:
+          type: string
+          pattern: ^\d{4}-\d{2}-\d{2}$
+        effectiveTo:
+          type: string
+          pattern: ^\d{4}-\d{2}-\d{2}$
+      required:
+        - mode
+        - value
+        - effectiveFrom
     ReplyToConversationDto:
       type: object
       properties:

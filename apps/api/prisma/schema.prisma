@@ -2051,6 +2051,8 @@ model DoctorProfile {
   @@index([specialtyId])
   @@map("doctor_profiles")
   attendedDeliveries DeliveryRecord[] @relation("DeliveryAttendant")
+  clinicianFeeRules   ClinicianFeeRule[]
+  clinicianFeeEntries ClinicianFeeEntry[]
   providedFamilyPlanningRecords FamilyPlanningRecord[] @relation("FamilyPlanningProvider")
 }
 
@@ -3362,6 +3364,7 @@ model ServiceTariff {
   invoiceItems InvoiceItem[]
   labTests     LabTest[]
   labPanels    LabPanel[]
+  clinicianFeeRules ClinicianFeeRule[]
 
   @@index([category])
   @@index([isActive])
@@ -3442,6 +3445,7 @@ model Invoice {
   payment      Payment?
   documents    InvoiceDocument[]
   deliveries   DocumentDelivery[]
+  clinicianFeeEntries ClinicianFeeEntry[]
 
   managedDocuments ManagedDocument[]
 
@@ -3505,6 +3509,7 @@ model InvoiceItem {
   medication       Medication?             @relation(fields: [medicationId], references: [id], onDelete: SetNull)
   labOrder         LabOrder?               @relation(fields: [labOrderId], references: [id], onDelete: SetNull)
   prescriptionItem PrescriptionMedication? @relation(fields: [prescriptionItemId], references: [id], onDelete: SetNull)
+  clinicianFeeEntries ClinicianFeeEntry[]
 
   @@index([invoiceId])
   @@index([serviceTariffId])
@@ -3548,6 +3553,97 @@ model Payment {
   @@index([cashierId])
   @@index([method, paidAt])
   @@map("payments")
+}
+
+/// How a clinician's share of a line is stated (P27-T06): a percentage of what
+/// the patient paid for the line, or a fixed rupiah amount per unit.
+enum ClinicianFeeRuleMode {
+  PERCENT
+  FIXED
+}
+
+/// An accrual is written when an invoice is paid; a reversal, with the signs
+/// flipped, when a paid invoice is voided. Entries are never edited.
+enum ClinicianFeeEntryKind {
+  ACCRUAL
+  REVERSAL
+}
+
+/// A jasa medis rule (P27-T06): what share of a priced service goes to the
+/// clinician who delivered it. The target is exactly one of a tariff or a
+/// tariff category (CHECK in the migration); a null `doctorId` makes the rule
+/// the clinic-wide default for that target. The most specific rule in force on
+/// the payment day wins: clinician + tariff, tariff, clinician + category,
+/// category. Rules of the same target and clinician may not overlap in time
+/// (checked by the service).
+///
+/// Deleting a rule is a soft delete: the entries it produced snapshot its mode
+/// and value, so history never depends on the rule surviving.
+model ClinicianFeeRule {
+  id              String                 @id @default(uuid()) @db.Uuid
+  serviceTariffId String?                @map("service_tariff_id") @db.Uuid
+  category        ServiceTariffCategory?
+  doctorId        String?                @map("doctor_id") @db.Uuid
+  mode            ClinicianFeeRuleMode
+  /// Percent (0-100, CHECK) for PERCENT; rupiah per unit for FIXED.
+  value           Decimal                @db.Decimal(12, 2)
+  /// Clinic-local calendar days, both inclusive; a null end is open-ended.
+  effectiveFrom   DateTime               @map("effective_from") @db.Date
+  effectiveTo     DateTime?              @map("effective_to") @db.Date
+  createdAt       DateTime               @default(now()) @map("created_at")
+  updatedAt       DateTime               @updatedAt @map("updated_at")
+  deletedAt       DateTime?              @map("deleted_at")
+
+  serviceTariff ServiceTariff?      @relation(fields: [serviceTariffId], references: [id], onDelete: Restrict)
+  doctor        DoctorProfile?      @relation(fields: [doctorId], references: [id], onDelete: Restrict)
+  entries       ClinicianFeeEntry[]
+
+  @@index([serviceTariffId])
+  @@index([category])
+  @@index([doctorId])
+  @@index([deletedAt])
+  @@map("clinician_fee_rules")
+}
+
+/// One line of the jasa medis ledger (P27-T06). Written inside the payment
+/// transaction for every paid line whose clinician has a rule in force, and
+/// reversed inside the void transaction. `@@unique([invoiceItemId, kind])` is
+/// the idempotency key: paying or voiding twice can never double-write.
+///
+/// Amounts are signed: an ACCRUAL is positive, a REVERSAL negative (CHECK in
+/// the migration), so a period's total is a plain sum. `lineAmount` is what
+/// the patient paid for the line, `grossFee` the clinician's share of it and
+/// `clinicShare` the rest. The rule's mode and value are snapshots. Entries
+/// cascade with their invoice and line, which are never hard-deleted once paid.
+model ClinicianFeeEntry {
+  id            String                @id @default(uuid()) @db.Uuid
+  kind          ClinicianFeeEntryKind
+  invoiceId     String                @map("invoice_id") @db.Uuid
+  invoiceItemId String                @map("invoice_item_id") @db.Uuid
+  doctorId      String                @map("doctor_id") @db.Uuid
+  ruleId        String?               @map("rule_id") @db.Uuid
+  ruleMode      ClinicianFeeRuleMode  @map("rule_mode")
+  ruleValue     Decimal               @map("rule_value") @db.Decimal(12, 2)
+  lineAmount    Decimal               @map("line_amount") @db.Decimal(12, 2)
+  grossFee      Decimal               @map("gross_fee") @db.Decimal(12, 2)
+  clinicShare   Decimal               @map("clinic_share") @db.Decimal(12, 2)
+  /// `YYYY-MM` of `occurredAt` in the clinic's timezone.
+  period        String                @db.Char(7)
+  /// When the invoice was paid (ACCRUAL) or voided (REVERSAL).
+  occurredAt    DateTime              @map("occurred_at")
+  createdAt     DateTime              @default(now()) @map("created_at")
+
+  invoice     Invoice           @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  invoiceItem InvoiceItem       @relation(fields: [invoiceItemId], references: [id], onDelete: Cascade)
+  doctor      DoctorProfile     @relation(fields: [doctorId], references: [id], onDelete: Restrict)
+  rule        ClinicianFeeRule? @relation(fields: [ruleId], references: [id], onDelete: SetNull)
+
+  @@unique([invoiceItemId, kind])
+  @@index([invoiceId])
+  @@index([doctorId, period])
+  @@index([period])
+  @@index([ruleId])
+  @@map("clinician_fee_entries")
 }
 
 /// The editable working copy of a printable document layout (P16-T05). A

@@ -564,7 +564,98 @@
           "NOT_BILLED": "Seharusnya ditagih di sini, tetapi tidak ada barisnya"
         }
       },
-      "taxCodeUnresolved": "Beberapa baris belum punya kode atau tarif pajak, jadi klinik PKP belum bisa menerbitkan tagihan ini. Atur di Pengaturan › Pajak › Tarif & obat, lalu terbitkan lagi."
+      "taxCodeUnresolved": "Beberapa baris belum punya kode atau tarif pajak, jadi klinik PKP belum bisa menerbitkan tagihan ini. Atur di Pengaturan › Pajak › Tarif & obat, lalu terbitkan lagi.",
+      "fees": {
+        "tab": "Jasa medis",
+        "perUnit": "/ unit",
+        "rules": {
+          "title": "Aturan jasa medis",
+          "description": "Bagian tenaga kesehatan (jasa medis) dari setiap layanan yang dibayar. Aturan paling spesifik yang berlaku pada hari pembayaran dipakai: tenaga kesehatan + tarif, tarif, tenaga kesehatan + kategori, lalu kategori.",
+          "new": "Aturan baru",
+          "empty": "Belum ada aturan jasa medis",
+          "emptyDescription": "Selama belum ada aturan, tagihan yang dibayar tidak mencatat jasa medis.",
+          "loadError": "Gagal memuat aturan jasa medis",
+          "target": "Layanan",
+          "clinician": "Tenaga kesehatan",
+          "share": "Bagian",
+          "effective": "Berlaku",
+          "allClinicians": "Semua tenaga kesehatan",
+          "openEnded": "tanpa batas akhir",
+          "edit": "Ubah",
+          "delete": "Hapus",
+          "deleteTitle": "Hapus aturan ini?",
+          "deleteDescription": "Pembayaran berikutnya tidak lagi memakainya. Catatan yang sudah tertulis tetap memakai ketentuan saat dicatat.",
+          "deleted": "Aturan jasa medis dihapus",
+          "deleteError": "Gagal menghapus aturan jasa medis",
+          "levels": {
+            "CLINICIAN_TARIFF": "Tenaga kesehatan + tarif",
+            "TARIFF": "Tarif",
+            "CLINICIAN_CATEGORY": "Tenaga kesehatan + kategori",
+            "CATEGORY": "Kategori"
+          }
+        },
+        "form": {
+          "createTitle": "Aturan jasa medis baru",
+          "editTitle": "Ubah aturan jasa medis",
+          "description": "Persentase dari yang dibayar pasien untuk baris tersebut, atau nominal tetap per unit.",
+          "editDescription": "Layanan dan tenaga kesehatan tidak dapat diubah; buat aturan baru untuk menggantinya. Hanya pembayaran berikutnya yang terpengaruh.",
+          "targetKind": "Berlaku untuk",
+          "targetKinds": {
+            "CATEGORY": "Satu kategori tarif",
+            "TARIFF": "Satu tarif"
+          },
+          "tariff": "Tarif",
+          "pickTariff": "Pilih tarif",
+          "category": "Kategori",
+          "clinician": "Tenaga kesehatan",
+          "mode": "Jenis bagian",
+          "modes": {
+            "PERCENT": "Persentase dari baris",
+            "FIXED": "Nominal tetap per unit"
+          },
+          "valuePercent": "Bagian (%)",
+          "valueFixed": "Nominal per unit (Rp)",
+          "effectiveFrom": "Berlaku mulai",
+          "effectiveTo": "Sampai (opsional)",
+          "invalid": "Periksa isian: pilih layanan, bagian 0–100% (atau nominal tidak negatif), dan tanggal mulai yang tidak setelah tanggal akhir.",
+          "save": "Simpan aturan",
+          "created": "Aturan jasa medis dibuat",
+          "saved": "Aturan jasa medis disimpan",
+          "saveError": "Gagal menyimpan aturan jasa medis"
+        },
+        "statements": {
+          "title": "Rekap bulanan",
+          "description": "Jasa medis yang tercatat pada bulan terpilih: pembayaran pada bulan dibayar, pembatalan pada bulan dibatalkan.",
+          "period": "Bulan",
+          "clinician": "Tenaga kesehatan",
+          "entries": "Baris",
+          "lineAmount": "Tagihan",
+          "grossFee": "Jasa medis (bruto)",
+          "clinicShare": "Bagian klinik",
+          "total": "Total",
+          "empty": "Belum ada jasa medis bulan ini",
+          "emptyDescription": "Tidak ada tagihan dibayar pada bulan ini yang cocok dengan aturan jasa medis.",
+          "loadError": "Gagal memuat rekap",
+          "view": "Lihat rekap",
+          "back": "Semua tenaga kesehatan",
+          "exportCsv": "Ekspor CSV",
+          "exportError": "Gagal mengekspor rekap",
+          "time": "Waktu",
+          "kind": "Jenis",
+          "invoice": "Tagihan",
+          "service": "Layanan",
+          "rule": "Aturan",
+          "noEntries": "Tenaga kesehatan ini tidak memiliki catatan bulan ini.",
+          "kinds": {
+            "ACCRUAL": "Pembayaran",
+            "REVERSAL": "Pembatalan"
+          }
+        },
+        "errors": {
+          "CLINICIAN_FEE_RULE_OVERLAP": "Sudah ada aturan lain untuk layanan dan tenaga kesehatan yang sama pada sebagian tanggal ini. Akhiri aturan tersebut terlebih dahulu.",
+          "CLINICIAN_FEE_RULE_TARGET_INVALID": "Tarif atau tenaga kesehatan tersebut sudah tidak ada."
+        }
+      }
     },
     "integrations": {
       "title": "Integrasi",

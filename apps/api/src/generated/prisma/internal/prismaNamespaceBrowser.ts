@@ -111,6 +111,8 @@ export const ModelName = {
   Invoice: 'Invoice',
   InvoiceItem: 'InvoiceItem',
   Payment: 'Payment',
+  ClinicianFeeRule: 'ClinicianFeeRule',
+  ClinicianFeeEntry: 'ClinicianFeeEntry',
   DocumentTemplate: 'DocumentTemplate',
   DocumentTemplateVersion: 'DocumentTemplateVersion',
   InvoiceDocument: 'InvoiceDocument',
@@ -1230,6 +1232,43 @@ export const PaymentScalarFieldEnum = {
 } as const
 
 export type PaymentScalarFieldEnum = (typeof PaymentScalarFieldEnum)[keyof typeof PaymentScalarFieldEnum]
+
+
+export const ClinicianFeeRuleScalarFieldEnum = {
+  id: 'id',
+  serviceTariffId: 'serviceTariffId',
+  category: 'category',
+  doctorId: 'doctorId',
+  mode: 'mode',
+  value: 'value',
+  effectiveFrom: 'effectiveFrom',
+  effectiveTo: 'effectiveTo',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type ClinicianFeeRuleScalarFieldEnum = (typeof ClinicianFeeRuleScalarFieldEnum)[keyof typeof ClinicianFeeRuleScalarFieldEnum]
+
+
+export const ClinicianFeeEntryScalarFieldEnum = {
+  id: 'id',
+  kind: 'kind',
+  invoiceId: 'invoiceId',
+  invoiceItemId: 'invoiceItemId',
+  doctorId: 'doctorId',
+  ruleId: 'ruleId',
+  ruleMode: 'ruleMode',
+  ruleValue: 'ruleValue',
+  lineAmount: 'lineAmount',
+  grossFee: 'grossFee',
+  clinicShare: 'clinicShare',
+  period: 'period',
+  occurredAt: 'occurredAt',
+  createdAt: 'createdAt'
+} as const
+
+export type ClinicianFeeEntryScalarFieldEnum = (typeof ClinicianFeeEntryScalarFieldEnum)[keyof typeof ClinicianFeeEntryScalarFieldEnum]
 
 
 export const DocumentTemplateScalarFieldEnum = {

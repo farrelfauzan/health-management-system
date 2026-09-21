@@ -62,6 +62,15 @@ describe('resolveAppAbilityRules integration permissions', () => {
     expect(ability.can('write', 'TaxReport')).toBe(false);
   });
 
+  it('maps the clinician-fee keys to the ClinicianFee subject (P27-T06)', () => {
+    const ability = buildAppAbility(
+      resolveAppAbilityRules({ permissions: ['clinician-fee.read:any'] }),
+    );
+
+    expect(ability.can('read', 'ClinicianFee')).toBe(true);
+    expect(ability.can('write', 'ClinicianFee')).toBe(false);
+  });
+
   it('maps the tax-code keys to the TaxCode subject', () => {
     // P27-T03. Without the resource row the Kode pajak and Tarif & obat tabs never render.
     const ability = buildAppAbility(resolveAppAbilityRules({ permissions: ['tax-code.read:any'] }));

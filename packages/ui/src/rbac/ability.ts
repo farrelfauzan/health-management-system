@@ -119,6 +119,8 @@ export type AppSubject =
   | 'TaxCode'
   // P27-T05. Monthly tax report drafts.
   | 'TaxReport'
+  // P27-T06. Jasa medis rules and the monthly clinician fee statements.
+  | 'ClinicianFee'
   | 'Invoice'
   | 'Payment'
   | 'ChatSession'

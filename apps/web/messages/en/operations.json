@@ -564,7 +564,98 @@
           "NOT_BILLED": "Meant to be charged here, but no line was produced"
         }
       },
-      "taxCodeUnresolved": "Some lines have no tax code or rate, so a PKP clinic cannot issue this bill yet. Set them under Settings › Taxes › Tariffs & medicines, then issue again."
+      "taxCodeUnresolved": "Some lines have no tax code or rate, so a PKP clinic cannot issue this bill yet. Set them under Settings › Taxes › Tariffs & medicines, then issue again.",
+      "fees": {
+        "tab": "Clinician fees",
+        "perUnit": "/ unit",
+        "rules": {
+          "title": "Fee rules",
+          "description": "The clinician's share (jasa medis) of each paid service. The most specific rule in force on the payment day applies: clinician + tariff, tariff, clinician + category, then category.",
+          "new": "New rule",
+          "empty": "No fee rules yet",
+          "emptyDescription": "Until a rule exists, paid invoices write no jasa medis entries.",
+          "loadError": "Unable to load the fee rules",
+          "target": "Service",
+          "clinician": "Clinician",
+          "share": "Share",
+          "effective": "In force",
+          "allClinicians": "All clinicians",
+          "openEnded": "no end date",
+          "edit": "Edit",
+          "delete": "Delete",
+          "deleteTitle": "Delete this rule?",
+          "deleteDescription": "Later payments stop using it. Entries already written keep the terms they were written with.",
+          "deleted": "Fee rule deleted",
+          "deleteError": "Unable to delete the fee rule",
+          "levels": {
+            "CLINICIAN_TARIFF": "Clinician + tariff",
+            "TARIFF": "Tariff",
+            "CLINICIAN_CATEGORY": "Clinician + category",
+            "CATEGORY": "Category"
+          }
+        },
+        "form": {
+          "createTitle": "New fee rule",
+          "editTitle": "Edit fee rule",
+          "description": "A percentage of what the patient paid for the line, or a fixed amount per unit.",
+          "editDescription": "The service and clinician are fixed; create a new rule to change them. Only later payments are affected.",
+          "targetKind": "Applies to",
+          "targetKinds": {
+            "CATEGORY": "A tariff category",
+            "TARIFF": "One tariff"
+          },
+          "tariff": "Tariff",
+          "pickTariff": "Pick a tariff",
+          "category": "Category",
+          "clinician": "Clinician",
+          "mode": "Share type",
+          "modes": {
+            "PERCENT": "Percentage of the line",
+            "FIXED": "Fixed amount per unit"
+          },
+          "valuePercent": "Share (%)",
+          "valueFixed": "Amount per unit (Rp)",
+          "effectiveFrom": "In force from",
+          "effectiveTo": "Until (optional)",
+          "invalid": "Check the form: pick a service, a share between 0 and 100% (or a non-negative amount) and a start date not after the end date.",
+          "save": "Save rule",
+          "created": "Fee rule created",
+          "saved": "Fee rule saved",
+          "saveError": "Unable to save the fee rule"
+        },
+        "statements": {
+          "title": "Monthly statement",
+          "description": "Jasa medis written in the chosen month: payments in the month they were paid, cancellations in the month they were voided.",
+          "period": "Month",
+          "clinician": "Clinician",
+          "entries": "Lines",
+          "lineAmount": "Billed",
+          "grossFee": "Jasa medis (gross)",
+          "clinicShare": "Clinic share",
+          "total": "Total",
+          "empty": "No jasa medis this month",
+          "emptyDescription": "No paid invoice in this month matched a fee rule.",
+          "loadError": "Unable to load the statement",
+          "view": "View statement",
+          "back": "All clinicians",
+          "exportCsv": "Export CSV",
+          "exportError": "Unable to export the statement",
+          "time": "Time",
+          "kind": "Type",
+          "invoice": "Invoice",
+          "service": "Service",
+          "rule": "Rule",
+          "noEntries": "This clinician has no entries this month.",
+          "kinds": {
+            "ACCRUAL": "Payment",
+            "REVERSAL": "Cancellation"
+          }
+        },
+        "errors": {
+          "CLINICIAN_FEE_RULE_OVERLAP": "Another rule for the same service and clinician is already in force on some of these dates. End that rule first.",
+          "CLINICIAN_FEE_RULE_TARGET_INVALID": "The tariff or clinician no longer exists."
+        }
+      }
     },
     "integrations": {
       "title": "Integrations",

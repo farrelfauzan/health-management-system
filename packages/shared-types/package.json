@@ -197,7 +197,16 @@
     "#taxes/compute-pp55-monthly-tax": "./src/taxes/compute-pp55-monthly-tax.ts",
     "#taxes/resolve-tax-report-due-dates": "./src/taxes/resolve-tax-report-due-dates.ts",
     "#taxes/summarize-ppn-output": "./src/taxes/summarize-ppn-output.ts",
-    "#taxes/diff-tax-report-totals": "./src/taxes/diff-tax-report-totals.ts"
+    "#taxes/diff-tax-report-totals": "./src/taxes/diff-tax-report-totals.ts",
+    "#clinician-fee/schemas": "./src/clinician-fee/schemas.ts",
+    "#clinician-fee/contracts": "./src/clinician-fee/contracts.ts",
+    "#clinician-fee/types": "./src/clinician-fee/types.ts",
+    "#clinician-fee/resolve-clinician-fee-rule": "./src/clinician-fee/resolve-clinician-fee-rule.ts",
+    "#clinician-fee/compute-clinician-fee": "./src/clinician-fee/compute-clinician-fee.ts",
+    "#clinician-fee/has-overlapping-clinician-fee-rule": "./src/clinician-fee/has-overlapping-clinician-fee-rule.ts",
+    "#clinician-fee/build-clinician-fee-accrual": "./src/clinician-fee/build-clinician-fee-accrual.ts",
+    "#clinician-fee/build-clinician-fee-reversal": "./src/clinician-fee/build-clinician-fee-reversal.ts",
+    "#clinician-fee/sum-clinician-fee-totals": "./src/clinician-fee/sum-clinician-fee-totals.ts"
   },
   "main": "./dist/index.cjs",
   "types": "./src/index.ts",

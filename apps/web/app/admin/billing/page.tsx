@@ -9,6 +9,9 @@ import { SESSION_HINT_COOKIE_NAME } from '#lib/auth/session-hint-cookie';
 import { resolveSessionClaims } from '#lib/auth/session-claims';
 import { parseTabSearchParam } from '#lib/navigation/parse-tab-search-param';
 import { resolveAppAbilityRules } from '#lib/rbac/app-ability.server';
+import { resolveClinicToday } from '#lib/shared/clinic-today';
+
+const PERIOD_LENGTH = 7;
 
 type AdminBillingPageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -25,6 +28,7 @@ export default async function AdminBillingPage({ searchParams }: AdminBillingPag
   const canAccess =
     ability.can('read', 'Invoice') ||
     ability.can('read', 'ServiceTariff') ||
+    ability.can('read', 'ClinicianFee') ||
     ability.can('read', 'DocumentTemplate');
 
   if (!canAccess) {
@@ -37,6 +41,7 @@ export default async function AdminBillingPage({ searchParams }: AdminBillingPag
     <BillingWorkspace
       currentUserId={claims?.sub ?? null}
       initialTab={parseTabSearchParam(params.tab, BILLING_TABS)}
+      currentPeriod={resolveClinicToday().slice(0, PERIOD_LENGTH)}
     />
   );
 }
