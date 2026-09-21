@@ -365,6 +365,16 @@ enum AuditAction {
   /// the birth time moves that ending. Both are worth a name of their own.
   DELIVERY_RECORDED
   DELIVERY_UPDATED
+  /// A family planning course was started, or a live one ended (P25-T14).
+  /// A refused IUD/implant start is MIDWIFE_AUTHORITY_REFUSED, not these.
+  FAMILY_PLANNING_STARTED
+  FAMILY_PLANNING_DISCONTINUED
+  /// An SHK heel-prick sample was taken, or its answer from the referral
+  /// laboratory recorded (P25-T10). A RECALL or INVALID_SAMPLE result opens
+  /// the next sample in the same write, so the result row is where a recall
+  /// can be traced from.
+  SHK_SAMPLE_TAKEN
+  SHK_RESULT_RECORDED
   /// The clinic's tax profile changed (P27-T02): taxpayer type, PP 55 regime,
   /// PKP status, NITKU or pricing mode. Carries each changed field's old and
   /// new value — every later tax computation reads this row, and a report is
@@ -678,7 +688,8 @@ model DoctorMandate {
   createdBy       User          @relation("DoctorMandateCreatedBy", fields: [createdById], references: [id])
   revokedBy       User?         @relation("DoctorMandateRevokedBy", fields: [revokedById], references: [id])
 
-  procedures Procedure[]
+  procedures            Procedure[]
+  familyPlanningRecords FamilyPlanningRecord[]
 
   @@index([midwifeDoctorId])
   @@index([mandatingDoctorId])
@@ -832,6 +843,9 @@ enum SatusehatSubmissionKind {
   /// Closes a pregnancy's ANC EpisodeOfCare (P25-T08). Not a bundle: one
   /// PATCH, enqueued when the pregnancy ends.
   EPISODE_OF_CARE_FINISH
+  /// Closes a birth's PNC EpisodeOfCare (P25-T12): one PATCH, enqueued by the
+  /// sweep once the last nifas window (KF4, day 42) has passed.
+  POSTNATAL_EPISODE_FINISH
 
   @@map("satusehat_submission_kind")
 }
@@ -1188,6 +1202,7 @@ model User {
   createdPregnancyEpisodes  PregnancyEpisode[]         @relation("PregnancyEpisodeCreatedBy")
   recordedExternalDoctorVisits PregnancyExternalDoctorVisit[] @relation("PregnancyExternalDoctorVisitRecordedBy")
   recordedAntenatalExaminations AntenatalExamination[]        @relation("AntenatalExaminationRecordedBy")
+  recordedPostnatalExaminations PostnatalExamination[]        @relation("PostnatalExaminationRecordedBy")
   dismissedAntenatalReferrals   AntenatalReferralDismissal[]  @relation("AntenatalReferralDismissedBy")
   revokedDoctorMandates     DoctorMandate[]            @relation("DoctorMandateRevokedBy")
 
@@ -1196,6 +1211,7 @@ model User {
   @@index([offboardedAt])
   @@map("users")
   recordedDeliveries DeliveryRecord[] @relation("DeliveryRecordedBy")
+  shkSamplesTaken    ShkScreening[]   @relation("ShkSampleTakenBy")
 }
 
 /// One issued refresh token (SJ-6). The token itself is opaque 256-bit random
@@ -1593,6 +1609,7 @@ model PatientProfile {
   allergies             PatientAllergy[]
   immunizations         Immunization[]
   pregnancyEpisodes     PregnancyEpisode[]
+  familyPlanningRecords FamilyPlanningRecord[]
   encounters            Encounter[]
   invoices              Invoice[]
   labOrders             LabOrder[]
@@ -2036,6 +2053,7 @@ model DoctorProfile {
   attendedDeliveries DeliveryRecord[] @relation("DeliveryAttendant")
   clinicianFeeRules   ClinicianFeeRule[]
   clinicianFeeEntries ClinicianFeeEntry[]
+  providedFamilyPlanningRecords FamilyPlanningRecord[] @relation("FamilyPlanningProvider")
 }
 
 /// Academic qualifications mapped later to SATUSEHAT Practitioner.qualification
@@ -2504,6 +2522,9 @@ model Encounter {
   clinicalDocuments    Document[]
   labOrders            LabOrder[]
   antenatalVisit       AntenatalVisit?
+  familyPlanningStarts   FamilyPlanningRecord[]
+  familyPlanningServices FamilyPlanningService[]
+  postnatalVisit       PostnatalVisit?
 
   @@index([patientId, startedAt])
   @@index([doctorId, startedAt])
@@ -2754,6 +2775,7 @@ model Medication {
   @@map("medications")
   deliveryUterotonics   DeliveryRecord[]    @relation("DeliveryUterotonic")
   newbornVitaminK1Doses NewbornCareRecord[] @relation("NewbornVitaminK1")
+  postnatalVitaminADoses PostnatalExamination[] @relation("PostnatalVitaminA")
   newbornEyeProphylaxis NewbornCareRecord[] @relation("NewbornEyeProphylaxis")
 }
 
@@ -5400,6 +5422,9 @@ enum NotificationType {
   TAX_OBLIGATION_DUE
   TAX_TURNOVER_THRESHOLD
   TAX_PP55_LAST_YEAR
+  /// An SHK sample came back RECALL or INVALID_SAMPLE (P25-T10). Addressed to
+  /// the delivery's attendant and every holder of `encounter.write:own`.
+  SHK_RECALL
 }
 
 /// One row of a user's in-app bell feed. `title_key`/`body_key` are i18n
@@ -6758,6 +6783,7 @@ model PregnancyEpisode {
   externalDoctorVisits PregnancyExternalDoctorVisit[]
   satusehatSubmissions SatusehatSubmission[]
   deliveryRecord       DeliveryRecord?
+  postnatalVisits      PostnatalVisit[]
 
   @@index([patientId])
   @@index([createdById])
@@ -6904,7 +6930,8 @@ model DeliveryRecord {
   uterotonic       Medication?      @relation("DeliveryUterotonic", fields: [uterotonicMedicationId], references: [id], onDelete: Restrict)
   recordedBy       User             @relation("DeliveryRecordedBy", fields: [recordedById], references: [id], onDelete: Restrict)
 
-  newbornCareRecords NewbornCareRecord[]
+  newbornCareRecords    NewbornCareRecord[]
+  familyPlanningRecords FamilyPlanningRecord[]
 
   @@index([admissionId])
   @@index([attendantDoctorId])
@@ -6968,10 +6995,154 @@ model NewbornCareRecord {
   eyeProphylaxisMedication Medication? @relation("NewbornEyeProphylaxis", fields: [eyeProphylaxisMedicationId], references: [id], onDelete: Restrict)
   hb0Immunization     Immunization?  @relation("NewbornHb0", fields: [hb0ImmunizationId], references: [id], onDelete: SetNull)
 
+  postnatalVisits PostnatalVisit[]
+  shkScreenings ShkScreening[]
+
   @@unique([newbornPatientId])
   @@unique([deliveryRecordId, stillbirthOrder])
   @@index([deliveryRecordId])
   @@map("newborn_care_records")
+}
+
+/// The contraceptive method of one family planning course (P25-T14). MOW/MOP
+/// are out of scope: a sterilisation is a surgery, not a course with a due
+/// date.
+enum ContraceptiveMethod {
+  PILL
+  INJECTABLE_1_MONTH
+  INJECTABLE_3_MONTH
+  CONDOM
+  IUD
+  IMPLANT
+
+  @@map("contraceptive_method")
+}
+
+/// Peserta KB baru or aktif (P25-T14): whether this clinic's course is her
+/// first use of the method, or the continuation of one started elsewhere.
+enum AcceptorType {
+  NEW
+  CONTINUING
+
+  @@map("acceptor_type")
+}
+
+/// Why a course ended (P25-T14). A placeholder until the pilot clinic's kohort
+/// KB columns are known.
+enum ContraceptiveDiscontinuationReason {
+  SIDE_EFFECT
+  WANTS_PREGNANCY
+  METHOD_CHANGE
+  MEDICAL_REASON
+  LOST_TO_FOLLOW_UP
+  OTHER
+
+  @@map("contraceptive_discontinuation_reason")
+}
+
+/// One family planning course: one method, from the day it started to the day
+/// it was discontinued (P25-T14). At most one course per patient is live —
+/// a partial unique index in the migration, which Prisma cannot express.
+///
+/// `nextDueOn` is the course's current due date, moved forward by each
+/// follow-up service; it is what the due list reads.
+model FamilyPlanningRecord {
+  id                    String                              @id @default(uuid()) @db.Uuid
+  patientId             String                              @map("patient_id") @db.Uuid
+  method                ContraceptiveMethod
+  acceptorType          AcceptorType                        @map("acceptor_type")
+  startedOn             DateTime                            @map("started_on") @db.Date
+  providerDoctorId      String                              @map("provider_doctor_id") @db.Uuid
+  /// The visit the course was started in, when it was started in one.
+  startEncounterId      String?                             @map("start_encounter_id") @db.Uuid
+  /// Set for KB pasca salin: the birth this course follows.
+  deliveryRecordId      String?                             @map("delivery_record_id") @db.Uuid
+  /// The pelimpahan a midwife started an IUD under, when she holds no
+  /// IUD_IMPLANT authority of her own (P25-T05).
+  mandateId             String?                             @map("mandate_id") @db.Uuid
+  nextDueOn             DateTime?                           @map("next_due_on") @db.Date
+  sideEffects           String?                             @map("side_effects")
+  discontinuedOn        DateTime?                           @map("discontinued_on") @db.Date
+  discontinuationReason ContraceptiveDiscontinuationReason? @map("discontinuation_reason")
+  createdAt             DateTime                            @default(now()) @map("created_at")
+  updatedAt             DateTime                            @updatedAt @map("updated_at")
+
+  patient        PatientProfile          @relation(fields: [patientId], references: [id], onDelete: Restrict)
+  providerDoctor DoctorProfile           @relation("FamilyPlanningProvider", fields: [providerDoctorId], references: [id], onDelete: Restrict)
+  startEncounter Encounter?              @relation(fields: [startEncounterId], references: [id], onDelete: Restrict)
+  deliveryRecord DeliveryRecord?         @relation(fields: [deliveryRecordId], references: [id], onDelete: Restrict)
+  mandate        DoctorMandate?          @relation(fields: [mandateId], references: [id], onDelete: Restrict)
+  services       FamilyPlanningService[]
+
+  @@index([patientId])
+  @@index([providerDoctorId])
+  @@index([startEncounterId])
+  @@index([deliveryRecordId])
+  @@index([mandateId])
+  @@index([nextDueOn])
+  @@map("family_planning_records")
+}
+
+/// One follow-up of a family planning course — a reinjection, a pill resupply,
+/// a check-up (P25-T14).
+model FamilyPlanningService {
+  id                     String    @id @default(uuid()) @db.Uuid
+  familyPlanningRecordId String    @map("family_planning_record_id") @db.Uuid
+  encounterId            String?   @map("encounter_id") @db.Uuid
+  servedOn               DateTime  @map("served_on") @db.Date
+  action                 String
+  nextDueOn              DateTime? @map("next_due_on") @db.Date
+  createdAt              DateTime  @default(now()) @map("created_at")
+  updatedAt              DateTime  @updatedAt @map("updated_at")
+
+  familyPlanningRecord FamilyPlanningRecord @relation(fields: [familyPlanningRecordId], references: [id], onDelete: Cascade)
+  encounter            Encounter?           @relation(fields: [encounterId], references: [id], onDelete: Restrict)
+
+  @@index([familyPlanningRecordId])
+  @@index([encounterId])
+  @@map("family_planning_services")
+}
+
+/// What the referral laboratory answered for one SHK sample (P25-T10).
+enum ShkResult {
+  NORMAL
+  RECALL
+  INVALID_SAMPLE
+
+  @@map("shk_result")
+}
+
+/// One SHK (congenital hypothyroidism) heel-prick sample of one live baby
+/// (P25-T10).
+///
+/// Sequence 1 is created with the baby's newborn care record, due 48 to 72
+/// hours after birth as absolute offsets. A RECALL or INVALID_SAMPLE result
+/// creates the next sequence, due at once. The status (DUE, OVERDUE, TAKEN…)
+/// is derived on read and never stored: the clock alone moves a sample from
+/// DUE to OVERDUE.
+model ShkScreening {
+  id                  String     @id @default(uuid()) @db.Uuid
+  newbornCareRecordId String     @map("newborn_care_record_id") @db.Uuid
+  sequence            Int
+  dueFrom             DateTime   @map("due_from") @db.Timestamptz(3)
+  dueUntil            DateTime   @map("due_until") @db.Timestamptz(3)
+  sampleTakenAt       DateTime?  @map("sample_taken_at") @db.Timestamptz(3)
+  sampleTakenById     String?    @map("sample_taken_by_id") @db.Uuid
+  sentAt              DateTime?  @map("sent_at") @db.Timestamptz(3)
+  laboratoryName      String?    @map("laboratory_name")
+  resultReceivedAt    DateTime?  @map("result_received_at") @db.Timestamptz(3)
+  result              ShkResult?
+  notes               String?
+  createdAt           DateTime   @default(now()) @map("created_at")
+  updatedAt           DateTime   @updatedAt @map("updated_at")
+
+  newbornCareRecord NewbornCareRecord @relation(fields: [newbornCareRecordId], references: [id], onDelete: Cascade)
+  sampleTakenBy     User?             @relation("ShkSampleTakenBy", fields: [sampleTakenById], references: [id], onDelete: Restrict)
+
+  @@unique([newbornCareRecordId, sequence])
+  @@index([sampleTakenById])
+  @@index([dueUntil])
+  @@map("shk_screenings")
 }
 
 /// How the baby lies (P25-T07). `UNKNOWN` is a real answer early in pregnancy,
@@ -7069,4 +7240,129 @@ model AntenatalReferralDismissal {
   @@unique([antenatalVisitId, ruleCode])
   @@index([dismissedById])
   @@map("antenatal_referral_dismissals")
+}
+
+/// The nifas (KF) and neonatal (KN) visit codes (P25-T12). KF is SATUSEHAT's
+/// `…/CodeSystem/episodeofcare/puerperium`, KN its `…/episodeofcare/neonate`;
+/// the sandbox refuses anything outside either list.
+enum PostnatalVisitCode {
+  KF1
+  KF2
+  KF3
+  KF4
+  KN1
+  KN2
+  KN3
+
+  @@map("postnatal_visit_code")
+}
+
+/// Whose postnatal visit it is (P25-T12).
+enum PostnatalSubject {
+  MOTHER
+  NEWBORN
+
+  @@map("postnatal_subject")
+}
+
+/// "Kondisi payudara", the PNC playbook's five SNOMED answers (P25-T12).
+enum PostnatalBreastCondition {
+  NORMAL
+  SWELLING
+  REDNESS
+  NIPPLE_DISCHARGE
+  PAIN
+
+  @@map("postnatal_breast_condition")
+}
+
+/// "Warna lokhia" (P25-T12).
+enum LochiaColour {
+  RUBRA
+  SEROSA
+  ALBA
+
+  @@map("lochia_colour")
+}
+
+/// "Produksi ASI", the playbook's three `clinical-term` answers (P25-T12).
+enum BreastMilkProduction {
+  PRESENT
+  LOW
+  ABSENT
+
+  @@map("breast_milk_production")
+}
+
+/// One encounter counted as a nifas visit of the mother or a neonatal visit
+/// of one of her babies (P25-T12).
+///
+/// `pregnancy_episode_id` is the mother's episode on both kinds, so one birth's
+/// schedule reads one table. `visit_code` is derived from the encounter's
+/// start when the visit is linked and rewritten — then never again — when the
+/// encounter closes; null means the visit fell outside every window of its
+/// subject. The CHECKs in the migration tie a NEWBORN row to a baby and each
+/// code to its subject.
+model PostnatalVisit {
+  id                  String              @id @default(uuid()) @db.Uuid
+  encounterId         String              @unique @map("encounter_id") @db.Uuid
+  subject             PostnatalSubject
+  pregnancyEpisodeId  String              @map("pregnancy_episode_id") @db.Uuid
+  newbornCareRecordId String?             @map("newborn_care_record_id") @db.Uuid
+  visitCode           PostnatalVisitCode? @map("visit_code")
+  createdAt           DateTime            @default(now()) @map("created_at")
+  updatedAt           DateTime            @updatedAt @map("updated_at")
+
+  encounter         Encounter          @relation(fields: [encounterId], references: [id], onDelete: Cascade)
+  pregnancyEpisode  PregnancyEpisode   @relation(fields: [pregnancyEpisodeId], references: [id], onDelete: Restrict)
+  newbornCareRecord NewbornCareRecord? @relation(fields: [newbornCareRecordId], references: [id], onDelete: Restrict)
+
+  examination PostnatalExamination?
+
+  @@index([pregnancyEpisodeId])
+  @@index([newbornCareRecordId])
+  @@map("postnatal_visits")
+}
+
+/// The postnatal examination of one nifas visit (P25-T12). MOTHER visits only,
+/// which the service enforces.
+///
+/// Every field is nullable for the reason the 10T examination's are: an item
+/// not examined is "not done", not invalid. Blood pressure, pulse, temperature
+/// and respiration are **absent** — they are the encounter's `VitalSigns`.
+model PostnatalExamination {
+  id               String @id @default(uuid()) @db.Uuid
+  postnatalVisitId String @unique @map("postnatal_visit_id") @db.Uuid
+
+  vaginalBleeding              Boolean?                  @map("vaginal_bleeding")
+  bloodLossMl                  Int?                      @map("blood_loss_ml")
+  /// Free text: the playbook sends "Kondisi Perineum" as a string.
+  perineumCondition            String?                   @map("perineum_condition")
+  perinealInfectionSigns       Boolean?                  @map("perineal_infection_signs")
+  caesareanWoundInfectionSigns Boolean?                  @map("caesarean_wound_infection_signs")
+  breastCondition              PostnatalBreastCondition? @map("breast_condition")
+  uterineContraction           Boolean?                  @map("uterine_contraction")
+  lochiaColour                 LochiaColour?             @map("lochia_colour")
+  /// True when the lochia smells abnormal.
+  lochiaOdour                  Boolean?                  @map("lochia_odour")
+  breastMilkProduction         BreastMilkProduction?     @map("breast_milk_production")
+  urination                    Boolean?
+  defecation                   Boolean?
+  newbornCareCounselling       Boolean?                  @map("newborn_care_counselling")
+  /// Vitamin A for the mother, a time and a medication like the newborn's K1.
+  vitaminAGivenAt              DateTime?                 @map("vitamin_a_given_at") @db.Timestamptz(3)
+  vitaminAMedicationId         String?                   @map("vitamin_a_medication_id") @db.Uuid
+  familyPlanningCounselling    Boolean?                  @map("family_planning_counselling")
+
+  recordedById String   @map("recorded_by_id") @db.Uuid
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  postnatalVisit     PostnatalVisit @relation(fields: [postnatalVisitId], references: [id], onDelete: Cascade)
+  vitaminAMedication Medication?    @relation("PostnatalVitaminA", fields: [vitaminAMedicationId], references: [id], onDelete: Restrict)
+  recordedBy         User           @relation("PostnatalExaminationRecordedBy", fields: [recordedById], references: [id], onDelete: Restrict)
+
+  @@index([vitaminAMedicationId])
+  @@index([recordedById])
+  @@map("postnatal_examinations")
 }

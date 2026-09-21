@@ -169,6 +169,10 @@ export const AuditAction = {
   ANTENATAL_REFERRAL_DISMISSED: 'ANTENATAL_REFERRAL_DISMISSED',
   DELIVERY_RECORDED: 'DELIVERY_RECORDED',
   DELIVERY_UPDATED: 'DELIVERY_UPDATED',
+  FAMILY_PLANNING_STARTED: 'FAMILY_PLANNING_STARTED',
+  FAMILY_PLANNING_DISCONTINUED: 'FAMILY_PLANNING_DISCONTINUED',
+  SHK_SAMPLE_TAKEN: 'SHK_SAMPLE_TAKEN',
+  SHK_RESULT_RECORDED: 'SHK_RESULT_RECORDED',
   TAX_SETTINGS_UPDATED: 'TAX_SETTINGS_UPDATED',
   TAX_CODE_CHANGED: 'TAX_CODE_CHANGED',
   TAX_ASSIGNMENT_CHANGED: 'TAX_ASSIGNMENT_CHANGED',
@@ -558,7 +562,8 @@ export type RegistrationType = (typeof RegistrationType)[keyof typeof Registrati
 export const SatusehatSubmissionKind = {
   ENCOUNTER: 'ENCOUNTER',
   LAB_REPORT: 'LAB_REPORT',
-  EPISODE_OF_CARE_FINISH: 'EPISODE_OF_CARE_FINISH'
+  EPISODE_OF_CARE_FINISH: 'EPISODE_OF_CARE_FINISH',
+  POSTNATAL_EPISODE_FINISH: 'POSTNATAL_EPISODE_FINISH'
 } as const
 
 export type SatusehatSubmissionKind = (typeof SatusehatSubmissionKind)[keyof typeof SatusehatSubmissionKind]
@@ -1104,7 +1109,8 @@ export const NotificationType = {
   DOCTOR_AUTHORITY_EXPIRED: 'DOCTOR_AUTHORITY_EXPIRED',
   TAX_OBLIGATION_DUE: 'TAX_OBLIGATION_DUE',
   TAX_TURNOVER_THRESHOLD: 'TAX_TURNOVER_THRESHOLD',
-  TAX_PP55_LAST_YEAR: 'TAX_PP55_LAST_YEAR'
+  TAX_PP55_LAST_YEAR: 'TAX_PP55_LAST_YEAR',
+  SHK_RECALL: 'SHK_RECALL'
 } as const
 
 export type NotificationType = (typeof NotificationType)[keyof typeof NotificationType]
@@ -1358,6 +1364,47 @@ export const BirthOutcome = {
 export type BirthOutcome = (typeof BirthOutcome)[keyof typeof BirthOutcome]
 
 
+export const ContraceptiveMethod = {
+  PILL: 'PILL',
+  INJECTABLE_1_MONTH: 'INJECTABLE_1_MONTH',
+  INJECTABLE_3_MONTH: 'INJECTABLE_3_MONTH',
+  CONDOM: 'CONDOM',
+  IUD: 'IUD',
+  IMPLANT: 'IMPLANT'
+} as const
+
+export type ContraceptiveMethod = (typeof ContraceptiveMethod)[keyof typeof ContraceptiveMethod]
+
+
+export const AcceptorType = {
+  NEW: 'NEW',
+  CONTINUING: 'CONTINUING'
+} as const
+
+export type AcceptorType = (typeof AcceptorType)[keyof typeof AcceptorType]
+
+
+export const ContraceptiveDiscontinuationReason = {
+  SIDE_EFFECT: 'SIDE_EFFECT',
+  WANTS_PREGNANCY: 'WANTS_PREGNANCY',
+  METHOD_CHANGE: 'METHOD_CHANGE',
+  MEDICAL_REASON: 'MEDICAL_REASON',
+  LOST_TO_FOLLOW_UP: 'LOST_TO_FOLLOW_UP',
+  OTHER: 'OTHER'
+} as const
+
+export type ContraceptiveDiscontinuationReason = (typeof ContraceptiveDiscontinuationReason)[keyof typeof ContraceptiveDiscontinuationReason]
+
+
+export const ShkResult = {
+  NORMAL: 'NORMAL',
+  RECALL: 'RECALL',
+  INVALID_SAMPLE: 'INVALID_SAMPLE'
+} as const
+
+export type ShkResult = (typeof ShkResult)[keyof typeof ShkResult]
+
+
 export const FetalPresentation = {
   CEPHALIC: 'CEPHALIC',
   BREECH: 'BREECH',
@@ -1386,3 +1433,53 @@ export const TetanusImmunizationStatus = {
 } as const
 
 export type TetanusImmunizationStatus = (typeof TetanusImmunizationStatus)[keyof typeof TetanusImmunizationStatus]
+
+
+export const PostnatalVisitCode = {
+  KF1: 'KF1',
+  KF2: 'KF2',
+  KF3: 'KF3',
+  KF4: 'KF4',
+  KN1: 'KN1',
+  KN2: 'KN2',
+  KN3: 'KN3'
+} as const
+
+export type PostnatalVisitCode = (typeof PostnatalVisitCode)[keyof typeof PostnatalVisitCode]
+
+
+export const PostnatalSubject = {
+  MOTHER: 'MOTHER',
+  NEWBORN: 'NEWBORN'
+} as const
+
+export type PostnatalSubject = (typeof PostnatalSubject)[keyof typeof PostnatalSubject]
+
+
+export const PostnatalBreastCondition = {
+  NORMAL: 'NORMAL',
+  SWELLING: 'SWELLING',
+  REDNESS: 'REDNESS',
+  NIPPLE_DISCHARGE: 'NIPPLE_DISCHARGE',
+  PAIN: 'PAIN'
+} as const
+
+export type PostnatalBreastCondition = (typeof PostnatalBreastCondition)[keyof typeof PostnatalBreastCondition]
+
+
+export const LochiaColour = {
+  RUBRA: 'RUBRA',
+  SEROSA: 'SEROSA',
+  ALBA: 'ALBA'
+} as const
+
+export type LochiaColour = (typeof LochiaColour)[keyof typeof LochiaColour]
+
+
+export const BreastMilkProduction = {
+  PRESENT: 'PRESENT',
+  LOW: 'LOW',
+  ABSENT: 'ABSENT'
+} as const
+
+export type BreastMilkProduction = (typeof BreastMilkProduction)[keyof typeof BreastMilkProduction]

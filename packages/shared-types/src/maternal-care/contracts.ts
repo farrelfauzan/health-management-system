@@ -1,3 +1,4 @@
+import type { NewbornShkSummary } from '#shk-screening/contracts';
 import type {
   BirthOutcomeValue,
   DeliveryModeValue,
@@ -7,7 +8,15 @@ import type {
   PregnancyEpisodeStatusValue,
 } from '#maternal-care/schemas';
 import type {
+  BreastMilkProductionValue,
+  LochiaColourValue,
+  PostnatalBreastConditionValue,
+  PostnatalSubjectValue,
+  PostnatalVisitCodeValue,
+} from '#maternal-care/schemas';
+import type {
   AntenatalVisitCodeValue,
+  PostnatalWindowStatus,
   FetalHeadEngagementValue,
   FetalPresentationValue,
   GestationalAge,
@@ -136,6 +145,8 @@ export type NewbornCareView = {
   hb0ImmunizationId: string | null;
   examinedAt: string | null;
   identityTagAt: string | null;
+  /** Her newest SHK sample (P25-T10); null for a stillbirth. */
+  shkScreening: NewbornShkSummary | null;
 };
 
 /** One recorded birth, with its babies (P25-T09, FR-INC-01). */
@@ -162,4 +173,66 @@ export type DeliveryRecordView = {
   referralReason: string | null;
   notes: string | null;
   newborns: NewbornCareView[];
+};
+
+/** One of the seven nifas/neonatal windows on the schedule (P25-T12). */
+export type PostnatalScheduleEntry = {
+  code: PostnatalVisitCodeValue;
+  subject: PostnatalSubjectValue;
+  /** First instant of the window. */
+  startsAt: string;
+  /** Last instant of the window, inclusive. */
+  endsAt: string;
+  status: PostnatalWindowStatus;
+  /** The visit that fulfilled it, or null. */
+  fulfilledBy: {
+    encounterId: string;
+    startedAt: string;
+  } | null;
+};
+
+/** The KF1–KF4 / KN1–KN3 schedule of one birth (P25-T12). */
+export type PostnatalScheduleResponse = {
+  pregnancyEpisodeId: string;
+  birthAt: string;
+  entries: PostnatalScheduleEntry[];
+};
+
+/** The postnatal examination as the API returns it (P25-T12). */
+export type PostnatalExaminationView = {
+  vaginalBleeding: boolean | null;
+  bloodLossMl: number | null;
+  perineumCondition: string | null;
+  perinealInfectionSigns: boolean | null;
+  caesareanWoundInfectionSigns: boolean | null;
+  breastCondition: PostnatalBreastConditionValue | null;
+  uterineContraction: boolean | null;
+  lochiaColour: LochiaColourValue | null;
+  lochiaOdour: boolean | null;
+  breastMilkProduction: BreastMilkProductionValue | null;
+  urination: boolean | null;
+  defecation: boolean | null;
+  newbornCareCounselling: boolean | null;
+  vitaminAGivenAt: string | null;
+  vitaminAMedicationId: string | null;
+  familyPlanningCounselling: boolean | null;
+};
+
+/**
+ * One encounter counted as a nifas or neonatal visit (P25-T12).
+ * `visitCode` null means the visit fell outside every window of its subject —
+ * "di luar jendela".
+ */
+export type EncounterPostnatalVisitResponse = {
+  id: string;
+  encounterId: string;
+  subject: PostnatalSubjectValue;
+  pregnancyEpisodeId: string;
+  newbornCareRecordId: string | null;
+  visitCode: PostnatalVisitCodeValue | null;
+  /** True once the encounter has closed and the code can no longer move. */
+  isCodeFrozen: boolean;
+  birthAt: string;
+  /** Present on MOTHER visits once recorded; always null on NEWBORN ones. */
+  examination: PostnatalExaminationView | null;
 };

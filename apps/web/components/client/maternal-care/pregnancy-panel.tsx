@@ -10,10 +10,12 @@ import { AntenatalVisitList } from '#components/client/maternal-care/antenatal-v
 import { DeliveryCard } from '#components/client/maternal-care/delivery-card';
 import { EndPregnancyEpisodeDialog } from '#components/client/maternal-care/end-pregnancy-episode-dialog';
 import { ExternalDoctorVisitCard } from '#components/client/maternal-care/external-doctor-visit-card';
+import { PostnatalScheduleSection } from '#components/client/maternal-care/postnatal-schedule-section';
 import { PregnancyEpisodeHeaderCard } from '#components/client/maternal-care/pregnancy-episode-header-card';
 import { RecordDeliveryDialog } from '#components/client/maternal-care/record-delivery-dialog';
 import { RecordExternalDoctorVisitDialog } from '#components/client/maternal-care/record-external-doctor-visit-dialog';
 import { RecordNewbornDialog } from '#components/client/maternal-care/record-newborn-dialog';
+import { StartFamilyPlanningDialog } from '#components/client/maternal-care/start-family-planning-dialog';
 import { StartPregnancyEpisodeDialog } from '#components/client/maternal-care/start-pregnancy-episode-dialog';
 import { TrimesterScheduleCard } from '#components/client/maternal-care/trimester-schedule-card';
 import { EmptyState } from '#components/shared/empty-state';
@@ -37,6 +39,8 @@ export function PregnancyPanel({ patientId }: PregnancyPanelProps) {
   const [isExternalVisitDialogOpen, setIsExternalVisitDialogOpen] = useState<boolean>(false);
   const [isDeliveryDialogOpen, setIsDeliveryDialogOpen] = useState<boolean>(false);
   const [isNewbornDialogOpen, setIsNewbornDialogOpen] = useState<boolean>(false);
+  // P25-T14: the birth a "Mulai KB pasca salin" course is linked to.
+  const [familyPlanningDeliveryId, setFamilyPlanningDeliveryId] = useState<string | null>(null);
   const episode = episodeQuery.episode;
   const queryClient = useQueryClient();
   const deliveryQuery = usePregnancyDelivery(episode?.episode.id ?? '', episode !== null);
@@ -60,7 +64,10 @@ export function PregnancyPanel({ patientId }: PregnancyPanelProps) {
 
   if (episode === null) {
     return (
-      <>
+      <div className="space-y-6">
+        {/* P25-T12. After the birth the episode is no longer active, and this
+            is when the nifas and neonatal windows matter. */}
+        <PostnatalScheduleSection patientId={patientId} />
         <EmptyState
           icon="pregnant_woman"
           title={
@@ -81,7 +88,7 @@ export function PregnancyPanel({ patientId }: PregnancyPanelProps) {
             patientId={patientId}
           />
         ) : null}
-      </>
+      </div>
     );
   }
 
@@ -114,6 +121,7 @@ export function PregnancyPanel({ patientId }: PregnancyPanelProps) {
           certificateMutation.mutate(newbornCareRecordId)
         }
         isIssuing={certificateMutation.isPending}
+        onStartFamilyPlanning={setFamilyPlanningDeliveryId}
       />
 
       {isEndDialogOpen ? (
@@ -138,6 +146,20 @@ export function PregnancyPanel({ patientId }: PregnancyPanelProps) {
           onOpenChange={setIsDeliveryDialogOpen}
           episodeId={episode.episode.id}
           attendantDoctorId={ownProfileQuery.data?.id ?? ''}
+        />
+      ) : null}
+
+      {familyPlanningDeliveryId !== null && ownProfileQuery.data ? (
+        <StartFamilyPlanningDialog
+          open
+          onOpenChange={(isOpen) => {
+            if (!isOpen) {
+              setFamilyPlanningDeliveryId(null);
+            }
+          }}
+          patientId={patientId}
+          providerDoctorId={ownProfileQuery.data.id}
+          deliveryRecordId={familyPlanningDeliveryId}
         />
       ) : null}
 

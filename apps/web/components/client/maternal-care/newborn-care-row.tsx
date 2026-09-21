@@ -5,6 +5,7 @@ import { Button, Icon } from '@hms/ui';
 import Link from 'next/link';
 
 import { NewbornCareFact } from '#components/client/maternal-care/newborn-care-fact';
+import { ShkStatusChip } from '#components/client/maternal-care/shk-status-chip';
 import { useTranslations } from 'next-intl';
 
 type NewbornCareRowProps = {
@@ -51,6 +52,14 @@ export function NewbornCareRow({
               {t('maternalCare.delivery.outcome.STILLBIRTH')}
             </span>
           ) : null}
+          {newborn.shkScreening === null ? null : (
+            <ShkStatusChip
+              status={newborn.shkScreening.status}
+              result={newborn.shkScreening.result}
+              sequence={newborn.shkScreening.sequence}
+              isEarly={newborn.shkScreening.isEarly}
+            />
+          )}
         </div>
         {isStillbirth ? null : isRegistered ? (
           <Button

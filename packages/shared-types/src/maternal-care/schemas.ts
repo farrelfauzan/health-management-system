@@ -359,3 +359,89 @@ export const updateNewbornCareSchema = recordNewbornCareSchema.innerType()
   });
 
 export type UpdateNewbornCareInput = z.infer<typeof updateNewbornCareSchema>;
+
+/**
+ * The nifas (KF) and neonatal (KN) visit codes (P25-T12). KF is SATUSEHAT's
+ * `…/CodeSystem/episodeofcare/puerperium`, KN its `…/episodeofcare/neonate` —
+ * both verified against the sandbox, which refuses a code outside the list.
+ */
+export const postnatalVisitCodeSchema = z.enum(['KF1', 'KF2', 'KF3', 'KF4', 'KN1', 'KN2', 'KN3']);
+
+export type PostnatalVisitCodeValue = z.infer<typeof postnatalVisitCodeSchema>;
+
+/** Whose visit it is: the mother (nifas) or one of the babies (neonatal). */
+export const postnatalSubjectSchema = z.enum(['MOTHER', 'NEWBORN']);
+
+export type PostnatalSubjectValue = z.infer<typeof postnatalSubjectSchema>;
+
+/** "Kondisi payudara" — the PNC playbook's five SNOMED answers. */
+export const postnatalBreastConditionSchema = z.enum([
+  'NORMAL',
+  'SWELLING',
+  'REDNESS',
+  'NIPPLE_DISCHARGE',
+  'PAIN',
+]);
+
+export type PostnatalBreastConditionValue = z.infer<typeof postnatalBreastConditionSchema>;
+
+/** "Warna lokhia" — rubra, serosa, alba, as the playbook codes them. */
+export const lochiaColourSchema = z.enum(['RUBRA', 'SEROSA', 'ALBA']);
+
+export type LochiaColourValue = z.infer<typeof lochiaColourSchema>;
+
+/** "Produksi ASI" — the playbook's three `clinical-term` answers. */
+export const breastMilkProductionSchema = z.enum(['PRESENT', 'LOW', 'ABSENT']);
+
+export type BreastMilkProductionValue = z.infer<typeof breastMilkProductionSchema>;
+
+/**
+ * Counting an encounter as a nifas or neonatal visit (P25-T12).
+ *
+ * `newbornCareRecordId` is optional even for a NEWBORN visit: the baby's
+ * record is found from the encounter's patient when it is left out, because a
+ * registered baby has exactly one. It is refused for a MOTHER visit.
+ */
+export const linkPostnatalVisitSchema = z
+  .object({
+    subject: postnatalSubjectSchema,
+    newbornCareRecordId: z.string().uuid().optional(),
+  })
+  .refine((value) => value.subject === 'NEWBORN' || value.newbornCareRecordId === undefined, {
+    message: 'A nifas visit of the mother names no baby',
+    path: ['newbornCareRecordId'],
+  });
+
+export type LinkPostnatalVisitInput = z.infer<typeof linkPostnatalVisitSchema>;
+
+/**
+ * The postnatal examination of one nifas visit (P25-T12). Every field is
+ * optional for the same reason the 10T one is: an item not examined is "not
+ * done", not invalid. Blood pressure, pulse, temperature and respiration are
+ * absent — they are the encounter's vital signs.
+ */
+export const upsertPostnatalExaminationSchema = z
+  .object({
+    vaginalBleeding: z.boolean().nullish(),
+    bloodLossMl: z.number().int().min(0).max(10_000).nullish(),
+    perineumCondition: z.string().trim().max(500).nullish(),
+    perinealInfectionSigns: z.boolean().nullish(),
+    caesareanWoundInfectionSigns: z.boolean().nullish(),
+    breastCondition: postnatalBreastConditionSchema.nullish(),
+    uterineContraction: z.boolean().nullish(),
+    lochiaColour: lochiaColourSchema.nullish(),
+    lochiaOdour: z.boolean().nullish(),
+    breastMilkProduction: breastMilkProductionSchema.nullish(),
+    urination: z.boolean().nullish(),
+    defecation: z.boolean().nullish(),
+    newbornCareCounselling: z.boolean().nullish(),
+    vitaminAGivenAt: z.string().datetime().nullish(),
+    vitaminAMedicationId: z.string().uuid().nullish(),
+    familyPlanningCounselling: z.boolean().nullish(),
+  })
+  .refine((value) => !value.vitaminAMedicationId || Boolean(value.vitaminAGivenAt), {
+    message: 'A vitamin A medication needs the time it was given',
+    path: ['vitaminAGivenAt'],
+  });
+
+export type UpsertPostnatalExaminationInput = z.infer<typeof upsertPostnatalExaminationSchema>;

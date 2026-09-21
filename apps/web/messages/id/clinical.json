@@ -1246,6 +1246,8 @@
         "historical": "Dosis historis (dari Buku KIA)",
         "historicalHint": "Untuk dosis yang disalin dari kartu atau Buku KIA. Nomor batch dan kedaluwarsa tidak wajib, dan dosis dilaporkan ke SATUSEHAT sebagai catatan historis.",
         "historicalBadge": "Historis",
+        "performedBy": "Diberikan oleh {name}",
+        "enteredBy": "Dicatat oleh {name}",
         "reason": "Alasan imunisasi",
         "reasonPlaceholder": "Pilih alasan imunisasi",
         "pickReason": "Pilih alasan imunisasi.",

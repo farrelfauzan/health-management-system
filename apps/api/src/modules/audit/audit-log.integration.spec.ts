@@ -8,6 +8,7 @@ import { AppModule } from '../../app.module';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { AuditAction } from '../../generated/prisma/client';
 import { AuthRepository } from '../auth/repository/auth.repository';
+import { LabSpecimenService } from '../laboratory/service/lab-specimen.service';
 
 /**
  * SJ-4 against real Postgres. Three guarantees live here and nowhere else:
@@ -28,6 +29,9 @@ describe('Audit log against Postgres', () => {
   const READER_USER_ID = '5aaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
   const WRITER_USER_ID = '5bbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';
   const AUDITOR_USER_ID = '5ccccccc-cccc-4ccc-8ccc-cccccccccccc';
+  const LAB_TECHNICIAN_USER_ID = '5ddddddd-dddd-4ddd-8ddd-dddddddddddd';
+  const LAB_TECHNICIAN_NAME = 'Dewi Lestari, A.Md.AK';
+  const LAB_ORDER_ID = '5eeeeeee-eeee-4eee-8eee-eeeeeeeeeeee';
 
   type SeededPermission = { action: string; resource: string; scope: 'ANY' | 'OWN' };
 
@@ -47,6 +51,19 @@ describe('Audit log against Postgres', () => {
       roleCode: 'ADMIN',
       permissions: [{ action: 'read', resource: 'AuditLog', scope: 'ANY' }],
     },
+    [LAB_TECHNICIAN_USER_ID]: {
+      roleCode: 'LAB_TECHNICIAN',
+      permissions: [{ action: 'write', resource: 'LabSpecimen', scope: 'ANY' }],
+    },
+  };
+
+  /**
+   * The bench's collect route with the lab work stubbed out: what is under
+   * test is the row the interceptor writes and how the query endpoint names
+   * its actor, not accessioning (that is `lab-ordering.integration.spec.ts`).
+   */
+  const labSpecimenServiceStub = {
+    collectLabSpecimens: jest.fn(async () => []),
   };
 
   const authRepositoryMock = {
@@ -110,6 +127,8 @@ describe('Audit log against Postgres', () => {
     const moduleRef = await Test.createTestingModule({ imports: [AppModule] })
       .overrideProvider(AuthRepository)
       .useValue(authRepositoryMock)
+      .overrideProvider(LabSpecimenService)
+      .useValue(labSpecimenServiceStub)
       .compile();
 
     app = moduleRef.createNestApplication();
@@ -127,6 +146,7 @@ describe('Audit log against Postgres', () => {
 
   afterAll(async () => {
     await prisma.patientProfile.deleteMany({ where: { mrn: { startsWith: TEST_MARKER } } });
+    await prisma.user.deleteMany({ where: { email: { startsWith: TEST_MARKER } } });
     await app.close();
   });
 
@@ -253,6 +273,63 @@ describe('Audit log against Postgres', () => {
         .set('Authorization', `Bearer ${accessToken}`);
 
       expect(response.status).toBe(403);
+    });
+
+    /**
+     * P20-T07's acceptance: given a lab technician records a specimen, when an
+     * administrator reads the audit trail, the entry names the person and
+     * still carries the id. The technician is a real account row — the name
+     * comes from `users`, joined when the log is read, not from the token.
+     */
+    it('names the lab technician who recorded a specimen and keeps their id', async () => {
+      await prisma.user.create({
+        data: {
+          id: LAB_TECHNICIAN_USER_ID,
+          email: `${TEST_MARKER}-lab1@klinik.test`,
+          fullName: LAB_TECHNICIAN_NAME,
+          passwordHash: 'not-a-real-hash',
+        },
+      });
+      const technicianToken = await signTokenFor(LAB_TECHNICIAN_USER_ID);
+      const collectResponse = await request(app.getHttpServer())
+        .post(`/api/v1/lab-orders/${LAB_ORDER_ID}/collect`)
+        .set('Authorization', `Bearer ${technicianToken}`)
+        .send({});
+      expect(collectResponse.status).toBe(201);
+      const auditorToken = await signTokenFor(AUDITOR_USER_ID);
+
+      const response = await request(app.getHttpServer())
+        .get('/api/v1/audit')
+        .query({ actorUserId: LAB_TECHNICIAN_USER_ID, resource: 'lab-specimen' })
+        .set('Authorization', `Bearer ${auditorToken}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.data[0]).toMatchObject({
+        actorUserId: LAB_TECHNICIAN_USER_ID,
+        actorName: LAB_TECHNICIAN_NAME,
+        actorRole: 'LAB_TECHNICIAN',
+        action: AuditAction.CREATE,
+        resource: 'lab-specimen',
+        resourceId: LAB_ORDER_ID,
+      });
+    });
+
+    /**
+     * `actor_user_id` has no foreign key on purpose, so an actor can outlive
+     * their account. The row must still answer with the id — just no name.
+     */
+    it('keeps the id of an actor whose account no longer exists', async () => {
+      const auditorToken = await signTokenFor(AUDITOR_USER_ID);
+
+      const response = await request(app.getHttpServer())
+        .get('/api/v1/audit')
+        .query({ actorUserId: READER_USER_ID, patientId })
+        .set('Authorization', `Bearer ${auditorToken}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.data.length).toBeGreaterThan(0);
+      expect(response.body.data[0].actorUserId).toBe(READER_USER_ID);
+      expect(response.body.data[0]).not.toHaveProperty('actorName');
     });
 
     /**

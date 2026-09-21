@@ -36,6 +36,8 @@ const NOTIFICATION_TYPE_ICONS: Record<string, string> = {
   DOCUMENT_APPROVAL_OVERDUE: 'alarm',
   BUG_REPORT_HELD: 'pause_circle',
   BUG_REPORT_PUBLISH_FAILED: 'sync_problem',
+  // P25-T10. A baby called back for another SHK heel prick.
+  SHK_RECALL: 'child_care',
 };
 
 /**

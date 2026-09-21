@@ -305,6 +305,9 @@ export type EncounterWhereInput = {
   clinicalDocuments?: Prisma.DocumentListRelationFilter
   labOrders?: Prisma.LabOrderListRelationFilter
   antenatalVisit?: Prisma.XOR<Prisma.AntenatalVisitNullableScalarRelationFilter, Prisma.AntenatalVisitWhereInput> | null
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordListRelationFilter
+  familyPlanningServices?: Prisma.FamilyPlanningServiceListRelationFilter
+  postnatalVisit?: Prisma.XOR<Prisma.PostnatalVisitNullableScalarRelationFilter, Prisma.PostnatalVisitWhereInput> | null
 }
 
 export type EncounterOrderByWithRelationInput = {
@@ -341,6 +344,9 @@ export type EncounterOrderByWithRelationInput = {
   clinicalDocuments?: Prisma.DocumentOrderByRelationAggregateInput
   labOrders?: Prisma.LabOrderOrderByRelationAggregateInput
   antenatalVisit?: Prisma.AntenatalVisitOrderByWithRelationInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordOrderByRelationAggregateInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceOrderByRelationAggregateInput
+  postnatalVisit?: Prisma.PostnatalVisitOrderByWithRelationInput
 }
 
 export type EncounterWhereUniqueInput = Prisma.AtLeast<{
@@ -380,6 +386,9 @@ export type EncounterWhereUniqueInput = Prisma.AtLeast<{
   clinicalDocuments?: Prisma.DocumentListRelationFilter
   labOrders?: Prisma.LabOrderListRelationFilter
   antenatalVisit?: Prisma.XOR<Prisma.AntenatalVisitNullableScalarRelationFilter, Prisma.AntenatalVisitWhereInput> | null
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordListRelationFilter
+  familyPlanningServices?: Prisma.FamilyPlanningServiceListRelationFilter
+  postnatalVisit?: Prisma.XOR<Prisma.PostnatalVisitNullableScalarRelationFilter, Prisma.PostnatalVisitWhereInput> | null
 }, "id" | "registrationId">
 
 export type EncounterOrderByWithAggregationInput = {
@@ -458,6 +467,9 @@ export type EncounterCreateInput = {
   clinicalDocuments?: Prisma.DocumentCreateNestedManyWithoutEncounterInput
   labOrders?: Prisma.LabOrderCreateNestedManyWithoutEncounterInput
   antenatalVisit?: Prisma.AntenatalVisitCreateNestedOneWithoutEncounterInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutStartEncounterInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceCreateNestedManyWithoutEncounterInput
+  postnatalVisit?: Prisma.PostnatalVisitCreateNestedOneWithoutEncounterInput
 }
 
 export type EncounterUncheckedCreateInput = {
@@ -490,6 +502,9 @@ export type EncounterUncheckedCreateInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutEncounterInput
   labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutEncounterInput
   antenatalVisit?: Prisma.AntenatalVisitUncheckedCreateNestedOneWithoutEncounterInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutStartEncounterInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceUncheckedCreateNestedManyWithoutEncounterInput
+  postnatalVisit?: Prisma.PostnatalVisitUncheckedCreateNestedOneWithoutEncounterInput
 }
 
 export type EncounterUpdateInput = {
@@ -522,6 +537,9 @@ export type EncounterUpdateInput = {
   clinicalDocuments?: Prisma.DocumentUpdateManyWithoutEncounterNestedInput
   labOrders?: Prisma.LabOrderUpdateManyWithoutEncounterNestedInput
   antenatalVisit?: Prisma.AntenatalVisitUpdateOneWithoutEncounterNestedInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordUpdateManyWithoutStartEncounterNestedInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceUpdateManyWithoutEncounterNestedInput
+  postnatalVisit?: Prisma.PostnatalVisitUpdateOneWithoutEncounterNestedInput
 }
 
 export type EncounterUncheckedUpdateInput = {
@@ -554,6 +572,9 @@ export type EncounterUncheckedUpdateInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutEncounterNestedInput
   labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutEncounterNestedInput
   antenatalVisit?: Prisma.AntenatalVisitUncheckedUpdateOneWithoutEncounterNestedInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutStartEncounterNestedInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceUncheckedUpdateManyWithoutEncounterNestedInput
+  postnatalVisit?: Prisma.PostnatalVisitUncheckedUpdateOneWithoutEncounterNestedInput
 }
 
 export type EncounterCreateManyInput = {
@@ -1042,6 +1063,52 @@ export type EncounterUpdateOneRequiredWithoutAntenatalVisitNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.EncounterUpdateToOneWithWhereWithoutAntenatalVisitInput, Prisma.EncounterUpdateWithoutAntenatalVisitInput>, Prisma.EncounterUncheckedUpdateWithoutAntenatalVisitInput>
 }
 
+export type EncounterCreateNestedOneWithoutFamilyPlanningStartsInput = {
+  create?: Prisma.XOR<Prisma.EncounterCreateWithoutFamilyPlanningStartsInput, Prisma.EncounterUncheckedCreateWithoutFamilyPlanningStartsInput>
+  connectOrCreate?: Prisma.EncounterCreateOrConnectWithoutFamilyPlanningStartsInput
+  connect?: Prisma.EncounterWhereUniqueInput
+}
+
+export type EncounterUpdateOneWithoutFamilyPlanningStartsNestedInput = {
+  create?: Prisma.XOR<Prisma.EncounterCreateWithoutFamilyPlanningStartsInput, Prisma.EncounterUncheckedCreateWithoutFamilyPlanningStartsInput>
+  connectOrCreate?: Prisma.EncounterCreateOrConnectWithoutFamilyPlanningStartsInput
+  upsert?: Prisma.EncounterUpsertWithoutFamilyPlanningStartsInput
+  disconnect?: Prisma.EncounterWhereInput | boolean
+  delete?: Prisma.EncounterWhereInput | boolean
+  connect?: Prisma.EncounterWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.EncounterUpdateToOneWithWhereWithoutFamilyPlanningStartsInput, Prisma.EncounterUpdateWithoutFamilyPlanningStartsInput>, Prisma.EncounterUncheckedUpdateWithoutFamilyPlanningStartsInput>
+}
+
+export type EncounterCreateNestedOneWithoutFamilyPlanningServicesInput = {
+  create?: Prisma.XOR<Prisma.EncounterCreateWithoutFamilyPlanningServicesInput, Prisma.EncounterUncheckedCreateWithoutFamilyPlanningServicesInput>
+  connectOrCreate?: Prisma.EncounterCreateOrConnectWithoutFamilyPlanningServicesInput
+  connect?: Prisma.EncounterWhereUniqueInput
+}
+
+export type EncounterUpdateOneWithoutFamilyPlanningServicesNestedInput = {
+  create?: Prisma.XOR<Prisma.EncounterCreateWithoutFamilyPlanningServicesInput, Prisma.EncounterUncheckedCreateWithoutFamilyPlanningServicesInput>
+  connectOrCreate?: Prisma.EncounterCreateOrConnectWithoutFamilyPlanningServicesInput
+  upsert?: Prisma.EncounterUpsertWithoutFamilyPlanningServicesInput
+  disconnect?: Prisma.EncounterWhereInput | boolean
+  delete?: Prisma.EncounterWhereInput | boolean
+  connect?: Prisma.EncounterWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.EncounterUpdateToOneWithWhereWithoutFamilyPlanningServicesInput, Prisma.EncounterUpdateWithoutFamilyPlanningServicesInput>, Prisma.EncounterUncheckedUpdateWithoutFamilyPlanningServicesInput>
+}
+
+export type EncounterCreateNestedOneWithoutPostnatalVisitInput = {
+  create?: Prisma.XOR<Prisma.EncounterCreateWithoutPostnatalVisitInput, Prisma.EncounterUncheckedCreateWithoutPostnatalVisitInput>
+  connectOrCreate?: Prisma.EncounterCreateOrConnectWithoutPostnatalVisitInput
+  connect?: Prisma.EncounterWhereUniqueInput
+}
+
+export type EncounterUpdateOneRequiredWithoutPostnatalVisitNestedInput = {
+  create?: Prisma.XOR<Prisma.EncounterCreateWithoutPostnatalVisitInput, Prisma.EncounterUncheckedCreateWithoutPostnatalVisitInput>
+  connectOrCreate?: Prisma.EncounterCreateOrConnectWithoutPostnatalVisitInput
+  upsert?: Prisma.EncounterUpsertWithoutPostnatalVisitInput
+  connect?: Prisma.EncounterWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.EncounterUpdateToOneWithWhereWithoutPostnatalVisitInput, Prisma.EncounterUpdateWithoutPostnatalVisitInput>, Prisma.EncounterUncheckedUpdateWithoutPostnatalVisitInput>
+}
+
 export type EncounterCreateWithoutCreatedByInput = {
   id?: string
   status?: $Enums.EncounterStatus
@@ -1071,6 +1138,9 @@ export type EncounterCreateWithoutCreatedByInput = {
   clinicalDocuments?: Prisma.DocumentCreateNestedManyWithoutEncounterInput
   labOrders?: Prisma.LabOrderCreateNestedManyWithoutEncounterInput
   antenatalVisit?: Prisma.AntenatalVisitCreateNestedOneWithoutEncounterInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutStartEncounterInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceCreateNestedManyWithoutEncounterInput
+  postnatalVisit?: Prisma.PostnatalVisitCreateNestedOneWithoutEncounterInput
 }
 
 export type EncounterUncheckedCreateWithoutCreatedByInput = {
@@ -1102,6 +1172,9 @@ export type EncounterUncheckedCreateWithoutCreatedByInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutEncounterInput
   labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutEncounterInput
   antenatalVisit?: Prisma.AntenatalVisitUncheckedCreateNestedOneWithoutEncounterInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutStartEncounterInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceUncheckedCreateNestedManyWithoutEncounterInput
+  postnatalVisit?: Prisma.PostnatalVisitUncheckedCreateNestedOneWithoutEncounterInput
 }
 
 export type EncounterCreateOrConnectWithoutCreatedByInput = {
@@ -1182,6 +1255,9 @@ export type EncounterCreateWithoutPatientInput = {
   clinicalDocuments?: Prisma.DocumentCreateNestedManyWithoutEncounterInput
   labOrders?: Prisma.LabOrderCreateNestedManyWithoutEncounterInput
   antenatalVisit?: Prisma.AntenatalVisitCreateNestedOneWithoutEncounterInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutStartEncounterInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceCreateNestedManyWithoutEncounterInput
+  postnatalVisit?: Prisma.PostnatalVisitCreateNestedOneWithoutEncounterInput
 }
 
 export type EncounterUncheckedCreateWithoutPatientInput = {
@@ -1213,6 +1289,9 @@ export type EncounterUncheckedCreateWithoutPatientInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutEncounterInput
   labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutEncounterInput
   antenatalVisit?: Prisma.AntenatalVisitUncheckedCreateNestedOneWithoutEncounterInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutStartEncounterInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceUncheckedCreateNestedManyWithoutEncounterInput
+  postnatalVisit?: Prisma.PostnatalVisitUncheckedCreateNestedOneWithoutEncounterInput
 }
 
 export type EncounterCreateOrConnectWithoutPatientInput = {
@@ -1270,6 +1349,9 @@ export type EncounterCreateWithoutDoctorInput = {
   clinicalDocuments?: Prisma.DocumentCreateNestedManyWithoutEncounterInput
   labOrders?: Prisma.LabOrderCreateNestedManyWithoutEncounterInput
   antenatalVisit?: Prisma.AntenatalVisitCreateNestedOneWithoutEncounterInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutStartEncounterInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceCreateNestedManyWithoutEncounterInput
+  postnatalVisit?: Prisma.PostnatalVisitCreateNestedOneWithoutEncounterInput
 }
 
 export type EncounterUncheckedCreateWithoutDoctorInput = {
@@ -1301,6 +1383,9 @@ export type EncounterUncheckedCreateWithoutDoctorInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutEncounterInput
   labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutEncounterInput
   antenatalVisit?: Prisma.AntenatalVisitUncheckedCreateNestedOneWithoutEncounterInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutStartEncounterInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceUncheckedCreateNestedManyWithoutEncounterInput
+  postnatalVisit?: Prisma.PostnatalVisitUncheckedCreateNestedOneWithoutEncounterInput
 }
 
 export type EncounterCreateOrConnectWithoutDoctorInput = {
@@ -1358,6 +1443,9 @@ export type EncounterCreateWithoutRegistrationInput = {
   clinicalDocuments?: Prisma.DocumentCreateNestedManyWithoutEncounterInput
   labOrders?: Prisma.LabOrderCreateNestedManyWithoutEncounterInput
   antenatalVisit?: Prisma.AntenatalVisitCreateNestedOneWithoutEncounterInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutStartEncounterInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceCreateNestedManyWithoutEncounterInput
+  postnatalVisit?: Prisma.PostnatalVisitCreateNestedOneWithoutEncounterInput
 }
 
 export type EncounterUncheckedCreateWithoutRegistrationInput = {
@@ -1389,6 +1477,9 @@ export type EncounterUncheckedCreateWithoutRegistrationInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutEncounterInput
   labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutEncounterInput
   antenatalVisit?: Prisma.AntenatalVisitUncheckedCreateNestedOneWithoutEncounterInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutStartEncounterInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceUncheckedCreateNestedManyWithoutEncounterInput
+  postnatalVisit?: Prisma.PostnatalVisitUncheckedCreateNestedOneWithoutEncounterInput
 }
 
 export type EncounterCreateOrConnectWithoutRegistrationInput = {
@@ -1436,6 +1527,9 @@ export type EncounterUpdateWithoutRegistrationInput = {
   clinicalDocuments?: Prisma.DocumentUpdateManyWithoutEncounterNestedInput
   labOrders?: Prisma.LabOrderUpdateManyWithoutEncounterNestedInput
   antenatalVisit?: Prisma.AntenatalVisitUpdateOneWithoutEncounterNestedInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordUpdateManyWithoutStartEncounterNestedInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceUpdateManyWithoutEncounterNestedInput
+  postnatalVisit?: Prisma.PostnatalVisitUpdateOneWithoutEncounterNestedInput
 }
 
 export type EncounterUncheckedUpdateWithoutRegistrationInput = {
@@ -1467,6 +1561,9 @@ export type EncounterUncheckedUpdateWithoutRegistrationInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutEncounterNestedInput
   labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutEncounterNestedInput
   antenatalVisit?: Prisma.AntenatalVisitUncheckedUpdateOneWithoutEncounterNestedInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutStartEncounterNestedInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceUncheckedUpdateManyWithoutEncounterNestedInput
+  postnatalVisit?: Prisma.PostnatalVisitUncheckedUpdateOneWithoutEncounterNestedInput
 }
 
 export type EncounterCreateWithoutVitalSignsInput = {
@@ -1498,6 +1595,9 @@ export type EncounterCreateWithoutVitalSignsInput = {
   clinicalDocuments?: Prisma.DocumentCreateNestedManyWithoutEncounterInput
   labOrders?: Prisma.LabOrderCreateNestedManyWithoutEncounterInput
   antenatalVisit?: Prisma.AntenatalVisitCreateNestedOneWithoutEncounterInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutStartEncounterInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceCreateNestedManyWithoutEncounterInput
+  postnatalVisit?: Prisma.PostnatalVisitCreateNestedOneWithoutEncounterInput
 }
 
 export type EncounterUncheckedCreateWithoutVitalSignsInput = {
@@ -1529,6 +1629,9 @@ export type EncounterUncheckedCreateWithoutVitalSignsInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutEncounterInput
   labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutEncounterInput
   antenatalVisit?: Prisma.AntenatalVisitUncheckedCreateNestedOneWithoutEncounterInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutStartEncounterInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceUncheckedCreateNestedManyWithoutEncounterInput
+  postnatalVisit?: Prisma.PostnatalVisitUncheckedCreateNestedOneWithoutEncounterInput
 }
 
 export type EncounterCreateOrConnectWithoutVitalSignsInput = {
@@ -1576,6 +1679,9 @@ export type EncounterUpdateWithoutVitalSignsInput = {
   clinicalDocuments?: Prisma.DocumentUpdateManyWithoutEncounterNestedInput
   labOrders?: Prisma.LabOrderUpdateManyWithoutEncounterNestedInput
   antenatalVisit?: Prisma.AntenatalVisitUpdateOneWithoutEncounterNestedInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordUpdateManyWithoutStartEncounterNestedInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceUpdateManyWithoutEncounterNestedInput
+  postnatalVisit?: Prisma.PostnatalVisitUpdateOneWithoutEncounterNestedInput
 }
 
 export type EncounterUncheckedUpdateWithoutVitalSignsInput = {
@@ -1607,6 +1713,9 @@ export type EncounterUncheckedUpdateWithoutVitalSignsInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutEncounterNestedInput
   labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutEncounterNestedInput
   antenatalVisit?: Prisma.AntenatalVisitUncheckedUpdateOneWithoutEncounterNestedInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutStartEncounterNestedInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceUncheckedUpdateManyWithoutEncounterNestedInput
+  postnatalVisit?: Prisma.PostnatalVisitUncheckedUpdateOneWithoutEncounterNestedInput
 }
 
 export type EncounterCreateWithoutDiagnosesInput = {
@@ -1638,6 +1747,9 @@ export type EncounterCreateWithoutDiagnosesInput = {
   clinicalDocuments?: Prisma.DocumentCreateNestedManyWithoutEncounterInput
   labOrders?: Prisma.LabOrderCreateNestedManyWithoutEncounterInput
   antenatalVisit?: Prisma.AntenatalVisitCreateNestedOneWithoutEncounterInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutStartEncounterInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceCreateNestedManyWithoutEncounterInput
+  postnatalVisit?: Prisma.PostnatalVisitCreateNestedOneWithoutEncounterInput
 }
 
 export type EncounterUncheckedCreateWithoutDiagnosesInput = {
@@ -1669,6 +1781,9 @@ export type EncounterUncheckedCreateWithoutDiagnosesInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutEncounterInput
   labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutEncounterInput
   antenatalVisit?: Prisma.AntenatalVisitUncheckedCreateNestedOneWithoutEncounterInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutStartEncounterInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceUncheckedCreateNestedManyWithoutEncounterInput
+  postnatalVisit?: Prisma.PostnatalVisitUncheckedCreateNestedOneWithoutEncounterInput
 }
 
 export type EncounterCreateOrConnectWithoutDiagnosesInput = {
@@ -1716,6 +1831,9 @@ export type EncounterUpdateWithoutDiagnosesInput = {
   clinicalDocuments?: Prisma.DocumentUpdateManyWithoutEncounterNestedInput
   labOrders?: Prisma.LabOrderUpdateManyWithoutEncounterNestedInput
   antenatalVisit?: Prisma.AntenatalVisitUpdateOneWithoutEncounterNestedInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordUpdateManyWithoutStartEncounterNestedInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceUpdateManyWithoutEncounterNestedInput
+  postnatalVisit?: Prisma.PostnatalVisitUpdateOneWithoutEncounterNestedInput
 }
 
 export type EncounterUncheckedUpdateWithoutDiagnosesInput = {
@@ -1747,6 +1865,9 @@ export type EncounterUncheckedUpdateWithoutDiagnosesInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutEncounterNestedInput
   labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutEncounterNestedInput
   antenatalVisit?: Prisma.AntenatalVisitUncheckedUpdateOneWithoutEncounterNestedInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutStartEncounterNestedInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceUncheckedUpdateManyWithoutEncounterNestedInput
+  postnatalVisit?: Prisma.PostnatalVisitUncheckedUpdateOneWithoutEncounterNestedInput
 }
 
 export type EncounterCreateWithoutProceduresInput = {
@@ -1778,6 +1899,9 @@ export type EncounterCreateWithoutProceduresInput = {
   clinicalDocuments?: Prisma.DocumentCreateNestedManyWithoutEncounterInput
   labOrders?: Prisma.LabOrderCreateNestedManyWithoutEncounterInput
   antenatalVisit?: Prisma.AntenatalVisitCreateNestedOneWithoutEncounterInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutStartEncounterInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceCreateNestedManyWithoutEncounterInput
+  postnatalVisit?: Prisma.PostnatalVisitCreateNestedOneWithoutEncounterInput
 }
 
 export type EncounterUncheckedCreateWithoutProceduresInput = {
@@ -1809,6 +1933,9 @@ export type EncounterUncheckedCreateWithoutProceduresInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutEncounterInput
   labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutEncounterInput
   antenatalVisit?: Prisma.AntenatalVisitUncheckedCreateNestedOneWithoutEncounterInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutStartEncounterInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceUncheckedCreateNestedManyWithoutEncounterInput
+  postnatalVisit?: Prisma.PostnatalVisitUncheckedCreateNestedOneWithoutEncounterInput
 }
 
 export type EncounterCreateOrConnectWithoutProceduresInput = {
@@ -1856,6 +1983,9 @@ export type EncounterUpdateWithoutProceduresInput = {
   clinicalDocuments?: Prisma.DocumentUpdateManyWithoutEncounterNestedInput
   labOrders?: Prisma.LabOrderUpdateManyWithoutEncounterNestedInput
   antenatalVisit?: Prisma.AntenatalVisitUpdateOneWithoutEncounterNestedInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordUpdateManyWithoutStartEncounterNestedInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceUpdateManyWithoutEncounterNestedInput
+  postnatalVisit?: Prisma.PostnatalVisitUpdateOneWithoutEncounterNestedInput
 }
 
 export type EncounterUncheckedUpdateWithoutProceduresInput = {
@@ -1887,6 +2017,9 @@ export type EncounterUncheckedUpdateWithoutProceduresInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutEncounterNestedInput
   labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutEncounterNestedInput
   antenatalVisit?: Prisma.AntenatalVisitUncheckedUpdateOneWithoutEncounterNestedInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutStartEncounterNestedInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceUncheckedUpdateManyWithoutEncounterNestedInput
+  postnatalVisit?: Prisma.PostnatalVisitUncheckedUpdateOneWithoutEncounterNestedInput
 }
 
 export type EncounterCreateWithoutPrescriptionsInput = {
@@ -1918,6 +2051,9 @@ export type EncounterCreateWithoutPrescriptionsInput = {
   clinicalDocuments?: Prisma.DocumentCreateNestedManyWithoutEncounterInput
   labOrders?: Prisma.LabOrderCreateNestedManyWithoutEncounterInput
   antenatalVisit?: Prisma.AntenatalVisitCreateNestedOneWithoutEncounterInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutStartEncounterInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceCreateNestedManyWithoutEncounterInput
+  postnatalVisit?: Prisma.PostnatalVisitCreateNestedOneWithoutEncounterInput
 }
 
 export type EncounterUncheckedCreateWithoutPrescriptionsInput = {
@@ -1949,6 +2085,9 @@ export type EncounterUncheckedCreateWithoutPrescriptionsInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutEncounterInput
   labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutEncounterInput
   antenatalVisit?: Prisma.AntenatalVisitUncheckedCreateNestedOneWithoutEncounterInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutStartEncounterInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceUncheckedCreateNestedManyWithoutEncounterInput
+  postnatalVisit?: Prisma.PostnatalVisitUncheckedCreateNestedOneWithoutEncounterInput
 }
 
 export type EncounterCreateOrConnectWithoutPrescriptionsInput = {
@@ -1996,6 +2135,9 @@ export type EncounterUpdateWithoutPrescriptionsInput = {
   clinicalDocuments?: Prisma.DocumentUpdateManyWithoutEncounterNestedInput
   labOrders?: Prisma.LabOrderUpdateManyWithoutEncounterNestedInput
   antenatalVisit?: Prisma.AntenatalVisitUpdateOneWithoutEncounterNestedInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordUpdateManyWithoutStartEncounterNestedInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceUpdateManyWithoutEncounterNestedInput
+  postnatalVisit?: Prisma.PostnatalVisitUpdateOneWithoutEncounterNestedInput
 }
 
 export type EncounterUncheckedUpdateWithoutPrescriptionsInput = {
@@ -2027,6 +2169,9 @@ export type EncounterUncheckedUpdateWithoutPrescriptionsInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutEncounterNestedInput
   labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutEncounterNestedInput
   antenatalVisit?: Prisma.AntenatalVisitUncheckedUpdateOneWithoutEncounterNestedInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutStartEncounterNestedInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceUncheckedUpdateManyWithoutEncounterNestedInput
+  postnatalVisit?: Prisma.PostnatalVisitUncheckedUpdateOneWithoutEncounterNestedInput
 }
 
 export type EncounterCreateWithoutInvoicesInput = {
@@ -2058,6 +2203,9 @@ export type EncounterCreateWithoutInvoicesInput = {
   clinicalDocuments?: Prisma.DocumentCreateNestedManyWithoutEncounterInput
   labOrders?: Prisma.LabOrderCreateNestedManyWithoutEncounterInput
   antenatalVisit?: Prisma.AntenatalVisitCreateNestedOneWithoutEncounterInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutStartEncounterInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceCreateNestedManyWithoutEncounterInput
+  postnatalVisit?: Prisma.PostnatalVisitCreateNestedOneWithoutEncounterInput
 }
 
 export type EncounterUncheckedCreateWithoutInvoicesInput = {
@@ -2089,6 +2237,9 @@ export type EncounterUncheckedCreateWithoutInvoicesInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutEncounterInput
   labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutEncounterInput
   antenatalVisit?: Prisma.AntenatalVisitUncheckedCreateNestedOneWithoutEncounterInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutStartEncounterInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceUncheckedCreateNestedManyWithoutEncounterInput
+  postnatalVisit?: Prisma.PostnatalVisitUncheckedCreateNestedOneWithoutEncounterInput
 }
 
 export type EncounterCreateOrConnectWithoutInvoicesInput = {
@@ -2136,6 +2287,9 @@ export type EncounterUpdateWithoutInvoicesInput = {
   clinicalDocuments?: Prisma.DocumentUpdateManyWithoutEncounterNestedInput
   labOrders?: Prisma.LabOrderUpdateManyWithoutEncounterNestedInput
   antenatalVisit?: Prisma.AntenatalVisitUpdateOneWithoutEncounterNestedInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordUpdateManyWithoutStartEncounterNestedInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceUpdateManyWithoutEncounterNestedInput
+  postnatalVisit?: Prisma.PostnatalVisitUpdateOneWithoutEncounterNestedInput
 }
 
 export type EncounterUncheckedUpdateWithoutInvoicesInput = {
@@ -2167,6 +2321,9 @@ export type EncounterUncheckedUpdateWithoutInvoicesInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutEncounterNestedInput
   labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutEncounterNestedInput
   antenatalVisit?: Prisma.AntenatalVisitUncheckedUpdateOneWithoutEncounterNestedInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutStartEncounterNestedInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceUncheckedUpdateManyWithoutEncounterNestedInput
+  postnatalVisit?: Prisma.PostnatalVisitUncheckedUpdateOneWithoutEncounterNestedInput
 }
 
 export type EncounterCreateWithoutSatusehatSubmissionsInput = {
@@ -2198,6 +2355,9 @@ export type EncounterCreateWithoutSatusehatSubmissionsInput = {
   clinicalDocuments?: Prisma.DocumentCreateNestedManyWithoutEncounterInput
   labOrders?: Prisma.LabOrderCreateNestedManyWithoutEncounterInput
   antenatalVisit?: Prisma.AntenatalVisitCreateNestedOneWithoutEncounterInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutStartEncounterInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceCreateNestedManyWithoutEncounterInput
+  postnatalVisit?: Prisma.PostnatalVisitCreateNestedOneWithoutEncounterInput
 }
 
 export type EncounterUncheckedCreateWithoutSatusehatSubmissionsInput = {
@@ -2229,6 +2389,9 @@ export type EncounterUncheckedCreateWithoutSatusehatSubmissionsInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutEncounterInput
   labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutEncounterInput
   antenatalVisit?: Prisma.AntenatalVisitUncheckedCreateNestedOneWithoutEncounterInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutStartEncounterInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceUncheckedCreateNestedManyWithoutEncounterInput
+  postnatalVisit?: Prisma.PostnatalVisitUncheckedCreateNestedOneWithoutEncounterInput
 }
 
 export type EncounterCreateOrConnectWithoutSatusehatSubmissionsInput = {
@@ -2276,6 +2439,9 @@ export type EncounterUpdateWithoutSatusehatSubmissionsInput = {
   clinicalDocuments?: Prisma.DocumentUpdateManyWithoutEncounterNestedInput
   labOrders?: Prisma.LabOrderUpdateManyWithoutEncounterNestedInput
   antenatalVisit?: Prisma.AntenatalVisitUpdateOneWithoutEncounterNestedInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordUpdateManyWithoutStartEncounterNestedInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceUpdateManyWithoutEncounterNestedInput
+  postnatalVisit?: Prisma.PostnatalVisitUpdateOneWithoutEncounterNestedInput
 }
 
 export type EncounterUncheckedUpdateWithoutSatusehatSubmissionsInput = {
@@ -2307,6 +2473,9 @@ export type EncounterUncheckedUpdateWithoutSatusehatSubmissionsInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutEncounterNestedInput
   labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutEncounterNestedInput
   antenatalVisit?: Prisma.AntenatalVisitUncheckedUpdateOneWithoutEncounterNestedInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutStartEncounterNestedInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceUncheckedUpdateManyWithoutEncounterNestedInput
+  postnatalVisit?: Prisma.PostnatalVisitUncheckedUpdateOneWithoutEncounterNestedInput
 }
 
 export type EncounterCreateWithoutBpjsReferralInput = {
@@ -2338,6 +2507,9 @@ export type EncounterCreateWithoutBpjsReferralInput = {
   clinicalDocuments?: Prisma.DocumentCreateNestedManyWithoutEncounterInput
   labOrders?: Prisma.LabOrderCreateNestedManyWithoutEncounterInput
   antenatalVisit?: Prisma.AntenatalVisitCreateNestedOneWithoutEncounterInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutStartEncounterInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceCreateNestedManyWithoutEncounterInput
+  postnatalVisit?: Prisma.PostnatalVisitCreateNestedOneWithoutEncounterInput
 }
 
 export type EncounterUncheckedCreateWithoutBpjsReferralInput = {
@@ -2369,6 +2541,9 @@ export type EncounterUncheckedCreateWithoutBpjsReferralInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutEncounterInput
   labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutEncounterInput
   antenatalVisit?: Prisma.AntenatalVisitUncheckedCreateNestedOneWithoutEncounterInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutStartEncounterInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceUncheckedCreateNestedManyWithoutEncounterInput
+  postnatalVisit?: Prisma.PostnatalVisitUncheckedCreateNestedOneWithoutEncounterInput
 }
 
 export type EncounterCreateOrConnectWithoutBpjsReferralInput = {
@@ -2416,6 +2591,9 @@ export type EncounterUpdateWithoutBpjsReferralInput = {
   clinicalDocuments?: Prisma.DocumentUpdateManyWithoutEncounterNestedInput
   labOrders?: Prisma.LabOrderUpdateManyWithoutEncounterNestedInput
   antenatalVisit?: Prisma.AntenatalVisitUpdateOneWithoutEncounterNestedInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordUpdateManyWithoutStartEncounterNestedInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceUpdateManyWithoutEncounterNestedInput
+  postnatalVisit?: Prisma.PostnatalVisitUpdateOneWithoutEncounterNestedInput
 }
 
 export type EncounterUncheckedUpdateWithoutBpjsReferralInput = {
@@ -2447,6 +2625,9 @@ export type EncounterUncheckedUpdateWithoutBpjsReferralInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutEncounterNestedInput
   labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutEncounterNestedInput
   antenatalVisit?: Prisma.AntenatalVisitUncheckedUpdateOneWithoutEncounterNestedInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutStartEncounterNestedInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceUncheckedUpdateManyWithoutEncounterNestedInput
+  postnatalVisit?: Prisma.PostnatalVisitUncheckedUpdateOneWithoutEncounterNestedInput
 }
 
 export type EncounterCreateWithoutClinicalDocumentsInput = {
@@ -2478,6 +2659,9 @@ export type EncounterCreateWithoutClinicalDocumentsInput = {
   admissions?: Prisma.AdmissionCreateNestedManyWithoutSourceEncounterInput
   labOrders?: Prisma.LabOrderCreateNestedManyWithoutEncounterInput
   antenatalVisit?: Prisma.AntenatalVisitCreateNestedOneWithoutEncounterInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutStartEncounterInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceCreateNestedManyWithoutEncounterInput
+  postnatalVisit?: Prisma.PostnatalVisitCreateNestedOneWithoutEncounterInput
 }
 
 export type EncounterUncheckedCreateWithoutClinicalDocumentsInput = {
@@ -2509,6 +2693,9 @@ export type EncounterUncheckedCreateWithoutClinicalDocumentsInput = {
   admissions?: Prisma.AdmissionUncheckedCreateNestedManyWithoutSourceEncounterInput
   labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutEncounterInput
   antenatalVisit?: Prisma.AntenatalVisitUncheckedCreateNestedOneWithoutEncounterInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutStartEncounterInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceUncheckedCreateNestedManyWithoutEncounterInput
+  postnatalVisit?: Prisma.PostnatalVisitUncheckedCreateNestedOneWithoutEncounterInput
 }
 
 export type EncounterCreateOrConnectWithoutClinicalDocumentsInput = {
@@ -2556,6 +2743,9 @@ export type EncounterUpdateWithoutClinicalDocumentsInput = {
   admissions?: Prisma.AdmissionUpdateManyWithoutSourceEncounterNestedInput
   labOrders?: Prisma.LabOrderUpdateManyWithoutEncounterNestedInput
   antenatalVisit?: Prisma.AntenatalVisitUpdateOneWithoutEncounterNestedInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordUpdateManyWithoutStartEncounterNestedInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceUpdateManyWithoutEncounterNestedInput
+  postnatalVisit?: Prisma.PostnatalVisitUpdateOneWithoutEncounterNestedInput
 }
 
 export type EncounterUncheckedUpdateWithoutClinicalDocumentsInput = {
@@ -2587,6 +2777,9 @@ export type EncounterUncheckedUpdateWithoutClinicalDocumentsInput = {
   admissions?: Prisma.AdmissionUncheckedUpdateManyWithoutSourceEncounterNestedInput
   labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutEncounterNestedInput
   antenatalVisit?: Prisma.AntenatalVisitUncheckedUpdateOneWithoutEncounterNestedInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutStartEncounterNestedInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceUncheckedUpdateManyWithoutEncounterNestedInput
+  postnatalVisit?: Prisma.PostnatalVisitUncheckedUpdateOneWithoutEncounterNestedInput
 }
 
 export type EncounterCreateWithoutAdmissionsInput = {
@@ -2618,6 +2811,9 @@ export type EncounterCreateWithoutAdmissionsInput = {
   clinicalDocuments?: Prisma.DocumentCreateNestedManyWithoutEncounterInput
   labOrders?: Prisma.LabOrderCreateNestedManyWithoutEncounterInput
   antenatalVisit?: Prisma.AntenatalVisitCreateNestedOneWithoutEncounterInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutStartEncounterInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceCreateNestedManyWithoutEncounterInput
+  postnatalVisit?: Prisma.PostnatalVisitCreateNestedOneWithoutEncounterInput
 }
 
 export type EncounterUncheckedCreateWithoutAdmissionsInput = {
@@ -2649,6 +2845,9 @@ export type EncounterUncheckedCreateWithoutAdmissionsInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutEncounterInput
   labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutEncounterInput
   antenatalVisit?: Prisma.AntenatalVisitUncheckedCreateNestedOneWithoutEncounterInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutStartEncounterInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceUncheckedCreateNestedManyWithoutEncounterInput
+  postnatalVisit?: Prisma.PostnatalVisitUncheckedCreateNestedOneWithoutEncounterInput
 }
 
 export type EncounterCreateOrConnectWithoutAdmissionsInput = {
@@ -2696,6 +2895,9 @@ export type EncounterUpdateWithoutAdmissionsInput = {
   clinicalDocuments?: Prisma.DocumentUpdateManyWithoutEncounterNestedInput
   labOrders?: Prisma.LabOrderUpdateManyWithoutEncounterNestedInput
   antenatalVisit?: Prisma.AntenatalVisitUpdateOneWithoutEncounterNestedInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordUpdateManyWithoutStartEncounterNestedInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceUpdateManyWithoutEncounterNestedInput
+  postnatalVisit?: Prisma.PostnatalVisitUpdateOneWithoutEncounterNestedInput
 }
 
 export type EncounterUncheckedUpdateWithoutAdmissionsInput = {
@@ -2727,6 +2929,9 @@ export type EncounterUncheckedUpdateWithoutAdmissionsInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutEncounterNestedInput
   labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutEncounterNestedInput
   antenatalVisit?: Prisma.AntenatalVisitUncheckedUpdateOneWithoutEncounterNestedInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutStartEncounterNestedInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceUncheckedUpdateManyWithoutEncounterNestedInput
+  postnatalVisit?: Prisma.PostnatalVisitUncheckedUpdateOneWithoutEncounterNestedInput
 }
 
 export type EncounterCreateWithoutLabOrdersInput = {
@@ -2758,6 +2963,9 @@ export type EncounterCreateWithoutLabOrdersInput = {
   admissions?: Prisma.AdmissionCreateNestedManyWithoutSourceEncounterInput
   clinicalDocuments?: Prisma.DocumentCreateNestedManyWithoutEncounterInput
   antenatalVisit?: Prisma.AntenatalVisitCreateNestedOneWithoutEncounterInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutStartEncounterInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceCreateNestedManyWithoutEncounterInput
+  postnatalVisit?: Prisma.PostnatalVisitCreateNestedOneWithoutEncounterInput
 }
 
 export type EncounterUncheckedCreateWithoutLabOrdersInput = {
@@ -2789,6 +2997,9 @@ export type EncounterUncheckedCreateWithoutLabOrdersInput = {
   admissions?: Prisma.AdmissionUncheckedCreateNestedManyWithoutSourceEncounterInput
   clinicalDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutEncounterInput
   antenatalVisit?: Prisma.AntenatalVisitUncheckedCreateNestedOneWithoutEncounterInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutStartEncounterInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceUncheckedCreateNestedManyWithoutEncounterInput
+  postnatalVisit?: Prisma.PostnatalVisitUncheckedCreateNestedOneWithoutEncounterInput
 }
 
 export type EncounterCreateOrConnectWithoutLabOrdersInput = {
@@ -2836,6 +3047,9 @@ export type EncounterUpdateWithoutLabOrdersInput = {
   admissions?: Prisma.AdmissionUpdateManyWithoutSourceEncounterNestedInput
   clinicalDocuments?: Prisma.DocumentUpdateManyWithoutEncounterNestedInput
   antenatalVisit?: Prisma.AntenatalVisitUpdateOneWithoutEncounterNestedInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordUpdateManyWithoutStartEncounterNestedInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceUpdateManyWithoutEncounterNestedInput
+  postnatalVisit?: Prisma.PostnatalVisitUpdateOneWithoutEncounterNestedInput
 }
 
 export type EncounterUncheckedUpdateWithoutLabOrdersInput = {
@@ -2867,6 +3081,9 @@ export type EncounterUncheckedUpdateWithoutLabOrdersInput = {
   admissions?: Prisma.AdmissionUncheckedUpdateManyWithoutSourceEncounterNestedInput
   clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutEncounterNestedInput
   antenatalVisit?: Prisma.AntenatalVisitUncheckedUpdateOneWithoutEncounterNestedInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutStartEncounterNestedInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceUncheckedUpdateManyWithoutEncounterNestedInput
+  postnatalVisit?: Prisma.PostnatalVisitUncheckedUpdateOneWithoutEncounterNestedInput
 }
 
 export type EncounterCreateWithoutImmunizationsInput = {
@@ -2898,6 +3115,9 @@ export type EncounterCreateWithoutImmunizationsInput = {
   clinicalDocuments?: Prisma.DocumentCreateNestedManyWithoutEncounterInput
   labOrders?: Prisma.LabOrderCreateNestedManyWithoutEncounterInput
   antenatalVisit?: Prisma.AntenatalVisitCreateNestedOneWithoutEncounterInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutStartEncounterInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceCreateNestedManyWithoutEncounterInput
+  postnatalVisit?: Prisma.PostnatalVisitCreateNestedOneWithoutEncounterInput
 }
 
 export type EncounterUncheckedCreateWithoutImmunizationsInput = {
@@ -2929,6 +3149,9 @@ export type EncounterUncheckedCreateWithoutImmunizationsInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutEncounterInput
   labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutEncounterInput
   antenatalVisit?: Prisma.AntenatalVisitUncheckedCreateNestedOneWithoutEncounterInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutStartEncounterInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceUncheckedCreateNestedManyWithoutEncounterInput
+  postnatalVisit?: Prisma.PostnatalVisitUncheckedCreateNestedOneWithoutEncounterInput
 }
 
 export type EncounterCreateOrConnectWithoutImmunizationsInput = {
@@ -2976,6 +3199,9 @@ export type EncounterUpdateWithoutImmunizationsInput = {
   clinicalDocuments?: Prisma.DocumentUpdateManyWithoutEncounterNestedInput
   labOrders?: Prisma.LabOrderUpdateManyWithoutEncounterNestedInput
   antenatalVisit?: Prisma.AntenatalVisitUpdateOneWithoutEncounterNestedInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordUpdateManyWithoutStartEncounterNestedInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceUpdateManyWithoutEncounterNestedInput
+  postnatalVisit?: Prisma.PostnatalVisitUpdateOneWithoutEncounterNestedInput
 }
 
 export type EncounterUncheckedUpdateWithoutImmunizationsInput = {
@@ -3007,6 +3233,9 @@ export type EncounterUncheckedUpdateWithoutImmunizationsInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutEncounterNestedInput
   labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutEncounterNestedInput
   antenatalVisit?: Prisma.AntenatalVisitUncheckedUpdateOneWithoutEncounterNestedInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutStartEncounterNestedInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceUncheckedUpdateManyWithoutEncounterNestedInput
+  postnatalVisit?: Prisma.PostnatalVisitUncheckedUpdateOneWithoutEncounterNestedInput
 }
 
 export type EncounterCreateWithoutAntenatalVisitInput = {
@@ -3038,6 +3267,9 @@ export type EncounterCreateWithoutAntenatalVisitInput = {
   admissions?: Prisma.AdmissionCreateNestedManyWithoutSourceEncounterInput
   clinicalDocuments?: Prisma.DocumentCreateNestedManyWithoutEncounterInput
   labOrders?: Prisma.LabOrderCreateNestedManyWithoutEncounterInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutStartEncounterInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceCreateNestedManyWithoutEncounterInput
+  postnatalVisit?: Prisma.PostnatalVisitCreateNestedOneWithoutEncounterInput
 }
 
 export type EncounterUncheckedCreateWithoutAntenatalVisitInput = {
@@ -3069,6 +3301,9 @@ export type EncounterUncheckedCreateWithoutAntenatalVisitInput = {
   admissions?: Prisma.AdmissionUncheckedCreateNestedManyWithoutSourceEncounterInput
   clinicalDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutEncounterInput
   labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutEncounterInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutStartEncounterInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceUncheckedCreateNestedManyWithoutEncounterInput
+  postnatalVisit?: Prisma.PostnatalVisitUncheckedCreateNestedOneWithoutEncounterInput
 }
 
 export type EncounterCreateOrConnectWithoutAntenatalVisitInput = {
@@ -3116,6 +3351,9 @@ export type EncounterUpdateWithoutAntenatalVisitInput = {
   admissions?: Prisma.AdmissionUpdateManyWithoutSourceEncounterNestedInput
   clinicalDocuments?: Prisma.DocumentUpdateManyWithoutEncounterNestedInput
   labOrders?: Prisma.LabOrderUpdateManyWithoutEncounterNestedInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordUpdateManyWithoutStartEncounterNestedInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceUpdateManyWithoutEncounterNestedInput
+  postnatalVisit?: Prisma.PostnatalVisitUpdateOneWithoutEncounterNestedInput
 }
 
 export type EncounterUncheckedUpdateWithoutAntenatalVisitInput = {
@@ -3147,6 +3385,465 @@ export type EncounterUncheckedUpdateWithoutAntenatalVisitInput = {
   admissions?: Prisma.AdmissionUncheckedUpdateManyWithoutSourceEncounterNestedInput
   clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutEncounterNestedInput
   labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutEncounterNestedInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutStartEncounterNestedInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceUncheckedUpdateManyWithoutEncounterNestedInput
+  postnatalVisit?: Prisma.PostnatalVisitUncheckedUpdateOneWithoutEncounterNestedInput
+}
+
+export type EncounterCreateWithoutFamilyPlanningStartsInput = {
+  id?: string
+  status?: $Enums.EncounterStatus
+  startedAt?: Date | string
+  endedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  subjective?: string | null
+  objective?: string | null
+  assessment?: string | null
+  plan?: string | null
+  prognosis?: $Enums.EncounterPrognosis | null
+  childVisitPurpose?: $Enums.EncounterChildVisitPurpose | null
+  registration: Prisma.RegistrationCreateNestedOneWithoutEncounterInput
+  patient: Prisma.PatientProfileCreateNestedOneWithoutEncountersInput
+  doctor: Prisma.DoctorProfileCreateNestedOneWithoutEncountersInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutCreatedEncountersInput
+  vitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutEncounterInput
+  diagnoses?: Prisma.DiagnosisCreateNestedManyWithoutEncounterInput
+  procedures?: Prisma.ProcedureCreateNestedManyWithoutEncounterInput
+  immunizations?: Prisma.ImmunizationCreateNestedManyWithoutEncounterInput
+  prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutEncounterInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutEncounterInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionCreateNestedManyWithoutEncounterInput
+  bpjsReferral?: Prisma.BpjsReferralCreateNestedOneWithoutEncounterInput
+  admissions?: Prisma.AdmissionCreateNestedManyWithoutSourceEncounterInput
+  clinicalDocuments?: Prisma.DocumentCreateNestedManyWithoutEncounterInput
+  labOrders?: Prisma.LabOrderCreateNestedManyWithoutEncounterInput
+  antenatalVisit?: Prisma.AntenatalVisitCreateNestedOneWithoutEncounterInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceCreateNestedManyWithoutEncounterInput
+  postnatalVisit?: Prisma.PostnatalVisitCreateNestedOneWithoutEncounterInput
+}
+
+export type EncounterUncheckedCreateWithoutFamilyPlanningStartsInput = {
+  id?: string
+  registrationId: string
+  patientId: string
+  doctorId: string
+  status?: $Enums.EncounterStatus
+  startedAt?: Date | string
+  endedAt?: Date | string | null
+  createdById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  subjective?: string | null
+  objective?: string | null
+  assessment?: string | null
+  plan?: string | null
+  prognosis?: $Enums.EncounterPrognosis | null
+  childVisitPurpose?: $Enums.EncounterChildVisitPurpose | null
+  vitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutEncounterInput
+  diagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutEncounterInput
+  procedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutEncounterInput
+  immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutEncounterInput
+  prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutEncounterInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutEncounterInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionUncheckedCreateNestedManyWithoutEncounterInput
+  bpjsReferral?: Prisma.BpjsReferralUncheckedCreateNestedOneWithoutEncounterInput
+  admissions?: Prisma.AdmissionUncheckedCreateNestedManyWithoutSourceEncounterInput
+  clinicalDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutEncounterInput
+  labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutEncounterInput
+  antenatalVisit?: Prisma.AntenatalVisitUncheckedCreateNestedOneWithoutEncounterInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceUncheckedCreateNestedManyWithoutEncounterInput
+  postnatalVisit?: Prisma.PostnatalVisitUncheckedCreateNestedOneWithoutEncounterInput
+}
+
+export type EncounterCreateOrConnectWithoutFamilyPlanningStartsInput = {
+  where: Prisma.EncounterWhereUniqueInput
+  create: Prisma.XOR<Prisma.EncounterCreateWithoutFamilyPlanningStartsInput, Prisma.EncounterUncheckedCreateWithoutFamilyPlanningStartsInput>
+}
+
+export type EncounterUpsertWithoutFamilyPlanningStartsInput = {
+  update: Prisma.XOR<Prisma.EncounterUpdateWithoutFamilyPlanningStartsInput, Prisma.EncounterUncheckedUpdateWithoutFamilyPlanningStartsInput>
+  create: Prisma.XOR<Prisma.EncounterCreateWithoutFamilyPlanningStartsInput, Prisma.EncounterUncheckedCreateWithoutFamilyPlanningStartsInput>
+  where?: Prisma.EncounterWhereInput
+}
+
+export type EncounterUpdateToOneWithWhereWithoutFamilyPlanningStartsInput = {
+  where?: Prisma.EncounterWhereInput
+  data: Prisma.XOR<Prisma.EncounterUpdateWithoutFamilyPlanningStartsInput, Prisma.EncounterUncheckedUpdateWithoutFamilyPlanningStartsInput>
+}
+
+export type EncounterUpdateWithoutFamilyPlanningStartsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumEncounterStatusFieldUpdateOperationsInput | $Enums.EncounterStatus
+  startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subjective?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  objective?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  assessment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  plan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prognosis?: Prisma.NullableEnumEncounterPrognosisFieldUpdateOperationsInput | $Enums.EncounterPrognosis | null
+  childVisitPurpose?: Prisma.NullableEnumEncounterChildVisitPurposeFieldUpdateOperationsInput | $Enums.EncounterChildVisitPurpose | null
+  registration?: Prisma.RegistrationUpdateOneRequiredWithoutEncounterNestedInput
+  patient?: Prisma.PatientProfileUpdateOneRequiredWithoutEncountersNestedInput
+  doctor?: Prisma.DoctorProfileUpdateOneRequiredWithoutEncountersNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutCreatedEncountersNestedInput
+  vitalSigns?: Prisma.VitalSignsUpdateManyWithoutEncounterNestedInput
+  diagnoses?: Prisma.DiagnosisUpdateManyWithoutEncounterNestedInput
+  procedures?: Prisma.ProcedureUpdateManyWithoutEncounterNestedInput
+  immunizations?: Prisma.ImmunizationUpdateManyWithoutEncounterNestedInput
+  prescriptions?: Prisma.PrescriptionUpdateManyWithoutEncounterNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutEncounterNestedInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionUpdateManyWithoutEncounterNestedInput
+  bpjsReferral?: Prisma.BpjsReferralUpdateOneWithoutEncounterNestedInput
+  admissions?: Prisma.AdmissionUpdateManyWithoutSourceEncounterNestedInput
+  clinicalDocuments?: Prisma.DocumentUpdateManyWithoutEncounterNestedInput
+  labOrders?: Prisma.LabOrderUpdateManyWithoutEncounterNestedInput
+  antenatalVisit?: Prisma.AntenatalVisitUpdateOneWithoutEncounterNestedInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceUpdateManyWithoutEncounterNestedInput
+  postnatalVisit?: Prisma.PostnatalVisitUpdateOneWithoutEncounterNestedInput
+}
+
+export type EncounterUncheckedUpdateWithoutFamilyPlanningStartsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  registrationId?: Prisma.StringFieldUpdateOperationsInput | string
+  patientId?: Prisma.StringFieldUpdateOperationsInput | string
+  doctorId?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumEncounterStatusFieldUpdateOperationsInput | $Enums.EncounterStatus
+  startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subjective?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  objective?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  assessment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  plan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prognosis?: Prisma.NullableEnumEncounterPrognosisFieldUpdateOperationsInput | $Enums.EncounterPrognosis | null
+  childVisitPurpose?: Prisma.NullableEnumEncounterChildVisitPurposeFieldUpdateOperationsInput | $Enums.EncounterChildVisitPurpose | null
+  vitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutEncounterNestedInput
+  diagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutEncounterNestedInput
+  procedures?: Prisma.ProcedureUncheckedUpdateManyWithoutEncounterNestedInput
+  immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutEncounterNestedInput
+  prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutEncounterNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutEncounterNestedInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionUncheckedUpdateManyWithoutEncounterNestedInput
+  bpjsReferral?: Prisma.BpjsReferralUncheckedUpdateOneWithoutEncounterNestedInput
+  admissions?: Prisma.AdmissionUncheckedUpdateManyWithoutSourceEncounterNestedInput
+  clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutEncounterNestedInput
+  labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutEncounterNestedInput
+  antenatalVisit?: Prisma.AntenatalVisitUncheckedUpdateOneWithoutEncounterNestedInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceUncheckedUpdateManyWithoutEncounterNestedInput
+  postnatalVisit?: Prisma.PostnatalVisitUncheckedUpdateOneWithoutEncounterNestedInput
+}
+
+export type EncounterCreateWithoutFamilyPlanningServicesInput = {
+  id?: string
+  status?: $Enums.EncounterStatus
+  startedAt?: Date | string
+  endedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  subjective?: string | null
+  objective?: string | null
+  assessment?: string | null
+  plan?: string | null
+  prognosis?: $Enums.EncounterPrognosis | null
+  childVisitPurpose?: $Enums.EncounterChildVisitPurpose | null
+  registration: Prisma.RegistrationCreateNestedOneWithoutEncounterInput
+  patient: Prisma.PatientProfileCreateNestedOneWithoutEncountersInput
+  doctor: Prisma.DoctorProfileCreateNestedOneWithoutEncountersInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutCreatedEncountersInput
+  vitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutEncounterInput
+  diagnoses?: Prisma.DiagnosisCreateNestedManyWithoutEncounterInput
+  procedures?: Prisma.ProcedureCreateNestedManyWithoutEncounterInput
+  immunizations?: Prisma.ImmunizationCreateNestedManyWithoutEncounterInput
+  prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutEncounterInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutEncounterInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionCreateNestedManyWithoutEncounterInput
+  bpjsReferral?: Prisma.BpjsReferralCreateNestedOneWithoutEncounterInput
+  admissions?: Prisma.AdmissionCreateNestedManyWithoutSourceEncounterInput
+  clinicalDocuments?: Prisma.DocumentCreateNestedManyWithoutEncounterInput
+  labOrders?: Prisma.LabOrderCreateNestedManyWithoutEncounterInput
+  antenatalVisit?: Prisma.AntenatalVisitCreateNestedOneWithoutEncounterInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutStartEncounterInput
+  postnatalVisit?: Prisma.PostnatalVisitCreateNestedOneWithoutEncounterInput
+}
+
+export type EncounterUncheckedCreateWithoutFamilyPlanningServicesInput = {
+  id?: string
+  registrationId: string
+  patientId: string
+  doctorId: string
+  status?: $Enums.EncounterStatus
+  startedAt?: Date | string
+  endedAt?: Date | string | null
+  createdById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  subjective?: string | null
+  objective?: string | null
+  assessment?: string | null
+  plan?: string | null
+  prognosis?: $Enums.EncounterPrognosis | null
+  childVisitPurpose?: $Enums.EncounterChildVisitPurpose | null
+  vitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutEncounterInput
+  diagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutEncounterInput
+  procedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutEncounterInput
+  immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutEncounterInput
+  prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutEncounterInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutEncounterInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionUncheckedCreateNestedManyWithoutEncounterInput
+  bpjsReferral?: Prisma.BpjsReferralUncheckedCreateNestedOneWithoutEncounterInput
+  admissions?: Prisma.AdmissionUncheckedCreateNestedManyWithoutSourceEncounterInput
+  clinicalDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutEncounterInput
+  labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutEncounterInput
+  antenatalVisit?: Prisma.AntenatalVisitUncheckedCreateNestedOneWithoutEncounterInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutStartEncounterInput
+  postnatalVisit?: Prisma.PostnatalVisitUncheckedCreateNestedOneWithoutEncounterInput
+}
+
+export type EncounterCreateOrConnectWithoutFamilyPlanningServicesInput = {
+  where: Prisma.EncounterWhereUniqueInput
+  create: Prisma.XOR<Prisma.EncounterCreateWithoutFamilyPlanningServicesInput, Prisma.EncounterUncheckedCreateWithoutFamilyPlanningServicesInput>
+}
+
+export type EncounterUpsertWithoutFamilyPlanningServicesInput = {
+  update: Prisma.XOR<Prisma.EncounterUpdateWithoutFamilyPlanningServicesInput, Prisma.EncounterUncheckedUpdateWithoutFamilyPlanningServicesInput>
+  create: Prisma.XOR<Prisma.EncounterCreateWithoutFamilyPlanningServicesInput, Prisma.EncounterUncheckedCreateWithoutFamilyPlanningServicesInput>
+  where?: Prisma.EncounterWhereInput
+}
+
+export type EncounterUpdateToOneWithWhereWithoutFamilyPlanningServicesInput = {
+  where?: Prisma.EncounterWhereInput
+  data: Prisma.XOR<Prisma.EncounterUpdateWithoutFamilyPlanningServicesInput, Prisma.EncounterUncheckedUpdateWithoutFamilyPlanningServicesInput>
+}
+
+export type EncounterUpdateWithoutFamilyPlanningServicesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumEncounterStatusFieldUpdateOperationsInput | $Enums.EncounterStatus
+  startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subjective?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  objective?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  assessment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  plan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prognosis?: Prisma.NullableEnumEncounterPrognosisFieldUpdateOperationsInput | $Enums.EncounterPrognosis | null
+  childVisitPurpose?: Prisma.NullableEnumEncounterChildVisitPurposeFieldUpdateOperationsInput | $Enums.EncounterChildVisitPurpose | null
+  registration?: Prisma.RegistrationUpdateOneRequiredWithoutEncounterNestedInput
+  patient?: Prisma.PatientProfileUpdateOneRequiredWithoutEncountersNestedInput
+  doctor?: Prisma.DoctorProfileUpdateOneRequiredWithoutEncountersNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutCreatedEncountersNestedInput
+  vitalSigns?: Prisma.VitalSignsUpdateManyWithoutEncounterNestedInput
+  diagnoses?: Prisma.DiagnosisUpdateManyWithoutEncounterNestedInput
+  procedures?: Prisma.ProcedureUpdateManyWithoutEncounterNestedInput
+  immunizations?: Prisma.ImmunizationUpdateManyWithoutEncounterNestedInput
+  prescriptions?: Prisma.PrescriptionUpdateManyWithoutEncounterNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutEncounterNestedInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionUpdateManyWithoutEncounterNestedInput
+  bpjsReferral?: Prisma.BpjsReferralUpdateOneWithoutEncounterNestedInput
+  admissions?: Prisma.AdmissionUpdateManyWithoutSourceEncounterNestedInput
+  clinicalDocuments?: Prisma.DocumentUpdateManyWithoutEncounterNestedInput
+  labOrders?: Prisma.LabOrderUpdateManyWithoutEncounterNestedInput
+  antenatalVisit?: Prisma.AntenatalVisitUpdateOneWithoutEncounterNestedInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordUpdateManyWithoutStartEncounterNestedInput
+  postnatalVisit?: Prisma.PostnatalVisitUpdateOneWithoutEncounterNestedInput
+}
+
+export type EncounterUncheckedUpdateWithoutFamilyPlanningServicesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  registrationId?: Prisma.StringFieldUpdateOperationsInput | string
+  patientId?: Prisma.StringFieldUpdateOperationsInput | string
+  doctorId?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumEncounterStatusFieldUpdateOperationsInput | $Enums.EncounterStatus
+  startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subjective?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  objective?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  assessment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  plan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prognosis?: Prisma.NullableEnumEncounterPrognosisFieldUpdateOperationsInput | $Enums.EncounterPrognosis | null
+  childVisitPurpose?: Prisma.NullableEnumEncounterChildVisitPurposeFieldUpdateOperationsInput | $Enums.EncounterChildVisitPurpose | null
+  vitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutEncounterNestedInput
+  diagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutEncounterNestedInput
+  procedures?: Prisma.ProcedureUncheckedUpdateManyWithoutEncounterNestedInput
+  immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutEncounterNestedInput
+  prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutEncounterNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutEncounterNestedInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionUncheckedUpdateManyWithoutEncounterNestedInput
+  bpjsReferral?: Prisma.BpjsReferralUncheckedUpdateOneWithoutEncounterNestedInput
+  admissions?: Prisma.AdmissionUncheckedUpdateManyWithoutSourceEncounterNestedInput
+  clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutEncounterNestedInput
+  labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutEncounterNestedInput
+  antenatalVisit?: Prisma.AntenatalVisitUncheckedUpdateOneWithoutEncounterNestedInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutStartEncounterNestedInput
+  postnatalVisit?: Prisma.PostnatalVisitUncheckedUpdateOneWithoutEncounterNestedInput
+}
+
+export type EncounterCreateWithoutPostnatalVisitInput = {
+  id?: string
+  status?: $Enums.EncounterStatus
+  startedAt?: Date | string
+  endedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  subjective?: string | null
+  objective?: string | null
+  assessment?: string | null
+  plan?: string | null
+  prognosis?: $Enums.EncounterPrognosis | null
+  childVisitPurpose?: $Enums.EncounterChildVisitPurpose | null
+  registration: Prisma.RegistrationCreateNestedOneWithoutEncounterInput
+  patient: Prisma.PatientProfileCreateNestedOneWithoutEncountersInput
+  doctor: Prisma.DoctorProfileCreateNestedOneWithoutEncountersInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutCreatedEncountersInput
+  vitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutEncounterInput
+  diagnoses?: Prisma.DiagnosisCreateNestedManyWithoutEncounterInput
+  procedures?: Prisma.ProcedureCreateNestedManyWithoutEncounterInput
+  immunizations?: Prisma.ImmunizationCreateNestedManyWithoutEncounterInput
+  prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutEncounterInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutEncounterInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionCreateNestedManyWithoutEncounterInput
+  bpjsReferral?: Prisma.BpjsReferralCreateNestedOneWithoutEncounterInput
+  admissions?: Prisma.AdmissionCreateNestedManyWithoutSourceEncounterInput
+  clinicalDocuments?: Prisma.DocumentCreateNestedManyWithoutEncounterInput
+  labOrders?: Prisma.LabOrderCreateNestedManyWithoutEncounterInput
+  antenatalVisit?: Prisma.AntenatalVisitCreateNestedOneWithoutEncounterInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutStartEncounterInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceCreateNestedManyWithoutEncounterInput
+}
+
+export type EncounterUncheckedCreateWithoutPostnatalVisitInput = {
+  id?: string
+  registrationId: string
+  patientId: string
+  doctorId: string
+  status?: $Enums.EncounterStatus
+  startedAt?: Date | string
+  endedAt?: Date | string | null
+  createdById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  subjective?: string | null
+  objective?: string | null
+  assessment?: string | null
+  plan?: string | null
+  prognosis?: $Enums.EncounterPrognosis | null
+  childVisitPurpose?: $Enums.EncounterChildVisitPurpose | null
+  vitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutEncounterInput
+  diagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutEncounterInput
+  procedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutEncounterInput
+  immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutEncounterInput
+  prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutEncounterInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutEncounterInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionUncheckedCreateNestedManyWithoutEncounterInput
+  bpjsReferral?: Prisma.BpjsReferralUncheckedCreateNestedOneWithoutEncounterInput
+  admissions?: Prisma.AdmissionUncheckedCreateNestedManyWithoutSourceEncounterInput
+  clinicalDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutEncounterInput
+  labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutEncounterInput
+  antenatalVisit?: Prisma.AntenatalVisitUncheckedCreateNestedOneWithoutEncounterInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutStartEncounterInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceUncheckedCreateNestedManyWithoutEncounterInput
+}
+
+export type EncounterCreateOrConnectWithoutPostnatalVisitInput = {
+  where: Prisma.EncounterWhereUniqueInput
+  create: Prisma.XOR<Prisma.EncounterCreateWithoutPostnatalVisitInput, Prisma.EncounterUncheckedCreateWithoutPostnatalVisitInput>
+}
+
+export type EncounterUpsertWithoutPostnatalVisitInput = {
+  update: Prisma.XOR<Prisma.EncounterUpdateWithoutPostnatalVisitInput, Prisma.EncounterUncheckedUpdateWithoutPostnatalVisitInput>
+  create: Prisma.XOR<Prisma.EncounterCreateWithoutPostnatalVisitInput, Prisma.EncounterUncheckedCreateWithoutPostnatalVisitInput>
+  where?: Prisma.EncounterWhereInput
+}
+
+export type EncounterUpdateToOneWithWhereWithoutPostnatalVisitInput = {
+  where?: Prisma.EncounterWhereInput
+  data: Prisma.XOR<Prisma.EncounterUpdateWithoutPostnatalVisitInput, Prisma.EncounterUncheckedUpdateWithoutPostnatalVisitInput>
+}
+
+export type EncounterUpdateWithoutPostnatalVisitInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumEncounterStatusFieldUpdateOperationsInput | $Enums.EncounterStatus
+  startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subjective?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  objective?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  assessment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  plan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prognosis?: Prisma.NullableEnumEncounterPrognosisFieldUpdateOperationsInput | $Enums.EncounterPrognosis | null
+  childVisitPurpose?: Prisma.NullableEnumEncounterChildVisitPurposeFieldUpdateOperationsInput | $Enums.EncounterChildVisitPurpose | null
+  registration?: Prisma.RegistrationUpdateOneRequiredWithoutEncounterNestedInput
+  patient?: Prisma.PatientProfileUpdateOneRequiredWithoutEncountersNestedInput
+  doctor?: Prisma.DoctorProfileUpdateOneRequiredWithoutEncountersNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutCreatedEncountersNestedInput
+  vitalSigns?: Prisma.VitalSignsUpdateManyWithoutEncounterNestedInput
+  diagnoses?: Prisma.DiagnosisUpdateManyWithoutEncounterNestedInput
+  procedures?: Prisma.ProcedureUpdateManyWithoutEncounterNestedInput
+  immunizations?: Prisma.ImmunizationUpdateManyWithoutEncounterNestedInput
+  prescriptions?: Prisma.PrescriptionUpdateManyWithoutEncounterNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutEncounterNestedInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionUpdateManyWithoutEncounterNestedInput
+  bpjsReferral?: Prisma.BpjsReferralUpdateOneWithoutEncounterNestedInput
+  admissions?: Prisma.AdmissionUpdateManyWithoutSourceEncounterNestedInput
+  clinicalDocuments?: Prisma.DocumentUpdateManyWithoutEncounterNestedInput
+  labOrders?: Prisma.LabOrderUpdateManyWithoutEncounterNestedInput
+  antenatalVisit?: Prisma.AntenatalVisitUpdateOneWithoutEncounterNestedInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordUpdateManyWithoutStartEncounterNestedInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceUpdateManyWithoutEncounterNestedInput
+}
+
+export type EncounterUncheckedUpdateWithoutPostnatalVisitInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  registrationId?: Prisma.StringFieldUpdateOperationsInput | string
+  patientId?: Prisma.StringFieldUpdateOperationsInput | string
+  doctorId?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumEncounterStatusFieldUpdateOperationsInput | $Enums.EncounterStatus
+  startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  subjective?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  objective?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  assessment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  plan?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prognosis?: Prisma.NullableEnumEncounterPrognosisFieldUpdateOperationsInput | $Enums.EncounterPrognosis | null
+  childVisitPurpose?: Prisma.NullableEnumEncounterChildVisitPurposeFieldUpdateOperationsInput | $Enums.EncounterChildVisitPurpose | null
+  vitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutEncounterNestedInput
+  diagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutEncounterNestedInput
+  procedures?: Prisma.ProcedureUncheckedUpdateManyWithoutEncounterNestedInput
+  immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutEncounterNestedInput
+  prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutEncounterNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutEncounterNestedInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionUncheckedUpdateManyWithoutEncounterNestedInput
+  bpjsReferral?: Prisma.BpjsReferralUncheckedUpdateOneWithoutEncounterNestedInput
+  admissions?: Prisma.AdmissionUncheckedUpdateManyWithoutSourceEncounterNestedInput
+  clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutEncounterNestedInput
+  labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutEncounterNestedInput
+  antenatalVisit?: Prisma.AntenatalVisitUncheckedUpdateOneWithoutEncounterNestedInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutStartEncounterNestedInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceUncheckedUpdateManyWithoutEncounterNestedInput
 }
 
 export type EncounterCreateManyCreatedByInput = {
@@ -3197,6 +3894,9 @@ export type EncounterUpdateWithoutCreatedByInput = {
   clinicalDocuments?: Prisma.DocumentUpdateManyWithoutEncounterNestedInput
   labOrders?: Prisma.LabOrderUpdateManyWithoutEncounterNestedInput
   antenatalVisit?: Prisma.AntenatalVisitUpdateOneWithoutEncounterNestedInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordUpdateManyWithoutStartEncounterNestedInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceUpdateManyWithoutEncounterNestedInput
+  postnatalVisit?: Prisma.PostnatalVisitUpdateOneWithoutEncounterNestedInput
 }
 
 export type EncounterUncheckedUpdateWithoutCreatedByInput = {
@@ -3228,6 +3928,9 @@ export type EncounterUncheckedUpdateWithoutCreatedByInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutEncounterNestedInput
   labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutEncounterNestedInput
   antenatalVisit?: Prisma.AntenatalVisitUncheckedUpdateOneWithoutEncounterNestedInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutStartEncounterNestedInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceUncheckedUpdateManyWithoutEncounterNestedInput
+  postnatalVisit?: Prisma.PostnatalVisitUncheckedUpdateOneWithoutEncounterNestedInput
 }
 
 export type EncounterUncheckedUpdateManyWithoutCreatedByInput = {
@@ -3297,6 +4000,9 @@ export type EncounterUpdateWithoutPatientInput = {
   clinicalDocuments?: Prisma.DocumentUpdateManyWithoutEncounterNestedInput
   labOrders?: Prisma.LabOrderUpdateManyWithoutEncounterNestedInput
   antenatalVisit?: Prisma.AntenatalVisitUpdateOneWithoutEncounterNestedInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordUpdateManyWithoutStartEncounterNestedInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceUpdateManyWithoutEncounterNestedInput
+  postnatalVisit?: Prisma.PostnatalVisitUpdateOneWithoutEncounterNestedInput
 }
 
 export type EncounterUncheckedUpdateWithoutPatientInput = {
@@ -3328,6 +4034,9 @@ export type EncounterUncheckedUpdateWithoutPatientInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutEncounterNestedInput
   labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutEncounterNestedInput
   antenatalVisit?: Prisma.AntenatalVisitUncheckedUpdateOneWithoutEncounterNestedInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutStartEncounterNestedInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceUncheckedUpdateManyWithoutEncounterNestedInput
+  postnatalVisit?: Prisma.PostnatalVisitUncheckedUpdateOneWithoutEncounterNestedInput
 }
 
 export type EncounterUncheckedUpdateManyWithoutPatientInput = {
@@ -3397,6 +4106,9 @@ export type EncounterUpdateWithoutDoctorInput = {
   clinicalDocuments?: Prisma.DocumentUpdateManyWithoutEncounterNestedInput
   labOrders?: Prisma.LabOrderUpdateManyWithoutEncounterNestedInput
   antenatalVisit?: Prisma.AntenatalVisitUpdateOneWithoutEncounterNestedInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordUpdateManyWithoutStartEncounterNestedInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceUpdateManyWithoutEncounterNestedInput
+  postnatalVisit?: Prisma.PostnatalVisitUpdateOneWithoutEncounterNestedInput
 }
 
 export type EncounterUncheckedUpdateWithoutDoctorInput = {
@@ -3428,6 +4140,9 @@ export type EncounterUncheckedUpdateWithoutDoctorInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutEncounterNestedInput
   labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutEncounterNestedInput
   antenatalVisit?: Prisma.AntenatalVisitUncheckedUpdateOneWithoutEncounterNestedInput
+  familyPlanningStarts?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutStartEncounterNestedInput
+  familyPlanningServices?: Prisma.FamilyPlanningServiceUncheckedUpdateManyWithoutEncounterNestedInput
+  postnatalVisit?: Prisma.PostnatalVisitUncheckedUpdateOneWithoutEncounterNestedInput
 }
 
 export type EncounterUncheckedUpdateManyWithoutDoctorInput = {
@@ -3465,6 +4180,8 @@ export type EncounterCountOutputType = {
   admissions: number
   clinicalDocuments: number
   labOrders: number
+  familyPlanningStarts: number
+  familyPlanningServices: number
 }
 
 export type EncounterCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -3478,6 +4195,8 @@ export type EncounterCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensi
   admissions?: boolean | EncounterCountOutputTypeCountAdmissionsArgs
   clinicalDocuments?: boolean | EncounterCountOutputTypeCountClinicalDocumentsArgs
   labOrders?: boolean | EncounterCountOutputTypeCountLabOrdersArgs
+  familyPlanningStarts?: boolean | EncounterCountOutputTypeCountFamilyPlanningStartsArgs
+  familyPlanningServices?: boolean | EncounterCountOutputTypeCountFamilyPlanningServicesArgs
 }
 
 /**
@@ -3560,6 +4279,20 @@ export type EncounterCountOutputTypeCountLabOrdersArgs<ExtArgs extends runtime.T
   where?: Prisma.LabOrderWhereInput
 }
 
+/**
+ * EncounterCountOutputType without action
+ */
+export type EncounterCountOutputTypeCountFamilyPlanningStartsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.FamilyPlanningRecordWhereInput
+}
+
+/**
+ * EncounterCountOutputType without action
+ */
+export type EncounterCountOutputTypeCountFamilyPlanningServicesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.FamilyPlanningServiceWhereInput
+}
+
 
 export type EncounterSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -3595,6 +4328,9 @@ export type EncounterSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   clinicalDocuments?: boolean | Prisma.Encounter$clinicalDocumentsArgs<ExtArgs>
   labOrders?: boolean | Prisma.Encounter$labOrdersArgs<ExtArgs>
   antenatalVisit?: boolean | Prisma.Encounter$antenatalVisitArgs<ExtArgs>
+  familyPlanningStarts?: boolean | Prisma.Encounter$familyPlanningStartsArgs<ExtArgs>
+  familyPlanningServices?: boolean | Prisma.Encounter$familyPlanningServicesArgs<ExtArgs>
+  postnatalVisit?: boolean | Prisma.Encounter$postnatalVisitArgs<ExtArgs>
   _count?: boolean | Prisma.EncounterCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["encounter"]>
 
@@ -3684,6 +4420,9 @@ export type EncounterInclude<ExtArgs extends runtime.Types.Extensions.InternalAr
   clinicalDocuments?: boolean | Prisma.Encounter$clinicalDocumentsArgs<ExtArgs>
   labOrders?: boolean | Prisma.Encounter$labOrdersArgs<ExtArgs>
   antenatalVisit?: boolean | Prisma.Encounter$antenatalVisitArgs<ExtArgs>
+  familyPlanningStarts?: boolean | Prisma.Encounter$familyPlanningStartsArgs<ExtArgs>
+  familyPlanningServices?: boolean | Prisma.Encounter$familyPlanningServicesArgs<ExtArgs>
+  postnatalVisit?: boolean | Prisma.Encounter$postnatalVisitArgs<ExtArgs>
   _count?: boolean | Prisma.EncounterCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type EncounterIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -3723,6 +4462,9 @@ export type $EncounterPayload<ExtArgs extends runtime.Types.Extensions.InternalA
     clinicalDocuments: Prisma.$DocumentPayload<ExtArgs>[]
     labOrders: Prisma.$LabOrderPayload<ExtArgs>[]
     antenatalVisit: Prisma.$AntenatalVisitPayload<ExtArgs> | null
+    familyPlanningStarts: Prisma.$FamilyPlanningRecordPayload<ExtArgs>[]
+    familyPlanningServices: Prisma.$FamilyPlanningServicePayload<ExtArgs>[]
+    postnatalVisit: Prisma.$PostnatalVisitPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -4175,6 +4917,9 @@ export interface Prisma__EncounterClient<T, Null = never, ExtArgs extends runtim
   clinicalDocuments<T extends Prisma.Encounter$clinicalDocumentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Encounter$clinicalDocumentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DocumentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   labOrders<T extends Prisma.Encounter$labOrdersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Encounter$labOrdersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LabOrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   antenatalVisit<T extends Prisma.Encounter$antenatalVisitArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Encounter$antenatalVisitArgs<ExtArgs>>): Prisma.Prisma__AntenatalVisitClient<runtime.Types.Result.GetResult<Prisma.$AntenatalVisitPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  familyPlanningStarts<T extends Prisma.Encounter$familyPlanningStartsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Encounter$familyPlanningStartsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FamilyPlanningRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  familyPlanningServices<T extends Prisma.Encounter$familyPlanningServicesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Encounter$familyPlanningServicesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FamilyPlanningServicePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  postnatalVisit<T extends Prisma.Encounter$postnatalVisitArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Encounter$postnatalVisitArgs<ExtArgs>>): Prisma.Prisma__PostnatalVisitClient<runtime.Types.Result.GetResult<Prisma.$PostnatalVisitPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4916,6 +5661,73 @@ export type Encounter$antenatalVisitArgs<ExtArgs extends runtime.Types.Extension
    */
   include?: Prisma.AntenatalVisitInclude<ExtArgs> | null
   where?: Prisma.AntenatalVisitWhereInput
+}
+
+/**
+ * Encounter.familyPlanningStarts
+ */
+export type Encounter$familyPlanningStartsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the FamilyPlanningRecord
+   */
+  select?: Prisma.FamilyPlanningRecordSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the FamilyPlanningRecord
+   */
+  omit?: Prisma.FamilyPlanningRecordOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FamilyPlanningRecordInclude<ExtArgs> | null
+  where?: Prisma.FamilyPlanningRecordWhereInput
+  orderBy?: Prisma.FamilyPlanningRecordOrderByWithRelationInput | Prisma.FamilyPlanningRecordOrderByWithRelationInput[]
+  cursor?: Prisma.FamilyPlanningRecordWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.FamilyPlanningRecordScalarFieldEnum | Prisma.FamilyPlanningRecordScalarFieldEnum[]
+}
+
+/**
+ * Encounter.familyPlanningServices
+ */
+export type Encounter$familyPlanningServicesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the FamilyPlanningService
+   */
+  select?: Prisma.FamilyPlanningServiceSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the FamilyPlanningService
+   */
+  omit?: Prisma.FamilyPlanningServiceOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FamilyPlanningServiceInclude<ExtArgs> | null
+  where?: Prisma.FamilyPlanningServiceWhereInput
+  orderBy?: Prisma.FamilyPlanningServiceOrderByWithRelationInput | Prisma.FamilyPlanningServiceOrderByWithRelationInput[]
+  cursor?: Prisma.FamilyPlanningServiceWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.FamilyPlanningServiceScalarFieldEnum | Prisma.FamilyPlanningServiceScalarFieldEnum[]
+}
+
+/**
+ * Encounter.postnatalVisit
+ */
+export type Encounter$postnatalVisitArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PostnatalVisit
+   */
+  select?: Prisma.PostnatalVisitSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PostnatalVisit
+   */
+  omit?: Prisma.PostnatalVisitOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PostnatalVisitInclude<ExtArgs> | null
+  where?: Prisma.PostnatalVisitWhereInput
 }
 
 /**

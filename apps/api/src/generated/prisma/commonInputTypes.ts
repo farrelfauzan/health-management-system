@@ -2621,6 +2621,74 @@ export type EnumBirthOutcomeWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumBirthOutcomeFilter<$PrismaModel>
 }
 
+export type EnumContraceptiveMethodFilter<$PrismaModel = never> = {
+  equals?: $Enums.ContraceptiveMethod | Prisma.EnumContraceptiveMethodFieldRefInput<$PrismaModel>
+  in?: $Enums.ContraceptiveMethod[] | Prisma.ListEnumContraceptiveMethodFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ContraceptiveMethod[] | Prisma.ListEnumContraceptiveMethodFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumContraceptiveMethodFilter<$PrismaModel> | $Enums.ContraceptiveMethod
+}
+
+export type EnumAcceptorTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.AcceptorType | Prisma.EnumAcceptorTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.AcceptorType[] | Prisma.ListEnumAcceptorTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.AcceptorType[] | Prisma.ListEnumAcceptorTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumAcceptorTypeFilter<$PrismaModel> | $Enums.AcceptorType
+}
+
+export type EnumContraceptiveDiscontinuationReasonNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.ContraceptiveDiscontinuationReason | Prisma.EnumContraceptiveDiscontinuationReasonFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ContraceptiveDiscontinuationReason[] | Prisma.ListEnumContraceptiveDiscontinuationReasonFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ContraceptiveDiscontinuationReason[] | Prisma.ListEnumContraceptiveDiscontinuationReasonFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumContraceptiveDiscontinuationReasonNullableFilter<$PrismaModel> | $Enums.ContraceptiveDiscontinuationReason | null
+}
+
+export type EnumContraceptiveMethodWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ContraceptiveMethod | Prisma.EnumContraceptiveMethodFieldRefInput<$PrismaModel>
+  in?: $Enums.ContraceptiveMethod[] | Prisma.ListEnumContraceptiveMethodFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ContraceptiveMethod[] | Prisma.ListEnumContraceptiveMethodFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumContraceptiveMethodWithAggregatesFilter<$PrismaModel> | $Enums.ContraceptiveMethod
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumContraceptiveMethodFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumContraceptiveMethodFilter<$PrismaModel>
+}
+
+export type EnumAcceptorTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.AcceptorType | Prisma.EnumAcceptorTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.AcceptorType[] | Prisma.ListEnumAcceptorTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.AcceptorType[] | Prisma.ListEnumAcceptorTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumAcceptorTypeWithAggregatesFilter<$PrismaModel> | $Enums.AcceptorType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumAcceptorTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumAcceptorTypeFilter<$PrismaModel>
+}
+
+export type EnumContraceptiveDiscontinuationReasonNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ContraceptiveDiscontinuationReason | Prisma.EnumContraceptiveDiscontinuationReasonFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ContraceptiveDiscontinuationReason[] | Prisma.ListEnumContraceptiveDiscontinuationReasonFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ContraceptiveDiscontinuationReason[] | Prisma.ListEnumContraceptiveDiscontinuationReasonFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumContraceptiveDiscontinuationReasonNullableWithAggregatesFilter<$PrismaModel> | $Enums.ContraceptiveDiscontinuationReason | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumContraceptiveDiscontinuationReasonNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumContraceptiveDiscontinuationReasonNullableFilter<$PrismaModel>
+}
+
+export type EnumShkResultNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.ShkResult | Prisma.EnumShkResultFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ShkResult[] | Prisma.ListEnumShkResultFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ShkResult[] | Prisma.ListEnumShkResultFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumShkResultNullableFilter<$PrismaModel> | $Enums.ShkResult | null
+}
+
+export type EnumShkResultNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ShkResult | Prisma.EnumShkResultFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ShkResult[] | Prisma.ListEnumShkResultFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ShkResult[] | Prisma.ListEnumShkResultFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumShkResultNullableWithAggregatesFilter<$PrismaModel> | $Enums.ShkResult | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumShkResultNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumShkResultNullableFilter<$PrismaModel>
+}
+
 export type EnumFetalPresentationNullableFilter<$PrismaModel = never> = {
   equals?: $Enums.FetalPresentation | Prisma.EnumFetalPresentationFieldRefInput<$PrismaModel> | null
   in?: $Enums.FetalPresentation[] | Prisma.ListEnumFetalPresentationFieldRefInput<$PrismaModel> | null
@@ -2670,6 +2738,91 @@ export type EnumTetanusImmunizationStatusNullableWithAggregatesFilter<$PrismaMod
   _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
   _min?: Prisma.NestedEnumTetanusImmunizationStatusNullableFilter<$PrismaModel>
   _max?: Prisma.NestedEnumTetanusImmunizationStatusNullableFilter<$PrismaModel>
+}
+
+export type EnumPostnatalSubjectFilter<$PrismaModel = never> = {
+  equals?: $Enums.PostnatalSubject | Prisma.EnumPostnatalSubjectFieldRefInput<$PrismaModel>
+  in?: $Enums.PostnatalSubject[] | Prisma.ListEnumPostnatalSubjectFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PostnatalSubject[] | Prisma.ListEnumPostnatalSubjectFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPostnatalSubjectFilter<$PrismaModel> | $Enums.PostnatalSubject
+}
+
+export type EnumPostnatalVisitCodeNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.PostnatalVisitCode | Prisma.EnumPostnatalVisitCodeFieldRefInput<$PrismaModel> | null
+  in?: $Enums.PostnatalVisitCode[] | Prisma.ListEnumPostnatalVisitCodeFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.PostnatalVisitCode[] | Prisma.ListEnumPostnatalVisitCodeFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumPostnatalVisitCodeNullableFilter<$PrismaModel> | $Enums.PostnatalVisitCode | null
+}
+
+export type EnumPostnatalSubjectWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PostnatalSubject | Prisma.EnumPostnatalSubjectFieldRefInput<$PrismaModel>
+  in?: $Enums.PostnatalSubject[] | Prisma.ListEnumPostnatalSubjectFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PostnatalSubject[] | Prisma.ListEnumPostnatalSubjectFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPostnatalSubjectWithAggregatesFilter<$PrismaModel> | $Enums.PostnatalSubject
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPostnatalSubjectFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPostnatalSubjectFilter<$PrismaModel>
+}
+
+export type EnumPostnatalVisitCodeNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PostnatalVisitCode | Prisma.EnumPostnatalVisitCodeFieldRefInput<$PrismaModel> | null
+  in?: $Enums.PostnatalVisitCode[] | Prisma.ListEnumPostnatalVisitCodeFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.PostnatalVisitCode[] | Prisma.ListEnumPostnatalVisitCodeFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumPostnatalVisitCodeNullableWithAggregatesFilter<$PrismaModel> | $Enums.PostnatalVisitCode | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPostnatalVisitCodeNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPostnatalVisitCodeNullableFilter<$PrismaModel>
+}
+
+export type EnumPostnatalBreastConditionNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.PostnatalBreastCondition | Prisma.EnumPostnatalBreastConditionFieldRefInput<$PrismaModel> | null
+  in?: $Enums.PostnatalBreastCondition[] | Prisma.ListEnumPostnatalBreastConditionFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.PostnatalBreastCondition[] | Prisma.ListEnumPostnatalBreastConditionFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumPostnatalBreastConditionNullableFilter<$PrismaModel> | $Enums.PostnatalBreastCondition | null
+}
+
+export type EnumLochiaColourNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.LochiaColour | Prisma.EnumLochiaColourFieldRefInput<$PrismaModel> | null
+  in?: $Enums.LochiaColour[] | Prisma.ListEnumLochiaColourFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.LochiaColour[] | Prisma.ListEnumLochiaColourFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumLochiaColourNullableFilter<$PrismaModel> | $Enums.LochiaColour | null
+}
+
+export type EnumBreastMilkProductionNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.BreastMilkProduction | Prisma.EnumBreastMilkProductionFieldRefInput<$PrismaModel> | null
+  in?: $Enums.BreastMilkProduction[] | Prisma.ListEnumBreastMilkProductionFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.BreastMilkProduction[] | Prisma.ListEnumBreastMilkProductionFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumBreastMilkProductionNullableFilter<$PrismaModel> | $Enums.BreastMilkProduction | null
+}
+
+export type EnumPostnatalBreastConditionNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PostnatalBreastCondition | Prisma.EnumPostnatalBreastConditionFieldRefInput<$PrismaModel> | null
+  in?: $Enums.PostnatalBreastCondition[] | Prisma.ListEnumPostnatalBreastConditionFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.PostnatalBreastCondition[] | Prisma.ListEnumPostnatalBreastConditionFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumPostnatalBreastConditionNullableWithAggregatesFilter<$PrismaModel> | $Enums.PostnatalBreastCondition | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPostnatalBreastConditionNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPostnatalBreastConditionNullableFilter<$PrismaModel>
+}
+
+export type EnumLochiaColourNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.LochiaColour | Prisma.EnumLochiaColourFieldRefInput<$PrismaModel> | null
+  in?: $Enums.LochiaColour[] | Prisma.ListEnumLochiaColourFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.LochiaColour[] | Prisma.ListEnumLochiaColourFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumLochiaColourNullableWithAggregatesFilter<$PrismaModel> | $Enums.LochiaColour | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumLochiaColourNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumLochiaColourNullableFilter<$PrismaModel>
+}
+
+export type EnumBreastMilkProductionNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.BreastMilkProduction | Prisma.EnumBreastMilkProductionFieldRefInput<$PrismaModel> | null
+  in?: $Enums.BreastMilkProduction[] | Prisma.ListEnumBreastMilkProductionFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.BreastMilkProduction[] | Prisma.ListEnumBreastMilkProductionFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumBreastMilkProductionNullableWithAggregatesFilter<$PrismaModel> | $Enums.BreastMilkProduction | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumBreastMilkProductionNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumBreastMilkProductionNullableFilter<$PrismaModel>
 }
 
 export type NestedUuidFilter<$PrismaModel = never> = {
@@ -5234,6 +5387,74 @@ export type NestedEnumBirthOutcomeWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumBirthOutcomeFilter<$PrismaModel>
 }
 
+export type NestedEnumContraceptiveMethodFilter<$PrismaModel = never> = {
+  equals?: $Enums.ContraceptiveMethod | Prisma.EnumContraceptiveMethodFieldRefInput<$PrismaModel>
+  in?: $Enums.ContraceptiveMethod[] | Prisma.ListEnumContraceptiveMethodFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ContraceptiveMethod[] | Prisma.ListEnumContraceptiveMethodFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumContraceptiveMethodFilter<$PrismaModel> | $Enums.ContraceptiveMethod
+}
+
+export type NestedEnumAcceptorTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.AcceptorType | Prisma.EnumAcceptorTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.AcceptorType[] | Prisma.ListEnumAcceptorTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.AcceptorType[] | Prisma.ListEnumAcceptorTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumAcceptorTypeFilter<$PrismaModel> | $Enums.AcceptorType
+}
+
+export type NestedEnumContraceptiveDiscontinuationReasonNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.ContraceptiveDiscontinuationReason | Prisma.EnumContraceptiveDiscontinuationReasonFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ContraceptiveDiscontinuationReason[] | Prisma.ListEnumContraceptiveDiscontinuationReasonFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ContraceptiveDiscontinuationReason[] | Prisma.ListEnumContraceptiveDiscontinuationReasonFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumContraceptiveDiscontinuationReasonNullableFilter<$PrismaModel> | $Enums.ContraceptiveDiscontinuationReason | null
+}
+
+export type NestedEnumContraceptiveMethodWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ContraceptiveMethod | Prisma.EnumContraceptiveMethodFieldRefInput<$PrismaModel>
+  in?: $Enums.ContraceptiveMethod[] | Prisma.ListEnumContraceptiveMethodFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ContraceptiveMethod[] | Prisma.ListEnumContraceptiveMethodFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumContraceptiveMethodWithAggregatesFilter<$PrismaModel> | $Enums.ContraceptiveMethod
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumContraceptiveMethodFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumContraceptiveMethodFilter<$PrismaModel>
+}
+
+export type NestedEnumAcceptorTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.AcceptorType | Prisma.EnumAcceptorTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.AcceptorType[] | Prisma.ListEnumAcceptorTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.AcceptorType[] | Prisma.ListEnumAcceptorTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumAcceptorTypeWithAggregatesFilter<$PrismaModel> | $Enums.AcceptorType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumAcceptorTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumAcceptorTypeFilter<$PrismaModel>
+}
+
+export type NestedEnumContraceptiveDiscontinuationReasonNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ContraceptiveDiscontinuationReason | Prisma.EnumContraceptiveDiscontinuationReasonFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ContraceptiveDiscontinuationReason[] | Prisma.ListEnumContraceptiveDiscontinuationReasonFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ContraceptiveDiscontinuationReason[] | Prisma.ListEnumContraceptiveDiscontinuationReasonFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumContraceptiveDiscontinuationReasonNullableWithAggregatesFilter<$PrismaModel> | $Enums.ContraceptiveDiscontinuationReason | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumContraceptiveDiscontinuationReasonNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumContraceptiveDiscontinuationReasonNullableFilter<$PrismaModel>
+}
+
+export type NestedEnumShkResultNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.ShkResult | Prisma.EnumShkResultFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ShkResult[] | Prisma.ListEnumShkResultFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ShkResult[] | Prisma.ListEnumShkResultFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumShkResultNullableFilter<$PrismaModel> | $Enums.ShkResult | null
+}
+
+export type NestedEnumShkResultNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ShkResult | Prisma.EnumShkResultFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ShkResult[] | Prisma.ListEnumShkResultFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ShkResult[] | Prisma.ListEnumShkResultFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumShkResultNullableWithAggregatesFilter<$PrismaModel> | $Enums.ShkResult | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumShkResultNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumShkResultNullableFilter<$PrismaModel>
+}
+
 export type NestedEnumFetalPresentationNullableFilter<$PrismaModel = never> = {
   equals?: $Enums.FetalPresentation | Prisma.EnumFetalPresentationFieldRefInput<$PrismaModel> | null
   in?: $Enums.FetalPresentation[] | Prisma.ListEnumFetalPresentationFieldRefInput<$PrismaModel> | null
@@ -5283,6 +5504,91 @@ export type NestedEnumTetanusImmunizationStatusNullableWithAggregatesFilter<$Pri
   _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
   _min?: Prisma.NestedEnumTetanusImmunizationStatusNullableFilter<$PrismaModel>
   _max?: Prisma.NestedEnumTetanusImmunizationStatusNullableFilter<$PrismaModel>
+}
+
+export type NestedEnumPostnatalSubjectFilter<$PrismaModel = never> = {
+  equals?: $Enums.PostnatalSubject | Prisma.EnumPostnatalSubjectFieldRefInput<$PrismaModel>
+  in?: $Enums.PostnatalSubject[] | Prisma.ListEnumPostnatalSubjectFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PostnatalSubject[] | Prisma.ListEnumPostnatalSubjectFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPostnatalSubjectFilter<$PrismaModel> | $Enums.PostnatalSubject
+}
+
+export type NestedEnumPostnatalVisitCodeNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.PostnatalVisitCode | Prisma.EnumPostnatalVisitCodeFieldRefInput<$PrismaModel> | null
+  in?: $Enums.PostnatalVisitCode[] | Prisma.ListEnumPostnatalVisitCodeFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.PostnatalVisitCode[] | Prisma.ListEnumPostnatalVisitCodeFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumPostnatalVisitCodeNullableFilter<$PrismaModel> | $Enums.PostnatalVisitCode | null
+}
+
+export type NestedEnumPostnatalSubjectWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PostnatalSubject | Prisma.EnumPostnatalSubjectFieldRefInput<$PrismaModel>
+  in?: $Enums.PostnatalSubject[] | Prisma.ListEnumPostnatalSubjectFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PostnatalSubject[] | Prisma.ListEnumPostnatalSubjectFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPostnatalSubjectWithAggregatesFilter<$PrismaModel> | $Enums.PostnatalSubject
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPostnatalSubjectFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPostnatalSubjectFilter<$PrismaModel>
+}
+
+export type NestedEnumPostnatalVisitCodeNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PostnatalVisitCode | Prisma.EnumPostnatalVisitCodeFieldRefInput<$PrismaModel> | null
+  in?: $Enums.PostnatalVisitCode[] | Prisma.ListEnumPostnatalVisitCodeFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.PostnatalVisitCode[] | Prisma.ListEnumPostnatalVisitCodeFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumPostnatalVisitCodeNullableWithAggregatesFilter<$PrismaModel> | $Enums.PostnatalVisitCode | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPostnatalVisitCodeNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPostnatalVisitCodeNullableFilter<$PrismaModel>
+}
+
+export type NestedEnumPostnatalBreastConditionNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.PostnatalBreastCondition | Prisma.EnumPostnatalBreastConditionFieldRefInput<$PrismaModel> | null
+  in?: $Enums.PostnatalBreastCondition[] | Prisma.ListEnumPostnatalBreastConditionFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.PostnatalBreastCondition[] | Prisma.ListEnumPostnatalBreastConditionFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumPostnatalBreastConditionNullableFilter<$PrismaModel> | $Enums.PostnatalBreastCondition | null
+}
+
+export type NestedEnumLochiaColourNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.LochiaColour | Prisma.EnumLochiaColourFieldRefInput<$PrismaModel> | null
+  in?: $Enums.LochiaColour[] | Prisma.ListEnumLochiaColourFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.LochiaColour[] | Prisma.ListEnumLochiaColourFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumLochiaColourNullableFilter<$PrismaModel> | $Enums.LochiaColour | null
+}
+
+export type NestedEnumBreastMilkProductionNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.BreastMilkProduction | Prisma.EnumBreastMilkProductionFieldRefInput<$PrismaModel> | null
+  in?: $Enums.BreastMilkProduction[] | Prisma.ListEnumBreastMilkProductionFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.BreastMilkProduction[] | Prisma.ListEnumBreastMilkProductionFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumBreastMilkProductionNullableFilter<$PrismaModel> | $Enums.BreastMilkProduction | null
+}
+
+export type NestedEnumPostnatalBreastConditionNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PostnatalBreastCondition | Prisma.EnumPostnatalBreastConditionFieldRefInput<$PrismaModel> | null
+  in?: $Enums.PostnatalBreastCondition[] | Prisma.ListEnumPostnatalBreastConditionFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.PostnatalBreastCondition[] | Prisma.ListEnumPostnatalBreastConditionFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumPostnatalBreastConditionNullableWithAggregatesFilter<$PrismaModel> | $Enums.PostnatalBreastCondition | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPostnatalBreastConditionNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPostnatalBreastConditionNullableFilter<$PrismaModel>
+}
+
+export type NestedEnumLochiaColourNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.LochiaColour | Prisma.EnumLochiaColourFieldRefInput<$PrismaModel> | null
+  in?: $Enums.LochiaColour[] | Prisma.ListEnumLochiaColourFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.LochiaColour[] | Prisma.ListEnumLochiaColourFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumLochiaColourNullableWithAggregatesFilter<$PrismaModel> | $Enums.LochiaColour | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumLochiaColourNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumLochiaColourNullableFilter<$PrismaModel>
+}
+
+export type NestedEnumBreastMilkProductionNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.BreastMilkProduction | Prisma.EnumBreastMilkProductionFieldRefInput<$PrismaModel> | null
+  in?: $Enums.BreastMilkProduction[] | Prisma.ListEnumBreastMilkProductionFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.BreastMilkProduction[] | Prisma.ListEnumBreastMilkProductionFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumBreastMilkProductionNullableWithAggregatesFilter<$PrismaModel> | $Enums.BreastMilkProduction | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumBreastMilkProductionNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumBreastMilkProductionNullableFilter<$PrismaModel>
 }
 
 

@@ -349,6 +349,7 @@ export type DoctorProfileWhereInput = {
   attendedDeliveries?: Prisma.DeliveryRecordListRelationFilter
   clinicianFeeRules?: Prisma.ClinicianFeeRuleListRelationFilter
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryListRelationFilter
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordListRelationFilter
 }
 
 export type DoctorProfileOrderByWithRelationInput = {
@@ -392,6 +393,7 @@ export type DoctorProfileOrderByWithRelationInput = {
   attendedDeliveries?: Prisma.DeliveryRecordOrderByRelationAggregateInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleOrderByRelationAggregateInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryOrderByRelationAggregateInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordOrderByRelationAggregateInput
 }
 
 export type DoctorProfileWhereUniqueInput = Prisma.AtLeast<{
@@ -438,6 +440,7 @@ export type DoctorProfileWhereUniqueInput = Prisma.AtLeast<{
   attendedDeliveries?: Prisma.DeliveryRecordListRelationFilter
   clinicianFeeRules?: Prisma.ClinicianFeeRuleListRelationFilter
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryListRelationFilter
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordListRelationFilter
 }, "id" | "licenseNumber" | "ownerUserId" | "nikIndex">
 
 export type DoctorProfileOrderByWithAggregationInput = {
@@ -531,6 +534,7 @@ export type DoctorProfileCreateInput = {
   attendedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutAttendantDoctorInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleCreateNestedManyWithoutDoctorInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryCreateNestedManyWithoutDoctorInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutProviderDoctorInput
 }
 
 export type DoctorProfileUncheckedCreateInput = {
@@ -572,6 +576,7 @@ export type DoctorProfileUncheckedCreateInput = {
   attendedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutAttendantDoctorInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUncheckedCreateNestedManyWithoutDoctorInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedCreateNestedManyWithoutDoctorInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutProviderDoctorInput
 }
 
 export type DoctorProfileUpdateInput = {
@@ -613,6 +618,7 @@ export type DoctorProfileUpdateInput = {
   attendedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutAttendantDoctorNestedInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUpdateManyWithoutDoctorNestedInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUpdateManyWithoutDoctorNestedInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutProviderDoctorNestedInput
 }
 
 export type DoctorProfileUncheckedUpdateInput = {
@@ -654,6 +660,7 @@ export type DoctorProfileUncheckedUpdateInput = {
   attendedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutAttendantDoctorNestedInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUncheckedUpdateManyWithoutDoctorNestedInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedUpdateManyWithoutDoctorNestedInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutProviderDoctorNestedInput
 }
 
 export type DoctorProfileCreateManyInput = {
@@ -1168,6 +1175,20 @@ export type DoctorProfileUpdateOneRequiredWithoutAttendedDeliveriesNestedInput =
   update?: Prisma.XOR<Prisma.XOR<Prisma.DoctorProfileUpdateToOneWithWhereWithoutAttendedDeliveriesInput, Prisma.DoctorProfileUpdateWithoutAttendedDeliveriesInput>, Prisma.DoctorProfileUncheckedUpdateWithoutAttendedDeliveriesInput>
 }
 
+export type DoctorProfileCreateNestedOneWithoutProvidedFamilyPlanningRecordsInput = {
+  create?: Prisma.XOR<Prisma.DoctorProfileCreateWithoutProvidedFamilyPlanningRecordsInput, Prisma.DoctorProfileUncheckedCreateWithoutProvidedFamilyPlanningRecordsInput>
+  connectOrCreate?: Prisma.DoctorProfileCreateOrConnectWithoutProvidedFamilyPlanningRecordsInput
+  connect?: Prisma.DoctorProfileWhereUniqueInput
+}
+
+export type DoctorProfileUpdateOneRequiredWithoutProvidedFamilyPlanningRecordsNestedInput = {
+  create?: Prisma.XOR<Prisma.DoctorProfileCreateWithoutProvidedFamilyPlanningRecordsInput, Prisma.DoctorProfileUncheckedCreateWithoutProvidedFamilyPlanningRecordsInput>
+  connectOrCreate?: Prisma.DoctorProfileCreateOrConnectWithoutProvidedFamilyPlanningRecordsInput
+  upsert?: Prisma.DoctorProfileUpsertWithoutProvidedFamilyPlanningRecordsInput
+  connect?: Prisma.DoctorProfileWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.DoctorProfileUpdateToOneWithWhereWithoutProvidedFamilyPlanningRecordsInput, Prisma.DoctorProfileUpdateWithoutProvidedFamilyPlanningRecordsInput>, Prisma.DoctorProfileUncheckedUpdateWithoutProvidedFamilyPlanningRecordsInput>
+}
+
 export type DoctorProfileCreateWithoutMandatesReceivedInput = {
   id?: string
   licenseNumber: string
@@ -1206,6 +1227,7 @@ export type DoctorProfileCreateWithoutMandatesReceivedInput = {
   attendedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutAttendantDoctorInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleCreateNestedManyWithoutDoctorInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryCreateNestedManyWithoutDoctorInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutProviderDoctorInput
 }
 
 export type DoctorProfileUncheckedCreateWithoutMandatesReceivedInput = {
@@ -1246,6 +1268,7 @@ export type DoctorProfileUncheckedCreateWithoutMandatesReceivedInput = {
   attendedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutAttendantDoctorInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUncheckedCreateNestedManyWithoutDoctorInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedCreateNestedManyWithoutDoctorInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutProviderDoctorInput
 }
 
 export type DoctorProfileCreateOrConnectWithoutMandatesReceivedInput = {
@@ -1291,6 +1314,7 @@ export type DoctorProfileCreateWithoutMandatesGrantedInput = {
   attendedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutAttendantDoctorInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleCreateNestedManyWithoutDoctorInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryCreateNestedManyWithoutDoctorInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutProviderDoctorInput
 }
 
 export type DoctorProfileUncheckedCreateWithoutMandatesGrantedInput = {
@@ -1331,6 +1355,7 @@ export type DoctorProfileUncheckedCreateWithoutMandatesGrantedInput = {
   attendedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutAttendantDoctorInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUncheckedCreateNestedManyWithoutDoctorInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedCreateNestedManyWithoutDoctorInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutProviderDoctorInput
 }
 
 export type DoctorProfileCreateOrConnectWithoutMandatesGrantedInput = {
@@ -1387,6 +1412,7 @@ export type DoctorProfileUpdateWithoutMandatesReceivedInput = {
   attendedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutAttendantDoctorNestedInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUpdateManyWithoutDoctorNestedInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUpdateManyWithoutDoctorNestedInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutProviderDoctorNestedInput
 }
 
 export type DoctorProfileUncheckedUpdateWithoutMandatesReceivedInput = {
@@ -1427,6 +1453,7 @@ export type DoctorProfileUncheckedUpdateWithoutMandatesReceivedInput = {
   attendedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutAttendantDoctorNestedInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUncheckedUpdateManyWithoutDoctorNestedInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedUpdateManyWithoutDoctorNestedInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutProviderDoctorNestedInput
 }
 
 export type DoctorProfileUpsertWithoutMandatesGrantedInput = {
@@ -1478,6 +1505,7 @@ export type DoctorProfileUpdateWithoutMandatesGrantedInput = {
   attendedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutAttendantDoctorNestedInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUpdateManyWithoutDoctorNestedInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUpdateManyWithoutDoctorNestedInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutProviderDoctorNestedInput
 }
 
 export type DoctorProfileUncheckedUpdateWithoutMandatesGrantedInput = {
@@ -1518,6 +1546,7 @@ export type DoctorProfileUncheckedUpdateWithoutMandatesGrantedInput = {
   attendedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutAttendantDoctorNestedInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUncheckedUpdateManyWithoutDoctorNestedInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedUpdateManyWithoutDoctorNestedInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutProviderDoctorNestedInput
 }
 
 export type DoctorProfileCreateWithoutOwnerUserInput = {
@@ -1558,6 +1587,7 @@ export type DoctorProfileCreateWithoutOwnerUserInput = {
   attendedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutAttendantDoctorInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleCreateNestedManyWithoutDoctorInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryCreateNestedManyWithoutDoctorInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutProviderDoctorInput
 }
 
 export type DoctorProfileUncheckedCreateWithoutOwnerUserInput = {
@@ -1598,6 +1628,7 @@ export type DoctorProfileUncheckedCreateWithoutOwnerUserInput = {
   attendedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutAttendantDoctorInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUncheckedCreateNestedManyWithoutDoctorInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedCreateNestedManyWithoutDoctorInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutProviderDoctorInput
 }
 
 export type DoctorProfileCreateOrConnectWithoutOwnerUserInput = {
@@ -1654,6 +1685,7 @@ export type DoctorProfileUpdateWithoutOwnerUserInput = {
   attendedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutAttendantDoctorNestedInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUpdateManyWithoutDoctorNestedInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUpdateManyWithoutDoctorNestedInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutProviderDoctorNestedInput
 }
 
 export type DoctorProfileUncheckedUpdateWithoutOwnerUserInput = {
@@ -1694,6 +1726,7 @@ export type DoctorProfileUncheckedUpdateWithoutOwnerUserInput = {
   attendedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutAttendantDoctorNestedInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUncheckedUpdateManyWithoutDoctorNestedInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedUpdateManyWithoutDoctorNestedInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutProviderDoctorNestedInput
 }
 
 export type DoctorProfileCreateWithoutOwnerInvitationsInput = {
@@ -1734,6 +1767,7 @@ export type DoctorProfileCreateWithoutOwnerInvitationsInput = {
   attendedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutAttendantDoctorInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleCreateNestedManyWithoutDoctorInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryCreateNestedManyWithoutDoctorInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutProviderDoctorInput
 }
 
 export type DoctorProfileUncheckedCreateWithoutOwnerInvitationsInput = {
@@ -1774,6 +1808,7 @@ export type DoctorProfileUncheckedCreateWithoutOwnerInvitationsInput = {
   attendedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutAttendantDoctorInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUncheckedCreateNestedManyWithoutDoctorInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedCreateNestedManyWithoutDoctorInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutProviderDoctorInput
 }
 
 export type DoctorProfileCreateOrConnectWithoutOwnerInvitationsInput = {
@@ -1830,6 +1865,7 @@ export type DoctorProfileUpdateWithoutOwnerInvitationsInput = {
   attendedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutAttendantDoctorNestedInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUpdateManyWithoutDoctorNestedInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUpdateManyWithoutDoctorNestedInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutProviderDoctorNestedInput
 }
 
 export type DoctorProfileUncheckedUpdateWithoutOwnerInvitationsInput = {
@@ -1870,6 +1906,7 @@ export type DoctorProfileUncheckedUpdateWithoutOwnerInvitationsInput = {
   attendedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutAttendantDoctorNestedInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUncheckedUpdateManyWithoutDoctorNestedInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedUpdateManyWithoutDoctorNestedInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutProviderDoctorNestedInput
 }
 
 export type DoctorProfileCreateWithoutSpecialtyInput = {
@@ -1910,6 +1947,7 @@ export type DoctorProfileCreateWithoutSpecialtyInput = {
   attendedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutAttendantDoctorInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleCreateNestedManyWithoutDoctorInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryCreateNestedManyWithoutDoctorInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutProviderDoctorInput
 }
 
 export type DoctorProfileUncheckedCreateWithoutSpecialtyInput = {
@@ -1950,6 +1988,7 @@ export type DoctorProfileUncheckedCreateWithoutSpecialtyInput = {
   attendedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutAttendantDoctorInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUncheckedCreateNestedManyWithoutDoctorInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedCreateNestedManyWithoutDoctorInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutProviderDoctorInput
 }
 
 export type DoctorProfileCreateOrConnectWithoutSpecialtyInput = {
@@ -2041,6 +2080,7 @@ export type DoctorProfileCreateWithoutEducationsInput = {
   attendedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutAttendantDoctorInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleCreateNestedManyWithoutDoctorInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryCreateNestedManyWithoutDoctorInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutProviderDoctorInput
 }
 
 export type DoctorProfileUncheckedCreateWithoutEducationsInput = {
@@ -2081,6 +2121,7 @@ export type DoctorProfileUncheckedCreateWithoutEducationsInput = {
   attendedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutAttendantDoctorInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUncheckedCreateNestedManyWithoutDoctorInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedCreateNestedManyWithoutDoctorInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutProviderDoctorInput
 }
 
 export type DoctorProfileCreateOrConnectWithoutEducationsInput = {
@@ -2137,6 +2178,7 @@ export type DoctorProfileUpdateWithoutEducationsInput = {
   attendedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutAttendantDoctorNestedInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUpdateManyWithoutDoctorNestedInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUpdateManyWithoutDoctorNestedInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutProviderDoctorNestedInput
 }
 
 export type DoctorProfileUncheckedUpdateWithoutEducationsInput = {
@@ -2177,6 +2219,7 @@ export type DoctorProfileUncheckedUpdateWithoutEducationsInput = {
   attendedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutAttendantDoctorNestedInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUncheckedUpdateManyWithoutDoctorNestedInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedUpdateManyWithoutDoctorNestedInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutProviderDoctorNestedInput
 }
 
 export type DoctorProfileCreateWithoutLicensesInput = {
@@ -2217,6 +2260,7 @@ export type DoctorProfileCreateWithoutLicensesInput = {
   attendedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutAttendantDoctorInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleCreateNestedManyWithoutDoctorInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryCreateNestedManyWithoutDoctorInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutProviderDoctorInput
 }
 
 export type DoctorProfileUncheckedCreateWithoutLicensesInput = {
@@ -2257,6 +2301,7 @@ export type DoctorProfileUncheckedCreateWithoutLicensesInput = {
   attendedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutAttendantDoctorInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUncheckedCreateNestedManyWithoutDoctorInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedCreateNestedManyWithoutDoctorInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutProviderDoctorInput
 }
 
 export type DoctorProfileCreateOrConnectWithoutLicensesInput = {
@@ -2313,6 +2358,7 @@ export type DoctorProfileUpdateWithoutLicensesInput = {
   attendedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutAttendantDoctorNestedInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUpdateManyWithoutDoctorNestedInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUpdateManyWithoutDoctorNestedInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutProviderDoctorNestedInput
 }
 
 export type DoctorProfileUncheckedUpdateWithoutLicensesInput = {
@@ -2353,6 +2399,7 @@ export type DoctorProfileUncheckedUpdateWithoutLicensesInput = {
   attendedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutAttendantDoctorNestedInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUncheckedUpdateManyWithoutDoctorNestedInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedUpdateManyWithoutDoctorNestedInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutProviderDoctorNestedInput
 }
 
 export type DoctorProfileCreateWithoutAuthoritiesInput = {
@@ -2393,6 +2440,7 @@ export type DoctorProfileCreateWithoutAuthoritiesInput = {
   attendedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutAttendantDoctorInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleCreateNestedManyWithoutDoctorInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryCreateNestedManyWithoutDoctorInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutProviderDoctorInput
 }
 
 export type DoctorProfileUncheckedCreateWithoutAuthoritiesInput = {
@@ -2433,6 +2481,7 @@ export type DoctorProfileUncheckedCreateWithoutAuthoritiesInput = {
   attendedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutAttendantDoctorInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUncheckedCreateNestedManyWithoutDoctorInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedCreateNestedManyWithoutDoctorInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutProviderDoctorInput
 }
 
 export type DoctorProfileCreateOrConnectWithoutAuthoritiesInput = {
@@ -2489,6 +2538,7 @@ export type DoctorProfileUpdateWithoutAuthoritiesInput = {
   attendedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutAttendantDoctorNestedInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUpdateManyWithoutDoctorNestedInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUpdateManyWithoutDoctorNestedInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutProviderDoctorNestedInput
 }
 
 export type DoctorProfileUncheckedUpdateWithoutAuthoritiesInput = {
@@ -2529,6 +2579,7 @@ export type DoctorProfileUncheckedUpdateWithoutAuthoritiesInput = {
   attendedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutAttendantDoctorNestedInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUncheckedUpdateManyWithoutDoctorNestedInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedUpdateManyWithoutDoctorNestedInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutProviderDoctorNestedInput
 }
 
 export type DoctorProfileCreateWithoutSchedulesInput = {
@@ -2569,6 +2620,7 @@ export type DoctorProfileCreateWithoutSchedulesInput = {
   attendedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutAttendantDoctorInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleCreateNestedManyWithoutDoctorInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryCreateNestedManyWithoutDoctorInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutProviderDoctorInput
 }
 
 export type DoctorProfileUncheckedCreateWithoutSchedulesInput = {
@@ -2609,6 +2661,7 @@ export type DoctorProfileUncheckedCreateWithoutSchedulesInput = {
   attendedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutAttendantDoctorInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUncheckedCreateNestedManyWithoutDoctorInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedCreateNestedManyWithoutDoctorInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutProviderDoctorInput
 }
 
 export type DoctorProfileCreateOrConnectWithoutSchedulesInput = {
@@ -2665,6 +2718,7 @@ export type DoctorProfileUpdateWithoutSchedulesInput = {
   attendedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutAttendantDoctorNestedInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUpdateManyWithoutDoctorNestedInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUpdateManyWithoutDoctorNestedInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutProviderDoctorNestedInput
 }
 
 export type DoctorProfileUncheckedUpdateWithoutSchedulesInput = {
@@ -2705,6 +2759,7 @@ export type DoctorProfileUncheckedUpdateWithoutSchedulesInput = {
   attendedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutAttendantDoctorNestedInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUncheckedUpdateManyWithoutDoctorNestedInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedUpdateManyWithoutDoctorNestedInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutProviderDoctorNestedInput
 }
 
 export type DoctorProfileCreateWithoutAppointmentSessionsInput = {
@@ -2745,6 +2800,7 @@ export type DoctorProfileCreateWithoutAppointmentSessionsInput = {
   attendedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutAttendantDoctorInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleCreateNestedManyWithoutDoctorInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryCreateNestedManyWithoutDoctorInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutProviderDoctorInput
 }
 
 export type DoctorProfileUncheckedCreateWithoutAppointmentSessionsInput = {
@@ -2785,6 +2841,7 @@ export type DoctorProfileUncheckedCreateWithoutAppointmentSessionsInput = {
   attendedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutAttendantDoctorInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUncheckedCreateNestedManyWithoutDoctorInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedCreateNestedManyWithoutDoctorInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutProviderDoctorInput
 }
 
 export type DoctorProfileCreateOrConnectWithoutAppointmentSessionsInput = {
@@ -2841,6 +2898,7 @@ export type DoctorProfileUpdateWithoutAppointmentSessionsInput = {
   attendedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutAttendantDoctorNestedInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUpdateManyWithoutDoctorNestedInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUpdateManyWithoutDoctorNestedInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutProviderDoctorNestedInput
 }
 
 export type DoctorProfileUncheckedUpdateWithoutAppointmentSessionsInput = {
@@ -2881,6 +2939,7 @@ export type DoctorProfileUncheckedUpdateWithoutAppointmentSessionsInput = {
   attendedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutAttendantDoctorNestedInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUncheckedUpdateManyWithoutDoctorNestedInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedUpdateManyWithoutDoctorNestedInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutProviderDoctorNestedInput
 }
 
 export type DoctorProfileCreateWithoutPatientsInput = {
@@ -2921,6 +2980,7 @@ export type DoctorProfileCreateWithoutPatientsInput = {
   attendedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutAttendantDoctorInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleCreateNestedManyWithoutDoctorInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryCreateNestedManyWithoutDoctorInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutProviderDoctorInput
 }
 
 export type DoctorProfileUncheckedCreateWithoutPatientsInput = {
@@ -2961,6 +3021,7 @@ export type DoctorProfileUncheckedCreateWithoutPatientsInput = {
   attendedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutAttendantDoctorInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUncheckedCreateNestedManyWithoutDoctorInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedCreateNestedManyWithoutDoctorInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutProviderDoctorInput
 }
 
 export type DoctorProfileCreateOrConnectWithoutPatientsInput = {
@@ -3017,6 +3078,7 @@ export type DoctorProfileUpdateWithoutPatientsInput = {
   attendedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutAttendantDoctorNestedInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUpdateManyWithoutDoctorNestedInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUpdateManyWithoutDoctorNestedInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutProviderDoctorNestedInput
 }
 
 export type DoctorProfileUncheckedUpdateWithoutPatientsInput = {
@@ -3057,6 +3119,7 @@ export type DoctorProfileUncheckedUpdateWithoutPatientsInput = {
   attendedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutAttendantDoctorNestedInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUncheckedUpdateManyWithoutDoctorNestedInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedUpdateManyWithoutDoctorNestedInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutProviderDoctorNestedInput
 }
 
 export type DoctorProfileCreateWithoutAppointmentsInput = {
@@ -3097,6 +3160,7 @@ export type DoctorProfileCreateWithoutAppointmentsInput = {
   attendedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutAttendantDoctorInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleCreateNestedManyWithoutDoctorInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryCreateNestedManyWithoutDoctorInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutProviderDoctorInput
 }
 
 export type DoctorProfileUncheckedCreateWithoutAppointmentsInput = {
@@ -3137,6 +3201,7 @@ export type DoctorProfileUncheckedCreateWithoutAppointmentsInput = {
   attendedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutAttendantDoctorInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUncheckedCreateNestedManyWithoutDoctorInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedCreateNestedManyWithoutDoctorInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutProviderDoctorInput
 }
 
 export type DoctorProfileCreateOrConnectWithoutAppointmentsInput = {
@@ -3193,6 +3258,7 @@ export type DoctorProfileUpdateWithoutAppointmentsInput = {
   attendedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutAttendantDoctorNestedInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUpdateManyWithoutDoctorNestedInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUpdateManyWithoutDoctorNestedInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutProviderDoctorNestedInput
 }
 
 export type DoctorProfileUncheckedUpdateWithoutAppointmentsInput = {
@@ -3233,6 +3299,7 @@ export type DoctorProfileUncheckedUpdateWithoutAppointmentsInput = {
   attendedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutAttendantDoctorNestedInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUncheckedUpdateManyWithoutDoctorNestedInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedUpdateManyWithoutDoctorNestedInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutProviderDoctorNestedInput
 }
 
 export type DoctorProfileCreateWithoutEncountersInput = {
@@ -3273,6 +3340,7 @@ export type DoctorProfileCreateWithoutEncountersInput = {
   attendedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutAttendantDoctorInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleCreateNestedManyWithoutDoctorInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryCreateNestedManyWithoutDoctorInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutProviderDoctorInput
 }
 
 export type DoctorProfileUncheckedCreateWithoutEncountersInput = {
@@ -3313,6 +3381,7 @@ export type DoctorProfileUncheckedCreateWithoutEncountersInput = {
   attendedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutAttendantDoctorInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUncheckedCreateNestedManyWithoutDoctorInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedCreateNestedManyWithoutDoctorInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutProviderDoctorInput
 }
 
 export type DoctorProfileCreateOrConnectWithoutEncountersInput = {
@@ -3369,6 +3438,7 @@ export type DoctorProfileUpdateWithoutEncountersInput = {
   attendedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutAttendantDoctorNestedInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUpdateManyWithoutDoctorNestedInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUpdateManyWithoutDoctorNestedInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutProviderDoctorNestedInput
 }
 
 export type DoctorProfileUncheckedUpdateWithoutEncountersInput = {
@@ -3409,6 +3479,7 @@ export type DoctorProfileUncheckedUpdateWithoutEncountersInput = {
   attendedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutAttendantDoctorNestedInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUncheckedUpdateManyWithoutDoctorNestedInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedUpdateManyWithoutDoctorNestedInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutProviderDoctorNestedInput
 }
 
 export type DoctorProfileCreateWithoutPrescriptionsInput = {
@@ -3449,6 +3520,7 @@ export type DoctorProfileCreateWithoutPrescriptionsInput = {
   attendedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutAttendantDoctorInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleCreateNestedManyWithoutDoctorInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryCreateNestedManyWithoutDoctorInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutProviderDoctorInput
 }
 
 export type DoctorProfileUncheckedCreateWithoutPrescriptionsInput = {
@@ -3489,6 +3561,7 @@ export type DoctorProfileUncheckedCreateWithoutPrescriptionsInput = {
   attendedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutAttendantDoctorInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUncheckedCreateNestedManyWithoutDoctorInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedCreateNestedManyWithoutDoctorInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutProviderDoctorInput
 }
 
 export type DoctorProfileCreateOrConnectWithoutPrescriptionsInput = {
@@ -3545,6 +3618,7 @@ export type DoctorProfileUpdateWithoutPrescriptionsInput = {
   attendedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutAttendantDoctorNestedInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUpdateManyWithoutDoctorNestedInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUpdateManyWithoutDoctorNestedInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutProviderDoctorNestedInput
 }
 
 export type DoctorProfileUncheckedUpdateWithoutPrescriptionsInput = {
@@ -3585,6 +3659,7 @@ export type DoctorProfileUncheckedUpdateWithoutPrescriptionsInput = {
   attendedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutAttendantDoctorNestedInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUncheckedUpdateManyWithoutDoctorNestedInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedUpdateManyWithoutDoctorNestedInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutProviderDoctorNestedInput
 }
 
 export type DoctorProfileCreateWithoutClinicianFeeRulesInput = {
@@ -3625,6 +3700,7 @@ export type DoctorProfileCreateWithoutClinicianFeeRulesInput = {
   ownerInvitations?: Prisma.UserInvitationCreateNestedManyWithoutDoctorProfileInput
   attendedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutAttendantDoctorInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryCreateNestedManyWithoutDoctorInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutProviderDoctorInput
 }
 
 export type DoctorProfileUncheckedCreateWithoutClinicianFeeRulesInput = {
@@ -3665,6 +3741,7 @@ export type DoctorProfileUncheckedCreateWithoutClinicianFeeRulesInput = {
   ownerInvitations?: Prisma.UserInvitationUncheckedCreateNestedManyWithoutDoctorProfileInput
   attendedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutAttendantDoctorInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedCreateNestedManyWithoutDoctorInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutProviderDoctorInput
 }
 
 export type DoctorProfileCreateOrConnectWithoutClinicianFeeRulesInput = {
@@ -3721,6 +3798,7 @@ export type DoctorProfileUpdateWithoutClinicianFeeRulesInput = {
   ownerInvitations?: Prisma.UserInvitationUpdateManyWithoutDoctorProfileNestedInput
   attendedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutAttendantDoctorNestedInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUpdateManyWithoutDoctorNestedInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutProviderDoctorNestedInput
 }
 
 export type DoctorProfileUncheckedUpdateWithoutClinicianFeeRulesInput = {
@@ -3761,6 +3839,7 @@ export type DoctorProfileUncheckedUpdateWithoutClinicianFeeRulesInput = {
   ownerInvitations?: Prisma.UserInvitationUncheckedUpdateManyWithoutDoctorProfileNestedInput
   attendedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutAttendantDoctorNestedInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedUpdateManyWithoutDoctorNestedInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutProviderDoctorNestedInput
 }
 
 export type DoctorProfileCreateWithoutClinicianFeeEntriesInput = {
@@ -3801,6 +3880,7 @@ export type DoctorProfileCreateWithoutClinicianFeeEntriesInput = {
   ownerInvitations?: Prisma.UserInvitationCreateNestedManyWithoutDoctorProfileInput
   attendedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutAttendantDoctorInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleCreateNestedManyWithoutDoctorInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutProviderDoctorInput
 }
 
 export type DoctorProfileUncheckedCreateWithoutClinicianFeeEntriesInput = {
@@ -3841,6 +3921,7 @@ export type DoctorProfileUncheckedCreateWithoutClinicianFeeEntriesInput = {
   ownerInvitations?: Prisma.UserInvitationUncheckedCreateNestedManyWithoutDoctorProfileInput
   attendedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutAttendantDoctorInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUncheckedCreateNestedManyWithoutDoctorInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutProviderDoctorInput
 }
 
 export type DoctorProfileCreateOrConnectWithoutClinicianFeeEntriesInput = {
@@ -3897,6 +3978,7 @@ export type DoctorProfileUpdateWithoutClinicianFeeEntriesInput = {
   ownerInvitations?: Prisma.UserInvitationUpdateManyWithoutDoctorProfileNestedInput
   attendedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutAttendantDoctorNestedInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUpdateManyWithoutDoctorNestedInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutProviderDoctorNestedInput
 }
 
 export type DoctorProfileUncheckedUpdateWithoutClinicianFeeEntriesInput = {
@@ -3937,6 +4019,7 @@ export type DoctorProfileUncheckedUpdateWithoutClinicianFeeEntriesInput = {
   ownerInvitations?: Prisma.UserInvitationUncheckedUpdateManyWithoutDoctorProfileNestedInput
   attendedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutAttendantDoctorNestedInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUncheckedUpdateManyWithoutDoctorNestedInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutProviderDoctorNestedInput
 }
 
 export type DoctorProfileCreateWithoutAdmissionsInput = {
@@ -3977,6 +4060,7 @@ export type DoctorProfileCreateWithoutAdmissionsInput = {
   attendedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutAttendantDoctorInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleCreateNestedManyWithoutDoctorInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryCreateNestedManyWithoutDoctorInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutProviderDoctorInput
 }
 
 export type DoctorProfileUncheckedCreateWithoutAdmissionsInput = {
@@ -4017,6 +4101,7 @@ export type DoctorProfileUncheckedCreateWithoutAdmissionsInput = {
   attendedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutAttendantDoctorInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUncheckedCreateNestedManyWithoutDoctorInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedCreateNestedManyWithoutDoctorInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutProviderDoctorInput
 }
 
 export type DoctorProfileCreateOrConnectWithoutAdmissionsInput = {
@@ -4073,6 +4158,7 @@ export type DoctorProfileUpdateWithoutAdmissionsInput = {
   attendedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutAttendantDoctorNestedInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUpdateManyWithoutDoctorNestedInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUpdateManyWithoutDoctorNestedInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutProviderDoctorNestedInput
 }
 
 export type DoctorProfileUncheckedUpdateWithoutAdmissionsInput = {
@@ -4113,6 +4199,7 @@ export type DoctorProfileUncheckedUpdateWithoutAdmissionsInput = {
   attendedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutAttendantDoctorNestedInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUncheckedUpdateManyWithoutDoctorNestedInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedUpdateManyWithoutDoctorNestedInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutProviderDoctorNestedInput
 }
 
 export type DoctorProfileCreateWithoutManagedDocumentsInput = {
@@ -4153,6 +4240,7 @@ export type DoctorProfileCreateWithoutManagedDocumentsInput = {
   attendedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutAttendantDoctorInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleCreateNestedManyWithoutDoctorInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryCreateNestedManyWithoutDoctorInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutProviderDoctorInput
 }
 
 export type DoctorProfileUncheckedCreateWithoutManagedDocumentsInput = {
@@ -4193,6 +4281,7 @@ export type DoctorProfileUncheckedCreateWithoutManagedDocumentsInput = {
   attendedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutAttendantDoctorInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUncheckedCreateNestedManyWithoutDoctorInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedCreateNestedManyWithoutDoctorInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutProviderDoctorInput
 }
 
 export type DoctorProfileCreateOrConnectWithoutManagedDocumentsInput = {
@@ -4249,6 +4338,7 @@ export type DoctorProfileUpdateWithoutManagedDocumentsInput = {
   attendedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutAttendantDoctorNestedInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUpdateManyWithoutDoctorNestedInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUpdateManyWithoutDoctorNestedInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutProviderDoctorNestedInput
 }
 
 export type DoctorProfileUncheckedUpdateWithoutManagedDocumentsInput = {
@@ -4289,6 +4379,7 @@ export type DoctorProfileUncheckedUpdateWithoutManagedDocumentsInput = {
   attendedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutAttendantDoctorNestedInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUncheckedUpdateManyWithoutDoctorNestedInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedUpdateManyWithoutDoctorNestedInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutProviderDoctorNestedInput
 }
 
 export type DoctorProfileCreateWithoutLabOrdersInput = {
@@ -4329,6 +4420,7 @@ export type DoctorProfileCreateWithoutLabOrdersInput = {
   attendedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutAttendantDoctorInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleCreateNestedManyWithoutDoctorInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryCreateNestedManyWithoutDoctorInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutProviderDoctorInput
 }
 
 export type DoctorProfileUncheckedCreateWithoutLabOrdersInput = {
@@ -4369,6 +4461,7 @@ export type DoctorProfileUncheckedCreateWithoutLabOrdersInput = {
   attendedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutAttendantDoctorInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUncheckedCreateNestedManyWithoutDoctorInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedCreateNestedManyWithoutDoctorInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutProviderDoctorInput
 }
 
 export type DoctorProfileCreateOrConnectWithoutLabOrdersInput = {
@@ -4425,6 +4518,7 @@ export type DoctorProfileUpdateWithoutLabOrdersInput = {
   attendedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutAttendantDoctorNestedInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUpdateManyWithoutDoctorNestedInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUpdateManyWithoutDoctorNestedInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutProviderDoctorNestedInput
 }
 
 export type DoctorProfileUncheckedUpdateWithoutLabOrdersInput = {
@@ -4465,6 +4559,7 @@ export type DoctorProfileUncheckedUpdateWithoutLabOrdersInput = {
   attendedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutAttendantDoctorNestedInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUncheckedUpdateManyWithoutDoctorNestedInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedUpdateManyWithoutDoctorNestedInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutProviderDoctorNestedInput
 }
 
 export type DoctorProfileCreateWithoutImmunizationsInput = {
@@ -4505,6 +4600,7 @@ export type DoctorProfileCreateWithoutImmunizationsInput = {
   attendedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutAttendantDoctorInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleCreateNestedManyWithoutDoctorInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryCreateNestedManyWithoutDoctorInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutProviderDoctorInput
 }
 
 export type DoctorProfileUncheckedCreateWithoutImmunizationsInput = {
@@ -4545,6 +4641,7 @@ export type DoctorProfileUncheckedCreateWithoutImmunizationsInput = {
   attendedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutAttendantDoctorInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUncheckedCreateNestedManyWithoutDoctorInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedCreateNestedManyWithoutDoctorInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutProviderDoctorInput
 }
 
 export type DoctorProfileCreateOrConnectWithoutImmunizationsInput = {
@@ -4601,6 +4698,7 @@ export type DoctorProfileUpdateWithoutImmunizationsInput = {
   attendedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutAttendantDoctorNestedInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUpdateManyWithoutDoctorNestedInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUpdateManyWithoutDoctorNestedInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutProviderDoctorNestedInput
 }
 
 export type DoctorProfileUncheckedUpdateWithoutImmunizationsInput = {
@@ -4641,6 +4739,7 @@ export type DoctorProfileUncheckedUpdateWithoutImmunizationsInput = {
   attendedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutAttendantDoctorNestedInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUncheckedUpdateManyWithoutDoctorNestedInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedUpdateManyWithoutDoctorNestedInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutProviderDoctorNestedInput
 }
 
 export type DoctorProfileCreateWithoutAttendedDeliveriesInput = {
@@ -4681,6 +4780,7 @@ export type DoctorProfileCreateWithoutAttendedDeliveriesInput = {
   ownerInvitations?: Prisma.UserInvitationCreateNestedManyWithoutDoctorProfileInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleCreateNestedManyWithoutDoctorInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryCreateNestedManyWithoutDoctorInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutProviderDoctorInput
 }
 
 export type DoctorProfileUncheckedCreateWithoutAttendedDeliveriesInput = {
@@ -4721,6 +4821,7 @@ export type DoctorProfileUncheckedCreateWithoutAttendedDeliveriesInput = {
   ownerInvitations?: Prisma.UserInvitationUncheckedCreateNestedManyWithoutDoctorProfileInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUncheckedCreateNestedManyWithoutDoctorInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedCreateNestedManyWithoutDoctorInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutProviderDoctorInput
 }
 
 export type DoctorProfileCreateOrConnectWithoutAttendedDeliveriesInput = {
@@ -4777,6 +4878,7 @@ export type DoctorProfileUpdateWithoutAttendedDeliveriesInput = {
   ownerInvitations?: Prisma.UserInvitationUpdateManyWithoutDoctorProfileNestedInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUpdateManyWithoutDoctorNestedInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUpdateManyWithoutDoctorNestedInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutProviderDoctorNestedInput
 }
 
 export type DoctorProfileUncheckedUpdateWithoutAttendedDeliveriesInput = {
@@ -4815,6 +4917,187 @@ export type DoctorProfileUncheckedUpdateWithoutAttendedDeliveriesInput = {
   labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutOrderedByNestedInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutDoctorNestedInput
   ownerInvitations?: Prisma.UserInvitationUncheckedUpdateManyWithoutDoctorProfileNestedInput
+  clinicianFeeRules?: Prisma.ClinicianFeeRuleUncheckedUpdateManyWithoutDoctorNestedInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedUpdateManyWithoutDoctorNestedInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutProviderDoctorNestedInput
+}
+
+export type DoctorProfileCreateWithoutProvidedFamilyPlanningRecordsInput = {
+  id?: string
+  licenseNumber: string
+  fullName: string
+  profession?: $Enums.ClinicianProfession
+  phoneNumber?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  nikCiphertext?: string | null
+  nikIndex?: string | null
+  nikLast4?: string | null
+  nikKeyVersion?: number | null
+  satusehatPractitionerId?: string | null
+  bpjsDoctorCode?: string | null
+  title?: string | null
+  degrees?: string | null
+  specialty: Prisma.SpecialtyCreateNestedOneWithoutDoctorsInput
+  ownerUser?: Prisma.UserCreateNestedOneWithoutDoctorProfileInput
+  patients?: Prisma.DoctorPatientCreateNestedManyWithoutDoctorInput
+  schedules?: Prisma.DoctorScheduleCreateNestedManyWithoutDoctorInput
+  appointments?: Prisma.AppointmentCreateNestedManyWithoutDoctorInput
+  appointmentSessions?: Prisma.AppointmentSessionCreateNestedManyWithoutDoctorInput
+  prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutDoctorInput
+  licenses?: Prisma.DoctorLicenseCreateNestedManyWithoutDoctorInput
+  authorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutDoctorInput
+  mandatesReceived?: Prisma.DoctorMandateCreateNestedManyWithoutMidwifeDoctorInput
+  mandatesGranted?: Prisma.DoctorMandateCreateNestedManyWithoutMandatingDoctorInput
+  educations?: Prisma.DoctorEducationCreateNestedManyWithoutDoctorInput
+  encounters?: Prisma.EncounterCreateNestedManyWithoutDoctorInput
+  admissions?: Prisma.AdmissionCreateNestedManyWithoutAdmittingDoctorInput
+  immunizations?: Prisma.ImmunizationCreateNestedManyWithoutPerformedByInput
+  labOrders?: Prisma.LabOrderCreateNestedManyWithoutOrderedByInput
+  managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutDoctorInput
+  ownerInvitations?: Prisma.UserInvitationCreateNestedManyWithoutDoctorProfileInput
+  attendedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutAttendantDoctorInput
+  clinicianFeeRules?: Prisma.ClinicianFeeRuleCreateNestedManyWithoutDoctorInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryCreateNestedManyWithoutDoctorInput
+}
+
+export type DoctorProfileUncheckedCreateWithoutProvidedFamilyPlanningRecordsInput = {
+  id?: string
+  licenseNumber: string
+  fullName: string
+  specialtyId: string
+  profession?: $Enums.ClinicianProfession
+  phoneNumber?: string | null
+  ownerUserId?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  nikCiphertext?: string | null
+  nikIndex?: string | null
+  nikLast4?: string | null
+  nikKeyVersion?: number | null
+  satusehatPractitionerId?: string | null
+  bpjsDoctorCode?: string | null
+  title?: string | null
+  degrees?: string | null
+  patients?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutDoctorInput
+  schedules?: Prisma.DoctorScheduleUncheckedCreateNestedManyWithoutDoctorInput
+  appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutDoctorInput
+  appointmentSessions?: Prisma.AppointmentSessionUncheckedCreateNestedManyWithoutDoctorInput
+  prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutDoctorInput
+  licenses?: Prisma.DoctorLicenseUncheckedCreateNestedManyWithoutDoctorInput
+  authorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutDoctorInput
+  mandatesReceived?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutMidwifeDoctorInput
+  mandatesGranted?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutMandatingDoctorInput
+  educations?: Prisma.DoctorEducationUncheckedCreateNestedManyWithoutDoctorInput
+  encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutDoctorInput
+  admissions?: Prisma.AdmissionUncheckedCreateNestedManyWithoutAdmittingDoctorInput
+  immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutPerformedByInput
+  labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutOrderedByInput
+  managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutDoctorInput
+  ownerInvitations?: Prisma.UserInvitationUncheckedCreateNestedManyWithoutDoctorProfileInput
+  attendedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutAttendantDoctorInput
+  clinicianFeeRules?: Prisma.ClinicianFeeRuleUncheckedCreateNestedManyWithoutDoctorInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedCreateNestedManyWithoutDoctorInput
+}
+
+export type DoctorProfileCreateOrConnectWithoutProvidedFamilyPlanningRecordsInput = {
+  where: Prisma.DoctorProfileWhereUniqueInput
+  create: Prisma.XOR<Prisma.DoctorProfileCreateWithoutProvidedFamilyPlanningRecordsInput, Prisma.DoctorProfileUncheckedCreateWithoutProvidedFamilyPlanningRecordsInput>
+}
+
+export type DoctorProfileUpsertWithoutProvidedFamilyPlanningRecordsInput = {
+  update: Prisma.XOR<Prisma.DoctorProfileUpdateWithoutProvidedFamilyPlanningRecordsInput, Prisma.DoctorProfileUncheckedUpdateWithoutProvidedFamilyPlanningRecordsInput>
+  create: Prisma.XOR<Prisma.DoctorProfileCreateWithoutProvidedFamilyPlanningRecordsInput, Prisma.DoctorProfileUncheckedCreateWithoutProvidedFamilyPlanningRecordsInput>
+  where?: Prisma.DoctorProfileWhereInput
+}
+
+export type DoctorProfileUpdateToOneWithWhereWithoutProvidedFamilyPlanningRecordsInput = {
+  where?: Prisma.DoctorProfileWhereInput
+  data: Prisma.XOR<Prisma.DoctorProfileUpdateWithoutProvidedFamilyPlanningRecordsInput, Prisma.DoctorProfileUncheckedUpdateWithoutProvidedFamilyPlanningRecordsInput>
+}
+
+export type DoctorProfileUpdateWithoutProvidedFamilyPlanningRecordsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  licenseNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  profession?: Prisma.EnumClinicianProfessionFieldUpdateOperationsInput | $Enums.ClinicianProfession
+  phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nikCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikIndex?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  degrees?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  specialty?: Prisma.SpecialtyUpdateOneRequiredWithoutDoctorsNestedInput
+  ownerUser?: Prisma.UserUpdateOneWithoutDoctorProfileNestedInput
+  patients?: Prisma.DoctorPatientUpdateManyWithoutDoctorNestedInput
+  schedules?: Prisma.DoctorScheduleUpdateManyWithoutDoctorNestedInput
+  appointments?: Prisma.AppointmentUpdateManyWithoutDoctorNestedInput
+  appointmentSessions?: Prisma.AppointmentSessionUpdateManyWithoutDoctorNestedInput
+  prescriptions?: Prisma.PrescriptionUpdateManyWithoutDoctorNestedInput
+  licenses?: Prisma.DoctorLicenseUpdateManyWithoutDoctorNestedInput
+  authorities?: Prisma.DoctorAuthorityUpdateManyWithoutDoctorNestedInput
+  mandatesReceived?: Prisma.DoctorMandateUpdateManyWithoutMidwifeDoctorNestedInput
+  mandatesGranted?: Prisma.DoctorMandateUpdateManyWithoutMandatingDoctorNestedInput
+  educations?: Prisma.DoctorEducationUpdateManyWithoutDoctorNestedInput
+  encounters?: Prisma.EncounterUpdateManyWithoutDoctorNestedInput
+  admissions?: Prisma.AdmissionUpdateManyWithoutAdmittingDoctorNestedInput
+  immunizations?: Prisma.ImmunizationUpdateManyWithoutPerformedByNestedInput
+  labOrders?: Prisma.LabOrderUpdateManyWithoutOrderedByNestedInput
+  managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutDoctorNestedInput
+  ownerInvitations?: Prisma.UserInvitationUpdateManyWithoutDoctorProfileNestedInput
+  attendedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutAttendantDoctorNestedInput
+  clinicianFeeRules?: Prisma.ClinicianFeeRuleUpdateManyWithoutDoctorNestedInput
+  clinicianFeeEntries?: Prisma.ClinicianFeeEntryUpdateManyWithoutDoctorNestedInput
+}
+
+export type DoctorProfileUncheckedUpdateWithoutProvidedFamilyPlanningRecordsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  licenseNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  specialtyId?: Prisma.StringFieldUpdateOperationsInput | string
+  profession?: Prisma.EnumClinicianProfessionFieldUpdateOperationsInput | $Enums.ClinicianProfession
+  phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ownerUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nikCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikIndex?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  degrees?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  patients?: Prisma.DoctorPatientUncheckedUpdateManyWithoutDoctorNestedInput
+  schedules?: Prisma.DoctorScheduleUncheckedUpdateManyWithoutDoctorNestedInput
+  appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutDoctorNestedInput
+  appointmentSessions?: Prisma.AppointmentSessionUncheckedUpdateManyWithoutDoctorNestedInput
+  prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutDoctorNestedInput
+  licenses?: Prisma.DoctorLicenseUncheckedUpdateManyWithoutDoctorNestedInput
+  authorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutDoctorNestedInput
+  mandatesReceived?: Prisma.DoctorMandateUncheckedUpdateManyWithoutMidwifeDoctorNestedInput
+  mandatesGranted?: Prisma.DoctorMandateUncheckedUpdateManyWithoutMandatingDoctorNestedInput
+  educations?: Prisma.DoctorEducationUncheckedUpdateManyWithoutDoctorNestedInput
+  encounters?: Prisma.EncounterUncheckedUpdateManyWithoutDoctorNestedInput
+  admissions?: Prisma.AdmissionUncheckedUpdateManyWithoutAdmittingDoctorNestedInput
+  immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutPerformedByNestedInput
+  labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutOrderedByNestedInput
+  managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutDoctorNestedInput
+  ownerInvitations?: Prisma.UserInvitationUncheckedUpdateManyWithoutDoctorProfileNestedInput
+  attendedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutAttendantDoctorNestedInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUncheckedUpdateManyWithoutDoctorNestedInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedUpdateManyWithoutDoctorNestedInput
 }
@@ -4878,6 +5161,7 @@ export type DoctorProfileUpdateWithoutSpecialtyInput = {
   attendedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutAttendantDoctorNestedInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUpdateManyWithoutDoctorNestedInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUpdateManyWithoutDoctorNestedInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutProviderDoctorNestedInput
 }
 
 export type DoctorProfileUncheckedUpdateWithoutSpecialtyInput = {
@@ -4918,6 +5202,7 @@ export type DoctorProfileUncheckedUpdateWithoutSpecialtyInput = {
   attendedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutAttendantDoctorNestedInput
   clinicianFeeRules?: Prisma.ClinicianFeeRuleUncheckedUpdateManyWithoutDoctorNestedInput
   clinicianFeeEntries?: Prisma.ClinicianFeeEntryUncheckedUpdateManyWithoutDoctorNestedInput
+  providedFamilyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutProviderDoctorNestedInput
 }
 
 export type DoctorProfileUncheckedUpdateManyWithoutSpecialtyInput = {
@@ -4966,6 +5251,7 @@ export type DoctorProfileCountOutputType = {
   attendedDeliveries: number
   clinicianFeeRules: number
   clinicianFeeEntries: number
+  providedFamilyPlanningRecords: number
 }
 
 export type DoctorProfileCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -4988,6 +5274,7 @@ export type DoctorProfileCountOutputTypeSelect<ExtArgs extends runtime.Types.Ext
   attendedDeliveries?: boolean | DoctorProfileCountOutputTypeCountAttendedDeliveriesArgs
   clinicianFeeRules?: boolean | DoctorProfileCountOutputTypeCountClinicianFeeRulesArgs
   clinicianFeeEntries?: boolean | DoctorProfileCountOutputTypeCountClinicianFeeEntriesArgs
+  providedFamilyPlanningRecords?: boolean | DoctorProfileCountOutputTypeCountProvidedFamilyPlanningRecordsArgs
 }
 
 /**
@@ -5133,6 +5420,13 @@ export type DoctorProfileCountOutputTypeCountClinicianFeeEntriesArgs<ExtArgs ext
   where?: Prisma.ClinicianFeeEntryWhereInput
 }
 
+/**
+ * DoctorProfileCountOutputType without action
+ */
+export type DoctorProfileCountOutputTypeCountProvidedFamilyPlanningRecordsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.FamilyPlanningRecordWhereInput
+}
+
 
 export type DoctorProfileSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -5175,6 +5469,7 @@ export type DoctorProfileSelect<ExtArgs extends runtime.Types.Extensions.Interna
   attendedDeliveries?: boolean | Prisma.DoctorProfile$attendedDeliveriesArgs<ExtArgs>
   clinicianFeeRules?: boolean | Prisma.DoctorProfile$clinicianFeeRulesArgs<ExtArgs>
   clinicianFeeEntries?: boolean | Prisma.DoctorProfile$clinicianFeeEntriesArgs<ExtArgs>
+  providedFamilyPlanningRecords?: boolean | Prisma.DoctorProfile$providedFamilyPlanningRecordsArgs<ExtArgs>
   _count?: boolean | Prisma.DoctorProfileCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["doctorProfile"]>
 
@@ -5271,6 +5566,7 @@ export type DoctorProfileInclude<ExtArgs extends runtime.Types.Extensions.Intern
   attendedDeliveries?: boolean | Prisma.DoctorProfile$attendedDeliveriesArgs<ExtArgs>
   clinicianFeeRules?: boolean | Prisma.DoctorProfile$clinicianFeeRulesArgs<ExtArgs>
   clinicianFeeEntries?: boolean | Prisma.DoctorProfile$clinicianFeeEntriesArgs<ExtArgs>
+  providedFamilyPlanningRecords?: boolean | Prisma.DoctorProfile$providedFamilyPlanningRecordsArgs<ExtArgs>
   _count?: boolean | Prisma.DoctorProfileCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type DoctorProfileIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -5314,6 +5610,7 @@ export type $DoctorProfilePayload<ExtArgs extends runtime.Types.Extensions.Inter
     attendedDeliveries: Prisma.$DeliveryRecordPayload<ExtArgs>[]
     clinicianFeeRules: Prisma.$ClinicianFeeRulePayload<ExtArgs>[]
     clinicianFeeEntries: Prisma.$ClinicianFeeEntryPayload<ExtArgs>[]
+    providedFamilyPlanningRecords: Prisma.$FamilyPlanningRecordPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -5763,6 +6060,7 @@ export interface Prisma__DoctorProfileClient<T, Null = never, ExtArgs extends ru
   attendedDeliveries<T extends Prisma.DoctorProfile$attendedDeliveriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DoctorProfile$attendedDeliveriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DeliveryRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   clinicianFeeRules<T extends Prisma.DoctorProfile$clinicianFeeRulesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DoctorProfile$clinicianFeeRulesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ClinicianFeeRulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   clinicianFeeEntries<T extends Prisma.DoctorProfile$clinicianFeeEntriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DoctorProfile$clinicianFeeEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ClinicianFeeEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  providedFamilyPlanningRecords<T extends Prisma.DoctorProfile$providedFamilyPlanningRecordsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DoctorProfile$providedFamilyPlanningRecordsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FamilyPlanningRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -6684,6 +6982,30 @@ export type DoctorProfile$clinicianFeeEntriesArgs<ExtArgs extends runtime.Types.
   take?: number
   skip?: number
   distinct?: Prisma.ClinicianFeeEntryScalarFieldEnum | Prisma.ClinicianFeeEntryScalarFieldEnum[]
+}
+
+/**
+ * DoctorProfile.providedFamilyPlanningRecords
+ */
+export type DoctorProfile$providedFamilyPlanningRecordsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the FamilyPlanningRecord
+   */
+  select?: Prisma.FamilyPlanningRecordSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the FamilyPlanningRecord
+   */
+  omit?: Prisma.FamilyPlanningRecordOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FamilyPlanningRecordInclude<ExtArgs> | null
+  where?: Prisma.FamilyPlanningRecordWhereInput
+  orderBy?: Prisma.FamilyPlanningRecordOrderByWithRelationInput | Prisma.FamilyPlanningRecordOrderByWithRelationInput[]
+  cursor?: Prisma.FamilyPlanningRecordWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.FamilyPlanningRecordScalarFieldEnum | Prisma.FamilyPlanningRecordScalarFieldEnum[]
 }
 
 /**

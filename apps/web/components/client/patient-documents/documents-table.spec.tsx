@@ -100,6 +100,20 @@ describe('DocumentsTable', () => {
     expect(screen.queryByText('General')).not.toBeInTheDocument();
   });
 
+  /** P20-T07: a person is shown by name or not at all — never by a uuid. */
+  it('names the uploader and never falls back to their account id', () => {
+    renderTable(
+      [
+        buildDocument({ id: 'doc-named', uploadedByName: 'Dewi Lestari' }),
+        buildDocument({ id: 'doc-unnamed', uploadedByName: null }),
+      ],
+      FULL_RULES,
+    );
+
+    expect(screen.getByText('Dewi Lestari')).toBeInTheDocument();
+    expect(screen.queryByText(/user-abc/)).not.toBeInTheDocument();
+  });
+
   it('marks a released document', () => {
     renderTable(
       [buildDocument({ releasedToPatient: true, releasedAt: '2026-08-31T00:00:00.000Z' })],

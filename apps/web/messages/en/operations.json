@@ -224,6 +224,7 @@
       "dispenseNow": "Dispense Now",
       "dispensing": "Dispensing...",
       "dispensedSuccess": "{rx} dispensed successfully.",
+      "dispensedBySuccess": "{rx} dispensed by {pharmacist}.",
       "dispenseError": "Unable to dispense the prescription. Please try again.",
       "noMedicationItems": "No medication items",
       "moreMedications": "{name} +{count} more",
@@ -667,7 +668,8 @@
       "satusehatKinds": {
         "encounter": "Visit",
         "lab_report": "Lab report",
-        "episode_of_care_finish": "Close pregnancy episode"
+        "episode_of_care_finish": "Close pregnancy episode",
+        "postnatal_episode_finish": "Close postnatal episode"
       },
       "submissionStatus": "Submission status",
       "submissionType": "BPJS submission type",

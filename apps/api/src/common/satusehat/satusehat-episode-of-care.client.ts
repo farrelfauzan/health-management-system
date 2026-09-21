@@ -23,13 +23,24 @@ import { SatusehatSearchBundle } from './satusehat.types';
 export class SatusehatEpisodeOfCareClient {
   constructor(private readonly httpClient: SatusehatHttpClient) {}
 
-  /** The episode registered under our own identifier, or null when there is none. */
-  async findEpisodeIdByIdentifier(organizationId: string, localId: string): Promise<string | null> {
+  /**
+   * The episode registered under our own identifier, or null when there is none.
+   *
+   * `typeCode` narrows the search to one episode type (P25-T12): a pregnancy's
+   * ANC and PNC episodes carry the same identifier — the pregnancy row — and
+   * the sandbox accepts the pair and honours `type` alongside `identifier`.
+   */
+  async findEpisodeIdByIdentifier(
+    organizationId: string,
+    localId: string,
+    typeCode?: string,
+  ): Promise<string | null> {
     const bundle = await this.httpClient.sendRequest<SatusehatSearchBundle>({
       method: 'GET',
       path: '/EpisodeOfCare',
       query: {
         identifier: `${buildSatusehatEpisodeOfCareIdentifierSystem(organizationId)}|${localId}`,
+        ...(typeCode === undefined ? {} : { type: typeCode }),
       },
     });
     return this.readFirstEpisodeId(bundle);

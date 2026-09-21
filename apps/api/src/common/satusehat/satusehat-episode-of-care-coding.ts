@@ -26,3 +26,29 @@ const EPISODE_OF_CARE_IDENTIFIER_SYSTEM_PREFIX = 'http://sys-ids.kemkes.go.id/ep
 export function buildSatusehatEpisodeOfCareIdentifierSystem(organizationId: string): string {
   return `${EPISODE_OF_CARE_IDENTIFIER_SYSTEM_PREFIX}/${organizationId}`;
 }
+
+/**
+ * The PNC (nifas) episode (P25-T12). The playbook names the type system with
+ * `https://`; the sandbox refuses that as an invalid coding system and
+ * accepts the `http://` one above — see `docs/ops/satusehat-pnc-spike.md`.
+ */
+export const SATUSEHAT_POSTNATAL_EPISODE_TYPE_CODE = 'PNC';
+
+export const SATUSEHAT_POSTNATAL_EPISODE_TYPE_DISPLAY = 'Postnatal Care';
+
+/**
+ * Where a nifas visit's KF1–KF4 goes on the Encounter: an identifier under
+ * this system, beside the encounter's own. A terminology system, unlike the
+ * ANC K code's org-scoped one — the sandbox validates the value against it
+ * and refuses `KF9` (Rule 10117).
+ */
+export const SATUSEHAT_PUERPERIUM_VISIT_SYSTEM =
+  'http://terminology.kemkes.go.id/CodeSystem/episodeofcare/puerperium';
+
+/**
+ * Where a neonatal visit's KN1–KN3 goes. Not in the playbook; found by probing
+ * the sandbox, which accepts KN1–KN3 here and refuses `KN9`, and refuses
+ * `…/neonatal` and `…/newborn` outright.
+ */
+export const SATUSEHAT_NEONATAL_VISIT_SYSTEM =
+  'http://terminology.kemkes.go.id/CodeSystem/episodeofcare/neonate';

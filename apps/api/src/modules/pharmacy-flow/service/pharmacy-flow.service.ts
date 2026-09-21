@@ -825,6 +825,7 @@ export class PharmacyFlowService {
       prescriptionId: record.prescriptionId,
       prescriptionStatus: record.prescription.status,
       pharmacistId: record.pharmacistId,
+      pharmacistName: record.pharmacistName,
       status: record.status,
       dispensedAt: record.dispensedAt.toISOString(),
       notes: record.notes ?? undefined,

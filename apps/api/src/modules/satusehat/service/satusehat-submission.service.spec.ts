@@ -5,6 +5,9 @@ import { AuditService } from '../../../common/audit/audit.service';
 import { SatusehatAmbiguousMatchError } from '../../../common/satusehat/satusehat-ambiguous-match.error';
 import { SatusehatFhirMapper } from '../../../common/satusehat/satusehat-fhir.mapper';
 import { SatusehatFhirTransactionBundle } from '../../../common/satusehat/satusehat-fhir.types';
+import { SatusehatPostnatalMapper } from '../../../common/satusehat/satusehat-postnatal.mapper';
+import { SatusehatPostnatalRepository } from '../repository/satusehat-postnatal.repository';
+import { SatusehatPostnatalSubmissionService } from './satusehat-postnatal-submission.service';
 import { SatusehatEpisodeOfCareClient } from '../../../common/satusehat/satusehat-episode-of-care.client';
 import { SatusehatHttpClient } from '../../../common/satusehat/satusehat-http.client';
 import { SatusehatMasterDataClient } from '../../../common/satusehat/satusehat-master-data.client';
@@ -112,6 +115,7 @@ function buildBundleData(overrides: Record<string, unknown> = {}) {
       registeredRootLocationId: null,
     },
     antenatalVisit: null,
+    postnatalVisit: null,
     ...overrides,
   };
 }
@@ -376,6 +380,10 @@ describe('SatusehatSubmissionService', () => {
   const auditServiceMock = {
     record: jest.fn(),
   };
+  const postnatalRepositoryMock = {
+    savePostnatalEpisodeOfCareId: jest.fn(),
+    findPostnatalEpisodeFinishData: jest.fn(),
+  };
   const episodeOfCareClientMock = {
     findEpisodeIdByIdentifier: jest.fn(),
     findActiveEpisodeIdByPatient: jest.fn(),
@@ -394,6 +402,14 @@ describe('SatusehatSubmissionService', () => {
       httpClientMock as unknown as SatusehatHttpClient,
       episodeOfCareClientMock as unknown as SatusehatEpisodeOfCareClient,
       auditServiceMock as unknown as AuditService,
+      new SatusehatPostnatalSubmissionService(
+        configService,
+        episodeOfCareClientMock as unknown as SatusehatEpisodeOfCareClient,
+        new SatusehatPostnatalMapper(configService),
+        new SatusehatFhirMapper(configService),
+        postnatalRepositoryMock as unknown as SatusehatPostnatalRepository,
+      ),
+      postnatalRepositoryMock as unknown as SatusehatPostnatalRepository,
     );
   }
 
@@ -2178,6 +2194,146 @@ describe('SatusehatSubmissionService', () => {
       // submission: the laboratory is the performer either way.
       expect((serviceRequest?.resource as { requester?: unknown }).requester).toBeUndefined();
       expect(submissionRepositoryMock.markSubmitted).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('the PNC episode (P25-T12)', () => {
+    const PREGNANCY_EPISODE_ID = 'b4d5e6f7-a8b9-4c0d-8e1f-2a3b4c5d6e7f';
+    /** 1 October 03:00 WIB. */
+    const BIRTH_AT = new Date('2026-09-30T20:00:00.000Z');
+
+    function arrangePostnatalVisit(overrides: Record<string, unknown> = {}): void {
+      submissionRepositoryMock.findBundleData.mockResolvedValue(
+        buildBundleData({
+          postnatalVisit: {
+            subject: 'MOTHER',
+            visitCode: 'KF2',
+            pregnancyEpisodeId: PREGNANCY_EPISODE_ID,
+            satusehatPostnatalEpisodeOfCareId: null,
+            birthAt: BIRTH_AT,
+            examination: {
+              vaginalBleeding: false,
+              bloodLossMl: null,
+              perineumCondition: null,
+              perinealInfectionSigns: null,
+              caesareanWoundInfectionSigns: null,
+              breastCondition: 'NORMAL',
+              uterineContraction: true,
+              lochiaColour: 'SEROSA',
+              lochiaOdour: null,
+              breastMilkProduction: 'PRESENT',
+              urination: null,
+              defecation: null,
+              newbornCareCounselling: true,
+              vitaminAGivenAt: null,
+              vitaminAMedicationId: null,
+              familyPlanningCounselling: null,
+            },
+            ...overrides,
+          },
+        }),
+      );
+      httpClientMock.sendRequest.mockResolvedValue({
+        entry: [
+          { response: { status: '201 Created', location: 'Encounter/ihs-enc-1/_history/1' } },
+        ],
+      });
+    }
+
+    function readSentBundle() {
+      return httpClientMock.sendRequest.mock.calls[0]?.[0]?.body as {
+        entry: Array<{
+          resource: {
+            resourceType: string;
+            episodeOfCare?: unknown;
+            identifier?: Array<{ system: string; value: string }>;
+            code?: { coding: Array<{ code: string }> };
+          };
+        }>;
+      };
+    }
+
+    it('opens the PNC episode, and the KF2 visit carries its KF identifier and references it', async () => {
+      arrangePostnatalVisit();
+      episodeOfCareClientMock.findEpisodeIdByIdentifier.mockResolvedValue(null);
+      episodeOfCareClientMock.findActiveEpisodeIdByPatient.mockResolvedValue(null);
+      episodeOfCareClientMock.createEpisodeOfCare.mockResolvedValue('pnc-episode-id');
+
+      await buildService().processSubmission(buildSubmission());
+
+      expect(postnatalRepositoryMock.savePostnatalEpisodeOfCareId).toHaveBeenCalledWith({
+        pregnancyEpisodeId: PREGNANCY_EPISODE_ID,
+        satusehatEpisodeOfCareId: 'pnc-episode-id',
+      });
+      // The ANC episode is never touched: a nifas visit is not an ANC one.
+      expect(submissionRepositoryMock.saveAntenatalEpisodeOfCareId).not.toHaveBeenCalled();
+      const encounter = readSentBundle().entry.find(
+        (entry) => entry.resource.resourceType === 'Encounter',
+      );
+      expect(encounter?.resource.episodeOfCare).toEqual([
+        { reference: 'EpisodeOfCare/pnc-episode-id' },
+      ]);
+      expect(encounter?.resource.identifier?.[0]).toMatchObject({
+        system: 'http://terminology.kemkes.go.id/CodeSystem/episodeofcare/puerperium',
+        value: 'KF2',
+      });
+      const observationCodes = readSentBundle()
+        .entry.filter((entry) => entry.resource.resourceType === 'Observation')
+        .map((entry) => entry.resource.code?.coding[0]?.code);
+      expect(observationCodes).toEqual(
+        expect.arrayContaining(['93857-1', '289530006', '32422-8', '289700000', '249214003', 'OC000017']),
+      );
+    });
+
+    it('reuses the stored PNC episode on a later visit without searching', async () => {
+      arrangePostnatalVisit({ visitCode: 'KF3', satusehatPostnatalEpisodeOfCareId: 'pnc-episode-id' });
+
+      await buildService().processSubmission(buildSubmission());
+
+      expect(episodeOfCareClientMock.findEpisodeIdByIdentifier).not.toHaveBeenCalled();
+      expect(episodeOfCareClientMock.createEpisodeOfCare).not.toHaveBeenCalled();
+    });
+
+    it('reports a visit outside every window as an ordinary encounter', async () => {
+      arrangePostnatalVisit({ visitCode: null });
+
+      await buildService().processSubmission(buildSubmission());
+
+      expect(episodeOfCareClientMock.createEpisodeOfCare).not.toHaveBeenCalled();
+      const encounter = readSentBundle().entry.find(
+        (entry) => entry.resource.resourceType === 'Encounter',
+      );
+      expect(encounter?.resource.episodeOfCare).toBeUndefined();
+    });
+
+    it('closes the PNC episode with one PATCH at the delivery plus 42 days', async () => {
+      postnatalRepositoryMock.findPostnatalEpisodeFinishData.mockResolvedValue({
+        pregnancyEpisodeId: PREGNANCY_EPISODE_ID,
+        patientId,
+        patientIhsNumber: 'P02478375538',
+        satusehatPostnatalEpisodeOfCareId: 'pnc-episode-id',
+        birthAt: BIRTH_AT,
+      });
+
+      await buildService().processSubmission(
+        buildSubmission({
+          kind: 'POSTNATAL_EPISODE_FINISH',
+          encounterId: null,
+          pregnancyEpisodeId: PREGNANCY_EPISODE_ID,
+        }),
+      );
+
+      const [episodeId, operations] = episodeOfCareClientMock.patchEpisodeOfCare.mock.calls[0] as [
+        string,
+        Array<{ op: string; path: string; value: unknown }>,
+      ];
+      expect(episodeId).toBe('pnc-episode-id');
+      expect(operations).toContainEqual({
+        op: 'add',
+        path: '/period/end',
+        value: '2026-11-11T20:00:00.000Z',
+      });
+      expect(submissionRepositoryMock.markSubmitted).toHaveBeenCalled();
     });
   });
 

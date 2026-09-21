@@ -181,8 +181,13 @@ export const ModelName = {
   AntenatalVisit: 'AntenatalVisit',
   DeliveryRecord: 'DeliveryRecord',
   NewbornCareRecord: 'NewbornCareRecord',
+  FamilyPlanningRecord: 'FamilyPlanningRecord',
+  FamilyPlanningService: 'FamilyPlanningService',
+  ShkScreening: 'ShkScreening',
   AntenatalExamination: 'AntenatalExamination',
-  AntenatalReferralDismissal: 'AntenatalReferralDismissal'
+  AntenatalReferralDismissal: 'AntenatalReferralDismissal',
+  PostnatalVisit: 'PostnatalVisit',
+  PostnatalExamination: 'PostnatalExamination'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -2466,6 +2471,61 @@ export const NewbornCareRecordScalarFieldEnum = {
 export type NewbornCareRecordScalarFieldEnum = (typeof NewbornCareRecordScalarFieldEnum)[keyof typeof NewbornCareRecordScalarFieldEnum]
 
 
+export const FamilyPlanningRecordScalarFieldEnum = {
+  id: 'id',
+  patientId: 'patientId',
+  method: 'method',
+  acceptorType: 'acceptorType',
+  startedOn: 'startedOn',
+  providerDoctorId: 'providerDoctorId',
+  startEncounterId: 'startEncounterId',
+  deliveryRecordId: 'deliveryRecordId',
+  mandateId: 'mandateId',
+  nextDueOn: 'nextDueOn',
+  sideEffects: 'sideEffects',
+  discontinuedOn: 'discontinuedOn',
+  discontinuationReason: 'discontinuationReason',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type FamilyPlanningRecordScalarFieldEnum = (typeof FamilyPlanningRecordScalarFieldEnum)[keyof typeof FamilyPlanningRecordScalarFieldEnum]
+
+
+export const FamilyPlanningServiceScalarFieldEnum = {
+  id: 'id',
+  familyPlanningRecordId: 'familyPlanningRecordId',
+  encounterId: 'encounterId',
+  servedOn: 'servedOn',
+  action: 'action',
+  nextDueOn: 'nextDueOn',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type FamilyPlanningServiceScalarFieldEnum = (typeof FamilyPlanningServiceScalarFieldEnum)[keyof typeof FamilyPlanningServiceScalarFieldEnum]
+
+
+export const ShkScreeningScalarFieldEnum = {
+  id: 'id',
+  newbornCareRecordId: 'newbornCareRecordId',
+  sequence: 'sequence',
+  dueFrom: 'dueFrom',
+  dueUntil: 'dueUntil',
+  sampleTakenAt: 'sampleTakenAt',
+  sampleTakenById: 'sampleTakenById',
+  sentAt: 'sentAt',
+  laboratoryName: 'laboratoryName',
+  resultReceivedAt: 'resultReceivedAt',
+  result: 'result',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ShkScreeningScalarFieldEnum = (typeof ShkScreeningScalarFieldEnum)[keyof typeof ShkScreeningScalarFieldEnum]
+
+
 export const AntenatalExaminationScalarFieldEnum = {
   id: 'id',
   antenatalVisitId: 'antenatalVisitId',
@@ -2498,6 +2558,47 @@ export const AntenatalReferralDismissalScalarFieldEnum = {
 } as const
 
 export type AntenatalReferralDismissalScalarFieldEnum = (typeof AntenatalReferralDismissalScalarFieldEnum)[keyof typeof AntenatalReferralDismissalScalarFieldEnum]
+
+
+export const PostnatalVisitScalarFieldEnum = {
+  id: 'id',
+  encounterId: 'encounterId',
+  subject: 'subject',
+  pregnancyEpisodeId: 'pregnancyEpisodeId',
+  newbornCareRecordId: 'newbornCareRecordId',
+  visitCode: 'visitCode',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PostnatalVisitScalarFieldEnum = (typeof PostnatalVisitScalarFieldEnum)[keyof typeof PostnatalVisitScalarFieldEnum]
+
+
+export const PostnatalExaminationScalarFieldEnum = {
+  id: 'id',
+  postnatalVisitId: 'postnatalVisitId',
+  vaginalBleeding: 'vaginalBleeding',
+  bloodLossMl: 'bloodLossMl',
+  perineumCondition: 'perineumCondition',
+  perinealInfectionSigns: 'perinealInfectionSigns',
+  caesareanWoundInfectionSigns: 'caesareanWoundInfectionSigns',
+  breastCondition: 'breastCondition',
+  uterineContraction: 'uterineContraction',
+  lochiaColour: 'lochiaColour',
+  lochiaOdour: 'lochiaOdour',
+  breastMilkProduction: 'breastMilkProduction',
+  urination: 'urination',
+  defecation: 'defecation',
+  newbornCareCounselling: 'newbornCareCounselling',
+  vitaminAGivenAt: 'vitaminAGivenAt',
+  vitaminAMedicationId: 'vitaminAMedicationId',
+  familyPlanningCounselling: 'familyPlanningCounselling',
+  recordedById: 'recordedById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PostnatalExaminationScalarFieldEnum = (typeof PostnatalExaminationScalarFieldEnum)[keyof typeof PostnatalExaminationScalarFieldEnum]
 
 
 export const SortOrder = {

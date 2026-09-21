@@ -218,6 +218,7 @@ describe('SATUSEHAT submission ops integration', () => {
         registeredRootLocationId: null,
       },
       antenatalVisit: null,
+      postnatalVisit: null,
     };
   }
 

@@ -94,6 +94,7 @@ describe('SatusehatRecordComparisonService', () => {
         registeredRootLocationId: null,
       },
       antenatalVisit: null,
+      postnatalVisit: null,
     } as SatusehatSubmissionBundleData;
   }
 

@@ -13,4 +13,5 @@ export const SatusehatSubmissionControllerListSubmissionsV1Kind = {
   ENCOUNTER: 'ENCOUNTER',
   LAB_REPORT: 'LAB_REPORT',
   EPISODE_OF_CARE_FINISH: 'EPISODE_OF_CARE_FINISH',
+  POSTNATAL_EPISODE_FINISH: 'POSTNATAL_EPISODE_FINISH',
 } as const;

@@ -28,6 +28,21 @@ export type JwtPayload = {
    * in docs/MVP/decisions.md).
    */
   permissions: string[];
+  /**
+   * The person's name (P20-T08), resolved at issuance the D-027 way — the
+   * account's own `fullName`, then the doctor profile's, then the patient
+   * record's — and absent when nothing names them. The shell greets by it and
+   * never derives a name from the email address, so a receptionist with no
+   * name is shown their address as-is.
+   *
+   * Presentation only, like everything else here the web tier reads: no guard
+   * consults it. Re-resolved on every refresh, so a renamed account or profile
+   * reaches the claim at the next rotation, not instantly. Kept out of the
+   * payload entirely when absent, and bounded by the 120-character name
+   * schemas, which keeps the token well inside the 4096-byte cookie limit that
+   * forced the permission split above.
+   */
+  name?: string;
 };
 
 /**
@@ -126,12 +141,12 @@ export type IssuedSession = {
    */
   isProfileIncomplete: boolean;
   /**
-   * The person's own name, as their clinical record spells it, or null when
-   * no record carries one — a receptionist or an administrator has an account
-   * and no profile. Feeds the session-hint cookie so the shell can greet
-   * someone by name instead of by the local part of their email address; like
-   * the fields above it is a rendering input and never authorisation, which
-   * is exactly why it rides in the hint rather than in the signed token.
+   * The person's name — the account's own, else their doctor or patient
+   * record's (D-027, P20-T08) — or null when nothing names them. Feeds the
+   * session-hint cookie and the access token's `name` claim so the shell can
+   * greet someone by name, and by their plain email address when there is
+   * none; like the fields above it is a rendering input and never
+   * authorisation.
    */
   displayName: string | null;
   /**
@@ -153,9 +168,10 @@ export type IssuedSession = {
 
 /**
  * What a session knows about the person behind it beyond their credentials:
- * the name to greet them by and the kind of clinician their own profile says
- * they are. Both come from their clinical record, both are rendering inputs,
- * and both are null for an account no such record names.
+ * the name to greet them by — the account's own, else their doctor or patient
+ * record's (D-027, P20-T08) — and the kind of clinician their own profile says
+ * they are. Both are rendering inputs, and both are null for an account
+ * nothing names.
  */
 export type SessionIdentity = {
   displayName: string | null;

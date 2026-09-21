@@ -3,11 +3,25 @@ import {
   RecordNewbornCareInput,
   UpdateDeliveryInput,
   UpdateNewbornCareInput,
+  computeShkSampleWindow,
 } from '@hms/shared-types';
 import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from '../../../common/prisma/prisma.service';
+import { PrismaTransactionClient } from '../../../common/prisma/prisma.types';
 import { enqueueSatusehatEpisodeClose } from './enqueue-satusehat-episode-close';
+
+/** A baby's newest SHK sample, for the chip on her card (P25-T10). */
+const LATEST_SHK_SCREENING = {
+  orderBy: { sequence: 'desc' },
+  take: 1,
+} as const;
+
+/** What one baby is read back with. */
+const NEWBORN_INCLUDE = {
+  newbornPatient: { select: { fullName: true, birthOrder: true } },
+  shkScreenings: LATEST_SHK_SCREENING,
+} as const;
 
 /** Everything a birth and its babies are read back with, in one shape. */
 const DELIVERY_INCLUDE = {
@@ -15,9 +29,7 @@ const DELIVERY_INCLUDE = {
   uterotonic: { select: { name: true } },
   newbornCareRecords: {
     orderBy: { createdAt: 'asc' },
-    include: {
-      newbornPatient: { select: { fullName: true, birthOrder: true } },
-    },
+    include: NEWBORN_INCLUDE,
   },
 } as const;
 
@@ -41,6 +53,7 @@ export class DeliveryRecordRepository {
       where: { id },
       include: {
         newbornPatient: { select: { fullName: true, birthOrder: true } },
+        shkScreenings: LATEST_SHK_SCREENING,
         deliveryRecord: {
           select: {
             id: true,
@@ -98,37 +111,83 @@ export class DeliveryRecordRepository {
    * Corrects a recorded birth, moving the episode's `endedAt` with it when the
    * birth time changed — the episode ended when the last baby was born, and
    * leaving the old instant would make the record disagree with itself.
+   *
+   * A new birth time also moves every **untaken first** SHK sample's window
+   * (P25-T10), which is measured from it. A taken sample keeps the window it
+   * was taken against, and a repeat sample's window runs from the result that
+   * asked for it, not from the birth.
    */
   async updateDelivery(id: string, payload: UpdateDeliveryInput) {
     return this.prisma.executeTransaction(async (tx) => {
-      const delivery = await tx.deliveryRecord.update({
-        where: { id },
-        data: payload,
-        include: DELIVERY_INCLUDE,
-      });
+      await tx.deliveryRecord.update({ where: { id }, data: payload });
       if (payload.birthAt !== undefined) {
+        const birthAt = new Date(payload.birthAt);
+        const moved = await tx.deliveryRecord.findUniqueOrThrow({
+          where: { id },
+          select: { pregnancyEpisodeId: true },
+        });
         await tx.pregnancyEpisode.update({
-          where: { id: delivery.pregnancyEpisodeId },
-          data: { endedAt: delivery.birthAt },
+          where: { id: moved.pregnancyEpisodeId },
+          data: { endedAt: birthAt },
+        });
+        await tx.shkScreening.updateMany({
+          where: {
+            sequence: 1,
+            sampleTakenAt: null,
+            newbornCareRecord: { deliveryRecordId: id },
+          },
+          data: computeShkSampleWindow(birthAt),
         });
       }
 
-      return delivery;
+      return tx.deliveryRecord.findUniqueOrThrow({ where: { id }, include: DELIVERY_INCLUDE });
     });
   }
 
+  /**
+   * Records a baby and, for a live birth, her first SHK sample in the same
+   * transaction (P25-T10): a baby saved without it would never reach the
+   * worklist, which is the whole point of tracking the sample.
+   */
   async createNewborn(deliveryRecordId: string, payload: RecordNewbornCareInput) {
-    return this.prisma.newbornCareRecord.create({
-      data: { ...payload, deliveryRecordId },
-      include: { newbornPatient: { select: { fullName: true, birthOrder: true } } },
+    return this.prisma.executeTransaction(async (tx) => {
+      const newborn = await tx.newbornCareRecord.create({
+        data: { ...payload, deliveryRecordId },
+        select: { id: true },
+      });
+      if (payload.outcome === 'LIVE_BIRTH') {
+        await this.createFirstShkSample(tx, newborn.id, deliveryRecordId);
+      }
+
+      return tx.newbornCareRecord.findUniqueOrThrow({
+        where: { id: newborn.id },
+        include: NEWBORN_INCLUDE,
+      });
     });
   }
 
+  /**
+   * Corrects a baby's essentials. An outcome corrected to LIVE_BIRTH gains
+   * her first SHK sample; one corrected to STILLBIRTH loses the samples
+   * nobody has taken yet, which were never going to be taken.
+   */
   async updateNewborn(id: string, payload: UpdateNewbornCareInput) {
-    return this.prisma.newbornCareRecord.update({
-      where: { id },
-      data: payload,
-      include: { newbornPatient: { select: { fullName: true, birthOrder: true } } },
+    return this.prisma.executeTransaction(async (tx) => {
+      const newborn = await tx.newbornCareRecord.update({
+        where: { id },
+        data: payload,
+        select: { deliveryRecordId: true, _count: { select: { shkScreenings: true } } },
+      });
+      if (payload.outcome === 'LIVE_BIRTH' && newborn._count.shkScreenings === 0) {
+        await this.createFirstShkSample(tx, id, newborn.deliveryRecordId);
+      }
+      if (payload.outcome === 'STILLBIRTH') {
+        await tx.shkScreening.deleteMany({
+          where: { newbornCareRecordId: id, sampleTakenAt: null },
+        });
+      }
+
+      return tx.newbornCareRecord.findUniqueOrThrow({ where: { id }, include: NEWBORN_INCLUDE });
     });
   }
 
@@ -148,6 +207,20 @@ export class DeliveryRecordRepository {
     return babies
       .map((baby) => baby.stillbirthOrder ?? baby.newbornPatient?.birthOrder ?? null)
       .filter((order): order is number => order !== null);
+  }
+
+  private async createFirstShkSample(
+    tx: PrismaTransactionClient,
+    newbornCareRecordId: string,
+    deliveryRecordId: string,
+  ): Promise<void> {
+    const delivery = await tx.deliveryRecord.findUniqueOrThrow({
+      where: { id: deliveryRecordId },
+      select: { birthAt: true },
+    });
+    await tx.shkScreening.create({
+      data: { newbornCareRecordId, sequence: 1, ...computeShkSampleWindow(delivery.birthAt) },
+    });
   }
 
   /** The profession of the clinician being named as the attendant. */

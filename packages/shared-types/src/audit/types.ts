@@ -28,3 +28,12 @@ export type ListAuditEventsRecords = {
   records: AuditEventRecord[];
   total: number;
 };
+
+/**
+ * The display name of one account that appears as an audit actor, looked up
+ * for a whole page of rows at once (P20-T07).
+ */
+export type AuditActorNameRecord = {
+  id: string;
+  name: string;
+};

@@ -1,7 +1,12 @@
 import type {
   DeliveryModeValue,
   EstimatedDeliveryDateSourceValue,
+  BreastMilkProductionValue,
+  LochiaColourValue,
   PerinealTearGradeValue,
+  PostnatalBreastConditionValue,
+  PostnatalSubjectValue,
+  PostnatalVisitCodeValue,
   PregnancyEndReasonValue,
   PregnancyEpisodeStatusValue,
 } from '#maternal-care/schemas';
@@ -350,4 +355,84 @@ export type BirthCertificateSubject = {
   birthOrder: number | null;
   attendantName: string;
   attendantStrNumber: string | null;
+};
+
+/**
+ * One nifas or neonatal window after a birth (P25-T12). Both bounds are
+ * inclusive instants: `endsAt` is the last millisecond that still counts.
+ */
+export type PostnatalVisitWindow = {
+  code: PostnatalVisitCodeValue;
+  subject: PostnatalSubjectValue;
+  startsAt: Date;
+  endsAt: Date;
+};
+
+/**
+ * Where a window stands as of now: done, open now, not yet open, or closed
+ * with nothing recorded in it.
+ */
+export type PostnatalWindowStatus = 'FULFILLED' | 'DUE' | 'UPCOMING' | 'MISSED';
+
+/** One postnatal visit as the repository reads it (P25-T12). */
+export type PostnatalVisitRecord = {
+  id: string;
+  encounterId: string;
+  subject: PostnatalSubjectValue;
+  pregnancyEpisodeId: string;
+  newbornCareRecordId: string | null;
+  /** The stored code: written at link time, rewritten and frozen at close. */
+  visitCode: PostnatalVisitCodeValue | null;
+  encounterStartedAt: Date;
+  encounterStatus: string;
+};
+
+/** What linking a postnatal visit writes (P25-T12). */
+export type LinkPostnatalVisitPayload = {
+  encounterId: string;
+  subject: PostnatalSubjectValue;
+  pregnancyEpisodeId: string;
+  newbornCareRecordId: string | null;
+  visitCode: PostnatalVisitCodeValue | null;
+};
+
+/** A birth as the postnatal rules need it: which pregnancy, and when. */
+export type PostnatalBirthRecord = {
+  pregnancyEpisodeId: string;
+  patientId: string;
+  birthAt: Date;
+};
+
+/** The baby a neonatal visit is for, and the birth she came from. */
+export type PostnatalNewbornRecord = {
+  newbornCareRecordId: string;
+  newbornPatientId: string | null;
+  pregnancyEpisodeId: string;
+  birthAt: Date;
+};
+
+/** The postnatal examination as it is stored (P25-T12). */
+export type PostnatalExaminationRecord = {
+  vaginalBleeding: boolean | null;
+  bloodLossMl: number | null;
+  perineumCondition: string | null;
+  perinealInfectionSigns: boolean | null;
+  caesareanWoundInfectionSigns: boolean | null;
+  breastCondition: PostnatalBreastConditionValue | null;
+  uterineContraction: boolean | null;
+  lochiaColour: LochiaColourValue | null;
+  lochiaOdour: boolean | null;
+  breastMilkProduction: BreastMilkProductionValue | null;
+  urination: boolean | null;
+  defecation: boolean | null;
+  newbornCareCounselling: boolean | null;
+  vitaminAGivenAt: Date | null;
+  vitaminAMedicationId: string | null;
+  familyPlanningCounselling: boolean | null;
+};
+
+/** A pregnancy whose PNC episode is due to be closed (P25-T12). */
+export type PostnatalEpisodeCloseCandidate = {
+  pregnancyEpisodeId: string;
+  birthAt: Date;
 };

@@ -61,6 +61,11 @@ describe('PharmacyFlowRepository inventory', () => {
       updatedAt: new Date(),
       items: [],
       prescription: { status: 'DISPENSED' },
+      pharmacist: {
+        email: 'apotek1@klinik.id',
+        fullName: 'Rani Putri, S.Farm., Apt.',
+        doctorProfile: null,
+      },
     };
     const tx = {
       $queryRaw: jest
@@ -102,12 +107,17 @@ describe('PharmacyFlowRepository inventory', () => {
     } as unknown as PrismaService;
     const repository = new PharmacyFlowRepository(prisma);
 
-    await repository.createDispense({
+    const actual = await repository.createDispense({
       prescriptionId,
       pharmacistId: finalRecord.pharmacistId,
       items: [{ medicationId, quantity: 9 }],
       inventoryDate: new Date('2026-07-30T00:00:00.000Z'),
     });
+
+    // P20-T07: the dispenser comes back as a person, and the raw relation
+    // does not leak past the repository.
+    expect(actual.pharmacistName).toBe('Rani Putri, S.Farm., Apt.');
+    expect(actual).not.toHaveProperty('pharmacist');
 
     expect(tx.dispenseItemStockAllocation.createMany).toHaveBeenCalledWith({
       data: [

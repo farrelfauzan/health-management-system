@@ -10,6 +10,7 @@ import type { AuditControllerListAuditEventsV1200DataItemMetadata } from './audi
 export type AuditControllerListAuditEventsV1200DataItem = {
   id: string;
   actorUserId: string;
+  actorName: string;
   actorRole: string;
   action: string;
   resource: string;
