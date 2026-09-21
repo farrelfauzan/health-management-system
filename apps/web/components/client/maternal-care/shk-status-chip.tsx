@@ -8,6 +8,7 @@ type ShkStatusChipProps = {
   status: ShkScreeningStatusValue;
   result: ShkResultValue | null;
   sequence: number;
+  isEarly: boolean;
 };
 
 const STATUS_CLASS_NAMES: Record<ShkScreeningStatusValue, string> = {
@@ -22,9 +23,10 @@ const STATUS_CLASS_NAMES: Record<ShkScreeningStatusValue, string> = {
 /**
  * Where one SHK sample stands (P25-T10). A resulted sample shows its answer
  * rather than "resulted", and a repeat sample says which one it is, because
- * "SHK due" on a baby already screened once reads like a mistake.
+ * "SHK due" on a baby already screened once reads like a mistake. An early
+ * heel prick is flagged too: the laboratory may not be able to read it.
  */
-export function ShkStatusChip({ status, result, sequence }: ShkStatusChipProps) {
+export function ShkStatusChip({ status, result, sequence, isEarly }: ShkStatusChipProps) {
   const t = useTranslations('maternalCare.shk');
   const label =
     status === 'RESULTED' && result !== null ? t(`results.${result}`) : t(`statuses.${status}`);
@@ -38,6 +40,7 @@ export function ShkStatusChip({ status, result, sequence }: ShkStatusChipProps) 
     >
       {t('chip', { label })}
       {sequence > 1 ? <span>{t('sequence', { sequence })}</span> : null}
+      {isEarly ? <span title={t('earlyHint')}>{t('early')}</span> : null}
     </span>
   );
 }

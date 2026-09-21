@@ -1,6 +1,7 @@
 import {
   NewbornShkSummary,
   ShkScreeningCoreRecord,
+  isShkSampleEarly,
   resolveShkScreeningStatus,
 } from '@hms/shared-types';
 
@@ -22,6 +23,7 @@ export function toNewbornShkSummary(
     status: resolveShkScreeningStatus({ ...latest, now }),
     dueFrom: latest.dueFrom.toISOString(),
     dueUntil: latest.dueUntil.toISOString(),
+    isEarly: isShkSampleEarly(latest),
     result: latest.result,
   };
 }

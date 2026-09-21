@@ -209,6 +209,7 @@ export const MATERNAL_CARE_EXAMPLES = {
       status: 'UPCOMING',
       dueFrom: '2026-11-10T20:10:00.000Z',
       dueUntil: '2026-11-11T20:10:00.000Z',
+      isEarly: false,
       result: null,
     },
   },

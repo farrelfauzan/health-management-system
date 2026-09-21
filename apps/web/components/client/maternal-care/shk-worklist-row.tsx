@@ -57,7 +57,11 @@ export function ShkWorklistRow({
           status={screening.status}
           result={screening.result}
           sequence={screening.sequence}
+          isEarly={screening.isEarly}
         />
+        {screening.isEarly ? (
+          <p className="mt-1 text-xs text-warning-strong">{t('earlyHint')}</p>
+        ) : null}
       </TableCell>
       <TableCell className="text-xs text-slate-600">
         {screening.laboratoryName ?? '—'}

@@ -67,6 +67,7 @@ export * from '#shk-screening/types';
 export * from '#shk-screening/compute-shk-sample-window';
 export * from '#shk-screening/compute-shk-repeat-window';
 export * from '#shk-screening/resolve-shk-screening-status';
+export * from '#shk-screening/is-shk-sample-early';
 export * from '#doctor-credential-option/schemas';
 export * from '#doctor-credential-option/contracts';
 export * from '#doctor-credential-option/types';

@@ -14,6 +14,7 @@ export type ShkScreeningControllerRecordSampleV1200Data = {
   dueFrom: string;
   dueUntil: string;
   sampleTakenAt: string;
+  isEarly: boolean;
   sampleTakenByName: string;
   sentAt: unknown | null;
   laboratoryName: unknown | null;

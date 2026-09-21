@@ -10,6 +10,8 @@ export type ShkScreeningView = {
   dueFrom: string;
   dueUntil: string;
   sampleTakenAt: string | null;
+  /** The heel prick was recorded before the window opened (< 48 h). Allowed, but shown. */
+  isEarly: boolean;
   sampleTakenByName: string | null;
   sentAt: string | null;
   laboratoryName: string | null;
@@ -33,5 +35,6 @@ export type NewbornShkSummary = {
   status: ShkScreeningStatusValue;
   dueFrom: string;
   dueUntil: string;
+  isEarly: boolean;
   result: ShkResultValue | null;
 };

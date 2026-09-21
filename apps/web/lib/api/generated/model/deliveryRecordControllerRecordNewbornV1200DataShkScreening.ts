@@ -12,5 +12,6 @@ export type DeliveryRecordControllerRecordNewbornV1200DataShkScreening = {
   status: string;
   dueFrom: string;
   dueUntil: string;
+  isEarly: boolean;
   result: unknown | null;
 };

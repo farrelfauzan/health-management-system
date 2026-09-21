@@ -48,6 +48,7 @@
     "#shk-screening/compute-shk-sample-window": "./src/shk-screening/compute-shk-sample-window.ts",
     "#shk-screening/compute-shk-repeat-window": "./src/shk-screening/compute-shk-repeat-window.ts",
     "#shk-screening/resolve-shk-screening-status": "./src/shk-screening/resolve-shk-screening-status.ts",
+    "#shk-screening/is-shk-sample-early": "./src/shk-screening/is-shk-sample-early.ts",
     "#doctor-credential-option/schemas": "./src/doctor-credential-option/schemas.ts",
     "#doctor-credential-option/contracts": "./src/doctor-credential-option/contracts.ts",
     "#doctor-credential-option/types": "./src/doctor-credential-option/types.ts",

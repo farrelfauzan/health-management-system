@@ -14,6 +14,7 @@ export type ShkScreeningControllerListWorklistV1200DataItem = {
   dueFrom: string;
   dueUntil: string;
   sampleTakenAt: unknown | null;
+  isEarly: boolean;
   sampleTakenByName: unknown | null;
   sentAt: unknown | null;
   laboratoryName: unknown | null;

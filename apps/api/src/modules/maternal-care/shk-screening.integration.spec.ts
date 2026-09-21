@@ -1,4 +1,6 @@
 import { randomUUID } from 'node:crypto';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 
 import { ConfigService } from '@nestjs/config';
 
@@ -321,5 +323,41 @@ describe('SHK screening against Postgres', () => {
     await expect(
       prisma.notification.count({ where: { userId: { in: createdUserIds } } }),
     ).resolves.toBe(0);
+  });
+
+  it('backfills sequence 1 for a live baby recorded before SHK tracking, once', async () => {
+    // Given a live baby with no sample row, as every baby recorded before the
+    // migration shipped is.
+    const { newbornId } = await createDeliveryWithBaby('LIVE_BIRTH');
+    await prisma.shkScreening.deleteMany({ where: { newbornCareRecordId: newbornId } });
+    const backfillSql = readFileSync(
+      join(__dirname, '../../../prisma/migrations/20261211000000_shk_backfill_first_samples/migration.sql'),
+      'utf8',
+    );
+
+    await prisma.$executeRawUnsafe(backfillSql);
+    await prisma.$executeRawUnsafe(backfillSql);
+
+    const screenings = await listScreenings(newbornId);
+    expect(screenings).toHaveLength(1);
+    expect(screenings[0]).toMatchObject({
+      sequence: 1,
+      dueFrom: new Date('2026-10-02T20:00:00.000Z'),
+      dueUntil: new Date('2026-10-03T20:00:00.000Z'),
+    });
+  });
+
+  it('marks a heel prick before 48 hours as early on the view', async () => {
+    const { newbornId } = await createDeliveryWithBaby('LIVE_BIRTH');
+    const first = await readFirstScreening(newbornId);
+
+    const view = await service.recordSample(
+      first.id,
+      { takenAt: '2026-10-01T20:00:00.000Z' },
+      { sub: recorderId } as never,
+    );
+
+    expect(view.isEarly).toBe(true);
+    expect(view.status).toBe('TAKEN');
   });
 });

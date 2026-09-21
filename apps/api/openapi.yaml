@@ -40570,6 +40570,8 @@ paths:
                             type: string
                           dueUntil:
                             type: string
+                          isEarly:
+                            type: boolean
                           result:
                             nullable: true
                         required:
@@ -40578,6 +40580,7 @@ paths:
                           - status
                           - dueFrom
                           - dueUntil
+                          - isEarly
                           - result
                     required:
                       - id
@@ -40632,6 +40635,7 @@ paths:
                       status: UPCOMING
                       dueFrom: 2026-11-10T20:10:00.000Z
                       dueUntil: 2026-11-11T20:10:00.000Z
+                      isEarly: false
                       result: null
                   message: Newborn recorded
         "400":
@@ -40758,6 +40762,8 @@ paths:
                             type: string
                           dueUntil:
                             type: string
+                          isEarly:
+                            type: boolean
                           result:
                             nullable: true
                         required:
@@ -40766,6 +40772,7 @@ paths:
                           - status
                           - dueFrom
                           - dueUntil
+                          - isEarly
                           - result
                     required:
                       - id
@@ -40820,6 +40827,7 @@ paths:
                       status: UPCOMING
                       dueFrom: 2026-11-10T20:10:00.000Z
                       dueUntil: 2026-11-11T20:10:00.000Z
+                      isEarly: false
                       result: null
                   message: Newborn updated
         "400":
@@ -40987,6 +40995,8 @@ paths:
                           type: string
                         sampleTakenAt:
                           nullable: true
+                        isEarly:
+                          type: boolean
                         sampleTakenByName:
                           nullable: true
                         sentAt:
@@ -41021,6 +41031,7 @@ paths:
                         - dueFrom
                         - dueUntil
                         - sampleTakenAt
+                        - isEarly
                         - sampleTakenByName
                         - sentAt
                         - laboratoryName
@@ -41045,6 +41056,7 @@ paths:
                       dueFrom: 2026-10-02T20:00:00.000Z
                       dueUntil: 2026-10-03T20:00:00.000Z
                       sampleTakenAt: null
+                      isEarly: false
                       sampleTakenByName: null
                       sentAt: null
                       laboratoryName: null
@@ -41128,6 +41140,8 @@ paths:
                         type: string
                       sampleTakenAt:
                         type: string
+                      isEarly:
+                        type: boolean
                       sampleTakenByName:
                         type: string
                       sentAt:
@@ -41162,6 +41176,7 @@ paths:
                       - dueFrom
                       - dueUntil
                       - sampleTakenAt
+                      - isEarly
                       - sampleTakenByName
                       - sentAt
                       - laboratoryName
@@ -41189,6 +41204,7 @@ paths:
                     dueFrom: 2026-10-02T20:00:00.000Z
                     dueUntil: 2026-10-03T20:00:00.000Z
                     sampleTakenAt: 2026-10-03T01:30:00.000Z
+                    isEarly: false
                     sampleTakenByName: Bidan Siti Rahma, S.Tr.Keb.
                     sentAt: null
                     laboratoryName: null
@@ -41290,6 +41306,8 @@ paths:
                         type: string
                       sampleTakenAt:
                         type: string
+                      isEarly:
+                        type: boolean
                       sampleTakenByName:
                         type: string
                       sentAt:
@@ -41324,6 +41342,7 @@ paths:
                       - dueFrom
                       - dueUntil
                       - sampleTakenAt
+                      - isEarly
                       - sampleTakenByName
                       - sentAt
                       - laboratoryName
@@ -41351,6 +41370,7 @@ paths:
                     dueFrom: 2026-10-02T20:00:00.000Z
                     dueUntil: 2026-10-03T20:00:00.000Z
                     sampleTakenAt: 2026-10-03T01:30:00.000Z
+                    isEarly: false
                     sampleTakenByName: Bidan Siti Rahma, S.Tr.Keb.
                     sentAt: 2026-10-03T04:00:00.000Z
                     laboratoryName: Labkesda Provinsi
@@ -41455,6 +41475,8 @@ paths:
                         type: string
                       sampleTakenAt:
                         type: string
+                      isEarly:
+                        type: boolean
                       sampleTakenByName:
                         type: string
                       sentAt:
@@ -41489,6 +41511,7 @@ paths:
                       - dueFrom
                       - dueUntil
                       - sampleTakenAt
+                      - isEarly
                       - sampleTakenByName
                       - sentAt
                       - laboratoryName
@@ -41516,6 +41539,7 @@ paths:
                     dueFrom: 2026-10-02T20:00:00.000Z
                     dueUntil: 2026-10-03T20:00:00.000Z
                     sampleTakenAt: 2026-10-03T01:30:00.000Z
+                    isEarly: false
                     sampleTakenByName: Bidan Siti Rahma, S.Tr.Keb.
                     sentAt: null
                     laboratoryName: null

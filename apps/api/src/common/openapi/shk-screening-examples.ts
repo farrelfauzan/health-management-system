@@ -11,6 +11,7 @@ const SCREENING = {
   dueFrom: '2026-10-02T20:00:00.000Z',
   dueUntil: '2026-10-03T20:00:00.000Z',
   sampleTakenAt: null,
+  isEarly: false,
   sampleTakenByName: null,
   sentAt: null,
   laboratoryName: null,

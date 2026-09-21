@@ -1,6 +1,7 @@
 import {
   ShkScreeningRecord,
   ShkScreeningView,
+  isShkSampleEarly,
   resolveShkScreeningStatus,
   resolveUserDisplayName,
 } from '@hms/shared-types';
@@ -17,6 +18,7 @@ export function toShkScreeningView(record: ShkScreeningRecord, now: Date): ShkSc
     dueFrom: record.dueFrom.toISOString(),
     dueUntil: record.dueUntil.toISOString(),
     sampleTakenAt: record.sampleTakenAt?.toISOString() ?? null,
+    isEarly: isShkSampleEarly(record),
     sampleTakenByName:
       record.sampleTakenBy === null ? null : resolveUserDisplayName(record.sampleTakenBy),
     sentAt: record.sentAt?.toISOString() ?? null,

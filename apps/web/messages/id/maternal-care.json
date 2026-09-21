@@ -289,7 +289,9 @@
         "result": "Hasil SHK dicatat"
       },
       "save": "Simpan",
-      "cancel": "Batal"
+      "cancel": "Batal",
+      "early": "diambil dini",
+      "earlyHint": "Sampel diambil sebelum 48 jam; laboratorium mungkin tidak dapat membacanya."
     }
   }
 }

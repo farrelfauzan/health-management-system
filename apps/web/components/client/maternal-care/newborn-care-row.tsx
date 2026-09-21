@@ -57,6 +57,7 @@ export function NewbornCareRow({
               status={newborn.shkScreening.status}
               result={newborn.shkScreening.result}
               sequence={newborn.shkScreening.sequence}
+              isEarly={newborn.shkScreening.isEarly}
             />
           )}
         </div>

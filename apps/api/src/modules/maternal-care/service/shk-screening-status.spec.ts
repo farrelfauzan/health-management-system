@@ -2,6 +2,7 @@ import {
   ShkScreeningStatusValue,
   computeShkRepeatWindow,
   computeShkSampleWindow,
+  isShkSampleEarly,
   resolveShkScreeningStatus,
 } from '@hms/shared-types';
 
@@ -76,5 +77,19 @@ describe('SHK sample window and status (P25-T10)', () => {
         now: receivedAt,
       }),
     ).toBe('DUE');
+  });
+
+  it.each([
+    ['47h59m', 47 * HOUR + 59 * MINUTE, true],
+    ['48h', 48 * HOUR, false],
+    ['100h', 100 * HOUR, false],
+  ])('flags a heel prick at %s after birth as early: %s', (_label, offsetMs, expected) => {
+    expect(
+      isShkSampleEarly({ dueFrom: window.dueFrom, sampleTakenAt: new Date(BIRTH_AT.getTime() + offsetMs) }),
+    ).toBe(expected);
+  });
+
+  it('never flags an untaken sample as early', () => {
+    expect(isShkSampleEarly({ dueFrom: window.dueFrom, sampleTakenAt: null })).toBe(false);
   });
 });

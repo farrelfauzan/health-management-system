@@ -289,7 +289,9 @@
         "result": "SHK result recorded"
       },
       "save": "Save",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "early": "taken early",
+      "earlyHint": "Sample taken before 48 hours; the laboratory may not be able to read it."
     }
   }
 }
