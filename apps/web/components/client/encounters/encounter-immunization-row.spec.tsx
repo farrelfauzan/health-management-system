@@ -57,6 +57,26 @@ describe('EncounterImmunizationRow', () => {
     expect(screen.getByText(/Imunisasi dasar/)).toBeInTheDocument();
   });
 
+  /** P20-T07: the performer was on the response, and nothing rendered it. */
+  it('names who gave a dose given here', () => {
+    renderRow(buildImmunization({ performedByName: 'Bd. Rina Kartika' }));
+
+    expect(screen.getByText('Diberikan oleh Bd. Rina Kartika')).toBeInTheDocument();
+  });
+
+  it('names who entered a dose copied from a KIA book, not who gave it', () => {
+    renderRow(buildImmunization({ isHistorical: true, performedByName: 'Bd. Rina Kartika' }));
+
+    expect(screen.getByText('Dicatat oleh Bd. Rina Kartika')).toBeInTheDocument();
+    expect(screen.queryByText(/Diberikan oleh/)).not.toBeInTheDocument();
+  });
+
+  it('shows no performer line when none was recorded', () => {
+    renderRow(buildImmunization({ performedByName: undefined }));
+
+    expect(screen.queryByText(/Diberikan oleh|Dicatat oleh/)).not.toBeInTheDocument();
+  });
+
   it('names the vaccine and the facts a clinician reads off the card', () => {
     renderRow(buildImmunization());
 

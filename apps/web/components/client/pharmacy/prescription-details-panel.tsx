@@ -68,9 +68,16 @@ export function PrescriptionDetailsPanel({
     }
     try {
       const response = await dispenseMutation.mutateAsync(parsed.data);
-      parseApiSuccess<DispenseRecordResponse>(response, t('dispenseError'));
+      const dispensed = parseApiSuccess<DispenseRecordResponse>(response, t('dispenseError'));
       await invalidatePharmacyQueries(queryClient);
-      onDispensed(t('dispensedSuccess', { rx: formatRxNumber(prescription.id) }));
+      const rx = formatRxNumber(prescription.id);
+      // Names who handed it over (P20-T07). The unnamed copy stays for a
+      // response from an API that predates the field.
+      onDispensed(
+        dispensed.data.pharmacistName
+          ? t('dispensedBySuccess', { rx, pharmacist: dispensed.data.pharmacistName })
+          : t('dispensedSuccess', { rx }),
+      );
     } catch (error) {
       setActionError(resolveApiErrorMessage(error, t('dispenseError')));
     }

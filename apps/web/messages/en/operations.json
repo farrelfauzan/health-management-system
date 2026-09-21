@@ -224,6 +224,7 @@
       "dispenseNow": "Dispense Now",
       "dispensing": "Dispensing...",
       "dispensedSuccess": "{rx} dispensed successfully.",
+      "dispensedBySuccess": "{rx} dispensed by {pharmacist}.",
       "dispenseError": "Unable to dispense the prescription. Please try again.",
       "noMedicationItems": "No medication items",
       "moreMedications": "{name} +{count} more",

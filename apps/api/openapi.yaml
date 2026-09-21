@@ -31722,6 +31722,8 @@ paths:
                         type: string
                       pharmacistId:
                         type: string
+                      pharmacistName:
+                        type: string
                       status:
                         type: string
                       dispensedAt:
@@ -31758,6 +31760,7 @@ paths:
                       - prescriptionId
                       - prescriptionStatus
                       - pharmacistId
+                      - pharmacistName
                       - status
                       - dispensedAt
                       - notes
@@ -31775,6 +31778,7 @@ paths:
                     prescriptionId: 77777777-7777-4777-8777-777777777777
                     prescriptionStatus: DISPENSED
                     pharmacistId: 33333333-3333-4333-8333-333333333333
+                    pharmacistName: Rani Putri, S.Farm., Apt.
                     status: COMPLETED
                     dispensedAt: 2026-07-20T08:00:00.000Z
                     notes: Dispensed in full
@@ -33305,6 +33309,8 @@ paths:
                           type: string
                         actorUserId:
                           type: string
+                        actorName:
+                          type: string
                         actorRole:
                           type: string
                         action:
@@ -33334,6 +33340,7 @@ paths:
                       required:
                         - id
                         - actorUserId
+                        - actorName
                         - actorRole
                         - action
                         - resource
@@ -33363,6 +33370,7 @@ paths:
                   data:
                     - id: 99999999-9999-4999-8999-999999999999
                       actorUserId: 33333333-3333-4333-8333-333333333333
+                      actorName: dr. Sari Wulandari
                       actorRole: DOCTOR
                       action: READ
                       resource: patient
