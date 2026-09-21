@@ -43,7 +43,10 @@ function buildRepository(row: Record<string, unknown>): EncounterRepository {
 describe('EncounterRepository immunization performer name', () => {
   it("names the performer by their account's name", async () => {
     const repository = buildRepository(
-      buildImmunizationRow({ fullName: 'Bd. Rina', ownerUser: { fullName: 'Bd. Rina Kartika, S.Tr.Keb' } }),
+      buildImmunizationRow({
+        fullName: 'Bd. Rina',
+        ownerUser: { fullName: 'Bd. Rina Kartika, S.Tr.Keb' },
+      }),
     );
 
     const actual = await repository.findImmunizationById('22222222-2222-4222-8222-222222222222');
