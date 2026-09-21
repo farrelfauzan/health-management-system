@@ -8,6 +8,10 @@ const MATERNAL_CARE_QUERY_PREFIXES = [
   '/api/v1/patients',
   '/api/v1/pregnancy-episodes',
   '/api/v1/encounters',
+  // Recording a birth ends the episode, so the header, the visit list and the
+  // delivery section all change together (P25-T09).
+  '/api/v1/deliveries',
+  '/api/v1/newborn-care-records',
 ];
 
 export async function invalidateMaternalCareQueries(queryClient: QueryClient): Promise<void> {

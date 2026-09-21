@@ -331,6 +331,9 @@ export type MedicationWhereInput = {
   invoiceItems?: Prisma.InvoiceItemListRelationFilter
   immunizations?: Prisma.ImmunizationListRelationFilter
   taxCode?: Prisma.XOR<Prisma.TaxCodeNullableScalarRelationFilter, Prisma.TaxCodeWhereInput> | null
+  deliveryUterotonics?: Prisma.DeliveryRecordListRelationFilter
+  newbornVitaminK1Doses?: Prisma.NewbornCareRecordListRelationFilter
+  newbornEyeProphylaxis?: Prisma.NewbornCareRecordListRelationFilter
 }
 
 export type MedicationOrderByWithRelationInput = {
@@ -359,6 +362,9 @@ export type MedicationOrderByWithRelationInput = {
   invoiceItems?: Prisma.InvoiceItemOrderByRelationAggregateInput
   immunizations?: Prisma.ImmunizationOrderByRelationAggregateInput
   taxCode?: Prisma.TaxCodeOrderByWithRelationInput
+  deliveryUterotonics?: Prisma.DeliveryRecordOrderByRelationAggregateInput
+  newbornVitaminK1Doses?: Prisma.NewbornCareRecordOrderByRelationAggregateInput
+  newbornEyeProphylaxis?: Prisma.NewbornCareRecordOrderByRelationAggregateInput
 }
 
 export type MedicationWhereUniqueInput = Prisma.AtLeast<{
@@ -390,6 +396,9 @@ export type MedicationWhereUniqueInput = Prisma.AtLeast<{
   invoiceItems?: Prisma.InvoiceItemListRelationFilter
   immunizations?: Prisma.ImmunizationListRelationFilter
   taxCode?: Prisma.XOR<Prisma.TaxCodeNullableScalarRelationFilter, Prisma.TaxCodeWhereInput> | null
+  deliveryUterotonics?: Prisma.DeliveryRecordListRelationFilter
+  newbornVitaminK1Doses?: Prisma.NewbornCareRecordListRelationFilter
+  newbornEyeProphylaxis?: Prisma.NewbornCareRecordListRelationFilter
 }, "id" | "code" | "kfaCode" | "dphoCode">
 
 export type MedicationOrderByWithAggregationInput = {
@@ -467,6 +476,9 @@ export type MedicationCreateInput = {
   invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutMedicationInput
   immunizations?: Prisma.ImmunizationCreateNestedManyWithoutMedicationInput
   taxCode?: Prisma.TaxCodeCreateNestedOneWithoutMedicationsInput
+  deliveryUterotonics?: Prisma.DeliveryRecordCreateNestedManyWithoutUterotonicInput
+  newbornVitaminK1Doses?: Prisma.NewbornCareRecordCreateNestedManyWithoutVitaminK1MedicationInput
+  newbornEyeProphylaxis?: Prisma.NewbornCareRecordCreateNestedManyWithoutEyeProphylaxisMedicationInput
 }
 
 export type MedicationUncheckedCreateInput = {
@@ -494,6 +506,9 @@ export type MedicationUncheckedCreateInput = {
   stockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutMedicationInput
   invoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutMedicationInput
   immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutMedicationInput
+  deliveryUterotonics?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutUterotonicInput
+  newbornVitaminK1Doses?: Prisma.NewbornCareRecordUncheckedCreateNestedManyWithoutVitaminK1MedicationInput
+  newbornEyeProphylaxis?: Prisma.NewbornCareRecordUncheckedCreateNestedManyWithoutEyeProphylaxisMedicationInput
 }
 
 export type MedicationUpdateInput = {
@@ -521,6 +536,9 @@ export type MedicationUpdateInput = {
   invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutMedicationNestedInput
   immunizations?: Prisma.ImmunizationUpdateManyWithoutMedicationNestedInput
   taxCode?: Prisma.TaxCodeUpdateOneWithoutMedicationsNestedInput
+  deliveryUterotonics?: Prisma.DeliveryRecordUpdateManyWithoutUterotonicNestedInput
+  newbornVitaminK1Doses?: Prisma.NewbornCareRecordUpdateManyWithoutVitaminK1MedicationNestedInput
+  newbornEyeProphylaxis?: Prisma.NewbornCareRecordUpdateManyWithoutEyeProphylaxisMedicationNestedInput
 }
 
 export type MedicationUncheckedUpdateInput = {
@@ -548,6 +566,9 @@ export type MedicationUncheckedUpdateInput = {
   stockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutMedicationNestedInput
   invoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutMedicationNestedInput
   immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutMedicationNestedInput
+  deliveryUterotonics?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutUterotonicNestedInput
+  newbornVitaminK1Doses?: Prisma.NewbornCareRecordUncheckedUpdateManyWithoutVitaminK1MedicationNestedInput
+  newbornEyeProphylaxis?: Prisma.NewbornCareRecordUncheckedUpdateManyWithoutEyeProphylaxisMedicationNestedInput
 }
 
 export type MedicationCreateManyInput = {
@@ -849,6 +870,54 @@ export type MedicationUpdateOneRequiredWithoutImmunizationsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.MedicationUpdateToOneWithWhereWithoutImmunizationsInput, Prisma.MedicationUpdateWithoutImmunizationsInput>, Prisma.MedicationUncheckedUpdateWithoutImmunizationsInput>
 }
 
+export type MedicationCreateNestedOneWithoutDeliveryUterotonicsInput = {
+  create?: Prisma.XOR<Prisma.MedicationCreateWithoutDeliveryUterotonicsInput, Prisma.MedicationUncheckedCreateWithoutDeliveryUterotonicsInput>
+  connectOrCreate?: Prisma.MedicationCreateOrConnectWithoutDeliveryUterotonicsInput
+  connect?: Prisma.MedicationWhereUniqueInput
+}
+
+export type MedicationUpdateOneWithoutDeliveryUterotonicsNestedInput = {
+  create?: Prisma.XOR<Prisma.MedicationCreateWithoutDeliveryUterotonicsInput, Prisma.MedicationUncheckedCreateWithoutDeliveryUterotonicsInput>
+  connectOrCreate?: Prisma.MedicationCreateOrConnectWithoutDeliveryUterotonicsInput
+  upsert?: Prisma.MedicationUpsertWithoutDeliveryUterotonicsInput
+  disconnect?: Prisma.MedicationWhereInput | boolean
+  delete?: Prisma.MedicationWhereInput | boolean
+  connect?: Prisma.MedicationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.MedicationUpdateToOneWithWhereWithoutDeliveryUterotonicsInput, Prisma.MedicationUpdateWithoutDeliveryUterotonicsInput>, Prisma.MedicationUncheckedUpdateWithoutDeliveryUterotonicsInput>
+}
+
+export type MedicationCreateNestedOneWithoutNewbornVitaminK1DosesInput = {
+  create?: Prisma.XOR<Prisma.MedicationCreateWithoutNewbornVitaminK1DosesInput, Prisma.MedicationUncheckedCreateWithoutNewbornVitaminK1DosesInput>
+  connectOrCreate?: Prisma.MedicationCreateOrConnectWithoutNewbornVitaminK1DosesInput
+  connect?: Prisma.MedicationWhereUniqueInput
+}
+
+export type MedicationCreateNestedOneWithoutNewbornEyeProphylaxisInput = {
+  create?: Prisma.XOR<Prisma.MedicationCreateWithoutNewbornEyeProphylaxisInput, Prisma.MedicationUncheckedCreateWithoutNewbornEyeProphylaxisInput>
+  connectOrCreate?: Prisma.MedicationCreateOrConnectWithoutNewbornEyeProphylaxisInput
+  connect?: Prisma.MedicationWhereUniqueInput
+}
+
+export type MedicationUpdateOneWithoutNewbornVitaminK1DosesNestedInput = {
+  create?: Prisma.XOR<Prisma.MedicationCreateWithoutNewbornVitaminK1DosesInput, Prisma.MedicationUncheckedCreateWithoutNewbornVitaminK1DosesInput>
+  connectOrCreate?: Prisma.MedicationCreateOrConnectWithoutNewbornVitaminK1DosesInput
+  upsert?: Prisma.MedicationUpsertWithoutNewbornVitaminK1DosesInput
+  disconnect?: Prisma.MedicationWhereInput | boolean
+  delete?: Prisma.MedicationWhereInput | boolean
+  connect?: Prisma.MedicationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.MedicationUpdateToOneWithWhereWithoutNewbornVitaminK1DosesInput, Prisma.MedicationUpdateWithoutNewbornVitaminK1DosesInput>, Prisma.MedicationUncheckedUpdateWithoutNewbornVitaminK1DosesInput>
+}
+
+export type MedicationUpdateOneWithoutNewbornEyeProphylaxisNestedInput = {
+  create?: Prisma.XOR<Prisma.MedicationCreateWithoutNewbornEyeProphylaxisInput, Prisma.MedicationUncheckedCreateWithoutNewbornEyeProphylaxisInput>
+  connectOrCreate?: Prisma.MedicationCreateOrConnectWithoutNewbornEyeProphylaxisInput
+  upsert?: Prisma.MedicationUpsertWithoutNewbornEyeProphylaxisInput
+  disconnect?: Prisma.MedicationWhereInput | boolean
+  delete?: Prisma.MedicationWhereInput | boolean
+  connect?: Prisma.MedicationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.MedicationUpdateToOneWithWhereWithoutNewbornEyeProphylaxisInput, Prisma.MedicationUpdateWithoutNewbornEyeProphylaxisInput>, Prisma.MedicationUncheckedUpdateWithoutNewbornEyeProphylaxisInput>
+}
+
 export type MedicationCreateWithoutPrescriptionItemsInput = {
   id?: string
   code: string
@@ -873,6 +942,9 @@ export type MedicationCreateWithoutPrescriptionItemsInput = {
   invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutMedicationInput
   immunizations?: Prisma.ImmunizationCreateNestedManyWithoutMedicationInput
   taxCode?: Prisma.TaxCodeCreateNestedOneWithoutMedicationsInput
+  deliveryUterotonics?: Prisma.DeliveryRecordCreateNestedManyWithoutUterotonicInput
+  newbornVitaminK1Doses?: Prisma.NewbornCareRecordCreateNestedManyWithoutVitaminK1MedicationInput
+  newbornEyeProphylaxis?: Prisma.NewbornCareRecordCreateNestedManyWithoutEyeProphylaxisMedicationInput
 }
 
 export type MedicationUncheckedCreateWithoutPrescriptionItemsInput = {
@@ -899,6 +971,9 @@ export type MedicationUncheckedCreateWithoutPrescriptionItemsInput = {
   stockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutMedicationInput
   invoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutMedicationInput
   immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutMedicationInput
+  deliveryUterotonics?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutUterotonicInput
+  newbornVitaminK1Doses?: Prisma.NewbornCareRecordUncheckedCreateNestedManyWithoutVitaminK1MedicationInput
+  newbornEyeProphylaxis?: Prisma.NewbornCareRecordUncheckedCreateNestedManyWithoutEyeProphylaxisMedicationInput
 }
 
 export type MedicationCreateOrConnectWithoutPrescriptionItemsInput = {
@@ -941,6 +1016,9 @@ export type MedicationUpdateWithoutPrescriptionItemsInput = {
   invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutMedicationNestedInput
   immunizations?: Prisma.ImmunizationUpdateManyWithoutMedicationNestedInput
   taxCode?: Prisma.TaxCodeUpdateOneWithoutMedicationsNestedInput
+  deliveryUterotonics?: Prisma.DeliveryRecordUpdateManyWithoutUterotonicNestedInput
+  newbornVitaminK1Doses?: Prisma.NewbornCareRecordUpdateManyWithoutVitaminK1MedicationNestedInput
+  newbornEyeProphylaxis?: Prisma.NewbornCareRecordUpdateManyWithoutEyeProphylaxisMedicationNestedInput
 }
 
 export type MedicationUncheckedUpdateWithoutPrescriptionItemsInput = {
@@ -967,6 +1045,9 @@ export type MedicationUncheckedUpdateWithoutPrescriptionItemsInput = {
   stockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutMedicationNestedInput
   invoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutMedicationNestedInput
   immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutMedicationNestedInput
+  deliveryUterotonics?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutUterotonicNestedInput
+  newbornVitaminK1Doses?: Prisma.NewbornCareRecordUncheckedUpdateManyWithoutVitaminK1MedicationNestedInput
+  newbornEyeProphylaxis?: Prisma.NewbornCareRecordUncheckedUpdateManyWithoutEyeProphylaxisMedicationNestedInput
 }
 
 export type MedicationCreateWithoutCompoundComponentsInput = {
@@ -993,6 +1074,9 @@ export type MedicationCreateWithoutCompoundComponentsInput = {
   invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutMedicationInput
   immunizations?: Prisma.ImmunizationCreateNestedManyWithoutMedicationInput
   taxCode?: Prisma.TaxCodeCreateNestedOneWithoutMedicationsInput
+  deliveryUterotonics?: Prisma.DeliveryRecordCreateNestedManyWithoutUterotonicInput
+  newbornVitaminK1Doses?: Prisma.NewbornCareRecordCreateNestedManyWithoutVitaminK1MedicationInput
+  newbornEyeProphylaxis?: Prisma.NewbornCareRecordCreateNestedManyWithoutEyeProphylaxisMedicationInput
 }
 
 export type MedicationUncheckedCreateWithoutCompoundComponentsInput = {
@@ -1019,6 +1103,9 @@ export type MedicationUncheckedCreateWithoutCompoundComponentsInput = {
   stockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutMedicationInput
   invoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutMedicationInput
   immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutMedicationInput
+  deliveryUterotonics?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutUterotonicInput
+  newbornVitaminK1Doses?: Prisma.NewbornCareRecordUncheckedCreateNestedManyWithoutVitaminK1MedicationInput
+  newbornEyeProphylaxis?: Prisma.NewbornCareRecordUncheckedCreateNestedManyWithoutEyeProphylaxisMedicationInput
 }
 
 export type MedicationCreateOrConnectWithoutCompoundComponentsInput = {
@@ -1061,6 +1148,9 @@ export type MedicationUpdateWithoutCompoundComponentsInput = {
   invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutMedicationNestedInput
   immunizations?: Prisma.ImmunizationUpdateManyWithoutMedicationNestedInput
   taxCode?: Prisma.TaxCodeUpdateOneWithoutMedicationsNestedInput
+  deliveryUterotonics?: Prisma.DeliveryRecordUpdateManyWithoutUterotonicNestedInput
+  newbornVitaminK1Doses?: Prisma.NewbornCareRecordUpdateManyWithoutVitaminK1MedicationNestedInput
+  newbornEyeProphylaxis?: Prisma.NewbornCareRecordUpdateManyWithoutEyeProphylaxisMedicationNestedInput
 }
 
 export type MedicationUncheckedUpdateWithoutCompoundComponentsInput = {
@@ -1087,6 +1177,9 @@ export type MedicationUncheckedUpdateWithoutCompoundComponentsInput = {
   stockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutMedicationNestedInput
   invoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutMedicationNestedInput
   immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutMedicationNestedInput
+  deliveryUterotonics?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutUterotonicNestedInput
+  newbornVitaminK1Doses?: Prisma.NewbornCareRecordUncheckedUpdateManyWithoutVitaminK1MedicationNestedInput
+  newbornEyeProphylaxis?: Prisma.NewbornCareRecordUncheckedUpdateManyWithoutEyeProphylaxisMedicationNestedInput
 }
 
 export type MedicationCreateWithoutDispenseItemsInput = {
@@ -1113,6 +1206,9 @@ export type MedicationCreateWithoutDispenseItemsInput = {
   invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutMedicationInput
   immunizations?: Prisma.ImmunizationCreateNestedManyWithoutMedicationInput
   taxCode?: Prisma.TaxCodeCreateNestedOneWithoutMedicationsInput
+  deliveryUterotonics?: Prisma.DeliveryRecordCreateNestedManyWithoutUterotonicInput
+  newbornVitaminK1Doses?: Prisma.NewbornCareRecordCreateNestedManyWithoutVitaminK1MedicationInput
+  newbornEyeProphylaxis?: Prisma.NewbornCareRecordCreateNestedManyWithoutEyeProphylaxisMedicationInput
 }
 
 export type MedicationUncheckedCreateWithoutDispenseItemsInput = {
@@ -1139,6 +1235,9 @@ export type MedicationUncheckedCreateWithoutDispenseItemsInput = {
   stockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutMedicationInput
   invoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutMedicationInput
   immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutMedicationInput
+  deliveryUterotonics?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutUterotonicInput
+  newbornVitaminK1Doses?: Prisma.NewbornCareRecordUncheckedCreateNestedManyWithoutVitaminK1MedicationInput
+  newbornEyeProphylaxis?: Prisma.NewbornCareRecordUncheckedCreateNestedManyWithoutEyeProphylaxisMedicationInput
 }
 
 export type MedicationCreateOrConnectWithoutDispenseItemsInput = {
@@ -1181,6 +1280,9 @@ export type MedicationUpdateWithoutDispenseItemsInput = {
   invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutMedicationNestedInput
   immunizations?: Prisma.ImmunizationUpdateManyWithoutMedicationNestedInput
   taxCode?: Prisma.TaxCodeUpdateOneWithoutMedicationsNestedInput
+  deliveryUterotonics?: Prisma.DeliveryRecordUpdateManyWithoutUterotonicNestedInput
+  newbornVitaminK1Doses?: Prisma.NewbornCareRecordUpdateManyWithoutVitaminK1MedicationNestedInput
+  newbornEyeProphylaxis?: Prisma.NewbornCareRecordUpdateManyWithoutEyeProphylaxisMedicationNestedInput
 }
 
 export type MedicationUncheckedUpdateWithoutDispenseItemsInput = {
@@ -1207,6 +1309,9 @@ export type MedicationUncheckedUpdateWithoutDispenseItemsInput = {
   stockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutMedicationNestedInput
   invoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutMedicationNestedInput
   immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutMedicationNestedInput
+  deliveryUterotonics?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutUterotonicNestedInput
+  newbornVitaminK1Doses?: Prisma.NewbornCareRecordUncheckedUpdateManyWithoutVitaminK1MedicationNestedInput
+  newbornEyeProphylaxis?: Prisma.NewbornCareRecordUncheckedUpdateManyWithoutEyeProphylaxisMedicationNestedInput
 }
 
 export type MedicationCreateWithoutStockReceiptsInput = {
@@ -1233,6 +1338,9 @@ export type MedicationCreateWithoutStockReceiptsInput = {
   invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutMedicationInput
   immunizations?: Prisma.ImmunizationCreateNestedManyWithoutMedicationInput
   taxCode?: Prisma.TaxCodeCreateNestedOneWithoutMedicationsInput
+  deliveryUterotonics?: Prisma.DeliveryRecordCreateNestedManyWithoutUterotonicInput
+  newbornVitaminK1Doses?: Prisma.NewbornCareRecordCreateNestedManyWithoutVitaminK1MedicationInput
+  newbornEyeProphylaxis?: Prisma.NewbornCareRecordCreateNestedManyWithoutEyeProphylaxisMedicationInput
 }
 
 export type MedicationUncheckedCreateWithoutStockReceiptsInput = {
@@ -1259,6 +1367,9 @@ export type MedicationUncheckedCreateWithoutStockReceiptsInput = {
   dispenseItems?: Prisma.DispenseItemUncheckedCreateNestedManyWithoutMedicationInput
   invoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutMedicationInput
   immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutMedicationInput
+  deliveryUterotonics?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutUterotonicInput
+  newbornVitaminK1Doses?: Prisma.NewbornCareRecordUncheckedCreateNestedManyWithoutVitaminK1MedicationInput
+  newbornEyeProphylaxis?: Prisma.NewbornCareRecordUncheckedCreateNestedManyWithoutEyeProphylaxisMedicationInput
 }
 
 export type MedicationCreateOrConnectWithoutStockReceiptsInput = {
@@ -1301,6 +1412,9 @@ export type MedicationUpdateWithoutStockReceiptsInput = {
   invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutMedicationNestedInput
   immunizations?: Prisma.ImmunizationUpdateManyWithoutMedicationNestedInput
   taxCode?: Prisma.TaxCodeUpdateOneWithoutMedicationsNestedInput
+  deliveryUterotonics?: Prisma.DeliveryRecordUpdateManyWithoutUterotonicNestedInput
+  newbornVitaminK1Doses?: Prisma.NewbornCareRecordUpdateManyWithoutVitaminK1MedicationNestedInput
+  newbornEyeProphylaxis?: Prisma.NewbornCareRecordUpdateManyWithoutEyeProphylaxisMedicationNestedInput
 }
 
 export type MedicationUncheckedUpdateWithoutStockReceiptsInput = {
@@ -1327,6 +1441,9 @@ export type MedicationUncheckedUpdateWithoutStockReceiptsInput = {
   dispenseItems?: Prisma.DispenseItemUncheckedUpdateManyWithoutMedicationNestedInput
   invoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutMedicationNestedInput
   immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutMedicationNestedInput
+  deliveryUterotonics?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutUterotonicNestedInput
+  newbornVitaminK1Doses?: Prisma.NewbornCareRecordUncheckedUpdateManyWithoutVitaminK1MedicationNestedInput
+  newbornEyeProphylaxis?: Prisma.NewbornCareRecordUncheckedUpdateManyWithoutEyeProphylaxisMedicationNestedInput
 }
 
 export type MedicationCreateWithoutTaxCodeInput = {
@@ -1353,6 +1470,9 @@ export type MedicationCreateWithoutTaxCodeInput = {
   stockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutMedicationInput
   invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutMedicationInput
   immunizations?: Prisma.ImmunizationCreateNestedManyWithoutMedicationInput
+  deliveryUterotonics?: Prisma.DeliveryRecordCreateNestedManyWithoutUterotonicInput
+  newbornVitaminK1Doses?: Prisma.NewbornCareRecordCreateNestedManyWithoutVitaminK1MedicationInput
+  newbornEyeProphylaxis?: Prisma.NewbornCareRecordCreateNestedManyWithoutEyeProphylaxisMedicationInput
 }
 
 export type MedicationUncheckedCreateWithoutTaxCodeInput = {
@@ -1379,6 +1499,9 @@ export type MedicationUncheckedCreateWithoutTaxCodeInput = {
   stockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutMedicationInput
   invoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutMedicationInput
   immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutMedicationInput
+  deliveryUterotonics?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutUterotonicInput
+  newbornVitaminK1Doses?: Prisma.NewbornCareRecordUncheckedCreateNestedManyWithoutVitaminK1MedicationInput
+  newbornEyeProphylaxis?: Prisma.NewbornCareRecordUncheckedCreateNestedManyWithoutEyeProphylaxisMedicationInput
 }
 
 export type MedicationCreateOrConnectWithoutTaxCodeInput = {
@@ -1455,6 +1578,9 @@ export type MedicationCreateWithoutInvoiceItemsInput = {
   stockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutMedicationInput
   immunizations?: Prisma.ImmunizationCreateNestedManyWithoutMedicationInput
   taxCode?: Prisma.TaxCodeCreateNestedOneWithoutMedicationsInput
+  deliveryUterotonics?: Prisma.DeliveryRecordCreateNestedManyWithoutUterotonicInput
+  newbornVitaminK1Doses?: Prisma.NewbornCareRecordCreateNestedManyWithoutVitaminK1MedicationInput
+  newbornEyeProphylaxis?: Prisma.NewbornCareRecordCreateNestedManyWithoutEyeProphylaxisMedicationInput
 }
 
 export type MedicationUncheckedCreateWithoutInvoiceItemsInput = {
@@ -1481,6 +1607,9 @@ export type MedicationUncheckedCreateWithoutInvoiceItemsInput = {
   dispenseItems?: Prisma.DispenseItemUncheckedCreateNestedManyWithoutMedicationInput
   stockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutMedicationInput
   immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutMedicationInput
+  deliveryUterotonics?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutUterotonicInput
+  newbornVitaminK1Doses?: Prisma.NewbornCareRecordUncheckedCreateNestedManyWithoutVitaminK1MedicationInput
+  newbornEyeProphylaxis?: Prisma.NewbornCareRecordUncheckedCreateNestedManyWithoutEyeProphylaxisMedicationInput
 }
 
 export type MedicationCreateOrConnectWithoutInvoiceItemsInput = {
@@ -1523,6 +1652,9 @@ export type MedicationUpdateWithoutInvoiceItemsInput = {
   stockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutMedicationNestedInput
   immunizations?: Prisma.ImmunizationUpdateManyWithoutMedicationNestedInput
   taxCode?: Prisma.TaxCodeUpdateOneWithoutMedicationsNestedInput
+  deliveryUterotonics?: Prisma.DeliveryRecordUpdateManyWithoutUterotonicNestedInput
+  newbornVitaminK1Doses?: Prisma.NewbornCareRecordUpdateManyWithoutVitaminK1MedicationNestedInput
+  newbornEyeProphylaxis?: Prisma.NewbornCareRecordUpdateManyWithoutEyeProphylaxisMedicationNestedInput
 }
 
 export type MedicationUncheckedUpdateWithoutInvoiceItemsInput = {
@@ -1549,6 +1681,9 @@ export type MedicationUncheckedUpdateWithoutInvoiceItemsInput = {
   dispenseItems?: Prisma.DispenseItemUncheckedUpdateManyWithoutMedicationNestedInput
   stockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutMedicationNestedInput
   immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutMedicationNestedInput
+  deliveryUterotonics?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutUterotonicNestedInput
+  newbornVitaminK1Doses?: Prisma.NewbornCareRecordUncheckedUpdateManyWithoutVitaminK1MedicationNestedInput
+  newbornEyeProphylaxis?: Prisma.NewbornCareRecordUncheckedUpdateManyWithoutEyeProphylaxisMedicationNestedInput
 }
 
 export type MedicationCreateWithoutImmunizationsInput = {
@@ -1575,6 +1710,9 @@ export type MedicationCreateWithoutImmunizationsInput = {
   stockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutMedicationInput
   invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutMedicationInput
   taxCode?: Prisma.TaxCodeCreateNestedOneWithoutMedicationsInput
+  deliveryUterotonics?: Prisma.DeliveryRecordCreateNestedManyWithoutUterotonicInput
+  newbornVitaminK1Doses?: Prisma.NewbornCareRecordCreateNestedManyWithoutVitaminK1MedicationInput
+  newbornEyeProphylaxis?: Prisma.NewbornCareRecordCreateNestedManyWithoutEyeProphylaxisMedicationInput
 }
 
 export type MedicationUncheckedCreateWithoutImmunizationsInput = {
@@ -1601,6 +1739,9 @@ export type MedicationUncheckedCreateWithoutImmunizationsInput = {
   dispenseItems?: Prisma.DispenseItemUncheckedCreateNestedManyWithoutMedicationInput
   stockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutMedicationInput
   invoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutMedicationInput
+  deliveryUterotonics?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutUterotonicInput
+  newbornVitaminK1Doses?: Prisma.NewbornCareRecordUncheckedCreateNestedManyWithoutVitaminK1MedicationInput
+  newbornEyeProphylaxis?: Prisma.NewbornCareRecordUncheckedCreateNestedManyWithoutEyeProphylaxisMedicationInput
 }
 
 export type MedicationCreateOrConnectWithoutImmunizationsInput = {
@@ -1643,6 +1784,9 @@ export type MedicationUpdateWithoutImmunizationsInput = {
   stockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutMedicationNestedInput
   invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutMedicationNestedInput
   taxCode?: Prisma.TaxCodeUpdateOneWithoutMedicationsNestedInput
+  deliveryUterotonics?: Prisma.DeliveryRecordUpdateManyWithoutUterotonicNestedInput
+  newbornVitaminK1Doses?: Prisma.NewbornCareRecordUpdateManyWithoutVitaminK1MedicationNestedInput
+  newbornEyeProphylaxis?: Prisma.NewbornCareRecordUpdateManyWithoutEyeProphylaxisMedicationNestedInput
 }
 
 export type MedicationUncheckedUpdateWithoutImmunizationsInput = {
@@ -1669,6 +1813,405 @@ export type MedicationUncheckedUpdateWithoutImmunizationsInput = {
   dispenseItems?: Prisma.DispenseItemUncheckedUpdateManyWithoutMedicationNestedInput
   stockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutMedicationNestedInput
   invoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutMedicationNestedInput
+  deliveryUterotonics?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutUterotonicNestedInput
+  newbornVitaminK1Doses?: Prisma.NewbornCareRecordUncheckedUpdateManyWithoutVitaminK1MedicationNestedInput
+  newbornEyeProphylaxis?: Prisma.NewbornCareRecordUncheckedUpdateManyWithoutEyeProphylaxisMedicationNestedInput
+}
+
+export type MedicationCreateWithoutDeliveryUterotonicsInput = {
+  id?: string
+  code: string
+  kfaCode?: string | null
+  dphoCode?: string | null
+  name: string
+  form?: string | null
+  strength?: string | null
+  unit?: $Enums.MedicationUnit | null
+  category?: $Enums.MedicationCategory | null
+  reorderLevel?: number
+  unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isVaccine?: boolean
+  isMidwifePrescribable?: boolean
+  midwifeAuthorityKind?: $Enums.DoctorAuthorityKind | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  prescriptionItems?: Prisma.PrescriptionMedicationCreateNestedManyWithoutMedicationInput
+  compoundComponents?: Prisma.PrescriptionItemComponentCreateNestedManyWithoutMedicationInput
+  dispenseItems?: Prisma.DispenseItemCreateNestedManyWithoutMedicationInput
+  stockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutMedicationInput
+  invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutMedicationInput
+  immunizations?: Prisma.ImmunizationCreateNestedManyWithoutMedicationInput
+  taxCode?: Prisma.TaxCodeCreateNestedOneWithoutMedicationsInput
+  newbornVitaminK1Doses?: Prisma.NewbornCareRecordCreateNestedManyWithoutVitaminK1MedicationInput
+  newbornEyeProphylaxis?: Prisma.NewbornCareRecordCreateNestedManyWithoutEyeProphylaxisMedicationInput
+}
+
+export type MedicationUncheckedCreateWithoutDeliveryUterotonicsInput = {
+  id?: string
+  code: string
+  kfaCode?: string | null
+  dphoCode?: string | null
+  name: string
+  form?: string | null
+  strength?: string | null
+  unit?: $Enums.MedicationUnit | null
+  category?: $Enums.MedicationCategory | null
+  reorderLevel?: number
+  unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isVaccine?: boolean
+  isMidwifePrescribable?: boolean
+  midwifeAuthorityKind?: $Enums.DoctorAuthorityKind | null
+  taxCodeId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  prescriptionItems?: Prisma.PrescriptionMedicationUncheckedCreateNestedManyWithoutMedicationInput
+  compoundComponents?: Prisma.PrescriptionItemComponentUncheckedCreateNestedManyWithoutMedicationInput
+  dispenseItems?: Prisma.DispenseItemUncheckedCreateNestedManyWithoutMedicationInput
+  stockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutMedicationInput
+  invoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutMedicationInput
+  immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutMedicationInput
+  newbornVitaminK1Doses?: Prisma.NewbornCareRecordUncheckedCreateNestedManyWithoutVitaminK1MedicationInput
+  newbornEyeProphylaxis?: Prisma.NewbornCareRecordUncheckedCreateNestedManyWithoutEyeProphylaxisMedicationInput
+}
+
+export type MedicationCreateOrConnectWithoutDeliveryUterotonicsInput = {
+  where: Prisma.MedicationWhereUniqueInput
+  create: Prisma.XOR<Prisma.MedicationCreateWithoutDeliveryUterotonicsInput, Prisma.MedicationUncheckedCreateWithoutDeliveryUterotonicsInput>
+}
+
+export type MedicationUpsertWithoutDeliveryUterotonicsInput = {
+  update: Prisma.XOR<Prisma.MedicationUpdateWithoutDeliveryUterotonicsInput, Prisma.MedicationUncheckedUpdateWithoutDeliveryUterotonicsInput>
+  create: Prisma.XOR<Prisma.MedicationCreateWithoutDeliveryUterotonicsInput, Prisma.MedicationUncheckedCreateWithoutDeliveryUterotonicsInput>
+  where?: Prisma.MedicationWhereInput
+}
+
+export type MedicationUpdateToOneWithWhereWithoutDeliveryUterotonicsInput = {
+  where?: Prisma.MedicationWhereInput
+  data: Prisma.XOR<Prisma.MedicationUpdateWithoutDeliveryUterotonicsInput, Prisma.MedicationUncheckedUpdateWithoutDeliveryUterotonicsInput>
+}
+
+export type MedicationUpdateWithoutDeliveryUterotonicsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  kfaCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dphoCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  form?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  strength?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unit?: Prisma.NullableEnumMedicationUnitFieldUpdateOperationsInput | $Enums.MedicationUnit | null
+  category?: Prisma.NullableEnumMedicationCategoryFieldUpdateOperationsInput | $Enums.MedicationCategory | null
+  reorderLevel?: Prisma.IntFieldUpdateOperationsInput | number
+  unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isVaccine?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  midwifeAuthorityKind?: Prisma.NullableEnumDoctorAuthorityKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityKind | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  prescriptionItems?: Prisma.PrescriptionMedicationUpdateManyWithoutMedicationNestedInput
+  compoundComponents?: Prisma.PrescriptionItemComponentUpdateManyWithoutMedicationNestedInput
+  dispenseItems?: Prisma.DispenseItemUpdateManyWithoutMedicationNestedInput
+  stockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutMedicationNestedInput
+  invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutMedicationNestedInput
+  immunizations?: Prisma.ImmunizationUpdateManyWithoutMedicationNestedInput
+  taxCode?: Prisma.TaxCodeUpdateOneWithoutMedicationsNestedInput
+  newbornVitaminK1Doses?: Prisma.NewbornCareRecordUpdateManyWithoutVitaminK1MedicationNestedInput
+  newbornEyeProphylaxis?: Prisma.NewbornCareRecordUpdateManyWithoutEyeProphylaxisMedicationNestedInput
+}
+
+export type MedicationUncheckedUpdateWithoutDeliveryUterotonicsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  kfaCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dphoCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  form?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  strength?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unit?: Prisma.NullableEnumMedicationUnitFieldUpdateOperationsInput | $Enums.MedicationUnit | null
+  category?: Prisma.NullableEnumMedicationCategoryFieldUpdateOperationsInput | $Enums.MedicationCategory | null
+  reorderLevel?: Prisma.IntFieldUpdateOperationsInput | number
+  unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isVaccine?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  midwifeAuthorityKind?: Prisma.NullableEnumDoctorAuthorityKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityKind | null
+  taxCodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  prescriptionItems?: Prisma.PrescriptionMedicationUncheckedUpdateManyWithoutMedicationNestedInput
+  compoundComponents?: Prisma.PrescriptionItemComponentUncheckedUpdateManyWithoutMedicationNestedInput
+  dispenseItems?: Prisma.DispenseItemUncheckedUpdateManyWithoutMedicationNestedInput
+  stockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutMedicationNestedInput
+  invoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutMedicationNestedInput
+  immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutMedicationNestedInput
+  newbornVitaminK1Doses?: Prisma.NewbornCareRecordUncheckedUpdateManyWithoutVitaminK1MedicationNestedInput
+  newbornEyeProphylaxis?: Prisma.NewbornCareRecordUncheckedUpdateManyWithoutEyeProphylaxisMedicationNestedInput
+}
+
+export type MedicationCreateWithoutNewbornVitaminK1DosesInput = {
+  id?: string
+  code: string
+  kfaCode?: string | null
+  dphoCode?: string | null
+  name: string
+  form?: string | null
+  strength?: string | null
+  unit?: $Enums.MedicationUnit | null
+  category?: $Enums.MedicationCategory | null
+  reorderLevel?: number
+  unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isVaccine?: boolean
+  isMidwifePrescribable?: boolean
+  midwifeAuthorityKind?: $Enums.DoctorAuthorityKind | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  prescriptionItems?: Prisma.PrescriptionMedicationCreateNestedManyWithoutMedicationInput
+  compoundComponents?: Prisma.PrescriptionItemComponentCreateNestedManyWithoutMedicationInput
+  dispenseItems?: Prisma.DispenseItemCreateNestedManyWithoutMedicationInput
+  stockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutMedicationInput
+  invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutMedicationInput
+  immunizations?: Prisma.ImmunizationCreateNestedManyWithoutMedicationInput
+  taxCode?: Prisma.TaxCodeCreateNestedOneWithoutMedicationsInput
+  deliveryUterotonics?: Prisma.DeliveryRecordCreateNestedManyWithoutUterotonicInput
+  newbornEyeProphylaxis?: Prisma.NewbornCareRecordCreateNestedManyWithoutEyeProphylaxisMedicationInput
+}
+
+export type MedicationUncheckedCreateWithoutNewbornVitaminK1DosesInput = {
+  id?: string
+  code: string
+  kfaCode?: string | null
+  dphoCode?: string | null
+  name: string
+  form?: string | null
+  strength?: string | null
+  unit?: $Enums.MedicationUnit | null
+  category?: $Enums.MedicationCategory | null
+  reorderLevel?: number
+  unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isVaccine?: boolean
+  isMidwifePrescribable?: boolean
+  midwifeAuthorityKind?: $Enums.DoctorAuthorityKind | null
+  taxCodeId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  prescriptionItems?: Prisma.PrescriptionMedicationUncheckedCreateNestedManyWithoutMedicationInput
+  compoundComponents?: Prisma.PrescriptionItemComponentUncheckedCreateNestedManyWithoutMedicationInput
+  dispenseItems?: Prisma.DispenseItemUncheckedCreateNestedManyWithoutMedicationInput
+  stockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutMedicationInput
+  invoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutMedicationInput
+  immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutMedicationInput
+  deliveryUterotonics?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutUterotonicInput
+  newbornEyeProphylaxis?: Prisma.NewbornCareRecordUncheckedCreateNestedManyWithoutEyeProphylaxisMedicationInput
+}
+
+export type MedicationCreateOrConnectWithoutNewbornVitaminK1DosesInput = {
+  where: Prisma.MedicationWhereUniqueInput
+  create: Prisma.XOR<Prisma.MedicationCreateWithoutNewbornVitaminK1DosesInput, Prisma.MedicationUncheckedCreateWithoutNewbornVitaminK1DosesInput>
+}
+
+export type MedicationCreateWithoutNewbornEyeProphylaxisInput = {
+  id?: string
+  code: string
+  kfaCode?: string | null
+  dphoCode?: string | null
+  name: string
+  form?: string | null
+  strength?: string | null
+  unit?: $Enums.MedicationUnit | null
+  category?: $Enums.MedicationCategory | null
+  reorderLevel?: number
+  unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isVaccine?: boolean
+  isMidwifePrescribable?: boolean
+  midwifeAuthorityKind?: $Enums.DoctorAuthorityKind | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  prescriptionItems?: Prisma.PrescriptionMedicationCreateNestedManyWithoutMedicationInput
+  compoundComponents?: Prisma.PrescriptionItemComponentCreateNestedManyWithoutMedicationInput
+  dispenseItems?: Prisma.DispenseItemCreateNestedManyWithoutMedicationInput
+  stockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutMedicationInput
+  invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutMedicationInput
+  immunizations?: Prisma.ImmunizationCreateNestedManyWithoutMedicationInput
+  taxCode?: Prisma.TaxCodeCreateNestedOneWithoutMedicationsInput
+  deliveryUterotonics?: Prisma.DeliveryRecordCreateNestedManyWithoutUterotonicInput
+  newbornVitaminK1Doses?: Prisma.NewbornCareRecordCreateNestedManyWithoutVitaminK1MedicationInput
+}
+
+export type MedicationUncheckedCreateWithoutNewbornEyeProphylaxisInput = {
+  id?: string
+  code: string
+  kfaCode?: string | null
+  dphoCode?: string | null
+  name: string
+  form?: string | null
+  strength?: string | null
+  unit?: $Enums.MedicationUnit | null
+  category?: $Enums.MedicationCategory | null
+  reorderLevel?: number
+  unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isVaccine?: boolean
+  isMidwifePrescribable?: boolean
+  midwifeAuthorityKind?: $Enums.DoctorAuthorityKind | null
+  taxCodeId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  prescriptionItems?: Prisma.PrescriptionMedicationUncheckedCreateNestedManyWithoutMedicationInput
+  compoundComponents?: Prisma.PrescriptionItemComponentUncheckedCreateNestedManyWithoutMedicationInput
+  dispenseItems?: Prisma.DispenseItemUncheckedCreateNestedManyWithoutMedicationInput
+  stockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutMedicationInput
+  invoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutMedicationInput
+  immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutMedicationInput
+  deliveryUterotonics?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutUterotonicInput
+  newbornVitaminK1Doses?: Prisma.NewbornCareRecordUncheckedCreateNestedManyWithoutVitaminK1MedicationInput
+}
+
+export type MedicationCreateOrConnectWithoutNewbornEyeProphylaxisInput = {
+  where: Prisma.MedicationWhereUniqueInput
+  create: Prisma.XOR<Prisma.MedicationCreateWithoutNewbornEyeProphylaxisInput, Prisma.MedicationUncheckedCreateWithoutNewbornEyeProphylaxisInput>
+}
+
+export type MedicationUpsertWithoutNewbornVitaminK1DosesInput = {
+  update: Prisma.XOR<Prisma.MedicationUpdateWithoutNewbornVitaminK1DosesInput, Prisma.MedicationUncheckedUpdateWithoutNewbornVitaminK1DosesInput>
+  create: Prisma.XOR<Prisma.MedicationCreateWithoutNewbornVitaminK1DosesInput, Prisma.MedicationUncheckedCreateWithoutNewbornVitaminK1DosesInput>
+  where?: Prisma.MedicationWhereInput
+}
+
+export type MedicationUpdateToOneWithWhereWithoutNewbornVitaminK1DosesInput = {
+  where?: Prisma.MedicationWhereInput
+  data: Prisma.XOR<Prisma.MedicationUpdateWithoutNewbornVitaminK1DosesInput, Prisma.MedicationUncheckedUpdateWithoutNewbornVitaminK1DosesInput>
+}
+
+export type MedicationUpdateWithoutNewbornVitaminK1DosesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  kfaCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dphoCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  form?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  strength?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unit?: Prisma.NullableEnumMedicationUnitFieldUpdateOperationsInput | $Enums.MedicationUnit | null
+  category?: Prisma.NullableEnumMedicationCategoryFieldUpdateOperationsInput | $Enums.MedicationCategory | null
+  reorderLevel?: Prisma.IntFieldUpdateOperationsInput | number
+  unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isVaccine?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  midwifeAuthorityKind?: Prisma.NullableEnumDoctorAuthorityKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityKind | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  prescriptionItems?: Prisma.PrescriptionMedicationUpdateManyWithoutMedicationNestedInput
+  compoundComponents?: Prisma.PrescriptionItemComponentUpdateManyWithoutMedicationNestedInput
+  dispenseItems?: Prisma.DispenseItemUpdateManyWithoutMedicationNestedInput
+  stockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutMedicationNestedInput
+  invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutMedicationNestedInput
+  immunizations?: Prisma.ImmunizationUpdateManyWithoutMedicationNestedInput
+  taxCode?: Prisma.TaxCodeUpdateOneWithoutMedicationsNestedInput
+  deliveryUterotonics?: Prisma.DeliveryRecordUpdateManyWithoutUterotonicNestedInput
+  newbornEyeProphylaxis?: Prisma.NewbornCareRecordUpdateManyWithoutEyeProphylaxisMedicationNestedInput
+}
+
+export type MedicationUncheckedUpdateWithoutNewbornVitaminK1DosesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  kfaCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dphoCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  form?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  strength?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unit?: Prisma.NullableEnumMedicationUnitFieldUpdateOperationsInput | $Enums.MedicationUnit | null
+  category?: Prisma.NullableEnumMedicationCategoryFieldUpdateOperationsInput | $Enums.MedicationCategory | null
+  reorderLevel?: Prisma.IntFieldUpdateOperationsInput | number
+  unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isVaccine?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  midwifeAuthorityKind?: Prisma.NullableEnumDoctorAuthorityKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityKind | null
+  taxCodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  prescriptionItems?: Prisma.PrescriptionMedicationUncheckedUpdateManyWithoutMedicationNestedInput
+  compoundComponents?: Prisma.PrescriptionItemComponentUncheckedUpdateManyWithoutMedicationNestedInput
+  dispenseItems?: Prisma.DispenseItemUncheckedUpdateManyWithoutMedicationNestedInput
+  stockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutMedicationNestedInput
+  invoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutMedicationNestedInput
+  immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutMedicationNestedInput
+  deliveryUterotonics?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutUterotonicNestedInput
+  newbornEyeProphylaxis?: Prisma.NewbornCareRecordUncheckedUpdateManyWithoutEyeProphylaxisMedicationNestedInput
+}
+
+export type MedicationUpsertWithoutNewbornEyeProphylaxisInput = {
+  update: Prisma.XOR<Prisma.MedicationUpdateWithoutNewbornEyeProphylaxisInput, Prisma.MedicationUncheckedUpdateWithoutNewbornEyeProphylaxisInput>
+  create: Prisma.XOR<Prisma.MedicationCreateWithoutNewbornEyeProphylaxisInput, Prisma.MedicationUncheckedCreateWithoutNewbornEyeProphylaxisInput>
+  where?: Prisma.MedicationWhereInput
+}
+
+export type MedicationUpdateToOneWithWhereWithoutNewbornEyeProphylaxisInput = {
+  where?: Prisma.MedicationWhereInput
+  data: Prisma.XOR<Prisma.MedicationUpdateWithoutNewbornEyeProphylaxisInput, Prisma.MedicationUncheckedUpdateWithoutNewbornEyeProphylaxisInput>
+}
+
+export type MedicationUpdateWithoutNewbornEyeProphylaxisInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  kfaCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dphoCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  form?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  strength?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unit?: Prisma.NullableEnumMedicationUnitFieldUpdateOperationsInput | $Enums.MedicationUnit | null
+  category?: Prisma.NullableEnumMedicationCategoryFieldUpdateOperationsInput | $Enums.MedicationCategory | null
+  reorderLevel?: Prisma.IntFieldUpdateOperationsInput | number
+  unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isVaccine?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  midwifeAuthorityKind?: Prisma.NullableEnumDoctorAuthorityKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityKind | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  prescriptionItems?: Prisma.PrescriptionMedicationUpdateManyWithoutMedicationNestedInput
+  compoundComponents?: Prisma.PrescriptionItemComponentUpdateManyWithoutMedicationNestedInput
+  dispenseItems?: Prisma.DispenseItemUpdateManyWithoutMedicationNestedInput
+  stockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutMedicationNestedInput
+  invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutMedicationNestedInput
+  immunizations?: Prisma.ImmunizationUpdateManyWithoutMedicationNestedInput
+  taxCode?: Prisma.TaxCodeUpdateOneWithoutMedicationsNestedInput
+  deliveryUterotonics?: Prisma.DeliveryRecordUpdateManyWithoutUterotonicNestedInput
+  newbornVitaminK1Doses?: Prisma.NewbornCareRecordUpdateManyWithoutVitaminK1MedicationNestedInput
+}
+
+export type MedicationUncheckedUpdateWithoutNewbornEyeProphylaxisInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  kfaCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dphoCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  form?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  strength?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unit?: Prisma.NullableEnumMedicationUnitFieldUpdateOperationsInput | $Enums.MedicationUnit | null
+  category?: Prisma.NullableEnumMedicationCategoryFieldUpdateOperationsInput | $Enums.MedicationCategory | null
+  reorderLevel?: Prisma.IntFieldUpdateOperationsInput | number
+  unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isVaccine?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  midwifeAuthorityKind?: Prisma.NullableEnumDoctorAuthorityKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityKind | null
+  taxCodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  prescriptionItems?: Prisma.PrescriptionMedicationUncheckedUpdateManyWithoutMedicationNestedInput
+  compoundComponents?: Prisma.PrescriptionItemComponentUncheckedUpdateManyWithoutMedicationNestedInput
+  dispenseItems?: Prisma.DispenseItemUncheckedUpdateManyWithoutMedicationNestedInput
+  stockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutMedicationNestedInput
+  invoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutMedicationNestedInput
+  immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutMedicationNestedInput
+  deliveryUterotonics?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutUterotonicNestedInput
+  newbornVitaminK1Doses?: Prisma.NewbornCareRecordUncheckedUpdateManyWithoutVitaminK1MedicationNestedInput
 }
 
 export type MedicationCreateManyTaxCodeInput = {
@@ -1715,6 +2258,9 @@ export type MedicationUpdateWithoutTaxCodeInput = {
   stockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutMedicationNestedInput
   invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutMedicationNestedInput
   immunizations?: Prisma.ImmunizationUpdateManyWithoutMedicationNestedInput
+  deliveryUterotonics?: Prisma.DeliveryRecordUpdateManyWithoutUterotonicNestedInput
+  newbornVitaminK1Doses?: Prisma.NewbornCareRecordUpdateManyWithoutVitaminK1MedicationNestedInput
+  newbornEyeProphylaxis?: Prisma.NewbornCareRecordUpdateManyWithoutEyeProphylaxisMedicationNestedInput
 }
 
 export type MedicationUncheckedUpdateWithoutTaxCodeInput = {
@@ -1741,6 +2287,9 @@ export type MedicationUncheckedUpdateWithoutTaxCodeInput = {
   stockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutMedicationNestedInput
   invoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutMedicationNestedInput
   immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutMedicationNestedInput
+  deliveryUterotonics?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutUterotonicNestedInput
+  newbornVitaminK1Doses?: Prisma.NewbornCareRecordUncheckedUpdateManyWithoutVitaminK1MedicationNestedInput
+  newbornEyeProphylaxis?: Prisma.NewbornCareRecordUncheckedUpdateManyWithoutEyeProphylaxisMedicationNestedInput
 }
 
 export type MedicationUncheckedUpdateManyWithoutTaxCodeInput = {
@@ -1775,6 +2324,9 @@ export type MedicationCountOutputType = {
   stockReceipts: number
   invoiceItems: number
   immunizations: number
+  deliveryUterotonics: number
+  newbornVitaminK1Doses: number
+  newbornEyeProphylaxis: number
 }
 
 export type MedicationCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1784,6 +2336,9 @@ export type MedicationCountOutputTypeSelect<ExtArgs extends runtime.Types.Extens
   stockReceipts?: boolean | MedicationCountOutputTypeCountStockReceiptsArgs
   invoiceItems?: boolean | MedicationCountOutputTypeCountInvoiceItemsArgs
   immunizations?: boolean | MedicationCountOutputTypeCountImmunizationsArgs
+  deliveryUterotonics?: boolean | MedicationCountOutputTypeCountDeliveryUterotonicsArgs
+  newbornVitaminK1Doses?: boolean | MedicationCountOutputTypeCountNewbornVitaminK1DosesArgs
+  newbornEyeProphylaxis?: boolean | MedicationCountOutputTypeCountNewbornEyeProphylaxisArgs
 }
 
 /**
@@ -1838,6 +2393,27 @@ export type MedicationCountOutputTypeCountImmunizationsArgs<ExtArgs extends runt
   where?: Prisma.ImmunizationWhereInput
 }
 
+/**
+ * MedicationCountOutputType without action
+ */
+export type MedicationCountOutputTypeCountDeliveryUterotonicsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.DeliveryRecordWhereInput
+}
+
+/**
+ * MedicationCountOutputType without action
+ */
+export type MedicationCountOutputTypeCountNewbornVitaminK1DosesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.NewbornCareRecordWhereInput
+}
+
+/**
+ * MedicationCountOutputType without action
+ */
+export type MedicationCountOutputTypeCountNewbornEyeProphylaxisArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.NewbornCareRecordWhereInput
+}
+
 
 export type MedicationSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1865,6 +2441,9 @@ export type MedicationSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   invoiceItems?: boolean | Prisma.Medication$invoiceItemsArgs<ExtArgs>
   immunizations?: boolean | Prisma.Medication$immunizationsArgs<ExtArgs>
   taxCode?: boolean | Prisma.Medication$taxCodeArgs<ExtArgs>
+  deliveryUterotonics?: boolean | Prisma.Medication$deliveryUterotonicsArgs<ExtArgs>
+  newbornVitaminK1Doses?: boolean | Prisma.Medication$newbornVitaminK1DosesArgs<ExtArgs>
+  newbornEyeProphylaxis?: boolean | Prisma.Medication$newbornEyeProphylaxisArgs<ExtArgs>
   _count?: boolean | Prisma.MedicationCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["medication"]>
 
@@ -1942,6 +2521,9 @@ export type MedicationInclude<ExtArgs extends runtime.Types.Extensions.InternalA
   invoiceItems?: boolean | Prisma.Medication$invoiceItemsArgs<ExtArgs>
   immunizations?: boolean | Prisma.Medication$immunizationsArgs<ExtArgs>
   taxCode?: boolean | Prisma.Medication$taxCodeArgs<ExtArgs>
+  deliveryUterotonics?: boolean | Prisma.Medication$deliveryUterotonicsArgs<ExtArgs>
+  newbornVitaminK1Doses?: boolean | Prisma.Medication$newbornVitaminK1DosesArgs<ExtArgs>
+  newbornEyeProphylaxis?: boolean | Prisma.Medication$newbornEyeProphylaxisArgs<ExtArgs>
   _count?: boolean | Prisma.MedicationCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type MedicationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1961,6 +2543,9 @@ export type $MedicationPayload<ExtArgs extends runtime.Types.Extensions.Internal
     invoiceItems: Prisma.$InvoiceItemPayload<ExtArgs>[]
     immunizations: Prisma.$ImmunizationPayload<ExtArgs>[]
     taxCode: Prisma.$TaxCodePayload<ExtArgs> | null
+    deliveryUterotonics: Prisma.$DeliveryRecordPayload<ExtArgs>[]
+    newbornVitaminK1Doses: Prisma.$NewbornCareRecordPayload<ExtArgs>[]
+    newbornEyeProphylaxis: Prisma.$NewbornCareRecordPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2415,6 +3000,9 @@ export interface Prisma__MedicationClient<T, Null = never, ExtArgs extends runti
   invoiceItems<T extends Prisma.Medication$invoiceItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Medication$invoiceItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvoiceItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   immunizations<T extends Prisma.Medication$immunizationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Medication$immunizationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ImmunizationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   taxCode<T extends Prisma.Medication$taxCodeArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Medication$taxCodeArgs<ExtArgs>>): Prisma.Prisma__TaxCodeClient<runtime.Types.Result.GetResult<Prisma.$TaxCodePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  deliveryUterotonics<T extends Prisma.Medication$deliveryUterotonicsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Medication$deliveryUterotonicsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DeliveryRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  newbornVitaminK1Doses<T extends Prisma.Medication$newbornVitaminK1DosesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Medication$newbornVitaminK1DosesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NewbornCareRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  newbornEyeProphylaxis<T extends Prisma.Medication$newbornEyeProphylaxisArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Medication$newbornEyeProphylaxisArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NewbornCareRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3023,6 +3611,78 @@ export type Medication$taxCodeArgs<ExtArgs extends runtime.Types.Extensions.Inte
    */
   include?: Prisma.TaxCodeInclude<ExtArgs> | null
   where?: Prisma.TaxCodeWhereInput
+}
+
+/**
+ * Medication.deliveryUterotonics
+ */
+export type Medication$deliveryUterotonicsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the DeliveryRecord
+   */
+  select?: Prisma.DeliveryRecordSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the DeliveryRecord
+   */
+  omit?: Prisma.DeliveryRecordOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DeliveryRecordInclude<ExtArgs> | null
+  where?: Prisma.DeliveryRecordWhereInput
+  orderBy?: Prisma.DeliveryRecordOrderByWithRelationInput | Prisma.DeliveryRecordOrderByWithRelationInput[]
+  cursor?: Prisma.DeliveryRecordWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.DeliveryRecordScalarFieldEnum | Prisma.DeliveryRecordScalarFieldEnum[]
+}
+
+/**
+ * Medication.newbornVitaminK1Doses
+ */
+export type Medication$newbornVitaminK1DosesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the NewbornCareRecord
+   */
+  select?: Prisma.NewbornCareRecordSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the NewbornCareRecord
+   */
+  omit?: Prisma.NewbornCareRecordOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.NewbornCareRecordInclude<ExtArgs> | null
+  where?: Prisma.NewbornCareRecordWhereInput
+  orderBy?: Prisma.NewbornCareRecordOrderByWithRelationInput | Prisma.NewbornCareRecordOrderByWithRelationInput[]
+  cursor?: Prisma.NewbornCareRecordWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.NewbornCareRecordScalarFieldEnum | Prisma.NewbornCareRecordScalarFieldEnum[]
+}
+
+/**
+ * Medication.newbornEyeProphylaxis
+ */
+export type Medication$newbornEyeProphylaxisArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the NewbornCareRecord
+   */
+  select?: Prisma.NewbornCareRecordSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the NewbornCareRecord
+   */
+  omit?: Prisma.NewbornCareRecordOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.NewbornCareRecordInclude<ExtArgs> | null
+  where?: Prisma.NewbornCareRecordWhereInput
+  orderBy?: Prisma.NewbornCareRecordOrderByWithRelationInput | Prisma.NewbornCareRecordOrderByWithRelationInput[]
+  cursor?: Prisma.NewbornCareRecordWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.NewbornCareRecordScalarFieldEnum | Prisma.NewbornCareRecordScalarFieldEnum[]
 }
 
 /**

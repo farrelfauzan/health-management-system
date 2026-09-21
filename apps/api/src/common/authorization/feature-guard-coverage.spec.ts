@@ -60,6 +60,7 @@ const GATED_CONTROLLERS: Readonly<Record<string, FeatureKey>> = {
   // does not follow pregnancies has no use for it.
   PregnancyEpisodeController: 'maternal-care',
   AntenatalExaminationController: 'maternal-care',
+  DeliveryRecordController: 'maternal-care',
   BpjsAntreanConfigController: 'bpjs-antrean',
   BpjsAntreanWsController: 'bpjs-antrean',
   SatusehatLinkController: 'satusehat',

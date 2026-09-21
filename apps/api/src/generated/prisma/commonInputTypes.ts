@@ -2519,6 +2519,57 @@ export type EnumAntenatalVisitCodeNullableWithAggregatesFilter<$PrismaModel = ne
   _max?: Prisma.NestedEnumAntenatalVisitCodeNullableFilter<$PrismaModel>
 }
 
+export type EnumDeliveryModeFilter<$PrismaModel = never> = {
+  equals?: $Enums.DeliveryMode | Prisma.EnumDeliveryModeFieldRefInput<$PrismaModel>
+  in?: $Enums.DeliveryMode[] | Prisma.ListEnumDeliveryModeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DeliveryMode[] | Prisma.ListEnumDeliveryModeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDeliveryModeFilter<$PrismaModel> | $Enums.DeliveryMode
+}
+
+export type EnumPerinealTearGradeFilter<$PrismaModel = never> = {
+  equals?: $Enums.PerinealTearGrade | Prisma.EnumPerinealTearGradeFieldRefInput<$PrismaModel>
+  in?: $Enums.PerinealTearGrade[] | Prisma.ListEnumPerinealTearGradeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PerinealTearGrade[] | Prisma.ListEnumPerinealTearGradeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPerinealTearGradeFilter<$PrismaModel> | $Enums.PerinealTearGrade
+}
+
+export type EnumDeliveryModeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.DeliveryMode | Prisma.EnumDeliveryModeFieldRefInput<$PrismaModel>
+  in?: $Enums.DeliveryMode[] | Prisma.ListEnumDeliveryModeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DeliveryMode[] | Prisma.ListEnumDeliveryModeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDeliveryModeWithAggregatesFilter<$PrismaModel> | $Enums.DeliveryMode
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumDeliveryModeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumDeliveryModeFilter<$PrismaModel>
+}
+
+export type EnumPerinealTearGradeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PerinealTearGrade | Prisma.EnumPerinealTearGradeFieldRefInput<$PrismaModel>
+  in?: $Enums.PerinealTearGrade[] | Prisma.ListEnumPerinealTearGradeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PerinealTearGrade[] | Prisma.ListEnumPerinealTearGradeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPerinealTearGradeWithAggregatesFilter<$PrismaModel> | $Enums.PerinealTearGrade
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPerinealTearGradeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPerinealTearGradeFilter<$PrismaModel>
+}
+
+export type EnumBirthOutcomeFilter<$PrismaModel = never> = {
+  equals?: $Enums.BirthOutcome | Prisma.EnumBirthOutcomeFieldRefInput<$PrismaModel>
+  in?: $Enums.BirthOutcome[] | Prisma.ListEnumBirthOutcomeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.BirthOutcome[] | Prisma.ListEnumBirthOutcomeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumBirthOutcomeFilter<$PrismaModel> | $Enums.BirthOutcome
+}
+
+export type EnumBirthOutcomeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.BirthOutcome | Prisma.EnumBirthOutcomeFieldRefInput<$PrismaModel>
+  in?: $Enums.BirthOutcome[] | Prisma.ListEnumBirthOutcomeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.BirthOutcome[] | Prisma.ListEnumBirthOutcomeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumBirthOutcomeWithAggregatesFilter<$PrismaModel> | $Enums.BirthOutcome
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumBirthOutcomeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumBirthOutcomeFilter<$PrismaModel>
+}
+
 export type EnumFetalPresentationNullableFilter<$PrismaModel = never> = {
   equals?: $Enums.FetalPresentation | Prisma.EnumFetalPresentationFieldRefInput<$PrismaModel> | null
   in?: $Enums.FetalPresentation[] | Prisma.ListEnumFetalPresentationFieldRefInput<$PrismaModel> | null
@@ -5028,6 +5079,57 @@ export type NestedEnumAntenatalVisitCodeNullableWithAggregatesFilter<$PrismaMode
   _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
   _min?: Prisma.NestedEnumAntenatalVisitCodeNullableFilter<$PrismaModel>
   _max?: Prisma.NestedEnumAntenatalVisitCodeNullableFilter<$PrismaModel>
+}
+
+export type NestedEnumDeliveryModeFilter<$PrismaModel = never> = {
+  equals?: $Enums.DeliveryMode | Prisma.EnumDeliveryModeFieldRefInput<$PrismaModel>
+  in?: $Enums.DeliveryMode[] | Prisma.ListEnumDeliveryModeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DeliveryMode[] | Prisma.ListEnumDeliveryModeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDeliveryModeFilter<$PrismaModel> | $Enums.DeliveryMode
+}
+
+export type NestedEnumPerinealTearGradeFilter<$PrismaModel = never> = {
+  equals?: $Enums.PerinealTearGrade | Prisma.EnumPerinealTearGradeFieldRefInput<$PrismaModel>
+  in?: $Enums.PerinealTearGrade[] | Prisma.ListEnumPerinealTearGradeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PerinealTearGrade[] | Prisma.ListEnumPerinealTearGradeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPerinealTearGradeFilter<$PrismaModel> | $Enums.PerinealTearGrade
+}
+
+export type NestedEnumDeliveryModeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.DeliveryMode | Prisma.EnumDeliveryModeFieldRefInput<$PrismaModel>
+  in?: $Enums.DeliveryMode[] | Prisma.ListEnumDeliveryModeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.DeliveryMode[] | Prisma.ListEnumDeliveryModeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumDeliveryModeWithAggregatesFilter<$PrismaModel> | $Enums.DeliveryMode
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumDeliveryModeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumDeliveryModeFilter<$PrismaModel>
+}
+
+export type NestedEnumPerinealTearGradeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PerinealTearGrade | Prisma.EnumPerinealTearGradeFieldRefInput<$PrismaModel>
+  in?: $Enums.PerinealTearGrade[] | Prisma.ListEnumPerinealTearGradeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PerinealTearGrade[] | Prisma.ListEnumPerinealTearGradeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPerinealTearGradeWithAggregatesFilter<$PrismaModel> | $Enums.PerinealTearGrade
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPerinealTearGradeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPerinealTearGradeFilter<$PrismaModel>
+}
+
+export type NestedEnumBirthOutcomeFilter<$PrismaModel = never> = {
+  equals?: $Enums.BirthOutcome | Prisma.EnumBirthOutcomeFieldRefInput<$PrismaModel>
+  in?: $Enums.BirthOutcome[] | Prisma.ListEnumBirthOutcomeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.BirthOutcome[] | Prisma.ListEnumBirthOutcomeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumBirthOutcomeFilter<$PrismaModel> | $Enums.BirthOutcome
+}
+
+export type NestedEnumBirthOutcomeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.BirthOutcome | Prisma.EnumBirthOutcomeFieldRefInput<$PrismaModel>
+  in?: $Enums.BirthOutcome[] | Prisma.ListEnumBirthOutcomeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.BirthOutcome[] | Prisma.ListEnumBirthOutcomeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumBirthOutcomeWithAggregatesFilter<$PrismaModel> | $Enums.BirthOutcome
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumBirthOutcomeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumBirthOutcomeFilter<$PrismaModel>
 }
 
 export type NestedEnumFetalPresentationNullableFilter<$PrismaModel = never> = {

@@ -88,7 +88,12 @@ export type DocxContentValidationResult =
  * rules about them live. The caller formats; this is already print-ready.
  */
 export type ClinicalRequestRenderContext = {
-  kind: 'LAB_REQUEST' | 'PRESCRIPTION' | 'REFERRAL_LETTER' | 'PREGNANCY_CERTIFICATE';
+  kind:
+    | 'LAB_REQUEST'
+    | 'PRESCRIPTION'
+    | 'REFERRAL_LETTER'
+    | 'PREGNANCY_CERTIFICATE'
+    | 'BIRTH_CERTIFICATE';
   /** The clinical record being printed — a lab order id, or a prescription id. */
   subjectId: string;
   patientId: string;

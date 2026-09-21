@@ -177,6 +177,8 @@ export const ModelName = {
   PregnancyEpisode: 'PregnancyEpisode',
   PregnancyExternalDoctorVisit: 'PregnancyExternalDoctorVisit',
   AntenatalVisit: 'AntenatalVisit',
+  DeliveryRecord: 'DeliveryRecord',
+  NewbornCareRecord: 'NewbornCareRecord',
   AntenatalExamination: 'AntenatalExamination',
   AntenatalReferralDismissal: 'AntenatalReferralDismissal'
 } as const
@@ -2366,6 +2368,63 @@ export const AntenatalVisitScalarFieldEnum = {
 } as const
 
 export type AntenatalVisitScalarFieldEnum = (typeof AntenatalVisitScalarFieldEnum)[keyof typeof AntenatalVisitScalarFieldEnum]
+
+
+export const DeliveryRecordScalarFieldEnum = {
+  id: 'id',
+  pregnancyEpisodeId: 'pregnancyEpisodeId',
+  admissionId: 'admissionId',
+  attendantDoctorId: 'attendantDoctorId',
+  labourOnsetAt: 'labourOnsetAt',
+  fullDilatationAt: 'fullDilatationAt',
+  birthAt: 'birthAt',
+  placentaDeliveredAt: 'placentaDeliveredAt',
+  postpartumMonitoringEndedAt: 'postpartumMonitoringEndedAt',
+  mode: 'mode',
+  episiotomy: 'episiotomy',
+  perinealTearGrade: 'perinealTearGrade',
+  uterotonicMedicationId: 'uterotonicMedicationId',
+  uterotonicGivenAt: 'uterotonicGivenAt',
+  bloodLossMl: 'bloodLossMl',
+  placentaComplete: 'placentaComplete',
+  referredOut: 'referredOut',
+  referralReason: 'referralReason',
+  notes: 'notes',
+  recordedById: 'recordedById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DeliveryRecordScalarFieldEnum = (typeof DeliveryRecordScalarFieldEnum)[keyof typeof DeliveryRecordScalarFieldEnum]
+
+
+export const NewbornCareRecordScalarFieldEnum = {
+  id: 'id',
+  deliveryRecordId: 'deliveryRecordId',
+  outcome: 'outcome',
+  stillbirthOrder: 'stillbirthOrder',
+  newbornPatientId: 'newbornPatientId',
+  sex: 'sex',
+  birthWeightGrams: 'birthWeightGrams',
+  lengthCm: 'lengthCm',
+  headCircumferenceCm: 'headCircumferenceCm',
+  apgar1Min: 'apgar1Min',
+  apgar5Min: 'apgar5Min',
+  imdStartedAt: 'imdStartedAt',
+  imdDurationMinutes: 'imdDurationMinutes',
+  cordCareAt: 'cordCareAt',
+  vitaminK1GivenAt: 'vitaminK1GivenAt',
+  vitaminK1MedicationId: 'vitaminK1MedicationId',
+  eyeProphylaxisGivenAt: 'eyeProphylaxisGivenAt',
+  eyeProphylaxisMedicationId: 'eyeProphylaxisMedicationId',
+  hb0ImmunizationId: 'hb0ImmunizationId',
+  examinedAt: 'examinedAt',
+  identityTagAt: 'identityTagAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type NewbornCareRecordScalarFieldEnum = (typeof NewbornCareRecordScalarFieldEnum)[keyof typeof NewbornCareRecordScalarFieldEnum]
 
 
 export const AntenatalExaminationScalarFieldEnum = {

@@ -19,6 +19,7 @@ const CATEGORY_LABELS: Readonly<Record<DocumentCategoryValue, { id: string; en: 
   DISCHARGE_SUMMARY: { id: 'resume pulang', en: 'discharge summary' },
   MEDICAL_CERTIFICATE: { id: 'surat keterangan dokter', en: 'medical certificate' },
   PREGNANCY_CERTIFICATE: { id: 'surat keterangan hamil', en: 'pregnancy certificate' },
+  BIRTH_CERTIFICATE: { id: 'surat keterangan lahir', en: 'birth certificate' },
   INSURANCE: { id: 'dokumen asuransi', en: 'insurance document' },
   IDENTITY: { id: 'dokumen identitas', en: 'identity document' },
   OTHER: { id: 'dokumen medis', en: 'medical document' },
