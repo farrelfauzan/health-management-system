@@ -543,3 +543,36 @@ export type BuildTaxReportPdfHtmlParams = {
   context: TaxReportPdfContext;
   format: TaxReportPdfValueFormatter;
 };
+
+/** Which statutory obligation a due date belongs to (P27-T10). */
+export type TaxObligationCode =
+  | 'PP55_INCOME_TAX_DEPOSIT'
+  | 'PPN_DEPOSIT_AND_RETURN'
+  | 'WITHHOLDING_RETURN_PPH_21_26'
+  | 'WITHHOLDING_RETURN_UNIFICATION'
+  | 'ANNUAL_RETURN_INDIVIDUAL'
+  | 'ANNUAL_RETURN_ENTITY';
+
+/**
+ * One obligation falling due on one date (P27-T10).
+ *
+ * `reportKind` is the draft whose FINALIZED status silences the reminder, and
+ * null for an obligation this repository does not report on — a withholding
+ * return has no draft here, so its date is calendar information rather than
+ * something to chase a clinic about.
+ */
+export type TaxObligationDueDate = {
+  obligation: TaxObligationCode;
+  /** `YYYY-MM-DD`, the statutory date with no working-day shift applied. */
+  dueDate: string;
+  reportKind: 'PP55_OMZET' | 'PPN_OUTPUT' | null;
+};
+
+/** One reminder a sweep decided to raise, before it has been claimed. */
+export type DueTaxReminder = {
+  obligation: TaxObligationCode;
+  /** `YYYY-MM` for a monthly obligation, `YYYY` for an annual one. */
+  period: string;
+  dueDate: string;
+  leadDays: number;
+};

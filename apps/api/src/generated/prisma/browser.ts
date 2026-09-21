@@ -599,11 +599,23 @@ export type TaxCodeRate = Prisma.TaxCodeRateModel
  */
 export type TaxCategoryDefault = Prisma.TaxCategoryDefaultModel
 /**
+ * Model TaxReminderNotice
+ * One tax reminder that has already been raised (P27-T10).
+ * 
+ * The row is the claim, not the notification: notifications fan out to every
+ * holder of `tax-report.write:any`, and what must happen exactly once is the
+ * *decision* to raise them. Keeping that decision in a table rather than in
+ * the sweep's schedule is what lets the sweep run every few hours, survive a
+ * restart, and still announce a five-day mark it was down for — the claim is
+ * keyed to the reminder, never to the day the job happened to observe it.
+ * 
+ * Append-only. Withdrawing a reminder would silently re-arm it on the next
+ * sweep, which is the one thing a compliance reminder must never do.
+ */
+export type TaxReminderNotice = Prisma.TaxReminderNoticeModel
+/**
  * Model TaxReportDraft
- * A month's tax figures, prepared for the clinic to pay and file in Coretax
- * itself (P27-T05, D-038: the product drafts, never files). A DRAFT is
- * recomputed at will; a FINALIZED row is a frozen snapshot and is never
- * rewritten — later changes to the books are shown beside it, not merged in.
+ * 
  */
 export type TaxReportDraft = Prisma.TaxReportDraftModel
 /**
