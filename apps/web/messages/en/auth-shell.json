@@ -111,6 +111,7 @@
         "appointments": "Appointments",
         "registration": "Registration",
         "encounters": "Encounters",
+        "shkScreening": "SHK Screening",
         "pharmacy": "Pharmacy",
         "billing": "Billing",
         "taxes": "Taxes",
@@ -243,6 +244,10 @@
         "doctorAuthorityExpired": {
           "title": "Midwife authority expired",
           "body": "{doctorName}'s {kind} authority (no. {grantReference}) ended on {validUntil}."
+        },
+        "shkRecall": {
+          "title": "SHK sample needs repeating",
+          "body": "The baby of {motherName} needs SHK sample {sequence}. Open the baby's card on her mother's pregnancy tab."
         },
         "taxObligationDue": {
           "title": "Tax due date approaching",

@@ -41,6 +41,15 @@ export const DOCTOR_NAV_SECTIONS: AdminNavSection[] = [
         ability: { action: 'read', subject: 'Patient' },
       },
       {
+        // P25-T10. The babies due, late or recalled for the SHK heel prick.
+        // Hidden with the `maternal-care` entitlement (catalog navHrefs).
+        href: '/doctor/shk',
+        label: 'SHK Screening',
+        labelKey: 'shkScreening',
+        icon: 'child_care',
+        ability: { action: 'read', subject: 'Encounter' },
+      },
+      {
         // The assistant is an OWN-scoped grant every doctor holds, so it
         // belongs in this shell. It was previously reachable only through the
         // floating launcher, and that pointed at the admin route.

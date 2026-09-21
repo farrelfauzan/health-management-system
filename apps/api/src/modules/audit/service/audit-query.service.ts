@@ -23,10 +23,29 @@ export class AuditQueryService {
   async listAuditEvents(params: ListAuditEventsParams): Promise<ListAuditEventsResult> {
     assertKnownAction(params.action);
     const { records, total } = await this.auditQueryRepository.listAuditEvents(params);
+    const actorNames = await this.findActorNames(records);
     return {
-      data: records.map(toAuditEventResponse),
+      data: records.map((record) => toAuditEventResponse(record, actorNames)),
       meta: { page: params.page, limit: params.limit, total },
     };
+  }
+
+  /**
+   * One lookup for the whole page, keyed by account id (P20-T07). A page of
+   * fifty reads by the same nurse is one id, not fifty queries.
+   */
+  private async findActorNames(
+    records: readonly AuditEventRecord[],
+  ): Promise<ReadonlyMap<string, string>> {
+    const actorUserIds = [
+      ...new Set(
+        records
+          .map((record) => record.actorUserId)
+          .filter((actorUserId): actorUserId is string => actorUserId !== null),
+      ),
+    ];
+    const names = await this.auditQueryRepository.listActorNames(actorUserIds);
+    return new Map(names.map((entry) => [entry.id, entry.name]));
   }
 }
 
@@ -41,10 +60,15 @@ function assertKnownAction(action: string | undefined): void {
   }
 }
 
-function toAuditEventResponse(record: AuditEventRecord): AuditEventResponse {
+function toAuditEventResponse(
+  record: AuditEventRecord,
+  actorNames: ReadonlyMap<string, string>,
+): AuditEventResponse {
+  const actorName = record.actorUserId ? actorNames.get(record.actorUserId) : undefined;
   return {
     id: record.id,
     ...(record.actorUserId ? { actorUserId: record.actorUserId } : {}),
+    ...(actorName ? { actorName } : {}),
     ...(record.actorRole ? { actorRole: record.actorRole } : {}),
     action: record.action,
     resource: record.resource,

@@ -46,8 +46,14 @@ export function ProfileMenu({
 }: ProfileMenuProps) {
   const t = useTranslations('authShell.shell.profile');
   const queryClient = useQueryClient();
-  const displayName = profile.isFallbackName ? t('fallbackName') : profile.displayName;
+  // Only a profile with neither a name nor an address gets the placeholder; an
+  // unnamed account is shown its address, verbatim (P20-T08).
+  const displayName =
+    profile.isFallbackName && !profile.email ? t('fallbackName') : profile.displayName;
   const roleLabel = profile.roleKey ? t(`roles.${profile.roleKey}`) : profile.roleLabel;
+  // When the address already stands in for the name above, the second line
+  // says what the account is rather than repeating it.
+  const secondaryLine = (!profile.isFallbackName && profile.email) || roleLabel;
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -69,7 +75,7 @@ export function ProfileMenu({
         <DropdownMenuLabel className="grid leading-tight">
           <span className="truncate text-sm font-medium">{displayName}</span>
           <span className="truncate text-xs font-normal text-muted-foreground">
-            {profile.email || roleLabel}
+            {secondaryLine}
           </span>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />

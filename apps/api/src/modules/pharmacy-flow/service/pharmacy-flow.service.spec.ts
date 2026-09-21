@@ -164,6 +164,7 @@ describe('PharmacyFlowService', () => {
     id: 'd4e5f6a7-2222-4333-8444-af6a1de1a007',
     prescriptionId,
     pharmacistId: currentUser.sub,
+    pharmacistName: 'Rani Putri, S.Farm., Apt.',
     status: 'DISPENSED',
     dispensedAt: new Date('2026-07-19T09:00:00.000Z'),
     notes: null,

@@ -73,10 +73,10 @@ export function decodeSessionHint(hint: string | undefined): AccessTokenClaims |
     // every other role, every hint written by an older API — reads as
     // complete, the same fail-open reading as the fields above.
     const isProfileIncomplete = parsed.profileIncomplete === true;
-    // The person's own name, when the API found a record that carries one.
-    // Absent for an account with no profile and for every hint written before
-    // this field existed, and the right reading of that is "we have no better
-    // name than the email address" — which is the shell's existing fallback.
+    // The person's name, when the account or one of its records carries one.
+    // Absent for an account nothing names and for every hint written before
+    // this field existed, and the right reading of that is "we have no name" —
+    // the shell then shows the email address verbatim (P20-T08).
     const name = typeof parsed.name === 'string' && parsed.name !== '' ? parsed.name : undefined;
     // Likewise the clinician profession, and only the two the product knows:
     // anything else — an older hint, a non-clinician, a value from a future

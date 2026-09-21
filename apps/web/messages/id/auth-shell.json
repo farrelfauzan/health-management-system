@@ -111,6 +111,7 @@
         "appointments": "Janji temu",
         "registration": "Pendaftaran",
         "encounters": "Pemeriksaan",
+        "shkScreening": "Skrining SHK",
         "pharmacy": "Farmasi",
         "billing": "Penagihan",
         "taxes": "Pajak",
@@ -243,6 +244,10 @@
         "doctorAuthorityExpired": {
           "title": "Kewenangan bidan telah berakhir",
           "body": "Kewenangan {kind} milik {doctorName} (No. {grantReference}) telah berakhir pada {validUntil}."
+        },
+        "shkRecall": {
+          "title": "Sampel SHK perlu diambil ulang",
+          "body": "Bayi dari {motherName} perlu pengambilan sampel SHK ke-{sequence}. Buka kartu bayi di tab kehamilan ibunya."
         },
         "taxObligationDue": {
           "title": "Batas waktu pajak mendekat",

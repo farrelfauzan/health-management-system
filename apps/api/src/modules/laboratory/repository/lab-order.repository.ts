@@ -9,10 +9,12 @@ import {
   ListLabOrdersParams,
   ListLabWorklistParams,
   LabWorklistOrderRecord,
+  resolveClinicianName,
   UpdateLabOrderDispositionPayload,
 } from '@hms/shared-types';
 import { Injectable } from '@nestjs/common';
 
+import { CLINICIAN_NAME_SELECT } from '../../../common/prisma/clinician-name-select';
 import { PrismaService } from '../../../common/prisma/prisma.service';
 import { LabDailyNumberAllocatorRepository } from './lab-daily-number-allocator.repository';
 import { LabOrderListRow, LabOrderRow, LabWorklistRow } from './lab-order-row.types';
@@ -28,7 +30,7 @@ const LAB_ORDER_ITEM_INCLUDE = {
 };
 
 const LAB_ORDER_INCLUDE = {
-  orderedBy: { select: { fullName: true } },
+  orderedBy: { select: CLINICIAN_NAME_SELECT },
   items: LAB_ORDER_ITEM_INCLUDE,
   specimens: { orderBy: { collectedAt: 'asc' as const } },
 };
@@ -39,7 +41,7 @@ const LAB_ORDER_INCLUDE = {
  * worklist is not a route into the medical record (P18-T03).
  */
 const LAB_WORKLIST_INCLUDE = {
-  orderedBy: { select: { fullName: true, licenseNumber: true } },
+  orderedBy: { select: { ...CLINICIAN_NAME_SELECT, licenseNumber: true } },
   specimens: { orderBy: { collectedAt: 'asc' as const } },
   patient: {
     select: {
@@ -207,7 +209,7 @@ export class LabOrderRepository {
         skip: (params.page - 1) * params.limit,
         take: params.limit,
         include: {
-          orderedBy: { select: { fullName: true } },
+          orderedBy: { select: CLINICIAN_NAME_SELECT },
           patient: { select: { fullName: true, mrn: true } },
           _count: { select: { items: true } },
         },
@@ -306,7 +308,7 @@ export class LabOrderRepository {
       source: row.source,
       patientId: row.patientId,
       orderedById: row.orderedById,
-      orderedByName: row.orderedBy?.fullName ?? null,
+      orderedByName: row.orderedBy ? resolveClinicianName(row.orderedBy) : null,
       externalRequesterName: row.externalRequesterName,
       externalRequesterFacility: row.externalRequesterFacility,
       status: row.status,
@@ -361,7 +363,7 @@ export class LabOrderRepository {
       source: row.source,
       patientId: row.patientId,
       orderedById: row.orderedById,
-      orderedByName: row.orderedBy?.fullName ?? null,
+      orderedByName: row.orderedBy ? resolveClinicianName(row.orderedBy) : null,
       externalRequesterName: row.externalRequesterName,
       externalRequesterFacility: row.externalRequesterFacility,
       status: row.status as LabOrderStatusValue,

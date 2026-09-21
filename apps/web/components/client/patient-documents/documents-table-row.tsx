@@ -96,13 +96,8 @@ export function DocumentsTableRow({
         )}
       </TableCell>
       <TableCell>
-        {document.uploadedByName ? (
-          <span className="text-xs text-slate-500">{document.uploadedByName}</span>
-        ) : (
-          <span className="font-mono text-xs text-slate-500" title={document.uploadedById}>
-            {document.uploadedById.slice(0, SHORT_ID_LENGTH)}…
-          </span>
-        )}
+        {/* A name or nothing — never a uuid fragment for a person (P20-T07). */}
+        <span className="text-xs text-slate-500">{document.uploadedByName ?? '—'}</span>
       </TableCell>
       <TableCell className="text-right">
         <DocumentRowActions

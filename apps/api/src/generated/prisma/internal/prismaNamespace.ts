@@ -512,6 +512,7 @@ export const ModelName = {
   AntenatalVisit: 'AntenatalVisit',
   DeliveryRecord: 'DeliveryRecord',
   NewbornCareRecord: 'NewbornCareRecord',
+  ShkScreening: 'ShkScreening',
   AntenatalExamination: 'AntenatalExamination',
   AntenatalReferralDismissal: 'AntenatalReferralDismissal',
   PostnatalVisit: 'PostnatalVisit',
@@ -531,7 +532,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "doctorMandate" | "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientDeliveryConsent" | "documentDelivery" | "documentDeliveryLink" | "patientAllergy" | "doctorCredentialOption" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorLicenseExpiryNotice" | "doctorAuthority" | "doctorAuthorityExpiryNotice" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "midwifeFormularyItem" | "prescription" | "prescriptionMedication" | "prescriptionItemComponent" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "taxSettings" | "taxCode" | "taxCodeRate" | "taxCategoryDefault" | "taxReminderNotice" | "taxReportDraft" | "taxReportDocument" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "satusehatSubmissionResource" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "vaultDocumentExpiryNotice" | "vaultDocumentShare" | "userOffboardingNotice" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit" | "documentType" | "documentTypeApprover" | "managedDocument" | "documentApprovalRequest" | "documentApprovalApprover" | "documentApprovalDecision" | "labTest" | "labReferenceRange" | "labPanel" | "labPanelMember" | "labOrderCounter" | "labOrder" | "labOrderItem" | "labSpecimenCounter" | "labSpecimen" | "labResult" | "laboratorySettings" | "labReport" | "immunization" | "province" | "regency" | "district" | "village" | "bugReport" | "bugReportCounter" | "pregnancyEpisode" | "pregnancyExternalDoctorVisit" | "antenatalVisit" | "deliveryRecord" | "newbornCareRecord" | "antenatalExamination" | "antenatalReferralDismissal" | "postnatalVisit" | "postnatalExamination"
+    modelProps: "doctorMandate" | "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientDeliveryConsent" | "documentDelivery" | "documentDeliveryLink" | "patientAllergy" | "doctorCredentialOption" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorLicenseExpiryNotice" | "doctorAuthority" | "doctorAuthorityExpiryNotice" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "midwifeFormularyItem" | "prescription" | "prescriptionMedication" | "prescriptionItemComponent" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "taxSettings" | "taxCode" | "taxCodeRate" | "taxCategoryDefault" | "taxReminderNotice" | "taxReportDraft" | "taxReportDocument" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "satusehatSubmissionResource" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "vaultDocumentExpiryNotice" | "vaultDocumentShare" | "userOffboardingNotice" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit" | "documentType" | "documentTypeApprover" | "managedDocument" | "documentApprovalRequest" | "documentApprovalApprover" | "documentApprovalDecision" | "labTest" | "labReferenceRange" | "labPanel" | "labPanelMember" | "labOrderCounter" | "labOrder" | "labOrderItem" | "labSpecimenCounter" | "labSpecimen" | "labResult" | "laboratorySettings" | "labReport" | "immunization" | "province" | "regency" | "district" | "village" | "bugReport" | "bugReportCounter" | "pregnancyEpisode" | "pregnancyExternalDoctorVisit" | "antenatalVisit" | "deliveryRecord" | "newbornCareRecord" | "shkScreening" | "antenatalExamination" | "antenatalReferralDismissal" | "postnatalVisit" | "postnatalExamination"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -10007,6 +10008,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ShkScreening: {
+      payload: Prisma.$ShkScreeningPayload<ExtArgs>
+      fields: Prisma.ShkScreeningFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ShkScreeningFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShkScreeningPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ShkScreeningFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShkScreeningPayload>
+        }
+        findFirst: {
+          args: Prisma.ShkScreeningFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShkScreeningPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ShkScreeningFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShkScreeningPayload>
+        }
+        findMany: {
+          args: Prisma.ShkScreeningFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShkScreeningPayload>[]
+        }
+        create: {
+          args: Prisma.ShkScreeningCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShkScreeningPayload>
+        }
+        createMany: {
+          args: Prisma.ShkScreeningCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ShkScreeningCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShkScreeningPayload>[]
+        }
+        delete: {
+          args: Prisma.ShkScreeningDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShkScreeningPayload>
+        }
+        update: {
+          args: Prisma.ShkScreeningUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShkScreeningPayload>
+        }
+        deleteMany: {
+          args: Prisma.ShkScreeningDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ShkScreeningUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ShkScreeningUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShkScreeningPayload>[]
+        }
+        upsert: {
+          args: Prisma.ShkScreeningUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShkScreeningPayload>
+        }
+        aggregate: {
+          args: Prisma.ShkScreeningAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateShkScreening>
+        }
+        groupBy: {
+          args: Prisma.ShkScreeningGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ShkScreeningGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ShkScreeningCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ShkScreeningCountAggregateOutputType> | number
+        }
+      }
+    }
     AntenatalExamination: {
       payload: Prisma.$AntenatalExaminationPayload<ExtArgs>
       fields: Prisma.AntenatalExaminationFieldRefs
@@ -12570,6 +12645,26 @@ export const NewbornCareRecordScalarFieldEnum = {
 export type NewbornCareRecordScalarFieldEnum = (typeof NewbornCareRecordScalarFieldEnum)[keyof typeof NewbornCareRecordScalarFieldEnum]
 
 
+export const ShkScreeningScalarFieldEnum = {
+  id: 'id',
+  newbornCareRecordId: 'newbornCareRecordId',
+  sequence: 'sequence',
+  dueFrom: 'dueFrom',
+  dueUntil: 'dueUntil',
+  sampleTakenAt: 'sampleTakenAt',
+  sampleTakenById: 'sampleTakenById',
+  sentAt: 'sentAt',
+  laboratoryName: 'laboratoryName',
+  resultReceivedAt: 'resultReceivedAt',
+  result: 'result',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ShkScreeningScalarFieldEnum = (typeof ShkScreeningScalarFieldEnum)[keyof typeof ShkScreeningScalarFieldEnum]
+
+
 export const AntenatalExaminationScalarFieldEnum = {
   id: 'id',
   antenatalVisitId: 'antenatalVisitId',
@@ -14429,6 +14524,20 @@ export type ListEnumBirthOutcomeFieldRefInput<$PrismaModel> = FieldRefInputType<
 
 
 /**
+ * Reference to a field of type 'ShkResult'
+ */
+export type EnumShkResultFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ShkResult'>
+    
+
+
+/**
+ * Reference to a field of type 'ShkResult[]'
+ */
+export type ListEnumShkResultFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ShkResult[]'>
+    
+
+
+/**
  * Reference to a field of type 'FetalPresentation'
  */
 export type EnumFetalPresentationFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FetalPresentation'>
@@ -14791,6 +14900,7 @@ export type GlobalOmitConfig = {
   antenatalVisit?: Prisma.AntenatalVisitOmit
   deliveryRecord?: Prisma.DeliveryRecordOmit
   newbornCareRecord?: Prisma.NewbornCareRecordOmit
+  shkScreening?: Prisma.ShkScreeningOmit
   antenatalExamination?: Prisma.AntenatalExaminationOmit
   antenatalReferralDismissal?: Prisma.AntenatalReferralDismissalOmit
   postnatalVisit?: Prisma.PostnatalVisitOmit

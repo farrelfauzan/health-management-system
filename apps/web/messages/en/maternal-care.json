@@ -300,6 +300,69 @@
           "ABSENT": "Absent"
         }
       }
+    },
+    "shk": {
+      "title": "SHK Screening",
+      "subtitle": "The heel-prick sample is taken 48–72 hours after birth. This list shows babies who are due, late, awaiting a result or recalled.",
+      "loadError": "The SHK screening list could not be loaded.",
+      "saveError": "The SHK screening could not be saved.",
+      "empty": "No SHK samples in this list.",
+      "tabs": {
+        "DUE": "Due",
+        "OVERDUE": "Overdue",
+        "AWAITING_RESULT": "Awaiting result",
+        "RECALL": "Recall",
+        "ALL": "All open"
+      },
+      "statuses": {
+        "UPCOMING": "Not yet due",
+        "DUE": "Due",
+        "OVERDUE": "Overdue",
+        "TAKEN": "Sample taken",
+        "SENT": "Sent to lab",
+        "RESULTED": "Resulted"
+      },
+      "results": {
+        "NORMAL": "Normal",
+        "RECALL": "Recall",
+        "INVALID_SAMPLE": "Invalid sample"
+      },
+      "chip": "SHK: {label}",
+      "sequence": "(sample {sequence})",
+      "babyOf": "Baby of {motherName}",
+      "bornAt": "Born {birthAt}",
+      "window": "{dueFrom} – {dueUntil}",
+      "columns": {
+        "baby": "Baby",
+        "window": "Sampling window",
+        "status": "Status",
+        "laboratory": "Laboratory",
+        "attendant": "Birth attendant",
+        "actions": "Actions"
+      },
+      "actions": {
+        "sample": "Record sample taken",
+        "sent": "Record sent",
+        "result": "Record result"
+      },
+      "fields": {
+        "sampleAt": "Time taken",
+        "sentAt": "Time sent",
+        "resultAt": "Time result received",
+        "laboratoryName": "Referral laboratory",
+        "result": "Result",
+        "notes": "Notes"
+      },
+      "repeatHint": "This result opens the next sample and notifies the clinicians.",
+      "saved": {
+        "sample": "SHK sample recorded",
+        "sent": "SHK sample sending recorded",
+        "result": "SHK result recorded"
+      },
+      "save": "Save",
+      "cancel": "Cancel",
+      "early": "taken early",
+      "earlyHint": "Sample taken before 48 hours; the laboratory may not be able to read it."
     }
   }
 }

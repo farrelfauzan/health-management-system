@@ -179,6 +179,7 @@ export const ModelName = {
   AntenatalVisit: 'AntenatalVisit',
   DeliveryRecord: 'DeliveryRecord',
   NewbornCareRecord: 'NewbornCareRecord',
+  ShkScreening: 'ShkScreening',
   AntenatalExamination: 'AntenatalExamination',
   AntenatalReferralDismissal: 'AntenatalReferralDismissal',
   PostnatalVisit: 'PostnatalVisit',
@@ -2427,6 +2428,26 @@ export const NewbornCareRecordScalarFieldEnum = {
 } as const
 
 export type NewbornCareRecordScalarFieldEnum = (typeof NewbornCareRecordScalarFieldEnum)[keyof typeof NewbornCareRecordScalarFieldEnum]
+
+
+export const ShkScreeningScalarFieldEnum = {
+  id: 'id',
+  newbornCareRecordId: 'newbornCareRecordId',
+  sequence: 'sequence',
+  dueFrom: 'dueFrom',
+  dueUntil: 'dueUntil',
+  sampleTakenAt: 'sampleTakenAt',
+  sampleTakenById: 'sampleTakenById',
+  sentAt: 'sentAt',
+  laboratoryName: 'laboratoryName',
+  resultReceivedAt: 'resultReceivedAt',
+  result: 'result',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ShkScreeningScalarFieldEnum = (typeof ShkScreeningScalarFieldEnum)[keyof typeof ShkScreeningScalarFieldEnum]
 
 
 export const AntenatalExaminationScalarFieldEnum = {

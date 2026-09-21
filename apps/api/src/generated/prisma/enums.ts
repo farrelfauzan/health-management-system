@@ -169,6 +169,8 @@ export const AuditAction = {
   ANTENATAL_REFERRAL_DISMISSED: 'ANTENATAL_REFERRAL_DISMISSED',
   DELIVERY_RECORDED: 'DELIVERY_RECORDED',
   DELIVERY_UPDATED: 'DELIVERY_UPDATED',
+  SHK_SAMPLE_TAKEN: 'SHK_SAMPLE_TAKEN',
+  SHK_RESULT_RECORDED: 'SHK_RESULT_RECORDED',
   TAX_SETTINGS_UPDATED: 'TAX_SETTINGS_UPDATED',
   TAX_CODE_CHANGED: 'TAX_CODE_CHANGED',
   TAX_ASSIGNMENT_CHANGED: 'TAX_ASSIGNMENT_CHANGED',
@@ -1089,7 +1091,8 @@ export const NotificationType = {
   DOCTOR_AUTHORITY_EXPIRED: 'DOCTOR_AUTHORITY_EXPIRED',
   TAX_OBLIGATION_DUE: 'TAX_OBLIGATION_DUE',
   TAX_TURNOVER_THRESHOLD: 'TAX_TURNOVER_THRESHOLD',
-  TAX_PP55_LAST_YEAR: 'TAX_PP55_LAST_YEAR'
+  TAX_PP55_LAST_YEAR: 'TAX_PP55_LAST_YEAR',
+  SHK_RECALL: 'SHK_RECALL'
 } as const
 
 export type NotificationType = (typeof NotificationType)[keyof typeof NotificationType]
@@ -1341,6 +1344,15 @@ export const BirthOutcome = {
 } as const
 
 export type BirthOutcome = (typeof BirthOutcome)[keyof typeof BirthOutcome]
+
+
+export const ShkResult = {
+  NORMAL: 'NORMAL',
+  RECALL: 'RECALL',
+  INVALID_SAMPLE: 'INVALID_SAMPLE'
+} as const
+
+export type ShkResult = (typeof ShkResult)[keyof typeof ShkResult]
 
 
 export const FetalPresentation = {

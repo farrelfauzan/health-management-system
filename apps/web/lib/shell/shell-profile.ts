@@ -2,9 +2,17 @@ import type { AccessTokenClaims } from '#lib/auth/access-token-claims';
 
 export type ShellProfile = {
   displayName: string;
-  isFallbackName?: boolean;
+  /**
+   * The display name is not a person's name (P20-T08): nothing names this
+   * account, so `displayName` is its email address verbatim — or, with no
+   * address either, an untranslated placeholder the menu swaps for its own
+   * copy. Consumers use it to avoid printing the address twice, never to
+   * invent a name.
+   */
+  isFallbackName: boolean;
   roleLabel: string;
-  roleKey?: 'superAdmin' | 'admin' | 'doctor' | 'midwife' | 'pharmacist' | 'patient' | 'staff' | null;
+  roleKey?:
+    'superAdmin' | 'admin' | 'doctor' | 'midwife' | 'pharmacist' | 'patient' | 'staff' | null;
   email: string;
 };
 
@@ -28,30 +36,29 @@ function formatTitleCase(value: string): string {
 /**
  * Who the shell says you are.
  *
- * The name comes from the person's own record when the session carries one —
- * their doctor or patient profile, written into the session hint by the API —
- * because that is the name they wrote down and the name colleagues call them
- * by. It is used verbatim: a real name is not ours to re-case, and title-casing
- * would turn "Siti Nurhaliza binti Abdullah" into something nobody signs.
+ * The name is the session's `name` claim (P20-T08) — the account's own name,
+ * else the doctor or patient record's, resolved by the API at issuance and
+ * carried by both the access token and the session hint. It is used verbatim:
+ * a real name is not ours to re-case, and title-casing would turn "Siti
+ * Nurhaliza binti Abdullah" into something nobody signs.
+ *
+ * With no name — an account nobody has named yet, or a session issued before
+ * the claim existed, until its next refresh — the shell shows the email
+ * address exactly as it is. It used to title-case the local part instead, so
+ * `apotek1@klinik.id` was greeted as "Apotek1" with an "A" avatar: a name
+ * nobody chose, presented as if somebody had. `isFallbackName` says which of
+ * the two the display name is.
  *
  * The role line underneath is the same idea: a clinician's own profile says
  * whether they are a doctor or a midwife, and that is what it shows; the role
  * code on the account only answers for everyone who has no clinician profile.
- *
- * The email address is the fallback, not the source. An account no clinical
- * record names — a receptionist, an administrator — still has to be greeted as
- * something, and the local part title-cased is the best guess available. Only
- * when there is no address either does `isFallbackName` go up, which is the
- * menu's cue to render a translated placeholder instead of a name at all.
  */
 export function resolveShellProfile(claims: AccessTokenClaims | null): ShellProfile {
   if (!claims) {
     return FALLBACK_PROFILE;
   }
   const fullName = claims.name?.trim() ?? '';
-  const emailLocalPart = claims.email?.split('@')[0] ?? '';
-  const displayName =
-    fullName || (emailLocalPart ? formatTitleCase(emailLocalPart) : FALLBACK_PROFILE.displayName);
+  const email = claims.email?.trim() ?? '';
   // A clinician is labelled by what their own profile says they are, and only
   // then by the role code on their account. The two drift apart legitimately:
   // an administrator correcting a profession from MIDWIFE to DOCTOR does not
@@ -61,11 +68,11 @@ export function resolveShellProfile(claims: AccessTokenClaims | null): ShellProf
   const roleLabel = primaryRole ? formatTitleCase(primaryRole) : FALLBACK_PROFILE.roleLabel;
   const roleKey = resolveRoleKey(primaryRole);
   return {
-    displayName,
-    isFallbackName: !fullName && !emailLocalPart,
+    displayName: fullName || email || FALLBACK_PROFILE.displayName,
+    isFallbackName: !fullName,
     roleLabel,
     roleKey,
-    email: claims.email ?? '',
+    email,
   };
 }
 
