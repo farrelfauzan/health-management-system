@@ -96,12 +96,16 @@ describe('AdminUserInviteDialog', () => {
     const user = userEvent.setup();
     renderDialog();
 
+    await user.type(screen.getByLabelText('Full name'), 'Rani Putri');
     await user.type(screen.getByLabelText('Email'), 'new-admin@hms.local');
     await user.click(await screen.findByText('Admin'));
     await user.click(screen.getByRole('button', { name: 'Send invitation' }));
 
     expect(inviteRequestMock).toHaveBeenCalledWith({
       email: 'new-admin@hms.local',
+      // Collected from the administrator, who already knows the name, rather
+      // than from the invitee, whose typing nobody checks (P20-T05).
+      fullName: 'Rani Putri',
       roleCodes: ['ADMIN'],
     });
   });
@@ -114,10 +118,22 @@ describe('AdminUserInviteDialog', () => {
     expect(screen.queryByLabelText(/password/i)).toBeNull();
   });
 
+  it('requires a name before submitting', async () => {
+    const user = userEvent.setup();
+    renderDialog();
+
+    await user.type(screen.getByLabelText('Email'), 'new-admin@hms.local');
+    await user.click(await screen.findByText('Admin'));
+    await user.click(screen.getByRole('button', { name: 'Send invitation' }));
+
+    expect(inviteRequestMock).not.toHaveBeenCalled();
+  });
+
   it('requires at least one role before submitting', async () => {
     const user = userEvent.setup();
     renderDialog();
 
+    await user.type(screen.getByLabelText('Full name'), 'Rani Putri');
     await user.type(screen.getByLabelText('Email'), 'new-admin@hms.local');
     await user.click(screen.getByRole('button', { name: 'Send invitation' }));
 
@@ -130,6 +146,7 @@ describe('AdminUserInviteDialog', () => {
     inviteRequestMock.mockRejectedValue(buildConflictError());
     renderDialog();
 
+    await user.type(screen.getByLabelText('Full name'), 'Rani Putri');
     await user.type(screen.getByLabelText('Email'), 'existing@hms.local');
     await user.click(await screen.findByText('Admin'));
     await user.click(screen.getByRole('button', { name: 'Send invitation' }));

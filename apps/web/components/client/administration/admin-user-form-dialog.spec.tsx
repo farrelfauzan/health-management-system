@@ -35,6 +35,7 @@ const rolesRequestMock = vi.mocked(rbacControllerGetRolesV1);
 const EXISTING_USER: AdminUser = {
   id: 'user-1',
   email: 'existing@hms.local',
+  fullName: 'Rani Putri',
   isActive: true,
   createdAt: '2026-07-01T00:00:00.000Z',
   updatedAt: '2026-07-01T00:00:00.000Z',
@@ -100,6 +101,9 @@ describe('AdminUserFormDialog', () => {
 
     expect(updateRequestMock).toHaveBeenCalledWith('user-1', {
       email: 'existing@hms.local',
+      // Prefilled from the account and sent back unchanged: an edit that left
+      // it out would blank a name nobody asked to remove (P20-T05).
+      fullName: 'Rani Putri',
       roleCodes: ['ADMIN'],
       isActive: true,
     });
