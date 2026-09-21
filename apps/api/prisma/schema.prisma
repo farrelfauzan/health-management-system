@@ -838,6 +838,9 @@ enum SatusehatSubmissionKind {
   /// Closes a pregnancy's ANC EpisodeOfCare (P25-T08). Not a bundle: one
   /// PATCH, enqueued when the pregnancy ends.
   EPISODE_OF_CARE_FINISH
+  /// Closes a birth's PNC EpisodeOfCare (P25-T12): one PATCH, enqueued by the
+  /// sweep once the last nifas window (KF4, day 42) has passed.
+  POSTNATAL_EPISODE_FINISH
 
   @@map("satusehat_submission_kind")
 }
@@ -1194,6 +1197,7 @@ model User {
   createdPregnancyEpisodes  PregnancyEpisode[]         @relation("PregnancyEpisodeCreatedBy")
   recordedExternalDoctorVisits PregnancyExternalDoctorVisit[] @relation("PregnancyExternalDoctorVisitRecordedBy")
   recordedAntenatalExaminations AntenatalExamination[]        @relation("AntenatalExaminationRecordedBy")
+  recordedPostnatalExaminations PostnatalExamination[]        @relation("PostnatalExaminationRecordedBy")
   dismissedAntenatalReferrals   AntenatalReferralDismissal[]  @relation("AntenatalReferralDismissedBy")
   revokedDoctorMandates     DoctorMandate[]            @relation("DoctorMandateRevokedBy")
 
@@ -2509,6 +2513,7 @@ model Encounter {
   clinicalDocuments    Document[]
   labOrders            LabOrder[]
   antenatalVisit       AntenatalVisit?
+  postnatalVisit       PostnatalVisit?
 
   @@index([patientId, startedAt])
   @@index([doctorId, startedAt])
@@ -2759,6 +2764,7 @@ model Medication {
   @@map("medications")
   deliveryUterotonics   DeliveryRecord[]    @relation("DeliveryUterotonic")
   newbornVitaminK1Doses NewbornCareRecord[] @relation("NewbornVitaminK1")
+  postnatalVitaminADoses PostnatalExamination[] @relation("PostnatalVitaminA")
   newbornEyeProphylaxis NewbornCareRecord[] @relation("NewbornEyeProphylaxis")
 }
 
@@ -6672,6 +6678,7 @@ model PregnancyEpisode {
   externalDoctorVisits PregnancyExternalDoctorVisit[]
   satusehatSubmissions SatusehatSubmission[]
   deliveryRecord       DeliveryRecord?
+  postnatalVisits      PostnatalVisit[]
 
   @@index([patientId])
   @@index([createdById])
@@ -6882,6 +6889,7 @@ model NewbornCareRecord {
   eyeProphylaxisMedication Medication? @relation("NewbornEyeProphylaxis", fields: [eyeProphylaxisMedicationId], references: [id], onDelete: Restrict)
   hb0Immunization     Immunization?  @relation("NewbornHb0", fields: [hb0ImmunizationId], references: [id], onDelete: SetNull)
 
+  postnatalVisits PostnatalVisit[]
   shkScreenings ShkScreening[]
 
   @@unique([newbornPatientId])
@@ -7027,4 +7035,129 @@ model AntenatalReferralDismissal {
   @@unique([antenatalVisitId, ruleCode])
   @@index([dismissedById])
   @@map("antenatal_referral_dismissals")
+}
+
+/// The nifas (KF) and neonatal (KN) visit codes (P25-T12). KF is SATUSEHAT's
+/// `…/CodeSystem/episodeofcare/puerperium`, KN its `…/episodeofcare/neonate`;
+/// the sandbox refuses anything outside either list.
+enum PostnatalVisitCode {
+  KF1
+  KF2
+  KF3
+  KF4
+  KN1
+  KN2
+  KN3
+
+  @@map("postnatal_visit_code")
+}
+
+/// Whose postnatal visit it is (P25-T12).
+enum PostnatalSubject {
+  MOTHER
+  NEWBORN
+
+  @@map("postnatal_subject")
+}
+
+/// "Kondisi payudara", the PNC playbook's five SNOMED answers (P25-T12).
+enum PostnatalBreastCondition {
+  NORMAL
+  SWELLING
+  REDNESS
+  NIPPLE_DISCHARGE
+  PAIN
+
+  @@map("postnatal_breast_condition")
+}
+
+/// "Warna lokhia" (P25-T12).
+enum LochiaColour {
+  RUBRA
+  SEROSA
+  ALBA
+
+  @@map("lochia_colour")
+}
+
+/// "Produksi ASI", the playbook's three `clinical-term` answers (P25-T12).
+enum BreastMilkProduction {
+  PRESENT
+  LOW
+  ABSENT
+
+  @@map("breast_milk_production")
+}
+
+/// One encounter counted as a nifas visit of the mother or a neonatal visit
+/// of one of her babies (P25-T12).
+///
+/// `pregnancy_episode_id` is the mother's episode on both kinds, so one birth's
+/// schedule reads one table. `visit_code` is derived from the encounter's
+/// start when the visit is linked and rewritten — then never again — when the
+/// encounter closes; null means the visit fell outside every window of its
+/// subject. The CHECKs in the migration tie a NEWBORN row to a baby and each
+/// code to its subject.
+model PostnatalVisit {
+  id                  String              @id @default(uuid()) @db.Uuid
+  encounterId         String              @unique @map("encounter_id") @db.Uuid
+  subject             PostnatalSubject
+  pregnancyEpisodeId  String              @map("pregnancy_episode_id") @db.Uuid
+  newbornCareRecordId String?             @map("newborn_care_record_id") @db.Uuid
+  visitCode           PostnatalVisitCode? @map("visit_code")
+  createdAt           DateTime            @default(now()) @map("created_at")
+  updatedAt           DateTime            @updatedAt @map("updated_at")
+
+  encounter         Encounter          @relation(fields: [encounterId], references: [id], onDelete: Cascade)
+  pregnancyEpisode  PregnancyEpisode   @relation(fields: [pregnancyEpisodeId], references: [id], onDelete: Restrict)
+  newbornCareRecord NewbornCareRecord? @relation(fields: [newbornCareRecordId], references: [id], onDelete: Restrict)
+
+  examination PostnatalExamination?
+
+  @@index([pregnancyEpisodeId])
+  @@index([newbornCareRecordId])
+  @@map("postnatal_visits")
+}
+
+/// The postnatal examination of one nifas visit (P25-T12). MOTHER visits only,
+/// which the service enforces.
+///
+/// Every field is nullable for the reason the 10T examination's are: an item
+/// not examined is "not done", not invalid. Blood pressure, pulse, temperature
+/// and respiration are **absent** — they are the encounter's `VitalSigns`.
+model PostnatalExamination {
+  id               String @id @default(uuid()) @db.Uuid
+  postnatalVisitId String @unique @map("postnatal_visit_id") @db.Uuid
+
+  vaginalBleeding              Boolean?                  @map("vaginal_bleeding")
+  bloodLossMl                  Int?                      @map("blood_loss_ml")
+  /// Free text: the playbook sends "Kondisi Perineum" as a string.
+  perineumCondition            String?                   @map("perineum_condition")
+  perinealInfectionSigns       Boolean?                  @map("perineal_infection_signs")
+  caesareanWoundInfectionSigns Boolean?                  @map("caesarean_wound_infection_signs")
+  breastCondition              PostnatalBreastCondition? @map("breast_condition")
+  uterineContraction           Boolean?                  @map("uterine_contraction")
+  lochiaColour                 LochiaColour?             @map("lochia_colour")
+  /// True when the lochia smells abnormal.
+  lochiaOdour                  Boolean?                  @map("lochia_odour")
+  breastMilkProduction         BreastMilkProduction?     @map("breast_milk_production")
+  urination                    Boolean?
+  defecation                   Boolean?
+  newbornCareCounselling       Boolean?                  @map("newborn_care_counselling")
+  /// Vitamin A for the mother, a time and a medication like the newborn's K1.
+  vitaminAGivenAt              DateTime?                 @map("vitamin_a_given_at") @db.Timestamptz(3)
+  vitaminAMedicationId         String?                   @map("vitamin_a_medication_id") @db.Uuid
+  familyPlanningCounselling    Boolean?                  @map("family_planning_counselling")
+
+  recordedById String   @map("recorded_by_id") @db.Uuid
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  postnatalVisit     PostnatalVisit @relation(fields: [postnatalVisitId], references: [id], onDelete: Cascade)
+  vitaminAMedication Medication?    @relation("PostnatalVitaminA", fields: [vitaminAMedicationId], references: [id], onDelete: Restrict)
+  recordedBy         User           @relation("PostnatalExaminationRecordedBy", fields: [recordedById], references: [id], onDelete: Restrict)
+
+  @@index([vitaminAMedicationId])
+  @@index([recordedById])
+  @@map("postnatal_examinations")
 }

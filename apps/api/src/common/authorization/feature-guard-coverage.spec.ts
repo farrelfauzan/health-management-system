@@ -61,6 +61,7 @@ const GATED_CONTROLLERS: Readonly<Record<string, FeatureKey>> = {
   PregnancyEpisodeController: 'maternal-care',
   AntenatalExaminationController: 'maternal-care',
   DeliveryRecordController: 'maternal-care',
+  PostnatalVisitController: 'maternal-care',
   ShkScreeningController: 'maternal-care',
   BpjsAntreanConfigController: 'bpjs-antrean',
   BpjsAntreanWsController: 'bpjs-antrean',

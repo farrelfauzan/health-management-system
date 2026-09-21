@@ -560,7 +560,8 @@ export type RegistrationType = (typeof RegistrationType)[keyof typeof Registrati
 export const SatusehatSubmissionKind = {
   ENCOUNTER: 'ENCOUNTER',
   LAB_REPORT: 'LAB_REPORT',
-  EPISODE_OF_CARE_FINISH: 'EPISODE_OF_CARE_FINISH'
+  EPISODE_OF_CARE_FINISH: 'EPISODE_OF_CARE_FINISH',
+  POSTNATAL_EPISODE_FINISH: 'POSTNATAL_EPISODE_FINISH'
 } as const
 
 export type SatusehatSubmissionKind = (typeof SatusehatSubmissionKind)[keyof typeof SatusehatSubmissionKind]
@@ -1382,3 +1383,53 @@ export const TetanusImmunizationStatus = {
 } as const
 
 export type TetanusImmunizationStatus = (typeof TetanusImmunizationStatus)[keyof typeof TetanusImmunizationStatus]
+
+
+export const PostnatalVisitCode = {
+  KF1: 'KF1',
+  KF2: 'KF2',
+  KF3: 'KF3',
+  KF4: 'KF4',
+  KN1: 'KN1',
+  KN2: 'KN2',
+  KN3: 'KN3'
+} as const
+
+export type PostnatalVisitCode = (typeof PostnatalVisitCode)[keyof typeof PostnatalVisitCode]
+
+
+export const PostnatalSubject = {
+  MOTHER: 'MOTHER',
+  NEWBORN: 'NEWBORN'
+} as const
+
+export type PostnatalSubject = (typeof PostnatalSubject)[keyof typeof PostnatalSubject]
+
+
+export const PostnatalBreastCondition = {
+  NORMAL: 'NORMAL',
+  SWELLING: 'SWELLING',
+  REDNESS: 'REDNESS',
+  NIPPLE_DISCHARGE: 'NIPPLE_DISCHARGE',
+  PAIN: 'PAIN'
+} as const
+
+export type PostnatalBreastCondition = (typeof PostnatalBreastCondition)[keyof typeof PostnatalBreastCondition]
+
+
+export const LochiaColour = {
+  RUBRA: 'RUBRA',
+  SEROSA: 'SEROSA',
+  ALBA: 'ALBA'
+} as const
+
+export type LochiaColour = (typeof LochiaColour)[keyof typeof LochiaColour]
+
+
+export const BreastMilkProduction = {
+  PRESENT: 'PRESENT',
+  LOW: 'LOW',
+  ABSENT: 'ABSENT'
+} as const
+
+export type BreastMilkProduction = (typeof BreastMilkProduction)[keyof typeof BreastMilkProduction]

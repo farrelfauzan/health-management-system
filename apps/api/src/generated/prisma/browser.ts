@@ -1658,3 +1658,26 @@ export type AntenatalExamination = Prisma.AntenatalExaminationModel
  * "dismissed" on its own answers nothing later.
  */
 export type AntenatalReferralDismissal = Prisma.AntenatalReferralDismissalModel
+/**
+ * Model PostnatalVisit
+ * One encounter counted as a nifas visit of the mother or a neonatal visit
+ * of one of her babies (P25-T12).
+ * 
+ * `pregnancy_episode_id` is the mother's episode on both kinds, so one birth's
+ * schedule reads one table. `visit_code` is derived from the encounter's
+ * start when the visit is linked and rewritten — then never again — when the
+ * encounter closes; null means the visit fell outside every window of its
+ * subject. The CHECKs in the migration tie a NEWBORN row to a baby and each
+ * code to its subject.
+ */
+export type PostnatalVisit = Prisma.PostnatalVisitModel
+/**
+ * Model PostnatalExamination
+ * The postnatal examination of one nifas visit (P25-T12). MOTHER visits only,
+ * which the service enforces.
+ * 
+ * Every field is nullable for the reason the 10T examination's are: an item
+ * not examined is "not done", not invalid. Blood pressure, pulse, temperature
+ * and respiration are **absent** — they are the encounter's `VitalSigns`.
+ */
+export type PostnatalExamination = Prisma.PostnatalExaminationModel

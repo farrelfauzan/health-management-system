@@ -6,6 +6,7 @@ import { SatusehatKfaClient } from './satusehat-kfa.client';
 import { SatusehatEpisodeOfCareClient } from './satusehat-episode-of-care.client';
 import { SatusehatLocationClient } from './satusehat-location.client';
 import { SatusehatMasterDataClient } from './satusehat-master-data.client';
+import { SatusehatPostnatalMapper } from './satusehat-postnatal.mapper';
 import { SatusehatTokenClient } from './satusehat-token.client';
 
 /**
@@ -23,6 +24,7 @@ import { SatusehatTokenClient } from './satusehat-token.client';
     SatusehatLocationClient,
     SatusehatMasterDataClient,
     SatusehatFhirMapper,
+    SatusehatPostnatalMapper,
   ],
   exports: [
     SatusehatHttpClient,
@@ -31,6 +33,7 @@ import { SatusehatTokenClient } from './satusehat-token.client';
     SatusehatLocationClient,
     SatusehatMasterDataClient,
     SatusehatFhirMapper,
+    SatusehatPostnatalMapper,
   ],
 })
 export class SatusehatModule {}

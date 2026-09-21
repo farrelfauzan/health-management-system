@@ -320,6 +320,7 @@ export class SatusehatFhirMapper {
       resourceType: 'Encounter',
       identifier: [
         ...this.buildAntenatalVisitIdentifier(input, organizationId),
+        ...this.buildPostnatalVisitIdentifier(input),
         {
           system: `${ENCOUNTER_IDENTIFIER_SYSTEM_PREFIX}/${organizationId}`,
           use: 'official',
@@ -350,7 +351,7 @@ export class SatusehatFhirMapper {
       statusHistory: this.buildStatusHistory(input),
       ...this.buildHospitalization(input),
       ...this.buildEncounterDiagnosis(input),
-      ...this.buildAntenatalEpisodeReference(input),
+      ...this.buildEpisodeOfCareReference(input),
       serviceProvider: { reference: `Organization/${organizationId}` },
     };
   }
@@ -1542,17 +1543,35 @@ export class SatusehatFhirMapper {
     return { valueString: String(value) };
   }
 
-  private buildAntenatalEpisodeReference(
+  /**
+   * The episode a visit belongs to: the ANC one for an antenatal visit
+   * (P25-T08), the PNC one for a nifas visit (P25-T12). An encounter is at
+   * most one of the two, and a baby's neonatal visit references none.
+   */
+  private buildEpisodeOfCareReference(
     input: SatusehatEncounterMapInput,
   ): Pick<SatusehatFhirEncounter, 'episodeOfCare'> {
-    if (!input.antenatalEpisode) {
+    const episodeIds = [
+      input.antenatalEpisode?.satusehatEpisodeOfCareId,
+      input.postnatalEpisode?.satusehatEpisodeOfCareId,
+    ].filter((episodeId): episodeId is string => Boolean(episodeId));
+    if (episodeIds.length === 0) {
       return {};
     }
     return {
-      episodeOfCare: [
-        { reference: `EpisodeOfCare/${input.antenatalEpisode.satusehatEpisodeOfCareId}` },
-      ],
+      episodeOfCare: episodeIds.map((episodeId) => ({ reference: `EpisodeOfCare/${episodeId}` })),
     };
+  }
+
+  /** KF1–KF4 or KN1–KN3, under the terminology system the caller chose (P25-T12). */
+  private buildPostnatalVisitIdentifier(
+    input: SatusehatEncounterMapInput,
+  ): SatusehatFhirIdentifier[] {
+    const visitIdentifier = input.postnatalEpisode?.visitIdentifier;
+    if (!visitIdentifier) {
+      return [];
+    }
+    return [{ system: visitIdentifier.system, use: 'official', value: visitIdentifier.value }];
   }
 
   private buildAntenatalVisitIdentifier(

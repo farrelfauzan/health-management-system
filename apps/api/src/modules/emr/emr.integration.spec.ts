@@ -11,6 +11,7 @@ import { DoctorAuthorityRepository } from '../doctor-management/repository/docto
 import { DoctorMandateRepository } from '../doctor-management/repository/doctor-mandate.repository';
 import { LabOrderRepository } from '../laboratory/repository/lab-order.repository';
 import { MaternalCareRepository } from '../maternal-care/repository/maternal-care.repository';
+import { PostnatalVisitRepository } from '../maternal-care/repository/postnatal-visit.repository';
 import { PharmacyFlowRepository } from '../pharmacy-flow/repository/pharmacy-flow.repository';
 import { Icd10CodeRepository } from '../terminology/repository/icd10-code.repository';
 import { EncounterRepository } from './repository/encounter.repository';
@@ -86,6 +87,11 @@ describe('EMR integration', () => {
     listEpisodeVisits: jest.fn(() => Promise.resolve([])),
     freezeVisitCode: jest.fn(() => Promise.resolve(undefined)),
   } as unknown as MaternalCareRepository;
+
+  // P25-T12: the same close freezes a nifas visit's KF/KN code too.
+  const postnatalVisitRepositoryMock = {
+    findVisitByEncounterId: jest.fn(() => Promise.resolve(null)),
+  } as unknown as PostnatalVisitRepository;
 
   const prismaServiceMock = {
     // SJ-4 writes one audit row per patient-data route, and the write is
@@ -176,6 +182,8 @@ describe('EMR integration', () => {
       // the encounter.
       .overrideProvider(MaternalCareRepository)
       .useValue(maternalCareRepositoryMock)
+      .overrideProvider(PostnatalVisitRepository)
+      .useValue(postnatalVisitRepositoryMock)
       .overrideProvider(PrismaService)
       .useValue(prismaServiceMock)
       .compile();

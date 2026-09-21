@@ -203,6 +203,8 @@ export type SatusehatFhirObservation = {
   /** Used by the two antenatal date observations, HPHT and HPL (P25-T08). */
   valueDateTime?: string;
   valueCodeableConcept?: SatusehatFhirCodeableConceptWithText;
+  /** The nifas findings the PNC playbook sends as present/absent (P25-T12). */
+  valueBoolean?: boolean;
   interpretation?: SatusehatFhirCodeableConcept[];
   referenceRange?: SatusehatFhirObservationReferenceRange[];
 };
@@ -331,6 +333,38 @@ export type SatusehatEncounterMapInput = {
    * be absent, so a visit recorded without one is simply reported without it.
    */
   antenatalEpisode?: { satusehatEpisodeOfCareId: string; visitCode: string | null };
+  /**
+   * Set when this visit is a nifas or neonatal one (P25-T12). The episode id —
+   * a nifas visit's PNC episode, null for a baby's visit, whose neonatal
+   * episode is not sent — adds an `episodeOfCare` reference; the visit
+   * identifier (KF under `…/puerperium`, KN under `…/neonate`) is added beside
+   * the encounter's own.
+   */
+  postnatalEpisode?: {
+    satusehatEpisodeOfCareId: string | null;
+    visitIdentifier: { system: string; value: string } | null;
+  };
+};
+
+/** What {@link SatusehatPostnatalMapper.mapPostnatalEpisodeOfCare} needs (P25-T12). */
+export type SatusehatPostnatalEpisodeMapInput = {
+  pregnancyEpisodeId: string;
+  patientIhsNumber: string;
+  patientName?: string;
+  /** `EpisodeOfCare.period.start` — the birth. */
+  startedAt: Date;
+};
+
+/** What {@link SatusehatPostnatalMapper.mapPostnatalObservations} needs (P25-T12). */
+export type SatusehatPostnatalObservationMapInput = {
+  patientIhsNumber: string;
+  patientName?: string;
+  practitionerIhsNumber?: string;
+  encounterReference: string;
+  recordedAt: Date;
+  values: Readonly<
+    Partial<Record<SatusehatPostnatalObservationField, number | string | boolean | Date>>
+  >;
 };
 
 /** What {@link SatusehatFhirMapper.mapAntenatalEpisodeOfCare} needs (P25-T08). */
@@ -993,6 +1027,44 @@ export type SatusehatAntenatalObservationDefinition = {
   category: 'survey' | 'exam' | 'vital-signs' | 'laboratory';
   unit?: string;
   ucumCode?: string;
+};
+
+/** The nifas findings that carry a coding (P25-T12). */
+export type SatusehatPostnatalObservationField =
+  | 'deliveryDate'
+  | 'vaginalBleeding'
+  | 'bloodLossMl'
+  | 'perineumCondition'
+  | 'perinealInfectionSigns'
+  | 'caesareanWoundInfectionSigns'
+  | 'breastCondition'
+  | 'uterineContraction'
+  | 'lochiaColour'
+  | 'lochiaOdour'
+  | 'breastMilkProduction'
+  | 'urination'
+  | 'defecation';
+
+/** One coded answer — a local enum value's SNOMED or `clinical-term` coding. */
+export type SatusehatCodedAnswer = {
+  system: string;
+  code: string;
+  display: string;
+};
+
+/**
+ * How one nifas finding is coded (P25-T12). `answers` is set for a finding
+ * sent as a CodeableConcept, keyed by the local enum value; `unit` and
+ * `ucumCode` for a quantity. A boolean, a string or a date needs neither.
+ */
+export type SatusehatPostnatalObservationDefinition = {
+  system: string;
+  code: string;
+  display: string;
+  category: 'survey' | 'exam';
+  unit?: string;
+  ucumCode?: string;
+  answers?: Readonly<Record<string, SatusehatCodedAnswer>>;
 };
 
 /** A FHIR EpisodeOfCare as SATUSEHAT accepts it (P25-T08). */

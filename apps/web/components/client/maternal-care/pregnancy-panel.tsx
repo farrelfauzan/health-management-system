@@ -10,6 +10,7 @@ import { AntenatalVisitList } from '#components/client/maternal-care/antenatal-v
 import { DeliveryCard } from '#components/client/maternal-care/delivery-card';
 import { EndPregnancyEpisodeDialog } from '#components/client/maternal-care/end-pregnancy-episode-dialog';
 import { ExternalDoctorVisitCard } from '#components/client/maternal-care/external-doctor-visit-card';
+import { PostnatalScheduleSection } from '#components/client/maternal-care/postnatal-schedule-section';
 import { PregnancyEpisodeHeaderCard } from '#components/client/maternal-care/pregnancy-episode-header-card';
 import { RecordDeliveryDialog } from '#components/client/maternal-care/record-delivery-dialog';
 import { RecordExternalDoctorVisitDialog } from '#components/client/maternal-care/record-external-doctor-visit-dialog';
@@ -60,7 +61,10 @@ export function PregnancyPanel({ patientId }: PregnancyPanelProps) {
 
   if (episode === null) {
     return (
-      <>
+      <div className="space-y-6">
+        {/* P25-T12. After the birth the episode is no longer active, and this
+            is when the nifas and neonatal windows matter. */}
+        <PostnatalScheduleSection patientId={patientId} />
         <EmptyState
           icon="pregnant_woman"
           title={
@@ -81,7 +85,7 @@ export function PregnancyPanel({ patientId }: PregnancyPanelProps) {
             patientId={patientId}
           />
         ) : null}
-      </>
+      </div>
     );
   }
 

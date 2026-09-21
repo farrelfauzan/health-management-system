@@ -34,6 +34,8 @@ import {
 import { Injectable } from '@nestjs/common';
 
 import { NationalIdentifierCryptoService } from '../../../common/crypto/national-identifier-crypto.service';
+import { POSTNATAL_EXAMINATION_BUNDLE_SELECT } from './postnatal-examination-bundle-select';
+import { toSatusehatPostnatalVisit } from './to-satusehat-postnatal-visit';
 import { PrismaService } from '../../../common/prisma/prisma.service';
 import { ClaimedSubmissionRow } from './claimed-submission-row.types';
 
@@ -591,6 +593,21 @@ export class SatusehatSubmissionRepository {
             },
           },
         },
+        // Present only when the visit is a nifas or neonatal one (P25-T12).
+        postnatalVisit: {
+          select: {
+            subject: true,
+            visitCode: true,
+            pregnancyEpisode: {
+              select: {
+                id: true,
+                satusehatPostnatalEpisodeOfCareId: true,
+                deliveryRecord: { select: { birthAt: true } },
+              },
+            },
+            examination: { select: POSTNATAL_EXAMINATION_BUNDLE_SELECT },
+          },
+        },
         prescriptions: {
           where: {
             deletedAt: null,
@@ -723,6 +740,7 @@ export class SatusehatSubmissionRepository {
         registeredRootLocationId: registeredRootLocationId,
       },
       antenatalVisit: this.toAntenatalVisit(encounter.antenatalVisit, encounter.startedAt),
+      postnatalVisit: toSatusehatPostnatalVisit(encounter.postnatalVisit),
     };
   }
 
