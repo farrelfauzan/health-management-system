@@ -1622,6 +1622,22 @@ export type DeliveryRecord = Prisma.DeliveryRecordModel
  */
 export type NewbornCareRecord = Prisma.NewbornCareRecordModel
 /**
+ * Model FamilyPlanningRecord
+ * One family planning course: one method, from the day it started to the day
+ * it was discontinued (P25-T14). At most one course per patient is live —
+ * a partial unique index in the migration, which Prisma cannot express.
+ * 
+ * `nextDueOn` is the course's current due date, moved forward by each
+ * follow-up service; it is what the due list reads.
+ */
+export type FamilyPlanningRecord = Prisma.FamilyPlanningRecordModel
+/**
+ * Model FamilyPlanningService
+ * One follow-up of a family planning course — a reinjection, a pill resupply,
+ * a check-up (P25-T14).
+ */
+export type FamilyPlanningService = Prisma.FamilyPlanningServiceModel
+/**
  * Model ShkScreening
  * One SHK (congenital hypothyroidism) heel-prick sample of one live baby
  * (P25-T10).

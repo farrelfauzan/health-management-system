@@ -512,6 +512,8 @@ export const ModelName = {
   AntenatalVisit: 'AntenatalVisit',
   DeliveryRecord: 'DeliveryRecord',
   NewbornCareRecord: 'NewbornCareRecord',
+  FamilyPlanningRecord: 'FamilyPlanningRecord',
+  FamilyPlanningService: 'FamilyPlanningService',
   ShkScreening: 'ShkScreening',
   AntenatalExamination: 'AntenatalExamination',
   AntenatalReferralDismissal: 'AntenatalReferralDismissal',
@@ -532,7 +534,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "doctorMandate" | "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientDeliveryConsent" | "documentDelivery" | "documentDeliveryLink" | "patientAllergy" | "doctorCredentialOption" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorLicenseExpiryNotice" | "doctorAuthority" | "doctorAuthorityExpiryNotice" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "midwifeFormularyItem" | "prescription" | "prescriptionMedication" | "prescriptionItemComponent" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "taxSettings" | "taxCode" | "taxCodeRate" | "taxCategoryDefault" | "taxReminderNotice" | "taxReportDraft" | "taxReportDocument" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "satusehatSubmissionResource" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "vaultDocumentExpiryNotice" | "vaultDocumentShare" | "userOffboardingNotice" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit" | "documentType" | "documentTypeApprover" | "managedDocument" | "documentApprovalRequest" | "documentApprovalApprover" | "documentApprovalDecision" | "labTest" | "labReferenceRange" | "labPanel" | "labPanelMember" | "labOrderCounter" | "labOrder" | "labOrderItem" | "labSpecimenCounter" | "labSpecimen" | "labResult" | "laboratorySettings" | "labReport" | "immunization" | "province" | "regency" | "district" | "village" | "bugReport" | "bugReportCounter" | "pregnancyEpisode" | "pregnancyExternalDoctorVisit" | "antenatalVisit" | "deliveryRecord" | "newbornCareRecord" | "shkScreening" | "antenatalExamination" | "antenatalReferralDismissal" | "postnatalVisit" | "postnatalExamination"
+    modelProps: "doctorMandate" | "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientDeliveryConsent" | "documentDelivery" | "documentDeliveryLink" | "patientAllergy" | "doctorCredentialOption" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorLicenseExpiryNotice" | "doctorAuthority" | "doctorAuthorityExpiryNotice" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "midwifeFormularyItem" | "prescription" | "prescriptionMedication" | "prescriptionItemComponent" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "taxSettings" | "taxCode" | "taxCodeRate" | "taxCategoryDefault" | "taxReminderNotice" | "taxReportDraft" | "taxReportDocument" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "satusehatSubmissionResource" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "vaultDocumentExpiryNotice" | "vaultDocumentShare" | "userOffboardingNotice" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit" | "documentType" | "documentTypeApprover" | "managedDocument" | "documentApprovalRequest" | "documentApprovalApprover" | "documentApprovalDecision" | "labTest" | "labReferenceRange" | "labPanel" | "labPanelMember" | "labOrderCounter" | "labOrder" | "labOrderItem" | "labSpecimenCounter" | "labSpecimen" | "labResult" | "laboratorySettings" | "labReport" | "immunization" | "province" | "regency" | "district" | "village" | "bugReport" | "bugReportCounter" | "pregnancyEpisode" | "pregnancyExternalDoctorVisit" | "antenatalVisit" | "deliveryRecord" | "newbornCareRecord" | "familyPlanningRecord" | "familyPlanningService" | "shkScreening" | "antenatalExamination" | "antenatalReferralDismissal" | "postnatalVisit" | "postnatalExamination"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -10008,6 +10010,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    FamilyPlanningRecord: {
+      payload: Prisma.$FamilyPlanningRecordPayload<ExtArgs>
+      fields: Prisma.FamilyPlanningRecordFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.FamilyPlanningRecordFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FamilyPlanningRecordPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.FamilyPlanningRecordFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FamilyPlanningRecordPayload>
+        }
+        findFirst: {
+          args: Prisma.FamilyPlanningRecordFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FamilyPlanningRecordPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.FamilyPlanningRecordFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FamilyPlanningRecordPayload>
+        }
+        findMany: {
+          args: Prisma.FamilyPlanningRecordFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FamilyPlanningRecordPayload>[]
+        }
+        create: {
+          args: Prisma.FamilyPlanningRecordCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FamilyPlanningRecordPayload>
+        }
+        createMany: {
+          args: Prisma.FamilyPlanningRecordCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.FamilyPlanningRecordCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FamilyPlanningRecordPayload>[]
+        }
+        delete: {
+          args: Prisma.FamilyPlanningRecordDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FamilyPlanningRecordPayload>
+        }
+        update: {
+          args: Prisma.FamilyPlanningRecordUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FamilyPlanningRecordPayload>
+        }
+        deleteMany: {
+          args: Prisma.FamilyPlanningRecordDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.FamilyPlanningRecordUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.FamilyPlanningRecordUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FamilyPlanningRecordPayload>[]
+        }
+        upsert: {
+          args: Prisma.FamilyPlanningRecordUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FamilyPlanningRecordPayload>
+        }
+        aggregate: {
+          args: Prisma.FamilyPlanningRecordAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateFamilyPlanningRecord>
+        }
+        groupBy: {
+          args: Prisma.FamilyPlanningRecordGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FamilyPlanningRecordGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.FamilyPlanningRecordCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FamilyPlanningRecordCountAggregateOutputType> | number
+        }
+      }
+    }
+    FamilyPlanningService: {
+      payload: Prisma.$FamilyPlanningServicePayload<ExtArgs>
+      fields: Prisma.FamilyPlanningServiceFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.FamilyPlanningServiceFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FamilyPlanningServicePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.FamilyPlanningServiceFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FamilyPlanningServicePayload>
+        }
+        findFirst: {
+          args: Prisma.FamilyPlanningServiceFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FamilyPlanningServicePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.FamilyPlanningServiceFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FamilyPlanningServicePayload>
+        }
+        findMany: {
+          args: Prisma.FamilyPlanningServiceFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FamilyPlanningServicePayload>[]
+        }
+        create: {
+          args: Prisma.FamilyPlanningServiceCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FamilyPlanningServicePayload>
+        }
+        createMany: {
+          args: Prisma.FamilyPlanningServiceCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.FamilyPlanningServiceCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FamilyPlanningServicePayload>[]
+        }
+        delete: {
+          args: Prisma.FamilyPlanningServiceDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FamilyPlanningServicePayload>
+        }
+        update: {
+          args: Prisma.FamilyPlanningServiceUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FamilyPlanningServicePayload>
+        }
+        deleteMany: {
+          args: Prisma.FamilyPlanningServiceDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.FamilyPlanningServiceUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.FamilyPlanningServiceUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FamilyPlanningServicePayload>[]
+        }
+        upsert: {
+          args: Prisma.FamilyPlanningServiceUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FamilyPlanningServicePayload>
+        }
+        aggregate: {
+          args: Prisma.FamilyPlanningServiceAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateFamilyPlanningService>
+        }
+        groupBy: {
+          args: Prisma.FamilyPlanningServiceGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FamilyPlanningServiceGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.FamilyPlanningServiceCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FamilyPlanningServiceCountAggregateOutputType> | number
+        }
+      }
+    }
     ShkScreening: {
       payload: Prisma.$ShkScreeningPayload<ExtArgs>
       fields: Prisma.ShkScreeningFieldRefs
@@ -12645,6 +12795,41 @@ export const NewbornCareRecordScalarFieldEnum = {
 export type NewbornCareRecordScalarFieldEnum = (typeof NewbornCareRecordScalarFieldEnum)[keyof typeof NewbornCareRecordScalarFieldEnum]
 
 
+export const FamilyPlanningRecordScalarFieldEnum = {
+  id: 'id',
+  patientId: 'patientId',
+  method: 'method',
+  acceptorType: 'acceptorType',
+  startedOn: 'startedOn',
+  providerDoctorId: 'providerDoctorId',
+  startEncounterId: 'startEncounterId',
+  deliveryRecordId: 'deliveryRecordId',
+  mandateId: 'mandateId',
+  nextDueOn: 'nextDueOn',
+  sideEffects: 'sideEffects',
+  discontinuedOn: 'discontinuedOn',
+  discontinuationReason: 'discontinuationReason',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type FamilyPlanningRecordScalarFieldEnum = (typeof FamilyPlanningRecordScalarFieldEnum)[keyof typeof FamilyPlanningRecordScalarFieldEnum]
+
+
+export const FamilyPlanningServiceScalarFieldEnum = {
+  id: 'id',
+  familyPlanningRecordId: 'familyPlanningRecordId',
+  encounterId: 'encounterId',
+  servedOn: 'servedOn',
+  action: 'action',
+  nextDueOn: 'nextDueOn',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type FamilyPlanningServiceScalarFieldEnum = (typeof FamilyPlanningServiceScalarFieldEnum)[keyof typeof FamilyPlanningServiceScalarFieldEnum]
+
+
 export const ShkScreeningScalarFieldEnum = {
   id: 'id',
   newbornCareRecordId: 'newbornCareRecordId',
@@ -14524,6 +14709,48 @@ export type ListEnumBirthOutcomeFieldRefInput<$PrismaModel> = FieldRefInputType<
 
 
 /**
+ * Reference to a field of type 'ContraceptiveMethod'
+ */
+export type EnumContraceptiveMethodFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ContraceptiveMethod'>
+    
+
+
+/**
+ * Reference to a field of type 'ContraceptiveMethod[]'
+ */
+export type ListEnumContraceptiveMethodFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ContraceptiveMethod[]'>
+    
+
+
+/**
+ * Reference to a field of type 'AcceptorType'
+ */
+export type EnumAcceptorTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AcceptorType'>
+    
+
+
+/**
+ * Reference to a field of type 'AcceptorType[]'
+ */
+export type ListEnumAcceptorTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AcceptorType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ContraceptiveDiscontinuationReason'
+ */
+export type EnumContraceptiveDiscontinuationReasonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ContraceptiveDiscontinuationReason'>
+    
+
+
+/**
+ * Reference to a field of type 'ContraceptiveDiscontinuationReason[]'
+ */
+export type ListEnumContraceptiveDiscontinuationReasonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ContraceptiveDiscontinuationReason[]'>
+    
+
+
+/**
  * Reference to a field of type 'ShkResult'
  */
 export type EnumShkResultFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ShkResult'>
@@ -14900,6 +15127,8 @@ export type GlobalOmitConfig = {
   antenatalVisit?: Prisma.AntenatalVisitOmit
   deliveryRecord?: Prisma.DeliveryRecordOmit
   newbornCareRecord?: Prisma.NewbornCareRecordOmit
+  familyPlanningRecord?: Prisma.FamilyPlanningRecordOmit
+  familyPlanningService?: Prisma.FamilyPlanningServiceOmit
   shkScreening?: Prisma.ShkScreeningOmit
   antenatalExamination?: Prisma.AntenatalExaminationOmit
   antenatalReferralDismissal?: Prisma.AntenatalReferralDismissalOmit

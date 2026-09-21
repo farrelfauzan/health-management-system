@@ -2570,6 +2570,57 @@ export type EnumBirthOutcomeWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumBirthOutcomeFilter<$PrismaModel>
 }
 
+export type EnumContraceptiveMethodFilter<$PrismaModel = never> = {
+  equals?: $Enums.ContraceptiveMethod | Prisma.EnumContraceptiveMethodFieldRefInput<$PrismaModel>
+  in?: $Enums.ContraceptiveMethod[] | Prisma.ListEnumContraceptiveMethodFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ContraceptiveMethod[] | Prisma.ListEnumContraceptiveMethodFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumContraceptiveMethodFilter<$PrismaModel> | $Enums.ContraceptiveMethod
+}
+
+export type EnumAcceptorTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.AcceptorType | Prisma.EnumAcceptorTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.AcceptorType[] | Prisma.ListEnumAcceptorTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.AcceptorType[] | Prisma.ListEnumAcceptorTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumAcceptorTypeFilter<$PrismaModel> | $Enums.AcceptorType
+}
+
+export type EnumContraceptiveDiscontinuationReasonNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.ContraceptiveDiscontinuationReason | Prisma.EnumContraceptiveDiscontinuationReasonFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ContraceptiveDiscontinuationReason[] | Prisma.ListEnumContraceptiveDiscontinuationReasonFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ContraceptiveDiscontinuationReason[] | Prisma.ListEnumContraceptiveDiscontinuationReasonFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumContraceptiveDiscontinuationReasonNullableFilter<$PrismaModel> | $Enums.ContraceptiveDiscontinuationReason | null
+}
+
+export type EnumContraceptiveMethodWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ContraceptiveMethod | Prisma.EnumContraceptiveMethodFieldRefInput<$PrismaModel>
+  in?: $Enums.ContraceptiveMethod[] | Prisma.ListEnumContraceptiveMethodFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ContraceptiveMethod[] | Prisma.ListEnumContraceptiveMethodFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumContraceptiveMethodWithAggregatesFilter<$PrismaModel> | $Enums.ContraceptiveMethod
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumContraceptiveMethodFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumContraceptiveMethodFilter<$PrismaModel>
+}
+
+export type EnumAcceptorTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.AcceptorType | Prisma.EnumAcceptorTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.AcceptorType[] | Prisma.ListEnumAcceptorTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.AcceptorType[] | Prisma.ListEnumAcceptorTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumAcceptorTypeWithAggregatesFilter<$PrismaModel> | $Enums.AcceptorType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumAcceptorTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumAcceptorTypeFilter<$PrismaModel>
+}
+
+export type EnumContraceptiveDiscontinuationReasonNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ContraceptiveDiscontinuationReason | Prisma.EnumContraceptiveDiscontinuationReasonFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ContraceptiveDiscontinuationReason[] | Prisma.ListEnumContraceptiveDiscontinuationReasonFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ContraceptiveDiscontinuationReason[] | Prisma.ListEnumContraceptiveDiscontinuationReasonFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumContraceptiveDiscontinuationReasonNullableWithAggregatesFilter<$PrismaModel> | $Enums.ContraceptiveDiscontinuationReason | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumContraceptiveDiscontinuationReasonNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumContraceptiveDiscontinuationReasonNullableFilter<$PrismaModel>
+}
+
 export type EnumShkResultNullableFilter<$PrismaModel = never> = {
   equals?: $Enums.ShkResult | Prisma.EnumShkResultFieldRefInput<$PrismaModel> | null
   in?: $Enums.ShkResult[] | Prisma.ListEnumShkResultFieldRefInput<$PrismaModel> | null
@@ -5232,6 +5283,57 @@ export type NestedEnumBirthOutcomeWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumBirthOutcomeFilter<$PrismaModel>
   _max?: Prisma.NestedEnumBirthOutcomeFilter<$PrismaModel>
+}
+
+export type NestedEnumContraceptiveMethodFilter<$PrismaModel = never> = {
+  equals?: $Enums.ContraceptiveMethod | Prisma.EnumContraceptiveMethodFieldRefInput<$PrismaModel>
+  in?: $Enums.ContraceptiveMethod[] | Prisma.ListEnumContraceptiveMethodFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ContraceptiveMethod[] | Prisma.ListEnumContraceptiveMethodFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumContraceptiveMethodFilter<$PrismaModel> | $Enums.ContraceptiveMethod
+}
+
+export type NestedEnumAcceptorTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.AcceptorType | Prisma.EnumAcceptorTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.AcceptorType[] | Prisma.ListEnumAcceptorTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.AcceptorType[] | Prisma.ListEnumAcceptorTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumAcceptorTypeFilter<$PrismaModel> | $Enums.AcceptorType
+}
+
+export type NestedEnumContraceptiveDiscontinuationReasonNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.ContraceptiveDiscontinuationReason | Prisma.EnumContraceptiveDiscontinuationReasonFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ContraceptiveDiscontinuationReason[] | Prisma.ListEnumContraceptiveDiscontinuationReasonFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ContraceptiveDiscontinuationReason[] | Prisma.ListEnumContraceptiveDiscontinuationReasonFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumContraceptiveDiscontinuationReasonNullableFilter<$PrismaModel> | $Enums.ContraceptiveDiscontinuationReason | null
+}
+
+export type NestedEnumContraceptiveMethodWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ContraceptiveMethod | Prisma.EnumContraceptiveMethodFieldRefInput<$PrismaModel>
+  in?: $Enums.ContraceptiveMethod[] | Prisma.ListEnumContraceptiveMethodFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ContraceptiveMethod[] | Prisma.ListEnumContraceptiveMethodFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumContraceptiveMethodWithAggregatesFilter<$PrismaModel> | $Enums.ContraceptiveMethod
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumContraceptiveMethodFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumContraceptiveMethodFilter<$PrismaModel>
+}
+
+export type NestedEnumAcceptorTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.AcceptorType | Prisma.EnumAcceptorTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.AcceptorType[] | Prisma.ListEnumAcceptorTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.AcceptorType[] | Prisma.ListEnumAcceptorTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumAcceptorTypeWithAggregatesFilter<$PrismaModel> | $Enums.AcceptorType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumAcceptorTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumAcceptorTypeFilter<$PrismaModel>
+}
+
+export type NestedEnumContraceptiveDiscontinuationReasonNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ContraceptiveDiscontinuationReason | Prisma.EnumContraceptiveDiscontinuationReasonFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ContraceptiveDiscontinuationReason[] | Prisma.ListEnumContraceptiveDiscontinuationReasonFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ContraceptiveDiscontinuationReason[] | Prisma.ListEnumContraceptiveDiscontinuationReasonFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumContraceptiveDiscontinuationReasonNullableWithAggregatesFilter<$PrismaModel> | $Enums.ContraceptiveDiscontinuationReason | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumContraceptiveDiscontinuationReasonNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumContraceptiveDiscontinuationReasonNullableFilter<$PrismaModel>
 }
 
 export type NestedEnumShkResultNullableFilter<$PrismaModel = never> = {

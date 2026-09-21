@@ -364,6 +364,7 @@ export type DeliveryRecordWhereInput = {
   uterotonic?: Prisma.XOR<Prisma.MedicationNullableScalarRelationFilter, Prisma.MedicationWhereInput> | null
   recordedBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   newbornCareRecords?: Prisma.NewbornCareRecordListRelationFilter
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordListRelationFilter
 }
 
 export type DeliveryRecordOrderByWithRelationInput = {
@@ -395,6 +396,7 @@ export type DeliveryRecordOrderByWithRelationInput = {
   uterotonic?: Prisma.MedicationOrderByWithRelationInput
   recordedBy?: Prisma.UserOrderByWithRelationInput
   newbornCareRecords?: Prisma.NewbornCareRecordOrderByRelationAggregateInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordOrderByRelationAggregateInput
 }
 
 export type DeliveryRecordWhereUniqueInput = Prisma.AtLeast<{
@@ -429,6 +431,7 @@ export type DeliveryRecordWhereUniqueInput = Prisma.AtLeast<{
   uterotonic?: Prisma.XOR<Prisma.MedicationNullableScalarRelationFilter, Prisma.MedicationWhereInput> | null
   recordedBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   newbornCareRecords?: Prisma.NewbornCareRecordListRelationFilter
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordListRelationFilter
 }, "id" | "pregnancyEpisodeId">
 
 export type DeliveryRecordOrderByWithAggregationInput = {
@@ -513,6 +516,7 @@ export type DeliveryRecordCreateInput = {
   uterotonic?: Prisma.MedicationCreateNestedOneWithoutDeliveryUterotonicsInput
   recordedBy: Prisma.UserCreateNestedOneWithoutRecordedDeliveriesInput
   newbornCareRecords?: Prisma.NewbornCareRecordCreateNestedManyWithoutDeliveryRecordInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutDeliveryRecordInput
 }
 
 export type DeliveryRecordUncheckedCreateInput = {
@@ -539,6 +543,7 @@ export type DeliveryRecordUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   newbornCareRecords?: Prisma.NewbornCareRecordUncheckedCreateNestedManyWithoutDeliveryRecordInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutDeliveryRecordInput
 }
 
 export type DeliveryRecordUpdateInput = {
@@ -565,6 +570,7 @@ export type DeliveryRecordUpdateInput = {
   uterotonic?: Prisma.MedicationUpdateOneWithoutDeliveryUterotonicsNestedInput
   recordedBy?: Prisma.UserUpdateOneRequiredWithoutRecordedDeliveriesNestedInput
   newbornCareRecords?: Prisma.NewbornCareRecordUpdateManyWithoutDeliveryRecordNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutDeliveryRecordNestedInput
 }
 
 export type DeliveryRecordUncheckedUpdateInput = {
@@ -591,6 +597,7 @@ export type DeliveryRecordUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   newbornCareRecords?: Prisma.NewbornCareRecordUncheckedUpdateManyWithoutDeliveryRecordNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutDeliveryRecordNestedInput
 }
 
 export type DeliveryRecordCreateManyInput = {
@@ -988,6 +995,22 @@ export type DeliveryRecordUpdateOneRequiredWithoutNewbornCareRecordsNestedInput 
   update?: Prisma.XOR<Prisma.XOR<Prisma.DeliveryRecordUpdateToOneWithWhereWithoutNewbornCareRecordsInput, Prisma.DeliveryRecordUpdateWithoutNewbornCareRecordsInput>, Prisma.DeliveryRecordUncheckedUpdateWithoutNewbornCareRecordsInput>
 }
 
+export type DeliveryRecordCreateNestedOneWithoutFamilyPlanningRecordsInput = {
+  create?: Prisma.XOR<Prisma.DeliveryRecordCreateWithoutFamilyPlanningRecordsInput, Prisma.DeliveryRecordUncheckedCreateWithoutFamilyPlanningRecordsInput>
+  connectOrCreate?: Prisma.DeliveryRecordCreateOrConnectWithoutFamilyPlanningRecordsInput
+  connect?: Prisma.DeliveryRecordWhereUniqueInput
+}
+
+export type DeliveryRecordUpdateOneWithoutFamilyPlanningRecordsNestedInput = {
+  create?: Prisma.XOR<Prisma.DeliveryRecordCreateWithoutFamilyPlanningRecordsInput, Prisma.DeliveryRecordUncheckedCreateWithoutFamilyPlanningRecordsInput>
+  connectOrCreate?: Prisma.DeliveryRecordCreateOrConnectWithoutFamilyPlanningRecordsInput
+  upsert?: Prisma.DeliveryRecordUpsertWithoutFamilyPlanningRecordsInput
+  disconnect?: Prisma.DeliveryRecordWhereInput | boolean
+  delete?: Prisma.DeliveryRecordWhereInput | boolean
+  connect?: Prisma.DeliveryRecordWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.DeliveryRecordUpdateToOneWithWhereWithoutFamilyPlanningRecordsInput, Prisma.DeliveryRecordUpdateWithoutFamilyPlanningRecordsInput>, Prisma.DeliveryRecordUncheckedUpdateWithoutFamilyPlanningRecordsInput>
+}
+
 export type DeliveryRecordCreateWithoutRecordedByInput = {
   id?: string
   labourOnsetAt?: Date | string | null
@@ -1011,6 +1034,7 @@ export type DeliveryRecordCreateWithoutRecordedByInput = {
   attendantDoctor: Prisma.DoctorProfileCreateNestedOneWithoutAttendedDeliveriesInput
   uterotonic?: Prisma.MedicationCreateNestedOneWithoutDeliveryUterotonicsInput
   newbornCareRecords?: Prisma.NewbornCareRecordCreateNestedManyWithoutDeliveryRecordInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutDeliveryRecordInput
 }
 
 export type DeliveryRecordUncheckedCreateWithoutRecordedByInput = {
@@ -1036,6 +1060,7 @@ export type DeliveryRecordUncheckedCreateWithoutRecordedByInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   newbornCareRecords?: Prisma.NewbornCareRecordUncheckedCreateNestedManyWithoutDeliveryRecordInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutDeliveryRecordInput
 }
 
 export type DeliveryRecordCreateOrConnectWithoutRecordedByInput = {
@@ -1115,6 +1140,7 @@ export type DeliveryRecordCreateWithoutAttendantDoctorInput = {
   uterotonic?: Prisma.MedicationCreateNestedOneWithoutDeliveryUterotonicsInput
   recordedBy: Prisma.UserCreateNestedOneWithoutRecordedDeliveriesInput
   newbornCareRecords?: Prisma.NewbornCareRecordCreateNestedManyWithoutDeliveryRecordInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutDeliveryRecordInput
 }
 
 export type DeliveryRecordUncheckedCreateWithoutAttendantDoctorInput = {
@@ -1140,6 +1166,7 @@ export type DeliveryRecordUncheckedCreateWithoutAttendantDoctorInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   newbornCareRecords?: Prisma.NewbornCareRecordUncheckedCreateNestedManyWithoutDeliveryRecordInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutDeliveryRecordInput
 }
 
 export type DeliveryRecordCreateOrConnectWithoutAttendantDoctorInput = {
@@ -1191,6 +1218,7 @@ export type DeliveryRecordCreateWithoutUterotonicInput = {
   attendantDoctor: Prisma.DoctorProfileCreateNestedOneWithoutAttendedDeliveriesInput
   recordedBy: Prisma.UserCreateNestedOneWithoutRecordedDeliveriesInput
   newbornCareRecords?: Prisma.NewbornCareRecordCreateNestedManyWithoutDeliveryRecordInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutDeliveryRecordInput
 }
 
 export type DeliveryRecordUncheckedCreateWithoutUterotonicInput = {
@@ -1216,6 +1244,7 @@ export type DeliveryRecordUncheckedCreateWithoutUterotonicInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   newbornCareRecords?: Prisma.NewbornCareRecordUncheckedCreateNestedManyWithoutDeliveryRecordInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutDeliveryRecordInput
 }
 
 export type DeliveryRecordCreateOrConnectWithoutUterotonicInput = {
@@ -1267,6 +1296,7 @@ export type DeliveryRecordCreateWithoutAdmissionInput = {
   uterotonic?: Prisma.MedicationCreateNestedOneWithoutDeliveryUterotonicsInput
   recordedBy: Prisma.UserCreateNestedOneWithoutRecordedDeliveriesInput
   newbornCareRecords?: Prisma.NewbornCareRecordCreateNestedManyWithoutDeliveryRecordInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutDeliveryRecordInput
 }
 
 export type DeliveryRecordUncheckedCreateWithoutAdmissionInput = {
@@ -1292,6 +1322,7 @@ export type DeliveryRecordUncheckedCreateWithoutAdmissionInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   newbornCareRecords?: Prisma.NewbornCareRecordUncheckedCreateNestedManyWithoutDeliveryRecordInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutDeliveryRecordInput
 }
 
 export type DeliveryRecordCreateOrConnectWithoutAdmissionInput = {
@@ -1343,6 +1374,7 @@ export type DeliveryRecordCreateWithoutPregnancyEpisodeInput = {
   uterotonic?: Prisma.MedicationCreateNestedOneWithoutDeliveryUterotonicsInput
   recordedBy: Prisma.UserCreateNestedOneWithoutRecordedDeliveriesInput
   newbornCareRecords?: Prisma.NewbornCareRecordCreateNestedManyWithoutDeliveryRecordInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutDeliveryRecordInput
 }
 
 export type DeliveryRecordUncheckedCreateWithoutPregnancyEpisodeInput = {
@@ -1368,6 +1400,7 @@ export type DeliveryRecordUncheckedCreateWithoutPregnancyEpisodeInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   newbornCareRecords?: Prisma.NewbornCareRecordUncheckedCreateNestedManyWithoutDeliveryRecordInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutDeliveryRecordInput
 }
 
 export type DeliveryRecordCreateOrConnectWithoutPregnancyEpisodeInput = {
@@ -1409,6 +1442,7 @@ export type DeliveryRecordUpdateWithoutPregnancyEpisodeInput = {
   uterotonic?: Prisma.MedicationUpdateOneWithoutDeliveryUterotonicsNestedInput
   recordedBy?: Prisma.UserUpdateOneRequiredWithoutRecordedDeliveriesNestedInput
   newbornCareRecords?: Prisma.NewbornCareRecordUpdateManyWithoutDeliveryRecordNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutDeliveryRecordNestedInput
 }
 
 export type DeliveryRecordUncheckedUpdateWithoutPregnancyEpisodeInput = {
@@ -1434,6 +1468,7 @@ export type DeliveryRecordUncheckedUpdateWithoutPregnancyEpisodeInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   newbornCareRecords?: Prisma.NewbornCareRecordUncheckedUpdateManyWithoutDeliveryRecordNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutDeliveryRecordNestedInput
 }
 
 export type DeliveryRecordCreateWithoutNewbornCareRecordsInput = {
@@ -1459,6 +1494,7 @@ export type DeliveryRecordCreateWithoutNewbornCareRecordsInput = {
   attendantDoctor: Prisma.DoctorProfileCreateNestedOneWithoutAttendedDeliveriesInput
   uterotonic?: Prisma.MedicationCreateNestedOneWithoutDeliveryUterotonicsInput
   recordedBy: Prisma.UserCreateNestedOneWithoutRecordedDeliveriesInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutDeliveryRecordInput
 }
 
 export type DeliveryRecordUncheckedCreateWithoutNewbornCareRecordsInput = {
@@ -1484,6 +1520,7 @@ export type DeliveryRecordUncheckedCreateWithoutNewbornCareRecordsInput = {
   recordedById: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutDeliveryRecordInput
 }
 
 export type DeliveryRecordCreateOrConnectWithoutNewbornCareRecordsInput = {
@@ -1525,6 +1562,7 @@ export type DeliveryRecordUpdateWithoutNewbornCareRecordsInput = {
   attendantDoctor?: Prisma.DoctorProfileUpdateOneRequiredWithoutAttendedDeliveriesNestedInput
   uterotonic?: Prisma.MedicationUpdateOneWithoutDeliveryUterotonicsNestedInput
   recordedBy?: Prisma.UserUpdateOneRequiredWithoutRecordedDeliveriesNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutDeliveryRecordNestedInput
 }
 
 export type DeliveryRecordUncheckedUpdateWithoutNewbornCareRecordsInput = {
@@ -1550,6 +1588,127 @@ export type DeliveryRecordUncheckedUpdateWithoutNewbornCareRecordsInput = {
   recordedById?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutDeliveryRecordNestedInput
+}
+
+export type DeliveryRecordCreateWithoutFamilyPlanningRecordsInput = {
+  id?: string
+  labourOnsetAt?: Date | string | null
+  fullDilatationAt?: Date | string | null
+  birthAt: Date | string
+  placentaDeliveredAt?: Date | string | null
+  postpartumMonitoringEndedAt?: Date | string | null
+  mode: $Enums.DeliveryMode
+  episiotomy?: boolean
+  perinealTearGrade?: $Enums.PerinealTearGrade
+  uterotonicGivenAt?: Date | string | null
+  bloodLossMl?: number | null
+  placentaComplete?: boolean | null
+  referredOut?: boolean
+  referralReason?: string | null
+  notes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  pregnancyEpisode: Prisma.PregnancyEpisodeCreateNestedOneWithoutDeliveryRecordInput
+  admission?: Prisma.AdmissionCreateNestedOneWithoutDeliveryRecordsInput
+  attendantDoctor: Prisma.DoctorProfileCreateNestedOneWithoutAttendedDeliveriesInput
+  uterotonic?: Prisma.MedicationCreateNestedOneWithoutDeliveryUterotonicsInput
+  recordedBy: Prisma.UserCreateNestedOneWithoutRecordedDeliveriesInput
+  newbornCareRecords?: Prisma.NewbornCareRecordCreateNestedManyWithoutDeliveryRecordInput
+}
+
+export type DeliveryRecordUncheckedCreateWithoutFamilyPlanningRecordsInput = {
+  id?: string
+  pregnancyEpisodeId: string
+  admissionId?: string | null
+  attendantDoctorId: string
+  labourOnsetAt?: Date | string | null
+  fullDilatationAt?: Date | string | null
+  birthAt: Date | string
+  placentaDeliveredAt?: Date | string | null
+  postpartumMonitoringEndedAt?: Date | string | null
+  mode: $Enums.DeliveryMode
+  episiotomy?: boolean
+  perinealTearGrade?: $Enums.PerinealTearGrade
+  uterotonicMedicationId?: string | null
+  uterotonicGivenAt?: Date | string | null
+  bloodLossMl?: number | null
+  placentaComplete?: boolean | null
+  referredOut?: boolean
+  referralReason?: string | null
+  notes?: string | null
+  recordedById: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  newbornCareRecords?: Prisma.NewbornCareRecordUncheckedCreateNestedManyWithoutDeliveryRecordInput
+}
+
+export type DeliveryRecordCreateOrConnectWithoutFamilyPlanningRecordsInput = {
+  where: Prisma.DeliveryRecordWhereUniqueInput
+  create: Prisma.XOR<Prisma.DeliveryRecordCreateWithoutFamilyPlanningRecordsInput, Prisma.DeliveryRecordUncheckedCreateWithoutFamilyPlanningRecordsInput>
+}
+
+export type DeliveryRecordUpsertWithoutFamilyPlanningRecordsInput = {
+  update: Prisma.XOR<Prisma.DeliveryRecordUpdateWithoutFamilyPlanningRecordsInput, Prisma.DeliveryRecordUncheckedUpdateWithoutFamilyPlanningRecordsInput>
+  create: Prisma.XOR<Prisma.DeliveryRecordCreateWithoutFamilyPlanningRecordsInput, Prisma.DeliveryRecordUncheckedCreateWithoutFamilyPlanningRecordsInput>
+  where?: Prisma.DeliveryRecordWhereInput
+}
+
+export type DeliveryRecordUpdateToOneWithWhereWithoutFamilyPlanningRecordsInput = {
+  where?: Prisma.DeliveryRecordWhereInput
+  data: Prisma.XOR<Prisma.DeliveryRecordUpdateWithoutFamilyPlanningRecordsInput, Prisma.DeliveryRecordUncheckedUpdateWithoutFamilyPlanningRecordsInput>
+}
+
+export type DeliveryRecordUpdateWithoutFamilyPlanningRecordsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  labourOnsetAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  fullDilatationAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  birthAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  placentaDeliveredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  postpartumMonitoringEndedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  mode?: Prisma.EnumDeliveryModeFieldUpdateOperationsInput | $Enums.DeliveryMode
+  episiotomy?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  perinealTearGrade?: Prisma.EnumPerinealTearGradeFieldUpdateOperationsInput | $Enums.PerinealTearGrade
+  uterotonicGivenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bloodLossMl?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  placentaComplete?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  referredOut?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  referralReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  pregnancyEpisode?: Prisma.PregnancyEpisodeUpdateOneRequiredWithoutDeliveryRecordNestedInput
+  admission?: Prisma.AdmissionUpdateOneWithoutDeliveryRecordsNestedInput
+  attendantDoctor?: Prisma.DoctorProfileUpdateOneRequiredWithoutAttendedDeliveriesNestedInput
+  uterotonic?: Prisma.MedicationUpdateOneWithoutDeliveryUterotonicsNestedInput
+  recordedBy?: Prisma.UserUpdateOneRequiredWithoutRecordedDeliveriesNestedInput
+  newbornCareRecords?: Prisma.NewbornCareRecordUpdateManyWithoutDeliveryRecordNestedInput
+}
+
+export type DeliveryRecordUncheckedUpdateWithoutFamilyPlanningRecordsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  pregnancyEpisodeId?: Prisma.StringFieldUpdateOperationsInput | string
+  admissionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attendantDoctorId?: Prisma.StringFieldUpdateOperationsInput | string
+  labourOnsetAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  fullDilatationAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  birthAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  placentaDeliveredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  postpartumMonitoringEndedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  mode?: Prisma.EnumDeliveryModeFieldUpdateOperationsInput | $Enums.DeliveryMode
+  episiotomy?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  perinealTearGrade?: Prisma.EnumPerinealTearGradeFieldUpdateOperationsInput | $Enums.PerinealTearGrade
+  uterotonicMedicationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  uterotonicGivenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bloodLossMl?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  placentaComplete?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  referredOut?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  referralReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  recordedById?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  newbornCareRecords?: Prisma.NewbornCareRecordUncheckedUpdateManyWithoutDeliveryRecordNestedInput
 }
 
 export type DeliveryRecordCreateManyRecordedByInput = {
@@ -1599,6 +1758,7 @@ export type DeliveryRecordUpdateWithoutRecordedByInput = {
   attendantDoctor?: Prisma.DoctorProfileUpdateOneRequiredWithoutAttendedDeliveriesNestedInput
   uterotonic?: Prisma.MedicationUpdateOneWithoutDeliveryUterotonicsNestedInput
   newbornCareRecords?: Prisma.NewbornCareRecordUpdateManyWithoutDeliveryRecordNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutDeliveryRecordNestedInput
 }
 
 export type DeliveryRecordUncheckedUpdateWithoutRecordedByInput = {
@@ -1624,6 +1784,7 @@ export type DeliveryRecordUncheckedUpdateWithoutRecordedByInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   newbornCareRecords?: Prisma.NewbornCareRecordUncheckedUpdateManyWithoutDeliveryRecordNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutDeliveryRecordNestedInput
 }
 
 export type DeliveryRecordUncheckedUpdateManyWithoutRecordedByInput = {
@@ -1697,6 +1858,7 @@ export type DeliveryRecordUpdateWithoutAttendantDoctorInput = {
   uterotonic?: Prisma.MedicationUpdateOneWithoutDeliveryUterotonicsNestedInput
   recordedBy?: Prisma.UserUpdateOneRequiredWithoutRecordedDeliveriesNestedInput
   newbornCareRecords?: Prisma.NewbornCareRecordUpdateManyWithoutDeliveryRecordNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutDeliveryRecordNestedInput
 }
 
 export type DeliveryRecordUncheckedUpdateWithoutAttendantDoctorInput = {
@@ -1722,6 +1884,7 @@ export type DeliveryRecordUncheckedUpdateWithoutAttendantDoctorInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   newbornCareRecords?: Prisma.NewbornCareRecordUncheckedUpdateManyWithoutDeliveryRecordNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutDeliveryRecordNestedInput
 }
 
 export type DeliveryRecordUncheckedUpdateManyWithoutAttendantDoctorInput = {
@@ -1795,6 +1958,7 @@ export type DeliveryRecordUpdateWithoutUterotonicInput = {
   attendantDoctor?: Prisma.DoctorProfileUpdateOneRequiredWithoutAttendedDeliveriesNestedInput
   recordedBy?: Prisma.UserUpdateOneRequiredWithoutRecordedDeliveriesNestedInput
   newbornCareRecords?: Prisma.NewbornCareRecordUpdateManyWithoutDeliveryRecordNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutDeliveryRecordNestedInput
 }
 
 export type DeliveryRecordUncheckedUpdateWithoutUterotonicInput = {
@@ -1820,6 +1984,7 @@ export type DeliveryRecordUncheckedUpdateWithoutUterotonicInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   newbornCareRecords?: Prisma.NewbornCareRecordUncheckedUpdateManyWithoutDeliveryRecordNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutDeliveryRecordNestedInput
 }
 
 export type DeliveryRecordUncheckedUpdateManyWithoutUterotonicInput = {
@@ -1893,6 +2058,7 @@ export type DeliveryRecordUpdateWithoutAdmissionInput = {
   uterotonic?: Prisma.MedicationUpdateOneWithoutDeliveryUterotonicsNestedInput
   recordedBy?: Prisma.UserUpdateOneRequiredWithoutRecordedDeliveriesNestedInput
   newbornCareRecords?: Prisma.NewbornCareRecordUpdateManyWithoutDeliveryRecordNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutDeliveryRecordNestedInput
 }
 
 export type DeliveryRecordUncheckedUpdateWithoutAdmissionInput = {
@@ -1918,6 +2084,7 @@ export type DeliveryRecordUncheckedUpdateWithoutAdmissionInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   newbornCareRecords?: Prisma.NewbornCareRecordUncheckedUpdateManyWithoutDeliveryRecordNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutDeliveryRecordNestedInput
 }
 
 export type DeliveryRecordUncheckedUpdateManyWithoutAdmissionInput = {
@@ -1951,10 +2118,12 @@ export type DeliveryRecordUncheckedUpdateManyWithoutAdmissionInput = {
 
 export type DeliveryRecordCountOutputType = {
   newbornCareRecords: number
+  familyPlanningRecords: number
 }
 
 export type DeliveryRecordCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   newbornCareRecords?: boolean | DeliveryRecordCountOutputTypeCountNewbornCareRecordsArgs
+  familyPlanningRecords?: boolean | DeliveryRecordCountOutputTypeCountFamilyPlanningRecordsArgs
 }
 
 /**
@@ -1972,6 +2141,13 @@ export type DeliveryRecordCountOutputTypeDefaultArgs<ExtArgs extends runtime.Typ
  */
 export type DeliveryRecordCountOutputTypeCountNewbornCareRecordsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.NewbornCareRecordWhereInput
+}
+
+/**
+ * DeliveryRecordCountOutputType without action
+ */
+export type DeliveryRecordCountOutputTypeCountFamilyPlanningRecordsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.FamilyPlanningRecordWhereInput
 }
 
 
@@ -2004,6 +2180,7 @@ export type DeliveryRecordSelect<ExtArgs extends runtime.Types.Extensions.Intern
   uterotonic?: boolean | Prisma.DeliveryRecord$uterotonicArgs<ExtArgs>
   recordedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   newbornCareRecords?: boolean | Prisma.DeliveryRecord$newbornCareRecordsArgs<ExtArgs>
+  familyPlanningRecords?: boolean | Prisma.DeliveryRecord$familyPlanningRecordsArgs<ExtArgs>
   _count?: boolean | Prisma.DeliveryRecordCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["deliveryRecord"]>
 
@@ -2100,6 +2277,7 @@ export type DeliveryRecordInclude<ExtArgs extends runtime.Types.Extensions.Inter
   uterotonic?: boolean | Prisma.DeliveryRecord$uterotonicArgs<ExtArgs>
   recordedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   newbornCareRecords?: boolean | Prisma.DeliveryRecord$newbornCareRecordsArgs<ExtArgs>
+  familyPlanningRecords?: boolean | Prisma.DeliveryRecord$familyPlanningRecordsArgs<ExtArgs>
   _count?: boolean | Prisma.DeliveryRecordCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type DeliveryRecordIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2126,6 +2304,7 @@ export type $DeliveryRecordPayload<ExtArgs extends runtime.Types.Extensions.Inte
     uterotonic: Prisma.$MedicationPayload<ExtArgs> | null
     recordedBy: Prisma.$UserPayload<ExtArgs>
     newbornCareRecords: Prisma.$NewbornCareRecordPayload<ExtArgs>[]
+    familyPlanningRecords: Prisma.$FamilyPlanningRecordPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2578,6 +2757,7 @@ export interface Prisma__DeliveryRecordClient<T, Null = never, ExtArgs extends r
   uterotonic<T extends Prisma.DeliveryRecord$uterotonicArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DeliveryRecord$uterotonicArgs<ExtArgs>>): Prisma.Prisma__MedicationClient<runtime.Types.Result.GetResult<Prisma.$MedicationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   recordedBy<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   newbornCareRecords<T extends Prisma.DeliveryRecord$newbornCareRecordsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DeliveryRecord$newbornCareRecordsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NewbornCareRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  familyPlanningRecords<T extends Prisma.DeliveryRecord$familyPlanningRecordsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DeliveryRecord$familyPlanningRecordsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FamilyPlanningRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3089,6 +3269,30 @@ export type DeliveryRecord$newbornCareRecordsArgs<ExtArgs extends runtime.Types.
   take?: number
   skip?: number
   distinct?: Prisma.NewbornCareRecordScalarFieldEnum | Prisma.NewbornCareRecordScalarFieldEnum[]
+}
+
+/**
+ * DeliveryRecord.familyPlanningRecords
+ */
+export type DeliveryRecord$familyPlanningRecordsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the FamilyPlanningRecord
+   */
+  select?: Prisma.FamilyPlanningRecordSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the FamilyPlanningRecord
+   */
+  omit?: Prisma.FamilyPlanningRecordOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FamilyPlanningRecordInclude<ExtArgs> | null
+  where?: Prisma.FamilyPlanningRecordWhereInput
+  orderBy?: Prisma.FamilyPlanningRecordOrderByWithRelationInput | Prisma.FamilyPlanningRecordOrderByWithRelationInput[]
+  cursor?: Prisma.FamilyPlanningRecordWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.FamilyPlanningRecordScalarFieldEnum | Prisma.FamilyPlanningRecordScalarFieldEnum[]
 }
 
 /**

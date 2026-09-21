@@ -40958,6 +40958,772 @@ paths:
         - bearer: []
       summary: Issue the surat keterangan lahir
       tags: *a55
+  /api/v1/family-planning/due:
+    get:
+      operationId: FamilyPlanningController_listDue_v1
+      parameters:
+        - name: withinDays
+          required: false
+          in: query
+          schema:
+            minimum: 0
+            maximum: 90
+            exclusiveMaximum: false
+            exclusiveMinimum: false
+            default: 7
+            type: integer
+      responses:
+        "200":
+          description: Live courses whose next due date is within `withinDays` (default 7)
+            of the clinic's today, or already past it, soonest first.
+            `daysUntilDue` is negative when overdue. Under OWN scope, only the
+            courses she provides and the patients assigned to her.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        familyPlanningRecordId:
+                          type: string
+                        patientId:
+                          type: string
+                        patientName:
+                          type: string
+                        medicalRecordNumber:
+                          type: string
+                        method:
+                          type: string
+                        nextDueOn:
+                          type: string
+                        daysUntilDue:
+                          type: integer
+                      required:
+                        - familyPlanningRecordId
+                        - patientId
+                        - patientName
+                        - medicalRecordNumber
+                        - method
+                        - nextDueOn
+                        - daysUntilDue
+                required:
+                  - data
+                example:
+                  data:
+                    - familyPlanningRecordId: 5d2c8e41-7b93-4a06-9f15-c3e8a2b7d104
+                      patientId: 4a9b2c71-8e35-4d02-a6f7-3b0c9d18e5a4
+                      patientName: Dewi Lestari
+                      medicalRecordNumber: RM-000123
+                      method: INJECTABLE_3_MONTH
+                      nextDueOn: 2026-12-24
+                      daysUntilDue: 7
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: List family planning courses due soon or overdue
+      tags: &a56
+        - Maternal Care
+  /api/v1/patients/{patientId}/family-planning:
+    get:
+      operationId: FamilyPlanningController_getPatientFamilyPlanning_v1
+      parameters:
+        - name: patientId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The live course (or null), every course newest first, and — when
+            she has no live course — her most recent birth of the last 42 days
+            that no course links to yet, offered as KB pasca salin.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      liveCourse:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          patientId:
+                            type: string
+                          method:
+                            type: string
+                          acceptorType:
+                            type: string
+                          startedOn:
+                            type: string
+                          providerDoctorId:
+                            type: string
+                          providerName:
+                            type: string
+                          startEncounterId:
+                            nullable: true
+                          deliveryRecordId:
+                            nullable: true
+                          mandateId:
+                            nullable: true
+                          nextDueOn:
+                            type: string
+                          sideEffects:
+                            nullable: true
+                          discontinuedOn:
+                            nullable: true
+                          discontinuationReason:
+                            nullable: true
+                          isLive:
+                            type: boolean
+                          services:
+                            type: array
+                            items: {}
+                        required:
+                          - id
+                          - patientId
+                          - method
+                          - acceptorType
+                          - startedOn
+                          - providerDoctorId
+                          - providerName
+                          - startEncounterId
+                          - deliveryRecordId
+                          - mandateId
+                          - nextDueOn
+                          - sideEffects
+                          - discontinuedOn
+                          - discontinuationReason
+                          - isLive
+                          - services
+                      courses:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            patientId:
+                              type: string
+                            method:
+                              type: string
+                            acceptorType:
+                              type: string
+                            startedOn:
+                              type: string
+                            providerDoctorId:
+                              type: string
+                            providerName:
+                              type: string
+                            startEncounterId:
+                              nullable: true
+                            deliveryRecordId:
+                              nullable: true
+                            mandateId:
+                              nullable: true
+                            nextDueOn:
+                              type: string
+                            sideEffects:
+                              nullable: true
+                            discontinuedOn:
+                              nullable: true
+                            discontinuationReason:
+                              nullable: true
+                            isLive:
+                              type: boolean
+                            services:
+                              type: array
+                              items: {}
+                          required:
+                            - id
+                            - patientId
+                            - method
+                            - acceptorType
+                            - startedOn
+                            - providerDoctorId
+                            - providerName
+                            - startEncounterId
+                            - deliveryRecordId
+                            - mandateId
+                            - nextDueOn
+                            - sideEffects
+                            - discontinuedOn
+                            - discontinuationReason
+                            - isLive
+                            - services
+                      postDeliveryCandidate:
+                        nullable: true
+                    required:
+                      - liveCourse
+                      - courses
+                      - postDeliveryCandidate
+                required:
+                  - data
+                example:
+                  data:
+                    liveCourse:
+                      id: 5d2c8e41-7b93-4a06-9f15-c3e8a2b7d104
+                      patientId: 4a9b2c71-8e35-4d02-a6f7-3b0c9d18e5a4
+                      method: INJECTABLE_3_MONTH
+                      acceptorType: NEW
+                      startedOn: 2026-10-01
+                      providerDoctorId: 8f3a6d12-4c57-4e89-b0a1-2d7e9c5f3b68
+                      providerName: Bidan Sari
+                      startEncounterId: null
+                      deliveryRecordId: null
+                      mandateId: null
+                      nextDueOn: 2026-12-24
+                      sideEffects: null
+                      discontinuedOn: null
+                      discontinuationReason: null
+                      isLive: true
+                      services: []
+                    courses:
+                      - id: 5d2c8e41-7b93-4a06-9f15-c3e8a2b7d104
+                        patientId: 4a9b2c71-8e35-4d02-a6f7-3b0c9d18e5a4
+                        method: INJECTABLE_3_MONTH
+                        acceptorType: NEW
+                        startedOn: 2026-10-01
+                        providerDoctorId: 8f3a6d12-4c57-4e89-b0a1-2d7e9c5f3b68
+                        providerName: Bidan Sari
+                        startEncounterId: null
+                        deliveryRecordId: null
+                        mandateId: null
+                        nextDueOn: 2026-12-24
+                        sideEffects: null
+                        discontinuedOn: null
+                        discontinuationReason: null
+                        isLive: true
+                        services: []
+                    postDeliveryCandidate: null
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Patient not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Patient not found.
+      security:
+        - bearer: []
+      summary: Read a patient's family planning record
+      tags: *a56
+    post:
+      operationId: FamilyPlanningController_startCourse_v1
+      parameters:
+        - name: patientId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StartFamilyPlanningDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  method: INJECTABLE_3_MONTH
+                  acceptorType: NEW
+                  startedOn: 2026-10-01
+                  providerDoctorId: 8f3a6d12-4c57-4e89-b0a1-2d7e9c5f3b68
+      responses:
+        "200":
+          description: Starts one method course. Without `nextDueOn` the method's sourced
+            default applies (pill and 1-month injectable 28 days, 3-month
+            injectable 84 days); a condom never has a due date and IUD/implant
+            dates are entered by the clinician. Pass `deliveryRecordId` for KB
+            pasca salin. 409 FAMILY_PLANNING_COURSE_ACTIVE when she already has
+            a live course; 422 MIDWIFE_AUTHORITY_REQUIRED (`details.kind`
+            IUD_IMPLANT) when a midwife provider starts an IUD or implant
+            without the authority or a covering mandate.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      patientId:
+                        type: string
+                      method:
+                        type: string
+                      acceptorType:
+                        type: string
+                      startedOn:
+                        type: string
+                      providerDoctorId:
+                        type: string
+                      providerName:
+                        type: string
+                      startEncounterId:
+                        nullable: true
+                      deliveryRecordId:
+                        nullable: true
+                      mandateId:
+                        nullable: true
+                      nextDueOn:
+                        type: string
+                      sideEffects:
+                        nullable: true
+                      discontinuedOn:
+                        nullable: true
+                      discontinuationReason:
+                        nullable: true
+                      isLive:
+                        type: boolean
+                      services:
+                        type: array
+                        items: {}
+                    required:
+                      - id
+                      - patientId
+                      - method
+                      - acceptorType
+                      - startedOn
+                      - providerDoctorId
+                      - providerName
+                      - startEncounterId
+                      - deliveryRecordId
+                      - mandateId
+                      - nextDueOn
+                      - sideEffects
+                      - discontinuedOn
+                      - discontinuationReason
+                      - isLive
+                      - services
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 5d2c8e41-7b93-4a06-9f15-c3e8a2b7d104
+                    patientId: 4a9b2c71-8e35-4d02-a6f7-3b0c9d18e5a4
+                    method: INJECTABLE_3_MONTH
+                    acceptorType: NEW
+                    startedOn: 2026-10-01
+                    providerDoctorId: 8f3a6d12-4c57-4e89-b0a1-2d7e9c5f3b68
+                    providerName: Bidan Sari
+                    startEncounterId: null
+                    deliveryRecordId: null
+                    mandateId: null
+                    nextDueOn: 2026-12-24
+                    sideEffects: null
+                    discontinuedOn: null
+                    discontinuationReason: null
+                    isLive: true
+                    services: []
+                  message: Family planning started
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Patient, provider, encounter or delivery not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Patient, provider, encounter or delivery not found.
+      security:
+        - bearer: []
+      summary: Start a family planning course
+      tags: *a56
+  /api/v1/family-planning/{id}/services:
+    post:
+      operationId: FamilyPlanningController_recordService_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RecordFamilyPlanningServiceDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  servedOn: 2026-12-23
+                  action: Suntik DMPA ulang
+      responses:
+        "200":
+          description: Records one service on a live course and moves the course's next
+            due date to the service's — the method default from `servedOn`
+            unless the clinician entered one. 409
+            FAMILY_PLANNING_COURSE_DISCONTINUED for a discontinued course.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      patientId:
+                        type: string
+                      method:
+                        type: string
+                      acceptorType:
+                        type: string
+                      startedOn:
+                        type: string
+                      providerDoctorId:
+                        type: string
+                      providerName:
+                        type: string
+                      startEncounterId:
+                        nullable: true
+                      deliveryRecordId:
+                        nullable: true
+                      mandateId:
+                        nullable: true
+                      nextDueOn:
+                        type: string
+                      sideEffects:
+                        nullable: true
+                      discontinuedOn:
+                        nullable: true
+                      discontinuationReason:
+                        nullable: true
+                      isLive:
+                        type: boolean
+                      services:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            encounterId:
+                              nullable: true
+                            servedOn:
+                              type: string
+                            action:
+                              type: string
+                            nextDueOn:
+                              type: string
+                          required:
+                            - id
+                            - encounterId
+                            - servedOn
+                            - action
+                            - nextDueOn
+                    required:
+                      - id
+                      - patientId
+                      - method
+                      - acceptorType
+                      - startedOn
+                      - providerDoctorId
+                      - providerName
+                      - startEncounterId
+                      - deliveryRecordId
+                      - mandateId
+                      - nextDueOn
+                      - sideEffects
+                      - discontinuedOn
+                      - discontinuationReason
+                      - isLive
+                      - services
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 5d2c8e41-7b93-4a06-9f15-c3e8a2b7d104
+                    patientId: 4a9b2c71-8e35-4d02-a6f7-3b0c9d18e5a4
+                    method: INJECTABLE_3_MONTH
+                    acceptorType: NEW
+                    startedOn: 2026-10-01
+                    providerDoctorId: 8f3a6d12-4c57-4e89-b0a1-2d7e9c5f3b68
+                    providerName: Bidan Sari
+                    startEncounterId: null
+                    deliveryRecordId: null
+                    mandateId: null
+                    nextDueOn: 2027-03-17
+                    sideEffects: null
+                    discontinuedOn: null
+                    discontinuationReason: null
+                    isLive: true
+                    services:
+                      - id: 0b7e3f95-2a18-4c6d-8e41-9f5a1c3d7b20
+                        encounterId: null
+                        servedOn: 2026-12-23
+                        action: Suntik DMPA ulang
+                        nextDueOn: 2027-03-17
+                  message: Family planning service recorded
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Family planning course not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Family planning course not found.
+      security:
+        - bearer: []
+      summary: Record a family planning follow-up
+      tags: *a56
+  /api/v1/family-planning/{id}/discontinue:
+    post:
+      operationId: FamilyPlanningController_discontinueCourse_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DiscontinueFamilyPlanningDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  discontinuedOn: 2027-03-17
+                  reason: WANTS_PREGNANCY
+      responses:
+        "200":
+          description: Ends the live course with a date and a reason; it leaves the due
+            list and a new course may be started. 409
+            FAMILY_PLANNING_COURSE_DISCONTINUED when it already ended.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      patientId:
+                        type: string
+                      method:
+                        type: string
+                      acceptorType:
+                        type: string
+                      startedOn:
+                        type: string
+                      providerDoctorId:
+                        type: string
+                      providerName:
+                        type: string
+                      startEncounterId:
+                        nullable: true
+                      deliveryRecordId:
+                        nullable: true
+                      mandateId:
+                        nullable: true
+                      nextDueOn:
+                        type: string
+                      sideEffects:
+                        nullable: true
+                      discontinuedOn:
+                        type: string
+                      discontinuationReason:
+                        type: string
+                      isLive:
+                        type: boolean
+                      services:
+                        type: array
+                        items: {}
+                    required:
+                      - id
+                      - patientId
+                      - method
+                      - acceptorType
+                      - startedOn
+                      - providerDoctorId
+                      - providerName
+                      - startEncounterId
+                      - deliveryRecordId
+                      - mandateId
+                      - nextDueOn
+                      - sideEffects
+                      - discontinuedOn
+                      - discontinuationReason
+                      - isLive
+                      - services
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 5d2c8e41-7b93-4a06-9f15-c3e8a2b7d104
+                    patientId: 4a9b2c71-8e35-4d02-a6f7-3b0c9d18e5a4
+                    method: INJECTABLE_3_MONTH
+                    acceptorType: NEW
+                    startedOn: 2026-10-01
+                    providerDoctorId: 8f3a6d12-4c57-4e89-b0a1-2d7e9c5f3b68
+                    providerName: Bidan Sari
+                    startEncounterId: null
+                    deliveryRecordId: null
+                    mandateId: null
+                    nextDueOn: 2026-12-24
+                    sideEffects: null
+                    discontinuedOn: 2027-03-17
+                    discontinuationReason: WANTS_PREGNANCY
+                    isLive: false
+                    services: []
+                  message: Family planning discontinued
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Family planning course not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Family planning course not found.
+      security:
+        - bearer: []
+      summary: Discontinue a family planning course
+      tags: *a56
   /api/v1/pregnancy-episodes/{id}/postnatal-schedule:
     get:
       operationId: PostnatalVisitController_getSchedule_v1
@@ -41065,7 +41831,7 @@ paths:
       security:
         - bearer: []
       summary: Read the nifas and neonatal schedule of a birth
-      tags: &a56
+      tags: &a57
         - Maternal Care
   /api/v1/encounters/{encounterId}/postnatal-visit:
     get:
@@ -41227,7 +41993,7 @@ paths:
       security:
         - bearer: []
       summary: Read this encounter's nifas or neonatal visit
-      tags: *a56
+      tags: *a57
     post:
       operationId: PostnatalVisitController_linkVisit_v1
       parameters:
@@ -41413,7 +42179,7 @@ paths:
       security:
         - bearer: []
       summary: Count this encounter as a nifas or neonatal visit
-      tags: *a56
+      tags: *a57
   /api/v1/encounters/{encounterId}/postnatal-examination:
     put:
       operationId: PostnatalVisitController_upsertExamination_v1
@@ -41614,7 +42380,7 @@ paths:
       security:
         - bearer: []
       summary: Record this nifas visit's examination
-      tags: *a56
+      tags: *a57
   /api/v1/shk-screenings:
     get:
       operationId: ShkScreeningController_listWorklist_v1
@@ -41756,7 +42522,7 @@ paths:
       security:
         - bearer: []
       summary: List the SHK sample worklist
-      tags: &a57
+      tags: &a58
         - Maternal Care
   /api/v1/shk-screenings/{id}/sample:
     post:
@@ -41923,7 +42689,7 @@ paths:
       security:
         - bearer: []
       summary: Record the heel prick
-      tags: *a57
+      tags: *a58
   /api/v1/shk-screenings/{id}/sent:
     post:
       operationId: ShkScreeningController_recordSent_v1
@@ -42089,7 +42855,7 @@ paths:
       security:
         - bearer: []
       summary: Record the card sent to the laboratory
-      tags: *a57
+      tags: *a58
   /api/v1/shk-screenings/{id}/result:
     post:
       operationId: ShkScreeningController_recordResult_v1
@@ -42258,7 +43024,7 @@ paths:
       security:
         - bearer: []
       summary: Record the laboratory's answer
-      tags: *a57
+      tags: *a58
   /api/v1/encounters:
     get:
       operationId: EncounterController_listEncounters_v1
@@ -42481,7 +43247,7 @@ paths:
       security:
         - bearer: []
       summary: List clinical encounters
-      tags: &a58
+      tags: &a59
         - Encounters
     post:
       operationId: EncounterController_openEncounter_v1
@@ -42652,7 +43418,7 @@ paths:
       security:
         - bearer: []
       summary: Open a clinical encounter
-      tags: *a58
+      tags: *a59
   /api/v1/encounters/{id}:
     get:
       operationId: EncounterController_getEncounterById_v1
@@ -43065,7 +43831,7 @@ paths:
       security:
         - bearer: []
       summary: Get a clinical encounter
-      tags: *a58
+      tags: *a59
     patch:
       operationId: EncounterController_updateEncounterSoap_v1
       parameters:
@@ -43252,7 +44018,7 @@ paths:
       security:
         - bearer: []
       summary: Write the SOAP note
-      tags: *a58
+      tags: *a59
   /api/v1/encounters/{id}/close:
     post:
       operationId: EncounterController_closeEncounter_v1
@@ -43424,7 +44190,7 @@ paths:
       security:
         - bearer: []
       summary: Close a clinical encounter
-      tags: *a58
+      tags: *a59
   /api/v1/encounters/{id}/cancel:
     post:
       operationId: EncounterController_cancelEncounter_v1
@@ -43593,7 +44359,7 @@ paths:
       security:
         - bearer: []
       summary: Cancel a clinical encounter
-      tags: *a58
+      tags: *a59
   /api/v1/encounters/{encounterId}/vital-signs:
     post:
       operationId: EncounterClinicalDataController_recordVitalSigns_v1
@@ -43742,7 +44508,7 @@ paths:
       security:
         - bearer: []
       summary: Record a vital-signs measurement
-      tags: &a59
+      tags: &a60
         - Encounters
   /api/v1/encounters/{encounterId}/diagnoses:
     post:
@@ -43866,7 +44632,7 @@ paths:
       security:
         - bearer: []
       summary: Code a diagnosis
-      tags: *a59
+      tags: *a60
   /api/v1/encounters/{encounterId}/diagnoses/{diagnosisId}:
     delete:
       operationId: EncounterClinicalDataController_removeDiagnosis_v1
@@ -43926,7 +44692,7 @@ paths:
       security:
         - bearer: []
       summary: Retract a diagnosis
-      tags: *a59
+      tags: *a60
   /api/v1/encounters/{encounterId}/procedures:
     post:
       operationId: EncounterClinicalDataController_addProcedure_v1
@@ -44044,7 +44810,7 @@ paths:
       security:
         - bearer: []
       summary: Code a procedure
-      tags: *a59
+      tags: *a60
   /api/v1/encounters/{encounterId}/procedures/{procedureId}:
     delete:
       operationId: EncounterClinicalDataController_removeProcedure_v1
@@ -44103,7 +44869,7 @@ paths:
       security:
         - bearer: []
       summary: Retract a procedure
-      tags: *a59
+      tags: *a60
   /api/v1/encounters/{encounterId}/immunizations:
     post:
       operationId: EncounterClinicalDataController_addImmunization_v1
@@ -44264,7 +45030,7 @@ paths:
       security:
         - bearer: []
       summary: Record a vaccination
-      tags: *a59
+      tags: *a60
   /api/v1/encounters/{encounterId}/immunizations/{immunizationId}:
     delete:
       operationId: EncounterClinicalDataController_removeImmunization_v1
@@ -44323,7 +45089,7 @@ paths:
       security:
         - bearer: []
       summary: Retract a vaccination
-      tags: *a59
+      tags: *a60
   /api/v1/encounters/{encounterId}/bpjs-referral:
     put:
       operationId: EncounterClinicalDataController_saveBpjsReferral_v1
@@ -44447,7 +45213,7 @@ paths:
       security:
         - bearer: []
       summary: Record or replace the encounter’s BPJS rujukan
-      tags: *a59
+      tags: *a60
     get:
       operationId: EncounterClinicalDataController_getBpjsReferral_v1
       parameters:
@@ -44538,7 +45304,7 @@ paths:
       security:
         - bearer: []
       summary: Read the encounter’s recorded BPJS rujukan
-      tags: *a59
+      tags: *a60
     delete:
       operationId: EncounterClinicalDataController_removeBpjsReferral_v1
       parameters:
@@ -44592,7 +45358,7 @@ paths:
       security:
         - bearer: []
       summary: Retract the encounter’s BPJS rujukan
-      tags: *a59
+      tags: *a60
   /api/v1/patients/{patientId}/immunizations:
     get:
       operationId: PatientImmunizationController_listPatientImmunizations_v1
@@ -44864,7 +45630,7 @@ paths:
       security:
         - bearer: []
       summary: List laboratory tests
-      tags: &a60
+      tags: &a61
         - Laboratory Catalog
     post:
       operationId: LabTestController_createLabTest_v1
@@ -45031,7 +45797,7 @@ paths:
       security:
         - bearer: []
       summary: Create a laboratory test
-      tags: *a60
+      tags: *a61
   /api/v1/lab-tests/{id}:
     patch:
       operationId: LabTestController_updateLabTest_v1
@@ -45206,7 +45972,7 @@ paths:
       security:
         - bearer: []
       summary: Update a laboratory test
-      tags: *a60
+      tags: *a61
   /api/v1/lab-tests/{id}/reference-ranges:
     put:
       operationId: LabTestController_replaceReferenceRanges_v1
@@ -45391,7 +46157,7 @@ paths:
       security:
         - bearer: []
       summary: Replace a test’s reference ranges
-      tags: *a60
+      tags: *a61
   /api/v1/lab-panels:
     get:
       operationId: LabPanelController_listLabPanels_v1
@@ -45511,7 +46277,7 @@ paths:
       security:
         - bearer: []
       summary: List laboratory panels
-      tags: &a61
+      tags: &a62
         - Laboratory Catalog
     post:
       operationId: LabPanelController_createLabPanel_v1
@@ -45654,7 +46420,7 @@ paths:
       security:
         - bearer: []
       summary: Create a laboratory panel
-      tags: *a61
+      tags: *a62
   /api/v1/lab-panels/{id}:
     patch:
       operationId: LabPanelController_updateLabPanel_v1
@@ -45799,7 +46565,7 @@ paths:
       security:
         - bearer: []
       summary: Update a laboratory panel
-      tags: *a61
+      tags: *a62
   /api/v1/encounters/{encounterId}/lab-orders:
     post:
       operationId: EncounterLabOrderController_createLabOrder_v1
@@ -45995,7 +46761,7 @@ paths:
       security:
         - bearer: []
       summary: Order laboratory tests on an encounter
-      tags: &a62
+      tags: &a63
         - Laboratory Orders
     get:
       operationId: EncounterLabOrderController_listEncounterLabOrders_v1
@@ -46160,7 +46926,7 @@ paths:
       security:
         - bearer: []
       summary: List an encounter’s laboratory orders
-      tags: *a62
+      tags: *a63
   /api/v1/lab-orders/intake:
     post:
       operationId: LabOrderController_createWalkInLabOrder_v1
@@ -46323,7 +47089,7 @@ paths:
       security:
         - bearer: []
       summary: Register a walk-in or external lab request
-      tags: &a63
+      tags: &a64
         - Laboratory Orders
   /api/v1/lab-orders:
     get:
@@ -46507,7 +47273,7 @@ paths:
       security:
         - bearer: []
       summary: List laboratory orders
-      tags: *a63
+      tags: *a64
   /api/v1/lab-orders/{id}:
     get:
       operationId: LabOrderController_getLabOrderById_v1
@@ -46668,7 +47434,7 @@ paths:
       security:
         - bearer: []
       summary: Read one laboratory order
-      tags: *a63
+      tags: *a64
   /api/v1/lab-orders/{id}/cancel:
     post:
       operationId: LabOrderController_cancelLabOrder_v1
@@ -46868,7 +47634,7 @@ paths:
       security:
         - bearer: []
       summary: Cancel a laboratory order
-      tags: *a63
+      tags: *a64
   /api/v1/lab-orders/{id}/disposition:
     patch:
       operationId: LabOrderController_updateDisposition_v1
@@ -47065,7 +47831,7 @@ paths:
       security:
         - bearer: []
       summary: Change where a laboratory order is filled and who pays
-      tags: *a63
+      tags: *a64
   /api/v1/lab-orders/{id}/request-document:
     post:
       operationId: LabOrderController_printRequestLetter_v1
@@ -47148,7 +47914,7 @@ paths:
       security:
         - bearer: []
       summary: Print the surat pengantar for a laboratory order
-      tags: *a63
+      tags: *a64
   /api/v1/lab-orders/{id}/collect:
     post:
       operationId: LabSpecimenController_collectLabSpecimens_v1
@@ -47264,7 +48030,7 @@ paths:
       security:
         - bearer: []
       summary: Collect the specimens an order needs
-      tags: &a64
+      tags: &a65
         - Laboratory Specimens
   /api/v1/lab-specimens/{id}/receive:
     post:
@@ -47354,7 +48120,7 @@ paths:
       security:
         - bearer: []
       summary: Mark a specimen as arrived in the lab
-      tags: *a64
+      tags: *a65
   /api/v1/lab-specimens/{id}/reject:
     post:
       operationId: LabSpecimenController_rejectLabSpecimen_v1
@@ -47466,7 +48232,7 @@ paths:
       security:
         - bearer: []
       summary: Reject a specimen and ask for a fresh draw
-      tags: *a64
+      tags: *a65
   /api/v1/lab-specimens/{id}/label:
     get:
       operationId: LabSpecimenController_getSpecimenLabel_v1
@@ -47569,7 +48335,7 @@ paths:
       security:
         - bearer: []
       summary: Read a specimen label payload
-      tags: *a64
+      tags: *a65
   /api/v1/lab-worklist:
     get:
       operationId: LabWorklistController_listWorklist_v1
@@ -47921,7 +48687,7 @@ paths:
       security:
         - bearer: []
       summary: Read the values entered on a laboratory order
-      tags: &a65
+      tags: &a66
         - Laboratory Results
     put:
       operationId: LabResultController_enterLabResults_v1
@@ -48181,7 +48947,7 @@ paths:
       security:
         - bearer: []
       summary: Enter results for a laboratory order
-      tags: *a65
+      tags: *a66
   /api/v1/lab-orders/{id}/release:
     post:
       operationId: LabResultController_releaseLabOrder_v1
@@ -48450,7 +49216,7 @@ paths:
       security:
         - bearer: []
       summary: Release a laboratory order
-      tags: *a65
+      tags: *a66
   /api/v1/lab-results/{id}/amend:
     post:
       operationId: LabResultController_amendLabResult_v1
@@ -48608,7 +49374,7 @@ paths:
       security:
         - bearer: []
       summary: Amend a released laboratory result
-      tags: *a65
+      tags: *a66
   /api/v1/patients/{id}/lab-results:
     get:
       operationId: PatientLabResultController_listPatientLabResults_v1
@@ -48847,7 +49613,7 @@ paths:
       security:
         - bearer: []
       summary: Read the laboratory verification settings
-      tags: &a66
+      tags: &a67
         - Laboratory Settings
     patch:
       operationId: LaboratorySettingsController_updateLaboratorySettings_v1
@@ -48933,7 +49699,7 @@ paths:
       security:
         - bearer: []
       summary: Change the laboratory verification settings
-      tags: *a66
+      tags: *a67
   /api/v1/lab-orders/{id}/report:
     get:
       operationId: LabReportController_downloadReport_v1
@@ -49022,7 +49788,7 @@ paths:
       security:
         - bearer: []
       summary: Download the current laboratory report
-      tags: &a67
+      tags: &a68
         - Laboratory Orders
   /api/v1/lab-orders/{id}/reports:
     get:
@@ -49222,7 +49988,7 @@ paths:
       security:
         - bearer: []
       summary: List the versions of a laboratory report
-      tags: *a67
+      tags: *a68
   /api/v1/lab-orders/{id}/reports/{reportId}/retry:
     post:
       operationId: LabReportController_retryReport_v1
@@ -49431,7 +50197,7 @@ paths:
       security:
         - bearer: []
       summary: Render a laboratory report version again
-      tags: *a67
+      tags: *a68
   /api/v1/admin/integrations/notion/status:
     get:
       operationId: NotionConnectorController_getStatus_v1
@@ -49497,7 +50263,7 @@ paths:
       security:
         - bearer: []
       summary: Read the Notion bug-report connector status
-      tags: &a68
+      tags: &a69
         - Notion Connector
   /api/v1/admin/integrations/notion/test-connection:
     post:
@@ -49578,7 +50344,7 @@ paths:
       security:
         - bearer: []
       summary: Test the Notion connection and check the Bug Board schema
-      tags: *a68
+      tags: *a69
   /api/v1/bug-reports:
     post:
       operationId: BugReportController_submitReport_v1
@@ -49756,7 +50522,7 @@ paths:
       security:
         - bearer: []
       summary: Read the clinic's tax profile
-      tags: &a69
+      tags: &a70
         - Tax Settings
     patch:
       operationId: TaxSettingsController_updateTaxSettings_v1
@@ -49866,7 +50632,7 @@ paths:
       security:
         - bearer: []
       summary: Change the clinic's tax profile
-      tags: *a69
+      tags: *a70
   /api/v1/tax/codes:
     get:
       operationId: TaxCodeController_listTaxCodes_v1
@@ -50013,7 +50779,7 @@ paths:
       security:
         - bearer: []
       summary: List tax codes with their rates
-      tags: &a70
+      tags: &a71
         - Tax Codes
     post:
       operationId: TaxCodeController_createTaxCode_v1
@@ -50191,7 +50957,7 @@ paths:
       security:
         - bearer: []
       summary: Create a tax code
-      tags: *a70
+      tags: *a71
   /api/v1/tax/codes/{id}:
     patch:
       operationId: TaxCodeController_updateTaxCode_v1
@@ -50368,7 +51134,7 @@ paths:
       security:
         - bearer: []
       summary: Change a tax code
-      tags: *a70
+      tags: *a71
   /api/v1/tax/codes/{id}/rates:
     post:
       operationId: TaxCodeController_addTaxCodeRate_v1
@@ -50546,7 +51312,7 @@ paths:
       security:
         - bearer: []
       summary: Add a rate to a tax code
-      tags: *a70
+      tags: *a71
   /api/v1/tax/category-defaults:
     get:
       operationId: TaxCategoryDefaultController_listCategoryDefaults_v1
@@ -50606,7 +51372,7 @@ paths:
       security:
         - bearer: []
       summary: List the tax code defaults
-      tags: &a71
+      tags: &a72
         - Tax Codes
     put:
       operationId: TaxCategoryDefaultController_updateCategoryDefaults_v1
@@ -50693,7 +51459,7 @@ paths:
       security:
         - bearer: []
       summary: Set tax code defaults
-      tags: *a71
+      tags: *a72
   /api/v1/tax/assignments:
     get:
       operationId: TaxAssignmentController_listAssignments_v1
@@ -50859,7 +51625,7 @@ paths:
       security:
         - bearer: []
       summary: List tariffs and medications with their tax code
-      tags: &a72
+      tags: &a73
         - Tax Codes
   /api/v1/tax/assignments/bulk:
     post:
@@ -50937,7 +51703,7 @@ paths:
       security:
         - bearer: []
       summary: Assign a tax code to many tariffs and medications
-      tags: *a72
+      tags: *a73
   /api/v1/tax/price-breakdowns:
     get:
       operationId: TaxPriceBreakdownController_listPriceBreakdowns_v1
@@ -51129,7 +51895,7 @@ paths:
       security:
         - bearer: []
       summary: List a year's monthly tax reports
-      tags: &a73
+      tags: &a74
         - Tax Reports
     post:
       operationId: TaxReportController_createReport_v1
@@ -51320,7 +52086,7 @@ paths:
       security:
         - bearer: []
       summary: Create the draft for a month
-      tags: *a73
+      tags: *a74
   /api/v1/tax/reports/{id}:
     get:
       operationId: TaxReportController_getReport_v1
@@ -51491,7 +52257,7 @@ paths:
       security:
         - bearer: []
       summary: Read one monthly tax report
-      tags: *a73
+      tags: *a74
   /api/v1/tax/reports/{id}/recompute:
     post:
       operationId: TaxReportController_recomputeReport_v1
@@ -51663,7 +52429,7 @@ paths:
       security:
         - bearer: []
       summary: Recompute a draft from the books
-      tags: *a73
+      tags: *a74
   /api/v1/tax/reports/{id}/finalize:
     post:
       operationId: TaxReportController_finalizeReport_v1
@@ -51838,7 +52604,7 @@ paths:
       security:
         - bearer: []
       summary: Finalize a monthly tax report
-      tags: *a73
+      tags: *a74
   /api/v1/tax/reports/{id}/export:
     get:
       operationId: TaxReportController_exportReport_v1
@@ -51854,7 +52620,7 @@ paths:
             and due dates, then one row per payment or invoice. Totals equal the
             report to the rupiah. Audited as an export."
       summary: Export one monthly tax report as CSV
-      tags: *a73
+      tags: *a74
   /api/v1/tax/reports/{id}/pdf:
     post:
       description: P27-T12. A DRAFT is rendered on every request with a DRAFT
@@ -51878,7 +52644,7 @@ paths:
                 type: string
                 format: binary
       summary: Download one monthly tax report as PDF
-      tags: *a73
+      tags: *a74
   /api/v1/tax/reports/{id}/pdf/download-url:
     get:
       operationId: TaxReportController_createPdfDownloadUrl_v1
@@ -51939,7 +52705,7 @@ paths:
       security:
         - bearer: []
       summary: A signed link to a finalized report's PDF
-      tags: *a73
+      tags: *a74
   /api/v1/satusehat/patients/{patientId}/link:
     post:
       operationId: SatusehatLinkController_linkPatient_v1
@@ -52009,7 +52775,7 @@ paths:
       security:
         - bearer: []
       summary: Link a patient to their SATUSEHAT IHS number
-      tags: &a74
+      tags: &a75
         - SATUSEHAT
   /api/v1/satusehat/doctors/{doctorId}/link:
     post:
@@ -52080,7 +52846,7 @@ paths:
       security:
         - bearer: []
       summary: Link a doctor to their SATUSEHAT IHS practitioner number
-      tags: *a74
+      tags: *a75
   /api/v1/satusehat/doctors/{doctorId}/link-by-ihs/preview:
     post:
       operationId: SatusehatLinkController_previewDoctorIhsLink_v1
@@ -52188,7 +52954,7 @@ paths:
       security:
         - bearer: []
       summary: Preview linking a doctor to a hand-typed SATUSEHAT IHS number
-      tags: *a74
+      tags: *a75
   /api/v1/satusehat/doctors/{doctorId}/link-by-ihs:
     post:
       operationId: SatusehatLinkController_linkDoctorByIhs_v1
@@ -52283,7 +53049,7 @@ paths:
       security:
         - bearer: []
       summary: Link a doctor to a hand-typed SATUSEHAT IHS number after confirmation
-      tags: *a74
+      tags: *a75
   /api/v1/satusehat/environment:
     get:
       operationId: SatusehatSubmissionController_getEnvironment_v1
@@ -52342,7 +53108,7 @@ paths:
       security:
         - bearer: []
       summary: Which SATUSEHAT environment this deployment reports to
-      tags: &a75
+      tags: &a76
         - SATUSEHAT
   /api/v1/satusehat/submissions:
     get:
@@ -52533,7 +53299,7 @@ paths:
       security:
         - bearer: []
       summary: List SATUSEHAT submission outbox entries
-      tags: *a75
+      tags: *a76
   /api/v1/satusehat/submissions/{id}:
     get:
       operationId: SatusehatSubmissionController_getSubmissionDetail_v1
@@ -52705,7 +53471,7 @@ paths:
       security:
         - bearer: []
       summary: One SATUSEHAT submission and what it sent
-      tags: *a75
+      tags: *a76
   /api/v1/satusehat/submissions/{id}/check:
     post:
       operationId: SatusehatSubmissionController_checkSubmission_v1
@@ -52809,7 +53575,7 @@ paths:
       security:
         - bearer: []
       summary: Check with SATUSEHAT whether it still holds what we sent
-      tags: *a75
+      tags: *a76
   /api/v1/satusehat/submissions/{id}/retry:
     post:
       operationId: SatusehatSubmissionController_retrySubmission_v1
@@ -52934,7 +53700,7 @@ paths:
       security:
         - bearer: []
       summary: Retry a failed SATUSEHAT submission
-      tags: *a75
+      tags: *a76
   /api/v1/satusehat/encounters/{encounterId}/record-comparison:
     get:
       operationId: SatusehatRecordController_compareEncounterRecord_v1
@@ -53208,7 +53974,7 @@ paths:
       security:
         - bearer: []
       summary: The clinic's SATUSEHAT Location tree
-      tags: &a76
+      tags: &a77
         - SATUSEHAT
   /api/v1/satusehat/locations/register:
     post:
@@ -53323,7 +54089,7 @@ paths:
       security:
         - bearer: []
       summary: Register clinic rows as SATUSEHAT Locations, or push their changes
-      tags: *a76
+      tags: *a77
   /api/v1/bpjs/config:
     get:
       operationId: BpjsPcareConfigController_getConfig_v1
@@ -53437,7 +54203,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS PCare bridging configuration
-      tags: &a77
+      tags: &a78
         - BPJS PCare
     put:
       operationId: BpjsPcareConfigController_upsertConfig_v1
@@ -53575,7 +54341,7 @@ paths:
       security:
         - bearer: []
       summary: Create or replace the BPJS PCare bridging configuration
-      tags: *a77
+      tags: *a78
     delete:
       operationId: BpjsPcareConfigController_deleteConfig_v1
       parameters: []
@@ -53634,7 +54400,7 @@ paths:
       security:
         - bearer: []
       summary: Delete the BPJS PCare bridging configuration
-      tags: *a77
+      tags: *a78
   /api/v1/bpjs/config/test-connection:
     post:
       operationId: BpjsPcareConfigController_testConnection_v1
@@ -53700,7 +54466,7 @@ paths:
       security:
         - bearer: []
       summary: Test the stored BPJS PCare credentials
-      tags: *a77
+      tags: *a78
   /api/v1/bpjs/reference/sync:
     post:
       operationId: BpjsReferenceController_syncCatalogs_v1
@@ -53788,7 +54554,7 @@ paths:
       security:
         - bearer: []
       summary: Sync the enumerable BPJS PCare reference catalogs
-      tags: &a78
+      tags: &a79
         - BPJS PCare
   /api/v1/bpjs/reference/status:
     get:
@@ -53855,7 +54621,7 @@ paths:
       security:
         - bearer: []
       summary: Read per-catalog BPJS reference sync status
-      tags: *a78
+      tags: *a79
   /api/v1/bpjs/reference/{catalog}:
     get:
       operationId: BpjsReferenceController_searchCatalog_v1
@@ -53949,7 +54715,7 @@ paths:
       security:
         - bearer: []
       summary: Search a synced BPJS reference catalog locally
-      tags: *a78
+      tags: *a79
   /api/v1/bpjs/reference/{catalog}/search:
     post:
       operationId: BpjsReferenceController_searchCatalogRemote_v1
@@ -54055,7 +54821,7 @@ paths:
       security:
         - bearer: []
       summary: Search a keyword-only BPJS catalog live and cache the results
-      tags: *a78
+      tags: *a79
   /api/v1/bpjs/mappings:
     get:
       operationId: BpjsMappingController_getOverview_v1
@@ -54143,7 +54909,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS mapping overview
-      tags: &a79
+      tags: &a80
         - BPJS PCare
   /api/v1/bpjs/mappings/doctors/{doctorId}:
     put:
@@ -54237,7 +55003,7 @@ paths:
       security:
         - bearer: []
       summary: Set or clear a doctor’s BPJS kdDokter mapping
-      tags: *a79
+      tags: *a80
   /api/v1/bpjs/mappings/specialties/{specialtyId}:
     put:
       operationId: BpjsMappingController_setSpecialtyMapping_v1
@@ -54326,7 +55092,7 @@ paths:
       security:
         - bearer: []
       summary: Set or clear a specialty’s BPJS kdPoli mapping
-      tags: *a79
+      tags: *a80
   /api/v1/bpjs/mappings/medications/{medicationId}:
     put:
       operationId: BpjsMappingController_setMedicationMapping_v1
@@ -54420,7 +55186,7 @@ paths:
       security:
         - bearer: []
       summary: Link or unlink a medication’s DPHO code
-      tags: *a79
+      tags: *a80
   /api/v1/bpjs/eligibility/patients/{patientId}/check:
     post:
       operationId: BpjsEligibilityController_checkEligibility_v1
@@ -54720,7 +55486,7 @@ paths:
       security:
         - bearer: []
       summary: List BPJS PCare submission outbox entries
-      tags: &a80
+      tags: &a81
         - BPJS PCare
   /api/v1/bpjs/submissions/{id}/retry:
     post:
@@ -54829,7 +55595,7 @@ paths:
       security:
         - bearer: []
       summary: Retry a failed BPJS PCare submission
-      tags: *a80
+      tags: *a81
   /api/v1/bpjs/reports/monthly:
     get:
       operationId: BpjsReportController_getMonthlyReport_v1
@@ -55076,7 +55842,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS Antrean Online bridging configuration
-      tags: &a81
+      tags: &a82
         - BPJS Antrean
     put:
       operationId: BpjsAntreanConfigController_upsertConfig_v1
@@ -55217,7 +55983,7 @@ paths:
       security:
         - bearer: []
       summary: Create or replace the BPJS Antrean Online bridging configuration
-      tags: *a81
+      tags: *a82
     delete:
       operationId: BpjsAntreanConfigController_deleteConfig_v1
       parameters: []
@@ -55276,7 +56042,7 @@ paths:
       security:
         - bearer: []
       summary: Delete the BPJS Antrean Online bridging configuration
-      tags: *a81
+      tags: *a82
   /api/v1/bpjs/antrean/config/test-connection:
     post:
       operationId: BpjsAntreanConfigController_testConnection_v1
@@ -55342,7 +56108,7 @@ paths:
       security:
         - bearer: []
       summary: Test the stored BPJS Antrean credentials
-      tags: *a81
+      tags: *a82
   /api/v1/bpjs/antrean/inbound-readiness:
     get:
       operationId: BpjsAntreanConfigController_getInboundReadiness_v1
@@ -55412,7 +56178,7 @@ paths:
       security:
         - bearer: []
       summary: Report whether the inbound Antrean web services can serve BPJS
-      tags: *a81
+      tags: *a82
   /api/v1/bpjs/antrean/hfis-reconciliation:
     get:
       operationId: BpjsAntreanConfigController_getHfisReconciliation_v1
@@ -55514,7 +56280,7 @@ paths:
       security:
         - bearer: []
       summary: Compare HFIS against HMS and report the disagreements
-      tags: *a81
+      tags: *a82
   /api/v1/admin/features:
     get:
       operationId: FeatureAdminController_getEntitlements_v1
@@ -55593,7 +56359,7 @@ paths:
       security:
         - bearer: []
       summary: List every feature and whether this client has it
-      tags: &a82
+      tags: &a83
         - Feature Entitlements
   /api/v1/admin/features/{key}:
     put:
@@ -55710,7 +56476,7 @@ paths:
       security:
         - bearer: []
       summary: Switch a feature on or off for this client
-      tags: *a82
+      tags: *a83
   /api/v1/features/availability:
     get:
       operationId: FeatureAvailabilityController_getAvailability_v1
@@ -55833,7 +56599,7 @@ paths:
       security:
         - bearer: []
       summary: List active roles
-      tags: &a83
+      tags: &a84
         - RBAC
     post:
       operationId: RbacController_createRole_v1
@@ -55920,7 +56686,7 @@ paths:
       security:
         - bearer: []
       summary: Create a custom role
-      tags: *a83
+      tags: *a84
   /api/v1/rbac/permissions:
     get:
       operationId: RbacController_getPermissionCatalog_v1
@@ -56000,7 +56766,7 @@ paths:
       security:
         - bearer: []
       summary: List the permission catalog
-      tags: *a83
+      tags: *a84
   /api/v1/rbac/roles/{id}:
     get:
       operationId: RbacController_getRoleById_v1
@@ -56119,7 +56885,7 @@ paths:
       security:
         - bearer: []
       summary: Get a role with its permissions and member count
-      tags: *a83
+      tags: *a84
     patch:
       operationId: RbacController_updateRole_v1
       parameters:
@@ -56218,7 +56984,7 @@ paths:
       security:
         - bearer: []
       summary: Update a role name or description
-      tags: *a83
+      tags: *a84
     delete:
       operationId: RbacController_deleteRole_v1
       parameters:
@@ -56294,7 +57060,7 @@ paths:
       security:
         - bearer: []
       summary: Soft-delete a role
-      tags: *a83
+      tags: *a84
   /api/v1/rbac/roles/{id}/permissions:
     put:
       operationId: RbacController_setRolePermissions_v1
@@ -56440,7 +57206,7 @@ paths:
       security:
         - bearer: []
       summary: Replace the permission set attached to a role
-      tags: *a83
+      tags: *a84
   /api/v1/rbac/assign-role:
     post:
       operationId: RbacController_assignRole_v1
@@ -56532,7 +57298,7 @@ paths:
       security:
         - bearer: []
       summary: Assign a role to a user
-      tags: *a83
+      tags: *a84
   /api/v1/rbac/unassign-role:
     post:
       operationId: RbacController_unassignRole_v1
@@ -56624,7 +57390,7 @@ paths:
       security:
         - bearer: []
       summary: Unassign a role from a user
-      tags: *a83
+      tags: *a84
   /api/v1/health:
     get:
       operationId: HealthController_getHealth_v1
@@ -60882,6 +61648,93 @@ components:
           type: string
           format: date-time
           nullable: true
+    StartFamilyPlanningDto:
+      type: object
+      properties:
+        method:
+          type: string
+          enum:
+            - PILL
+            - INJECTABLE_1_MONTH
+            - INJECTABLE_3_MONTH
+            - CONDOM
+            - IUD
+            - IMPLANT
+        acceptorType:
+          type: string
+          enum:
+            - NEW
+            - CONTINUING
+        startedOn:
+          type: string
+          pattern: ^\d{4}-\d{2}-\d{2}$
+        providerDoctorId:
+          type: string
+          format: uuid
+        startEncounterId:
+          type: string
+          format: uuid
+          nullable: true
+        deliveryRecordId:
+          type: string
+          format: uuid
+          nullable: true
+        nextDueOn:
+          type: string
+          pattern: ^\d{4}-\d{2}-\d{2}$
+          nullable: true
+        sideEffects:
+          type: string
+          maxLength: 2000
+          nullable: true
+      required:
+        - method
+        - acceptorType
+        - startedOn
+        - providerDoctorId
+    RecordFamilyPlanningServiceDto:
+      type: object
+      properties:
+        servedOn:
+          type: string
+          pattern: ^\d{4}-\d{2}-\d{2}$
+        action:
+          type: string
+          minLength: 1
+          maxLength: 500
+        encounterId:
+          type: string
+          format: uuid
+          nullable: true
+        nextDueOn:
+          type: string
+          pattern: ^\d{4}-\d{2}-\d{2}$
+          nullable: true
+        sideEffects:
+          type: string
+          maxLength: 2000
+          nullable: true
+      required:
+        - servedOn
+        - action
+    DiscontinueFamilyPlanningDto:
+      type: object
+      properties:
+        discontinuedOn:
+          type: string
+          pattern: ^\d{4}-\d{2}-\d{2}$
+        reason:
+          type: string
+          enum:
+            - SIDE_EFFECT
+            - WANTS_PREGNANCY
+            - METHOD_CHANGE
+            - MEDICAL_REASON
+            - LOST_TO_FOLLOW_UP
+            - OTHER
+      required:
+        - discontinuedOn
+        - reason
     LinkPostnatalVisitDto:
       type: object
       properties:

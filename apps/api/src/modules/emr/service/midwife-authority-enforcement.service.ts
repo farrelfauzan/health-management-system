@@ -4,7 +4,6 @@ import {
   CHILD_VISIT_PURPOSE_REQUIRED_ERROR_CODE,
   DoctorAuthorityKindValue,
   EncounterChildVisitPurposeValue,
-  MIDWIFE_AUTHORITY_REQUIRED_ERROR_CODE,
   NEONATAL_FIRST_AID_MAX_AGE_DAYS,
   ResolveChildVisitPurposeParams,
   getCalendarDateInTimeZone,
@@ -17,6 +16,7 @@ import { ConfigService } from '@nestjs/config';
 
 import { AuditService } from '../../../common/audit/audit.service';
 import { AuditAction } from '../../../generated/prisma/client';
+import { buildMidwifeAuthorityRequiredException } from '../../doctor-management/service/build-midwife-authority-required-exception';
 import { DoctorAuthorityService } from '../../doctor-management/service/doctor-authority.service';
 import { DoctorMandateService } from '../../doctor-management/service/doctor-mandate.service';
 
@@ -106,7 +106,7 @@ export class MidwifeAuthorityEnforcementService {
       patientId: params.encounter.patientId,
       metadata: { kind, code: params.code.trim(), encounterId: params.encounter.id, doctorId },
     });
-    throw this.buildAuthorityRequiredException(kind);
+    throw buildMidwifeAuthorityRequiredException(kind);
   }
 
   /**
@@ -187,17 +187,7 @@ export class MidwifeAuthorityEnforcementService {
         doctorId,
       },
     });
-    throw this.buildAuthorityRequiredException(kind);
-  }
-
-  private buildAuthorityRequiredException(
-    kind: DoctorAuthorityKindValue,
-  ): UnprocessableEntityException {
-    return new UnprocessableEntityException({
-      code: MIDWIFE_AUTHORITY_REQUIRED_ERROR_CODE,
-      message: `This midwife holds no active ${kind} authority (PP 28/2024 Pasal 744); refer the patient to a doctor or a puskesmas`,
-      errors: { kind },
-    });
+    throw buildMidwifeAuthorityRequiredException(kind);
   }
 
   private toClinicDate(instant: Date): string {
