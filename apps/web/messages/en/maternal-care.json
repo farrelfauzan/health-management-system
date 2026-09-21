@@ -170,6 +170,65 @@
         "issued": "Document issued",
         "reissueHint": "Reissuing renders a new document; the previous one is kept."
       }
+    },
+    "delivery": {
+      "title": "Delivery",
+      "empty": "No birth has been recorded for this pregnancy yet.",
+      "birthAt": "Born at",
+      "labourOnsetAt": "Labour began",
+      "fullDilatationAt": "Full dilatation",
+      "placentaDeliveredAt": "Placenta delivered",
+      "mode": "Mode of birth",
+      "attendant": "Attendant",
+      "tear": "Perineal tear",
+      "bloodLoss": "Blood loss (mL)",
+      "uterotonic": "Uterotonic",
+      "episiotomy": "Episiotomy performed",
+      "referredOutLabel": "Referred on",
+      "referralReason": "Where she was sent",
+      "referralRequired": "A grade 3 or 4 tear must be referred on — record where she was sent.",
+      "referredOut": "Referred on: {reason}",
+      "given": "Given",
+      "modes": {
+        "SPONTANEOUS_VAGINAL": "Spontaneous vaginal",
+        "ASSISTED_VAGINAL": "Assisted vaginal",
+        "CAESAREAN": "Caesarean"
+      },
+      "tears": {
+        "NONE": "None",
+        "GRADE_1": "Grade 1",
+        "GRADE_2": "Grade 2",
+        "GRADE_3": "Grade 3",
+        "GRADE_4": "Grade 4"
+      },
+      "outcome": {
+        "LIVE_BIRTH": "Live birth",
+        "STILLBIRTH": "Stillbirth"
+      },
+      "sex": {
+        "FEMALE": "Girl",
+        "MALE": "Boy"
+      },
+      "actions": {
+        "record": "Record the birth",
+        "recordNewborn": "Add a baby",
+        "registerNewborn": "Register the baby",
+        "issueBirthCertificate": "Birth certificate"
+      },
+      "newborns": {
+        "empty": "No baby has been recorded for this birth yet.",
+        "unnamed": "Baby {order}",
+        "outcome": "Outcome",
+        "sex": "Sex",
+        "weight": "Birth weight",
+        "grams": "{grams} g",
+        "length": "Length",
+        "apgar": "APGAR 1'/5'",
+        "apgar1": "APGAR 1'",
+        "apgar5": "APGAR 5'",
+        "vitaminK1": "Vitamin K1",
+        "registerHint": "Her birth order is set when she is registered as a patient, so it lives in one place."
+      }
     }
   }
 }

@@ -27,6 +27,12 @@ import type {
   AntenatalExaminationControllerIssueReferralLetterV1200,
   AntenatalExaminationControllerUpsertExaminationV1200,
   CreatePregnancyEpisodeDto,
+  DeliveryRecordControllerGetDeliveryV1200,
+  DeliveryRecordControllerIssueBirthCertificateV1200,
+  DeliveryRecordControllerRecordDeliveryV1200,
+  DeliveryRecordControllerRecordNewbornV1200,
+  DeliveryRecordControllerUpdateDeliveryV1200,
+  DeliveryRecordControllerUpdateNewbornV1200,
   DismissAntenatalReferralDto,
   EndPregnancyEpisodeDto,
   IssueAntenatalReferralLetterDto,
@@ -38,7 +44,11 @@ import type {
   PregnancyEpisodeControllerListEpisodesV1200,
   PregnancyEpisodeControllerRecordExternalDoctorVisitV1200,
   PregnancyEpisodeControllerUpdateEpisodeV1200,
+  RecordDeliveryDto,
   RecordExternalDoctorVisitDto,
+  RecordNewbornCareDto,
+  UpdateDeliveryDto,
+  UpdateNewbornCareDto,
   UpdatePregnancyEpisodeDto,
   UpsertAntenatalExaminationDto
 } from '../model';
@@ -1311,6 +1321,594 @@ export function useAntenatalExaminationControllerIssuePregnancyCertificateV1<TDa
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getAntenatalExaminationControllerIssuePregnancyCertificateV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Read this pregnancy's birth record
+ */
+export const deliveryRecordControllerGetDeliveryV1 = (
+    pregnancyEpisodeId: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<DeliveryRecordControllerGetDeliveryV1200>(
+      {url: `/api/v1/pregnancy-episodes/${pregnancyEpisodeId}/delivery`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getDeliveryRecordControllerGetDeliveryV1QueryKey = (pregnancyEpisodeId: string,) => {
+    return [
+    `/api/v1/pregnancy-episodes/${pregnancyEpisodeId}/delivery`
+    ] as const;
+    }
+
+
+export const getDeliveryRecordControllerGetDeliveryV1QueryOptions = <TData = Awaited<ReturnType<typeof deliveryRecordControllerGetDeliveryV1>>, TError = unknown>(pregnancyEpisodeId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof deliveryRecordControllerGetDeliveryV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getDeliveryRecordControllerGetDeliveryV1QueryKey(pregnancyEpisodeId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof deliveryRecordControllerGetDeliveryV1>>> = ({ signal }) => deliveryRecordControllerGetDeliveryV1(pregnancyEpisodeId, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: pregnancyEpisodeId !== null && pregnancyEpisodeId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof deliveryRecordControllerGetDeliveryV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type DeliveryRecordControllerGetDeliveryV1QueryResult = NonNullable<Awaited<ReturnType<typeof deliveryRecordControllerGetDeliveryV1>>>
+export type DeliveryRecordControllerGetDeliveryV1QueryError = unknown
+
+
+export function useDeliveryRecordControllerGetDeliveryV1<TData = Awaited<ReturnType<typeof deliveryRecordControllerGetDeliveryV1>>, TError = unknown>(
+ pregnancyEpisodeId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof deliveryRecordControllerGetDeliveryV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof deliveryRecordControllerGetDeliveryV1>>,
+          TError,
+          Awaited<ReturnType<typeof deliveryRecordControllerGetDeliveryV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDeliveryRecordControllerGetDeliveryV1<TData = Awaited<ReturnType<typeof deliveryRecordControllerGetDeliveryV1>>, TError = unknown>(
+ pregnancyEpisodeId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof deliveryRecordControllerGetDeliveryV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof deliveryRecordControllerGetDeliveryV1>>,
+          TError,
+          Awaited<ReturnType<typeof deliveryRecordControllerGetDeliveryV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDeliveryRecordControllerGetDeliveryV1<TData = Awaited<ReturnType<typeof deliveryRecordControllerGetDeliveryV1>>, TError = unknown>(
+ pregnancyEpisodeId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof deliveryRecordControllerGetDeliveryV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Read this pregnancy's birth record
+ */
+
+export function useDeliveryRecordControllerGetDeliveryV1<TData = Awaited<ReturnType<typeof deliveryRecordControllerGetDeliveryV1>>, TError = unknown>(
+ pregnancyEpisodeId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof deliveryRecordControllerGetDeliveryV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getDeliveryRecordControllerGetDeliveryV1QueryOptions(pregnancyEpisodeId,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Record the birth
+ */
+export const deliveryRecordControllerRecordDeliveryV1 = (
+    pregnancyEpisodeId: string,
+    recordDeliveryDto: RecordDeliveryDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<DeliveryRecordControllerRecordDeliveryV1200>(
+      {url: `/api/v1/pregnancy-episodes/${pregnancyEpisodeId}/delivery`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: recordDeliveryDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getDeliveryRecordControllerRecordDeliveryV1QueryKey = (pregnancyEpisodeId: string,
+    recordDeliveryDto?: RecordDeliveryDto,) => {
+    return [
+    'POST', `/api/v1/pregnancy-episodes/${pregnancyEpisodeId}/delivery`, recordDeliveryDto
+    ] as const;
+    }
+
+
+export const getDeliveryRecordControllerRecordDeliveryV1QueryOptions = <TData = Awaited<ReturnType<typeof deliveryRecordControllerRecordDeliveryV1>>, TError = unknown>(pregnancyEpisodeId: string,
+    recordDeliveryDto: RecordDeliveryDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof deliveryRecordControllerRecordDeliveryV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getDeliveryRecordControllerRecordDeliveryV1QueryKey(pregnancyEpisodeId,recordDeliveryDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof deliveryRecordControllerRecordDeliveryV1>>> = ({ signal }) => deliveryRecordControllerRecordDeliveryV1(pregnancyEpisodeId,recordDeliveryDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: pregnancyEpisodeId !== null && pregnancyEpisodeId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof deliveryRecordControllerRecordDeliveryV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type DeliveryRecordControllerRecordDeliveryV1QueryResult = NonNullable<Awaited<ReturnType<typeof deliveryRecordControllerRecordDeliveryV1>>>
+export type DeliveryRecordControllerRecordDeliveryV1QueryError = unknown
+
+
+export function useDeliveryRecordControllerRecordDeliveryV1<TData = Awaited<ReturnType<typeof deliveryRecordControllerRecordDeliveryV1>>, TError = unknown>(
+ pregnancyEpisodeId: string,
+    recordDeliveryDto: RecordDeliveryDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof deliveryRecordControllerRecordDeliveryV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof deliveryRecordControllerRecordDeliveryV1>>,
+          TError,
+          Awaited<ReturnType<typeof deliveryRecordControllerRecordDeliveryV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDeliveryRecordControllerRecordDeliveryV1<TData = Awaited<ReturnType<typeof deliveryRecordControllerRecordDeliveryV1>>, TError = unknown>(
+ pregnancyEpisodeId: string,
+    recordDeliveryDto: RecordDeliveryDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof deliveryRecordControllerRecordDeliveryV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof deliveryRecordControllerRecordDeliveryV1>>,
+          TError,
+          Awaited<ReturnType<typeof deliveryRecordControllerRecordDeliveryV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDeliveryRecordControllerRecordDeliveryV1<TData = Awaited<ReturnType<typeof deliveryRecordControllerRecordDeliveryV1>>, TError = unknown>(
+ pregnancyEpisodeId: string,
+    recordDeliveryDto: RecordDeliveryDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof deliveryRecordControllerRecordDeliveryV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Record the birth
+ */
+
+export function useDeliveryRecordControllerRecordDeliveryV1<TData = Awaited<ReturnType<typeof deliveryRecordControllerRecordDeliveryV1>>, TError = unknown>(
+ pregnancyEpisodeId: string,
+    recordDeliveryDto: RecordDeliveryDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof deliveryRecordControllerRecordDeliveryV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getDeliveryRecordControllerRecordDeliveryV1QueryOptions(pregnancyEpisodeId,recordDeliveryDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Correct a recorded birth
+ */
+export const deliveryRecordControllerUpdateDeliveryV1 = (
+    deliveryRecordId: string,
+    updateDeliveryDto: UpdateDeliveryDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<DeliveryRecordControllerUpdateDeliveryV1200>(
+      {url: `/api/v1/deliveries/${deliveryRecordId}`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: updateDeliveryDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getDeliveryRecordControllerUpdateDeliveryV1QueryKey = (deliveryRecordId: string,
+    updateDeliveryDto?: UpdateDeliveryDto,) => {
+    return [
+    'PATCH', `/api/v1/deliveries/${deliveryRecordId}`, updateDeliveryDto
+    ] as const;
+    }
+
+
+export const getDeliveryRecordControllerUpdateDeliveryV1QueryOptions = <TData = Awaited<ReturnType<typeof deliveryRecordControllerUpdateDeliveryV1>>, TError = unknown>(deliveryRecordId: string,
+    updateDeliveryDto: UpdateDeliveryDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof deliveryRecordControllerUpdateDeliveryV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getDeliveryRecordControllerUpdateDeliveryV1QueryKey(deliveryRecordId,updateDeliveryDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof deliveryRecordControllerUpdateDeliveryV1>>> = ({ signal }) => deliveryRecordControllerUpdateDeliveryV1(deliveryRecordId,updateDeliveryDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: deliveryRecordId !== null && deliveryRecordId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof deliveryRecordControllerUpdateDeliveryV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type DeliveryRecordControllerUpdateDeliveryV1QueryResult = NonNullable<Awaited<ReturnType<typeof deliveryRecordControllerUpdateDeliveryV1>>>
+export type DeliveryRecordControllerUpdateDeliveryV1QueryError = unknown
+
+
+export function useDeliveryRecordControllerUpdateDeliveryV1<TData = Awaited<ReturnType<typeof deliveryRecordControllerUpdateDeliveryV1>>, TError = unknown>(
+ deliveryRecordId: string,
+    updateDeliveryDto: UpdateDeliveryDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof deliveryRecordControllerUpdateDeliveryV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof deliveryRecordControllerUpdateDeliveryV1>>,
+          TError,
+          Awaited<ReturnType<typeof deliveryRecordControllerUpdateDeliveryV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDeliveryRecordControllerUpdateDeliveryV1<TData = Awaited<ReturnType<typeof deliveryRecordControllerUpdateDeliveryV1>>, TError = unknown>(
+ deliveryRecordId: string,
+    updateDeliveryDto: UpdateDeliveryDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof deliveryRecordControllerUpdateDeliveryV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof deliveryRecordControllerUpdateDeliveryV1>>,
+          TError,
+          Awaited<ReturnType<typeof deliveryRecordControllerUpdateDeliveryV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDeliveryRecordControllerUpdateDeliveryV1<TData = Awaited<ReturnType<typeof deliveryRecordControllerUpdateDeliveryV1>>, TError = unknown>(
+ deliveryRecordId: string,
+    updateDeliveryDto: UpdateDeliveryDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof deliveryRecordControllerUpdateDeliveryV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Correct a recorded birth
+ */
+
+export function useDeliveryRecordControllerUpdateDeliveryV1<TData = Awaited<ReturnType<typeof deliveryRecordControllerUpdateDeliveryV1>>, TError = unknown>(
+ deliveryRecordId: string,
+    updateDeliveryDto: UpdateDeliveryDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof deliveryRecordControllerUpdateDeliveryV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getDeliveryRecordControllerUpdateDeliveryV1QueryOptions(deliveryRecordId,updateDeliveryDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Record a baby of this birth
+ */
+export const deliveryRecordControllerRecordNewbornV1 = (
+    deliveryRecordId: string,
+    recordNewbornCareDto: RecordNewbornCareDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<DeliveryRecordControllerRecordNewbornV1200>(
+      {url: `/api/v1/deliveries/${deliveryRecordId}/newborns`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: recordNewbornCareDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getDeliveryRecordControllerRecordNewbornV1QueryKey = (deliveryRecordId: string,
+    recordNewbornCareDto?: RecordNewbornCareDto,) => {
+    return [
+    'POST', `/api/v1/deliveries/${deliveryRecordId}/newborns`, recordNewbornCareDto
+    ] as const;
+    }
+
+
+export const getDeliveryRecordControllerRecordNewbornV1QueryOptions = <TData = Awaited<ReturnType<typeof deliveryRecordControllerRecordNewbornV1>>, TError = unknown>(deliveryRecordId: string,
+    recordNewbornCareDto: RecordNewbornCareDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof deliveryRecordControllerRecordNewbornV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getDeliveryRecordControllerRecordNewbornV1QueryKey(deliveryRecordId,recordNewbornCareDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof deliveryRecordControllerRecordNewbornV1>>> = ({ signal }) => deliveryRecordControllerRecordNewbornV1(deliveryRecordId,recordNewbornCareDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: deliveryRecordId !== null && deliveryRecordId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof deliveryRecordControllerRecordNewbornV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type DeliveryRecordControllerRecordNewbornV1QueryResult = NonNullable<Awaited<ReturnType<typeof deliveryRecordControllerRecordNewbornV1>>>
+export type DeliveryRecordControllerRecordNewbornV1QueryError = unknown
+
+
+export function useDeliveryRecordControllerRecordNewbornV1<TData = Awaited<ReturnType<typeof deliveryRecordControllerRecordNewbornV1>>, TError = unknown>(
+ deliveryRecordId: string,
+    recordNewbornCareDto: RecordNewbornCareDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof deliveryRecordControllerRecordNewbornV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof deliveryRecordControllerRecordNewbornV1>>,
+          TError,
+          Awaited<ReturnType<typeof deliveryRecordControllerRecordNewbornV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDeliveryRecordControllerRecordNewbornV1<TData = Awaited<ReturnType<typeof deliveryRecordControllerRecordNewbornV1>>, TError = unknown>(
+ deliveryRecordId: string,
+    recordNewbornCareDto: RecordNewbornCareDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof deliveryRecordControllerRecordNewbornV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof deliveryRecordControllerRecordNewbornV1>>,
+          TError,
+          Awaited<ReturnType<typeof deliveryRecordControllerRecordNewbornV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDeliveryRecordControllerRecordNewbornV1<TData = Awaited<ReturnType<typeof deliveryRecordControllerRecordNewbornV1>>, TError = unknown>(
+ deliveryRecordId: string,
+    recordNewbornCareDto: RecordNewbornCareDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof deliveryRecordControllerRecordNewbornV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Record a baby of this birth
+ */
+
+export function useDeliveryRecordControllerRecordNewbornV1<TData = Awaited<ReturnType<typeof deliveryRecordControllerRecordNewbornV1>>, TError = unknown>(
+ deliveryRecordId: string,
+    recordNewbornCareDto: RecordNewbornCareDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof deliveryRecordControllerRecordNewbornV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getDeliveryRecordControllerRecordNewbornV1QueryOptions(deliveryRecordId,recordNewbornCareDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Correct a baby's essentials
+ */
+export const deliveryRecordControllerUpdateNewbornV1 = (
+    newbornCareRecordId: string,
+    updateNewbornCareDto: UpdateNewbornCareDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<DeliveryRecordControllerUpdateNewbornV1200>(
+      {url: `/api/v1/newborn-care-records/${newbornCareRecordId}`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: updateNewbornCareDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getDeliveryRecordControllerUpdateNewbornV1QueryKey = (newbornCareRecordId: string,
+    updateNewbornCareDto?: UpdateNewbornCareDto,) => {
+    return [
+    'PATCH', `/api/v1/newborn-care-records/${newbornCareRecordId}`, updateNewbornCareDto
+    ] as const;
+    }
+
+
+export const getDeliveryRecordControllerUpdateNewbornV1QueryOptions = <TData = Awaited<ReturnType<typeof deliveryRecordControllerUpdateNewbornV1>>, TError = unknown>(newbornCareRecordId: string,
+    updateNewbornCareDto: UpdateNewbornCareDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof deliveryRecordControllerUpdateNewbornV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getDeliveryRecordControllerUpdateNewbornV1QueryKey(newbornCareRecordId,updateNewbornCareDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof deliveryRecordControllerUpdateNewbornV1>>> = ({ signal }) => deliveryRecordControllerUpdateNewbornV1(newbornCareRecordId,updateNewbornCareDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: newbornCareRecordId !== null && newbornCareRecordId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof deliveryRecordControllerUpdateNewbornV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type DeliveryRecordControllerUpdateNewbornV1QueryResult = NonNullable<Awaited<ReturnType<typeof deliveryRecordControllerUpdateNewbornV1>>>
+export type DeliveryRecordControllerUpdateNewbornV1QueryError = unknown
+
+
+export function useDeliveryRecordControllerUpdateNewbornV1<TData = Awaited<ReturnType<typeof deliveryRecordControllerUpdateNewbornV1>>, TError = unknown>(
+ newbornCareRecordId: string,
+    updateNewbornCareDto: UpdateNewbornCareDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof deliveryRecordControllerUpdateNewbornV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof deliveryRecordControllerUpdateNewbornV1>>,
+          TError,
+          Awaited<ReturnType<typeof deliveryRecordControllerUpdateNewbornV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDeliveryRecordControllerUpdateNewbornV1<TData = Awaited<ReturnType<typeof deliveryRecordControllerUpdateNewbornV1>>, TError = unknown>(
+ newbornCareRecordId: string,
+    updateNewbornCareDto: UpdateNewbornCareDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof deliveryRecordControllerUpdateNewbornV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof deliveryRecordControllerUpdateNewbornV1>>,
+          TError,
+          Awaited<ReturnType<typeof deliveryRecordControllerUpdateNewbornV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDeliveryRecordControllerUpdateNewbornV1<TData = Awaited<ReturnType<typeof deliveryRecordControllerUpdateNewbornV1>>, TError = unknown>(
+ newbornCareRecordId: string,
+    updateNewbornCareDto: UpdateNewbornCareDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof deliveryRecordControllerUpdateNewbornV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Correct a baby's essentials
+ */
+
+export function useDeliveryRecordControllerUpdateNewbornV1<TData = Awaited<ReturnType<typeof deliveryRecordControllerUpdateNewbornV1>>, TError = unknown>(
+ newbornCareRecordId: string,
+    updateNewbornCareDto: UpdateNewbornCareDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof deliveryRecordControllerUpdateNewbornV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getDeliveryRecordControllerUpdateNewbornV1QueryOptions(newbornCareRecordId,updateNewbornCareDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Issue the surat keterangan lahir
+ */
+export const deliveryRecordControllerIssueBirthCertificateV1 = (
+    newbornCareRecordId: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<DeliveryRecordControllerIssueBirthCertificateV1200>(
+      {url: `/api/v1/newborn-care-records/${newbornCareRecordId}/birth-certificate`, method: 'POST', signal
+    },
+      );
+    }
+
+
+
+
+export const getDeliveryRecordControllerIssueBirthCertificateV1QueryKey = (newbornCareRecordId: string,) => {
+    return [
+    'POST', `/api/v1/newborn-care-records/${newbornCareRecordId}/birth-certificate`
+    ] as const;
+    }
+
+
+export const getDeliveryRecordControllerIssueBirthCertificateV1QueryOptions = <TData = Awaited<ReturnType<typeof deliveryRecordControllerIssueBirthCertificateV1>>, TError = unknown>(newbornCareRecordId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof deliveryRecordControllerIssueBirthCertificateV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getDeliveryRecordControllerIssueBirthCertificateV1QueryKey(newbornCareRecordId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof deliveryRecordControllerIssueBirthCertificateV1>>> = ({ signal }) => deliveryRecordControllerIssueBirthCertificateV1(newbornCareRecordId, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: newbornCareRecordId !== null && newbornCareRecordId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof deliveryRecordControllerIssueBirthCertificateV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type DeliveryRecordControllerIssueBirthCertificateV1QueryResult = NonNullable<Awaited<ReturnType<typeof deliveryRecordControllerIssueBirthCertificateV1>>>
+export type DeliveryRecordControllerIssueBirthCertificateV1QueryError = unknown
+
+
+export function useDeliveryRecordControllerIssueBirthCertificateV1<TData = Awaited<ReturnType<typeof deliveryRecordControllerIssueBirthCertificateV1>>, TError = unknown>(
+ newbornCareRecordId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof deliveryRecordControllerIssueBirthCertificateV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof deliveryRecordControllerIssueBirthCertificateV1>>,
+          TError,
+          Awaited<ReturnType<typeof deliveryRecordControllerIssueBirthCertificateV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDeliveryRecordControllerIssueBirthCertificateV1<TData = Awaited<ReturnType<typeof deliveryRecordControllerIssueBirthCertificateV1>>, TError = unknown>(
+ newbornCareRecordId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof deliveryRecordControllerIssueBirthCertificateV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof deliveryRecordControllerIssueBirthCertificateV1>>,
+          TError,
+          Awaited<ReturnType<typeof deliveryRecordControllerIssueBirthCertificateV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDeliveryRecordControllerIssueBirthCertificateV1<TData = Awaited<ReturnType<typeof deliveryRecordControllerIssueBirthCertificateV1>>, TError = unknown>(
+ newbornCareRecordId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof deliveryRecordControllerIssueBirthCertificateV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Issue the surat keterangan lahir
+ */
+
+export function useDeliveryRecordControllerIssueBirthCertificateV1<TData = Awaited<ReturnType<typeof deliveryRecordControllerIssueBirthCertificateV1>>, TError = unknown>(
+ newbornCareRecordId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof deliveryRecordControllerIssueBirthCertificateV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getDeliveryRecordControllerIssueBirthCertificateV1QueryOptions(newbornCareRecordId,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

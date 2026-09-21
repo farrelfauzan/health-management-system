@@ -99,6 +99,7 @@ export const DOCUMENT_CATEGORIES = [
   // medical certificate, because it is reissued from the pregnancy episode and
   // a clinic looking for it should not read every certificate she has had.
   'PREGNANCY_CERTIFICATE',
+  'BIRTH_CERTIFICATE',
   'INSURANCE',
   'IDENTITY',
   'OTHER',

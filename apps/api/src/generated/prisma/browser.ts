@@ -1598,6 +1598,30 @@ export type PregnancyExternalDoctorVisit = Prisma.PregnancyExternalDoctorVisitMo
  */
 export type AntenatalVisit = Prisma.AntenatalVisitModel
 /**
+ * Model DeliveryRecord
+ * One birth, from the onset of labour to the end of the fourth stage
+ * (P25-T09, FR-INC-01).
+ * 
+ * One row per pregnancy, not per baby: twins are one labour with two
+ * `newborn_care_records`. Every timing is nullable because a woman who
+ * arrives pushing has no recorded onset, and the checks in the migration
+ * order only the columns that are set.
+ */
+export type DeliveryRecord = Prisma.DeliveryRecordModel
+/**
+ * Model NewbornCareRecord
+ * One baby of one birth, and the essentials done for her in the first hour
+ * (P25-T09, FR-INC-03/05).
+ * 
+ * A live baby's birth order is **not** stored here: it lives once, on
+ * `patient_profiles.birth_order` (P24-T10), read through `newbornPatientId`.
+ * Two copies would eventually disagree, and the one on the patient is the one
+ * SATUSEHAT sends as `multipleBirthInteger`. A stillborn baby has no patient
+ * record at all, so she carries `stillbirthOrder` instead — the CHECK in the
+ * migration ties each to its outcome.
+ */
+export type NewbornCareRecord = Prisma.NewbornCareRecordModel
+/**
  * Model AntenatalExamination
  * The integrated 10T examination of one antenatal visit (P25-T07, FR-ANC-03).
  * 

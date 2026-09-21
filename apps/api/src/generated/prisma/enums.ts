@@ -167,6 +167,8 @@ export const AuditAction = {
   PREGNANCY_EPISODE_ENDED: 'PREGNANCY_EPISODE_ENDED',
   ANTENATAL_VISIT_LINKED: 'ANTENATAL_VISIT_LINKED',
   ANTENATAL_REFERRAL_DISMISSED: 'ANTENATAL_REFERRAL_DISMISSED',
+  DELIVERY_RECORDED: 'DELIVERY_RECORDED',
+  DELIVERY_UPDATED: 'DELIVERY_UPDATED',
   TAX_SETTINGS_UPDATED: 'TAX_SETTINGS_UPDATED',
   TAX_CODE_CHANGED: 'TAX_CODE_CHANGED',
   TAX_ASSIGNMENT_CHANGED: 'TAX_ASSIGNMENT_CHANGED',
@@ -716,7 +718,8 @@ export const DocumentTemplateKind = {
   PRESCRIPTION: 'PRESCRIPTION',
   LAB_REPORT: 'LAB_REPORT',
   REFERRAL_LETTER: 'REFERRAL_LETTER',
-  PREGNANCY_CERTIFICATE: 'PREGNANCY_CERTIFICATE'
+  PREGNANCY_CERTIFICATE: 'PREGNANCY_CERTIFICATE',
+  BIRTH_CERTIFICATE: 'BIRTH_CERTIFICATE'
 } as const
 
 export type DocumentTemplateKind = (typeof DocumentTemplateKind)[keyof typeof DocumentTemplateKind]
@@ -966,6 +969,7 @@ export const DocumentCategory = {
   DISCHARGE_SUMMARY: 'DISCHARGE_SUMMARY',
   MEDICAL_CERTIFICATE: 'MEDICAL_CERTIFICATE',
   PREGNANCY_CERTIFICATE: 'PREGNANCY_CERTIFICATE',
+  BIRTH_CERTIFICATE: 'BIRTH_CERTIFICATE',
   INSURANCE: 'INSURANCE',
   IDENTITY: 'IDENTITY',
   OTHER: 'OTHER'
@@ -1308,6 +1312,34 @@ export const AntenatalVisitCode = {
 } as const
 
 export type AntenatalVisitCode = (typeof AntenatalVisitCode)[keyof typeof AntenatalVisitCode]
+
+
+export const DeliveryMode = {
+  SPONTANEOUS_VAGINAL: 'SPONTANEOUS_VAGINAL',
+  ASSISTED_VAGINAL: 'ASSISTED_VAGINAL',
+  CAESAREAN: 'CAESAREAN'
+} as const
+
+export type DeliveryMode = (typeof DeliveryMode)[keyof typeof DeliveryMode]
+
+
+export const PerinealTearGrade = {
+  NONE: 'NONE',
+  GRADE_1: 'GRADE_1',
+  GRADE_2: 'GRADE_2',
+  GRADE_3: 'GRADE_3',
+  GRADE_4: 'GRADE_4'
+} as const
+
+export type PerinealTearGrade = (typeof PerinealTearGrade)[keyof typeof PerinealTearGrade]
+
+
+export const BirthOutcome = {
+  LIVE_BIRTH: 'LIVE_BIRTH',
+  STILLBIRTH: 'STILLBIRTH'
+} as const
+
+export type BirthOutcome = (typeof BirthOutcome)[keyof typeof BirthOutcome]
 
 
 export const FetalPresentation = {

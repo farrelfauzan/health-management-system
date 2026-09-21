@@ -12,4 +12,5 @@ export const CLINICAL_REQUEST_AUDIT_RESOURCE_BY_KIND: Readonly<
   PRESCRIPTION: 'Prescription',
   REFERRAL_LETTER: 'AntenatalVisit',
   PREGNANCY_CERTIFICATE: 'PregnancyEpisode',
+  BIRTH_CERTIFICATE: 'NewbornCareRecord',
 };

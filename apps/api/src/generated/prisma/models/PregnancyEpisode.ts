@@ -368,6 +368,7 @@ export type PregnancyEpisodeWhereInput = {
   antenatalVisits?: Prisma.AntenatalVisitListRelationFilter
   externalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitListRelationFilter
   satusehatSubmissions?: Prisma.SatusehatSubmissionListRelationFilter
+  deliveryRecord?: Prisma.XOR<Prisma.DeliveryRecordNullableScalarRelationFilter, Prisma.DeliveryRecordWhereInput> | null
 }
 
 export type PregnancyEpisodeOrderByWithRelationInput = {
@@ -397,6 +398,7 @@ export type PregnancyEpisodeOrderByWithRelationInput = {
   antenatalVisits?: Prisma.AntenatalVisitOrderByRelationAggregateInput
   externalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitOrderByRelationAggregateInput
   satusehatSubmissions?: Prisma.SatusehatSubmissionOrderByRelationAggregateInput
+  deliveryRecord?: Prisma.DeliveryRecordOrderByWithRelationInput
 }
 
 export type PregnancyEpisodeWhereUniqueInput = Prisma.AtLeast<{
@@ -429,6 +431,7 @@ export type PregnancyEpisodeWhereUniqueInput = Prisma.AtLeast<{
   antenatalVisits?: Prisma.AntenatalVisitListRelationFilter
   externalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitListRelationFilter
   satusehatSubmissions?: Prisma.SatusehatSubmissionListRelationFilter
+  deliveryRecord?: Prisma.XOR<Prisma.DeliveryRecordNullableScalarRelationFilter, Prisma.DeliveryRecordWhereInput> | null
 }, "id">
 
 export type PregnancyEpisodeOrderByWithAggregationInput = {
@@ -512,6 +515,7 @@ export type PregnancyEpisodeCreateInput = {
   antenatalVisits?: Prisma.AntenatalVisitCreateNestedManyWithoutPregnancyEpisodeInput
   externalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitCreateNestedManyWithoutPregnancyEpisodeInput
   satusehatSubmissions?: Prisma.SatusehatSubmissionCreateNestedManyWithoutPregnancyEpisodeInput
+  deliveryRecord?: Prisma.DeliveryRecordCreateNestedOneWithoutPregnancyEpisodeInput
 }
 
 export type PregnancyEpisodeUncheckedCreateInput = {
@@ -539,6 +543,7 @@ export type PregnancyEpisodeUncheckedCreateInput = {
   antenatalVisits?: Prisma.AntenatalVisitUncheckedCreateNestedManyWithoutPregnancyEpisodeInput
   externalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitUncheckedCreateNestedManyWithoutPregnancyEpisodeInput
   satusehatSubmissions?: Prisma.SatusehatSubmissionUncheckedCreateNestedManyWithoutPregnancyEpisodeInput
+  deliveryRecord?: Prisma.DeliveryRecordUncheckedCreateNestedOneWithoutPregnancyEpisodeInput
 }
 
 export type PregnancyEpisodeUpdateInput = {
@@ -566,6 +571,7 @@ export type PregnancyEpisodeUpdateInput = {
   antenatalVisits?: Prisma.AntenatalVisitUpdateManyWithoutPregnancyEpisodeNestedInput
   externalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitUpdateManyWithoutPregnancyEpisodeNestedInput
   satusehatSubmissions?: Prisma.SatusehatSubmissionUpdateManyWithoutPregnancyEpisodeNestedInput
+  deliveryRecord?: Prisma.DeliveryRecordUpdateOneWithoutPregnancyEpisodeNestedInput
 }
 
 export type PregnancyEpisodeUncheckedUpdateInput = {
@@ -593,6 +599,7 @@ export type PregnancyEpisodeUncheckedUpdateInput = {
   antenatalVisits?: Prisma.AntenatalVisitUncheckedUpdateManyWithoutPregnancyEpisodeNestedInput
   externalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitUncheckedUpdateManyWithoutPregnancyEpisodeNestedInput
   satusehatSubmissions?: Prisma.SatusehatSubmissionUncheckedUpdateManyWithoutPregnancyEpisodeNestedInput
+  deliveryRecord?: Prisma.DeliveryRecordUncheckedUpdateOneWithoutPregnancyEpisodeNestedInput
 }
 
 export type PregnancyEpisodeCreateManyInput = {
@@ -911,6 +918,20 @@ export type PregnancyEpisodeUpdateOneRequiredWithoutAntenatalVisitsNestedInput =
   update?: Prisma.XOR<Prisma.XOR<Prisma.PregnancyEpisodeUpdateToOneWithWhereWithoutAntenatalVisitsInput, Prisma.PregnancyEpisodeUpdateWithoutAntenatalVisitsInput>, Prisma.PregnancyEpisodeUncheckedUpdateWithoutAntenatalVisitsInput>
 }
 
+export type PregnancyEpisodeCreateNestedOneWithoutDeliveryRecordInput = {
+  create?: Prisma.XOR<Prisma.PregnancyEpisodeCreateWithoutDeliveryRecordInput, Prisma.PregnancyEpisodeUncheckedCreateWithoutDeliveryRecordInput>
+  connectOrCreate?: Prisma.PregnancyEpisodeCreateOrConnectWithoutDeliveryRecordInput
+  connect?: Prisma.PregnancyEpisodeWhereUniqueInput
+}
+
+export type PregnancyEpisodeUpdateOneRequiredWithoutDeliveryRecordNestedInput = {
+  create?: Prisma.XOR<Prisma.PregnancyEpisodeCreateWithoutDeliveryRecordInput, Prisma.PregnancyEpisodeUncheckedCreateWithoutDeliveryRecordInput>
+  connectOrCreate?: Prisma.PregnancyEpisodeCreateOrConnectWithoutDeliveryRecordInput
+  upsert?: Prisma.PregnancyEpisodeUpsertWithoutDeliveryRecordInput
+  connect?: Prisma.PregnancyEpisodeWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.PregnancyEpisodeUpdateToOneWithWhereWithoutDeliveryRecordInput, Prisma.PregnancyEpisodeUpdateWithoutDeliveryRecordInput>, Prisma.PregnancyEpisodeUncheckedUpdateWithoutDeliveryRecordInput>
+}
+
 export type PregnancyEpisodeCreateWithoutCreatedByInput = {
   id?: string
   status?: $Enums.PregnancyEpisodeStatus
@@ -935,6 +956,7 @@ export type PregnancyEpisodeCreateWithoutCreatedByInput = {
   antenatalVisits?: Prisma.AntenatalVisitCreateNestedManyWithoutPregnancyEpisodeInput
   externalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitCreateNestedManyWithoutPregnancyEpisodeInput
   satusehatSubmissions?: Prisma.SatusehatSubmissionCreateNestedManyWithoutPregnancyEpisodeInput
+  deliveryRecord?: Prisma.DeliveryRecordCreateNestedOneWithoutPregnancyEpisodeInput
 }
 
 export type PregnancyEpisodeUncheckedCreateWithoutCreatedByInput = {
@@ -961,6 +983,7 @@ export type PregnancyEpisodeUncheckedCreateWithoutCreatedByInput = {
   antenatalVisits?: Prisma.AntenatalVisitUncheckedCreateNestedManyWithoutPregnancyEpisodeInput
   externalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitUncheckedCreateNestedManyWithoutPregnancyEpisodeInput
   satusehatSubmissions?: Prisma.SatusehatSubmissionUncheckedCreateNestedManyWithoutPregnancyEpisodeInput
+  deliveryRecord?: Prisma.DeliveryRecordUncheckedCreateNestedOneWithoutPregnancyEpisodeInput
 }
 
 export type PregnancyEpisodeCreateOrConnectWithoutCreatedByInput = {
@@ -1040,6 +1063,7 @@ export type PregnancyEpisodeCreateWithoutPatientInput = {
   antenatalVisits?: Prisma.AntenatalVisitCreateNestedManyWithoutPregnancyEpisodeInput
   externalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitCreateNestedManyWithoutPregnancyEpisodeInput
   satusehatSubmissions?: Prisma.SatusehatSubmissionCreateNestedManyWithoutPregnancyEpisodeInput
+  deliveryRecord?: Prisma.DeliveryRecordCreateNestedOneWithoutPregnancyEpisodeInput
 }
 
 export type PregnancyEpisodeUncheckedCreateWithoutPatientInput = {
@@ -1066,6 +1090,7 @@ export type PregnancyEpisodeUncheckedCreateWithoutPatientInput = {
   antenatalVisits?: Prisma.AntenatalVisitUncheckedCreateNestedManyWithoutPregnancyEpisodeInput
   externalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitUncheckedCreateNestedManyWithoutPregnancyEpisodeInput
   satusehatSubmissions?: Prisma.SatusehatSubmissionUncheckedCreateNestedManyWithoutPregnancyEpisodeInput
+  deliveryRecord?: Prisma.DeliveryRecordUncheckedCreateNestedOneWithoutPregnancyEpisodeInput
 }
 
 export type PregnancyEpisodeCreateOrConnectWithoutPatientInput = {
@@ -1118,6 +1143,7 @@ export type PregnancyEpisodeCreateWithoutSatusehatSubmissionsInput = {
   createdBy: Prisma.UserCreateNestedOneWithoutCreatedPregnancyEpisodesInput
   antenatalVisits?: Prisma.AntenatalVisitCreateNestedManyWithoutPregnancyEpisodeInput
   externalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitCreateNestedManyWithoutPregnancyEpisodeInput
+  deliveryRecord?: Prisma.DeliveryRecordCreateNestedOneWithoutPregnancyEpisodeInput
 }
 
 export type PregnancyEpisodeUncheckedCreateWithoutSatusehatSubmissionsInput = {
@@ -1144,6 +1170,7 @@ export type PregnancyEpisodeUncheckedCreateWithoutSatusehatSubmissionsInput = {
   deletedAt?: Date | string | null
   antenatalVisits?: Prisma.AntenatalVisitUncheckedCreateNestedManyWithoutPregnancyEpisodeInput
   externalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitUncheckedCreateNestedManyWithoutPregnancyEpisodeInput
+  deliveryRecord?: Prisma.DeliveryRecordUncheckedCreateNestedOneWithoutPregnancyEpisodeInput
 }
 
 export type PregnancyEpisodeCreateOrConnectWithoutSatusehatSubmissionsInput = {
@@ -1186,6 +1213,7 @@ export type PregnancyEpisodeUpdateWithoutSatusehatSubmissionsInput = {
   createdBy?: Prisma.UserUpdateOneRequiredWithoutCreatedPregnancyEpisodesNestedInput
   antenatalVisits?: Prisma.AntenatalVisitUpdateManyWithoutPregnancyEpisodeNestedInput
   externalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitUpdateManyWithoutPregnancyEpisodeNestedInput
+  deliveryRecord?: Prisma.DeliveryRecordUpdateOneWithoutPregnancyEpisodeNestedInput
 }
 
 export type PregnancyEpisodeUncheckedUpdateWithoutSatusehatSubmissionsInput = {
@@ -1212,6 +1240,7 @@ export type PregnancyEpisodeUncheckedUpdateWithoutSatusehatSubmissionsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   antenatalVisits?: Prisma.AntenatalVisitUncheckedUpdateManyWithoutPregnancyEpisodeNestedInput
   externalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitUncheckedUpdateManyWithoutPregnancyEpisodeNestedInput
+  deliveryRecord?: Prisma.DeliveryRecordUncheckedUpdateOneWithoutPregnancyEpisodeNestedInput
 }
 
 export type PregnancyEpisodeCreateWithoutExternalDoctorVisitsInput = {
@@ -1238,6 +1267,7 @@ export type PregnancyEpisodeCreateWithoutExternalDoctorVisitsInput = {
   createdBy: Prisma.UserCreateNestedOneWithoutCreatedPregnancyEpisodesInput
   antenatalVisits?: Prisma.AntenatalVisitCreateNestedManyWithoutPregnancyEpisodeInput
   satusehatSubmissions?: Prisma.SatusehatSubmissionCreateNestedManyWithoutPregnancyEpisodeInput
+  deliveryRecord?: Prisma.DeliveryRecordCreateNestedOneWithoutPregnancyEpisodeInput
 }
 
 export type PregnancyEpisodeUncheckedCreateWithoutExternalDoctorVisitsInput = {
@@ -1264,6 +1294,7 @@ export type PregnancyEpisodeUncheckedCreateWithoutExternalDoctorVisitsInput = {
   deletedAt?: Date | string | null
   antenatalVisits?: Prisma.AntenatalVisitUncheckedCreateNestedManyWithoutPregnancyEpisodeInput
   satusehatSubmissions?: Prisma.SatusehatSubmissionUncheckedCreateNestedManyWithoutPregnancyEpisodeInput
+  deliveryRecord?: Prisma.DeliveryRecordUncheckedCreateNestedOneWithoutPregnancyEpisodeInput
 }
 
 export type PregnancyEpisodeCreateOrConnectWithoutExternalDoctorVisitsInput = {
@@ -1306,6 +1337,7 @@ export type PregnancyEpisodeUpdateWithoutExternalDoctorVisitsInput = {
   createdBy?: Prisma.UserUpdateOneRequiredWithoutCreatedPregnancyEpisodesNestedInput
   antenatalVisits?: Prisma.AntenatalVisitUpdateManyWithoutPregnancyEpisodeNestedInput
   satusehatSubmissions?: Prisma.SatusehatSubmissionUpdateManyWithoutPregnancyEpisodeNestedInput
+  deliveryRecord?: Prisma.DeliveryRecordUpdateOneWithoutPregnancyEpisodeNestedInput
 }
 
 export type PregnancyEpisodeUncheckedUpdateWithoutExternalDoctorVisitsInput = {
@@ -1332,6 +1364,7 @@ export type PregnancyEpisodeUncheckedUpdateWithoutExternalDoctorVisitsInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   antenatalVisits?: Prisma.AntenatalVisitUncheckedUpdateManyWithoutPregnancyEpisodeNestedInput
   satusehatSubmissions?: Prisma.SatusehatSubmissionUncheckedUpdateManyWithoutPregnancyEpisodeNestedInput
+  deliveryRecord?: Prisma.DeliveryRecordUncheckedUpdateOneWithoutPregnancyEpisodeNestedInput
 }
 
 export type PregnancyEpisodeCreateWithoutAntenatalVisitsInput = {
@@ -1358,6 +1391,7 @@ export type PregnancyEpisodeCreateWithoutAntenatalVisitsInput = {
   createdBy: Prisma.UserCreateNestedOneWithoutCreatedPregnancyEpisodesInput
   externalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitCreateNestedManyWithoutPregnancyEpisodeInput
   satusehatSubmissions?: Prisma.SatusehatSubmissionCreateNestedManyWithoutPregnancyEpisodeInput
+  deliveryRecord?: Prisma.DeliveryRecordCreateNestedOneWithoutPregnancyEpisodeInput
 }
 
 export type PregnancyEpisodeUncheckedCreateWithoutAntenatalVisitsInput = {
@@ -1384,6 +1418,7 @@ export type PregnancyEpisodeUncheckedCreateWithoutAntenatalVisitsInput = {
   deletedAt?: Date | string | null
   externalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitUncheckedCreateNestedManyWithoutPregnancyEpisodeInput
   satusehatSubmissions?: Prisma.SatusehatSubmissionUncheckedCreateNestedManyWithoutPregnancyEpisodeInput
+  deliveryRecord?: Prisma.DeliveryRecordUncheckedCreateNestedOneWithoutPregnancyEpisodeInput
 }
 
 export type PregnancyEpisodeCreateOrConnectWithoutAntenatalVisitsInput = {
@@ -1426,6 +1461,7 @@ export type PregnancyEpisodeUpdateWithoutAntenatalVisitsInput = {
   createdBy?: Prisma.UserUpdateOneRequiredWithoutCreatedPregnancyEpisodesNestedInput
   externalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitUpdateManyWithoutPregnancyEpisodeNestedInput
   satusehatSubmissions?: Prisma.SatusehatSubmissionUpdateManyWithoutPregnancyEpisodeNestedInput
+  deliveryRecord?: Prisma.DeliveryRecordUpdateOneWithoutPregnancyEpisodeNestedInput
 }
 
 export type PregnancyEpisodeUncheckedUpdateWithoutAntenatalVisitsInput = {
@@ -1450,6 +1486,131 @@ export type PregnancyEpisodeUncheckedUpdateWithoutAntenatalVisitsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  externalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitUncheckedUpdateManyWithoutPregnancyEpisodeNestedInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionUncheckedUpdateManyWithoutPregnancyEpisodeNestedInput
+  deliveryRecord?: Prisma.DeliveryRecordUncheckedUpdateOneWithoutPregnancyEpisodeNestedInput
+}
+
+export type PregnancyEpisodeCreateWithoutDeliveryRecordInput = {
+  id?: string
+  status?: $Enums.PregnancyEpisodeStatus
+  lastMenstrualPeriodDate?: Date | string | null
+  estimatedDeliveryDate: Date | string
+  eddSource: $Enums.EstimatedDeliveryDateSource
+  gravida: number
+  para: number
+  abortus: number
+  prePregnancyWeightKg?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  bloodType?: string | null
+  rhesus?: string | null
+  riskNotes?: string | null
+  endedAt?: Date | string | null
+  endReason?: $Enums.PregnancyEndReason | null
+  satusehatEpisodeOfCareId?: string | null
+  satusehatPostnatalEpisodeOfCareId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  patient: Prisma.PatientProfileCreateNestedOneWithoutPregnancyEpisodesInput
+  createdBy: Prisma.UserCreateNestedOneWithoutCreatedPregnancyEpisodesInput
+  antenatalVisits?: Prisma.AntenatalVisitCreateNestedManyWithoutPregnancyEpisodeInput
+  externalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitCreateNestedManyWithoutPregnancyEpisodeInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionCreateNestedManyWithoutPregnancyEpisodeInput
+}
+
+export type PregnancyEpisodeUncheckedCreateWithoutDeliveryRecordInput = {
+  id?: string
+  patientId: string
+  status?: $Enums.PregnancyEpisodeStatus
+  lastMenstrualPeriodDate?: Date | string | null
+  estimatedDeliveryDate: Date | string
+  eddSource: $Enums.EstimatedDeliveryDateSource
+  gravida: number
+  para: number
+  abortus: number
+  prePregnancyWeightKg?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  bloodType?: string | null
+  rhesus?: string | null
+  riskNotes?: string | null
+  endedAt?: Date | string | null
+  endReason?: $Enums.PregnancyEndReason | null
+  satusehatEpisodeOfCareId?: string | null
+  satusehatPostnatalEpisodeOfCareId?: string | null
+  createdById: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  antenatalVisits?: Prisma.AntenatalVisitUncheckedCreateNestedManyWithoutPregnancyEpisodeInput
+  externalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitUncheckedCreateNestedManyWithoutPregnancyEpisodeInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionUncheckedCreateNestedManyWithoutPregnancyEpisodeInput
+}
+
+export type PregnancyEpisodeCreateOrConnectWithoutDeliveryRecordInput = {
+  where: Prisma.PregnancyEpisodeWhereUniqueInput
+  create: Prisma.XOR<Prisma.PregnancyEpisodeCreateWithoutDeliveryRecordInput, Prisma.PregnancyEpisodeUncheckedCreateWithoutDeliveryRecordInput>
+}
+
+export type PregnancyEpisodeUpsertWithoutDeliveryRecordInput = {
+  update: Prisma.XOR<Prisma.PregnancyEpisodeUpdateWithoutDeliveryRecordInput, Prisma.PregnancyEpisodeUncheckedUpdateWithoutDeliveryRecordInput>
+  create: Prisma.XOR<Prisma.PregnancyEpisodeCreateWithoutDeliveryRecordInput, Prisma.PregnancyEpisodeUncheckedCreateWithoutDeliveryRecordInput>
+  where?: Prisma.PregnancyEpisodeWhereInput
+}
+
+export type PregnancyEpisodeUpdateToOneWithWhereWithoutDeliveryRecordInput = {
+  where?: Prisma.PregnancyEpisodeWhereInput
+  data: Prisma.XOR<Prisma.PregnancyEpisodeUpdateWithoutDeliveryRecordInput, Prisma.PregnancyEpisodeUncheckedUpdateWithoutDeliveryRecordInput>
+}
+
+export type PregnancyEpisodeUpdateWithoutDeliveryRecordInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumPregnancyEpisodeStatusFieldUpdateOperationsInput | $Enums.PregnancyEpisodeStatus
+  lastMenstrualPeriodDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  estimatedDeliveryDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  eddSource?: Prisma.EnumEstimatedDeliveryDateSourceFieldUpdateOperationsInput | $Enums.EstimatedDeliveryDateSource
+  gravida?: Prisma.IntFieldUpdateOperationsInput | number
+  para?: Prisma.IntFieldUpdateOperationsInput | number
+  abortus?: Prisma.IntFieldUpdateOperationsInput | number
+  prePregnancyWeightKg?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  bloodType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rhesus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  riskNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  endedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endReason?: Prisma.NullableEnumPregnancyEndReasonFieldUpdateOperationsInput | $Enums.PregnancyEndReason | null
+  satusehatEpisodeOfCareId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  satusehatPostnatalEpisodeOfCareId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patient?: Prisma.PatientProfileUpdateOneRequiredWithoutPregnancyEpisodesNestedInput
+  createdBy?: Prisma.UserUpdateOneRequiredWithoutCreatedPregnancyEpisodesNestedInput
+  antenatalVisits?: Prisma.AntenatalVisitUpdateManyWithoutPregnancyEpisodeNestedInput
+  externalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitUpdateManyWithoutPregnancyEpisodeNestedInput
+  satusehatSubmissions?: Prisma.SatusehatSubmissionUpdateManyWithoutPregnancyEpisodeNestedInput
+}
+
+export type PregnancyEpisodeUncheckedUpdateWithoutDeliveryRecordInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  patientId?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumPregnancyEpisodeStatusFieldUpdateOperationsInput | $Enums.PregnancyEpisodeStatus
+  lastMenstrualPeriodDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  estimatedDeliveryDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  eddSource?: Prisma.EnumEstimatedDeliveryDateSourceFieldUpdateOperationsInput | $Enums.EstimatedDeliveryDateSource
+  gravida?: Prisma.IntFieldUpdateOperationsInput | number
+  para?: Prisma.IntFieldUpdateOperationsInput | number
+  abortus?: Prisma.IntFieldUpdateOperationsInput | number
+  prePregnancyWeightKg?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  bloodType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rhesus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  riskNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  endedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endReason?: Prisma.NullableEnumPregnancyEndReasonFieldUpdateOperationsInput | $Enums.PregnancyEndReason | null
+  satusehatEpisodeOfCareId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  satusehatPostnatalEpisodeOfCareId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  antenatalVisits?: Prisma.AntenatalVisitUncheckedUpdateManyWithoutPregnancyEpisodeNestedInput
   externalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitUncheckedUpdateManyWithoutPregnancyEpisodeNestedInput
   satusehatSubmissions?: Prisma.SatusehatSubmissionUncheckedUpdateManyWithoutPregnancyEpisodeNestedInput
 }
@@ -1501,6 +1662,7 @@ export type PregnancyEpisodeUpdateWithoutCreatedByInput = {
   antenatalVisits?: Prisma.AntenatalVisitUpdateManyWithoutPregnancyEpisodeNestedInput
   externalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitUpdateManyWithoutPregnancyEpisodeNestedInput
   satusehatSubmissions?: Prisma.SatusehatSubmissionUpdateManyWithoutPregnancyEpisodeNestedInput
+  deliveryRecord?: Prisma.DeliveryRecordUpdateOneWithoutPregnancyEpisodeNestedInput
 }
 
 export type PregnancyEpisodeUncheckedUpdateWithoutCreatedByInput = {
@@ -1527,6 +1689,7 @@ export type PregnancyEpisodeUncheckedUpdateWithoutCreatedByInput = {
   antenatalVisits?: Prisma.AntenatalVisitUncheckedUpdateManyWithoutPregnancyEpisodeNestedInput
   externalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitUncheckedUpdateManyWithoutPregnancyEpisodeNestedInput
   satusehatSubmissions?: Prisma.SatusehatSubmissionUncheckedUpdateManyWithoutPregnancyEpisodeNestedInput
+  deliveryRecord?: Prisma.DeliveryRecordUncheckedUpdateOneWithoutPregnancyEpisodeNestedInput
 }
 
 export type PregnancyEpisodeUncheckedUpdateManyWithoutCreatedByInput = {
@@ -1599,6 +1762,7 @@ export type PregnancyEpisodeUpdateWithoutPatientInput = {
   antenatalVisits?: Prisma.AntenatalVisitUpdateManyWithoutPregnancyEpisodeNestedInput
   externalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitUpdateManyWithoutPregnancyEpisodeNestedInput
   satusehatSubmissions?: Prisma.SatusehatSubmissionUpdateManyWithoutPregnancyEpisodeNestedInput
+  deliveryRecord?: Prisma.DeliveryRecordUpdateOneWithoutPregnancyEpisodeNestedInput
 }
 
 export type PregnancyEpisodeUncheckedUpdateWithoutPatientInput = {
@@ -1625,6 +1789,7 @@ export type PregnancyEpisodeUncheckedUpdateWithoutPatientInput = {
   antenatalVisits?: Prisma.AntenatalVisitUncheckedUpdateManyWithoutPregnancyEpisodeNestedInput
   externalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitUncheckedUpdateManyWithoutPregnancyEpisodeNestedInput
   satusehatSubmissions?: Prisma.SatusehatSubmissionUncheckedUpdateManyWithoutPregnancyEpisodeNestedInput
+  deliveryRecord?: Prisma.DeliveryRecordUncheckedUpdateOneWithoutPregnancyEpisodeNestedInput
 }
 
 export type PregnancyEpisodeUncheckedUpdateManyWithoutPatientInput = {
@@ -1726,6 +1891,7 @@ export type PregnancyEpisodeSelect<ExtArgs extends runtime.Types.Extensions.Inte
   antenatalVisits?: boolean | Prisma.PregnancyEpisode$antenatalVisitsArgs<ExtArgs>
   externalDoctorVisits?: boolean | Prisma.PregnancyEpisode$externalDoctorVisitsArgs<ExtArgs>
   satusehatSubmissions?: boolean | Prisma.PregnancyEpisode$satusehatSubmissionsArgs<ExtArgs>
+  deliveryRecord?: boolean | Prisma.PregnancyEpisode$deliveryRecordArgs<ExtArgs>
   _count?: boolean | Prisma.PregnancyEpisodeCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["pregnancyEpisode"]>
 
@@ -1812,6 +1978,7 @@ export type PregnancyEpisodeInclude<ExtArgs extends runtime.Types.Extensions.Int
   antenatalVisits?: boolean | Prisma.PregnancyEpisode$antenatalVisitsArgs<ExtArgs>
   externalDoctorVisits?: boolean | Prisma.PregnancyEpisode$externalDoctorVisitsArgs<ExtArgs>
   satusehatSubmissions?: boolean | Prisma.PregnancyEpisode$satusehatSubmissionsArgs<ExtArgs>
+  deliveryRecord?: boolean | Prisma.PregnancyEpisode$deliveryRecordArgs<ExtArgs>
   _count?: boolean | Prisma.PregnancyEpisodeCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type PregnancyEpisodeIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1831,6 +1998,7 @@ export type $PregnancyEpisodePayload<ExtArgs extends runtime.Types.Extensions.In
     antenatalVisits: Prisma.$AntenatalVisitPayload<ExtArgs>[]
     externalDoctorVisits: Prisma.$PregnancyExternalDoctorVisitPayload<ExtArgs>[]
     satusehatSubmissions: Prisma.$SatusehatSubmissionPayload<ExtArgs>[]
+    deliveryRecord: Prisma.$DeliveryRecordPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2268,6 +2436,7 @@ export interface Prisma__PregnancyEpisodeClient<T, Null = never, ExtArgs extends
   antenatalVisits<T extends Prisma.PregnancyEpisode$antenatalVisitsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PregnancyEpisode$antenatalVisitsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AntenatalVisitPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   externalDoctorVisits<T extends Prisma.PregnancyEpisode$externalDoctorVisitsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PregnancyEpisode$externalDoctorVisitsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PregnancyExternalDoctorVisitPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   satusehatSubmissions<T extends Prisma.PregnancyEpisode$satusehatSubmissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PregnancyEpisode$satusehatSubmissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SatusehatSubmissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  deliveryRecord<T extends Prisma.PregnancyEpisode$deliveryRecordArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PregnancyEpisode$deliveryRecordArgs<ExtArgs>>): Prisma.Prisma__DeliveryRecordClient<runtime.Types.Result.GetResult<Prisma.$DeliveryRecordPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2788,6 +2957,25 @@ export type PregnancyEpisode$satusehatSubmissionsArgs<ExtArgs extends runtime.Ty
   take?: number
   skip?: number
   distinct?: Prisma.SatusehatSubmissionScalarFieldEnum | Prisma.SatusehatSubmissionScalarFieldEnum[]
+}
+
+/**
+ * PregnancyEpisode.deliveryRecord
+ */
+export type PregnancyEpisode$deliveryRecordArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the DeliveryRecord
+   */
+  select?: Prisma.DeliveryRecordSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the DeliveryRecord
+   */
+  omit?: Prisma.DeliveryRecordOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DeliveryRecordInclude<ExtArgs> | null
+  where?: Prisma.DeliveryRecordWhereInput
 }
 
 /**

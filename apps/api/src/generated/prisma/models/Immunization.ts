@@ -329,6 +329,7 @@ export type ImmunizationWhereInput = {
   patient?: Prisma.XOR<Prisma.PatientProfileScalarRelationFilter, Prisma.PatientProfileWhereInput>
   medication?: Prisma.XOR<Prisma.MedicationScalarRelationFilter, Prisma.MedicationWhereInput>
   performedBy?: Prisma.XOR<Prisma.DoctorProfileNullableScalarRelationFilter, Prisma.DoctorProfileWhereInput> | null
+  newbornCareRecords?: Prisma.NewbornCareRecordListRelationFilter
 }
 
 export type ImmunizationOrderByWithRelationInput = {
@@ -354,6 +355,7 @@ export type ImmunizationOrderByWithRelationInput = {
   patient?: Prisma.PatientProfileOrderByWithRelationInput
   medication?: Prisma.MedicationOrderByWithRelationInput
   performedBy?: Prisma.DoctorProfileOrderByWithRelationInput
+  newbornCareRecords?: Prisma.NewbornCareRecordOrderByRelationAggregateInput
 }
 
 export type ImmunizationWhereUniqueInput = Prisma.AtLeast<{
@@ -382,6 +384,7 @@ export type ImmunizationWhereUniqueInput = Prisma.AtLeast<{
   patient?: Prisma.XOR<Prisma.PatientProfileScalarRelationFilter, Prisma.PatientProfileWhereInput>
   medication?: Prisma.XOR<Prisma.MedicationScalarRelationFilter, Prisma.MedicationWhereInput>
   performedBy?: Prisma.XOR<Prisma.DoctorProfileNullableScalarRelationFilter, Prisma.DoctorProfileWhereInput> | null
+  newbornCareRecords?: Prisma.NewbornCareRecordListRelationFilter
 }, "id">
 
 export type ImmunizationOrderByWithAggregationInput = {
@@ -453,6 +456,7 @@ export type ImmunizationCreateInput = {
   patient: Prisma.PatientProfileCreateNestedOneWithoutImmunizationsInput
   medication: Prisma.MedicationCreateNestedOneWithoutImmunizationsInput
   performedBy?: Prisma.DoctorProfileCreateNestedOneWithoutImmunizationsInput
+  newbornCareRecords?: Prisma.NewbornCareRecordCreateNestedManyWithoutHb0ImmunizationInput
 }
 
 export type ImmunizationUncheckedCreateInput = {
@@ -474,6 +478,7 @@ export type ImmunizationUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  newbornCareRecords?: Prisma.NewbornCareRecordUncheckedCreateNestedManyWithoutHb0ImmunizationInput
 }
 
 export type ImmunizationUpdateInput = {
@@ -495,6 +500,7 @@ export type ImmunizationUpdateInput = {
   patient?: Prisma.PatientProfileUpdateOneRequiredWithoutImmunizationsNestedInput
   medication?: Prisma.MedicationUpdateOneRequiredWithoutImmunizationsNestedInput
   performedBy?: Prisma.DoctorProfileUpdateOneWithoutImmunizationsNestedInput
+  newbornCareRecords?: Prisma.NewbornCareRecordUpdateManyWithoutHb0ImmunizationNestedInput
 }
 
 export type ImmunizationUncheckedUpdateInput = {
@@ -516,6 +522,7 @@ export type ImmunizationUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  newbornCareRecords?: Prisma.NewbornCareRecordUncheckedUpdateManyWithoutHb0ImmunizationNestedInput
 }
 
 export type ImmunizationCreateManyInput = {
@@ -656,6 +663,11 @@ export type ImmunizationMinOrderByAggregateInput = {
 
 export type ImmunizationSumOrderByAggregateInput = {
   doseNumber?: Prisma.SortOrder
+}
+
+export type ImmunizationNullableScalarRelationFilter = {
+  is?: Prisma.ImmunizationWhereInput | null
+  isNot?: Prisma.ImmunizationWhereInput | null
 }
 
 export type ImmunizationCreateNestedManyWithoutPatientInput = {
@@ -838,6 +850,22 @@ export type NullableEnumImmunizationReasonFieldUpdateOperationsInput = {
   set?: $Enums.ImmunizationReason | null
 }
 
+export type ImmunizationCreateNestedOneWithoutNewbornCareRecordsInput = {
+  create?: Prisma.XOR<Prisma.ImmunizationCreateWithoutNewbornCareRecordsInput, Prisma.ImmunizationUncheckedCreateWithoutNewbornCareRecordsInput>
+  connectOrCreate?: Prisma.ImmunizationCreateOrConnectWithoutNewbornCareRecordsInput
+  connect?: Prisma.ImmunizationWhereUniqueInput
+}
+
+export type ImmunizationUpdateOneWithoutNewbornCareRecordsNestedInput = {
+  create?: Prisma.XOR<Prisma.ImmunizationCreateWithoutNewbornCareRecordsInput, Prisma.ImmunizationUncheckedCreateWithoutNewbornCareRecordsInput>
+  connectOrCreate?: Prisma.ImmunizationCreateOrConnectWithoutNewbornCareRecordsInput
+  upsert?: Prisma.ImmunizationUpsertWithoutNewbornCareRecordsInput
+  disconnect?: Prisma.ImmunizationWhereInput | boolean
+  delete?: Prisma.ImmunizationWhereInput | boolean
+  connect?: Prisma.ImmunizationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ImmunizationUpdateToOneWithWhereWithoutNewbornCareRecordsInput, Prisma.ImmunizationUpdateWithoutNewbornCareRecordsInput>, Prisma.ImmunizationUncheckedUpdateWithoutNewbornCareRecordsInput>
+}
+
 export type ImmunizationCreateWithoutPatientInput = {
   id?: string
   occurredAt: Date | string
@@ -856,6 +884,7 @@ export type ImmunizationCreateWithoutPatientInput = {
   encounter: Prisma.EncounterCreateNestedOneWithoutImmunizationsInput
   medication: Prisma.MedicationCreateNestedOneWithoutImmunizationsInput
   performedBy?: Prisma.DoctorProfileCreateNestedOneWithoutImmunizationsInput
+  newbornCareRecords?: Prisma.NewbornCareRecordCreateNestedManyWithoutHb0ImmunizationInput
 }
 
 export type ImmunizationUncheckedCreateWithoutPatientInput = {
@@ -876,6 +905,7 @@ export type ImmunizationUncheckedCreateWithoutPatientInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  newbornCareRecords?: Prisma.NewbornCareRecordUncheckedCreateNestedManyWithoutHb0ImmunizationInput
 }
 
 export type ImmunizationCreateOrConnectWithoutPatientInput = {
@@ -946,6 +976,7 @@ export type ImmunizationCreateWithoutPerformedByInput = {
   encounter: Prisma.EncounterCreateNestedOneWithoutImmunizationsInput
   patient: Prisma.PatientProfileCreateNestedOneWithoutImmunizationsInput
   medication: Prisma.MedicationCreateNestedOneWithoutImmunizationsInput
+  newbornCareRecords?: Prisma.NewbornCareRecordCreateNestedManyWithoutHb0ImmunizationInput
 }
 
 export type ImmunizationUncheckedCreateWithoutPerformedByInput = {
@@ -966,6 +997,7 @@ export type ImmunizationUncheckedCreateWithoutPerformedByInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  newbornCareRecords?: Prisma.NewbornCareRecordUncheckedCreateNestedManyWithoutHb0ImmunizationInput
 }
 
 export type ImmunizationCreateOrConnectWithoutPerformedByInput = {
@@ -1012,6 +1044,7 @@ export type ImmunizationCreateWithoutEncounterInput = {
   patient: Prisma.PatientProfileCreateNestedOneWithoutImmunizationsInput
   medication: Prisma.MedicationCreateNestedOneWithoutImmunizationsInput
   performedBy?: Prisma.DoctorProfileCreateNestedOneWithoutImmunizationsInput
+  newbornCareRecords?: Prisma.NewbornCareRecordCreateNestedManyWithoutHb0ImmunizationInput
 }
 
 export type ImmunizationUncheckedCreateWithoutEncounterInput = {
@@ -1032,6 +1065,7 @@ export type ImmunizationUncheckedCreateWithoutEncounterInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  newbornCareRecords?: Prisma.NewbornCareRecordUncheckedCreateNestedManyWithoutHb0ImmunizationInput
 }
 
 export type ImmunizationCreateOrConnectWithoutEncounterInput = {
@@ -1078,6 +1112,7 @@ export type ImmunizationCreateWithoutMedicationInput = {
   encounter: Prisma.EncounterCreateNestedOneWithoutImmunizationsInput
   patient: Prisma.PatientProfileCreateNestedOneWithoutImmunizationsInput
   performedBy?: Prisma.DoctorProfileCreateNestedOneWithoutImmunizationsInput
+  newbornCareRecords?: Prisma.NewbornCareRecordCreateNestedManyWithoutHb0ImmunizationInput
 }
 
 export type ImmunizationUncheckedCreateWithoutMedicationInput = {
@@ -1098,6 +1133,7 @@ export type ImmunizationUncheckedCreateWithoutMedicationInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  newbornCareRecords?: Prisma.NewbornCareRecordUncheckedCreateNestedManyWithoutHb0ImmunizationInput
 }
 
 export type ImmunizationCreateOrConnectWithoutMedicationInput = {
@@ -1124,6 +1160,106 @@ export type ImmunizationUpdateWithWhereUniqueWithoutMedicationInput = {
 export type ImmunizationUpdateManyWithWhereWithoutMedicationInput = {
   where: Prisma.ImmunizationScalarWhereInput
   data: Prisma.XOR<Prisma.ImmunizationUpdateManyMutationInput, Prisma.ImmunizationUncheckedUpdateManyWithoutMedicationInput>
+}
+
+export type ImmunizationCreateWithoutNewbornCareRecordsInput = {
+  id?: string
+  occurredAt: Date | string
+  lotNumber?: string | null
+  expirationDate?: Date | string | null
+  doseNumber?: number | null
+  route?: $Enums.ImmunizationRoute | null
+  site?: $Enums.ImmunizationSite | null
+  notes?: string | null
+  isHistorical?: boolean
+  reason?: $Enums.ImmunizationReason | null
+  satusehatImmunizationId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  encounter: Prisma.EncounterCreateNestedOneWithoutImmunizationsInput
+  patient: Prisma.PatientProfileCreateNestedOneWithoutImmunizationsInput
+  medication: Prisma.MedicationCreateNestedOneWithoutImmunizationsInput
+  performedBy?: Prisma.DoctorProfileCreateNestedOneWithoutImmunizationsInput
+}
+
+export type ImmunizationUncheckedCreateWithoutNewbornCareRecordsInput = {
+  id?: string
+  encounterId: string
+  patientId: string
+  medicationId: string
+  occurredAt: Date | string
+  lotNumber?: string | null
+  expirationDate?: Date | string | null
+  doseNumber?: number | null
+  route?: $Enums.ImmunizationRoute | null
+  site?: $Enums.ImmunizationSite | null
+  performedById?: string | null
+  notes?: string | null
+  isHistorical?: boolean
+  reason?: $Enums.ImmunizationReason | null
+  satusehatImmunizationId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+}
+
+export type ImmunizationCreateOrConnectWithoutNewbornCareRecordsInput = {
+  where: Prisma.ImmunizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.ImmunizationCreateWithoutNewbornCareRecordsInput, Prisma.ImmunizationUncheckedCreateWithoutNewbornCareRecordsInput>
+}
+
+export type ImmunizationUpsertWithoutNewbornCareRecordsInput = {
+  update: Prisma.XOR<Prisma.ImmunizationUpdateWithoutNewbornCareRecordsInput, Prisma.ImmunizationUncheckedUpdateWithoutNewbornCareRecordsInput>
+  create: Prisma.XOR<Prisma.ImmunizationCreateWithoutNewbornCareRecordsInput, Prisma.ImmunizationUncheckedCreateWithoutNewbornCareRecordsInput>
+  where?: Prisma.ImmunizationWhereInput
+}
+
+export type ImmunizationUpdateToOneWithWhereWithoutNewbornCareRecordsInput = {
+  where?: Prisma.ImmunizationWhereInput
+  data: Prisma.XOR<Prisma.ImmunizationUpdateWithoutNewbornCareRecordsInput, Prisma.ImmunizationUncheckedUpdateWithoutNewbornCareRecordsInput>
+}
+
+export type ImmunizationUpdateWithoutNewbornCareRecordsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  occurredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lotNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expirationDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  doseNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  route?: Prisma.NullableEnumImmunizationRouteFieldUpdateOperationsInput | $Enums.ImmunizationRoute | null
+  site?: Prisma.NullableEnumImmunizationSiteFieldUpdateOperationsInput | $Enums.ImmunizationSite | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isHistorical?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  reason?: Prisma.NullableEnumImmunizationReasonFieldUpdateOperationsInput | $Enums.ImmunizationReason | null
+  satusehatImmunizationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  encounter?: Prisma.EncounterUpdateOneRequiredWithoutImmunizationsNestedInput
+  patient?: Prisma.PatientProfileUpdateOneRequiredWithoutImmunizationsNestedInput
+  medication?: Prisma.MedicationUpdateOneRequiredWithoutImmunizationsNestedInput
+  performedBy?: Prisma.DoctorProfileUpdateOneWithoutImmunizationsNestedInput
+}
+
+export type ImmunizationUncheckedUpdateWithoutNewbornCareRecordsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  encounterId?: Prisma.StringFieldUpdateOperationsInput | string
+  patientId?: Prisma.StringFieldUpdateOperationsInput | string
+  medicationId?: Prisma.StringFieldUpdateOperationsInput | string
+  occurredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lotNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expirationDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  doseNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  route?: Prisma.NullableEnumImmunizationRouteFieldUpdateOperationsInput | $Enums.ImmunizationRoute | null
+  site?: Prisma.NullableEnumImmunizationSiteFieldUpdateOperationsInput | $Enums.ImmunizationSite | null
+  performedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isHistorical?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  reason?: Prisma.NullableEnumImmunizationReasonFieldUpdateOperationsInput | $Enums.ImmunizationReason | null
+  satusehatImmunizationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type ImmunizationCreateManyPatientInput = {
@@ -1164,6 +1300,7 @@ export type ImmunizationUpdateWithoutPatientInput = {
   encounter?: Prisma.EncounterUpdateOneRequiredWithoutImmunizationsNestedInput
   medication?: Prisma.MedicationUpdateOneRequiredWithoutImmunizationsNestedInput
   performedBy?: Prisma.DoctorProfileUpdateOneWithoutImmunizationsNestedInput
+  newbornCareRecords?: Prisma.NewbornCareRecordUpdateManyWithoutHb0ImmunizationNestedInput
 }
 
 export type ImmunizationUncheckedUpdateWithoutPatientInput = {
@@ -1184,6 +1321,7 @@ export type ImmunizationUncheckedUpdateWithoutPatientInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  newbornCareRecords?: Prisma.NewbornCareRecordUncheckedUpdateManyWithoutHb0ImmunizationNestedInput
 }
 
 export type ImmunizationUncheckedUpdateManyWithoutPatientInput = {
@@ -1244,6 +1382,7 @@ export type ImmunizationUpdateWithoutPerformedByInput = {
   encounter?: Prisma.EncounterUpdateOneRequiredWithoutImmunizationsNestedInput
   patient?: Prisma.PatientProfileUpdateOneRequiredWithoutImmunizationsNestedInput
   medication?: Prisma.MedicationUpdateOneRequiredWithoutImmunizationsNestedInput
+  newbornCareRecords?: Prisma.NewbornCareRecordUpdateManyWithoutHb0ImmunizationNestedInput
 }
 
 export type ImmunizationUncheckedUpdateWithoutPerformedByInput = {
@@ -1264,6 +1403,7 @@ export type ImmunizationUncheckedUpdateWithoutPerformedByInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  newbornCareRecords?: Prisma.NewbornCareRecordUncheckedUpdateManyWithoutHb0ImmunizationNestedInput
 }
 
 export type ImmunizationUncheckedUpdateManyWithoutPerformedByInput = {
@@ -1324,6 +1464,7 @@ export type ImmunizationUpdateWithoutEncounterInput = {
   patient?: Prisma.PatientProfileUpdateOneRequiredWithoutImmunizationsNestedInput
   medication?: Prisma.MedicationUpdateOneRequiredWithoutImmunizationsNestedInput
   performedBy?: Prisma.DoctorProfileUpdateOneWithoutImmunizationsNestedInput
+  newbornCareRecords?: Prisma.NewbornCareRecordUpdateManyWithoutHb0ImmunizationNestedInput
 }
 
 export type ImmunizationUncheckedUpdateWithoutEncounterInput = {
@@ -1344,6 +1485,7 @@ export type ImmunizationUncheckedUpdateWithoutEncounterInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  newbornCareRecords?: Prisma.NewbornCareRecordUncheckedUpdateManyWithoutHb0ImmunizationNestedInput
 }
 
 export type ImmunizationUncheckedUpdateManyWithoutEncounterInput = {
@@ -1404,6 +1546,7 @@ export type ImmunizationUpdateWithoutMedicationInput = {
   encounter?: Prisma.EncounterUpdateOneRequiredWithoutImmunizationsNestedInput
   patient?: Prisma.PatientProfileUpdateOneRequiredWithoutImmunizationsNestedInput
   performedBy?: Prisma.DoctorProfileUpdateOneWithoutImmunizationsNestedInput
+  newbornCareRecords?: Prisma.NewbornCareRecordUpdateManyWithoutHb0ImmunizationNestedInput
 }
 
 export type ImmunizationUncheckedUpdateWithoutMedicationInput = {
@@ -1424,6 +1567,7 @@ export type ImmunizationUncheckedUpdateWithoutMedicationInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  newbornCareRecords?: Prisma.NewbornCareRecordUncheckedUpdateManyWithoutHb0ImmunizationNestedInput
 }
 
 export type ImmunizationUncheckedUpdateManyWithoutMedicationInput = {
@@ -1446,6 +1590,35 @@ export type ImmunizationUncheckedUpdateManyWithoutMedicationInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
+
+/**
+ * Count Type ImmunizationCountOutputType
+ */
+
+export type ImmunizationCountOutputType = {
+  newbornCareRecords: number
+}
+
+export type ImmunizationCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  newbornCareRecords?: boolean | ImmunizationCountOutputTypeCountNewbornCareRecordsArgs
+}
+
+/**
+ * ImmunizationCountOutputType without action
+ */
+export type ImmunizationCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ImmunizationCountOutputType
+   */
+  select?: Prisma.ImmunizationCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * ImmunizationCountOutputType without action
+ */
+export type ImmunizationCountOutputTypeCountNewbornCareRecordsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.NewbornCareRecordWhereInput
+}
 
 
 export type ImmunizationSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1471,6 +1644,8 @@ export type ImmunizationSelect<ExtArgs extends runtime.Types.Extensions.Internal
   patient?: boolean | Prisma.PatientProfileDefaultArgs<ExtArgs>
   medication?: boolean | Prisma.MedicationDefaultArgs<ExtArgs>
   performedBy?: boolean | Prisma.Immunization$performedByArgs<ExtArgs>
+  newbornCareRecords?: boolean | Prisma.Immunization$newbornCareRecordsArgs<ExtArgs>
+  _count?: boolean | Prisma.ImmunizationCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["immunization"]>
 
 export type ImmunizationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1550,6 +1725,8 @@ export type ImmunizationInclude<ExtArgs extends runtime.Types.Extensions.Interna
   patient?: boolean | Prisma.PatientProfileDefaultArgs<ExtArgs>
   medication?: boolean | Prisma.MedicationDefaultArgs<ExtArgs>
   performedBy?: boolean | Prisma.Immunization$performedByArgs<ExtArgs>
+  newbornCareRecords?: boolean | Prisma.Immunization$newbornCareRecordsArgs<ExtArgs>
+  _count?: boolean | Prisma.ImmunizationCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ImmunizationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   encounter?: boolean | Prisma.EncounterDefaultArgs<ExtArgs>
@@ -1571,6 +1748,7 @@ export type $ImmunizationPayload<ExtArgs extends runtime.Types.Extensions.Intern
     patient: Prisma.$PatientProfilePayload<ExtArgs>
     medication: Prisma.$MedicationPayload<ExtArgs>
     performedBy: Prisma.$DoctorProfilePayload<ExtArgs> | null
+    newbornCareRecords: Prisma.$NewbornCareRecordPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2012,6 +2190,7 @@ export interface Prisma__ImmunizationClient<T, Null = never, ExtArgs extends run
   patient<T extends Prisma.PatientProfileDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PatientProfileDefaultArgs<ExtArgs>>): Prisma.Prisma__PatientProfileClient<runtime.Types.Result.GetResult<Prisma.$PatientProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   medication<T extends Prisma.MedicationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MedicationDefaultArgs<ExtArgs>>): Prisma.Prisma__MedicationClient<runtime.Types.Result.GetResult<Prisma.$MedicationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   performedBy<T extends Prisma.Immunization$performedByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Immunization$performedByArgs<ExtArgs>>): Prisma.Prisma__DoctorProfileClient<runtime.Types.Result.GetResult<Prisma.$DoctorProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  newbornCareRecords<T extends Prisma.Immunization$newbornCareRecordsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Immunization$newbornCareRecordsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NewbornCareRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2476,6 +2655,30 @@ export type Immunization$performedByArgs<ExtArgs extends runtime.Types.Extension
    */
   include?: Prisma.DoctorProfileInclude<ExtArgs> | null
   where?: Prisma.DoctorProfileWhereInput
+}
+
+/**
+ * Immunization.newbornCareRecords
+ */
+export type Immunization$newbornCareRecordsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the NewbornCareRecord
+   */
+  select?: Prisma.NewbornCareRecordSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the NewbornCareRecord
+   */
+  omit?: Prisma.NewbornCareRecordOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.NewbornCareRecordInclude<ExtArgs> | null
+  where?: Prisma.NewbornCareRecordWhereInput
+  orderBy?: Prisma.NewbornCareRecordOrderByWithRelationInput | Prisma.NewbornCareRecordOrderByWithRelationInput[]
+  cursor?: Prisma.NewbornCareRecordWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.NewbornCareRecordScalarFieldEnum | Prisma.NewbornCareRecordScalarFieldEnum[]
 }
 
 /**

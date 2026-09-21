@@ -16,4 +16,5 @@ export const DocumentTemplateVariableControllerListTemplateVariablesV1Kind = {
   LAB_REPORT: 'LAB_REPORT',
   REFERRAL_LETTER: 'REFERRAL_LETTER',
   PREGNANCY_CERTIFICATE: 'PREGNANCY_CERTIFICATE',
+  BIRTH_CERTIFICATE: 'BIRTH_CERTIFICATE',
 } as const;

@@ -510,6 +510,8 @@ export const ModelName = {
   PregnancyEpisode: 'PregnancyEpisode',
   PregnancyExternalDoctorVisit: 'PregnancyExternalDoctorVisit',
   AntenatalVisit: 'AntenatalVisit',
+  DeliveryRecord: 'DeliveryRecord',
+  NewbornCareRecord: 'NewbornCareRecord',
   AntenatalExamination: 'AntenatalExamination',
   AntenatalReferralDismissal: 'AntenatalReferralDismissal'
 } as const
@@ -527,7 +529,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "doctorMandate" | "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientDeliveryConsent" | "documentDelivery" | "documentDeliveryLink" | "patientAllergy" | "doctorCredentialOption" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorLicenseExpiryNotice" | "doctorAuthority" | "doctorAuthorityExpiryNotice" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "midwifeFormularyItem" | "prescription" | "prescriptionMedication" | "prescriptionItemComponent" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "taxSettings" | "taxCode" | "taxCodeRate" | "taxCategoryDefault" | "taxReminderNotice" | "taxReportDraft" | "taxReportDocument" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "satusehatSubmissionResource" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "vaultDocumentExpiryNotice" | "vaultDocumentShare" | "userOffboardingNotice" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit" | "documentType" | "documentTypeApprover" | "managedDocument" | "documentApprovalRequest" | "documentApprovalApprover" | "documentApprovalDecision" | "labTest" | "labReferenceRange" | "labPanel" | "labPanelMember" | "labOrderCounter" | "labOrder" | "labOrderItem" | "labSpecimenCounter" | "labSpecimen" | "labResult" | "laboratorySettings" | "labReport" | "immunization" | "province" | "regency" | "district" | "village" | "bugReport" | "bugReportCounter" | "pregnancyEpisode" | "pregnancyExternalDoctorVisit" | "antenatalVisit" | "antenatalExamination" | "antenatalReferralDismissal"
+    modelProps: "doctorMandate" | "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientDeliveryConsent" | "documentDelivery" | "documentDeliveryLink" | "patientAllergy" | "doctorCredentialOption" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorLicenseExpiryNotice" | "doctorAuthority" | "doctorAuthorityExpiryNotice" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "midwifeFormularyItem" | "prescription" | "prescriptionMedication" | "prescriptionItemComponent" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "taxSettings" | "taxCode" | "taxCodeRate" | "taxCategoryDefault" | "taxReminderNotice" | "taxReportDraft" | "taxReportDocument" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "satusehatSubmissionResource" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "vaultDocumentExpiryNotice" | "vaultDocumentShare" | "userOffboardingNotice" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit" | "documentType" | "documentTypeApprover" | "managedDocument" | "documentApprovalRequest" | "documentApprovalApprover" | "documentApprovalDecision" | "labTest" | "labReferenceRange" | "labPanel" | "labPanelMember" | "labOrderCounter" | "labOrder" | "labOrderItem" | "labSpecimenCounter" | "labSpecimen" | "labResult" | "laboratorySettings" | "labReport" | "immunization" | "province" | "regency" | "district" | "village" | "bugReport" | "bugReportCounter" | "pregnancyEpisode" | "pregnancyExternalDoctorVisit" | "antenatalVisit" | "deliveryRecord" | "newbornCareRecord" | "antenatalExamination" | "antenatalReferralDismissal"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -9855,6 +9857,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    DeliveryRecord: {
+      payload: Prisma.$DeliveryRecordPayload<ExtArgs>
+      fields: Prisma.DeliveryRecordFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.DeliveryRecordFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DeliveryRecordPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.DeliveryRecordFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DeliveryRecordPayload>
+        }
+        findFirst: {
+          args: Prisma.DeliveryRecordFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DeliveryRecordPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.DeliveryRecordFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DeliveryRecordPayload>
+        }
+        findMany: {
+          args: Prisma.DeliveryRecordFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DeliveryRecordPayload>[]
+        }
+        create: {
+          args: Prisma.DeliveryRecordCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DeliveryRecordPayload>
+        }
+        createMany: {
+          args: Prisma.DeliveryRecordCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.DeliveryRecordCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DeliveryRecordPayload>[]
+        }
+        delete: {
+          args: Prisma.DeliveryRecordDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DeliveryRecordPayload>
+        }
+        update: {
+          args: Prisma.DeliveryRecordUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DeliveryRecordPayload>
+        }
+        deleteMany: {
+          args: Prisma.DeliveryRecordDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.DeliveryRecordUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.DeliveryRecordUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DeliveryRecordPayload>[]
+        }
+        upsert: {
+          args: Prisma.DeliveryRecordUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DeliveryRecordPayload>
+        }
+        aggregate: {
+          args: Prisma.DeliveryRecordAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateDeliveryRecord>
+        }
+        groupBy: {
+          args: Prisma.DeliveryRecordGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DeliveryRecordGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.DeliveryRecordCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DeliveryRecordCountAggregateOutputType> | number
+        }
+      }
+    }
+    NewbornCareRecord: {
+      payload: Prisma.$NewbornCareRecordPayload<ExtArgs>
+      fields: Prisma.NewbornCareRecordFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.NewbornCareRecordFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewbornCareRecordPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.NewbornCareRecordFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewbornCareRecordPayload>
+        }
+        findFirst: {
+          args: Prisma.NewbornCareRecordFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewbornCareRecordPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.NewbornCareRecordFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewbornCareRecordPayload>
+        }
+        findMany: {
+          args: Prisma.NewbornCareRecordFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewbornCareRecordPayload>[]
+        }
+        create: {
+          args: Prisma.NewbornCareRecordCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewbornCareRecordPayload>
+        }
+        createMany: {
+          args: Prisma.NewbornCareRecordCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.NewbornCareRecordCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewbornCareRecordPayload>[]
+        }
+        delete: {
+          args: Prisma.NewbornCareRecordDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewbornCareRecordPayload>
+        }
+        update: {
+          args: Prisma.NewbornCareRecordUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewbornCareRecordPayload>
+        }
+        deleteMany: {
+          args: Prisma.NewbornCareRecordDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.NewbornCareRecordUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.NewbornCareRecordUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewbornCareRecordPayload>[]
+        }
+        upsert: {
+          args: Prisma.NewbornCareRecordUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewbornCareRecordPayload>
+        }
+        aggregate: {
+          args: Prisma.NewbornCareRecordAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateNewbornCareRecord>
+        }
+        groupBy: {
+          args: Prisma.NewbornCareRecordGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.NewbornCareRecordGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.NewbornCareRecordCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.NewbornCareRecordCountAggregateOutputType> | number
+        }
+      }
+    }
     AntenatalExamination: {
       payload: Prisma.$AntenatalExaminationPayload<ExtArgs>
       fields: Prisma.AntenatalExaminationFieldRefs
@@ -12213,6 +12363,63 @@ export const AntenatalVisitScalarFieldEnum = {
 export type AntenatalVisitScalarFieldEnum = (typeof AntenatalVisitScalarFieldEnum)[keyof typeof AntenatalVisitScalarFieldEnum]
 
 
+export const DeliveryRecordScalarFieldEnum = {
+  id: 'id',
+  pregnancyEpisodeId: 'pregnancyEpisodeId',
+  admissionId: 'admissionId',
+  attendantDoctorId: 'attendantDoctorId',
+  labourOnsetAt: 'labourOnsetAt',
+  fullDilatationAt: 'fullDilatationAt',
+  birthAt: 'birthAt',
+  placentaDeliveredAt: 'placentaDeliveredAt',
+  postpartumMonitoringEndedAt: 'postpartumMonitoringEndedAt',
+  mode: 'mode',
+  episiotomy: 'episiotomy',
+  perinealTearGrade: 'perinealTearGrade',
+  uterotonicMedicationId: 'uterotonicMedicationId',
+  uterotonicGivenAt: 'uterotonicGivenAt',
+  bloodLossMl: 'bloodLossMl',
+  placentaComplete: 'placentaComplete',
+  referredOut: 'referredOut',
+  referralReason: 'referralReason',
+  notes: 'notes',
+  recordedById: 'recordedById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DeliveryRecordScalarFieldEnum = (typeof DeliveryRecordScalarFieldEnum)[keyof typeof DeliveryRecordScalarFieldEnum]
+
+
+export const NewbornCareRecordScalarFieldEnum = {
+  id: 'id',
+  deliveryRecordId: 'deliveryRecordId',
+  outcome: 'outcome',
+  stillbirthOrder: 'stillbirthOrder',
+  newbornPatientId: 'newbornPatientId',
+  sex: 'sex',
+  birthWeightGrams: 'birthWeightGrams',
+  lengthCm: 'lengthCm',
+  headCircumferenceCm: 'headCircumferenceCm',
+  apgar1Min: 'apgar1Min',
+  apgar5Min: 'apgar5Min',
+  imdStartedAt: 'imdStartedAt',
+  imdDurationMinutes: 'imdDurationMinutes',
+  cordCareAt: 'cordCareAt',
+  vitaminK1GivenAt: 'vitaminK1GivenAt',
+  vitaminK1MedicationId: 'vitaminK1MedicationId',
+  eyeProphylaxisGivenAt: 'eyeProphylaxisGivenAt',
+  eyeProphylaxisMedicationId: 'eyeProphylaxisMedicationId',
+  hb0ImmunizationId: 'hb0ImmunizationId',
+  examinedAt: 'examinedAt',
+  identityTagAt: 'identityTagAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type NewbornCareRecordScalarFieldEnum = (typeof NewbornCareRecordScalarFieldEnum)[keyof typeof NewbornCareRecordScalarFieldEnum]
+
+
 export const AntenatalExaminationScalarFieldEnum = {
   id: 'id',
   antenatalVisitId: 'antenatalVisitId',
@@ -13989,6 +14196,48 @@ export type ListEnumAntenatalVisitCodeFieldRefInput<$PrismaModel> = FieldRefInpu
 
 
 /**
+ * Reference to a field of type 'DeliveryMode'
+ */
+export type EnumDeliveryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DeliveryMode'>
+    
+
+
+/**
+ * Reference to a field of type 'DeliveryMode[]'
+ */
+export type ListEnumDeliveryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DeliveryMode[]'>
+    
+
+
+/**
+ * Reference to a field of type 'PerinealTearGrade'
+ */
+export type EnumPerinealTearGradeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PerinealTearGrade'>
+    
+
+
+/**
+ * Reference to a field of type 'PerinealTearGrade[]'
+ */
+export type ListEnumPerinealTearGradeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PerinealTearGrade[]'>
+    
+
+
+/**
+ * Reference to a field of type 'BirthOutcome'
+ */
+export type EnumBirthOutcomeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BirthOutcome'>
+    
+
+
+/**
+ * Reference to a field of type 'BirthOutcome[]'
+ */
+export type ListEnumBirthOutcomeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BirthOutcome[]'>
+    
+
+
+/**
  * Reference to a field of type 'FetalPresentation'
  */
 export type EnumFetalPresentationFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FetalPresentation'>
@@ -14279,6 +14528,8 @@ export type GlobalOmitConfig = {
   pregnancyEpisode?: Prisma.PregnancyEpisodeOmit
   pregnancyExternalDoctorVisit?: Prisma.PregnancyExternalDoctorVisitOmit
   antenatalVisit?: Prisma.AntenatalVisitOmit
+  deliveryRecord?: Prisma.DeliveryRecordOmit
+  newbornCareRecord?: Prisma.NewbornCareRecordOmit
   antenatalExamination?: Prisma.AntenatalExaminationOmit
   antenatalReferralDismissal?: Prisma.AntenatalReferralDismissalOmit
 }

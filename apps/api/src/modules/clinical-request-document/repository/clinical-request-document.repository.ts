@@ -28,6 +28,7 @@ const DOCUMENT_CATEGORY_BY_KIND: Readonly<
   PRESCRIPTION: 'REFERRAL_LETTER',
   REFERRAL_LETTER: 'REFERRAL_LETTER',
   PREGNANCY_CERTIFICATE: 'PREGNANCY_CERTIFICATE',
+  BIRTH_CERTIFICATE: 'BIRTH_CERTIFICATE',
 };
 
 const PDF_MIME_TYPE = 'application/pdf';
@@ -137,7 +138,13 @@ export class ClinicalRequestDocumentRepository {
     tx: Parameters<Parameters<PrismaService['executeTransaction']>[0]>[0],
     context: ClinicalRequestRenderContext,
   ): Promise<string | null> {
-    if (context.kind === 'REFERRAL_LETTER' || context.kind === 'PREGNANCY_CERTIFICATE') {
+    // These three are reissued, never reprinted: each render is a new copy
+    // the family takes away, and the record keeps every one.
+    if (
+      context.kind === 'REFERRAL_LETTER' ||
+      context.kind === 'PREGNANCY_CERTIFICATE' ||
+      context.kind === 'BIRTH_CERTIFICATE'
+    ) {
       return null;
     }
     if (context.kind === 'LAB_REQUEST') {

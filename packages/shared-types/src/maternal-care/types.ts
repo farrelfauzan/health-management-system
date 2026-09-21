@@ -1,5 +1,7 @@
 import type {
+  DeliveryModeValue,
   EstimatedDeliveryDateSourceValue,
+  PerinealTearGradeValue,
   PregnancyEndReasonValue,
   PregnancyEpisodeStatusValue,
 } from '#maternal-care/schemas';
@@ -311,4 +313,41 @@ export type MaternalLetterPatient = {
   sex: string | null;
   address: string | null;
   nikLast4: string | null;
+};
+
+/** What the repository writes for a birth (P25-T09). */
+export type DeliveryRecordPayload = {
+  pregnancyEpisodeId: string;
+  attendantDoctorId: string;
+  admissionId: string | null;
+  labourOnsetAt: Date | null;
+  fullDilatationAt: Date | null;
+  birthAt: Date;
+  placentaDeliveredAt: Date | null;
+  postpartumMonitoringEndedAt: Date | null;
+  mode: DeliveryModeValue;
+  episiotomy: boolean;
+  perinealTearGrade: PerinealTearGradeValue;
+  uterotonicMedicationId: string | null;
+  uterotonicGivenAt: Date | null;
+  bloodLossMl: number | null;
+  placentaComplete: boolean | null;
+  referredOut: boolean;
+  referralReason: string | null;
+  notes: string | null;
+  recordedById: string;
+};
+
+/** What the certificate prints about one baby and her birth (FR-INC-05). */
+export type BirthCertificateSubject = {
+  motherName: string;
+  motherNikLast4: string | null;
+  babyName: string | null;
+  sex: 'MALE' | 'FEMALE';
+  birthAt: Date;
+  birthWeightGrams: number | null;
+  lengthCm: number | null;
+  birthOrder: number | null;
+  attendantName: string;
+  attendantStrNumber: string | null;
 };

@@ -53,6 +53,7 @@ export const TEMPLATE_VARIABLE_KINDS = [
   // episode rather than drafted, so the letter and the record cannot disagree.
   'REFERRAL_LETTER',
   'PREGNANCY_CERTIFICATE',
+  'BIRTH_CERTIFICATE',
 ] as const;
 
 export type TemplateVariableKind = (typeof TEMPLATE_VARIABLE_KINDS)[number];
@@ -881,6 +882,95 @@ export const PREGNANCY_CERTIFICATE_TEMPLATE_VARIABLES: readonly TemplateVariable
   ...MATERNAL_SHARED_VARIABLES,
 ];
 
+/**
+ * The surat keterangan lahir (P25-T09, FR-INC-05).
+ *
+ * Its own token set rather than the maternal shared one: this letter is about
+ * the **baby**, and the mother appears on it only as her name and a masked
+ * NIK. It is signed by whoever attended the birth, under their STR, not by the
+ * doctor issuing the document.
+ */
+export const BIRTH_CERTIFICATE_TEMPLATE_VARIABLES: readonly TemplateVariable[] = [
+  ...CLINIC_IDENTITY_VARIABLES,
+  {
+    token: 'baby.fullName',
+    labelId: 'Nama bayi',
+    labelEn: 'Baby name',
+    type: 'text',
+    sample: 'Bayi Ny. Rina',
+  },
+  {
+    token: 'baby.sex',
+    labelId: 'Jenis kelamin bayi',
+    labelEn: 'Baby sex',
+    type: 'text',
+    sample: 'Perempuan',
+  },
+  {
+    token: 'baby.birthDate',
+    labelId: 'Tanggal lahir',
+    labelEn: 'Date of birth',
+    type: 'date',
+    sample: '2026-11-09',
+  },
+  {
+    token: 'baby.birthTime',
+    labelId: 'Pukul lahir',
+    labelEn: 'Time of birth',
+    type: 'text',
+    sample: '03:10',
+  },
+  {
+    token: 'baby.birthWeight',
+    labelId: 'Berat lahir',
+    labelEn: 'Birth weight',
+    type: 'text',
+    sample: '3200 gram (3.20 kg)',
+  },
+  {
+    token: 'baby.birthLength',
+    labelId: 'Panjang badan',
+    labelEn: 'Birth length',
+    type: 'text',
+    sample: '49 cm',
+  },
+  {
+    token: 'baby.birthOrder',
+    labelId: 'Anak ke-',
+    labelEn: 'Birth order',
+    type: 'text',
+    sample: 'Anak ke-2',
+  },
+  {
+    token: 'mother.fullName',
+    labelId: 'Nama ibu',
+    labelEn: 'Mother name',
+    type: 'text',
+    sample: 'Rina Wijaya',
+  },
+  {
+    token: 'mother.nikMasked',
+    labelId: 'NIK ibu (disamarkan)',
+    labelEn: 'Mother NIK (masked)',
+    type: 'text',
+    sample: '••••••••••••3204',
+  },
+  {
+    token: 'attendant.fullName',
+    labelId: 'Penolong persalinan',
+    labelEn: 'Birth attendant',
+    type: 'text',
+    sample: 'Bidan Siti Rahma, S.Tr.Keb.',
+  },
+  {
+    token: 'attendant.strNumber',
+    labelId: 'STR penolong',
+    labelEn: 'Attendant STR number',
+    type: 'text',
+    sample: '21 1 1 2 3 24-123456',
+  },
+];
+
 export const TEMPLATE_VARIABLES_BY_KIND: Readonly<
   Record<TemplateVariableKind, readonly TemplateVariable[]>
 > = {
@@ -890,4 +980,5 @@ export const TEMPLATE_VARIABLES_BY_KIND: Readonly<
   LAB_REPORT: LAB_REPORT_TEMPLATE_VARIABLES,
   REFERRAL_LETTER: REFERRAL_LETTER_TEMPLATE_VARIABLES,
   PREGNANCY_CERTIFICATE: PREGNANCY_CERTIFICATE_TEMPLATE_VARIABLES,
+  BIRTH_CERTIFICATE: BIRTH_CERTIFICATE_TEMPLATE_VARIABLES,
 };
