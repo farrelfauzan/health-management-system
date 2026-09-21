@@ -127,7 +127,7 @@ export class SatusehatHttpClient {
     };
     const hasBody = request.body !== undefined;
     if (hasBody) {
-      headers['Content-Type'] = 'application/json';
+      headers['Content-Type'] = request.contentType ?? 'application/json';
     }
     try {
       return await fetch(requestUrl, {

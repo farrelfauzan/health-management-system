@@ -116,6 +116,81 @@ describe('Pregnancy episode against Postgres', () => {
     expect(history).toHaveLength(2);
   });
 
+  describe('closing the SATUSEHAT episode (P25-T08)', () => {
+    afterEach(async () => {
+      await prisma.satusehatSubmission.deleteMany({
+        where: { pregnancyEpisode: { patientId } },
+      });
+    });
+
+    it('enqueues one close, in the transaction that ends the pregnancy', async () => {
+      const episode = await createEpisode();
+      await prisma.pregnancyEpisode.update({
+        where: { id: episode.id },
+        data: { satusehatEpisodeOfCareId: 'episode-on-the-platform' },
+      });
+
+      await repository.endEpisode({
+        id: episode.id,
+        reason: 'DELIVERY',
+        endedAt: new Date('2026-11-09T03:10:00.000Z'),
+      });
+
+      const enqueued = await prisma.satusehatSubmission.findMany({
+        where: { pregnancyEpisodeId: episode.id },
+      });
+      expect(enqueued).toHaveLength(1);
+      expect(enqueued[0]).toMatchObject({
+        kind: 'EPISODE_OF_CARE_FINISH',
+        status: 'PENDING',
+        encounterId: null,
+        labOrderId: null,
+      });
+    });
+
+    it('enqueues nothing for a pregnancy that never reached the platform', async () => {
+      const episode = await createEpisode();
+
+      await repository.endEpisode({
+        id: episode.id,
+        reason: 'MISCARRIAGE',
+        endedAt: new Date('2026-04-01T00:00:00.000Z'),
+      });
+
+      // No episode id means nothing on the platform to close, and a row for it
+      // would fail on every attempt for ever.
+      await expect(
+        prisma.satusehatSubmission.count({ where: { pregnancyEpisodeId: episode.id } }),
+      ).resolves.toBe(0);
+    });
+
+    it('does not enqueue a second close beside one still waiting', async () => {
+      const episode = await createEpisode();
+      await prisma.pregnancyEpisode.update({
+        where: { id: episode.id },
+        data: { satusehatEpisodeOfCareId: 'episode-on-the-platform' },
+      });
+      await repository.endEpisode({
+        id: episode.id,
+        reason: 'DELIVERY',
+        endedAt: new Date('2026-11-09T03:10:00.000Z'),
+      });
+
+      // The end date corrected before the worker ran. The pending row re-reads
+      // the pregnancy when it is picked up, so it sends the corrected date —
+      // and the partial unique index would refuse a second open row anyway.
+      await repository.endEpisode({
+        id: episode.id,
+        reason: 'DELIVERY',
+        endedAt: new Date('2026-11-09T04:25:00.000Z'),
+      });
+
+      await expect(
+        prisma.satusehatSubmission.count({ where: { pregnancyEpisodeId: episode.id } }),
+      ).resolves.toBe(1);
+    });
+  });
+
   it('refuses GPA that does not add up', async () => {
     // G1 P1 A0 says one pregnancy, one of which already ended in a birth —
     // while this one is still running.

@@ -555,7 +555,8 @@ export type RegistrationType = (typeof RegistrationType)[keyof typeof Registrati
 
 export const SatusehatSubmissionKind = {
   ENCOUNTER: 'ENCOUNTER',
-  LAB_REPORT: 'LAB_REPORT'
+  LAB_REPORT: 'LAB_REPORT',
+  EPISODE_OF_CARE_FINISH: 'EPISODE_OF_CARE_FINISH'
 } as const
 
 export type SatusehatSubmissionKind = (typeof SatusehatSubmissionKind)[keyof typeof SatusehatSubmissionKind]

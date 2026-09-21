@@ -1,7 +1,9 @@
 import { randomUUID } from 'node:crypto';
 
 import {
+  getStartOfCalendarDateInTimeZone,
   NewbornSatusehatLinkContext,
+  SatusehatAntenatalVisit,
   resolveSatusehatServiceClassCode,
   SatusehatLocationFallbackReasonValue,
   SatusehatSubmissionAdmission,
@@ -38,6 +40,8 @@ import {
   SatusehatTransactionResponseEntry,
 } from '../../../common/satusehat/satusehat-fhir.types';
 import { SatusehatAmbiguousMatchError } from '../../../common/satusehat/satusehat-ambiguous-match.error';
+import { SATUSEHAT_ANTENATAL_EPISODE_TYPE_CODE } from '../../../common/satusehat/satusehat-episode-of-care-coding';
+import { SatusehatEpisodeOfCareClient } from '../../../common/satusehat/satusehat-episode-of-care.client';
 import { SatusehatHttpClient } from '../../../common/satusehat/satusehat-http.client';
 import { SatusehatMasterDataClient } from '../../../common/satusehat/satusehat-master-data.client';
 import { SatusehatError } from '../../../common/satusehat/satusehat.error';
@@ -95,6 +99,21 @@ const PERMANENT_ERROR_CODES: readonly string[] = [
   'SATUSEHAT_REQUEST_REJECTED',
 ];
 const MAX_STORED_ERROR_LENGTH = 2000;
+const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
+
+const SECOND_TRIMESTER_FIRST_WEEK = 13;
+const THIRD_TRIMESTER_FIRST_WEEK = 28;
+
+/** Which trimester a gestational age in completed weeks falls in (P25-T08). */
+function resolveAntenatalTrimester(gestationalAgeWeeks: number): string {
+  if (gestationalAgeWeeks >= THIRD_TRIMESTER_FIRST_WEEK) {
+    return 'Trimester 3';
+  }
+  if (gestationalAgeWeeks >= SECOND_TRIMESTER_FIRST_WEEK) {
+    return 'Trimester 2';
+  }
+  return 'Trimester 1';
+}
 
 /**
  * How the gap log describes each reason a vaccination was left out. Counts
@@ -138,6 +157,7 @@ const EMPTY_TRANSACTION_BUNDLE: SatusehatFhirTransactionBundle = {
 export class SatusehatSubmissionService {
   private readonly logger = new Logger(SatusehatSubmissionService.name);
   private readonly satusehatConfig: SatusehatConfig;
+  private readonly clinicTimeZone: string;
 
   constructor(
     configService: ConfigService,
@@ -146,9 +166,11 @@ export class SatusehatSubmissionService {
     private readonly masterDataClient: SatusehatMasterDataClient,
     private readonly fhirMapper: SatusehatFhirMapper,
     private readonly httpClient: SatusehatHttpClient,
+    private readonly episodeOfCareClient: SatusehatEpisodeOfCareClient,
     private readonly auditService: AuditService,
   ) {
     this.satusehatConfig = resolveSatusehatConfig(configService);
+    this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
   }
 
   async processSubmission(submission: SatusehatSubmissionRecord): Promise<void> {
@@ -156,6 +178,10 @@ export class SatusehatSubmissionService {
     try {
       if (submission.kind === 'LAB_REPORT') {
         await this.processLabReportSubmission(submission);
+        return;
+      }
+      if (submission.kind === 'EPISODE_OF_CARE_FINISH') {
+        await this.processEpisodeOfCareFinishSubmission(submission);
         return;
       }
       if (submission.encounterId === null) {
@@ -240,6 +266,11 @@ export class SatusehatSubmissionService {
     }
     const patientIhsNumber = await this.resolvePatientIhsNumber(bundleData);
     const practitionerIhsNumber = await this.resolvePractitionerIhsNumber(bundleData);
+    // Before the bundle, not inside it: an EpisodeOfCare is not a bundle entry
+    // — the Encounter references it by id, so the id has to exist first
+    // (P25-T08).
+    const antenatalVisit = await this.ensureAntenatalEpisode(bundleData, patientIhsNumber);
+    const episodeBundleData: SatusehatSubmissionBundleData = { ...bundleData, antenatalVisit };
     const allergyFullUrls = new Map<string, string>();
     const immunizationFullUrls = new Map<string, string>();
     const resourceList = new SatusehatResourceListBuilder();
@@ -250,7 +281,7 @@ export class SatusehatSubmissionService {
         bundleData.admission?.beds.map((bed) => bed.satusehatLocationId) ?? [],
     });
     const bundle = this.buildTransactionBundle(
-      bundleData,
+      episodeBundleData,
       bundleData.endedAt,
       patientIhsNumber,
       practitionerIhsNumber,
@@ -267,6 +298,16 @@ export class SatusehatSubmissionService {
     const createdResources = this.extractCreatedResources(bundle, response);
     await this.saveAllergyIhsIds(allergyFullUrls, createdResources);
     await this.saveImmunizationIhsIds(immunizationFullUrls, createdResources);
+    if (antenatalVisit?.satusehatEpisodeOfCareId) {
+      // Recorded as part of what this submission reported although it was not
+      // a bundle entry: the monitor's resource list is what an operator reads
+      // to see the episode reached the platform at all.
+      resourceList.recordExternalResource({
+        resourceType: 'EpisodeOfCare',
+        localRecordId: antenatalVisit.pregnancyEpisodeId,
+        satusehatId: antenatalVisit.satusehatEpisodeOfCareId,
+      });
+    }
     return {
       bundle,
       createdResources,
@@ -707,6 +748,244 @@ export class SatusehatSubmissionService {
     return assigned;
   }
 
+  /**
+   * The obstetric, visit and foetal Observations of an antenatal visit, or
+   * nothing at all for an ordinary one (P25-T08).
+   *
+   * The pregnancy's own numbers (gravida, HPHT, blood type) are sent on every
+   * visit rather than only the first: the platform holds no episode-level
+   * values, and a later clinic reading one visit should not have to fetch the
+   * others to learn the woman is a gravida 3.
+   */
+  /**
+   * The episode this antenatal visit belongs to, created if the platform does
+   * not already hold one (P25-T08). Returns the visit unchanged for an
+   * ordinary encounter, and with its episode id filled in for an ANC one.
+   *
+   * The order is adopt, then create, and it is not an optimisation:
+   *
+   * 1. Our own identifier, which finds the episode a timed-out POST in fact
+   *    created — the id it would have returned is recoverable no other way.
+   * 2. The patient's open ANC episode, whoever opened it. The platform allows
+   *    exactly one active episode per patient per type, so another clinic's is
+   *    not a rival to ours; it is the one this pregnancy has, and a create
+   *    would be refused while it stands (Rule 10109/10110).
+   * 3. Only then a POST.
+   *
+   * The id is saved as soon as it is known, before the bundle goes, so a
+   * failure between the two does not leave an episode on the platform that
+   * nothing here can name.
+   */
+  private async ensureAntenatalEpisode(
+    bundleData: SatusehatSubmissionBundleData,
+    patientIhsNumber: string,
+  ): Promise<SatusehatAntenatalVisit | null> {
+    const antenatalVisit = bundleData.antenatalVisit;
+    if (antenatalVisit === null || antenatalVisit.satusehatEpisodeOfCareId !== null) {
+      return antenatalVisit;
+    }
+    const organizationId = this.requireOrganizationId();
+    const adopted =
+      (await this.episodeOfCareClient.findEpisodeIdByIdentifier(
+        organizationId,
+        antenatalVisit.pregnancyEpisodeId,
+      )) ??
+      (await this.episodeOfCareClient.findActiveEpisodeIdByPatient(
+        patientIhsNumber,
+        SATUSEHAT_ANTENATAL_EPISODE_TYPE_CODE,
+      ));
+    const satusehatEpisodeOfCareId =
+      adopted ??
+      (await this.episodeOfCareClient.createEpisodeOfCare(
+        this.fhirMapper.mapAntenatalEpisodeOfCare({
+          pregnancyEpisodeId: antenatalVisit.pregnancyEpisodeId,
+          patientIhsNumber,
+          patientName: bundleData.patientName,
+          startedAt: this.resolveEpisodeStartedAt(antenatalVisit, bundleData.startedAt),
+        }),
+      ));
+    await this.submissionRepository.saveAntenatalEpisodeOfCareId({
+      pregnancyEpisodeId: antenatalVisit.pregnancyEpisodeId,
+      satusehatEpisodeOfCareId,
+    });
+    this.logger.log(
+      adopted === null
+        ? 'SATUSEHAT ANC episode created for this pregnancy'
+        : 'SATUSEHAT ANC episode adopted rather than created',
+    );
+    return { ...antenatalVisit, satusehatEpisodeOfCareId };
+  }
+
+  /**
+   * Closes a pregnancy's episode (P25-T08): one PATCH, no bundle.
+   *
+   * A row whose pregnancy has lost its episode id settles rather than
+   * retrying — there is nothing on the platform to close, and a retry would
+   * wait for an id that no longer exists. The same is true of a pregnancy that
+   * has not actually ended: the close is enqueued by the transaction that ends
+   * it, so a row that finds no `endedAt` is reporting a correction that undid
+   * the end.
+   */
+  private async processEpisodeOfCareFinishSubmission(
+    submission: SatusehatSubmissionRecord,
+  ): Promise<void> {
+    if (submission.pregnancyEpisodeId === null) {
+      throw new SatusehatSubmissionDataError('Episode close carries no pregnancy');
+    }
+    const finishData = await this.submissionRepository.findEpisodeOfCareFinishData(
+      submission.pregnancyEpisodeId,
+    );
+    if (finishData === null) {
+      throw new SatusehatSubmissionDataError('Pregnancy no longer exists');
+    }
+    if (finishData.satusehatEpisodeOfCareId === null || finishData.endedAt === null) {
+      this.logger.warn(
+        'SATUSEHAT episode close settled with nothing to send: the pregnancy carries no episode id or is no longer ended',
+      );
+      await this.submissionRepository.markSubmitted({
+        id: submission.id,
+        satusehatEncounterId: null,
+        locationFallbackReason: null,
+      });
+      return;
+    }
+    const patientIhsNumber = await this.resolvePatientIhsNumber(finishData);
+    await this.episodeOfCareClient.patchEpisodeOfCare(
+      finishData.satusehatEpisodeOfCareId,
+      this.fhirMapper.mapAntenatalEpisodeFinishOperations({
+        patientIhsNumber,
+        startedAt: this.resolveEpisodeStartedAt(finishData, finishData.endedAt),
+        endedAt: finishData.endedAt,
+      }),
+    );
+    await this.submissionRepository.markSubmitted({
+      id: submission.id,
+      satusehatEncounterId: null,
+      locationFallbackReason: null,
+    });
+    await this.submissionRepository.saveSubmissionResources({
+      submissionId: submission.id,
+      resources: [
+        {
+          resourceType: 'EpisodeOfCare',
+          outcome: 'SENT',
+          skipReason: null,
+          satusehatId: finishData.satusehatEpisodeOfCareId,
+          localRecordId: finishData.pregnancyEpisodeId,
+          isBackfilled: false,
+        },
+      ],
+    });
+    this.logger.log('SATUSEHAT episode close succeeded');
+  }
+
+  /**
+   * `EpisodeOfCare.period.start`: the HPHT when the pregnancy has one, else
+   * the visit that opened the episode.
+   *
+   * The HPHT is a calendar date, and the platform refuses a date-only value
+   * (Rule 10406), so it is widened to clinic-local midnight rather than sent
+   * as it is stored — midnight UTC would be the previous day in Jakarta.
+   */
+  private resolveEpisodeStartedAt(
+    pregnancy: { lastMenstrualPeriodDate: Date | null },
+    fallback: Date,
+  ): Date {
+    if (pregnancy.lastMenstrualPeriodDate === null) {
+      return fallback;
+    }
+    return getStartOfCalendarDateInTimeZone(
+      pregnancy.lastMenstrualPeriodDate.toISOString().slice(0, 10),
+      this.clinicTimeZone,
+    );
+  }
+
+  private requireOrganizationId(): string {
+    const organizationId = this.satusehatConfig.organizationId;
+    if (!organizationId) {
+      throw new SatusehatError(
+        'SATUSEHAT_NOT_CONFIGURED',
+        'SATUSEHAT_ORGANIZATION_ID is not configured',
+      );
+    }
+    return organizationId;
+  }
+
+  private buildAntenatalObservationEntries(
+    bundleData: SatusehatSubmissionBundleData,
+    encounterFullUrl: string,
+    patientIhsNumber: string,
+    practitionerIhsNumber: string,
+    recordedAt: Date,
+  ): SatusehatFhirBundleEntry[] {
+    const antenatalVisit = bundleData.antenatalVisit;
+    if (antenatalVisit === null) {
+      return [];
+    }
+    const examination = antenatalVisit.examination;
+    return this.fhirMapper
+      .mapAntenatalObservations({
+        patientIhsNumber,
+        patientName: bundleData.patientName,
+        practitionerIhsNumber,
+        encounterReference: encounterFullUrl,
+        recordedAt,
+        values: {
+          gravida: antenatalVisit.gravida,
+          para: antenatalVisit.para,
+          abortus: antenatalVisit.abortus,
+          ...(antenatalVisit.lastMenstrualPeriodDate
+            ? { lastMenstrualPeriodDate: antenatalVisit.lastMenstrualPeriodDate }
+            : {}),
+          estimatedDeliveryDate: antenatalVisit.estimatedDeliveryDate,
+          ...(antenatalVisit.prePregnancyWeightKg === null
+            ? {}
+            : { prePregnancyWeightKg: antenatalVisit.prePregnancyWeightKg }),
+          ...(antenatalVisit.gestationalAgeWeeks === null
+            ? {}
+            : {
+                gestationalAgeWeeks: antenatalVisit.gestationalAgeWeeks,
+                trimester: resolveAntenatalTrimester(antenatalVisit.gestationalAgeWeeks),
+              }),
+          ...(antenatalVisit.bloodType === null ? {} : { bloodType: antenatalVisit.bloodType }),
+          ...(antenatalVisit.rhesus === null ? {} : { rhesus: antenatalVisit.rhesus }),
+          ...(examination === null
+            ? {}
+            : {
+                ...(examination.muacCm === null ? {} : { muacCm: examination.muacCm }),
+                ...(examination.fundalHeightCm === null
+                  ? {}
+                  : { fundalHeightCm: examination.fundalHeightCm }),
+                ...(examination.fetalHeartRateBpm === null
+                  ? {}
+                  : { fetalHeartRateBpm: examination.fetalHeartRateBpm }),
+                ...(examination.fetalCount === null
+                  ? {}
+                  : { fetalCount: examination.fetalCount }),
+                ...(examination.estimatedFetalWeightGrams === null
+                  ? {}
+                  : { estimatedFetalWeightGrams: examination.estimatedFetalWeightGrams }),
+                // Sent as the local words rather than a coding: the playbook's
+                // answer lists could not be verified against the live gateway,
+                // which validates no code at all, and an invented coding would
+                // read as authoritative (see the ANC spike).
+                ...(examination.fetalPresentation === null ||
+                examination.fetalPresentation === 'UNKNOWN'
+                  ? {}
+                  : { fetalPresentation: examination.fetalPresentation }),
+                ...(examination.fetalHeadEngagement === null
+                  ? {}
+                  : { fetalHeadEngagement: examination.fetalHeadEngagement }),
+              }),
+        },
+      })
+      .map((observation) => ({
+        fullUrl: `urn:uuid:${randomUUID()}`,
+        resource: observation,
+        request: { method: 'POST', url: 'Observation' as const },
+      }));
+  }
+
   private buildTransactionBundle(
     bundleData: SatusehatSubmissionBundleData,
     endedAt: Date,
@@ -774,6 +1053,17 @@ export class SatusehatSubmissionService {
             request: { method: 'POST', url: 'Observation' },
           }))
       : [];
+    // The ANC Observations sit in the same list as the vital signs, so they
+    // reach the Composition's "Pemeriksaan" section the same way. Weight and
+    // blood pressure are not repeated here — the vital signs above already
+    // carry them, and the platform asks for no ANC-specific copy (P25-T08).
+    observationEntries.push(...this.buildAntenatalObservationEntries(
+      bundleData,
+      encounterFullUrl,
+      patientIhsNumber,
+      practitionerIhsNumber,
+      endedAt,
+    ));
     const medicationEntries = this.buildMedicationEntries(
       bundleData,
       encounterFullUrl,
@@ -798,6 +1088,14 @@ export class SatusehatSubmissionService {
         reference: entry.fullUrl,
         rank: index + 1,
       })),
+      ...(bundleData.antenatalVisit?.satusehatEpisodeOfCareId
+        ? {
+            antenatalEpisode: {
+              satusehatEpisodeOfCareId: bundleData.antenatalVisit.satusehatEpisodeOfCareId,
+              visitCode: bundleData.antenatalVisit.visitCode,
+            },
+          }
+        : {}),
     });
     const clinicalImpressionEntry = this.buildClinicalImpressionEntry(
       bundleData,

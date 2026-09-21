@@ -3,6 +3,7 @@ import { Module } from '@nestjs/common';
 import { SatusehatFhirMapper } from './satusehat-fhir.mapper';
 import { SatusehatHttpClient } from './satusehat-http.client';
 import { SatusehatKfaClient } from './satusehat-kfa.client';
+import { SatusehatEpisodeOfCareClient } from './satusehat-episode-of-care.client';
 import { SatusehatLocationClient } from './satusehat-location.client';
 import { SatusehatMasterDataClient } from './satusehat-master-data.client';
 import { SatusehatTokenClient } from './satusehat-token.client';
@@ -18,6 +19,7 @@ import { SatusehatTokenClient } from './satusehat-token.client';
     SatusehatTokenClient,
     SatusehatHttpClient,
     SatusehatKfaClient,
+    SatusehatEpisodeOfCareClient,
     SatusehatLocationClient,
     SatusehatMasterDataClient,
     SatusehatFhirMapper,
@@ -25,6 +27,7 @@ import { SatusehatTokenClient } from './satusehat-token.client';
   exports: [
     SatusehatHttpClient,
     SatusehatKfaClient,
+    SatusehatEpisodeOfCareClient,
     SatusehatLocationClient,
     SatusehatMasterDataClient,
     SatusehatFhirMapper,

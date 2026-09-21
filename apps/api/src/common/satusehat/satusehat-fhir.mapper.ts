@@ -5,39 +5,51 @@ import { escapeXhtml } from './escape-xhtml';
 import { SatusehatError } from './satusehat.error';
 import { resolveSatusehatConfig } from './satusehat.config';
 import { buildSatusehatEncounterServiceClassExtension } from './satusehat-service-class-extension';
+import { SATUSEHAT_ANTENATAL_OBSERVATION_DEFINITIONS } from './satusehat-antenatal-observation-definitions';
+import {
+  buildSatusehatEpisodeOfCareIdentifierSystem,
+  SATUSEHAT_ANTENATAL_EPISODE_TYPE_CODE,
+  SATUSEHAT_ANTENATAL_EPISODE_TYPE_DISPLAY,
+  SATUSEHAT_EPISODE_OF_CARE_TYPE_SYSTEM,
+} from './satusehat-episode-of-care-coding';
 import { SATUSEHAT_VITAL_SIGN_DEFINITIONS } from './satusehat-vital-sign-definitions';
 import {
   SatusehatAllergyMapInput,
+  SatusehatAntenatalEpisodeFinishMapInput,
+  SatusehatAntenatalEpisodeMapInput,
+  SatusehatAntenatalObservationDefinition,
+  SatusehatAntenatalObservationField,
+  SatusehatAntenatalObservationMapInput,
   SatusehatClinicalImpressionMapInput,
   SatusehatClinicalImpressionPrognosis,
   SatusehatCompositionMapInput,
   SatusehatCompositionSectionInput,
+  SatusehatCompoundMedicationMapInput,
   SatusehatConditionMapInput,
+  SatusehatDiagnosticReportMapInput,
   SatusehatEncounterMapInput,
   SatusehatEncounterStatusHistoryEntry,
   SatusehatFhirAddress,
   SatusehatFhirAdministrativeCodeEntry,
   SatusehatFhirAllergyIntolerance,
   SatusehatFhirClinicalImpression,
+  SatusehatFhirCodedOrBareQuantity,
+  SatusehatFhirCoding,
   SatusehatFhirComposition,
   SatusehatFhirCompositionSection,
-  SatusehatFhirEncounterHospitalization,
-  SatusehatFhirJsonPatchOperation,
-  SatusehatFhirNewbornPatient,
-  SatusehatNewbornNikPatchMapInput,
-  SatusehatNewbornPatientMapInput,
-  SatusehatFhirEncounterLocation,
-  SatusehatFhirCoding,
   SatusehatFhirCondition,
   SatusehatFhirDiagnosticReport,
-  SatusehatFhirCodedOrBareQuantity,
-  SatusehatFhirImmunization,
   SatusehatFhirEncounter,
+  SatusehatFhirEncounterHospitalization,
+  SatusehatFhirEncounterLocation,
+  SatusehatFhirEpisodeOfCare,
+  SatusehatFhirIdentifier,
+  SatusehatFhirImmunization,
+  SatusehatFhirJsonPatchOperation,
   SatusehatFhirMedication,
   SatusehatFhirMedicationDispense,
   SatusehatFhirMedicationRequest,
-  SatusehatImmunizationMapInput,
-  SatusehatImmunizationReasonCode,
+  SatusehatFhirNewbornPatient,
   SatusehatFhirObservation,
   SatusehatFhirObservationReferenceRange,
   SatusehatFhirProcedure,
@@ -45,14 +57,17 @@ import {
   SatusehatFhirReference,
   SatusehatFhirServiceRequest,
   SatusehatFhirSpecimen,
-  SatusehatMedicationDispenseMapInput,
-  SatusehatCompoundMedicationMapInput,
-  SatusehatMedicationMapInput,
-  SatusehatMedicationRequestMapInput,
-  SatusehatPatientAddressMapInput,
-  SatusehatDiagnosticReportMapInput,
+  SatusehatImmunizationMapInput,
+  SatusehatImmunizationReasonCode,
+  SatusehatJsonPatchOperation,
   SatusehatLabObservationMapInput,
   SatusehatLabOnlyEncounterMapInput,
+  SatusehatMedicationDispenseMapInput,
+  SatusehatMedicationMapInput,
+  SatusehatMedicationRequestMapInput,
+  SatusehatNewbornNikPatchMapInput,
+  SatusehatNewbornPatientMapInput,
+  SatusehatPatientAddressMapInput,
   SatusehatProcedureMapInput,
   SatusehatServiceRequestMapInput,
   SatusehatSpecimenMapInput,
@@ -60,6 +75,16 @@ import {
   SatusehatVitalSignsMapInput,
 } from './satusehat-fhir.types';
 import { SatusehatConfig } from './satusehat.types';
+
+/** The display each antenatal Observation category is sent under. */
+const ANTENATAL_OBSERVATION_CATEGORY_DISPLAYS: Readonly<
+  Record<SatusehatAntenatalObservationDefinition['category'], string>
+> = {
+  survey: 'Survey',
+  exam: 'Exam',
+  'vital-signs': 'Vital Signs',
+  laboratory: 'Laboratory',
+};
 
 const ENCOUNTER_IDENTIFIER_SYSTEM_PREFIX = 'http://sys-ids.kemkes.go.id/encounter';
 const ADMINISTRATIVE_CODE_EXTENSION_URL =
@@ -294,6 +319,7 @@ export class SatusehatFhirMapper {
     return {
       resourceType: 'Encounter',
       identifier: [
+        ...this.buildAntenatalVisitIdentifier(input, organizationId),
         {
           system: `${ENCOUNTER_IDENTIFIER_SYSTEM_PREFIX}/${organizationId}`,
           use: 'official',
@@ -324,6 +350,7 @@ export class SatusehatFhirMapper {
       statusHistory: this.buildStatusHistory(input),
       ...this.buildHospitalization(input),
       ...this.buildEncounterDiagnosis(input),
+      ...this.buildAntenatalEpisodeReference(input),
       serviceProvider: { reference: `Organization/${organizationId}` },
     };
   }
@@ -1368,6 +1395,181 @@ export class SatusehatFhirMapper {
       system: ORDERABLE_DRUG_FORM_SYSTEM,
       code: drugFormCode,
     };
+  }
+
+  /**
+   * The ANC episode one pregnancy is reported under (P25-T08).
+   *
+   * `period.start` is the HPHT when the pregnancy has one, widened to an
+   * instant by the caller: the platform refuses a date-only value
+   * (Rule 10406). The identifier is our own pregnancy row, which is what makes
+   * the episode findable again after a timeout.
+   */
+  mapAntenatalEpisodeOfCare(
+    input: SatusehatAntenatalEpisodeMapInput,
+  ): SatusehatFhirEpisodeOfCare {
+    const organizationId = this.requireConfigValue(
+      this.satusehatConfig.organizationId,
+      'SATUSEHAT_ORGANIZATION_ID',
+    );
+    return {
+      resourceType: 'EpisodeOfCare',
+      identifier: [
+        {
+          system: buildSatusehatEpisodeOfCareIdentifierSystem(organizationId),
+          use: 'official',
+          value: input.pregnancyEpisodeId,
+        },
+      ],
+      status: 'active',
+      type: [
+        {
+          coding: [
+            {
+              system: SATUSEHAT_EPISODE_OF_CARE_TYPE_SYSTEM,
+              code: SATUSEHAT_ANTENATAL_EPISODE_TYPE_CODE,
+              display: SATUSEHAT_ANTENATAL_EPISODE_TYPE_DISPLAY,
+            },
+          ],
+        },
+      ],
+      patient: this.buildReference(`Patient/${input.patientIhsNumber}`, input.patientName),
+      managingOrganization: { reference: `Organization/${organizationId}` },
+      period: { start: this.toFhirInstant(input.startedAt) },
+    };
+  }
+
+  /**
+   * The operation list that closes an episode (P25-T08).
+   *
+   * `/patient` is replaced although it does not change: the gateway validates
+   * the operation list on its own and rejects one without a patient reference,
+   * whatever else it carries.
+   */
+  mapAntenatalEpisodeFinishOperations(
+    input: SatusehatAntenatalEpisodeFinishMapInput,
+  ): SatusehatJsonPatchOperation[] {
+    const start = this.toFhirInstant(input.startedAt);
+    const end = this.toFhirInstant(input.endedAt);
+    return [
+      { op: 'replace', path: '/patient', value: { reference: `Patient/${input.patientIhsNumber}` } },
+      { op: 'replace', path: '/status', value: 'finished' },
+      { op: 'add', path: '/period/end', value: end },
+      {
+        op: 'add',
+        path: '/statusHistory',
+        value: [
+          { status: 'active', period: { start, end } },
+          { status: 'finished', period: { start: end } },
+        ],
+      },
+    ];
+  }
+
+  /**
+   * The obstetric, visit and foetal Observations of one antenatal visit
+   * (P25-T08).
+   *
+   * Weight, height and blood pressure are not here: they go out as ordinary
+   * vital signs, which the platform accepts for an ANC visit unchanged.
+   */
+  mapAntenatalObservations(
+    input: SatusehatAntenatalObservationMapInput,
+  ): SatusehatFhirObservation[] {
+    return Object.entries(SATUSEHAT_ANTENATAL_OBSERVATION_DEFINITIONS).flatMap(
+      ([field, definition]) => {
+        const value = input.values[field as SatusehatAntenatalObservationField];
+        if (value === undefined || value === null) {
+          return [];
+        }
+        return [this.buildAntenatalObservation(input, definition, value)];
+      },
+    );
+  }
+
+  private buildAntenatalObservation(
+    input: SatusehatAntenatalObservationMapInput,
+    definition: SatusehatAntenatalObservationDefinition,
+    value: number | string | Date,
+  ): SatusehatFhirObservation {
+    return {
+      resourceType: 'Observation',
+      status: 'final',
+      category: [
+        {
+          coding: [
+            {
+              system: OBSERVATION_CATEGORY_SYSTEM,
+              code: definition.category,
+              display: ANTENATAL_OBSERVATION_CATEGORY_DISPLAYS[definition.category],
+            },
+          ],
+        },
+      ],
+      code: {
+        coding: [
+          { system: definition.system, code: definition.code, display: definition.display },
+        ],
+      },
+      subject: this.buildReference(`Patient/${input.patientIhsNumber}`, input.patientName),
+      encounter: { reference: input.encounterReference },
+      effectiveDateTime: this.toFhirInstant(input.recordedAt),
+      issued: this.toFhirInstant(input.recordedAt),
+      ...(input.practitionerIhsNumber
+        ? { performer: [{ reference: `Practitioner/${input.practitionerIhsNumber}` }] }
+        : {}),
+      ...this.buildAntenatalObservationValue(definition, value),
+    };
+  }
+
+  private buildAntenatalObservationValue(
+    definition: SatusehatAntenatalObservationDefinition,
+    value: number | string | Date,
+  ): Pick<SatusehatFhirObservation, 'valueQuantity' | 'valueString' | 'valueDateTime'> {
+    if (value instanceof Date) {
+      return { valueDateTime: this.toFhirInstant(value) };
+    }
+    if (typeof value === 'number' && definition.unit && definition.ucumCode) {
+      return {
+        valueQuantity: {
+          value,
+          unit: definition.unit,
+          system: UCUM_SYSTEM,
+          code: definition.ucumCode,
+        },
+      };
+    }
+    return { valueString: String(value) };
+  }
+
+  private buildAntenatalEpisodeReference(
+    input: SatusehatEncounterMapInput,
+  ): Pick<SatusehatFhirEncounter, 'episodeOfCare'> {
+    if (!input.antenatalEpisode) {
+      return {};
+    }
+    return {
+      episodeOfCare: [
+        { reference: `EpisodeOfCare/${input.antenatalEpisode.satusehatEpisodeOfCareId}` },
+      ],
+    };
+  }
+
+  private buildAntenatalVisitIdentifier(
+    input: SatusehatEncounterMapInput,
+    organizationId: string,
+  ): SatusehatFhirIdentifier[] {
+    const visitCode = input.antenatalEpisode?.visitCode;
+    if (!visitCode) {
+      return [];
+    }
+    return [
+      {
+        system: buildSatusehatEpisodeOfCareIdentifierSystem(organizationId),
+        use: 'official',
+        value: visitCode,
+      },
+    ];
   }
 
   private buildObservation(
