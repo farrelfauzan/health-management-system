@@ -16,6 +16,7 @@ export type ClaimedSubmissionRow = {
   kind: SatusehatSubmissionKindValue;
   encounter_id: string | null;
   lab_order_id: string | null;
+  pregnancy_episode_id: string | null;
   lab_order_number: string | null;
   status: SatusehatSubmissionStatusValue;
   attempts: number;

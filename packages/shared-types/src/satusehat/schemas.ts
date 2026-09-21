@@ -12,7 +12,11 @@ export type SatusehatSubmissionStatusValue = z.infer<typeof satusehatSubmissionS
  * ServiceRequest/Specimen/Observation/DiagnosticReport chain written when a
  * lab order is released.
  */
-export const SATUSEHAT_SUBMISSION_KINDS = ['ENCOUNTER', 'LAB_REPORT'] as const;
+export const SATUSEHAT_SUBMISSION_KINDS = [
+  'ENCOUNTER',
+  'LAB_REPORT',
+  'EPISODE_OF_CARE_FINISH',
+] as const;
 
 export const satusehatSubmissionKindSchema = z.enum(SATUSEHAT_SUBMISSION_KINDS);
 

@@ -133,6 +133,7 @@ describe('SATUSEHAT record comparison integration', () => {
         specialtyLocationId: null,
         registeredRootLocationId: null,
       },
+      antenatalVisit: null,
     };
   }
 

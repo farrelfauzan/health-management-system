@@ -12,4 +12,5 @@ export type SatusehatSubmissionControllerListSubmissionsV1Kind = typeof Satuseha
 export const SatusehatSubmissionControllerListSubmissionsV1Kind = {
   ENCOUNTER: 'ENCOUNTER',
   LAB_REPORT: 'LAB_REPORT',
+  EPISODE_OF_CARE_FINISH: 'EPISODE_OF_CARE_FINISH',
 } as const;

@@ -28,6 +28,7 @@ describe('SatusehatSubmissionOpsService', () => {
     kind: 'ENCOUNTER',
     encounterId: 'encounter-1',
     labOrderId: null,
+    pregnancyEpisodeId: null,
     labOrderNumber: null,
     status: 'FAILED',
     attempts: 8,

@@ -91,6 +91,12 @@ export type SatusehatSubmissionRecord = {
   /** Set on LAB_REPORT rows only. */
   labOrderId: string | null;
   /**
+   * Set on EPISODE_OF_CARE_FINISH rows only (P25-T08): the pregnancy whose
+   * SATUSEHAT episode this row closes. An ANC encounter reaches its episode
+   * through its antenatal visit instead, so ENCOUNTER rows leave it null.
+   */
+  pregnancyEpisodeId: string | null;
+  /**
    * `LAB/YYYYMMDD/####` for a LAB_REPORT row — the handle the bench and the
    * patient both quote, and the only thing about the order the admin surface
    * needs in order to chase a failure.
@@ -369,6 +375,75 @@ export type SatusehatSubmissionBundleData = {
     SatusehatEncounterLocationSources,
     'configuredLocationId' | 'bedLocationIds'
   >;
+  /**
+   * Set when this encounter is an antenatal visit (P25-T08), and null for
+   * every other visit. Its presence is what turns the ANC use case on for one
+   * bundle: the episode is ensured before the bundle is built, the Encounter
+   * gains an `episodeOfCare` reference and a K-code identifier, and the
+   * obstetric and foetal Observations are added.
+   */
+  antenatalVisit: SatusehatAntenatalVisit | null;
+};
+
+/**
+ * One antenatal visit as the ANC chain reports it (P25-T08).
+ *
+ * The pregnancy's own numbers (gravida, HPHT, blood type) travel with the
+ * visit rather than being read separately, so the whole bundle is built from
+ * one snapshot — the same rule {@link SatusehatSubmissionBundleData} follows
+ * for the encounter's location.
+ */
+export type SatusehatAntenatalVisit = {
+  pregnancyEpisodeId: string;
+  /**
+   * `K1M`, `K1A`, `K2` … — sent as the Encounter's episode-of-care identifier.
+   * Nullable: a visit recorded without one is reported without the
+   * identifier, which the platform accepts (see the ANC spike).
+   */
+  visitCode: string | null;
+  /** The episode id already held for this pregnancy, or null before the first send. */
+  satusehatEpisodeOfCareId: string | null;
+  /** HPHT. Becomes `EpisodeOfCare.period.start` when present. */
+  lastMenstrualPeriodDate: Date | null;
+  estimatedDeliveryDate: Date;
+  gravida: number;
+  para: number;
+  abortus: number;
+  prePregnancyWeightKg: number | null;
+  bloodType: string | null;
+  rhesus: string | null;
+  /** Gestational age in completed weeks at this visit, or null when unknown. */
+  gestationalAgeWeeks: number | null;
+  examination: SatusehatAntenatalExamination | null;
+};
+
+/** The 10T measurements of one antenatal visit, as far as they were recorded. */
+export type SatusehatAntenatalExamination = {
+  muacCm: number | null;
+  fundalHeightCm: number | null;
+  fetalHeartRateBpm: number | null;
+  fetalPresentation: 'CEPHALIC' | 'BREECH' | 'TRANSVERSE' | 'UNKNOWN' | null;
+  fetalHeadEngagement: 'ENGAGED' | 'NOT_ENGAGED' | null;
+  fetalCount: number | null;
+  estimatedFetalWeightGrams: number | null;
+};
+
+/**
+ * What closing one pregnancy's SATUSEHAT episode needs (P25-T08).
+ *
+ * `satusehatEpisodeOfCareId` is nullable although the enqueue only happens
+ * when it is set: the row is read again when the worker picks it up, and by
+ * then the pregnancy may have been corrected. A row that finds none settles
+ * rather than retrying an id that will never appear.
+ */
+export type SatusehatEpisodeOfCareFinish = {
+  pregnancyEpisodeId: string;
+  patientId: string;
+  patientIhsNumber: string | null;
+  satusehatEpisodeOfCareId: string | null;
+  lastMenstrualPeriodDate: Date | null;
+  estimatedDeliveryDate: Date;
+  endedAt: Date | null;
 };
 
 /**

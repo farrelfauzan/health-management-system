@@ -26,6 +26,7 @@ import {
 export class SatusehatResourceListBuilder {
   private readonly localRecordIdsByFullUrl = new Map<string, string>();
   private readonly skipped: SatusehatSubmissionResourcePayload[] = [];
+  private readonly external: SatusehatSubmissionResourcePayload[] = [];
 
   /**
    * Notes that the entry at `fullUrl` came from a local row, so the list can
@@ -35,6 +36,30 @@ export class SatusehatResourceListBuilder {
    */
   trackLocalRecord(fullUrl: string, localRecordId: string): void {
     this.localRecordIdsByFullUrl.set(fullUrl, localRecordId);
+  }
+
+  /**
+   * Records a resource this submission reported that was **not** a bundle
+   * entry (P25-T08): the ANC EpisodeOfCare, which is created by its own POST
+   * before the bundle because the Encounter has to reference it by id.
+   *
+   * Without this the monitor would show an ANC visit whose episode is invisible
+   * — the one resource an operator chasing a failed ANC chain most needs to
+   * see.
+   */
+  recordExternalResource(params: {
+    resourceType: string;
+    localRecordId: string;
+    satusehatId: string;
+  }): void {
+    this.external.push({
+      resourceType: params.resourceType,
+      outcome: 'SENT',
+      skipReason: null,
+      satusehatId: params.satusehatId,
+      localRecordId: params.localRecordId,
+      isBackfilled: false,
+    });
   }
 
   /**
@@ -80,6 +105,6 @@ export class SatusehatResourceListBuilder {
       localRecordId: this.localRecordIdsByFullUrl.get(entry.fullUrl) ?? null,
       isBackfilled: false,
     }));
-    return [...sent, ...this.skipped];
+    return [...sent, ...this.external, ...this.skipped];
   }
 }
