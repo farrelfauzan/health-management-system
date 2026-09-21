@@ -146,6 +146,13 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     ('user.read:any', 'User', 'read', 'ANY', 'Read all users'),
     ('user.create:any', 'User', 'create', 'ANY', 'Create users'),
     ('user.update:any', 'User', 'update', 'ANY', 'Update users'),
+    -- P20-T05. The name on one's own account, and nothing else: roles, status,
+    -- organisation unit and the sign-in address stay administrative, the same
+    -- split D-025 made for doctors. Granted to every human role beside
+    -- `auth.logout:own`, which is the existing precedent for "a thing anyone
+    -- signed in may do to themselves"; the two service-account roles are
+    -- deliberately left out, because nobody is behind them to have a name.
+    ('user.update:own', 'User', 'update', 'OWN', 'Correct the name on own account'),
     -- P16-T41. A super-admin action and not deactivation (§7.3.10.2): it
     -- opens a 30-day vault-only window rather than locking the person out.
     -- Bound to no seeded role below; SUPER_ADMIN holds it through the
@@ -510,6 +517,7 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('ADMIN', 'role.read:any'),
     ('ADMIN', 'role.unassign:any'),
     ('ADMIN', 'auth.logout:own'),
+    ('ADMIN', 'user.update:own'),
     ('ADMIN', 'user.read:any'),
     ('ADMIN', 'user.create:any'),
     ('ADMIN', 'user.update:any'),
@@ -720,6 +728,7 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('ADMIN', 'audit.read:any'),
     ('DOCTOR', 'portal.doctor-access:any'),
     ('DOCTOR', 'auth.logout:own'),
+    ('DOCTOR', 'user.update:own'),
     ('DOCTOR', 'patient.read:own'),
     -- P24-T10. The clinician who attended the birth registers the baby, from
     -- the mother's record and at the bedside. MIDWIFE holds it through the
@@ -813,6 +822,7 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('DOCTOR', 'clinic-profile.read:any'),
     ('LAB_TECHNICIAN', 'portal.admin-access:any'),
     ('LAB_TECHNICIAN', 'auth.logout:own'),
+    ('LAB_TECHNICIAN', 'user.update:own'),
     -- Read only. Deciding what the clinic offers and what it costs is an
     -- administrative act; running the test is not.
     ('LAB_TECHNICIAN', 'lab-test.read:any'),
@@ -831,6 +841,7 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     -- clinic's identity — the same reason PHARMACIST and DOCTOR have it.
     ('LAB_TECHNICIAN', 'clinic-profile.read:any'),
     ('PHARMACIST', 'auth.logout:own'),
+    ('PHARMACIST', 'user.update:own'),
     ('PHARMACIST', 'medication.read:any'),
     ('PHARMACIST', 'medication.create:any'),
     ('PHARMACIST', 'medication.update:any'),
@@ -843,6 +854,7 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('PHARMACIST', 'clinic-profile.read:any'),
     ('PATIENT', 'portal.patient-access:own'),
     ('PATIENT', 'auth.logout:own'),
+    ('PATIENT', 'user.update:own'),
     ('PATIENT', 'patient.read:own'),
     ('PATIENT', 'patient.update:own'),
     ('PATIENT', 'patient.read-identifier:own'),
@@ -1013,6 +1025,7 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     -- may prescribe is narrowed in the service, not here (P24-T04).
     ('MIDWIFE', 'portal.doctor-access:any'),
     ('MIDWIFE', 'auth.logout:own'),
+    ('MIDWIFE', 'user.update:own'),
     ('MIDWIFE', 'patient.read:own'),
     ('MIDWIFE', 'patient.create-newborn:any'),
     ('MIDWIFE', 'doctor.read:any'),

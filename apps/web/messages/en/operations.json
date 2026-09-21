@@ -837,7 +837,9 @@
           "ACCEPTED": "Accepted",
           "REVOKED": "Revoked",
           "EXPIRED": "Expired"
-        }
+        },
+        "fullNameLabel": "Full name",
+        "fullNamePlaceholder": "Rani Putri, S.Farm., Apt."
       },
       "roles": {
         "title": "Roles",
@@ -958,7 +960,9 @@
         "cancel": "Cancel",
         "pending": "Working…",
         "error": "Could not update this user's offboarding. Please try again."
-      }
+      },
+      "fullName": "Full name",
+      "fullNamePlaceholder": "Rani Putri, S.Farm., Apt."
     },
     "rooms": {
       "title": "Rooms & Beds",

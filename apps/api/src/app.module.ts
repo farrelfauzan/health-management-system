@@ -17,6 +17,7 @@ import { PdfModule } from './common/pdf/pdf.module';
 import { SatusehatModule } from './common/satusehat/satusehat.module';
 import { RetentionModule } from './common/retention/retention.module';
 import { StorageModule } from './common/storage/storage.module';
+import { AccountModule } from './modules/account/account.module';
 import { AdminManagementModule } from './modules/admin-management/admin-management.module';
 import { AdmissionFlowModule } from './modules/admission-flow/admission-flow.module';
 import { MaternalCareModule } from './modules/maternal-care/maternal-care.module';
@@ -89,6 +90,7 @@ import { UserInvitationModule } from './modules/user-invitation/user-invitation.
     SpecialtyModule,
     TerminologyModule,
     DoctorManagementModule,
+    AccountModule,
     DoctorPatientModule,
     AppointmentManagementModule,
     RegionsModule,

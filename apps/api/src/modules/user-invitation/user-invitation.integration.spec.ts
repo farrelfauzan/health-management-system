@@ -185,6 +185,7 @@ describe('User invitations against Postgres', () => {
   it('refuses an invitation naming a role that does not exist', async () => {
     const response = await asAdmin('post', '/api/v1/users/invitations').send({
       email: `${TEST_MARKER}-nobody@example.test`,
+      fullName: 'Siti Rahma',
       roleCodes: ['IMP23_SPEC_NO_SUCH_ROLE'],
     });
 
@@ -198,6 +199,7 @@ describe('User invitations against Postgres', () => {
     it('records the invitation and returns no token', async () => {
       const response = await asAdmin('post', '/api/v1/users/invitations').send({
         email: INVITEE_EMAIL,
+        fullName: 'Siti Rahma',
         roleCodes: [INVITEE_ROLE_CODE],
       });
 
@@ -219,6 +221,7 @@ describe('User invitations against Postgres', () => {
     it('refuses a second live invitation to the same address', async () => {
       const response = await asAdmin('post', '/api/v1/users/invitations').send({
         email: INVITEE_EMAIL,
+        fullName: 'Siti Rahma',
         roleCodes: [INVITEE_ROLE_CODE],
       });
 
@@ -301,6 +304,7 @@ describe('User invitations against Postgres', () => {
     async function inviteFresh(emailSuffix: string): Promise<{ id: string; token: string }> {
       const response = await asAdmin('post', '/api/v1/users/invitations').send({
         email: `${TEST_MARKER}-${emailSuffix}@example.test`,
+        fullName: 'Siti Rahma',
         roleCodes: [INVITEE_ROLE_CODE],
       });
       expect(response.status).toBe(201);

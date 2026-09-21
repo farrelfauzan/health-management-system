@@ -22,6 +22,8 @@ function buildInvitationRow(overrides: Record<string, unknown> = {}) {
   return {
     id: INVITATION_ID,
     email: 'siti@example.com',
+    fullName: 'Siti Rahma',
+    doctorProfile: null,
     tokenHash: 'unused-in-these-tests',
     roleCodes: ['NURSE'],
     invitedById: CURRENT_USER_ID,
@@ -101,7 +103,7 @@ describe('UserInvitationService', () => {
   describe('createInvitation', () => {
     it('records the invitation, audits it, and sends exactly one email', async () => {
       const actualInvitation = await service.createInvitation(
-        { email: 'siti@example.com', roleCodes: ['NURSE'] },
+        { email: 'siti@example.com', fullName: 'Rani Putri', roleCodes: ['NURSE'] },
         CURRENT_USER_ID,
       );
 
@@ -117,7 +119,7 @@ describe('UserInvitationService', () => {
     // password, and the token never comes back over the API.
     it('never returns the token to the caller', async () => {
       const actualInvitation = await service.createInvitation(
-        { email: 'siti@example.com', roleCodes: ['NURSE'] },
+        { email: 'siti@example.com', fullName: 'Rani Putri', roleCodes: ['NURSE'] },
         CURRENT_USER_ID,
       );
 
@@ -126,7 +128,7 @@ describe('UserInvitationService', () => {
 
     it('emails a link built from the configured web origin', async () => {
       await service.createInvitation(
-        { email: 'siti@example.com', roleCodes: ['NURSE'] },
+        { email: 'siti@example.com', fullName: 'Rani Putri', roleCodes: ['NURSE'] },
         CURRENT_USER_ID,
       );
 
@@ -139,7 +141,7 @@ describe('UserInvitationService', () => {
 
       await expect(
         service.createInvitation(
-          { email: 'siti@example.com', roleCodes: ['NURSE'] },
+          { email: 'siti@example.com', fullName: 'Rani Putri', roleCodes: ['NURSE'] },
           CURRENT_USER_ID,
         ),
       ).rejects.toBeInstanceOf(ConflictException);
@@ -154,7 +156,7 @@ describe('UserInvitationService', () => {
 
       await expect(
         service.createInvitation(
-          { email: 'siti@example.com', roleCodes: ['NURSE'] },
+          { email: 'siti@example.com', fullName: 'Rani Putri', roleCodes: ['NURSE'] },
           CURRENT_USER_ID,
         ),
       ).rejects.toBeInstanceOf(ConflictException);
@@ -165,7 +167,7 @@ describe('UserInvitationService', () => {
 
       await expect(
         service.createInvitation(
-          { email: 'siti@example.com', roleCodes: ['SUPER_ADMIN'] },
+          { email: 'siti@example.com', fullName: 'Rani Putri', roleCodes: ['SUPER_ADMIN'] },
           CURRENT_USER_ID,
         ),
       ).rejects.toBeInstanceOf(ForbiddenException);
@@ -178,7 +180,7 @@ describe('UserInvitationService', () => {
       mailServiceMock.sendMail.mockResolvedValue({ accepted: false, messageId: undefined });
 
       const actualInvitation = await service.createInvitation(
-        { email: 'siti@example.com', roleCodes: ['NURSE'] },
+        { email: 'siti@example.com', fullName: 'Rani Putri', roleCodes: ['NURSE'] },
         CURRENT_USER_ID,
       );
 
@@ -268,6 +270,64 @@ describe('UserInvitationService', () => {
       );
       expect(auditServiceMock.record).toHaveBeenCalledWith(
         expect.objectContaining({ action: 'USER_CREATED' }),
+      );
+    });
+
+    it("names the new account from the invitation the administrator raised", async () => {
+      userInvitationRepositoryMock.acceptInvitation.mockResolvedValue({
+        id: 'new-user-id',
+        email: 'siti@example.com',
+      } as never);
+
+      await service.acceptInvitation('raw-token', {
+        password: 'a-perfectly-good-passphrase',
+      });
+
+      expect(userInvitationRepositoryMock.acceptInvitation).toHaveBeenCalledWith(
+        expect.objectContaining({ fullName: 'Siti Rahma' }),
+      );
+    });
+
+    it("names a doctor's account from the profile, which carries no invitation name", async () => {
+      userInvitationRepositoryMock.findInvitationByTokenHash.mockResolvedValue(
+        buildInvitationRow({
+          fullName: null,
+          doctorProfileId: 'doctor-profile-id',
+          doctorProfile: { fullName: 'dr. Olivia Kirana, Sp.OG' },
+        }) as never,
+      );
+      userInvitationRepositoryMock.acceptInvitation.mockResolvedValue({
+        id: 'new-user-id',
+        email: 'siti@example.com',
+      } as never);
+
+      await service.acceptInvitation('raw-token', {
+        password: 'a-perfectly-good-passphrase',
+      });
+
+      // The administrator typed this name onto the profile at creation
+      // (D-024). Asking the invitee for it again would replace a name the
+      // clinic vouches for with one nobody checked.
+      expect(userInvitationRepositoryMock.acceptInvitation).toHaveBeenCalledWith(
+        expect.objectContaining({ fullName: 'dr. Olivia Kirana, Sp.OG' }),
+      );
+    });
+
+    it('accepts an invitation raised before names were collected, leaving the account unnamed', async () => {
+      userInvitationRepositoryMock.findInvitationByTokenHash.mockResolvedValue(
+        buildInvitationRow({ fullName: null }) as never,
+      );
+      userInvitationRepositoryMock.acceptInvitation.mockResolvedValue({
+        id: 'new-user-id',
+        email: 'siti@example.com',
+      } as never);
+
+      await service.acceptInvitation('raw-token', {
+        password: 'a-perfectly-good-passphrase',
+      });
+
+      expect(userInvitationRepositoryMock.acceptInvitation).toHaveBeenCalledWith(
+        expect.objectContaining({ fullName: null }),
       );
     });
 

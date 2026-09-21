@@ -9,6 +9,11 @@
 export interface CreateAdminUserDto {
   email: string;
   /**
+     * @minLength 2
+     * @maxLength 120
+     */
+  fullName: string;
+  /**
      * @minLength 12
      * @maxLength 200
      */

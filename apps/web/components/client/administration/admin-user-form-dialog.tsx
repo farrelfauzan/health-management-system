@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useForm } from '@tanstack/react-form';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { adminUserEmailSchema, type AdminUser, type UpdateAdminUserInput } from '@hms/shared-types';
+import { adminUserEmailSchema, userFullNameSchema, type AdminUser, type UpdateAdminUserInput } from '@hms/shared-types';
 import {
   Button,
   Checkbox,
@@ -59,6 +59,7 @@ export function AdminUserFormDialog({ open, onOpenChange, user }: AdminUserFormD
   const form = useForm({
     defaultValues: {
       email: user.email,
+      fullName: user.fullName ?? '',
       password: '',
       roleCodes: user.roles.map((role) => role.code),
       isActive: user.isActive,
@@ -70,6 +71,7 @@ export function AdminUserFormDialog({ open, onOpenChange, user }: AdminUserFormD
           id: user.id,
           input: {
             email: value.email,
+            fullName: value.fullName,
             roleCodes: value.roleCodes,
             isActive: value.isActive,
             ...(value.password.length > 0 ? { password: value.password } : {}),
@@ -101,6 +103,25 @@ export function AdminUserFormDialog({ open, onOpenChange, user }: AdminUserFormD
           }}
         >
           {formError ? <InlineNotice tone="error">{formError}</InlineNotice> : null}
+
+          <form.Field name="fullName" validators={{ onSubmit: userFullNameSchema }}>
+            {(field) => (
+              <div className="space-y-1.5">
+                <Label htmlFor={field.name} className="font-heading text-xs text-slate-600">
+                  {t('administration.fullName')}
+                </Label>
+                <Input
+                  id={field.name}
+                  value={field.state.value}
+                  placeholder={t('administration.fullNamePlaceholder')}
+                  onChange={(event) => field.handleChange(event.target.value)}
+                  onBlur={field.handleBlur}
+                  aria-invalid={field.state.meta.errors.length > 0}
+                />
+                <FieldError errors={field.state.meta.errors} />
+              </div>
+            )}
+          </form.Field>
 
           <form.Field name="email" validators={{ onSubmit: adminUserEmailSchema }}>
             {(field) => (
