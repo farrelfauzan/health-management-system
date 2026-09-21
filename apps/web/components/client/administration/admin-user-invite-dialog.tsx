@@ -52,6 +52,7 @@ export function AdminUserInviteDialog({ open, onOpenChange }: AdminUserInviteDia
   const form = useForm({
     defaultValues: {
       email: '',
+      fullName: '',
       roleCodes: [] as string[],
     },
     onSubmit: async ({ value }) => {
@@ -59,6 +60,7 @@ export function AdminUserInviteDialog({ open, onOpenChange }: AdminUserInviteDia
       try {
         const response = await inviteMutation.mutateAsync({
           email: value.email,
+          fullName: value.fullName,
           roleCodes: value.roleCodes,
         });
         parseApiSuccess<UserInvitationView>(response, t('invitations.sendError'));
@@ -87,6 +89,28 @@ export function AdminUserInviteDialog({ open, onOpenChange }: AdminUserInviteDia
           }}
         >
           {formError ? <InlineNotice tone="error">{formError}</InlineNotice> : null}
+
+          <form.Field
+            name="fullName"
+            validators={{ onSubmit: createUserInvitationSchema.shape.fullName }}
+          >
+            {(field) => (
+              <div className="space-y-1.5">
+                <Label htmlFor={field.name} className="font-heading text-xs text-slate-600">
+                  {t('invitations.fullNameLabel')}
+                </Label>
+                <Input
+                  id={field.name}
+                  value={field.state.value}
+                  placeholder={t('invitations.fullNamePlaceholder')}
+                  onChange={(event) => field.handleChange(event.target.value)}
+                  onBlur={field.handleBlur}
+                  aria-invalid={field.state.meta.errors.length > 0}
+                />
+                <FieldError errors={field.state.meta.errors} />
+              </div>
+            )}
+          </form.Field>
 
           <form.Field
             name="email"

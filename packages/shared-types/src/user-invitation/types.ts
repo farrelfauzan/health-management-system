@@ -8,6 +8,12 @@ export type ListUserInvitationsParams = {
 
 export type CreateUserInvitationRecord = {
   email: string;
+  /**
+   * The name the administrator typed when raising this invitation (P20-T05).
+   * Absent on a doctor invitation, which reaches its name through the profile
+   * it is bound to.
+   */
+  fullName?: string;
   tokenHash: string;
   roleCodes: string[];
   invitedById: string;

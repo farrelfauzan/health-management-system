@@ -6,16 +6,10 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface CreateUserInvitationDto {
-  email: string;
+export interface UpdateOwnAccountDto {
   /**
      * @minLength 2
      * @maxLength 120
      */
   fullName: string;
-  /**
-     * @minItems 1
-     * @items.minLength 1
-     */
-  roleCodes: string[];
 }

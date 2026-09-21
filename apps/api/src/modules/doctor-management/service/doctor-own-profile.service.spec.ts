@@ -1,5 +1,6 @@
 import { NotFoundException } from '@nestjs/common';
 
+import { OwnAccountService } from '../../account/service/own-account.service';
 import { AuditService } from '../../../common/audit/audit.service';
 import { DoctorManagementRepository } from '../repository/doctor-management.repository';
 import { DoctorCredentialOptionService } from './doctor-credential-option.service';
@@ -39,10 +40,15 @@ describe('DoctorOwnProfileService (P20-T03)', () => {
     record: jest.fn(),
   } as unknown as AuditService;
 
+  const ownAccountServiceMock = {
+    renameOwnAccount: jest.fn(),
+  } as unknown as OwnAccountService;
+
   const service = new DoctorOwnProfileService(
     repositoryMock,
     doctorManagementServiceMock,
     credentialOptionServiceMock,
+    ownAccountServiceMock,
     auditServiceMock,
   );
 
@@ -82,13 +88,25 @@ describe('DoctorOwnProfileService (P20-T03)', () => {
   });
 
   describe('updateOwnDoctorProfile', () => {
+    it('leaves the account alone when the doctor changed no name', async () => {
+      await service.updateOwnDoctorProfile({ phoneNumber: '628129876500' }, currentUser);
+
+      expect(ownAccountServiceMock.renameOwnAccount).not.toHaveBeenCalled();
+    });
+
     it('writes only the fields a doctor owns and audits them with the doctor as actor', async () => {
       const inputPayload = { fullName: 'Dr. First Corrected', phoneNumber: '628129876500' };
 
       await service.updateOwnDoctorProfile(inputPayload, currentUser);
 
+      // The name is not written here any more (P20-T05): it belongs to the
+      // account, and the account service mirrors it onto this profile in one
+      // transaction. A second write here would be a second copy of that rule.
+      expect(ownAccountServiceMock.renameOwnAccount).toHaveBeenCalledWith(
+        currentUser.sub,
+        'Dr. First Corrected',
+      );
       expect(repositoryMock.updateDoctor).toHaveBeenCalledWith(doctorId, {
-        fullName: 'Dr. First Corrected',
         phoneNumber: '628129876500',
         title: undefined,
         degrees: undefined,

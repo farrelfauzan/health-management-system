@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { passwordPolicySchema } from '#admin-management/schemas';
+import { passwordPolicySchema, userFullNameSchema } from '#admin-management/schemas';
 
 /**
  * The lifecycle of one invitation, derived at read time rather than stored
@@ -19,6 +19,13 @@ const MAX_PAGE_SIZE = 100;
 
 export const createUserInvitationSchema = z.object({
   email: z.string().trim().toLowerCase().email(),
+  /**
+   * Collected at invite time, not at accept time (P20-T05): the person the
+   * clinic is inviting is somebody the administrator already knows the name
+   * of, and asking the invitee to type it makes the account's name unverified
+   * by anyone.
+   */
+  fullName: userFullNameSchema,
   roleCodes: z.array(z.string().min(1)).min(1),
 });
 export type CreateUserInvitationInput = z.infer<typeof createUserInvitationSchema>;

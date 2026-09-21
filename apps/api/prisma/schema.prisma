@@ -1073,6 +1073,12 @@ enum ChatActor {
 model User {
   id                 String    @id @default(uuid()) @db.Uuid
   email              String    @unique
+  /// The person's name, on the account rather than on a role-shaped profile
+  /// (D-027, P20-T05). Nullable for ever: every row predates the column, and
+  /// nobody is locked out of an account for want of a name nobody asked them
+  /// for. `DoctorProfile.fullName` survives as the name an administrator types
+  /// before an account exists — the two are mirrored while both columns do.
+  fullName           String?   @map("full_name")
   passwordHash       String    @map("password_hash")
   isActive           Boolean   @default(true) @map("is_active")
   /// Reserved service account: a row that exists so machine-originated writes
@@ -1277,6 +1283,10 @@ model RefreshToken {
 model UserInvitation {
   id          String    @id @default(uuid()) @db.Uuid
   email       String
+  /// The name the administrator typed when raising this invitation, copied
+  /// onto the account the accept creates (P20-T05). Null on a doctor
+  /// invitation, which reaches its name through `doctorProfileId` instead.
+  fullName    String?   @map("full_name")
   tokenHash   String    @unique @map("token_hash")
   roleCodes   String[]  @map("role_codes")
   invitedById String    @map("invited_by_id") @db.Uuid

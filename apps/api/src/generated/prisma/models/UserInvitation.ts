@@ -46,6 +46,7 @@ export type AggregateUserInvitation = {
 export type UserInvitationMinAggregateOutputType = {
   id: string | null
   email: string | null
+  fullName: string | null
   tokenHash: string | null
   invitedById: string | null
   expiresAt: Date | null
@@ -59,6 +60,7 @@ export type UserInvitationMinAggregateOutputType = {
 export type UserInvitationMaxAggregateOutputType = {
   id: string | null
   email: string | null
+  fullName: string | null
   tokenHash: string | null
   invitedById: string | null
   expiresAt: Date | null
@@ -72,6 +74,7 @@ export type UserInvitationMaxAggregateOutputType = {
 export type UserInvitationCountAggregateOutputType = {
   id: number
   email: number
+  fullName: number
   tokenHash: number
   roleCodes: number
   invitedById: number
@@ -88,6 +91,7 @@ export type UserInvitationCountAggregateOutputType = {
 export type UserInvitationMinAggregateInputType = {
   id?: true
   email?: true
+  fullName?: true
   tokenHash?: true
   invitedById?: true
   expiresAt?: true
@@ -101,6 +105,7 @@ export type UserInvitationMinAggregateInputType = {
 export type UserInvitationMaxAggregateInputType = {
   id?: true
   email?: true
+  fullName?: true
   tokenHash?: true
   invitedById?: true
   expiresAt?: true
@@ -114,6 +119,7 @@ export type UserInvitationMaxAggregateInputType = {
 export type UserInvitationCountAggregateInputType = {
   id?: true
   email?: true
+  fullName?: true
   tokenHash?: true
   roleCodes?: true
   invitedById?: true
@@ -201,6 +207,7 @@ export type UserInvitationGroupByArgs<ExtArgs extends runtime.Types.Extensions.I
 export type UserInvitationGroupByOutputType = {
   id: string
   email: string
+  fullName: string | null
   tokenHash: string
   roleCodes: string[]
   invitedById: string
@@ -236,6 +243,7 @@ export type UserInvitationWhereInput = {
   NOT?: Prisma.UserInvitationWhereInput | Prisma.UserInvitationWhereInput[]
   id?: Prisma.UuidFilter<"UserInvitation"> | string
   email?: Prisma.StringFilter<"UserInvitation"> | string
+  fullName?: Prisma.StringNullableFilter<"UserInvitation"> | string | null
   tokenHash?: Prisma.StringFilter<"UserInvitation"> | string
   roleCodes?: Prisma.StringNullableListFilter<"UserInvitation">
   invitedById?: Prisma.UuidFilter<"UserInvitation"> | string
@@ -252,6 +260,7 @@ export type UserInvitationWhereInput = {
 export type UserInvitationOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   email?: Prisma.SortOrder
+  fullName?: Prisma.SortOrderInput | Prisma.SortOrder
   tokenHash?: Prisma.SortOrder
   roleCodes?: Prisma.SortOrder
   invitedById?: Prisma.SortOrder
@@ -272,6 +281,7 @@ export type UserInvitationWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.UserInvitationWhereInput[]
   NOT?: Prisma.UserInvitationWhereInput | Prisma.UserInvitationWhereInput[]
   email?: Prisma.StringFilter<"UserInvitation"> | string
+  fullName?: Prisma.StringNullableFilter<"UserInvitation"> | string | null
   roleCodes?: Prisma.StringNullableListFilter<"UserInvitation">
   invitedById?: Prisma.UuidFilter<"UserInvitation"> | string
   expiresAt?: Prisma.DateTimeFilter<"UserInvitation"> | Date | string
@@ -287,6 +297,7 @@ export type UserInvitationWhereUniqueInput = Prisma.AtLeast<{
 export type UserInvitationOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   email?: Prisma.SortOrder
+  fullName?: Prisma.SortOrderInput | Prisma.SortOrder
   tokenHash?: Prisma.SortOrder
   roleCodes?: Prisma.SortOrder
   invitedById?: Prisma.SortOrder
@@ -307,6 +318,7 @@ export type UserInvitationScalarWhereWithAggregatesInput = {
   NOT?: Prisma.UserInvitationScalarWhereWithAggregatesInput | Prisma.UserInvitationScalarWhereWithAggregatesInput[]
   id?: Prisma.UuidWithAggregatesFilter<"UserInvitation"> | string
   email?: Prisma.StringWithAggregatesFilter<"UserInvitation"> | string
+  fullName?: Prisma.StringNullableWithAggregatesFilter<"UserInvitation"> | string | null
   tokenHash?: Prisma.StringWithAggregatesFilter<"UserInvitation"> | string
   roleCodes?: Prisma.StringNullableListFilter<"UserInvitation">
   invitedById?: Prisma.UuidWithAggregatesFilter<"UserInvitation"> | string
@@ -321,6 +333,7 @@ export type UserInvitationScalarWhereWithAggregatesInput = {
 export type UserInvitationCreateInput = {
   id?: string
   email: string
+  fullName?: string | null
   tokenHash: string
   roleCodes?: Prisma.UserInvitationCreateroleCodesInput | string[]
   expiresAt: Date | string
@@ -335,6 +348,7 @@ export type UserInvitationCreateInput = {
 export type UserInvitationUncheckedCreateInput = {
   id?: string
   email: string
+  fullName?: string | null
   tokenHash: string
   roleCodes?: Prisma.UserInvitationCreateroleCodesInput | string[]
   invitedById: string
@@ -349,6 +363,7 @@ export type UserInvitationUncheckedCreateInput = {
 export type UserInvitationUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenHash?: Prisma.StringFieldUpdateOperationsInput | string
   roleCodes?: Prisma.UserInvitationUpdateroleCodesInput | string[]
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -363,6 +378,7 @@ export type UserInvitationUpdateInput = {
 export type UserInvitationUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenHash?: Prisma.StringFieldUpdateOperationsInput | string
   roleCodes?: Prisma.UserInvitationUpdateroleCodesInput | string[]
   invitedById?: Prisma.StringFieldUpdateOperationsInput | string
@@ -377,6 +393,7 @@ export type UserInvitationUncheckedUpdateInput = {
 export type UserInvitationCreateManyInput = {
   id?: string
   email: string
+  fullName?: string | null
   tokenHash: string
   roleCodes?: Prisma.UserInvitationCreateroleCodesInput | string[]
   invitedById: string
@@ -391,6 +408,7 @@ export type UserInvitationCreateManyInput = {
 export type UserInvitationUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenHash?: Prisma.StringFieldUpdateOperationsInput | string
   roleCodes?: Prisma.UserInvitationUpdateroleCodesInput | string[]
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -403,6 +421,7 @@ export type UserInvitationUpdateManyMutationInput = {
 export type UserInvitationUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenHash?: Prisma.StringFieldUpdateOperationsInput | string
   roleCodes?: Prisma.UserInvitationUpdateroleCodesInput | string[]
   invitedById?: Prisma.StringFieldUpdateOperationsInput | string
@@ -427,6 +446,7 @@ export type UserInvitationOrderByRelationAggregateInput = {
 export type UserInvitationCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   email?: Prisma.SortOrder
+  fullName?: Prisma.SortOrder
   tokenHash?: Prisma.SortOrder
   roleCodes?: Prisma.SortOrder
   invitedById?: Prisma.SortOrder
@@ -441,6 +461,7 @@ export type UserInvitationCountOrderByAggregateInput = {
 export type UserInvitationMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   email?: Prisma.SortOrder
+  fullName?: Prisma.SortOrder
   tokenHash?: Prisma.SortOrder
   invitedById?: Prisma.SortOrder
   expiresAt?: Prisma.SortOrder
@@ -454,6 +475,7 @@ export type UserInvitationMaxOrderByAggregateInput = {
 export type UserInvitationMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   email?: Prisma.SortOrder
+  fullName?: Prisma.SortOrder
   tokenHash?: Prisma.SortOrder
   invitedById?: Prisma.SortOrder
   expiresAt?: Prisma.SortOrder
@@ -560,6 +582,7 @@ export type UserInvitationUncheckedUpdateManyWithoutDoctorProfileNestedInput = {
 export type UserInvitationCreateWithoutInvitedByInput = {
   id?: string
   email: string
+  fullName?: string | null
   tokenHash: string
   roleCodes?: Prisma.UserInvitationCreateroleCodesInput | string[]
   expiresAt: Date | string
@@ -573,6 +596,7 @@ export type UserInvitationCreateWithoutInvitedByInput = {
 export type UserInvitationUncheckedCreateWithoutInvitedByInput = {
   id?: string
   email: string
+  fullName?: string | null
   tokenHash: string
   roleCodes?: Prisma.UserInvitationCreateroleCodesInput | string[]
   expiresAt: Date | string
@@ -615,6 +639,7 @@ export type UserInvitationScalarWhereInput = {
   NOT?: Prisma.UserInvitationScalarWhereInput | Prisma.UserInvitationScalarWhereInput[]
   id?: Prisma.UuidFilter<"UserInvitation"> | string
   email?: Prisma.StringFilter<"UserInvitation"> | string
+  fullName?: Prisma.StringNullableFilter<"UserInvitation"> | string | null
   tokenHash?: Prisma.StringFilter<"UserInvitation"> | string
   roleCodes?: Prisma.StringNullableListFilter<"UserInvitation">
   invitedById?: Prisma.UuidFilter<"UserInvitation"> | string
@@ -629,6 +654,7 @@ export type UserInvitationScalarWhereInput = {
 export type UserInvitationCreateWithoutDoctorProfileInput = {
   id?: string
   email: string
+  fullName?: string | null
   tokenHash: string
   roleCodes?: Prisma.UserInvitationCreateroleCodesInput | string[]
   expiresAt: Date | string
@@ -642,6 +668,7 @@ export type UserInvitationCreateWithoutDoctorProfileInput = {
 export type UserInvitationUncheckedCreateWithoutDoctorProfileInput = {
   id?: string
   email: string
+  fullName?: string | null
   tokenHash: string
   roleCodes?: Prisma.UserInvitationCreateroleCodesInput | string[]
   invitedById: string
@@ -681,6 +708,7 @@ export type UserInvitationUpdateManyWithWhereWithoutDoctorProfileInput = {
 export type UserInvitationCreateManyInvitedByInput = {
   id?: string
   email: string
+  fullName?: string | null
   tokenHash: string
   roleCodes?: Prisma.UserInvitationCreateroleCodesInput | string[]
   expiresAt: Date | string
@@ -694,6 +722,7 @@ export type UserInvitationCreateManyInvitedByInput = {
 export type UserInvitationUpdateWithoutInvitedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenHash?: Prisma.StringFieldUpdateOperationsInput | string
   roleCodes?: Prisma.UserInvitationUpdateroleCodesInput | string[]
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -707,6 +736,7 @@ export type UserInvitationUpdateWithoutInvitedByInput = {
 export type UserInvitationUncheckedUpdateWithoutInvitedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenHash?: Prisma.StringFieldUpdateOperationsInput | string
   roleCodes?: Prisma.UserInvitationUpdateroleCodesInput | string[]
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -720,6 +750,7 @@ export type UserInvitationUncheckedUpdateWithoutInvitedByInput = {
 export type UserInvitationUncheckedUpdateManyWithoutInvitedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenHash?: Prisma.StringFieldUpdateOperationsInput | string
   roleCodes?: Prisma.UserInvitationUpdateroleCodesInput | string[]
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -733,6 +764,7 @@ export type UserInvitationUncheckedUpdateManyWithoutInvitedByInput = {
 export type UserInvitationCreateManyDoctorProfileInput = {
   id?: string
   email: string
+  fullName?: string | null
   tokenHash: string
   roleCodes?: Prisma.UserInvitationCreateroleCodesInput | string[]
   invitedById: string
@@ -746,6 +778,7 @@ export type UserInvitationCreateManyDoctorProfileInput = {
 export type UserInvitationUpdateWithoutDoctorProfileInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenHash?: Prisma.StringFieldUpdateOperationsInput | string
   roleCodes?: Prisma.UserInvitationUpdateroleCodesInput | string[]
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -759,6 +792,7 @@ export type UserInvitationUpdateWithoutDoctorProfileInput = {
 export type UserInvitationUncheckedUpdateWithoutDoctorProfileInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenHash?: Prisma.StringFieldUpdateOperationsInput | string
   roleCodes?: Prisma.UserInvitationUpdateroleCodesInput | string[]
   invitedById?: Prisma.StringFieldUpdateOperationsInput | string
@@ -772,6 +806,7 @@ export type UserInvitationUncheckedUpdateWithoutDoctorProfileInput = {
 export type UserInvitationUncheckedUpdateManyWithoutDoctorProfileInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tokenHash?: Prisma.StringFieldUpdateOperationsInput | string
   roleCodes?: Prisma.UserInvitationUpdateroleCodesInput | string[]
   invitedById?: Prisma.StringFieldUpdateOperationsInput | string
@@ -787,6 +822,7 @@ export type UserInvitationUncheckedUpdateManyWithoutDoctorProfileInput = {
 export type UserInvitationSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   email?: boolean
+  fullName?: boolean
   tokenHash?: boolean
   roleCodes?: boolean
   invitedById?: boolean
@@ -803,6 +839,7 @@ export type UserInvitationSelect<ExtArgs extends runtime.Types.Extensions.Intern
 export type UserInvitationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   email?: boolean
+  fullName?: boolean
   tokenHash?: boolean
   roleCodes?: boolean
   invitedById?: boolean
@@ -819,6 +856,7 @@ export type UserInvitationSelectCreateManyAndReturn<ExtArgs extends runtime.Type
 export type UserInvitationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   email?: boolean
+  fullName?: boolean
   tokenHash?: boolean
   roleCodes?: boolean
   invitedById?: boolean
@@ -835,6 +873,7 @@ export type UserInvitationSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
 export type UserInvitationSelectScalar = {
   id?: boolean
   email?: boolean
+  fullName?: boolean
   tokenHash?: boolean
   roleCodes?: boolean
   invitedById?: boolean
@@ -846,7 +885,7 @@ export type UserInvitationSelectScalar = {
   doctorProfileId?: boolean
 }
 
-export type UserInvitationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "tokenHash" | "roleCodes" | "invitedById" | "expiresAt" | "consumedAt" | "revokedAt" | "createdAt" | "updatedAt" | "doctorProfileId", ExtArgs["result"]["userInvitation"]>
+export type UserInvitationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "fullName" | "tokenHash" | "roleCodes" | "invitedById" | "expiresAt" | "consumedAt" | "revokedAt" | "createdAt" | "updatedAt" | "doctorProfileId", ExtArgs["result"]["userInvitation"]>
 export type UserInvitationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   invitedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   doctorProfile?: boolean | Prisma.UserInvitation$doctorProfileArgs<ExtArgs>
@@ -869,6 +908,12 @@ export type $UserInvitationPayload<ExtArgs extends runtime.Types.Extensions.Inte
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     email: string
+    /**
+     * The name the administrator typed when raising this invitation, copied
+     * onto the account the accept creates (P20-T05). Null on a doctor
+     * invitation, which reaches its name through `doctorProfileId` instead.
+     */
+    fullName: string | null
     tokenHash: string
     roleCodes: string[]
     invitedById: string
@@ -1331,6 +1376,7 @@ export interface Prisma__UserInvitationClient<T, Null = never, ExtArgs extends r
 export interface UserInvitationFieldRefs {
   readonly id: Prisma.FieldRef<"UserInvitation", 'String'>
   readonly email: Prisma.FieldRef<"UserInvitation", 'String'>
+  readonly fullName: Prisma.FieldRef<"UserInvitation", 'String'>
   readonly tokenHash: Prisma.FieldRef<"UserInvitation", 'String'>
   readonly roleCodes: Prisma.FieldRef<"UserInvitation", 'String[]'>
   readonly invitedById: Prisma.FieldRef<"UserInvitation", 'String'>

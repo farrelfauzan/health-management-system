@@ -9994,6 +9994,7 @@ export type DoctorMandateScalarFieldEnum = (typeof DoctorMandateScalarFieldEnum)
 export const UserScalarFieldEnum = {
   id: 'id',
   email: 'email',
+  fullName: 'fullName',
   passwordHash: 'passwordHash',
   isActive: 'isActive',
   isSystem: 'isSystem',
@@ -10038,6 +10039,7 @@ export type RefreshTokenScalarFieldEnum = (typeof RefreshTokenScalarFieldEnum)[k
 export const UserInvitationScalarFieldEnum = {
   id: 'id',
   email: 'email',
+  fullName: 'fullName',
   tokenHash: 'tokenHash',
   roleCodes: 'roleCodes',
   invitedById: 'invitedById',
