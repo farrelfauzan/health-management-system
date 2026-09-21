@@ -4,6 +4,7 @@ import {
   NewbornCareView,
   RecordDeliveryInput,
   RecordNewbornCareInput,
+  ShkScreeningCoreRecord,
   UpdateDeliveryInput,
   UpdateNewbornCareInput,
 } from '@hms/shared-types';
@@ -20,6 +21,7 @@ import { EncounterAccessService } from '../../emr/service/encounter-access.servi
 import { DeliveryRecordRepository } from '../repository/delivery-record.repository';
 import { MaternalCareRepository } from '../repository/maternal-care.repository';
 import { buildBirthCertificateValues } from './build-birth-certificate-values';
+import { toNewbornShkSummary } from './to-newborn-shk-summary';
 
 export const MIDWIFE_DELIVERY_MODE_OUT_OF_AUTHORITY_ERROR_CODE =
   'MIDWIFE_DELIVERY_MODE_OUT_OF_AUTHORITY';
@@ -378,6 +380,7 @@ export class DeliveryRecordService {
     hb0ImmunizationId: string | null;
     examinedAt: Date | null;
     identityTagAt: Date | null;
+    shkScreenings?: ShkScreeningCoreRecord[];
   }): NewbornCareView {
     return {
       id: newborn.id,
@@ -401,6 +404,7 @@ export class DeliveryRecordService {
       hb0ImmunizationId: newborn.hb0ImmunizationId,
       examinedAt: this.toIsoOrNull(newborn.examinedAt),
       identityTagAt: this.toIsoOrNull(newborn.identityTagAt),
+      shkScreening: toNewbornShkSummary(newborn.shkScreenings, new Date()),
     };
   }
 

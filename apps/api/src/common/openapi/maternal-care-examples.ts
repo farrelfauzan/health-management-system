@@ -203,5 +203,13 @@ export const MATERNAL_CARE_EXAMPLES = {
     hb0ImmunizationId: null,
     examinedAt: null,
     identityTagAt: null,
+    shkScreening: {
+      id: '3f4a5b6c-7d8e-4f9a-8b0c-1d2e3f4a5b6c',
+      sequence: 1,
+      status: 'UPCOMING',
+      dueFrom: '2026-11-10T20:10:00.000Z',
+      dueUntil: '2026-11-11T20:10:00.000Z',
+      result: null,
+    },
   },
 };

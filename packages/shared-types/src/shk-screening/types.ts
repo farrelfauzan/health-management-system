@@ -34,8 +34,46 @@ export type ShkResultPayload = {
   nextSample: { sequence: number; dueFrom: Date; dueUntil: Date } | null;
 };
 
-/** Who a recall is announced to, before de-duplication. */
-export type ShkRecallAudience = {
+/** The columns a sample's status and chip are derived from. */
+export type ShkScreeningCoreRecord = {
+  id: string;
+  sequence: number;
+  dueFrom: Date;
+  dueUntil: Date;
+  sampleTakenAt: Date | null;
+  sentAt: Date | null;
+  resultReceivedAt: Date | null;
+  result: ShkResultValue | null;
+};
+
+/** Repository projection of one worklist row, with the baby and her birth. */
+export type ShkScreeningRecord = ShkScreeningCoreRecord & {
+  newbornCareRecordId: string;
+  laboratoryName: string | null;
+  notes: string | null;
+  sampleTakenBy: {
+    fullName: string | null;
+    email: string;
+    doctorProfile: { fullName: string } | null;
+  } | null;
+  newbornCareRecord: {
+    id: string;
+    sex: 'MALE' | 'FEMALE';
+    newbornPatientId: string | null;
+    newbornPatient: { fullName: string } | null;
+    deliveryRecord: {
+      birthAt: Date;
+      attendantDoctorId: string;
+      attendantDoctor: { fullName: string; ownerUserId: string | null };
+      pregnancyEpisode: { patientId: string; patient: { fullName: string } };
+    };
+  };
+};
+
+/** What a recall notification is raised from. */
+export type ShkRecallNotice = {
   attendantUserId: string | null;
-  clinicianUserIds: string[];
+  motherPatientId: string;
+  motherName: string;
+  sequence: number;
 };
