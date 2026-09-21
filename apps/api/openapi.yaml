@@ -50104,6 +50104,7 @@ paths:
             enum:
               - ENCOUNTER
               - LAB_REPORT
+              - EPISODE_OF_CARE_FINISH
         - name: encounterId
           required: false
           in: query

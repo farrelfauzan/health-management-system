@@ -573,6 +573,11 @@
       "mappings": "BPJS mappings",
       "allStatuses": "All statuses",
       "allTypes": "All submission types",
+      "satusehatKinds": {
+        "encounter": "Visit",
+        "lab_report": "Lab report",
+        "episode_of_care_finish": "Close pregnancy episode"
+      },
       "submissionStatus": "Submission status",
       "submissionType": "BPJS submission type",
       "loadingSubmissions": "Loading submissions...",

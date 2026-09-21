@@ -16,6 +16,7 @@ import {
 import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from '../../../common/prisma/prisma.service';
+import { enqueueSatusehatEpisodeClose } from './enqueue-satusehat-episode-close';
 import { PregnancyEpisodeConflictError } from './pregnancy-episode-conflict.error';
 
 const UNIQUE_CONSTRAINT_ERROR_CODE = 'P2002';
@@ -153,14 +154,31 @@ export class MaternalCareRepository {
     return toPregnancyEpisodeRecord(episode);
   }
 
+  /**
+   * Ends the pregnancy and, in the same transaction, enqueues the close of its
+   * SATUSEHAT episode (P25-T08).
+   *
+   * One transaction rather than two writes: the close is a transactional
+   * outbox row attached to the event that ends the pregnancy, so a crash
+   * between them cannot leave an episode active on the national record with
+   * nothing left to notice.
+   *
+   * Only when the pregnancy actually has an episode id. A pregnancy whose
+   * visits never reached SATUSEHAT — an unconfigured deployment, or a woman
+   * who booked and miscarried before her first visit closed — has nothing to
+   * close, and a row for it would fail for ever.
+   */
   async endEpisode(payload: EndPregnancyEpisodeRecordPayload): Promise<PregnancyEpisodeRecord> {
-    const episode = await this.prisma.pregnancyEpisode.update({
-      where: { id: payload.id },
-      data: { status: 'ENDED', endReason: payload.reason, endedAt: payload.endedAt },
-      select: PREGNANCY_EPISODE_SELECT,
-    });
+    return this.prisma.executeTransaction(async (tx) => {
+      const episode = await tx.pregnancyEpisode.update({
+        where: { id: payload.id },
+        data: { status: 'ENDED', endReason: payload.reason, endedAt: payload.endedAt },
+        select: PREGNANCY_EPISODE_SELECT,
+      });
+      await enqueueSatusehatEpisodeClose(tx, payload.id);
 
-    return toPregnancyEpisodeRecord(episode);
+      return toPregnancyEpisodeRecord(episode);
+    });
   }
 
   /**

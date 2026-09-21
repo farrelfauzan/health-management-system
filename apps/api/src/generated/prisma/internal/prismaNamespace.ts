@@ -11098,6 +11098,7 @@ export const SatusehatSubmissionScalarFieldEnum = {
   encounterId: 'encounterId',
   kind: 'kind',
   labOrderId: 'labOrderId',
+  pregnancyEpisodeId: 'pregnancyEpisodeId',
   status: 'status',
   attempts: 'attempts',
   lastError: 'lastError',

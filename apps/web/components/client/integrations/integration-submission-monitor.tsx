@@ -35,7 +35,7 @@ import {
   toast,
   useAbility,
 } from '@hms/ui';
-import { useFormatter, useTranslations } from 'next-intl';
+import { useFormatter, useLocale, useTranslations } from 'next-intl';
 
 import { InlineNotice } from '#components/client/shared/inline-notice';
 import {
@@ -95,6 +95,10 @@ const SATUSEHAT_KIND_OPTIONS: Array<'ALL' | SatusehatSubmissionKindValue> = [
   'ALL',
   'ENCOUNTER',
   'LAB_REPORT',
+  // Not a bundle like the other two: one PATCH that closes a pregnancy's ANC
+  // episode (P25-T08). It is listed here because an operator chasing a
+  // maternity record needs to see whether the close landed.
+  'EPISODE_OF_CARE_FINISH',
 ];
 // Both BPJS integrations drain through one outbox, so this filter spans them:
 // the first four are PCare claims (P11-T05), the ANTREAN_* three are Antrean
@@ -128,6 +132,13 @@ function statusClass(status: MonitorRow['status']): string {
 
 export function IntegrationSubmissionMonitor() {
   const t = useTranslations('operations.integrations');
+  const tSatusehatKinds = useTranslations('operations.integrations.satusehatKinds');
+  const locale = useLocale();
+  const satusehatKindLabels: Readonly<Record<string, string>> = {
+    encounter: tSatusehatKinds('encounter'),
+    lab_report: tSatusehatKinds('lab_report'),
+    episode_of_care_finish: tSatusehatKinds('episode_of_care_finish'),
+  };
   const tDetail = useTranslations('operations.integrations.satusehatDetail');
   const format = useFormatter();
   const formatDate = (value: string | null) =>
@@ -289,7 +300,9 @@ export function IntegrationSubmissionMonitor() {
                 <SelectContent>
                   {SATUSEHAT_KIND_OPTIONS.map((option) => (
                     <SelectItem key={option} value={option}>
-                      {option === 'ALL' ? t('allTypes') : formatStatusLabel(option)}
+                      {option === 'ALL'
+                        ? t('allTypes')
+                        : formatStatusLabel(option, locale, satusehatKindLabels)}
                     </SelectItem>
                   ))}
                 </SelectContent>

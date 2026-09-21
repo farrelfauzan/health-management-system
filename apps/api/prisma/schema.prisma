@@ -824,6 +824,9 @@ enum RegistrationType {
 enum SatusehatSubmissionKind {
   ENCOUNTER
   LAB_REPORT
+  /// Closes a pregnancy's ANC EpisodeOfCare (P25-T08). Not a bundle: one
+  /// PATCH, enqueued when the pregnancy ends.
+  EPISODE_OF_CARE_FINISH
 
   @@map("satusehat_submission_kind")
 }
@@ -3692,6 +3695,11 @@ model SatusehatSubmission {
   /// way, by `satusehat_submissions_lab_order_open_key` — one *open* row per
   /// order, so an amendment can enqueue beside a report already sent.
   labOrderId           String?                   @map("lab_order_id") @db.Uuid
+  /// Set on EPISODE_OF_CARE_FINISH rows and null on the others. Constrained
+  /// like the two above, by `satusehat_submissions_pregnancy_episode_open_key`
+  /// — one *open* row per pregnancy, so a correction to the end date may
+  /// enqueue beside a close already sent.
+  pregnancyEpisodeId   String?                   @map("pregnancy_episode_id") @db.Uuid
   status               SatusehatSubmissionStatus @default(PENDING)
   attempts             Int                       @default(0)
   lastError            String?                   @map("last_error")
@@ -3712,12 +3720,14 @@ model SatusehatSubmission {
   createdAt            DateTime                  @default(now()) @map("created_at")
   updatedAt            DateTime                  @updatedAt @map("updated_at")
 
-  encounter Encounter? @relation(fields: [encounterId], references: [id], onDelete: Restrict)
-  labOrder  LabOrder?  @relation(fields: [labOrderId], references: [id], onDelete: Restrict)
-  resources SatusehatSubmissionResource[]
+  encounter        Encounter?        @relation(fields: [encounterId], references: [id], onDelete: Restrict)
+  labOrder         LabOrder?         @relation(fields: [labOrderId], references: [id], onDelete: Restrict)
+  pregnancyEpisode PregnancyEpisode? @relation(fields: [pregnancyEpisodeId], references: [id], onDelete: Restrict)
+  resources        SatusehatSubmissionResource[]
 
   @@index([status, nextAttemptAt])
   @@index([labOrderId])
+  @@index([pregnancyEpisodeId])
   @@map("satusehat_submissions")
 }
 
@@ -6586,6 +6596,7 @@ model PregnancyEpisode {
 
   antenatalVisits      AntenatalVisit[]
   externalDoctorVisits PregnancyExternalDoctorVisit[]
+  satusehatSubmissions SatusehatSubmission[]
 
   @@index([patientId])
   @@index([createdById])

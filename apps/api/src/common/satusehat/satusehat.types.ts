@@ -83,6 +83,12 @@ export type SatusehatRequest = {
   readonly path: string;
   readonly query?: Readonly<Record<string, string>>;
   readonly body?: unknown;
+  /**
+   * Overrides the `application/json` a body is otherwise sent under. Only the
+   * EpisodeOfCare close needs it: the gateway refuses a JSON Patch sent as
+   * plain JSON with `invalid_headers` (P25-T08).
+   */
+  readonly contentType?: string;
 };
 
 export type SatusehatCircuitBreakerState = 'CLOSED' | 'OPEN' | 'HALF_OPEN';

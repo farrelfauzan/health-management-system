@@ -95,6 +95,7 @@ describe('SATUSEHAT submission ops integration', () => {
       kind: 'ENCOUNTER',
       encounterId,
       labOrderId: null,
+      pregnancyEpisodeId: null,
       labOrderNumber: null,
       status: 'FAILED',
       attempts: 8,
@@ -216,6 +217,7 @@ describe('SATUSEHAT submission ops integration', () => {
         specialtyLocationId: null,
         registeredRootLocationId: null,
       },
+      antenatalVisit: null,
     };
   }
 

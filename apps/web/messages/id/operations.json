@@ -573,6 +573,11 @@
       "mappings": "Pemetaan BPJS",
       "allStatuses": "Semua status",
       "allTypes": "Semua jenis pengiriman",
+      "satusehatKinds": {
+        "encounter": "Kunjungan",
+        "lab_report": "Hasil lab",
+        "episode_of_care_finish": "Penutupan episode kehamilan"
+      },
       "submissionStatus": "Status pengiriman",
       "submissionType": "Jenis pengiriman BPJS",
       "loadingSubmissions": "Memuat pengiriman...",
