@@ -326,6 +326,7 @@ export type DoctorMandateWhereInput = {
   createdBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   revokedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   procedures?: Prisma.ProcedureListRelationFilter
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordListRelationFilter
 }
 
 export type DoctorMandateOrderByWithRelationInput = {
@@ -352,6 +353,7 @@ export type DoctorMandateOrderByWithRelationInput = {
   createdBy?: Prisma.UserOrderByWithRelationInput
   revokedBy?: Prisma.UserOrderByWithRelationInput
   procedures?: Prisma.ProcedureOrderByRelationAggregateInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordOrderByRelationAggregateInput
 }
 
 export type DoctorMandateWhereUniqueInput = Prisma.AtLeast<{
@@ -381,6 +383,7 @@ export type DoctorMandateWhereUniqueInput = Prisma.AtLeast<{
   createdBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   revokedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   procedures?: Prisma.ProcedureListRelationFilter
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordListRelationFilter
 }, "id">
 
 export type DoctorMandateOrderByWithAggregationInput = {
@@ -453,6 +456,7 @@ export type DoctorMandateCreateInput = {
   createdBy: Prisma.UserCreateNestedOneWithoutGrantedDoctorMandatesInput
   revokedBy?: Prisma.UserCreateNestedOneWithoutRevokedDoctorMandatesInput
   procedures?: Prisma.ProcedureCreateNestedManyWithoutMandateInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutMandateInput
 }
 
 export type DoctorMandateUncheckedCreateInput = {
@@ -475,6 +479,7 @@ export type DoctorMandateUncheckedCreateInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   procedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutMandateInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutMandateInput
 }
 
 export type DoctorMandateUpdateInput = {
@@ -497,6 +502,7 @@ export type DoctorMandateUpdateInput = {
   createdBy?: Prisma.UserUpdateOneRequiredWithoutGrantedDoctorMandatesNestedInput
   revokedBy?: Prisma.UserUpdateOneWithoutRevokedDoctorMandatesNestedInput
   procedures?: Prisma.ProcedureUpdateManyWithoutMandateNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutMandateNestedInput
 }
 
 export type DoctorMandateUncheckedUpdateInput = {
@@ -519,6 +525,7 @@ export type DoctorMandateUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   procedures?: Prisma.ProcedureUncheckedUpdateManyWithoutMandateNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutMandateNestedInput
 }
 
 export type DoctorMandateCreateManyInput = {
@@ -893,6 +900,22 @@ export type DoctorMandateUpdateOneWithoutProceduresNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.DoctorMandateUpdateToOneWithWhereWithoutProceduresInput, Prisma.DoctorMandateUpdateWithoutProceduresInput>, Prisma.DoctorMandateUncheckedUpdateWithoutProceduresInput>
 }
 
+export type DoctorMandateCreateNestedOneWithoutFamilyPlanningRecordsInput = {
+  create?: Prisma.XOR<Prisma.DoctorMandateCreateWithoutFamilyPlanningRecordsInput, Prisma.DoctorMandateUncheckedCreateWithoutFamilyPlanningRecordsInput>
+  connectOrCreate?: Prisma.DoctorMandateCreateOrConnectWithoutFamilyPlanningRecordsInput
+  connect?: Prisma.DoctorMandateWhereUniqueInput
+}
+
+export type DoctorMandateUpdateOneWithoutFamilyPlanningRecordsNestedInput = {
+  create?: Prisma.XOR<Prisma.DoctorMandateCreateWithoutFamilyPlanningRecordsInput, Prisma.DoctorMandateUncheckedCreateWithoutFamilyPlanningRecordsInput>
+  connectOrCreate?: Prisma.DoctorMandateCreateOrConnectWithoutFamilyPlanningRecordsInput
+  upsert?: Prisma.DoctorMandateUpsertWithoutFamilyPlanningRecordsInput
+  disconnect?: Prisma.DoctorMandateWhereInput | boolean
+  delete?: Prisma.DoctorMandateWhereInput | boolean
+  connect?: Prisma.DoctorMandateWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.DoctorMandateUpdateToOneWithWhereWithoutFamilyPlanningRecordsInput, Prisma.DoctorMandateUpdateWithoutFamilyPlanningRecordsInput>, Prisma.DoctorMandateUncheckedUpdateWithoutFamilyPlanningRecordsInput>
+}
+
 export type DoctorMandateCreateWithoutCreatedByInput = {
   id?: string
   kind: $Enums.DoctorMandateKind
@@ -912,6 +935,7 @@ export type DoctorMandateCreateWithoutCreatedByInput = {
   mandatingDoctor: Prisma.DoctorProfileCreateNestedOneWithoutMandatesGrantedInput
   revokedBy?: Prisma.UserCreateNestedOneWithoutRevokedDoctorMandatesInput
   procedures?: Prisma.ProcedureCreateNestedManyWithoutMandateInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutMandateInput
 }
 
 export type DoctorMandateUncheckedCreateWithoutCreatedByInput = {
@@ -933,6 +957,7 @@ export type DoctorMandateUncheckedCreateWithoutCreatedByInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   procedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutMandateInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutMandateInput
 }
 
 export type DoctorMandateCreateOrConnectWithoutCreatedByInput = {
@@ -964,6 +989,7 @@ export type DoctorMandateCreateWithoutRevokedByInput = {
   mandatingDoctor: Prisma.DoctorProfileCreateNestedOneWithoutMandatesGrantedInput
   createdBy: Prisma.UserCreateNestedOneWithoutGrantedDoctorMandatesInput
   procedures?: Prisma.ProcedureCreateNestedManyWithoutMandateInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutMandateInput
 }
 
 export type DoctorMandateUncheckedCreateWithoutRevokedByInput = {
@@ -985,6 +1011,7 @@ export type DoctorMandateUncheckedCreateWithoutRevokedByInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   procedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutMandateInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutMandateInput
 }
 
 export type DoctorMandateCreateOrConnectWithoutRevokedByInput = {
@@ -1072,6 +1099,7 @@ export type DoctorMandateCreateWithoutMidwifeDoctorInput = {
   createdBy: Prisma.UserCreateNestedOneWithoutGrantedDoctorMandatesInput
   revokedBy?: Prisma.UserCreateNestedOneWithoutRevokedDoctorMandatesInput
   procedures?: Prisma.ProcedureCreateNestedManyWithoutMandateInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutMandateInput
 }
 
 export type DoctorMandateUncheckedCreateWithoutMidwifeDoctorInput = {
@@ -1093,6 +1121,7 @@ export type DoctorMandateUncheckedCreateWithoutMidwifeDoctorInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   procedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutMandateInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutMandateInput
 }
 
 export type DoctorMandateCreateOrConnectWithoutMidwifeDoctorInput = {
@@ -1124,6 +1153,7 @@ export type DoctorMandateCreateWithoutMandatingDoctorInput = {
   createdBy: Prisma.UserCreateNestedOneWithoutGrantedDoctorMandatesInput
   revokedBy?: Prisma.UserCreateNestedOneWithoutRevokedDoctorMandatesInput
   procedures?: Prisma.ProcedureCreateNestedManyWithoutMandateInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutMandateInput
 }
 
 export type DoctorMandateUncheckedCreateWithoutMandatingDoctorInput = {
@@ -1145,6 +1175,7 @@ export type DoctorMandateUncheckedCreateWithoutMandatingDoctorInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   procedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutMandateInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutMandateInput
 }
 
 export type DoctorMandateCreateOrConnectWithoutMandatingDoctorInput = {
@@ -1208,6 +1239,7 @@ export type DoctorMandateCreateWithoutProceduresInput = {
   mandatingDoctor: Prisma.DoctorProfileCreateNestedOneWithoutMandatesGrantedInput
   createdBy: Prisma.UserCreateNestedOneWithoutGrantedDoctorMandatesInput
   revokedBy?: Prisma.UserCreateNestedOneWithoutRevokedDoctorMandatesInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutMandateInput
 }
 
 export type DoctorMandateUncheckedCreateWithoutProceduresInput = {
@@ -1229,6 +1261,7 @@ export type DoctorMandateUncheckedCreateWithoutProceduresInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutMandateInput
 }
 
 export type DoctorMandateCreateOrConnectWithoutProceduresInput = {
@@ -1266,6 +1299,7 @@ export type DoctorMandateUpdateWithoutProceduresInput = {
   mandatingDoctor?: Prisma.DoctorProfileUpdateOneRequiredWithoutMandatesGrantedNestedInput
   createdBy?: Prisma.UserUpdateOneRequiredWithoutGrantedDoctorMandatesNestedInput
   revokedBy?: Prisma.UserUpdateOneWithoutRevokedDoctorMandatesNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutMandateNestedInput
 }
 
 export type DoctorMandateUncheckedUpdateWithoutProceduresInput = {
@@ -1287,6 +1321,111 @@ export type DoctorMandateUncheckedUpdateWithoutProceduresInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutMandateNestedInput
+}
+
+export type DoctorMandateCreateWithoutFamilyPlanningRecordsInput = {
+  id?: string
+  kind: $Enums.DoctorMandateKind
+  instruction: string
+  icd9cmCodes?: Prisma.DoctorMandateCreateicd9cmCodesInput | string[]
+  validFrom: Date | string
+  validUntil: Date | string
+  instructionStorageKey: string
+  instructionMimeType: string
+  instructionSizeBytes: number
+  revokedAt?: Date | string | null
+  revokeReason?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  midwifeDoctor: Prisma.DoctorProfileCreateNestedOneWithoutMandatesReceivedInput
+  mandatingDoctor: Prisma.DoctorProfileCreateNestedOneWithoutMandatesGrantedInput
+  createdBy: Prisma.UserCreateNestedOneWithoutGrantedDoctorMandatesInput
+  revokedBy?: Prisma.UserCreateNestedOneWithoutRevokedDoctorMandatesInput
+  procedures?: Prisma.ProcedureCreateNestedManyWithoutMandateInput
+}
+
+export type DoctorMandateUncheckedCreateWithoutFamilyPlanningRecordsInput = {
+  id?: string
+  midwifeDoctorId: string
+  mandatingDoctorId: string
+  kind: $Enums.DoctorMandateKind
+  instruction: string
+  icd9cmCodes?: Prisma.DoctorMandateCreateicd9cmCodesInput | string[]
+  validFrom: Date | string
+  validUntil: Date | string
+  instructionStorageKey: string
+  instructionMimeType: string
+  instructionSizeBytes: number
+  revokedAt?: Date | string | null
+  revokedById?: string | null
+  revokeReason?: string | null
+  createdById: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  procedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutMandateInput
+}
+
+export type DoctorMandateCreateOrConnectWithoutFamilyPlanningRecordsInput = {
+  where: Prisma.DoctorMandateWhereUniqueInput
+  create: Prisma.XOR<Prisma.DoctorMandateCreateWithoutFamilyPlanningRecordsInput, Prisma.DoctorMandateUncheckedCreateWithoutFamilyPlanningRecordsInput>
+}
+
+export type DoctorMandateUpsertWithoutFamilyPlanningRecordsInput = {
+  update: Prisma.XOR<Prisma.DoctorMandateUpdateWithoutFamilyPlanningRecordsInput, Prisma.DoctorMandateUncheckedUpdateWithoutFamilyPlanningRecordsInput>
+  create: Prisma.XOR<Prisma.DoctorMandateCreateWithoutFamilyPlanningRecordsInput, Prisma.DoctorMandateUncheckedCreateWithoutFamilyPlanningRecordsInput>
+  where?: Prisma.DoctorMandateWhereInput
+}
+
+export type DoctorMandateUpdateToOneWithWhereWithoutFamilyPlanningRecordsInput = {
+  where?: Prisma.DoctorMandateWhereInput
+  data: Prisma.XOR<Prisma.DoctorMandateUpdateWithoutFamilyPlanningRecordsInput, Prisma.DoctorMandateUncheckedUpdateWithoutFamilyPlanningRecordsInput>
+}
+
+export type DoctorMandateUpdateWithoutFamilyPlanningRecordsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.EnumDoctorMandateKindFieldUpdateOperationsInput | $Enums.DoctorMandateKind
+  instruction?: Prisma.StringFieldUpdateOperationsInput | string
+  icd9cmCodes?: Prisma.DoctorMandateUpdateicd9cmCodesInput | string[]
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validUntil?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  instructionStorageKey?: Prisma.StringFieldUpdateOperationsInput | string
+  instructionMimeType?: Prisma.StringFieldUpdateOperationsInput | string
+  instructionSizeBytes?: Prisma.IntFieldUpdateOperationsInput | number
+  revokedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  revokeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  midwifeDoctor?: Prisma.DoctorProfileUpdateOneRequiredWithoutMandatesReceivedNestedInput
+  mandatingDoctor?: Prisma.DoctorProfileUpdateOneRequiredWithoutMandatesGrantedNestedInput
+  createdBy?: Prisma.UserUpdateOneRequiredWithoutGrantedDoctorMandatesNestedInput
+  revokedBy?: Prisma.UserUpdateOneWithoutRevokedDoctorMandatesNestedInput
+  procedures?: Prisma.ProcedureUpdateManyWithoutMandateNestedInput
+}
+
+export type DoctorMandateUncheckedUpdateWithoutFamilyPlanningRecordsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  midwifeDoctorId?: Prisma.StringFieldUpdateOperationsInput | string
+  mandatingDoctorId?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.EnumDoctorMandateKindFieldUpdateOperationsInput | $Enums.DoctorMandateKind
+  instruction?: Prisma.StringFieldUpdateOperationsInput | string
+  icd9cmCodes?: Prisma.DoctorMandateUpdateicd9cmCodesInput | string[]
+  validFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  validUntil?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  instructionStorageKey?: Prisma.StringFieldUpdateOperationsInput | string
+  instructionMimeType?: Prisma.StringFieldUpdateOperationsInput | string
+  instructionSizeBytes?: Prisma.IntFieldUpdateOperationsInput | number
+  revokedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  revokedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  revokeReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  procedures?: Prisma.ProcedureUncheckedUpdateManyWithoutMandateNestedInput
 }
 
 export type DoctorMandateCreateManyCreatedByInput = {
@@ -1348,6 +1487,7 @@ export type DoctorMandateUpdateWithoutCreatedByInput = {
   mandatingDoctor?: Prisma.DoctorProfileUpdateOneRequiredWithoutMandatesGrantedNestedInput
   revokedBy?: Prisma.UserUpdateOneWithoutRevokedDoctorMandatesNestedInput
   procedures?: Prisma.ProcedureUpdateManyWithoutMandateNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutMandateNestedInput
 }
 
 export type DoctorMandateUncheckedUpdateWithoutCreatedByInput = {
@@ -1369,6 +1509,7 @@ export type DoctorMandateUncheckedUpdateWithoutCreatedByInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   procedures?: Prisma.ProcedureUncheckedUpdateManyWithoutMandateNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutMandateNestedInput
 }
 
 export type DoctorMandateUncheckedUpdateManyWithoutCreatedByInput = {
@@ -1410,6 +1551,7 @@ export type DoctorMandateUpdateWithoutRevokedByInput = {
   mandatingDoctor?: Prisma.DoctorProfileUpdateOneRequiredWithoutMandatesGrantedNestedInput
   createdBy?: Prisma.UserUpdateOneRequiredWithoutGrantedDoctorMandatesNestedInput
   procedures?: Prisma.ProcedureUpdateManyWithoutMandateNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutMandateNestedInput
 }
 
 export type DoctorMandateUncheckedUpdateWithoutRevokedByInput = {
@@ -1431,6 +1573,7 @@ export type DoctorMandateUncheckedUpdateWithoutRevokedByInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   procedures?: Prisma.ProcedureUncheckedUpdateManyWithoutMandateNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutMandateNestedInput
 }
 
 export type DoctorMandateUncheckedUpdateManyWithoutRevokedByInput = {
@@ -1512,6 +1655,7 @@ export type DoctorMandateUpdateWithoutMidwifeDoctorInput = {
   createdBy?: Prisma.UserUpdateOneRequiredWithoutGrantedDoctorMandatesNestedInput
   revokedBy?: Prisma.UserUpdateOneWithoutRevokedDoctorMandatesNestedInput
   procedures?: Prisma.ProcedureUpdateManyWithoutMandateNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutMandateNestedInput
 }
 
 export type DoctorMandateUncheckedUpdateWithoutMidwifeDoctorInput = {
@@ -1533,6 +1677,7 @@ export type DoctorMandateUncheckedUpdateWithoutMidwifeDoctorInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   procedures?: Prisma.ProcedureUncheckedUpdateManyWithoutMandateNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutMandateNestedInput
 }
 
 export type DoctorMandateUncheckedUpdateManyWithoutMidwifeDoctorInput = {
@@ -1574,6 +1719,7 @@ export type DoctorMandateUpdateWithoutMandatingDoctorInput = {
   createdBy?: Prisma.UserUpdateOneRequiredWithoutGrantedDoctorMandatesNestedInput
   revokedBy?: Prisma.UserUpdateOneWithoutRevokedDoctorMandatesNestedInput
   procedures?: Prisma.ProcedureUpdateManyWithoutMandateNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutMandateNestedInput
 }
 
 export type DoctorMandateUncheckedUpdateWithoutMandatingDoctorInput = {
@@ -1595,6 +1741,7 @@ export type DoctorMandateUncheckedUpdateWithoutMandatingDoctorInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   procedures?: Prisma.ProcedureUncheckedUpdateManyWithoutMandateNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutMandateNestedInput
 }
 
 export type DoctorMandateUncheckedUpdateManyWithoutMandatingDoctorInput = {
@@ -1624,10 +1771,12 @@ export type DoctorMandateUncheckedUpdateManyWithoutMandatingDoctorInput = {
 
 export type DoctorMandateCountOutputType = {
   procedures: number
+  familyPlanningRecords: number
 }
 
 export type DoctorMandateCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   procedures?: boolean | DoctorMandateCountOutputTypeCountProceduresArgs
+  familyPlanningRecords?: boolean | DoctorMandateCountOutputTypeCountFamilyPlanningRecordsArgs
 }
 
 /**
@@ -1645,6 +1794,13 @@ export type DoctorMandateCountOutputTypeDefaultArgs<ExtArgs extends runtime.Type
  */
 export type DoctorMandateCountOutputTypeCountProceduresArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.ProcedureWhereInput
+}
+
+/**
+ * DoctorMandateCountOutputType without action
+ */
+export type DoctorMandateCountOutputTypeCountFamilyPlanningRecordsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.FamilyPlanningRecordWhereInput
 }
 
 
@@ -1672,6 +1828,7 @@ export type DoctorMandateSelect<ExtArgs extends runtime.Types.Extensions.Interna
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   revokedBy?: boolean | Prisma.DoctorMandate$revokedByArgs<ExtArgs>
   procedures?: boolean | Prisma.DoctorMandate$proceduresArgs<ExtArgs>
+  familyPlanningRecords?: boolean | Prisma.DoctorMandate$familyPlanningRecordsArgs<ExtArgs>
   _count?: boolean | Prisma.DoctorMandateCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["doctorMandate"]>
 
@@ -1753,6 +1910,7 @@ export type DoctorMandateInclude<ExtArgs extends runtime.Types.Extensions.Intern
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   revokedBy?: boolean | Prisma.DoctorMandate$revokedByArgs<ExtArgs>
   procedures?: boolean | Prisma.DoctorMandate$proceduresArgs<ExtArgs>
+  familyPlanningRecords?: boolean | Prisma.DoctorMandate$familyPlanningRecordsArgs<ExtArgs>
   _count?: boolean | Prisma.DoctorMandateCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type DoctorMandateIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1776,6 +1934,7 @@ export type $DoctorMandatePayload<ExtArgs extends runtime.Types.Extensions.Inter
     createdBy: Prisma.$UserPayload<ExtArgs>
     revokedBy: Prisma.$UserPayload<ExtArgs> | null
     procedures: Prisma.$ProcedurePayload<ExtArgs>[]
+    familyPlanningRecords: Prisma.$FamilyPlanningRecordPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2206,6 +2365,7 @@ export interface Prisma__DoctorMandateClient<T, Null = never, ExtArgs extends ru
   createdBy<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   revokedBy<T extends Prisma.DoctorMandate$revokedByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DoctorMandate$revokedByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   procedures<T extends Prisma.DoctorMandate$proceduresArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DoctorMandate$proceduresArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProcedurePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  familyPlanningRecords<T extends Prisma.DoctorMandate$familyPlanningRecordsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DoctorMandate$familyPlanningRecordsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FamilyPlanningRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2694,6 +2854,30 @@ export type DoctorMandate$proceduresArgs<ExtArgs extends runtime.Types.Extension
   take?: number
   skip?: number
   distinct?: Prisma.ProcedureScalarFieldEnum | Prisma.ProcedureScalarFieldEnum[]
+}
+
+/**
+ * DoctorMandate.familyPlanningRecords
+ */
+export type DoctorMandate$familyPlanningRecordsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the FamilyPlanningRecord
+   */
+  select?: Prisma.FamilyPlanningRecordSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the FamilyPlanningRecord
+   */
+  omit?: Prisma.FamilyPlanningRecordOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FamilyPlanningRecordInclude<ExtArgs> | null
+  where?: Prisma.FamilyPlanningRecordWhereInput
+  orderBy?: Prisma.FamilyPlanningRecordOrderByWithRelationInput | Prisma.FamilyPlanningRecordOrderByWithRelationInput[]
+  cursor?: Prisma.FamilyPlanningRecordWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.FamilyPlanningRecordScalarFieldEnum | Prisma.FamilyPlanningRecordScalarFieldEnum[]
 }
 
 /**

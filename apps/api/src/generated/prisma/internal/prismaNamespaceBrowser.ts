@@ -179,6 +179,8 @@ export const ModelName = {
   AntenatalVisit: 'AntenatalVisit',
   DeliveryRecord: 'DeliveryRecord',
   NewbornCareRecord: 'NewbornCareRecord',
+  FamilyPlanningRecord: 'FamilyPlanningRecord',
+  FamilyPlanningService: 'FamilyPlanningService',
   AntenatalExamination: 'AntenatalExamination',
   AntenatalReferralDismissal: 'AntenatalReferralDismissal'
 } as const
@@ -2425,6 +2427,41 @@ export const NewbornCareRecordScalarFieldEnum = {
 } as const
 
 export type NewbornCareRecordScalarFieldEnum = (typeof NewbornCareRecordScalarFieldEnum)[keyof typeof NewbornCareRecordScalarFieldEnum]
+
+
+export const FamilyPlanningRecordScalarFieldEnum = {
+  id: 'id',
+  patientId: 'patientId',
+  method: 'method',
+  acceptorType: 'acceptorType',
+  startedOn: 'startedOn',
+  providerDoctorId: 'providerDoctorId',
+  startEncounterId: 'startEncounterId',
+  deliveryRecordId: 'deliveryRecordId',
+  mandateId: 'mandateId',
+  nextDueOn: 'nextDueOn',
+  sideEffects: 'sideEffects',
+  discontinuedOn: 'discontinuedOn',
+  discontinuationReason: 'discontinuationReason',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type FamilyPlanningRecordScalarFieldEnum = (typeof FamilyPlanningRecordScalarFieldEnum)[keyof typeof FamilyPlanningRecordScalarFieldEnum]
+
+
+export const FamilyPlanningServiceScalarFieldEnum = {
+  id: 'id',
+  familyPlanningRecordId: 'familyPlanningRecordId',
+  encounterId: 'encounterId',
+  servedOn: 'servedOn',
+  action: 'action',
+  nextDueOn: 'nextDueOn',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type FamilyPlanningServiceScalarFieldEnum = (typeof FamilyPlanningServiceScalarFieldEnum)[keyof typeof FamilyPlanningServiceScalarFieldEnum]
 
 
 export const AntenatalExaminationScalarFieldEnum = {

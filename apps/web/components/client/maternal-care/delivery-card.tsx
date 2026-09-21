@@ -13,6 +13,11 @@ type DeliveryCardProps = {
   onRecordNewborn: () => void;
   onIssueCertificate: (newbornCareRecordId: string) => void;
   isIssuing: boolean;
+  /**
+   * "Mulai KB pasca salin" (P25-T14): starts a KB course linked to this birth.
+   * Left out where KB is not offered.
+   */
+  onStartFamilyPlanning?: (deliveryRecordId: string) => void;
 };
 
 /**
@@ -28,6 +33,7 @@ export function DeliveryCard({
   onRecordNewborn,
   onIssueCertificate,
   isIssuing,
+  onStartFamilyPlanning,
 }: DeliveryCardProps) {
   const t = useTranslations();
 
@@ -43,10 +49,23 @@ export function DeliveryCard({
             {t('maternalCare.delivery.actions.record')}
           </Button>
         ) : (
-          <Button type="button" variant="outline" size="sm" onClick={onRecordNewborn}>
-            <Icon name="child_care" size={16} />
-            {t('maternalCare.delivery.actions.recordNewborn')}
-          </Button>
+          <div className="flex flex-wrap justify-end gap-2">
+            {onStartFamilyPlanning === undefined ? null : (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => onStartFamilyPlanning(delivery.id)}
+              >
+                <Icon name="family_restroom" size={16} />
+                {t('maternalCare.familyPlanning.actions.startPostDelivery')}
+              </Button>
+            )}
+            <Button type="button" variant="outline" size="sm" onClick={onRecordNewborn}>
+              <Icon name="child_care" size={16} />
+              {t('maternalCare.delivery.actions.recordNewborn')}
+            </Button>
+          </div>
         )}
       </CardHeader>
       <CardContent className="space-y-4">

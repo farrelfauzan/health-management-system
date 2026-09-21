@@ -169,6 +169,8 @@ export const AuditAction = {
   ANTENATAL_REFERRAL_DISMISSED: 'ANTENATAL_REFERRAL_DISMISSED',
   DELIVERY_RECORDED: 'DELIVERY_RECORDED',
   DELIVERY_UPDATED: 'DELIVERY_UPDATED',
+  FAMILY_PLANNING_STARTED: 'FAMILY_PLANNING_STARTED',
+  FAMILY_PLANNING_DISCONTINUED: 'FAMILY_PLANNING_DISCONTINUED',
   TAX_SETTINGS_UPDATED: 'TAX_SETTINGS_UPDATED',
   TAX_CODE_CHANGED: 'TAX_CODE_CHANGED',
   TAX_ASSIGNMENT_CHANGED: 'TAX_ASSIGNMENT_CHANGED',
@@ -1340,6 +1342,38 @@ export const BirthOutcome = {
 } as const
 
 export type BirthOutcome = (typeof BirthOutcome)[keyof typeof BirthOutcome]
+
+
+export const ContraceptiveMethod = {
+  PILL: 'PILL',
+  INJECTABLE_1_MONTH: 'INJECTABLE_1_MONTH',
+  INJECTABLE_3_MONTH: 'INJECTABLE_3_MONTH',
+  CONDOM: 'CONDOM',
+  IUD: 'IUD',
+  IMPLANT: 'IMPLANT'
+} as const
+
+export type ContraceptiveMethod = (typeof ContraceptiveMethod)[keyof typeof ContraceptiveMethod]
+
+
+export const AcceptorType = {
+  NEW: 'NEW',
+  CONTINUING: 'CONTINUING'
+} as const
+
+export type AcceptorType = (typeof AcceptorType)[keyof typeof AcceptorType]
+
+
+export const ContraceptiveDiscontinuationReason = {
+  SIDE_EFFECT: 'SIDE_EFFECT',
+  WANTS_PREGNANCY: 'WANTS_PREGNANCY',
+  METHOD_CHANGE: 'METHOD_CHANGE',
+  MEDICAL_REASON: 'MEDICAL_REASON',
+  LOST_TO_FOLLOW_UP: 'LOST_TO_FOLLOW_UP',
+  OTHER: 'OTHER'
+} as const
+
+export type ContraceptiveDiscontinuationReason = (typeof ContraceptiveDiscontinuationReason)[keyof typeof ContraceptiveDiscontinuationReason]
 
 
 export const FetalPresentation = {

@@ -33,8 +33,15 @@ import type {
   DeliveryRecordControllerRecordNewbornV1200,
   DeliveryRecordControllerUpdateDeliveryV1200,
   DeliveryRecordControllerUpdateNewbornV1200,
+  DiscontinueFamilyPlanningDto,
   DismissAntenatalReferralDto,
   EndPregnancyEpisodeDto,
+  FamilyPlanningControllerDiscontinueCourseV1200,
+  FamilyPlanningControllerGetPatientFamilyPlanningV1200,
+  FamilyPlanningControllerListDueV1200,
+  FamilyPlanningControllerListDueV1Params,
+  FamilyPlanningControllerRecordServiceV1200,
+  FamilyPlanningControllerStartCourseV1200,
   IssueAntenatalReferralLetterDto,
   PregnancyEpisodeControllerCreateEpisodeV1200,
   PregnancyEpisodeControllerEndEpisodeV1200,
@@ -46,7 +53,9 @@ import type {
   PregnancyEpisodeControllerUpdateEpisodeV1200,
   RecordDeliveryDto,
   RecordExternalDoctorVisitDto,
+  RecordFamilyPlanningServiceDto,
   RecordNewbornCareDto,
+  StartFamilyPlanningDto,
   UpdateDeliveryDto,
   UpdateNewbornCareDto,
   UpdatePregnancyEpisodeDto,
@@ -1909,6 +1918,494 @@ export function useDeliveryRecordControllerIssueBirthCertificateV1<TData = Await
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getDeliveryRecordControllerIssueBirthCertificateV1QueryOptions(newbornCareRecordId,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary List family planning courses due soon or overdue
+ */
+export const familyPlanningControllerListDueV1 = (
+    params?: FamilyPlanningControllerListDueV1Params,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<FamilyPlanningControllerListDueV1200>(
+      {url: `/api/v1/family-planning/due`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+
+
+
+
+export const getFamilyPlanningControllerListDueV1QueryKey = (params?: FamilyPlanningControllerListDueV1Params,) => {
+    return [
+    `/api/v1/family-planning/due`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getFamilyPlanningControllerListDueV1QueryOptions = <TData = Awaited<ReturnType<typeof familyPlanningControllerListDueV1>>, TError = unknown>(params?: FamilyPlanningControllerListDueV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyPlanningControllerListDueV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getFamilyPlanningControllerListDueV1QueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof familyPlanningControllerListDueV1>>> = ({ signal }) => familyPlanningControllerListDueV1(params, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof familyPlanningControllerListDueV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type FamilyPlanningControllerListDueV1QueryResult = NonNullable<Awaited<ReturnType<typeof familyPlanningControllerListDueV1>>>
+export type FamilyPlanningControllerListDueV1QueryError = unknown
+
+
+export function useFamilyPlanningControllerListDueV1<TData = Awaited<ReturnType<typeof familyPlanningControllerListDueV1>>, TError = unknown>(
+ params: undefined |  FamilyPlanningControllerListDueV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyPlanningControllerListDueV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof familyPlanningControllerListDueV1>>,
+          TError,
+          Awaited<ReturnType<typeof familyPlanningControllerListDueV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useFamilyPlanningControllerListDueV1<TData = Awaited<ReturnType<typeof familyPlanningControllerListDueV1>>, TError = unknown>(
+ params?: FamilyPlanningControllerListDueV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyPlanningControllerListDueV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof familyPlanningControllerListDueV1>>,
+          TError,
+          Awaited<ReturnType<typeof familyPlanningControllerListDueV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useFamilyPlanningControllerListDueV1<TData = Awaited<ReturnType<typeof familyPlanningControllerListDueV1>>, TError = unknown>(
+ params?: FamilyPlanningControllerListDueV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyPlanningControllerListDueV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List family planning courses due soon or overdue
+ */
+
+export function useFamilyPlanningControllerListDueV1<TData = Awaited<ReturnType<typeof familyPlanningControllerListDueV1>>, TError = unknown>(
+ params?: FamilyPlanningControllerListDueV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyPlanningControllerListDueV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getFamilyPlanningControllerListDueV1QueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Read a patient's family planning record
+ */
+export const familyPlanningControllerGetPatientFamilyPlanningV1 = (
+    patientId: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<FamilyPlanningControllerGetPatientFamilyPlanningV1200>(
+      {url: `/api/v1/patients/${patientId}/family-planning`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getFamilyPlanningControllerGetPatientFamilyPlanningV1QueryKey = (patientId: string,) => {
+    return [
+    `/api/v1/patients/${patientId}/family-planning`
+    ] as const;
+    }
+
+
+export const getFamilyPlanningControllerGetPatientFamilyPlanningV1QueryOptions = <TData = Awaited<ReturnType<typeof familyPlanningControllerGetPatientFamilyPlanningV1>>, TError = unknown>(patientId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyPlanningControllerGetPatientFamilyPlanningV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getFamilyPlanningControllerGetPatientFamilyPlanningV1QueryKey(patientId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof familyPlanningControllerGetPatientFamilyPlanningV1>>> = ({ signal }) => familyPlanningControllerGetPatientFamilyPlanningV1(patientId, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: patientId !== null && patientId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof familyPlanningControllerGetPatientFamilyPlanningV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type FamilyPlanningControllerGetPatientFamilyPlanningV1QueryResult = NonNullable<Awaited<ReturnType<typeof familyPlanningControllerGetPatientFamilyPlanningV1>>>
+export type FamilyPlanningControllerGetPatientFamilyPlanningV1QueryError = unknown
+
+
+export function useFamilyPlanningControllerGetPatientFamilyPlanningV1<TData = Awaited<ReturnType<typeof familyPlanningControllerGetPatientFamilyPlanningV1>>, TError = unknown>(
+ patientId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyPlanningControllerGetPatientFamilyPlanningV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof familyPlanningControllerGetPatientFamilyPlanningV1>>,
+          TError,
+          Awaited<ReturnType<typeof familyPlanningControllerGetPatientFamilyPlanningV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useFamilyPlanningControllerGetPatientFamilyPlanningV1<TData = Awaited<ReturnType<typeof familyPlanningControllerGetPatientFamilyPlanningV1>>, TError = unknown>(
+ patientId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyPlanningControllerGetPatientFamilyPlanningV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof familyPlanningControllerGetPatientFamilyPlanningV1>>,
+          TError,
+          Awaited<ReturnType<typeof familyPlanningControllerGetPatientFamilyPlanningV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useFamilyPlanningControllerGetPatientFamilyPlanningV1<TData = Awaited<ReturnType<typeof familyPlanningControllerGetPatientFamilyPlanningV1>>, TError = unknown>(
+ patientId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyPlanningControllerGetPatientFamilyPlanningV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Read a patient's family planning record
+ */
+
+export function useFamilyPlanningControllerGetPatientFamilyPlanningV1<TData = Awaited<ReturnType<typeof familyPlanningControllerGetPatientFamilyPlanningV1>>, TError = unknown>(
+ patientId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyPlanningControllerGetPatientFamilyPlanningV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getFamilyPlanningControllerGetPatientFamilyPlanningV1QueryOptions(patientId,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Start a family planning course
+ */
+export const familyPlanningControllerStartCourseV1 = (
+    patientId: string,
+    startFamilyPlanningDto: StartFamilyPlanningDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<FamilyPlanningControllerStartCourseV1200>(
+      {url: `/api/v1/patients/${patientId}/family-planning`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: startFamilyPlanningDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getFamilyPlanningControllerStartCourseV1QueryKey = (patientId: string,
+    startFamilyPlanningDto?: StartFamilyPlanningDto,) => {
+    return [
+    'POST', `/api/v1/patients/${patientId}/family-planning`, startFamilyPlanningDto
+    ] as const;
+    }
+
+
+export const getFamilyPlanningControllerStartCourseV1QueryOptions = <TData = Awaited<ReturnType<typeof familyPlanningControllerStartCourseV1>>, TError = unknown>(patientId: string,
+    startFamilyPlanningDto: StartFamilyPlanningDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyPlanningControllerStartCourseV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getFamilyPlanningControllerStartCourseV1QueryKey(patientId,startFamilyPlanningDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof familyPlanningControllerStartCourseV1>>> = ({ signal }) => familyPlanningControllerStartCourseV1(patientId,startFamilyPlanningDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: patientId !== null && patientId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof familyPlanningControllerStartCourseV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type FamilyPlanningControllerStartCourseV1QueryResult = NonNullable<Awaited<ReturnType<typeof familyPlanningControllerStartCourseV1>>>
+export type FamilyPlanningControllerStartCourseV1QueryError = unknown
+
+
+export function useFamilyPlanningControllerStartCourseV1<TData = Awaited<ReturnType<typeof familyPlanningControllerStartCourseV1>>, TError = unknown>(
+ patientId: string,
+    startFamilyPlanningDto: StartFamilyPlanningDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyPlanningControllerStartCourseV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof familyPlanningControllerStartCourseV1>>,
+          TError,
+          Awaited<ReturnType<typeof familyPlanningControllerStartCourseV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useFamilyPlanningControllerStartCourseV1<TData = Awaited<ReturnType<typeof familyPlanningControllerStartCourseV1>>, TError = unknown>(
+ patientId: string,
+    startFamilyPlanningDto: StartFamilyPlanningDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyPlanningControllerStartCourseV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof familyPlanningControllerStartCourseV1>>,
+          TError,
+          Awaited<ReturnType<typeof familyPlanningControllerStartCourseV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useFamilyPlanningControllerStartCourseV1<TData = Awaited<ReturnType<typeof familyPlanningControllerStartCourseV1>>, TError = unknown>(
+ patientId: string,
+    startFamilyPlanningDto: StartFamilyPlanningDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyPlanningControllerStartCourseV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Start a family planning course
+ */
+
+export function useFamilyPlanningControllerStartCourseV1<TData = Awaited<ReturnType<typeof familyPlanningControllerStartCourseV1>>, TError = unknown>(
+ patientId: string,
+    startFamilyPlanningDto: StartFamilyPlanningDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyPlanningControllerStartCourseV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getFamilyPlanningControllerStartCourseV1QueryOptions(patientId,startFamilyPlanningDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Record a family planning follow-up
+ */
+export const familyPlanningControllerRecordServiceV1 = (
+    id: string,
+    recordFamilyPlanningServiceDto: RecordFamilyPlanningServiceDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<FamilyPlanningControllerRecordServiceV1200>(
+      {url: `/api/v1/family-planning/${id}/services`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: recordFamilyPlanningServiceDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getFamilyPlanningControllerRecordServiceV1QueryKey = (id: string,
+    recordFamilyPlanningServiceDto?: RecordFamilyPlanningServiceDto,) => {
+    return [
+    'POST', `/api/v1/family-planning/${id}/services`, recordFamilyPlanningServiceDto
+    ] as const;
+    }
+
+
+export const getFamilyPlanningControllerRecordServiceV1QueryOptions = <TData = Awaited<ReturnType<typeof familyPlanningControllerRecordServiceV1>>, TError = unknown>(id: string,
+    recordFamilyPlanningServiceDto: RecordFamilyPlanningServiceDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyPlanningControllerRecordServiceV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getFamilyPlanningControllerRecordServiceV1QueryKey(id,recordFamilyPlanningServiceDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof familyPlanningControllerRecordServiceV1>>> = ({ signal }) => familyPlanningControllerRecordServiceV1(id,recordFamilyPlanningServiceDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof familyPlanningControllerRecordServiceV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type FamilyPlanningControllerRecordServiceV1QueryResult = NonNullable<Awaited<ReturnType<typeof familyPlanningControllerRecordServiceV1>>>
+export type FamilyPlanningControllerRecordServiceV1QueryError = unknown
+
+
+export function useFamilyPlanningControllerRecordServiceV1<TData = Awaited<ReturnType<typeof familyPlanningControllerRecordServiceV1>>, TError = unknown>(
+ id: string,
+    recordFamilyPlanningServiceDto: RecordFamilyPlanningServiceDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyPlanningControllerRecordServiceV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof familyPlanningControllerRecordServiceV1>>,
+          TError,
+          Awaited<ReturnType<typeof familyPlanningControllerRecordServiceV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useFamilyPlanningControllerRecordServiceV1<TData = Awaited<ReturnType<typeof familyPlanningControllerRecordServiceV1>>, TError = unknown>(
+ id: string,
+    recordFamilyPlanningServiceDto: RecordFamilyPlanningServiceDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyPlanningControllerRecordServiceV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof familyPlanningControllerRecordServiceV1>>,
+          TError,
+          Awaited<ReturnType<typeof familyPlanningControllerRecordServiceV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useFamilyPlanningControllerRecordServiceV1<TData = Awaited<ReturnType<typeof familyPlanningControllerRecordServiceV1>>, TError = unknown>(
+ id: string,
+    recordFamilyPlanningServiceDto: RecordFamilyPlanningServiceDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyPlanningControllerRecordServiceV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Record a family planning follow-up
+ */
+
+export function useFamilyPlanningControllerRecordServiceV1<TData = Awaited<ReturnType<typeof familyPlanningControllerRecordServiceV1>>, TError = unknown>(
+ id: string,
+    recordFamilyPlanningServiceDto: RecordFamilyPlanningServiceDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyPlanningControllerRecordServiceV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getFamilyPlanningControllerRecordServiceV1QueryOptions(id,recordFamilyPlanningServiceDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Discontinue a family planning course
+ */
+export const familyPlanningControllerDiscontinueCourseV1 = (
+    id: string,
+    discontinueFamilyPlanningDto: DiscontinueFamilyPlanningDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<FamilyPlanningControllerDiscontinueCourseV1200>(
+      {url: `/api/v1/family-planning/${id}/discontinue`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: discontinueFamilyPlanningDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getFamilyPlanningControllerDiscontinueCourseV1QueryKey = (id: string,
+    discontinueFamilyPlanningDto?: DiscontinueFamilyPlanningDto,) => {
+    return [
+    'POST', `/api/v1/family-planning/${id}/discontinue`, discontinueFamilyPlanningDto
+    ] as const;
+    }
+
+
+export const getFamilyPlanningControllerDiscontinueCourseV1QueryOptions = <TData = Awaited<ReturnType<typeof familyPlanningControllerDiscontinueCourseV1>>, TError = unknown>(id: string,
+    discontinueFamilyPlanningDto: DiscontinueFamilyPlanningDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyPlanningControllerDiscontinueCourseV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getFamilyPlanningControllerDiscontinueCourseV1QueryKey(id,discontinueFamilyPlanningDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof familyPlanningControllerDiscontinueCourseV1>>> = ({ signal }) => familyPlanningControllerDiscontinueCourseV1(id,discontinueFamilyPlanningDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof familyPlanningControllerDiscontinueCourseV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type FamilyPlanningControllerDiscontinueCourseV1QueryResult = NonNullable<Awaited<ReturnType<typeof familyPlanningControllerDiscontinueCourseV1>>>
+export type FamilyPlanningControllerDiscontinueCourseV1QueryError = unknown
+
+
+export function useFamilyPlanningControllerDiscontinueCourseV1<TData = Awaited<ReturnType<typeof familyPlanningControllerDiscontinueCourseV1>>, TError = unknown>(
+ id: string,
+    discontinueFamilyPlanningDto: DiscontinueFamilyPlanningDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyPlanningControllerDiscontinueCourseV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof familyPlanningControllerDiscontinueCourseV1>>,
+          TError,
+          Awaited<ReturnType<typeof familyPlanningControllerDiscontinueCourseV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useFamilyPlanningControllerDiscontinueCourseV1<TData = Awaited<ReturnType<typeof familyPlanningControllerDiscontinueCourseV1>>, TError = unknown>(
+ id: string,
+    discontinueFamilyPlanningDto: DiscontinueFamilyPlanningDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyPlanningControllerDiscontinueCourseV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof familyPlanningControllerDiscontinueCourseV1>>,
+          TError,
+          Awaited<ReturnType<typeof familyPlanningControllerDiscontinueCourseV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useFamilyPlanningControllerDiscontinueCourseV1<TData = Awaited<ReturnType<typeof familyPlanningControllerDiscontinueCourseV1>>, TError = unknown>(
+ id: string,
+    discontinueFamilyPlanningDto: DiscontinueFamilyPlanningDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyPlanningControllerDiscontinueCourseV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Discontinue a family planning course
+ */
+
+export function useFamilyPlanningControllerDiscontinueCourseV1<TData = Awaited<ReturnType<typeof familyPlanningControllerDiscontinueCourseV1>>, TError = unknown>(
+ id: string,
+    discontinueFamilyPlanningDto: DiscontinueFamilyPlanningDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof familyPlanningControllerDiscontinueCourseV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getFamilyPlanningControllerDiscontinueCourseV1QueryOptions(id,discontinueFamilyPlanningDto,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

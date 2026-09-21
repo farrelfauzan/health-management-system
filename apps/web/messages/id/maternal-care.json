@@ -229,6 +229,87 @@
         "vitaminK1": "Vitamin K1",
         "registerHint": "Anak ke- diisi saat bayi didaftarkan sebagai pasien, supaya tersimpan di satu tempat saja."
       }
+    },
+    "familyPlanning": {
+      "tab": "KB",
+      "title": "Keluarga berencana (KB)",
+      "loadError": "Catatan KB tidak dapat dimuat.",
+      "empty": {
+        "title": "Belum ada layanan KB",
+        "description": "Mulai KB untuk mencatat metode, jenis akseptor, dan tanggal kunjungan ulang."
+      },
+      "live": "KB berjalan",
+      "history": "Riwayat KB",
+      "historyEmpty": "Belum ada riwayat KB.",
+      "noDueDate": "Tanpa jadwal ulang",
+      "overdue": "Terlambat",
+      "postDelivery": "Pasca salin",
+      "services": {
+        "title": "Kunjungan ulang",
+        "empty": "Belum ada kunjungan ulang."
+      },
+      "fields": {
+        "method": "Metode",
+        "acceptorType": "Akseptor",
+        "startedOn": "Tanggal mulai",
+        "provider": "Pemberi layanan",
+        "nextDueOn": "Jadwal ulang",
+        "sideEffects": "Efek samping",
+        "servedOn": "Tanggal layanan",
+        "action": "Tindakan",
+        "discontinuedOn": "Tanggal berhenti",
+        "reason": "Alasan"
+      },
+      "hints": {
+        "defaultNextDueOn": "Kosongkan untuk memakai jadwal bawaan: {date}.",
+        "enteredNextDueOn": "Tanggal kontrol IUD dan implan diisi oleh tenaga kesehatan.",
+        "condomNoDueDate": "Kondom tidak memiliki jadwal ulang.",
+        "actionPlaceholder": "mis. suntik DMPA ulang, pil diberikan 1 strip"
+      },
+      "methods": {
+        "PILL": "Pil",
+        "INJECTABLE_1_MONTH": "Suntik 1 bulan",
+        "INJECTABLE_3_MONTH": "Suntik 3 bulan",
+        "CONDOM": "Kondom",
+        "IUD": "IUD (AKDR)",
+        "IMPLANT": "Implan"
+      },
+      "acceptorTypes": {
+        "NEW": "Akseptor baru",
+        "CONTINUING": "Akseptor lama"
+      },
+      "reasons": {
+        "SIDE_EFFECT": "Efek samping",
+        "WANTS_PREGNANCY": "Ingin hamil",
+        "METHOD_CHANGE": "Ganti metode",
+        "MEDICAL_REASON": "Alasan medis",
+        "LOST_TO_FOLLOW_UP": "Tidak kembali (drop out)",
+        "OTHER": "Lainnya"
+      },
+      "actions": {
+        "start": "Mulai KB",
+        "startPostDelivery": "Mulai KB pasca salin",
+        "recordService": "Catat kunjungan ulang",
+        "discontinue": "Hentikan",
+        "cancel": "Batal",
+        "save": "Simpan"
+      },
+      "toasts": {
+        "started": "KB dimulai",
+        "serviceRecorded": "Kunjungan ulang dicatat",
+        "discontinued": "KB dihentikan"
+      },
+      "postDeliveryPrompt": {
+        "title": "Ibu melahirkan pada {date}",
+        "description": "KB pasca salin yang dimulai sekarang akan ditautkan ke persalinan ini."
+      },
+      "due": {
+        "title": "Jadwal KB minggu ini",
+        "subtitle": "KB berjalan yang jatuh tempo dalam 7 hari, atau sudah terlambat.",
+        "empty": "Tidak ada jadwal KB dalam 7 hari ke depan.",
+        "inDays": "{count, plural, =0 {Jatuh tempo hari ini} other {Jatuh tempo # hari lagi}}",
+        "overdueDays": "{count, plural, other {Terlambat # hari}}"
+      }
     }
   }
 }

@@ -15,6 +15,7 @@ import {
 import { useTranslations } from 'next-intl';
 
 import { PatientLabHistoryPanel } from '#components/client/laboratory/patient-lab-history-panel';
+import { FamilyPlanningPanel } from '#components/client/maternal-care/family-planning-panel';
 import { PregnancyPanel } from '#components/client/maternal-care/pregnancy-panel';
 import { PatientDocumentsPanel } from '#components/client/patient-documents/patient-documents-panel';
 import { AssignDoctorDialog } from '#components/client/patients/assign-doctor-dialog';
@@ -92,6 +93,10 @@ export function PatientDetailPanel({
   const readableTabs: Record<PatientDetailTab, boolean> = {
     overview: true,
     pregnancy: canReadPregnancy,
+    // P25-T14. Its own tab rather than a section of the Kehamilan one: KB
+    // runs whether or not she is pregnant, and a tab that appears and
+    // disappears with the episode would move under the midwife's hand.
+    'family-planning': canReadPregnancy,
     documents: canReadDocuments,
     laboratory: canReadLabHistory,
   };
@@ -178,6 +183,11 @@ export function PatientDetailPanel({
           {canReadPregnancy ? (
             <TabsTrigger value="pregnancy">{tMaternal('maternalCare.tab')}</TabsTrigger>
           ) : null}
+          {canReadPregnancy ? (
+            <TabsTrigger value="family-planning">
+              {tMaternal('maternalCare.familyPlanning.tab')}
+            </TabsTrigger>
+          ) : null}
           {canReadDocuments ? (
             <TabsTrigger value="documents">{t('patients.tabs.documents')}</TabsTrigger>
           ) : null}
@@ -207,6 +217,11 @@ export function PatientDetailPanel({
         {canReadPregnancy ? (
           <TabsContent value="pregnancy">
             <PregnancyPanel patientId={patient.id} />
+          </TabsContent>
+        ) : null}
+        {canReadPregnancy ? (
+          <TabsContent value="family-planning">
+            <FamilyPlanningPanel patientId={patient.id} />
           </TabsContent>
         ) : null}
         {canReadDocuments ? (

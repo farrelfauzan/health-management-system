@@ -12,6 +12,9 @@ const MATERNAL_CARE_QUERY_PREFIXES = [
   // delivery section all change together (P25-T09).
   '/api/v1/deliveries',
   '/api/v1/newborn-care-records',
+  // A KB start, follow-up or discontinuation changes the patient's KB tab and
+  // the clinician's due list together (P25-T14).
+  '/api/v1/family-planning',
 ];
 
 export async function invalidateMaternalCareQueries(queryClient: QueryClient): Promise<void> {

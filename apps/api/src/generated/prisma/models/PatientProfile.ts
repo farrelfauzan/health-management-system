@@ -562,6 +562,7 @@ export type PatientProfileWhereInput = {
   allergies?: Prisma.PatientAllergyListRelationFilter
   immunizations?: Prisma.ImmunizationListRelationFilter
   pregnancyEpisodes?: Prisma.PregnancyEpisodeListRelationFilter
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordListRelationFilter
   encounters?: Prisma.EncounterListRelationFilter
   invoices?: Prisma.InvoiceListRelationFilter
   labOrders?: Prisma.LabOrderListRelationFilter
@@ -637,6 +638,7 @@ export type PatientProfileOrderByWithRelationInput = {
   allergies?: Prisma.PatientAllergyOrderByRelationAggregateInput
   immunizations?: Prisma.ImmunizationOrderByRelationAggregateInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeOrderByRelationAggregateInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordOrderByRelationAggregateInput
   encounters?: Prisma.EncounterOrderByRelationAggregateInput
   invoices?: Prisma.InvoiceOrderByRelationAggregateInput
   labOrders?: Prisma.LabOrderOrderByRelationAggregateInput
@@ -715,6 +717,7 @@ export type PatientProfileWhereUniqueInput = Prisma.AtLeast<{
   allergies?: Prisma.PatientAllergyListRelationFilter
   immunizations?: Prisma.ImmunizationListRelationFilter
   pregnancyEpisodes?: Prisma.PregnancyEpisodeListRelationFilter
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordListRelationFilter
   encounters?: Prisma.EncounterListRelationFilter
   invoices?: Prisma.InvoiceListRelationFilter
   labOrders?: Prisma.LabOrderListRelationFilter
@@ -888,6 +891,7 @@ export type PatientProfileCreateInput = {
   allergies?: Prisma.PatientAllergyCreateNestedManyWithoutPatientInput
   immunizations?: Prisma.ImmunizationCreateNestedManyWithoutPatientInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutPatientInput
   encounters?: Prisma.EncounterCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutPatientInput
   labOrders?: Prisma.LabOrderCreateNestedManyWithoutPatientInput
@@ -957,6 +961,7 @@ export type PatientProfileUncheckedCreateInput = {
   allergies?: Prisma.PatientAllergyUncheckedCreateNestedManyWithoutPatientInput
   immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutPatientInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutPatientInput
   encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutPatientInput
   labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutPatientInput
@@ -1026,6 +1031,7 @@ export type PatientProfileUpdateInput = {
   allergies?: Prisma.PatientAllergyUpdateManyWithoutPatientNestedInput
   immunizations?: Prisma.ImmunizationUpdateManyWithoutPatientNestedInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutPatientNestedInput
   encounters?: Prisma.EncounterUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutPatientNestedInput
   labOrders?: Prisma.LabOrderUpdateManyWithoutPatientNestedInput
@@ -1095,6 +1101,7 @@ export type PatientProfileUncheckedUpdateInput = {
   allergies?: Prisma.PatientAllergyUncheckedUpdateManyWithoutPatientNestedInput
   immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutPatientNestedInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutPatientNestedInput
   encounters?: Prisma.EncounterUncheckedUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutPatientNestedInput
   labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutPatientNestedInput
@@ -2022,6 +2029,20 @@ export type PatientProfileUpdateOneWithoutNewbornCareRecordNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.PatientProfileUpdateToOneWithWhereWithoutNewbornCareRecordInput, Prisma.PatientProfileUpdateWithoutNewbornCareRecordInput>, Prisma.PatientProfileUncheckedUpdateWithoutNewbornCareRecordInput>
 }
 
+export type PatientProfileCreateNestedOneWithoutFamilyPlanningRecordsInput = {
+  create?: Prisma.XOR<Prisma.PatientProfileCreateWithoutFamilyPlanningRecordsInput, Prisma.PatientProfileUncheckedCreateWithoutFamilyPlanningRecordsInput>
+  connectOrCreate?: Prisma.PatientProfileCreateOrConnectWithoutFamilyPlanningRecordsInput
+  connect?: Prisma.PatientProfileWhereUniqueInput
+}
+
+export type PatientProfileUpdateOneRequiredWithoutFamilyPlanningRecordsNestedInput = {
+  create?: Prisma.XOR<Prisma.PatientProfileCreateWithoutFamilyPlanningRecordsInput, Prisma.PatientProfileUncheckedCreateWithoutFamilyPlanningRecordsInput>
+  connectOrCreate?: Prisma.PatientProfileCreateOrConnectWithoutFamilyPlanningRecordsInput
+  upsert?: Prisma.PatientProfileUpsertWithoutFamilyPlanningRecordsInput
+  connect?: Prisma.PatientProfileWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.PatientProfileUpdateToOneWithWhereWithoutFamilyPlanningRecordsInput, Prisma.PatientProfileUpdateWithoutFamilyPlanningRecordsInput>, Prisma.PatientProfileUncheckedUpdateWithoutFamilyPlanningRecordsInput>
+}
+
 export type PatientProfileCreateWithoutOwnerUserInput = {
   id?: string
   mrn: string
@@ -2075,6 +2096,7 @@ export type PatientProfileCreateWithoutOwnerUserInput = {
   allergies?: Prisma.PatientAllergyCreateNestedManyWithoutPatientInput
   immunizations?: Prisma.ImmunizationCreateNestedManyWithoutPatientInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutPatientInput
   encounters?: Prisma.EncounterCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutPatientInput
   labOrders?: Prisma.LabOrderCreateNestedManyWithoutPatientInput
@@ -2143,6 +2165,7 @@ export type PatientProfileUncheckedCreateWithoutOwnerUserInput = {
   allergies?: Prisma.PatientAllergyUncheckedCreateNestedManyWithoutPatientInput
   immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutPatientInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutPatientInput
   encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutPatientInput
   labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutPatientInput
@@ -2288,6 +2311,7 @@ export type PatientProfileCreateWithoutNewbornsInput = {
   allergies?: Prisma.PatientAllergyCreateNestedManyWithoutPatientInput
   immunizations?: Prisma.ImmunizationCreateNestedManyWithoutPatientInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutPatientInput
   encounters?: Prisma.EncounterCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutPatientInput
   labOrders?: Prisma.LabOrderCreateNestedManyWithoutPatientInput
@@ -2356,6 +2380,7 @@ export type PatientProfileUncheckedCreateWithoutNewbornsInput = {
   allergies?: Prisma.PatientAllergyUncheckedCreateNestedManyWithoutPatientInput
   immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutPatientInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutPatientInput
   encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutPatientInput
   labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutPatientInput
@@ -2429,6 +2454,7 @@ export type PatientProfileCreateWithoutMotherInput = {
   allergies?: Prisma.PatientAllergyCreateNestedManyWithoutPatientInput
   immunizations?: Prisma.ImmunizationCreateNestedManyWithoutPatientInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutPatientInput
   encounters?: Prisma.EncounterCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutPatientInput
   labOrders?: Prisma.LabOrderCreateNestedManyWithoutPatientInput
@@ -2497,6 +2523,7 @@ export type PatientProfileUncheckedCreateWithoutMotherInput = {
   allergies?: Prisma.PatientAllergyUncheckedCreateNestedManyWithoutPatientInput
   immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutPatientInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutPatientInput
   encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutPatientInput
   labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutPatientInput
@@ -2586,6 +2613,7 @@ export type PatientProfileUpdateWithoutNewbornsInput = {
   allergies?: Prisma.PatientAllergyUpdateManyWithoutPatientNestedInput
   immunizations?: Prisma.ImmunizationUpdateManyWithoutPatientNestedInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutPatientNestedInput
   encounters?: Prisma.EncounterUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutPatientNestedInput
   labOrders?: Prisma.LabOrderUpdateManyWithoutPatientNestedInput
@@ -2654,6 +2682,7 @@ export type PatientProfileUncheckedUpdateWithoutNewbornsInput = {
   allergies?: Prisma.PatientAllergyUncheckedUpdateManyWithoutPatientNestedInput
   immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutPatientNestedInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutPatientNestedInput
   encounters?: Prisma.EncounterUncheckedUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutPatientNestedInput
   labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutPatientNestedInput
@@ -2739,6 +2768,7 @@ export type PatientProfileCreateWithoutPrivacyNoticeRecordsInput = {
   allergies?: Prisma.PatientAllergyCreateNestedManyWithoutPatientInput
   immunizations?: Prisma.ImmunizationCreateNestedManyWithoutPatientInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutPatientInput
   encounters?: Prisma.EncounterCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutPatientInput
   labOrders?: Prisma.LabOrderCreateNestedManyWithoutPatientInput
@@ -2807,6 +2837,7 @@ export type PatientProfileUncheckedCreateWithoutPrivacyNoticeRecordsInput = {
   allergies?: Prisma.PatientAllergyUncheckedCreateNestedManyWithoutPatientInput
   immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutPatientInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutPatientInput
   encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutPatientInput
   labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutPatientInput
@@ -2891,6 +2922,7 @@ export type PatientProfileUpdateWithoutPrivacyNoticeRecordsInput = {
   allergies?: Prisma.PatientAllergyUpdateManyWithoutPatientNestedInput
   immunizations?: Prisma.ImmunizationUpdateManyWithoutPatientNestedInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutPatientNestedInput
   encounters?: Prisma.EncounterUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutPatientNestedInput
   labOrders?: Prisma.LabOrderUpdateManyWithoutPatientNestedInput
@@ -2959,6 +2991,7 @@ export type PatientProfileUncheckedUpdateWithoutPrivacyNoticeRecordsInput = {
   allergies?: Prisma.PatientAllergyUncheckedUpdateManyWithoutPatientNestedInput
   immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutPatientNestedInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutPatientNestedInput
   encounters?: Prisma.EncounterUncheckedUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutPatientNestedInput
   labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutPatientNestedInput
@@ -3027,6 +3060,7 @@ export type PatientProfileCreateWithoutDeliveryConsentsInput = {
   allergies?: Prisma.PatientAllergyCreateNestedManyWithoutPatientInput
   immunizations?: Prisma.ImmunizationCreateNestedManyWithoutPatientInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutPatientInput
   encounters?: Prisma.EncounterCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutPatientInput
   labOrders?: Prisma.LabOrderCreateNestedManyWithoutPatientInput
@@ -3095,6 +3129,7 @@ export type PatientProfileUncheckedCreateWithoutDeliveryConsentsInput = {
   allergies?: Prisma.PatientAllergyUncheckedCreateNestedManyWithoutPatientInput
   immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutPatientInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutPatientInput
   encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutPatientInput
   labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutPatientInput
@@ -3179,6 +3214,7 @@ export type PatientProfileUpdateWithoutDeliveryConsentsInput = {
   allergies?: Prisma.PatientAllergyUpdateManyWithoutPatientNestedInput
   immunizations?: Prisma.ImmunizationUpdateManyWithoutPatientNestedInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutPatientNestedInput
   encounters?: Prisma.EncounterUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutPatientNestedInput
   labOrders?: Prisma.LabOrderUpdateManyWithoutPatientNestedInput
@@ -3247,6 +3283,7 @@ export type PatientProfileUncheckedUpdateWithoutDeliveryConsentsInput = {
   allergies?: Prisma.PatientAllergyUncheckedUpdateManyWithoutPatientNestedInput
   immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutPatientNestedInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutPatientNestedInput
   encounters?: Prisma.EncounterUncheckedUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutPatientNestedInput
   labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutPatientNestedInput
@@ -3315,6 +3352,7 @@ export type PatientProfileCreateWithoutDeliveriesInput = {
   allergies?: Prisma.PatientAllergyCreateNestedManyWithoutPatientInput
   immunizations?: Prisma.ImmunizationCreateNestedManyWithoutPatientInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutPatientInput
   encounters?: Prisma.EncounterCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutPatientInput
   labOrders?: Prisma.LabOrderCreateNestedManyWithoutPatientInput
@@ -3383,6 +3421,7 @@ export type PatientProfileUncheckedCreateWithoutDeliveriesInput = {
   allergies?: Prisma.PatientAllergyUncheckedCreateNestedManyWithoutPatientInput
   immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutPatientInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutPatientInput
   encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutPatientInput
   labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutPatientInput
@@ -3467,6 +3506,7 @@ export type PatientProfileUpdateWithoutDeliveriesInput = {
   allergies?: Prisma.PatientAllergyUpdateManyWithoutPatientNestedInput
   immunizations?: Prisma.ImmunizationUpdateManyWithoutPatientNestedInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutPatientNestedInput
   encounters?: Prisma.EncounterUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutPatientNestedInput
   labOrders?: Prisma.LabOrderUpdateManyWithoutPatientNestedInput
@@ -3535,6 +3575,7 @@ export type PatientProfileUncheckedUpdateWithoutDeliveriesInput = {
   allergies?: Prisma.PatientAllergyUncheckedUpdateManyWithoutPatientNestedInput
   immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutPatientNestedInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutPatientNestedInput
   encounters?: Prisma.EncounterUncheckedUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutPatientNestedInput
   labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutPatientNestedInput
@@ -3602,6 +3643,7 @@ export type PatientProfileCreateWithoutAllergiesInput = {
   prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutPatientInput
   immunizations?: Prisma.ImmunizationCreateNestedManyWithoutPatientInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutPatientInput
   encounters?: Prisma.EncounterCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutPatientInput
   labOrders?: Prisma.LabOrderCreateNestedManyWithoutPatientInput
@@ -3670,6 +3712,7 @@ export type PatientProfileUncheckedCreateWithoutAllergiesInput = {
   prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutPatientInput
   immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutPatientInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutPatientInput
   encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutPatientInput
   labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutPatientInput
@@ -3754,6 +3797,7 @@ export type PatientProfileUpdateWithoutAllergiesInput = {
   prescriptions?: Prisma.PrescriptionUpdateManyWithoutPatientNestedInput
   immunizations?: Prisma.ImmunizationUpdateManyWithoutPatientNestedInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutPatientNestedInput
   encounters?: Prisma.EncounterUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutPatientNestedInput
   labOrders?: Prisma.LabOrderUpdateManyWithoutPatientNestedInput
@@ -3822,6 +3866,7 @@ export type PatientProfileUncheckedUpdateWithoutAllergiesInput = {
   prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutPatientNestedInput
   immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutPatientNestedInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutPatientNestedInput
   encounters?: Prisma.EncounterUncheckedUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutPatientNestedInput
   labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutPatientNestedInput
@@ -3890,6 +3935,7 @@ export type PatientProfileCreateWithoutDoctorsInput = {
   allergies?: Prisma.PatientAllergyCreateNestedManyWithoutPatientInput
   immunizations?: Prisma.ImmunizationCreateNestedManyWithoutPatientInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutPatientInput
   encounters?: Prisma.EncounterCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutPatientInput
   labOrders?: Prisma.LabOrderCreateNestedManyWithoutPatientInput
@@ -3958,6 +4004,7 @@ export type PatientProfileUncheckedCreateWithoutDoctorsInput = {
   allergies?: Prisma.PatientAllergyUncheckedCreateNestedManyWithoutPatientInput
   immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutPatientInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutPatientInput
   encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutPatientInput
   labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutPatientInput
@@ -4042,6 +4089,7 @@ export type PatientProfileUpdateWithoutDoctorsInput = {
   allergies?: Prisma.PatientAllergyUpdateManyWithoutPatientNestedInput
   immunizations?: Prisma.ImmunizationUpdateManyWithoutPatientNestedInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutPatientNestedInput
   encounters?: Prisma.EncounterUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutPatientNestedInput
   labOrders?: Prisma.LabOrderUpdateManyWithoutPatientNestedInput
@@ -4110,6 +4158,7 @@ export type PatientProfileUncheckedUpdateWithoutDoctorsInput = {
   allergies?: Prisma.PatientAllergyUncheckedUpdateManyWithoutPatientNestedInput
   immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutPatientNestedInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutPatientNestedInput
   encounters?: Prisma.EncounterUncheckedUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutPatientNestedInput
   labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutPatientNestedInput
@@ -4178,6 +4227,7 @@ export type PatientProfileCreateWithoutAppointmentsInput = {
   allergies?: Prisma.PatientAllergyCreateNestedManyWithoutPatientInput
   immunizations?: Prisma.ImmunizationCreateNestedManyWithoutPatientInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutPatientInput
   encounters?: Prisma.EncounterCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutPatientInput
   labOrders?: Prisma.LabOrderCreateNestedManyWithoutPatientInput
@@ -4246,6 +4296,7 @@ export type PatientProfileUncheckedCreateWithoutAppointmentsInput = {
   allergies?: Prisma.PatientAllergyUncheckedCreateNestedManyWithoutPatientInput
   immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutPatientInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutPatientInput
   encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutPatientInput
   labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutPatientInput
@@ -4330,6 +4381,7 @@ export type PatientProfileUpdateWithoutAppointmentsInput = {
   allergies?: Prisma.PatientAllergyUpdateManyWithoutPatientNestedInput
   immunizations?: Prisma.ImmunizationUpdateManyWithoutPatientNestedInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutPatientNestedInput
   encounters?: Prisma.EncounterUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutPatientNestedInput
   labOrders?: Prisma.LabOrderUpdateManyWithoutPatientNestedInput
@@ -4398,6 +4450,7 @@ export type PatientProfileUncheckedUpdateWithoutAppointmentsInput = {
   allergies?: Prisma.PatientAllergyUncheckedUpdateManyWithoutPatientNestedInput
   immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutPatientNestedInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutPatientNestedInput
   encounters?: Prisma.EncounterUncheckedUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutPatientNestedInput
   labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutPatientNestedInput
@@ -4466,6 +4519,7 @@ export type PatientProfileCreateWithoutRegistrationsInput = {
   allergies?: Prisma.PatientAllergyCreateNestedManyWithoutPatientInput
   immunizations?: Prisma.ImmunizationCreateNestedManyWithoutPatientInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutPatientInput
   encounters?: Prisma.EncounterCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutPatientInput
   labOrders?: Prisma.LabOrderCreateNestedManyWithoutPatientInput
@@ -4534,6 +4588,7 @@ export type PatientProfileUncheckedCreateWithoutRegistrationsInput = {
   allergies?: Prisma.PatientAllergyUncheckedCreateNestedManyWithoutPatientInput
   immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutPatientInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutPatientInput
   encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutPatientInput
   labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutPatientInput
@@ -4618,6 +4673,7 @@ export type PatientProfileUpdateWithoutRegistrationsInput = {
   allergies?: Prisma.PatientAllergyUpdateManyWithoutPatientNestedInput
   immunizations?: Prisma.ImmunizationUpdateManyWithoutPatientNestedInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutPatientNestedInput
   encounters?: Prisma.EncounterUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutPatientNestedInput
   labOrders?: Prisma.LabOrderUpdateManyWithoutPatientNestedInput
@@ -4686,6 +4742,7 @@ export type PatientProfileUncheckedUpdateWithoutRegistrationsInput = {
   allergies?: Prisma.PatientAllergyUncheckedUpdateManyWithoutPatientNestedInput
   immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutPatientNestedInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutPatientNestedInput
   encounters?: Prisma.EncounterUncheckedUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutPatientNestedInput
   labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutPatientNestedInput
@@ -4755,6 +4812,7 @@ export type PatientProfileCreateWithoutEncountersInput = {
   allergies?: Prisma.PatientAllergyCreateNestedManyWithoutPatientInput
   immunizations?: Prisma.ImmunizationCreateNestedManyWithoutPatientInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutPatientInput
   labOrders?: Prisma.LabOrderCreateNestedManyWithoutPatientInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckCreateNestedManyWithoutPatientInput
@@ -4823,6 +4881,7 @@ export type PatientProfileUncheckedCreateWithoutEncountersInput = {
   allergies?: Prisma.PatientAllergyUncheckedCreateNestedManyWithoutPatientInput
   immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutPatientInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutPatientInput
   labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutPatientInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUncheckedCreateNestedManyWithoutPatientInput
@@ -4907,6 +4966,7 @@ export type PatientProfileUpdateWithoutEncountersInput = {
   allergies?: Prisma.PatientAllergyUpdateManyWithoutPatientNestedInput
   immunizations?: Prisma.ImmunizationUpdateManyWithoutPatientNestedInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutPatientNestedInput
   labOrders?: Prisma.LabOrderUpdateManyWithoutPatientNestedInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUpdateManyWithoutPatientNestedInput
@@ -4975,6 +5035,7 @@ export type PatientProfileUncheckedUpdateWithoutEncountersInput = {
   allergies?: Prisma.PatientAllergyUncheckedUpdateManyWithoutPatientNestedInput
   immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutPatientNestedInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutPatientNestedInput
   labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutPatientNestedInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUncheckedUpdateManyWithoutPatientNestedInput
@@ -5042,6 +5103,7 @@ export type PatientProfileCreateWithoutPrescriptionsInput = {
   allergies?: Prisma.PatientAllergyCreateNestedManyWithoutPatientInput
   immunizations?: Prisma.ImmunizationCreateNestedManyWithoutPatientInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutPatientInput
   encounters?: Prisma.EncounterCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutPatientInput
   labOrders?: Prisma.LabOrderCreateNestedManyWithoutPatientInput
@@ -5110,6 +5172,7 @@ export type PatientProfileUncheckedCreateWithoutPrescriptionsInput = {
   allergies?: Prisma.PatientAllergyUncheckedCreateNestedManyWithoutPatientInput
   immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutPatientInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutPatientInput
   encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutPatientInput
   labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutPatientInput
@@ -5194,6 +5257,7 @@ export type PatientProfileUpdateWithoutPrescriptionsInput = {
   allergies?: Prisma.PatientAllergyUpdateManyWithoutPatientNestedInput
   immunizations?: Prisma.ImmunizationUpdateManyWithoutPatientNestedInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutPatientNestedInput
   encounters?: Prisma.EncounterUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutPatientNestedInput
   labOrders?: Prisma.LabOrderUpdateManyWithoutPatientNestedInput
@@ -5262,6 +5326,7 @@ export type PatientProfileUncheckedUpdateWithoutPrescriptionsInput = {
   allergies?: Prisma.PatientAllergyUncheckedUpdateManyWithoutPatientNestedInput
   immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutPatientNestedInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutPatientNestedInput
   encounters?: Prisma.EncounterUncheckedUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutPatientNestedInput
   labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutPatientNestedInput
@@ -5331,6 +5396,7 @@ export type PatientProfileCreateWithoutInvoicesInput = {
   allergies?: Prisma.PatientAllergyCreateNestedManyWithoutPatientInput
   immunizations?: Prisma.ImmunizationCreateNestedManyWithoutPatientInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutPatientInput
   encounters?: Prisma.EncounterCreateNestedManyWithoutPatientInput
   labOrders?: Prisma.LabOrderCreateNestedManyWithoutPatientInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckCreateNestedManyWithoutPatientInput
@@ -5399,6 +5465,7 @@ export type PatientProfileUncheckedCreateWithoutInvoicesInput = {
   allergies?: Prisma.PatientAllergyUncheckedCreateNestedManyWithoutPatientInput
   immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutPatientInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutPatientInput
   encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutPatientInput
   labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutPatientInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUncheckedCreateNestedManyWithoutPatientInput
@@ -5483,6 +5550,7 @@ export type PatientProfileUpdateWithoutInvoicesInput = {
   allergies?: Prisma.PatientAllergyUpdateManyWithoutPatientNestedInput
   immunizations?: Prisma.ImmunizationUpdateManyWithoutPatientNestedInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutPatientNestedInput
   encounters?: Prisma.EncounterUpdateManyWithoutPatientNestedInput
   labOrders?: Prisma.LabOrderUpdateManyWithoutPatientNestedInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUpdateManyWithoutPatientNestedInput
@@ -5551,6 +5619,7 @@ export type PatientProfileUncheckedUpdateWithoutInvoicesInput = {
   allergies?: Prisma.PatientAllergyUncheckedUpdateManyWithoutPatientNestedInput
   immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutPatientNestedInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutPatientNestedInput
   encounters?: Prisma.EncounterUncheckedUpdateManyWithoutPatientNestedInput
   labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutPatientNestedInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUncheckedUpdateManyWithoutPatientNestedInput
@@ -5619,6 +5688,7 @@ export type PatientProfileCreateWithoutBpjsEligibilityChecksInput = {
   allergies?: Prisma.PatientAllergyCreateNestedManyWithoutPatientInput
   immunizations?: Prisma.ImmunizationCreateNestedManyWithoutPatientInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutPatientInput
   encounters?: Prisma.EncounterCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutPatientInput
   labOrders?: Prisma.LabOrderCreateNestedManyWithoutPatientInput
@@ -5687,6 +5757,7 @@ export type PatientProfileUncheckedCreateWithoutBpjsEligibilityChecksInput = {
   allergies?: Prisma.PatientAllergyUncheckedCreateNestedManyWithoutPatientInput
   immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutPatientInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutPatientInput
   encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutPatientInput
   labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutPatientInput
@@ -5771,6 +5842,7 @@ export type PatientProfileUpdateWithoutBpjsEligibilityChecksInput = {
   allergies?: Prisma.PatientAllergyUpdateManyWithoutPatientNestedInput
   immunizations?: Prisma.ImmunizationUpdateManyWithoutPatientNestedInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutPatientNestedInput
   encounters?: Prisma.EncounterUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutPatientNestedInput
   labOrders?: Prisma.LabOrderUpdateManyWithoutPatientNestedInput
@@ -5839,6 +5911,7 @@ export type PatientProfileUncheckedUpdateWithoutBpjsEligibilityChecksInput = {
   allergies?: Prisma.PatientAllergyUncheckedUpdateManyWithoutPatientNestedInput
   immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutPatientNestedInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutPatientNestedInput
   encounters?: Prisma.EncounterUncheckedUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutPatientNestedInput
   labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutPatientNestedInput
@@ -5907,6 +5980,7 @@ export type PatientProfileCreateWithoutClinicalDocumentsInput = {
   allergies?: Prisma.PatientAllergyCreateNestedManyWithoutPatientInput
   immunizations?: Prisma.ImmunizationCreateNestedManyWithoutPatientInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutPatientInput
   encounters?: Prisma.EncounterCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutPatientInput
   labOrders?: Prisma.LabOrderCreateNestedManyWithoutPatientInput
@@ -5975,6 +6049,7 @@ export type PatientProfileUncheckedCreateWithoutClinicalDocumentsInput = {
   allergies?: Prisma.PatientAllergyUncheckedCreateNestedManyWithoutPatientInput
   immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutPatientInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutPatientInput
   encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutPatientInput
   labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutPatientInput
@@ -6059,6 +6134,7 @@ export type PatientProfileUpdateWithoutClinicalDocumentsInput = {
   allergies?: Prisma.PatientAllergyUpdateManyWithoutPatientNestedInput
   immunizations?: Prisma.ImmunizationUpdateManyWithoutPatientNestedInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutPatientNestedInput
   encounters?: Prisma.EncounterUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutPatientNestedInput
   labOrders?: Prisma.LabOrderUpdateManyWithoutPatientNestedInput
@@ -6127,6 +6203,7 @@ export type PatientProfileUncheckedUpdateWithoutClinicalDocumentsInput = {
   allergies?: Prisma.PatientAllergyUncheckedUpdateManyWithoutPatientNestedInput
   immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutPatientNestedInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutPatientNestedInput
   encounters?: Prisma.EncounterUncheckedUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutPatientNestedInput
   labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutPatientNestedInput
@@ -6195,6 +6272,7 @@ export type PatientProfileCreateWithoutChannelLinksInput = {
   allergies?: Prisma.PatientAllergyCreateNestedManyWithoutPatientInput
   immunizations?: Prisma.ImmunizationCreateNestedManyWithoutPatientInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutPatientInput
   encounters?: Prisma.EncounterCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutPatientInput
   labOrders?: Prisma.LabOrderCreateNestedManyWithoutPatientInput
@@ -6263,6 +6341,7 @@ export type PatientProfileUncheckedCreateWithoutChannelLinksInput = {
   allergies?: Prisma.PatientAllergyUncheckedCreateNestedManyWithoutPatientInput
   immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutPatientInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutPatientInput
   encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutPatientInput
   labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutPatientInput
@@ -6347,6 +6426,7 @@ export type PatientProfileUpdateWithoutChannelLinksInput = {
   allergies?: Prisma.PatientAllergyUpdateManyWithoutPatientNestedInput
   immunizations?: Prisma.ImmunizationUpdateManyWithoutPatientNestedInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutPatientNestedInput
   encounters?: Prisma.EncounterUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutPatientNestedInput
   labOrders?: Prisma.LabOrderUpdateManyWithoutPatientNestedInput
@@ -6415,6 +6495,7 @@ export type PatientProfileUncheckedUpdateWithoutChannelLinksInput = {
   allergies?: Prisma.PatientAllergyUncheckedUpdateManyWithoutPatientNestedInput
   immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutPatientNestedInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutPatientNestedInput
   encounters?: Prisma.EncounterUncheckedUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutPatientNestedInput
   labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutPatientNestedInput
@@ -6483,6 +6564,7 @@ export type PatientProfileCreateWithoutProspectiveRecordsInput = {
   allergies?: Prisma.PatientAllergyCreateNestedManyWithoutPatientInput
   immunizations?: Prisma.ImmunizationCreateNestedManyWithoutPatientInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutPatientInput
   encounters?: Prisma.EncounterCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutPatientInput
   labOrders?: Prisma.LabOrderCreateNestedManyWithoutPatientInput
@@ -6551,6 +6633,7 @@ export type PatientProfileUncheckedCreateWithoutProspectiveRecordsInput = {
   allergies?: Prisma.PatientAllergyUncheckedCreateNestedManyWithoutPatientInput
   immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutPatientInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutPatientInput
   encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutPatientInput
   labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutPatientInput
@@ -6635,6 +6718,7 @@ export type PatientProfileUpdateWithoutProspectiveRecordsInput = {
   allergies?: Prisma.PatientAllergyUpdateManyWithoutPatientNestedInput
   immunizations?: Prisma.ImmunizationUpdateManyWithoutPatientNestedInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutPatientNestedInput
   encounters?: Prisma.EncounterUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutPatientNestedInput
   labOrders?: Prisma.LabOrderUpdateManyWithoutPatientNestedInput
@@ -6703,6 +6787,7 @@ export type PatientProfileUncheckedUpdateWithoutProspectiveRecordsInput = {
   allergies?: Prisma.PatientAllergyUncheckedUpdateManyWithoutPatientNestedInput
   immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutPatientNestedInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutPatientNestedInput
   encounters?: Prisma.EncounterUncheckedUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutPatientNestedInput
   labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutPatientNestedInput
@@ -6771,6 +6856,7 @@ export type PatientProfileCreateWithoutAdmissionsInput = {
   allergies?: Prisma.PatientAllergyCreateNestedManyWithoutPatientInput
   immunizations?: Prisma.ImmunizationCreateNestedManyWithoutPatientInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutPatientInput
   encounters?: Prisma.EncounterCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutPatientInput
   labOrders?: Prisma.LabOrderCreateNestedManyWithoutPatientInput
@@ -6839,6 +6925,7 @@ export type PatientProfileUncheckedCreateWithoutAdmissionsInput = {
   allergies?: Prisma.PatientAllergyUncheckedCreateNestedManyWithoutPatientInput
   immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutPatientInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutPatientInput
   encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutPatientInput
   labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutPatientInput
@@ -6923,6 +7010,7 @@ export type PatientProfileUpdateWithoutAdmissionsInput = {
   allergies?: Prisma.PatientAllergyUpdateManyWithoutPatientNestedInput
   immunizations?: Prisma.ImmunizationUpdateManyWithoutPatientNestedInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutPatientNestedInput
   encounters?: Prisma.EncounterUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutPatientNestedInput
   labOrders?: Prisma.LabOrderUpdateManyWithoutPatientNestedInput
@@ -6991,6 +7079,7 @@ export type PatientProfileUncheckedUpdateWithoutAdmissionsInput = {
   allergies?: Prisma.PatientAllergyUncheckedUpdateManyWithoutPatientNestedInput
   immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutPatientNestedInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutPatientNestedInput
   encounters?: Prisma.EncounterUncheckedUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutPatientNestedInput
   labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutPatientNestedInput
@@ -7059,6 +7148,7 @@ export type PatientProfileCreateWithoutManagedDocumentsInput = {
   allergies?: Prisma.PatientAllergyCreateNestedManyWithoutPatientInput
   immunizations?: Prisma.ImmunizationCreateNestedManyWithoutPatientInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutPatientInput
   encounters?: Prisma.EncounterCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutPatientInput
   labOrders?: Prisma.LabOrderCreateNestedManyWithoutPatientInput
@@ -7127,6 +7217,7 @@ export type PatientProfileUncheckedCreateWithoutManagedDocumentsInput = {
   allergies?: Prisma.PatientAllergyUncheckedCreateNestedManyWithoutPatientInput
   immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutPatientInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutPatientInput
   encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutPatientInput
   labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutPatientInput
@@ -7211,6 +7302,7 @@ export type PatientProfileUpdateWithoutManagedDocumentsInput = {
   allergies?: Prisma.PatientAllergyUpdateManyWithoutPatientNestedInput
   immunizations?: Prisma.ImmunizationUpdateManyWithoutPatientNestedInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutPatientNestedInput
   encounters?: Prisma.EncounterUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutPatientNestedInput
   labOrders?: Prisma.LabOrderUpdateManyWithoutPatientNestedInput
@@ -7279,6 +7371,7 @@ export type PatientProfileUncheckedUpdateWithoutManagedDocumentsInput = {
   allergies?: Prisma.PatientAllergyUncheckedUpdateManyWithoutPatientNestedInput
   immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutPatientNestedInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutPatientNestedInput
   encounters?: Prisma.EncounterUncheckedUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutPatientNestedInput
   labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutPatientNestedInput
@@ -7347,6 +7440,7 @@ export type PatientProfileCreateWithoutLabOrdersInput = {
   allergies?: Prisma.PatientAllergyCreateNestedManyWithoutPatientInput
   immunizations?: Prisma.ImmunizationCreateNestedManyWithoutPatientInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutPatientInput
   encounters?: Prisma.EncounterCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutPatientInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckCreateNestedManyWithoutPatientInput
@@ -7415,6 +7509,7 @@ export type PatientProfileUncheckedCreateWithoutLabOrdersInput = {
   allergies?: Prisma.PatientAllergyUncheckedCreateNestedManyWithoutPatientInput
   immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutPatientInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutPatientInput
   encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutPatientInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUncheckedCreateNestedManyWithoutPatientInput
@@ -7499,6 +7594,7 @@ export type PatientProfileUpdateWithoutLabOrdersInput = {
   allergies?: Prisma.PatientAllergyUpdateManyWithoutPatientNestedInput
   immunizations?: Prisma.ImmunizationUpdateManyWithoutPatientNestedInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutPatientNestedInput
   encounters?: Prisma.EncounterUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutPatientNestedInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUpdateManyWithoutPatientNestedInput
@@ -7567,6 +7663,7 @@ export type PatientProfileUncheckedUpdateWithoutLabOrdersInput = {
   allergies?: Prisma.PatientAllergyUncheckedUpdateManyWithoutPatientNestedInput
   immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutPatientNestedInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutPatientNestedInput
   encounters?: Prisma.EncounterUncheckedUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutPatientNestedInput
   bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUncheckedUpdateManyWithoutPatientNestedInput
@@ -7634,6 +7731,7 @@ export type PatientProfileCreateWithoutImmunizationsInput = {
   prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutPatientInput
   allergies?: Prisma.PatientAllergyCreateNestedManyWithoutPatientInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutPatientInput
   encounters?: Prisma.EncounterCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutPatientInput
   labOrders?: Prisma.LabOrderCreateNestedManyWithoutPatientInput
@@ -7702,6 +7800,7 @@ export type PatientProfileUncheckedCreateWithoutImmunizationsInput = {
   prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutPatientInput
   allergies?: Prisma.PatientAllergyUncheckedCreateNestedManyWithoutPatientInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutPatientInput
   encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutPatientInput
   labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutPatientInput
@@ -7786,6 +7885,7 @@ export type PatientProfileUpdateWithoutImmunizationsInput = {
   prescriptions?: Prisma.PrescriptionUpdateManyWithoutPatientNestedInput
   allergies?: Prisma.PatientAllergyUpdateManyWithoutPatientNestedInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutPatientNestedInput
   encounters?: Prisma.EncounterUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutPatientNestedInput
   labOrders?: Prisma.LabOrderUpdateManyWithoutPatientNestedInput
@@ -7854,6 +7954,7 @@ export type PatientProfileUncheckedUpdateWithoutImmunizationsInput = {
   prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutPatientNestedInput
   allergies?: Prisma.PatientAllergyUncheckedUpdateManyWithoutPatientNestedInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutPatientNestedInput
   encounters?: Prisma.EncounterUncheckedUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutPatientNestedInput
   labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutPatientNestedInput
@@ -7922,6 +8023,7 @@ export type PatientProfileCreateWithoutProvinceInput = {
   allergies?: Prisma.PatientAllergyCreateNestedManyWithoutPatientInput
   immunizations?: Prisma.ImmunizationCreateNestedManyWithoutPatientInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutPatientInput
   encounters?: Prisma.EncounterCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutPatientInput
   labOrders?: Prisma.LabOrderCreateNestedManyWithoutPatientInput
@@ -7990,6 +8092,7 @@ export type PatientProfileUncheckedCreateWithoutProvinceInput = {
   allergies?: Prisma.PatientAllergyUncheckedCreateNestedManyWithoutPatientInput
   immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutPatientInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutPatientInput
   encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutPatientInput
   labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutPatientInput
@@ -8084,6 +8187,7 @@ export type PatientProfileCreateWithoutRegencyInput = {
   allergies?: Prisma.PatientAllergyCreateNestedManyWithoutPatientInput
   immunizations?: Prisma.ImmunizationCreateNestedManyWithoutPatientInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutPatientInput
   encounters?: Prisma.EncounterCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutPatientInput
   labOrders?: Prisma.LabOrderCreateNestedManyWithoutPatientInput
@@ -8152,6 +8256,7 @@ export type PatientProfileUncheckedCreateWithoutRegencyInput = {
   allergies?: Prisma.PatientAllergyUncheckedCreateNestedManyWithoutPatientInput
   immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutPatientInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutPatientInput
   encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutPatientInput
   labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutPatientInput
@@ -8246,6 +8351,7 @@ export type PatientProfileCreateWithoutDistrictInput = {
   allergies?: Prisma.PatientAllergyCreateNestedManyWithoutPatientInput
   immunizations?: Prisma.ImmunizationCreateNestedManyWithoutPatientInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutPatientInput
   encounters?: Prisma.EncounterCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutPatientInput
   labOrders?: Prisma.LabOrderCreateNestedManyWithoutPatientInput
@@ -8314,6 +8420,7 @@ export type PatientProfileUncheckedCreateWithoutDistrictInput = {
   allergies?: Prisma.PatientAllergyUncheckedCreateNestedManyWithoutPatientInput
   immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutPatientInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutPatientInput
   encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutPatientInput
   labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutPatientInput
@@ -8408,6 +8515,7 @@ export type PatientProfileCreateWithoutVillageInput = {
   allergies?: Prisma.PatientAllergyCreateNestedManyWithoutPatientInput
   immunizations?: Prisma.ImmunizationCreateNestedManyWithoutPatientInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutPatientInput
   encounters?: Prisma.EncounterCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutPatientInput
   labOrders?: Prisma.LabOrderCreateNestedManyWithoutPatientInput
@@ -8476,6 +8584,7 @@ export type PatientProfileUncheckedCreateWithoutVillageInput = {
   allergies?: Prisma.PatientAllergyUncheckedCreateNestedManyWithoutPatientInput
   immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutPatientInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutPatientInput
   encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutPatientInput
   labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutPatientInput
@@ -8570,6 +8679,7 @@ export type PatientProfileCreateWithoutPregnancyEpisodesInput = {
   prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutPatientInput
   allergies?: Prisma.PatientAllergyCreateNestedManyWithoutPatientInput
   immunizations?: Prisma.ImmunizationCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutPatientInput
   encounters?: Prisma.EncounterCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutPatientInput
   labOrders?: Prisma.LabOrderCreateNestedManyWithoutPatientInput
@@ -8638,6 +8748,7 @@ export type PatientProfileUncheckedCreateWithoutPregnancyEpisodesInput = {
   prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutPatientInput
   allergies?: Prisma.PatientAllergyUncheckedCreateNestedManyWithoutPatientInput
   immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutPatientInput
   encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutPatientInput
   labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutPatientInput
@@ -8722,6 +8833,7 @@ export type PatientProfileUpdateWithoutPregnancyEpisodesInput = {
   prescriptions?: Prisma.PrescriptionUpdateManyWithoutPatientNestedInput
   allergies?: Prisma.PatientAllergyUpdateManyWithoutPatientNestedInput
   immunizations?: Prisma.ImmunizationUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutPatientNestedInput
   encounters?: Prisma.EncounterUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutPatientNestedInput
   labOrders?: Prisma.LabOrderUpdateManyWithoutPatientNestedInput
@@ -8790,6 +8902,7 @@ export type PatientProfileUncheckedUpdateWithoutPregnancyEpisodesInput = {
   prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutPatientNestedInput
   allergies?: Prisma.PatientAllergyUncheckedUpdateManyWithoutPatientNestedInput
   immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutPatientNestedInput
   encounters?: Prisma.EncounterUncheckedUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutPatientNestedInput
   labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutPatientNestedInput
@@ -8859,6 +8972,7 @@ export type PatientProfileCreateWithoutNewbornCareRecordInput = {
   allergies?: Prisma.PatientAllergyCreateNestedManyWithoutPatientInput
   immunizations?: Prisma.ImmunizationCreateNestedManyWithoutPatientInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutPatientInput
   encounters?: Prisma.EncounterCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutPatientInput
   labOrders?: Prisma.LabOrderCreateNestedManyWithoutPatientInput
@@ -8927,6 +9041,7 @@ export type PatientProfileUncheckedCreateWithoutNewbornCareRecordInput = {
   allergies?: Prisma.PatientAllergyUncheckedCreateNestedManyWithoutPatientInput
   immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutPatientInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutPatientInput
   encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutPatientInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutPatientInput
   labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutPatientInput
@@ -9011,6 +9126,7 @@ export type PatientProfileUpdateWithoutNewbornCareRecordInput = {
   allergies?: Prisma.PatientAllergyUpdateManyWithoutPatientNestedInput
   immunizations?: Prisma.ImmunizationUpdateManyWithoutPatientNestedInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutPatientNestedInput
   encounters?: Prisma.EncounterUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutPatientNestedInput
   labOrders?: Prisma.LabOrderUpdateManyWithoutPatientNestedInput
@@ -9079,6 +9195,7 @@ export type PatientProfileUncheckedUpdateWithoutNewbornCareRecordInput = {
   allergies?: Prisma.PatientAllergyUncheckedUpdateManyWithoutPatientNestedInput
   immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutPatientNestedInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutPatientNestedInput
   encounters?: Prisma.EncounterUncheckedUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutPatientNestedInput
   labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutPatientNestedInput
@@ -9091,6 +9208,298 @@ export type PatientProfileUncheckedUpdateWithoutNewbornCareRecordInput = {
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutPatientNestedInput
   deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutPatientNestedInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutPatientNestedInput
+}
+
+export type PatientProfileCreateWithoutFamilyPlanningRecordsInput = {
+  id?: string
+  mrn: string
+  source?: $Enums.PatientRecordSource
+  fullName: string
+  dateOfBirth: Date | string
+  placeOfBirth?: string | null
+  sex: $Enums.PatientSex
+  status?: $Enums.PatientStatus
+  phoneNumber: string
+  address: string
+  rtRw?: string | null
+  postalCode?: string | null
+  birthOrder?: number | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  lastVisitAt?: Date | string | null
+  email?: string | null
+  bloodType?: $Enums.BloodType | null
+  rhesusFactor?: $Enums.RhesusFactor | null
+  maritalStatus?: $Enums.MaritalStatus | null
+  occupation?: string | null
+  religion?: $Enums.Religion | null
+  emergencyContactName?: string | null
+  emergencyContactPhone?: string | null
+  guardianName?: string | null
+  guardianRelation?: string | null
+  nikCiphertext?: string | null
+  nikIndex?: string | null
+  nikLast4?: string | null
+  nikKeyVersion?: number | null
+  bpjsNumberCiphertext?: string | null
+  bpjsNumberIndex?: string | null
+  bpjsNumberLast4?: string | null
+  bpjsNumberKeyVersion?: number | null
+  satusehatPatientIdCiphertext?: string | null
+  satusehatPatientIdKeyVersion?: number | null
+  satusehatPatientIdLast4?: string | null
+  ownerUser?: Prisma.UserCreateNestedOneWithoutPatientProfilesInput
+  mother?: Prisma.PatientProfileCreateNestedOneWithoutNewbornsInput
+  newborns?: Prisma.PatientProfileCreateNestedManyWithoutMotherInput
+  province?: Prisma.ProvinceCreateNestedOneWithoutPatientsInput
+  regency?: Prisma.RegencyCreateNestedOneWithoutPatientsInput
+  district?: Prisma.DistrictCreateNestedOneWithoutPatientsInput
+  village?: Prisma.VillageCreateNestedOneWithoutPatientsInput
+  doctors?: Prisma.DoctorPatientCreateNestedManyWithoutPatientInput
+  appointments?: Prisma.AppointmentCreateNestedManyWithoutPatientInput
+  registrations?: Prisma.RegistrationCreateNestedManyWithoutPatientInput
+  prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutPatientInput
+  allergies?: Prisma.PatientAllergyCreateNestedManyWithoutPatientInput
+  immunizations?: Prisma.ImmunizationCreateNestedManyWithoutPatientInput
+  pregnancyEpisodes?: Prisma.PregnancyEpisodeCreateNestedManyWithoutPatientInput
+  encounters?: Prisma.EncounterCreateNestedManyWithoutPatientInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutPatientInput
+  labOrders?: Prisma.LabOrderCreateNestedManyWithoutPatientInput
+  bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckCreateNestedManyWithoutPatientInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutPatientInput
+  channelLinks?: Prisma.ChannelPatientLinkCreateNestedManyWithoutPatientInput
+  prospectiveRecords?: Prisma.ProspectivePatientCreateNestedManyWithoutPatientInput
+  admissions?: Prisma.AdmissionCreateNestedManyWithoutPatientInput
+  clinicalDocuments?: Prisma.DocumentCreateNestedManyWithoutPatientInput
+  deliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutPatientInput
+  deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutPatientInput
+  managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutPatientInput
+  newbornCareRecord?: Prisma.NewbornCareRecordCreateNestedOneWithoutNewbornPatientInput
+}
+
+export type PatientProfileUncheckedCreateWithoutFamilyPlanningRecordsInput = {
+  id?: string
+  mrn: string
+  source?: $Enums.PatientRecordSource
+  fullName: string
+  dateOfBirth: Date | string
+  placeOfBirth?: string | null
+  sex: $Enums.PatientSex
+  status?: $Enums.PatientStatus
+  phoneNumber: string
+  address: string
+  provinceCode?: string | null
+  regencyCode?: string | null
+  districtCode?: string | null
+  villageCode?: string | null
+  rtRw?: string | null
+  postalCode?: string | null
+  motherPatientId?: string | null
+  birthOrder?: number | null
+  ownerUserId?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  lastVisitAt?: Date | string | null
+  email?: string | null
+  bloodType?: $Enums.BloodType | null
+  rhesusFactor?: $Enums.RhesusFactor | null
+  maritalStatus?: $Enums.MaritalStatus | null
+  occupation?: string | null
+  religion?: $Enums.Religion | null
+  emergencyContactName?: string | null
+  emergencyContactPhone?: string | null
+  guardianName?: string | null
+  guardianRelation?: string | null
+  nikCiphertext?: string | null
+  nikIndex?: string | null
+  nikLast4?: string | null
+  nikKeyVersion?: number | null
+  bpjsNumberCiphertext?: string | null
+  bpjsNumberIndex?: string | null
+  bpjsNumberLast4?: string | null
+  bpjsNumberKeyVersion?: number | null
+  satusehatPatientIdCiphertext?: string | null
+  satusehatPatientIdKeyVersion?: number | null
+  satusehatPatientIdLast4?: string | null
+  newborns?: Prisma.PatientProfileUncheckedCreateNestedManyWithoutMotherInput
+  doctors?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutPatientInput
+  appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutPatientInput
+  registrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutPatientInput
+  prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutPatientInput
+  allergies?: Prisma.PatientAllergyUncheckedCreateNestedManyWithoutPatientInput
+  immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutPatientInput
+  pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedCreateNestedManyWithoutPatientInput
+  encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutPatientInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutPatientInput
+  labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutPatientInput
+  bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUncheckedCreateNestedManyWithoutPatientInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutPatientInput
+  channelLinks?: Prisma.ChannelPatientLinkUncheckedCreateNestedManyWithoutPatientInput
+  prospectiveRecords?: Prisma.ProspectivePatientUncheckedCreateNestedManyWithoutPatientInput
+  admissions?: Prisma.AdmissionUncheckedCreateNestedManyWithoutPatientInput
+  clinicalDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutPatientInput
+  deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutPatientInput
+  deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutPatientInput
+  managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutPatientInput
+  newbornCareRecord?: Prisma.NewbornCareRecordUncheckedCreateNestedOneWithoutNewbornPatientInput
+}
+
+export type PatientProfileCreateOrConnectWithoutFamilyPlanningRecordsInput = {
+  where: Prisma.PatientProfileWhereUniqueInput
+  create: Prisma.XOR<Prisma.PatientProfileCreateWithoutFamilyPlanningRecordsInput, Prisma.PatientProfileUncheckedCreateWithoutFamilyPlanningRecordsInput>
+}
+
+export type PatientProfileUpsertWithoutFamilyPlanningRecordsInput = {
+  update: Prisma.XOR<Prisma.PatientProfileUpdateWithoutFamilyPlanningRecordsInput, Prisma.PatientProfileUncheckedUpdateWithoutFamilyPlanningRecordsInput>
+  create: Prisma.XOR<Prisma.PatientProfileCreateWithoutFamilyPlanningRecordsInput, Prisma.PatientProfileUncheckedCreateWithoutFamilyPlanningRecordsInput>
+  where?: Prisma.PatientProfileWhereInput
+}
+
+export type PatientProfileUpdateToOneWithWhereWithoutFamilyPlanningRecordsInput = {
+  where?: Prisma.PatientProfileWhereInput
+  data: Prisma.XOR<Prisma.PatientProfileUpdateWithoutFamilyPlanningRecordsInput, Prisma.PatientProfileUncheckedUpdateWithoutFamilyPlanningRecordsInput>
+}
+
+export type PatientProfileUpdateWithoutFamilyPlanningRecordsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  mrn?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumPatientRecordSourceFieldUpdateOperationsInput | $Enums.PatientRecordSource
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  dateOfBirth?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  placeOfBirth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sex?: Prisma.EnumPatientSexFieldUpdateOperationsInput | $Enums.PatientSex
+  status?: Prisma.EnumPatientStatusFieldUpdateOperationsInput | $Enums.PatientStatus
+  phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  rtRw?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastVisitAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
+  rhesusFactor?: Prisma.NullableEnumRhesusFactorFieldUpdateOperationsInput | $Enums.RhesusFactor | null
+  maritalStatus?: Prisma.NullableEnumMaritalStatusFieldUpdateOperationsInput | $Enums.MaritalStatus | null
+  occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  religion?: Prisma.NullableEnumReligionFieldUpdateOperationsInput | $Enums.Religion | null
+  emergencyContactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardianName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardianRelation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikIndex?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  bpjsNumberCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bpjsNumberIndex?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bpjsNumberLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bpjsNumberKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPatientIdCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  satusehatPatientIdKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPatientIdLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ownerUser?: Prisma.UserUpdateOneWithoutPatientProfilesNestedInput
+  mother?: Prisma.PatientProfileUpdateOneWithoutNewbornsNestedInput
+  newborns?: Prisma.PatientProfileUpdateManyWithoutMotherNestedInput
+  province?: Prisma.ProvinceUpdateOneWithoutPatientsNestedInput
+  regency?: Prisma.RegencyUpdateOneWithoutPatientsNestedInput
+  district?: Prisma.DistrictUpdateOneWithoutPatientsNestedInput
+  village?: Prisma.VillageUpdateOneWithoutPatientsNestedInput
+  doctors?: Prisma.DoctorPatientUpdateManyWithoutPatientNestedInput
+  appointments?: Prisma.AppointmentUpdateManyWithoutPatientNestedInput
+  registrations?: Prisma.RegistrationUpdateManyWithoutPatientNestedInput
+  prescriptions?: Prisma.PrescriptionUpdateManyWithoutPatientNestedInput
+  allergies?: Prisma.PatientAllergyUpdateManyWithoutPatientNestedInput
+  immunizations?: Prisma.ImmunizationUpdateManyWithoutPatientNestedInput
+  pregnancyEpisodes?: Prisma.PregnancyEpisodeUpdateManyWithoutPatientNestedInput
+  encounters?: Prisma.EncounterUpdateManyWithoutPatientNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutPatientNestedInput
+  labOrders?: Prisma.LabOrderUpdateManyWithoutPatientNestedInput
+  bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUpdateManyWithoutPatientNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutPatientNestedInput
+  channelLinks?: Prisma.ChannelPatientLinkUpdateManyWithoutPatientNestedInput
+  prospectiveRecords?: Prisma.ProspectivePatientUpdateManyWithoutPatientNestedInput
+  admissions?: Prisma.AdmissionUpdateManyWithoutPatientNestedInput
+  clinicalDocuments?: Prisma.DocumentUpdateManyWithoutPatientNestedInput
+  deliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutPatientNestedInput
+  deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutPatientNestedInput
+  managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutPatientNestedInput
+  newbornCareRecord?: Prisma.NewbornCareRecordUpdateOneWithoutNewbornPatientNestedInput
+}
+
+export type PatientProfileUncheckedUpdateWithoutFamilyPlanningRecordsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  mrn?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumPatientRecordSourceFieldUpdateOperationsInput | $Enums.PatientRecordSource
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  dateOfBirth?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  placeOfBirth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sex?: Prisma.EnumPatientSexFieldUpdateOperationsInput | $Enums.PatientSex
+  status?: Prisma.EnumPatientStatusFieldUpdateOperationsInput | $Enums.PatientStatus
+  phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  provinceCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  regencyCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  districtCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  villageCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rtRw?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  motherPatientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  ownerUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastVisitAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
+  rhesusFactor?: Prisma.NullableEnumRhesusFactorFieldUpdateOperationsInput | $Enums.RhesusFactor | null
+  maritalStatus?: Prisma.NullableEnumMaritalStatusFieldUpdateOperationsInput | $Enums.MaritalStatus | null
+  occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  religion?: Prisma.NullableEnumReligionFieldUpdateOperationsInput | $Enums.Religion | null
+  emergencyContactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardianName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardianRelation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikIndex?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  bpjsNumberCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bpjsNumberIndex?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bpjsNumberLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bpjsNumberKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPatientIdCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  satusehatPatientIdKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPatientIdLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  newborns?: Prisma.PatientProfileUncheckedUpdateManyWithoutMotherNestedInput
+  doctors?: Prisma.DoctorPatientUncheckedUpdateManyWithoutPatientNestedInput
+  appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutPatientNestedInput
+  registrations?: Prisma.RegistrationUncheckedUpdateManyWithoutPatientNestedInput
+  prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutPatientNestedInput
+  allergies?: Prisma.PatientAllergyUncheckedUpdateManyWithoutPatientNestedInput
+  immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutPatientNestedInput
+  pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedUpdateManyWithoutPatientNestedInput
+  encounters?: Prisma.EncounterUncheckedUpdateManyWithoutPatientNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutPatientNestedInput
+  labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutPatientNestedInput
+  bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUncheckedUpdateManyWithoutPatientNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutPatientNestedInput
+  channelLinks?: Prisma.ChannelPatientLinkUncheckedUpdateManyWithoutPatientNestedInput
+  prospectiveRecords?: Prisma.ProspectivePatientUncheckedUpdateManyWithoutPatientNestedInput
+  admissions?: Prisma.AdmissionUncheckedUpdateManyWithoutPatientNestedInput
+  clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutPatientNestedInput
+  deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutPatientNestedInput
+  deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutPatientNestedInput
+  managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutPatientNestedInput
+  newbornCareRecord?: Prisma.NewbornCareRecordUncheckedUpdateOneWithoutNewbornPatientNestedInput
 }
 
 export type PatientProfileCreateManyOwnerUserInput = {
@@ -9193,6 +9602,7 @@ export type PatientProfileUpdateWithoutOwnerUserInput = {
   allergies?: Prisma.PatientAllergyUpdateManyWithoutPatientNestedInput
   immunizations?: Prisma.ImmunizationUpdateManyWithoutPatientNestedInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutPatientNestedInput
   encounters?: Prisma.EncounterUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutPatientNestedInput
   labOrders?: Prisma.LabOrderUpdateManyWithoutPatientNestedInput
@@ -9261,6 +9671,7 @@ export type PatientProfileUncheckedUpdateWithoutOwnerUserInput = {
   allergies?: Prisma.PatientAllergyUncheckedUpdateManyWithoutPatientNestedInput
   immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutPatientNestedInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutPatientNestedInput
   encounters?: Prisma.EncounterUncheckedUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutPatientNestedInput
   labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutPatientNestedInput
@@ -9423,6 +9834,7 @@ export type PatientProfileUpdateWithoutMotherInput = {
   allergies?: Prisma.PatientAllergyUpdateManyWithoutPatientNestedInput
   immunizations?: Prisma.ImmunizationUpdateManyWithoutPatientNestedInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutPatientNestedInput
   encounters?: Prisma.EncounterUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutPatientNestedInput
   labOrders?: Prisma.LabOrderUpdateManyWithoutPatientNestedInput
@@ -9491,6 +9903,7 @@ export type PatientProfileUncheckedUpdateWithoutMotherInput = {
   allergies?: Prisma.PatientAllergyUncheckedUpdateManyWithoutPatientNestedInput
   immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutPatientNestedInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutPatientNestedInput
   encounters?: Prisma.EncounterUncheckedUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutPatientNestedInput
   labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutPatientNestedInput
@@ -9653,6 +10066,7 @@ export type PatientProfileUpdateWithoutProvinceInput = {
   allergies?: Prisma.PatientAllergyUpdateManyWithoutPatientNestedInput
   immunizations?: Prisma.ImmunizationUpdateManyWithoutPatientNestedInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutPatientNestedInput
   encounters?: Prisma.EncounterUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutPatientNestedInput
   labOrders?: Prisma.LabOrderUpdateManyWithoutPatientNestedInput
@@ -9721,6 +10135,7 @@ export type PatientProfileUncheckedUpdateWithoutProvinceInput = {
   allergies?: Prisma.PatientAllergyUncheckedUpdateManyWithoutPatientNestedInput
   immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutPatientNestedInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutPatientNestedInput
   encounters?: Prisma.EncounterUncheckedUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutPatientNestedInput
   labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutPatientNestedInput
@@ -9883,6 +10298,7 @@ export type PatientProfileUpdateWithoutRegencyInput = {
   allergies?: Prisma.PatientAllergyUpdateManyWithoutPatientNestedInput
   immunizations?: Prisma.ImmunizationUpdateManyWithoutPatientNestedInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutPatientNestedInput
   encounters?: Prisma.EncounterUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutPatientNestedInput
   labOrders?: Prisma.LabOrderUpdateManyWithoutPatientNestedInput
@@ -9951,6 +10367,7 @@ export type PatientProfileUncheckedUpdateWithoutRegencyInput = {
   allergies?: Prisma.PatientAllergyUncheckedUpdateManyWithoutPatientNestedInput
   immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutPatientNestedInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutPatientNestedInput
   encounters?: Prisma.EncounterUncheckedUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutPatientNestedInput
   labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutPatientNestedInput
@@ -10113,6 +10530,7 @@ export type PatientProfileUpdateWithoutDistrictInput = {
   allergies?: Prisma.PatientAllergyUpdateManyWithoutPatientNestedInput
   immunizations?: Prisma.ImmunizationUpdateManyWithoutPatientNestedInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutPatientNestedInput
   encounters?: Prisma.EncounterUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutPatientNestedInput
   labOrders?: Prisma.LabOrderUpdateManyWithoutPatientNestedInput
@@ -10181,6 +10599,7 @@ export type PatientProfileUncheckedUpdateWithoutDistrictInput = {
   allergies?: Prisma.PatientAllergyUncheckedUpdateManyWithoutPatientNestedInput
   immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutPatientNestedInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutPatientNestedInput
   encounters?: Prisma.EncounterUncheckedUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutPatientNestedInput
   labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutPatientNestedInput
@@ -10343,6 +10762,7 @@ export type PatientProfileUpdateWithoutVillageInput = {
   allergies?: Prisma.PatientAllergyUpdateManyWithoutPatientNestedInput
   immunizations?: Prisma.ImmunizationUpdateManyWithoutPatientNestedInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutPatientNestedInput
   encounters?: Prisma.EncounterUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutPatientNestedInput
   labOrders?: Prisma.LabOrderUpdateManyWithoutPatientNestedInput
@@ -10411,6 +10831,7 @@ export type PatientProfileUncheckedUpdateWithoutVillageInput = {
   allergies?: Prisma.PatientAllergyUncheckedUpdateManyWithoutPatientNestedInput
   immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutPatientNestedInput
   pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutPatientNestedInput
   encounters?: Prisma.EncounterUncheckedUpdateManyWithoutPatientNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutPatientNestedInput
   labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutPatientNestedInput
@@ -10487,6 +10908,7 @@ export type PatientProfileCountOutputType = {
   allergies: number
   immunizations: number
   pregnancyEpisodes: number
+  familyPlanningRecords: number
   encounters: number
   invoices: number
   labOrders: number
@@ -10510,6 +10932,7 @@ export type PatientProfileCountOutputTypeSelect<ExtArgs extends runtime.Types.Ex
   allergies?: boolean | PatientProfileCountOutputTypeCountAllergiesArgs
   immunizations?: boolean | PatientProfileCountOutputTypeCountImmunizationsArgs
   pregnancyEpisodes?: boolean | PatientProfileCountOutputTypeCountPregnancyEpisodesArgs
+  familyPlanningRecords?: boolean | PatientProfileCountOutputTypeCountFamilyPlanningRecordsArgs
   encounters?: boolean | PatientProfileCountOutputTypeCountEncountersArgs
   invoices?: boolean | PatientProfileCountOutputTypeCountInvoicesArgs
   labOrders?: boolean | PatientProfileCountOutputTypeCountLabOrdersArgs
@@ -10588,6 +11011,13 @@ export type PatientProfileCountOutputTypeCountImmunizationsArgs<ExtArgs extends 
  */
 export type PatientProfileCountOutputTypeCountPregnancyEpisodesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.PregnancyEpisodeWhereInput
+}
+
+/**
+ * PatientProfileCountOutputType without action
+ */
+export type PatientProfileCountOutputTypeCountFamilyPlanningRecordsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.FamilyPlanningRecordWhereInput
 }
 
 /**
@@ -10735,6 +11165,7 @@ export type PatientProfileSelect<ExtArgs extends runtime.Types.Extensions.Intern
   allergies?: boolean | Prisma.PatientProfile$allergiesArgs<ExtArgs>
   immunizations?: boolean | Prisma.PatientProfile$immunizationsArgs<ExtArgs>
   pregnancyEpisodes?: boolean | Prisma.PatientProfile$pregnancyEpisodesArgs<ExtArgs>
+  familyPlanningRecords?: boolean | Prisma.PatientProfile$familyPlanningRecordsArgs<ExtArgs>
   encounters?: boolean | Prisma.PatientProfile$encountersArgs<ExtArgs>
   invoices?: boolean | Prisma.PatientProfile$invoicesArgs<ExtArgs>
   labOrders?: boolean | Prisma.PatientProfile$labOrdersArgs<ExtArgs>
@@ -10923,6 +11354,7 @@ export type PatientProfileInclude<ExtArgs extends runtime.Types.Extensions.Inter
   allergies?: boolean | Prisma.PatientProfile$allergiesArgs<ExtArgs>
   immunizations?: boolean | Prisma.PatientProfile$immunizationsArgs<ExtArgs>
   pregnancyEpisodes?: boolean | Prisma.PatientProfile$pregnancyEpisodesArgs<ExtArgs>
+  familyPlanningRecords?: boolean | Prisma.PatientProfile$familyPlanningRecordsArgs<ExtArgs>
   encounters?: boolean | Prisma.PatientProfile$encountersArgs<ExtArgs>
   invoices?: boolean | Prisma.PatientProfile$invoicesArgs<ExtArgs>
   labOrders?: boolean | Prisma.PatientProfile$labOrdersArgs<ExtArgs>
@@ -10972,6 +11404,7 @@ export type $PatientProfilePayload<ExtArgs extends runtime.Types.Extensions.Inte
     allergies: Prisma.$PatientAllergyPayload<ExtArgs>[]
     immunizations: Prisma.$ImmunizationPayload<ExtArgs>[]
     pregnancyEpisodes: Prisma.$PregnancyEpisodePayload<ExtArgs>[]
+    familyPlanningRecords: Prisma.$FamilyPlanningRecordPayload<ExtArgs>[]
     encounters: Prisma.$EncounterPayload<ExtArgs>[]
     invoices: Prisma.$InvoicePayload<ExtArgs>[]
     labOrders: Prisma.$LabOrderPayload<ExtArgs>[]
@@ -11500,6 +11933,7 @@ export interface Prisma__PatientProfileClient<T, Null = never, ExtArgs extends r
   allergies<T extends Prisma.PatientProfile$allergiesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PatientProfile$allergiesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PatientAllergyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   immunizations<T extends Prisma.PatientProfile$immunizationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PatientProfile$immunizationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ImmunizationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   pregnancyEpisodes<T extends Prisma.PatientProfile$pregnancyEpisodesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PatientProfile$pregnancyEpisodesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PregnancyEpisodePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  familyPlanningRecords<T extends Prisma.PatientProfile$familyPlanningRecordsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PatientProfile$familyPlanningRecordsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FamilyPlanningRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   encounters<T extends Prisma.PatientProfile$encountersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PatientProfile$encountersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EncounterPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   invoices<T extends Prisma.PatientProfile$invoicesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PatientProfile$invoicesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvoicePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   labOrders<T extends Prisma.PatientProfile$labOrdersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PatientProfile$labOrdersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LabOrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -12291,6 +12725,30 @@ export type PatientProfile$pregnancyEpisodesArgs<ExtArgs extends runtime.Types.E
   take?: number
   skip?: number
   distinct?: Prisma.PregnancyEpisodeScalarFieldEnum | Prisma.PregnancyEpisodeScalarFieldEnum[]
+}
+
+/**
+ * PatientProfile.familyPlanningRecords
+ */
+export type PatientProfile$familyPlanningRecordsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the FamilyPlanningRecord
+   */
+  select?: Prisma.FamilyPlanningRecordSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the FamilyPlanningRecord
+   */
+  omit?: Prisma.FamilyPlanningRecordOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FamilyPlanningRecordInclude<ExtArgs> | null
+  where?: Prisma.FamilyPlanningRecordWhereInput
+  orderBy?: Prisma.FamilyPlanningRecordOrderByWithRelationInput | Prisma.FamilyPlanningRecordOrderByWithRelationInput[]
+  cursor?: Prisma.FamilyPlanningRecordWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.FamilyPlanningRecordScalarFieldEnum | Prisma.FamilyPlanningRecordScalarFieldEnum[]
 }
 
 /**

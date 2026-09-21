@@ -4,6 +4,7 @@ import { Card, CardContent } from '@hms/ui';
 import { useFormatter, useTranslations } from 'next-intl';
 
 import { EncountersTable } from '#components/client/encounters/encounters-table';
+import { FamilyPlanningDueCard } from '#components/client/maternal-care/family-planning-due-card';
 import { PageHeader } from '#components/shared/page-header';
 import { INVOICES_PAGE_SIZE } from '#lib/billing/search-params';
 import { useEncountersList } from '#lib/encounters/use-encounters-list';
@@ -11,9 +12,15 @@ import { useEncountersList } from '#lib/encounters/use-encounters-list';
 type DoctorTodayPanelProps = {
   /** Clinic-local day, resolved on the server so the browser timezone cannot shift it. */
   today: string;
+  /**
+   * P25-T14. Visibility only, resolved from the session claims on the server:
+   * the API's `@RequireFeature('maternal-care')` refuses the due list to a
+   * clinic without the entitlement whatever this says.
+   */
+  isMaternalCareEnabled?: boolean;
 };
 
-export function DoctorTodayPanel({ today }: DoctorTodayPanelProps) {
+export function DoctorTodayPanel({ today, isMaternalCareEnabled = false }: DoctorTodayPanelProps) {
   const t = useTranslations('clinical');
   const format = useFormatter();
   const openQuery = useEncountersList({
@@ -54,6 +61,8 @@ export function DoctorTodayPanel({ today }: DoctorTodayPanelProps) {
           </CardContent>
         </Card>
       </section>
+
+      {isMaternalCareEnabled ? <FamilyPlanningDueCard patientBasePath="/doctor/patients" /> : null}
 
       <section className="space-y-3">
         <h2 className="font-heading text-sm font-semibold text-slate-700">

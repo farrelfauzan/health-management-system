@@ -61,6 +61,8 @@ const GATED_CONTROLLERS: Readonly<Record<string, FeatureKey>> = {
   PregnancyEpisodeController: 'maternal-care',
   AntenatalExaminationController: 'maternal-care',
   DeliveryRecordController: 'maternal-care',
+  // P25-T14 — the KB course rides on the same entitlement as the episode.
+  FamilyPlanningController: 'maternal-care',
   BpjsAntreanConfigController: 'bpjs-antrean',
   BpjsAntreanWsController: 'bpjs-antrean',
   SatusehatLinkController: 'satusehat',

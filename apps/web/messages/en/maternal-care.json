@@ -229,6 +229,87 @@
         "vitaminK1": "Vitamin K1",
         "registerHint": "Her birth order is set when she is registered as a patient, so it lives in one place."
       }
+    },
+    "familyPlanning": {
+      "tab": "Family planning",
+      "title": "Family planning (KB)",
+      "loadError": "The family planning record could not be loaded.",
+      "empty": {
+        "title": "No family planning course yet",
+        "description": "Start a course to record the method, the acceptor type and when she is due back."
+      },
+      "live": "Current course",
+      "history": "Earlier courses",
+      "historyEmpty": "No earlier courses.",
+      "noDueDate": "No due date",
+      "overdue": "Overdue",
+      "postDelivery": "Post-delivery",
+      "services": {
+        "title": "Follow-ups",
+        "empty": "No follow-up recorded yet."
+      },
+      "fields": {
+        "method": "Method",
+        "acceptorType": "Acceptor",
+        "startedOn": "Started on",
+        "provider": "Provider",
+        "nextDueOn": "Next due",
+        "sideEffects": "Side effects",
+        "servedOn": "Served on",
+        "action": "Action taken",
+        "discontinuedOn": "Discontinued on",
+        "reason": "Reason"
+      },
+      "hints": {
+        "defaultNextDueOn": "Leave empty to use the default: {date}.",
+        "enteredNextDueOn": "IUD and implant control dates are entered by the clinician.",
+        "condomNoDueDate": "A condom has no due date.",
+        "actionPlaceholder": "e.g. DMPA reinjection, pill strip resupplied"
+      },
+      "methods": {
+        "PILL": "Pill",
+        "INJECTABLE_1_MONTH": "1-month injectable",
+        "INJECTABLE_3_MONTH": "3-month injectable",
+        "CONDOM": "Condom",
+        "IUD": "IUD",
+        "IMPLANT": "Implant"
+      },
+      "acceptorTypes": {
+        "NEW": "New acceptor",
+        "CONTINUING": "Continuing acceptor"
+      },
+      "reasons": {
+        "SIDE_EFFECT": "Side effect",
+        "WANTS_PREGNANCY": "Wants to become pregnant",
+        "METHOD_CHANGE": "Changing method",
+        "MEDICAL_REASON": "Medical reason",
+        "LOST_TO_FOLLOW_UP": "Lost to follow-up",
+        "OTHER": "Other"
+      },
+      "actions": {
+        "start": "Start family planning",
+        "startPostDelivery": "Start post-delivery family planning",
+        "recordService": "Record follow-up",
+        "discontinue": "Discontinue",
+        "cancel": "Cancel",
+        "save": "Save"
+      },
+      "toasts": {
+        "started": "Family planning course started",
+        "serviceRecorded": "Follow-up recorded",
+        "discontinued": "Family planning course discontinued"
+      },
+      "postDeliveryPrompt": {
+        "title": "She gave birth on {date}",
+        "description": "Post-delivery family planning started now is linked to this birth."
+      },
+      "due": {
+        "title": "Family planning due this week",
+        "subtitle": "Live courses due within 7 days, or overdue.",
+        "empty": "Nobody is due in the next 7 days.",
+        "inDays": "{count, plural, =0 {Due today} one {Due in # day} other {Due in # days}}",
+        "overdueDays": "{count, plural, one {# day overdue} other {# days overdue}}"
+      }
     }
   }
 }

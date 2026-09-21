@@ -365,6 +365,10 @@ enum AuditAction {
   /// the birth time moves that ending. Both are worth a name of their own.
   DELIVERY_RECORDED
   DELIVERY_UPDATED
+  /// A family planning course was started, or a live one ended (P25-T14).
+  /// A refused IUD/implant start is MIDWIFE_AUTHORITY_REFUSED, not these.
+  FAMILY_PLANNING_STARTED
+  FAMILY_PLANNING_DISCONTINUED
   /// The clinic's tax profile changed (P27-T02): taxpayer type, PP 55 regime,
   /// PKP status, NITKU or pricing mode. Carries each changed field's old and
   /// new value — every later tax computation reads this row, and a report is
@@ -678,7 +682,8 @@ model DoctorMandate {
   createdBy       User          @relation("DoctorMandateCreatedBy", fields: [createdById], references: [id])
   revokedBy       User?         @relation("DoctorMandateRevokedBy", fields: [revokedById], references: [id])
 
-  procedures Procedure[]
+  procedures            Procedure[]
+  familyPlanningRecords FamilyPlanningRecord[]
 
   @@index([midwifeDoctorId])
   @@index([mandatingDoctorId])
@@ -1593,6 +1598,7 @@ model PatientProfile {
   allergies             PatientAllergy[]
   immunizations         Immunization[]
   pregnancyEpisodes     PregnancyEpisode[]
+  familyPlanningRecords FamilyPlanningRecord[]
   encounters            Encounter[]
   invoices              Invoice[]
   labOrders             LabOrder[]
@@ -2034,6 +2040,7 @@ model DoctorProfile {
   @@index([specialtyId])
   @@map("doctor_profiles")
   attendedDeliveries DeliveryRecord[] @relation("DeliveryAttendant")
+  providedFamilyPlanningRecords FamilyPlanningRecord[] @relation("FamilyPlanningProvider")
 }
 
 /// Academic qualifications mapped later to SATUSEHAT Practitioner.qualification
@@ -2502,6 +2509,8 @@ model Encounter {
   clinicalDocuments    Document[]
   labOrders            LabOrder[]
   antenatalVisit       AntenatalVisit?
+  familyPlanningStarts   FamilyPlanningRecord[]
+  familyPlanningServices FamilyPlanningService[]
 
   @@index([patientId, startedAt])
   @@index([doctorId, startedAt])
@@ -6808,7 +6817,8 @@ model DeliveryRecord {
   uterotonic       Medication?      @relation("DeliveryUterotonic", fields: [uterotonicMedicationId], references: [id], onDelete: Restrict)
   recordedBy       User             @relation("DeliveryRecordedBy", fields: [recordedById], references: [id], onDelete: Restrict)
 
-  newbornCareRecords NewbornCareRecord[]
+  newbornCareRecords    NewbornCareRecord[]
+  familyPlanningRecords FamilyPlanningRecord[]
 
   @@index([admissionId])
   @@index([attendantDoctorId])
@@ -6876,6 +6886,105 @@ model NewbornCareRecord {
   @@unique([deliveryRecordId, stillbirthOrder])
   @@index([deliveryRecordId])
   @@map("newborn_care_records")
+}
+
+/// The contraceptive method of one family planning course (P25-T14). MOW/MOP
+/// are out of scope: a sterilisation is a surgery, not a course with a due
+/// date.
+enum ContraceptiveMethod {
+  PILL
+  INJECTABLE_1_MONTH
+  INJECTABLE_3_MONTH
+  CONDOM
+  IUD
+  IMPLANT
+
+  @@map("contraceptive_method")
+}
+
+/// Peserta KB baru or aktif (P25-T14): whether this clinic's course is her
+/// first use of the method, or the continuation of one started elsewhere.
+enum AcceptorType {
+  NEW
+  CONTINUING
+
+  @@map("acceptor_type")
+}
+
+/// Why a course ended (P25-T14). A placeholder until the pilot clinic's kohort
+/// KB columns are known.
+enum ContraceptiveDiscontinuationReason {
+  SIDE_EFFECT
+  WANTS_PREGNANCY
+  METHOD_CHANGE
+  MEDICAL_REASON
+  LOST_TO_FOLLOW_UP
+  OTHER
+
+  @@map("contraceptive_discontinuation_reason")
+}
+
+/// One family planning course: one method, from the day it started to the day
+/// it was discontinued (P25-T14). At most one course per patient is live —
+/// a partial unique index in the migration, which Prisma cannot express.
+///
+/// `nextDueOn` is the course's current due date, moved forward by each
+/// follow-up service; it is what the due list reads.
+model FamilyPlanningRecord {
+  id                    String                              @id @default(uuid()) @db.Uuid
+  patientId             String                              @map("patient_id") @db.Uuid
+  method                ContraceptiveMethod
+  acceptorType          AcceptorType                        @map("acceptor_type")
+  startedOn             DateTime                            @map("started_on") @db.Date
+  providerDoctorId      String                              @map("provider_doctor_id") @db.Uuid
+  /// The visit the course was started in, when it was started in one.
+  startEncounterId      String?                             @map("start_encounter_id") @db.Uuid
+  /// Set for KB pasca salin: the birth this course follows.
+  deliveryRecordId      String?                             @map("delivery_record_id") @db.Uuid
+  /// The pelimpahan a midwife started an IUD under, when she holds no
+  /// IUD_IMPLANT authority of her own (P25-T05).
+  mandateId             String?                             @map("mandate_id") @db.Uuid
+  nextDueOn             DateTime?                           @map("next_due_on") @db.Date
+  sideEffects           String?                             @map("side_effects")
+  discontinuedOn        DateTime?                           @map("discontinued_on") @db.Date
+  discontinuationReason ContraceptiveDiscontinuationReason? @map("discontinuation_reason")
+  createdAt             DateTime                            @default(now()) @map("created_at")
+  updatedAt             DateTime                            @updatedAt @map("updated_at")
+
+  patient        PatientProfile          @relation(fields: [patientId], references: [id], onDelete: Restrict)
+  providerDoctor DoctorProfile           @relation("FamilyPlanningProvider", fields: [providerDoctorId], references: [id], onDelete: Restrict)
+  startEncounter Encounter?              @relation(fields: [startEncounterId], references: [id], onDelete: Restrict)
+  deliveryRecord DeliveryRecord?         @relation(fields: [deliveryRecordId], references: [id], onDelete: Restrict)
+  mandate        DoctorMandate?          @relation(fields: [mandateId], references: [id], onDelete: Restrict)
+  services       FamilyPlanningService[]
+
+  @@index([patientId])
+  @@index([providerDoctorId])
+  @@index([startEncounterId])
+  @@index([deliveryRecordId])
+  @@index([mandateId])
+  @@index([nextDueOn])
+  @@map("family_planning_records")
+}
+
+/// One follow-up of a family planning course — a reinjection, a pill resupply,
+/// a check-up (P25-T14).
+model FamilyPlanningService {
+  id                     String    @id @default(uuid()) @db.Uuid
+  familyPlanningRecordId String    @map("family_planning_record_id") @db.Uuid
+  encounterId            String?   @map("encounter_id") @db.Uuid
+  servedOn               DateTime  @map("served_on") @db.Date
+  action                 String
+  nextDueOn              DateTime? @map("next_due_on") @db.Date
+  createdAt              DateTime  @default(now()) @map("created_at")
+  updatedAt              DateTime  @updatedAt @map("updated_at")
+
+  familyPlanningRecord FamilyPlanningRecord @relation(fields: [familyPlanningRecordId], references: [id], onDelete: Cascade)
+  encounter            Encounter?           @relation(fields: [encounterId], references: [id], onDelete: Restrict)
+
+  @@index([familyPlanningRecordId])
+  @@index([encounterId])
+  @@map("family_planning_services")
 }
 
 /// How the baby lies (P25-T07). `UNKNOWN` is a real answer early in pregnancy,
