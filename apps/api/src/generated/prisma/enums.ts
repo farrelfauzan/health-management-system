@@ -875,6 +875,15 @@ export const TaxReportStatus = {
 export type TaxReportStatus = (typeof TaxReportStatus)[keyof typeof TaxReportStatus]
 
 
+export const TaxReminderKind = {
+  OBLIGATION_DUE: 'OBLIGATION_DUE',
+  TURNOVER_THRESHOLD: 'TURNOVER_THRESHOLD',
+  PP55_LAST_YEAR: 'PP55_LAST_YEAR'
+} as const
+
+export type TaxReminderKind = (typeof TaxReminderKind)[keyof typeof TaxReminderKind]
+
+
 export const TaxReportDocumentStatus = {
   READY: 'READY',
   FAILED: 'FAILED'
@@ -1072,7 +1081,10 @@ export const NotificationType = {
   BUG_REPORT_HELD: 'BUG_REPORT_HELD',
   BUG_REPORT_PUBLISH_FAILED: 'BUG_REPORT_PUBLISH_FAILED',
   DOCTOR_AUTHORITY_EXPIRING: 'DOCTOR_AUTHORITY_EXPIRING',
-  DOCTOR_AUTHORITY_EXPIRED: 'DOCTOR_AUTHORITY_EXPIRED'
+  DOCTOR_AUTHORITY_EXPIRED: 'DOCTOR_AUTHORITY_EXPIRED',
+  TAX_OBLIGATION_DUE: 'TAX_OBLIGATION_DUE',
+  TAX_TURNOVER_THRESHOLD: 'TAX_TURNOVER_THRESHOLD',
+  TAX_PP55_LAST_YEAR: 'TAX_PP55_LAST_YEAR'
 } as const
 
 export type NotificationType = (typeof NotificationType)[keyof typeof NotificationType]

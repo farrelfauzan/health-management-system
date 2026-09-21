@@ -162,6 +162,8 @@
     "#laboratory/types": "./src/laboratory/types.ts",
     "#laboratory/compute-lab-flag": "./src/laboratory/compute-lab-flag.ts",
     "#laboratory/resolve-lab-reference-range": "./src/laboratory/resolve-lab-reference-range.ts",
+    "#taxes/tax-calendar": "./src/taxes/tax-calendar.ts",
+    "#taxes/resolve-crossed-turnover-fractions": "./src/taxes/resolve-crossed-turnover-fractions.ts",
     "#taxes/schemas": "./src/taxes/schemas.ts",
     "#taxes/contracts": "./src/taxes/contracts.ts",
     "#taxes/types": "./src/taxes/types.ts",

@@ -114,6 +114,8 @@ export * from '#laboratory/types';
 export * from '#laboratory/compute-lab-flag';
 export * from '#laboratory/resolve-lab-reference-range';
 export * from '#taxes/schemas';
+export * from '#taxes/tax-calendar';
+export * from '#taxes/resolve-crossed-turnover-fractions';
 export * from '#taxes/contracts';
 export * from '#taxes/types';
 export * from '#taxes/normalize-npwp';

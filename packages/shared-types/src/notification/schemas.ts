@@ -106,6 +106,19 @@ export const NOTIFICATION_TYPES = [
    * first symptom is somebody eventually wondering why the board went quiet.
    */
   'BUG_REPORT_PUBLISH_FAILED',
+  /**
+   * The tax calendar (P27-T10). Broadcast to holders of
+   * `tax-report.write:any`, who are the people who can act: finalize the
+   * month's draft, or take the clinic's PKP registration to the KPP.
+   *
+   * `TAX_OBLIGATION_DUE` is silenced by finalizing the draft, so a clinic that
+   * has done the work is never chased. The other two are announced once and
+   * never repeated — a turnover threshold is crossed once in a year, and a PP
+   * 55 entitlement ends once.
+   */
+  'TAX_OBLIGATION_DUE',
+  'TAX_TURNOVER_THRESHOLD',
+  'TAX_PP55_LAST_YEAR',
 ] as const;
 export const notificationTypeSchema = z.enum(NOTIFICATION_TYPES);
 export type NotificationTypeValue = z.infer<typeof notificationTypeSchema>;

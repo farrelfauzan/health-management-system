@@ -3185,6 +3185,43 @@ enum TaxReportStatus {
 /// itself (P27-T05, D-038: the product drafts, never files). A DRAFT is
 /// recomputed at will; a FINALIZED row is a frozen snapshot and is never
 /// rewritten — later changes to the books are shown beside it, not merged in.
+/// Which family a tax reminder belongs to (P27-T10).
+enum TaxReminderKind {
+  /// A statutory due date approaching with the period's draft unfinalized.
+  OBLIGATION_DUE
+  /// Calendar-year turnover crossing a fraction of the Rp 4.8 bn PKP threshold.
+  TURNOVER_THRESHOLD
+  /// The last year the clinic may use PP 55, announced from October of it.
+  PP55_LAST_YEAR
+
+  @@map("tax_reminder_kind")
+}
+
+/// One tax reminder that has already been raised (P27-T10).
+///
+/// The row is the claim, not the notification: notifications fan out to every
+/// holder of `tax-report.write:any`, and what must happen exactly once is the
+/// *decision* to raise them. Keeping that decision in a table rather than in
+/// the sweep's schedule is what lets the sweep run every few hours, survive a
+/// restart, and still announce a five-day mark it was down for — the claim is
+/// keyed to the reminder, never to the day the job happened to observe it.
+///
+/// Append-only. Withdrawing a reminder would silently re-arm it on the next
+/// sweep, which is the one thing a compliance reminder must never do.
+model TaxReminderNotice {
+  id   String          @id @default(uuid()) @db.Uuid
+  kind TaxReminderKind
+  /// The claim itself, unique across every family: `DUE:2026-10:PP55_INCOME_TAX_DEPOSIT:5`,
+  /// `TURNOVER:2026:80`, `PP55_LAST_YEAR:2029`. One text column because the
+  /// three families are keyed by different things and a shared set of nullable
+  /// columns would describe none of them honestly.
+  noticeKey String @unique @map("notice_key")
+  raisedAt  DateTime @default(now()) @map("raised_at")
+
+  @@index([kind])
+  @@map("tax_reminder_notices")
+}
+
 model TaxReportDraft {
   id            String          @id @default(uuid()) @db.Uuid
   /// `YYYY-MM` in the clinic's timezone.
@@ -5241,6 +5278,12 @@ enum NotificationType {
   DOCTOR_AUTHORITY_EXPIRED
 
   @@map("notification_type")
+  /// The tax calendar (P27-T10): a due date approaching with the month's
+  /// draft unfinalized, calendar-year turnover crossing a fraction of the PKP
+  /// threshold, and the last year the clinic may use PP 55.
+  TAX_OBLIGATION_DUE
+  TAX_TURNOVER_THRESHOLD
+  TAX_PP55_LAST_YEAR
 }
 
 /// One row of a user's in-app bell feed. `title_key`/`body_key` are i18n

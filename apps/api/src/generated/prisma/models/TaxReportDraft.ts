@@ -14,10 +14,7 @@ import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model TaxReportDraft
- * A month's tax figures, prepared for the clinic to pay and file in Coretax
- * itself (P27-T05, D-038: the product drafts, never files). A DRAFT is
- * recomputed at will; a FINALIZED row is a frozen snapshot and is never
- * rewritten — later changes to the books are shown beside it, not merged in.
+ * 
  */
 export type TaxReportDraftModel = runtime.Types.Result.DefaultSelection<Prisma.$TaxReportDraftPayload>
 

@@ -243,6 +243,22 @@
         "doctorAuthorityExpired": {
           "title": "Kewenangan bidan telah berakhir",
           "body": "Kewenangan {kind} milik {doctorName} (No. {grantReference}) telah berakhir pada {validUntil}."
+        },
+        "taxObligationDue": {
+          "title": "Batas waktu pajak mendekat",
+          "body": "{obligation} untuk masa {period} jatuh tempo {dueDate}, {daysUntilDue} hari lagi, dan laporannya belum difinalisasi."
+        },
+        "taxTurnoverNearing": {
+          "title": "Omzet mendekati ambang PKP",
+          "body": "Omzet {year} sudah mencapai {percent}% dari Rp {threshold} (Rp {turnover}). Siapkan pengukuhan PKP."
+        },
+        "taxTurnoverReached": {
+          "title": "Ambang PKP tercapai",
+          "body": "Omzet {year} mencapai Rp {turnover}, sudah di atas ambang Rp {threshold}. Pengukuhan PKP wajib, dan PP 55 tidak berlaku tahun depan."
+        },
+        "taxPp55LastYear": {
+          "title": "Tahun terakhir PP 55",
+          "body": "{lastEligibleYear} adalah tahun pajak terakhir klinik ini boleh memakai tarif final 0,5% PP 55. Siapkan peralihan ke rezim umum tahun berikutnya."
         }
       },
       "profile": {
