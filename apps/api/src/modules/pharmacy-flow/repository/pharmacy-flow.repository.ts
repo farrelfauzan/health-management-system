@@ -11,6 +11,7 @@ import {
   PrescribingClinicianRecord,
   PrescriptionScopeActor,
   resolvePrescriptionStatusAfterDispense,
+  resolveUserDisplayName,
   UpdateMedicationRecordPayload,
   VaccineCatalogEntry,
 } from '@hms/shared-types';
@@ -18,6 +19,7 @@ import { ConflictException, Injectable } from '@nestjs/common';
 
 import { PrismaService } from '../../../common/prisma/prisma.service';
 import { PrismaTransactionClient } from '../../../common/prisma/prisma.types';
+import { USER_DISPLAY_NAME_SELECT } from '../../../common/prisma/user-display-name-select';
 import { Prisma } from '../../../generated/prisma/client';
 import { buildPrescriptionScopeWhere } from './build-prescription-scope-where';
 import { MedicationIdentifierConflictError } from './medication-identifier-conflict.error';
@@ -124,6 +126,9 @@ const DISPENSE_DETAIL_INCLUDE = {
       status: true,
     },
   },
+  // Who handed it over, by name (P20-T07). The id alone was all the record
+  // carried, and nothing on the page could turn it back into a person.
+  pharmacist: { select: USER_DISPLAY_NAME_SELECT },
 } satisfies Prisma.DispenseRecordInclude;
 
 /**
@@ -150,13 +155,20 @@ function toPrescriptionDetailRecord<
 
 function toDispenseRecordDetailRecord<
   T extends {
+    pharmacist: {
+      email: string;
+      fullName: string | null;
+      doctorProfile: { fullName: string } | null;
+    };
     items: Array<{
       prescriptionItem: { components: Array<{ quantity: { toNumber: () => number } }> } | null;
     }>;
   },
 >(record: T): DispenseRecordDetailRecord {
+  const { pharmacist, ...rest } = record;
   return {
-    ...record,
+    ...rest,
+    pharmacistName: resolveUserDisplayName(pharmacist),
     items: record.items.map((item) => ({
       ...item,
       prescriptionItem: item.prescriptionItem

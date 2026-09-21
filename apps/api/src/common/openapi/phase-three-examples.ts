@@ -1213,6 +1213,7 @@ export const PHASE_THREE_EXAMPLES = {
       prescriptionId,
       prescriptionStatus: 'DISPENSED',
       pharmacistId: userId,
+      pharmacistName: 'Rani Putri, S.Farm., Apt.',
       status: 'COMPLETED',
       dispensedAt: timestamp,
       notes: 'Dispensed in full',
@@ -1235,6 +1236,7 @@ export const PHASE_THREE_EXAMPLES = {
     event: {
       id: '99999999-9999-4999-8999-999999999999',
       actorUserId: userId,
+      actorName: 'dr. Sari Wulandari',
       actorRole: 'DOCTOR',
       action: 'READ',
       resource: 'patient',

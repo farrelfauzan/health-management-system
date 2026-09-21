@@ -12,6 +12,7 @@
     "#admin-management/types": "./src/admin-management/types.ts",
     "#admin-management/resolve-user-full-name": "./src/admin-management/resolve-user-full-name.ts",
     "#admin-management/resolve-user-display-name": "./src/admin-management/resolve-user-display-name.ts",
+    "#admin-management/resolve-clinician-name": "./src/admin-management/resolve-clinician-name.ts",
     "#patient-management/schemas": "./src/patient-management/schemas.ts",
     "#patient-management/contracts": "./src/patient-management/contracts.ts",
     "#patient-management/types": "./src/patient-management/types.ts",

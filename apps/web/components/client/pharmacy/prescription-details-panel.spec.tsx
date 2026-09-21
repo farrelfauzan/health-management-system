@@ -144,6 +144,8 @@ describe('PrescriptionDetailsPanel', () => {
           id: 'dispense-1',
           prescriptionId: PRESCRIPTION.id,
           prescriptionStatus: 'DISPENSED',
+          pharmacistId: 'pharmacist-1',
+          pharmacistName: 'Rani Putri',
         },
         message: 'Dispense recorded',
       },
@@ -158,7 +160,8 @@ describe('PrescriptionDetailsPanel', () => {
         prescriptionId: PRESCRIPTION.id,
         items: [{ medicationId: PRESCRIPTION.items[0]?.medicationId, quantity: 21 }],
       });
-      expect(onDispensed).toHaveBeenCalledWith('RX-7F9C2B dispensed successfully.');
+      // P20-T07: the notice names who handed the medicine over.
+      expect(onDispensed).toHaveBeenCalledWith('RX-7F9C2B dispensed by Rani Putri.');
     });
   });
 

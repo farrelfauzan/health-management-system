@@ -224,6 +224,7 @@
       "dispenseNow": "Serahkan Sekarang",
       "dispensing": "Menyerahkan...",
       "dispensedSuccess": "{rx} berhasil diserahkan.",
+      "dispensedBySuccess": "{rx} berhasil diserahkan oleh {pharmacist}.",
       "dispenseError": "Resep tidak dapat diserahkan. Silakan coba lagi.",
       "noMedicationItems": "Tidak ada item obat",
       "moreMedications": "{name} +{count} lainnya",

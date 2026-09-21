@@ -1246,6 +1246,8 @@
         "historical": "Historical dose (from KIA book)",
         "historicalHint": "For a dose copied from a card or KIA book. Lot number and expiry are optional, and the dose is reported to SATUSEHAT as a historical record.",
         "historicalBadge": "Historical",
+        "performedBy": "Given by {name}",
+        "enteredBy": "Entered by {name}",
         "reason": "Immunisation reason",
         "reasonPlaceholder": "Choose the immunisation reason",
         "pickReason": "Choose the immunisation reason.",

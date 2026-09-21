@@ -16,6 +16,7 @@ import {
   ListEncountersParams,
   ProcedureRecord,
   ProcedureWithMandateRecord,
+  resolveClinicianName,
   UpdateEncounterRecordPayload,
   UpsertBpjsReferralRecordPayload,
   VitalSignsRecord,
@@ -25,6 +26,7 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '../../../generated/prisma/client';
 import { PrismaService } from '../../../common/prisma/prisma.service';
 import { PrismaTransactionClient } from '../../../common/prisma/prisma.types';
+import { CLINICIAN_NAME_SELECT } from '../../../common/prisma/clinician-name-select';
 
 /**
  * The pelimpahan a procedure was performed under (P25-T05), joined on every
@@ -38,7 +40,7 @@ const PROCEDURE_MANDATE_INCLUDE = {
 
 const IMMUNIZATION_INCLUDE = {
   medication: { select: { name: true, kfaCode: true } },
-  performedBy: { select: { fullName: true } },
+  performedBy: { select: CLINICIAN_NAME_SELECT },
 };
 
 type ImmunizationRow = {
@@ -59,7 +61,7 @@ type ImmunizationRow = {
   createdAt: Date;
   updatedAt: Date;
   medication: { name: string; kfaCode: string | null };
-  performedBy: { fullName: string } | null;
+  performedBy: { fullName: string; ownerUser?: { fullName: string | null } | null } | null;
 };
 
 /**
@@ -82,7 +84,7 @@ function toImmunizationRecord(row: ImmunizationRow): ImmunizationRecord {
     route: row.route,
     site: row.site,
     performedById: row.performedById,
-    performedByName: row.performedBy?.fullName ?? null,
+    performedByName: row.performedBy ? resolveClinicianName(row.performedBy) : null,
     notes: row.notes,
     isHistorical: row.isHistorical,
     reason: row.reason,
