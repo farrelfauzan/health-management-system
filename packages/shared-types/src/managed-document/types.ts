@@ -23,7 +23,7 @@ export type DocumentTypeRecord = {
   isActive: boolean;
   sortOrder: number;
   documentCount: number;
-  defaultApprovers: Array<{ id: string; email: string }>;
+  defaultApprovers: Array<{ id: string; email: string; name: string }>;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -117,7 +117,7 @@ export type ManagedDocumentRecord = {
    * are what the per-row access rule reads (FR-E5-04).
    */
   subjectDocument: { purpose: DocumentPurposeValue; ownerId: string | null } | null;
-  draftedBy: { id: string; email: string };
+  draftedBy: { id: string; email: string; name: string };
   issuedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
@@ -219,7 +219,7 @@ export type UpdateManagedDocumentRecordPayload = {
 export type ManagedDocumentHistoryEntryRecord = {
   id: string;
   action: string;
-  actor: { id: string; email: string } | null;
+  actor: { id: string; email: string; name: string } | null;
   metadata: unknown;
   occurredAt: Date;
 };

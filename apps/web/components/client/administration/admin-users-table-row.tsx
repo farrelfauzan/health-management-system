@@ -1,6 +1,7 @@
 'use client';
 
 import type { AdminUser } from '@hms/shared-types';
+import { resolveUserDisplayName } from '@hms/shared-types';
 import { Badge, TableCell, TableRow, useAbility } from '@hms/ui';
 import { useFormatter, useTranslations } from 'next-intl';
 
@@ -22,6 +23,9 @@ export function AdminUsersTableRow({
   onOffboard,
 }: AdminUsersTableRowProps) {
   const t = useTranslations('operations');
+  // The same resolution every other surface uses (D-027); the table used to
+  // print the address while the roster printed the name for the same person.
+  const displayName = resolveUserDisplayName(user);
   const format = useFormatter();
   const ability = useAbility();
   const isOffboarded = user.offboardedAt !== undefined;
@@ -73,9 +77,12 @@ export function AdminUsersTableRow({
     <TableRow className="transition-colors hover:bg-slate-50">
       <TableCell className="px-4 py-3">
         <div className="flex items-center gap-3">
-          <AvatarInitials name={user.email} />
+          <AvatarInitials name={displayName} />
           <div>
-            <p className="text-sm font-medium text-slate-900">{user.email}</p>
+            <p className="text-sm font-medium text-slate-900">{displayName}</p>
+            {/* The address as a second line only when a name is standing in
+                front of it — otherwise the same string would print twice. */}
+            {user.fullName ? <p className="text-xs text-slate-500">{user.email}</p> : null}
             <p className="text-xs text-slate-500">
               {t('administration.joined', {
                 date: format.dateTime(new Date(user.createdAt), { dateStyle: 'medium' }),
@@ -118,7 +125,7 @@ export function AdminUsersTableRow({
         {actions.length > 0 ? (
           <RowActionsMenu
             actions={actions}
-            triggerLabel={t('common.actionsFor', { name: user.email })}
+            triggerLabel={t('common.actionsFor', { name: displayName })}
           />
         ) : null}
       </TableCell>

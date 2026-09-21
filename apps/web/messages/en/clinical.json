@@ -482,7 +482,7 @@
         "optedOut": "Opted out by patient",
         "notAsked": "Not asked"
       },
-      "grantedBy": "Captured by {email} on {date}",
+      "grantedBy": "Captured by {name} on {date}",
       "noticeVersion": "Privacy notice v{version}",
       "revokedAt": "Withdrawn on {date}",
       "ready": "Ready to send",

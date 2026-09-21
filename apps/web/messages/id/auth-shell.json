@@ -170,11 +170,11 @@
         },
         "vaultDocumentShared": {
           "title": "Sebuah dokumen dibagikan kepada Anda",
-          "body": "{sharedByEmail} membagikan “{documentTitle}” kepada Anda."
+          "body": "{sharedByName} membagikan “{documentTitle}” kepada Anda."
         },
         "vaultDocumentOpened": {
           "title": "Dokumen yang Anda bagikan dibuka",
-          "body": "{granteeEmail} membuka “{documentTitle}” untuk pertama kalinya."
+          "body": "{granteeName} membuka “{documentTitle}” untuk pertama kalinya."
         },
         "conversationHandoff": {
           "title": "Pelanggan menunggu petugas",

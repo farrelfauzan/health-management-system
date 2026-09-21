@@ -22,7 +22,7 @@ export function DocumentApprovalDecisionItem({ decision }: DocumentApprovalDecis
     <li className="rounded-md bg-slate-50 px-3 py-2">
       <p className="text-sm text-slate-900">
         {t(decision.isApproved ? 'approvedBy' : 'rejectedBy', {
-          email: decision.approver.email,
+          name: decision.approver.name,
           date: format.dateTime(new Date(decision.decidedAt), {
             dateStyle: 'medium',
             timeStyle: 'short',

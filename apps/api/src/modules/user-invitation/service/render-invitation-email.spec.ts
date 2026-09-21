@@ -6,6 +6,7 @@ describe('renderInvitationEmail', () => {
     invitationUrl: 'https://klinik.example/invite/token-value',
     expiresAt: new Date('2026-08-29T04:00:00.000Z'),
     invitedByEmail: 'admin@klinik.example',
+    invitedByName: 'Rani Putri',
   };
 
   it('puts the invitation link in both the text and the HTML body', () => {
@@ -20,11 +21,21 @@ describe('renderInvitationEmail', () => {
   it('names the inviter when one is known', () => {
     const actualMail = renderInvitationEmail(basePayload);
 
+    expect(actualMail.text).toContain('Rani Putri');
+  });
+
+  it("prints the inviter's address when their account carries no name (P20-T06)", () => {
+    const actualMail = renderInvitationEmail({ ...basePayload, invitedByName: null });
+
     expect(actualMail.text).toContain('admin@klinik.example');
   });
 
   it('falls back to a generic sender line when the inviter is unknown', () => {
-    const actualMail = renderInvitationEmail({ ...basePayload, invitedByEmail: null });
+    const actualMail = renderInvitationEmail({
+      ...basePayload,
+      invitedByEmail: null,
+      invitedByName: null,
+    });
 
     expect(actualMail.text).toContain('administrator klinik');
     expect(actualMail.text).toContain('clinic administrator');
@@ -40,7 +51,7 @@ describe('renderInvitationEmail', () => {
   it('escapes HTML-significant characters rather than emitting them raw', () => {
     const actualMail = renderInvitationEmail({
       ...basePayload,
-      invitedByEmail: '<script>alert(1)</script>',
+      invitedByName: '<script>alert(1)</script>',
     });
 
     expect(actualMail.html).not.toContain('<script>');

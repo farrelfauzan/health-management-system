@@ -482,7 +482,7 @@
         "optedOut": "Dihentikan oleh pasien",
         "notAsked": "Belum ditanyakan"
       },
-      "grantedBy": "Dicatat oleh {email} pada {date}",
+      "grantedBy": "Dicatat oleh {name} pada {date}",
       "noticeVersion": "Pemberitahuan privasi v{version}",
       "revokedAt": "Dicabut pada {date}",
       "ready": "Siap dikirim",

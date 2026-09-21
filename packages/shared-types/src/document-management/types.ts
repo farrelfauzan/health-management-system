@@ -38,6 +38,8 @@ export type DocumentRecord = {
    * never as a fact about the row.
    */
   uploadedByEmail: string | null;
+  /** Who scanned it in, resolved for display (D-027); null only when not loaded. */
+  uploadedByName: string | null;
   /** Clinical-file fields (P16-T07); null on every corpus document. */
   patientId: string | null;
   encounterId: string | null;
@@ -485,10 +487,12 @@ export type VaultDocumentShareRecord = {
   documentId: string;
   granteeId: string;
   granteeEmail: string;
+  granteeName: string;
   /** False once the account is retired — a dead account opens nothing. */
   isGranteeActive: boolean;
   grantedById: string;
   grantedByEmail: string;
+  grantedByName: string;
   expiresAt: Date | null;
   revokedAt: Date | null;
   lastAccessedAt: Date | null;
@@ -510,6 +514,7 @@ export type SharedWithMeDocumentRecord = {
   sizeBytes: number;
   storageKey: string;
   sharedByEmail: string;
+  sharedByName: string;
   sharedAt: Date;
   expiresAt: Date | null;
 };
@@ -536,6 +541,7 @@ export type UpsertVaultDocumentShareData = {
 export type VaultDocumentShareRecipientRecord = {
   id: string;
   email: string;
+  name: string;
   roleCodes: string[];
 };
 

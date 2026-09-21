@@ -6,12 +6,11 @@ import {
 import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from '../../../common/prisma/prisma.service';
+import { USER_DISPLAY_NAME_SELECT } from '../../../common/prisma/user-display-name-select';
 
 const INVITATION_INCLUDE = {
   invitedBy: {
-    select: {
-      email: true,
-    },
+    select: USER_DISPLAY_NAME_SELECT,
   },
   // A doctor invitation carries no `fullName` of its own — the name is on the
   // profile it was raised for, and the accept copies it from here (P20-T05).

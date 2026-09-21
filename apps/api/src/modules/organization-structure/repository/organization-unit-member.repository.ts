@@ -2,6 +2,7 @@ import {
   ListOrganizationUnitMembersParams,
   OrganizationUnitMemberRecord,
   PagedOrganizationUnitMembers,
+  resolveUserFullName,
 } from '@hms/shared-types';
 import { Injectable } from '@nestjs/common';
 
@@ -20,6 +21,7 @@ const MEMBER_SELECT = {
   email: true,
   isActive: true,
   organizationUnitId: true,
+  fullName: true,
   doctorProfile: { select: { fullName: true } },
   roles: {
     where: { unassignedAt: null, deletedAt: null },
@@ -32,6 +34,7 @@ type MemberRow = {
   email: string;
   isActive: boolean;
   organizationUnitId: string | null;
+  fullName: string | null;
   doctorProfile: { fullName: string } | null;
   roles: { role: { code: string } }[];
 };
@@ -104,7 +107,7 @@ export class OrganizationUnitMemberRepository {
     return {
       userId: row.id,
       email: row.email,
-      fullName: row.doctorProfile?.fullName ?? null,
+      fullName: resolveUserFullName(row),
       isActive: row.isActive,
       roles: row.roles.map((entry) => entry.role.code),
       organizationUnitId: row.organizationUnitId,

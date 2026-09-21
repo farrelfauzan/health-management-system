@@ -11,6 +11,8 @@ function buildShare(overrides: Partial<VaultDocumentShareView> = {}): VaultDocum
     documentId: 'document-1',
     granteeId: 'grantee-1',
     granteeEmail: 'admin@example.test',
+
+    granteeName: 'Rani Putri',
     expiresAt: null,
     revokedAt: null,
     lastAccessedAt: null,

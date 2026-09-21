@@ -17,7 +17,7 @@ export type PatientDeliveryConsentRecord = {
   isGranted: boolean;
   noticeVersion: { id: string; version: string } | null;
   grantedAt: Date | null;
-  grantedBy: { id: string; email: string } | null;
+  grantedBy: { id: string; email: string; name: string } | null;
   revokedAt: Date | null;
   revokedReason: ConsentRevokedReasonValue | null;
 };

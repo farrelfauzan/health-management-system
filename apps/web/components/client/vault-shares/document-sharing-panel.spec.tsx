@@ -40,6 +40,7 @@ function buildShare(overrides: Record<string, unknown> = {}): Record<string, unk
     documentId: 'doc-1',
     granteeId: 'grantee-1',
     granteeEmail: 'admin-satu@example.test',
+    granteeName: 'Admin Satu',
     expiresAt: null,
     revokedAt: null,
     lastAccessedAt: null,
@@ -83,14 +84,18 @@ describe('DocumentSharingPanel', () => {
       data: {
         data: [
           buildShare({ openCount: 2, lastAccessedAt: '2026-09-02T11:00:00.000Z' }),
-          buildShare({ id: 'share-2', granteeEmail: 'admin-dua@example.test' }),
+          buildShare({
+            id: 'share-2',
+            granteeEmail: 'admin-dua@example.test',
+            granteeName: 'Admin Dua',
+          }),
         ],
       },
     });
     renderPanel();
 
-    expect(await screen.findByText('admin-satu@example.test')).toBeInTheDocument();
-    expect(screen.getByText('admin-dua@example.test')).toBeInTheDocument();
+    expect(await screen.findByText('Admin Satu')).toBeInTheDocument();
+    expect(screen.getByText('Admin Dua')).toBeInTheDocument();
     expect(screen.getByText(/2 kali/)).toBeInTheDocument();
     expect(screen.getByText(idMessages.vault.sharing.row.neverOpened)).toBeInTheDocument();
     expect(
@@ -102,7 +107,14 @@ describe('DocumentSharingPanel', () => {
     listSharesMock.mockResolvedValue({
       status: 200,
       data: {
-        data: [buildShare(), buildShare({ id: 'share-2', granteeEmail: 'admin-dua@example.test' })],
+        data: [
+          buildShare(),
+          buildShare({
+            id: 'share-2',
+            granteeEmail: 'admin-dua@example.test',
+            granteeName: 'Admin Dua',
+          }),
+        ],
       },
     });
     renderPanel();

@@ -183,6 +183,7 @@ export class ClinicCorpusApprovalService {
       defaultApprovers: type.defaultApprovers.map((approver) => ({
         id: approver.id,
         email: approver.email,
+        name: approver.name,
       })),
     };
   }

@@ -45,7 +45,7 @@ export function ShareRow({ documentId, share, onResult, onError }: ShareRowProps
     },
     onSuccess: async () => {
       await invalidateShareQueries(queryClient, documentId);
-      onResult(t('success.revoke', { email: share.granteeEmail }));
+      onResult(t('success.revoke', { name: share.granteeName }));
     },
     onError: (err: unknown) => onError(resolveApiErrorMessage(err, t('errors.revoke'))),
   });
@@ -53,7 +53,7 @@ export function ShareRow({ documentId, share, onResult, onError }: ShareRowProps
   return (
     <li className="flex items-start justify-between gap-3 border-b border-slate-100 px-3 py-2.5 last:border-b-0">
       <div className="min-w-0 space-y-1">
-        <p className="truncate text-sm font-medium text-slate-900">{share.granteeEmail}</p>
+        <p className="truncate text-sm font-medium text-slate-900">{share.granteeName}</p>
         <p className="text-xs text-slate-500">
           {share.openCount === 0
             ? t('neverOpened')

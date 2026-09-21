@@ -2,6 +2,7 @@ import {
   FinalizeTaxReportPayload,
   Pp55SourcePayment,
   PpnOutputSourceLine,
+  resolveUserDisplayName,
   SaveTaxReportPayload,
   TaxReportActorNames,
   TaxReportKindValue,
@@ -14,10 +15,11 @@ import {
 import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from '../../../common/prisma/prisma.service';
+import { USER_DISPLAY_NAME_SELECT } from '../../../common/prisma/user-display-name-select';
 import { Prisma, TaxReportDraft } from '../../../generated/prisma/client';
 
 const ACTOR_NAME_SELECT = {
-  select: { email: true, doctorProfile: { select: { fullName: true } } },
+  select: USER_DISPLAY_NAME_SELECT,
 } as const;
 
 /**
@@ -207,7 +209,7 @@ function toJson(value: TaxReportSummary | TaxReportLine[]): Prisma.InputJsonValu
 }
 
 function toActorName(
-  user: { email: string; doctorProfile: { fullName: string } | null } | null,
+  user: { email: string; fullName: string | null; doctorProfile: { fullName: string } | null } | null,
 ): string | null {
-  return user === null ? null : (user.doctorProfile?.fullName ?? user.email);
+  return user === null ? null : resolveUserDisplayName(user);
 }

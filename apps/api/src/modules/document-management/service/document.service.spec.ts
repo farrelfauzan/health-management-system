@@ -36,6 +36,7 @@ function buildDocumentRecord(overrides: Partial<DocumentRecord> = {}): DocumentR
     chunkCount: 0,
     uploadedById: ACTOR.sub,
     uploadedByEmail: null,
+    uploadedByName: null,
     patientId: null,
     encounterId: null,
     admissionId: null,
@@ -778,14 +779,14 @@ describe('DocumentService', () => {
         isApprovalRequired: true,
         allowSelfApproval: false,
         requiredApprovals: 1,
-        defaultApprovers: [{ id: 'approver-1', email: 'kepala.klinik@salingjaga.id' }],
+        defaultApprovers: [{ id: 'approver-1', email: 'kepala.klinik@salingjaga.id', name: 'Rani Putri' }],
       });
 
       await expect(documentService.getApprovalContext(ACTOR)).resolves.toEqual({
         isApprovalRequired: true,
         allowSelfApproval: false,
         requiredApprovals: 1,
-        defaultApprovers: [{ id: 'approver-1', email: 'kepala.klinik@salingjaga.id' }],
+        defaultApprovers: [{ id: 'approver-1', email: 'kepala.klinik@salingjaga.id', name: 'Rani Putri' }],
       });
     });
 

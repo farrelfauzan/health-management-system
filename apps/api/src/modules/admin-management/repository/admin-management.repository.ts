@@ -12,12 +12,21 @@ export class AdminManagementRepository {
     const skip = (page - 1) * limit;
 
     const where = {
+      // Name as well as address (P20-T06): a person is looked up by what they
+      // are called, and the address is only what they sign in with. Both name
+      // sources are searched because a doctor who has not been renamed on the
+      // account still carries the name typed onto the profile.
       ...(search
         ? {
-            email: {
-              contains: search,
-              mode: 'insensitive' as const,
-            },
+            OR: [
+              { email: { contains: search, mode: 'insensitive' as const } },
+              { fullName: { contains: search, mode: 'insensitive' as const } },
+              {
+                doctorProfile: {
+                  fullName: { contains: search, mode: 'insensitive' as const },
+                },
+              },
+            ],
           }
         : {}),
       ...(isActive !== undefined ? { isActive } : {}),

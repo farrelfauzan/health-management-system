@@ -12,6 +12,8 @@ import type {
 export type DeliveryConsentGrantedByView = {
   id: string;
   email: string;
+  /** Resolved for display (D-027, P20-T06); falls back to the address. */
+  name: string;
 };
 
 /** The notice version that was in force when consent was captured. */

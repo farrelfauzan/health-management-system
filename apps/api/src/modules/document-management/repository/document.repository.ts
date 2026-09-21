@@ -15,6 +15,7 @@ import {
 } from '@hms/shared-types';
 
 import { PrismaService } from '../../../common/prisma/prisma.service';
+import { USER_DISPLAY_NAME_SELECT } from '../../../common/prisma/user-display-name-select';
 import { PrismaTransactionClient } from '../../../common/prisma/prisma.types';
 import { toDocumentRecord } from './to-document-record';
 
@@ -128,7 +129,7 @@ export class DocumentRepository {
       },
       include: {
         _count: { select: { chunks: true } },
-        uploadedBy: { select: { email: true } },
+        uploadedBy: { select: USER_DISPLAY_NAME_SELECT },
       },
       orderBy: [{ documentDate: 'desc' }, { createdAt: 'desc' }, { id: 'desc' }],
       take: params.limit + 1,

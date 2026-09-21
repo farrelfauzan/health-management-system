@@ -64,12 +64,13 @@ export type ConversationHandoffSummaryView = {
 /**
  * One transcript turn as an admin reads it.
  *
- * `authorEmail` is resolved from the user row at read time rather than copied
- * onto the message, so an account that changes address is not shown under two
- * identities across one conversation. It is null on every non-`ADMIN` role,
- * because nobody wrote them — and the email is what this codebase has: `User`
- * carries no display name, and inventing one from the local part would put a
- * guess in a transcript that is read as evidence.
+ * `authorName` and `authorEmail` are resolved from the user row at read time
+ * rather than copied onto the message, so an account that changes name or
+ * address is not shown under two identities across one conversation. Both are
+ * null on every non-`ADMIN` role, because nobody wrote them. The name is the
+ * account's own (D-027, P20-T06), falling back to the address for an account
+ * nobody has named — never a guess from the address's local part, which would
+ * put an invention into a transcript that is read as evidence.
  *
  * `safetyTags` are surfaced deliberately: an admin taking over a conversation
  * needs to see that the previous turn was an emergency escalation or a
@@ -82,6 +83,7 @@ export type AdminConversationMessageView = {
   content: string;
   authorUserId: string | null;
   authorEmail: string | null;
+  authorName: string | null;
   safetyTags: string[];
   createdAt: string;
 };

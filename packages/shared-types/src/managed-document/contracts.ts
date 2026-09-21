@@ -10,6 +10,8 @@ import type {
 export type DocumentTypeApproverView = {
   id: string;
   email: string;
+  /** Resolved for display (D-027, P20-T06); falls back to the address. */
+  name: string;
 };
 
 /**
@@ -58,6 +60,8 @@ export type ManagedDocumentPartyView = {
 export type ManagedDocumentDrafterView = {
   id: string;
   email: string;
+  /** Resolved for display (D-027, P20-T06); falls back to the address. */
+  name: string;
 };
 
 /** The type a row files under, denormalised for the list (FR-E5-01). */

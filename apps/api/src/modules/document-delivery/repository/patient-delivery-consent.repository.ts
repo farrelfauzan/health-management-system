@@ -4,10 +4,12 @@ import {
   consentRevokedReasonSchema,
   GrantDeliveryConsentData,
   PatientDeliveryConsentRecord,
+  resolveUserDisplayName,
   RevokeDeliveryConsentData,
 } from '@hms/shared-types';
 
 import { PrismaService } from '../../../common/prisma/prisma.service';
+import { USER_DISPLAY_NAME_SELECT } from '../../../common/prisma/user-display-name-select';
 import { Prisma } from '../../../generated/prisma/client';
 
 /**
@@ -23,7 +25,7 @@ const CONSENT_SELECT = {
   revokedAt: true,
   revokedReason: true,
   noticeVersion: { select: { id: true, version: true } },
-  grantedBy: { select: { id: true, email: true } },
+  grantedBy: { select: { id: true, ...USER_DISPLAY_NAME_SELECT } },
 } satisfies Prisma.PatientDeliveryConsentSelect;
 
 type ConsentRow = Prisma.PatientDeliveryConsentGetPayload<{ select: typeof CONSENT_SELECT }>;
@@ -124,7 +126,13 @@ function toRecord(row: ConsentRow): PatientDeliveryConsentRecord {
     isGranted: row.isGranted,
     noticeVersion: row.noticeVersion,
     grantedAt: row.grantedAt,
-    grantedBy: row.grantedBy,
+    grantedBy: row.grantedBy
+      ? {
+          id: row.grantedBy.id,
+          email: row.grantedBy.email,
+          name: resolveUserDisplayName(row.grantedBy),
+        }
+      : null,
     revokedAt: row.revokedAt,
     revokedReason: parsedReason.success ? parsedReason.data : null,
   };

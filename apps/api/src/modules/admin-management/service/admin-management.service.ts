@@ -1,3 +1,4 @@
+import { resolveUserFullName } from '@hms/shared-types';
 import {
   BadRequestException,
   ConflictException,
@@ -83,13 +84,7 @@ export class AdminManagementService {
       items: result.items.map((user) => ({
         id: user.id,
         email: user.email,
-        // D-027's order, account first: the name on the account is the one its
-        // owner can correct, and the profile's is what an administrator typed
-        // before the account existed. P20-T06 moves this into one resolver and
-        // adopts it at every other display site.
-        ...(user.fullName ?? user.doctorProfile?.fullName
-          ? { fullName: user.fullName ?? user.doctorProfile?.fullName }
-          : {}),
+        ...(resolveUserFullName(user) ? { fullName: resolveUserFullName(user) as string } : {}),
         isActive: user.isActive,
         ...(user.offboardedAt ? { offboardedAt: user.offboardedAt.toISOString() } : {}),
         createdAt: user.createdAt,

@@ -28,6 +28,8 @@ export * from '#shared/phone-number-schema';
 export * from '#shared/format-phone-number';
 export * from '#admin-management/schemas';
 export * from '#admin-management/contracts';
+export * from '#admin-management/resolve-user-full-name';
+export * from '#admin-management/resolve-user-display-name';
 export * from '#admin-management/types';
 export * from '#patient-management/schemas';
 export * from '#patient-management/contracts';

@@ -95,10 +95,10 @@ class InMemoryDocumentTypeRepository {
     }
     this.types.set(typeId, {
       ...existing,
-      defaultApprovers: approverIds.map((id) => ({
-        id,
-        email: this.approverCandidates.find((candidate) => candidate.id === id)?.email ?? id,
-      })),
+      defaultApprovers: approverIds.map((id) => {
+        const candidate = this.approverCandidates.find((entry) => entry.id === id);
+        return { id, email: candidate?.email ?? id, name: candidate?.email ?? id };
+      }),
     });
   }
 
@@ -351,7 +351,11 @@ describe('Document types integration', () => {
     });
     expect(accepted.status).toBe(200);
     expect(accepted.body.data.defaultApprovers).toEqual([
-      { id: '11111111-1111-4111-8111-111111111111', email: 'staff@hms.local' },
+      {
+        id: '11111111-1111-4111-8111-111111111111',
+        email: 'staff@hms.local',
+        name: 'staff@hms.local',
+      },
     ]);
   });
 

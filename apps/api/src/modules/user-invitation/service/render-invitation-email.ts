@@ -25,11 +25,14 @@ const CLINIC_LABEL = 'Saling Jaga';
  */
 export function renderInvitationEmail(payload: InvitationEmailPayload): RenderedMail {
   const expiryLabel = formatExpiry(payload.expiresAt);
-  const inviterLineId = payload.invitedByEmail
-    ? `Undangan ini dikirim oleh ${payload.invitedByEmail}.`
+  // The inviter by name (P20-T06). An invitee reading "sent by Rani Putri"
+  // knows who to ask; "sent by admin@klinik.id" is an address, not a person.
+  const inviter = payload.invitedByName ?? payload.invitedByEmail;
+  const inviterLineId = inviter
+    ? `Undangan ini dikirim oleh ${inviter}.`
     : 'Undangan ini dikirim oleh administrator klinik.';
-  const inviterLineEn = payload.invitedByEmail
-    ? `This invitation was sent by ${payload.invitedByEmail}.`
+  const inviterLineEn = inviter
+    ? `This invitation was sent by ${inviter}.`
     : 'This invitation was sent by a clinic administrator.';
   return {
     subject: `Undangan akun ${CLINIC_LABEL} / Your ${CLINIC_LABEL} account invitation`,

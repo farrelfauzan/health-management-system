@@ -4,6 +4,7 @@ import {
   DoctorOwnerPlan,
   InviteDoctorOwnerParams,
   ListUserInvitationsParams,
+  resolveUserDisplayName,
   UserInvitationAcceptedView,
   UserInvitationPreview,
   UserInvitationView,
@@ -334,6 +335,7 @@ export class UserInvitationService {
       invitationUrl: buildInvitationUrl(this.config.webAppBaseUrl, token),
       expiresAt: invitation.expiresAt,
       invitedByEmail: invitation.invitedBy?.email ?? null,
+      invitedByName: invitation.invitedBy ? resolveUserDisplayName(invitation.invitedBy) : null,
     });
     const result = await this.mailService.sendMail({
       to: invitation.email,
@@ -401,6 +403,7 @@ export class UserInvitationService {
         name: roleNameByCode.get(code) ?? code,
       })),
       invitedByEmail: invitation.invitedBy?.email ?? null,
+      invitedByName: invitation.invitedBy ? resolveUserDisplayName(invitation.invitedBy) : null,
       expiresAt: invitation.expiresAt.toISOString(),
       createdAt: invitation.createdAt.toISOString(),
       consumedAt: invitation.consumedAt?.toISOString() ?? null,

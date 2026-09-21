@@ -32,7 +32,7 @@ function buildRecord(overrides: Partial<ManagedDocumentRecord> = {}): ManagedDoc
     subjectDocumentId: null,
     subjectInvoiceId: null,
     subjectDocument: null,
-    draftedBy: { id: 'user-1', email: 'admin@klinik.example' },
+    draftedBy: { id: 'user-1', email: 'admin@klinik.example', name: 'Rani Putri' },
     issuedAt: new Date('2026-09-30T03:00:00.000Z'),
     createdAt: new Date('2026-09-30T02:00:00.000Z'),
     updatedAt: new Date('2026-09-30T03:00:00.000Z'),

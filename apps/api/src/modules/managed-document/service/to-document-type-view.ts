@@ -21,6 +21,7 @@ export function toDocumentTypeView(record: DocumentTypeRecord): DocumentTypeView
     defaultApprovers: record.defaultApprovers.map((approver) => ({
       id: approver.id,
       email: approver.email,
+      name: approver.name,
     })),
     createdAt: record.createdAt.toISOString(),
     updatedAt: record.updatedAt.toISOString(),

@@ -15,6 +15,8 @@ import type {
 export type DocumentApprovalActorView = {
   id: string;
   email: string;
+  /** Resolved for display (D-027, P20-T06); falls back to the address. */
+  name: string;
 };
 
 /**
@@ -30,6 +32,8 @@ export type DocumentApprovalActorView = {
 export type DocumentApproverCandidateView = {
   id: string;
   email: string;
+  /** Resolved for display (D-027, P20-T06); falls back to the address. */
+  name: string;
   roleCodes: string[];
 };
 
@@ -37,6 +41,8 @@ export type DocumentApproverCandidateView = {
 export type DocumentApproverView = {
   id: string;
   email: string;
+  /** Resolved for display (D-027, P20-T06); falls back to the address. */
+  name: string;
   /**
    * Whether this approver still counts. An account that was deactivated or
    * lost `document-approval.decide:any` since submission drops out of the

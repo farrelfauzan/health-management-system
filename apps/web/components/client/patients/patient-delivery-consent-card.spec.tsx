@@ -37,7 +37,7 @@ const GRANTED_WHATSAPP = {
     isGranted: true,
     noticeVersion: { id: 'notice-1', version: '1.0' },
     grantedAt: '2026-09-28T02:15:00.000Z',
-    grantedBy: { id: 'user-1', email: 'kasir@klinik.example' },
+    grantedBy: { id: 'user-1', email: 'kasir@klinik.example', name: 'Sari Kasir' },
     revokedAt: null,
     revokedReason: null,
   },
@@ -120,7 +120,7 @@ describe('PatientDeliveryConsentCard', () => {
     expect(screen.getByText('Belum ditanyakan')).toBeInTheDocument();
     expect(screen.getByText(/Nomor pasien belum terverifikasi/)).toBeInTheDocument();
     expect(screen.getByText(/Belum ada persetujuan untuk kanal ini/)).toBeInTheDocument();
-    expect(screen.getByText(/kasir@klinik.example/)).toBeInTheDocument();
+    expect(screen.getByText(/Sari Kasir/)).toBeInTheDocument();
     expect(screen.getByText(/Pemberitahuan privasi v1.0/)).toBeInTheDocument();
   });
 

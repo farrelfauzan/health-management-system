@@ -10,14 +10,17 @@ import {
   InvoiceRecord,
   InvoiceRenderContextRecord,
   ResolvedInvoiceVariables,
+  resolveUserDisplayName,
   TemplateVariableWarning,
 } from '@hms/shared-types';
 
 import { PrismaService } from '../../../common/prisma/prisma.service';
+import { USER_DISPLAY_NAME_SELECT } from '../../../common/prisma/user-display-name-select';
 import { Invoice, InvoiceDocument, InvoiceItem, Prisma } from '../../../generated/prisma/client';
 
 type UserDisplayRow = {
   email: string;
+  fullName: string | null;
   doctorProfile: { fullName: string } | null;
 } | null;
 
@@ -64,10 +67,10 @@ const RENDER_CONTEXT_INCLUDE = {
   },
   payment: {
     include: {
-      cashier: { select: { email: true, doctorProfile: { select: { fullName: true } } } },
+      cashier: { select: USER_DISPLAY_NAME_SELECT },
     },
   },
-  voidedBy: { select: { email: true, doctorProfile: { select: { fullName: true } } } },
+  voidedBy: { select: USER_DISPLAY_NAME_SELECT },
 };
 
 /**
@@ -278,7 +281,7 @@ export class InvoiceDocumentRepository {
     if (user === null) {
       return null;
     }
-    return user.doctorProfile?.fullName ?? user.email;
+    return resolveUserDisplayName(user);
   }
 
   private toDocumentRecord(row: InvoiceDocument): InvoiceDocumentRecord {

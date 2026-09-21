@@ -8,7 +8,7 @@ import {
 
 /** The detail's approval half (`P16-T29`): the type's default approver set. */
 export type ManagedDocumentDetailExtras = {
-  defaultApprovers: Array<{ id: string; email: string }>;
+  defaultApprovers: Array<{ id: string; email: string; name: string }>;
 };
 
 /**

@@ -48,7 +48,7 @@ export function SharedWithMeRow({ document, onError }: SharedWithMeRowProps) {
       <TableCell className="px-4 py-3">
         <p className="text-sm font-medium text-slate-900">{document.title}</p>
       </TableCell>
-      <TableCell className="px-4 text-sm text-slate-600">{document.sharedByEmail}</TableCell>
+      <TableCell className="px-4 text-sm text-slate-600">{document.sharedByName}</TableCell>
       <TableCell className="px-4 text-sm text-slate-600">
         {document.sharedAt.slice(0, 10)}
       </TableCell>

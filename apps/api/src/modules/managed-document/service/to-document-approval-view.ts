@@ -32,11 +32,16 @@ export function toDocumentApprovalRoundView(
     approvers: record.approvers.map((approver) => ({
       id: approver.approverId,
       email: approver.email,
+      name: approver.name,
       isEligible: approver.isEligible,
     })),
     decisions: record.decisions.map((decision) => ({
       id: decision.id,
-      approver: { id: decision.approverId, email: decision.approverEmail },
+      approver: {
+        id: decision.approverId,
+        email: decision.approverEmail,
+        name: decision.approverName,
+      },
       isApproved: decision.isApproved,
       reason: decision.reason,
       decidedAt: decision.decidedAt.toISOString(),

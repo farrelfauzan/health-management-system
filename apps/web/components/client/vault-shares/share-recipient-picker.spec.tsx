@@ -14,10 +14,20 @@ vi.mock('#lib/api/generated/document-management/document-management', () => ({
 
 const { ShareRecipientPicker } = await import('./share-recipient-picker');
 
-type Recipient = { id: string; email: string; roleCodes: string[] };
+type Recipient = { id: string; email: string; name: string; roleCodes: string[] };
 
-const ADMIN_ONE: Recipient = { id: 'user-1', email: 'admin-satu@example.test', roleCodes: ['ADMIN'] };
-const ADMIN_TWO: Recipient = { id: 'user-2', email: 'admin-dua@example.test', roleCodes: ['ADMIN'] };
+const ADMIN_ONE: Recipient = {
+  id: 'user-1',
+  email: 'admin-satu@example.test',
+  name: 'Admin Satu',
+  roleCodes: ['ADMIN'],
+};
+const ADMIN_TWO: Recipient = {
+  id: 'user-2',
+  email: 'admin-dua@example.test',
+  name: 'Admin Dua',
+  roleCodes: ['ADMIN'],
+};
 
 function renderPicker(
   selected: Recipient[] = [],
@@ -97,10 +107,8 @@ describe('ShareRecipientPicker', () => {
     const onChange = vi.fn();
     renderPicker([ADMIN_ONE], onChange);
 
-    expect(screen.getByText(ADMIN_ONE.email)).toBeInTheDocument();
-    await userEvent.click(
-      screen.getByRole('button', { name: `Hapus ${ADMIN_ONE.email}` }),
-    );
+    expect(screen.getByText(ADMIN_ONE.name)).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: `Hapus ${ADMIN_ONE.name}` }));
 
     await waitFor(() => expect(onChange).toHaveBeenCalledWith([]));
   });

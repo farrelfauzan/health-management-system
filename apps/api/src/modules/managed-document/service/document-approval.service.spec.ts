@@ -64,7 +64,7 @@ function buildDocument(overrides: Partial<ManagedDocumentRecord> = {}): ManagedD
     subjectDocumentId: null,
     subjectInvoiceId: null,
     subjectDocument: null,
-    draftedBy: { id: DRAFTER_ID, email: 'drafter@klinik.example' },
+    draftedBy: { id: DRAFTER_ID, email: 'drafter@klinik.example', name: 'Rani Putri' },
     issuedAt: null,
     createdAt: new Date('2026-09-30T00:00:00Z'),
     updatedAt: new Date('2026-09-30T00:00:00Z'),
@@ -91,13 +91,13 @@ function buildRound(
       approverIds: [APPROVER_ID],
       frozenAt: '2026-09-30T01:00:00.000Z',
     },
-    submittedBy: { id: DRAFTER_ID, email: 'drafter@klinik.example' },
+    submittedBy: { id: DRAFTER_ID, email: 'drafter@klinik.example', name: 'Rani Putri' },
     submittedAt: new Date('2026-09-30T01:00:00Z'),
     dueAt: null,
     resolvedAt: null,
     dueSoonNotifiedAt: null,
     overdueNotifiedAt: null,
-    approvers: [{ approverId: APPROVER_ID, email: 'approver@klinik.example', isEligible: true }],
+    approvers: [{ approverId: APPROVER_ID, email: 'approver@klinik.example', name: 'Rani Putri', isEligible: true }],
     decisions: [],
     ...overrides,
   };
@@ -335,7 +335,7 @@ describe('DocumentApprovalService', () => {
       approvalRepositoryMock.findRequestById.mockResolvedValue(
         buildRound({
           approvers: [
-            { approverId: DRAFTER_ID, email: 'drafter@klinik.example', isEligible: true },
+            { approverId: DRAFTER_ID, email: 'drafter@klinik.example', name: 'Rani Putri', isEligible: true },
           ],
         }),
       );
@@ -350,7 +350,7 @@ describe('DocumentApprovalService', () => {
       approvalRepositoryMock.findRequestById.mockResolvedValue(
         buildRound({
           approvers: [
-            { approverId: DRAFTER_ID, email: 'drafter@klinik.example', isEligible: true },
+            { approverId: DRAFTER_ID, email: 'drafter@klinik.example', name: 'Rani Putri', isEligible: true },
           ],
         }),
       );

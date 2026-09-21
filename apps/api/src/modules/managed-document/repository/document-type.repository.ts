@@ -4,10 +4,12 @@ import {
   CreateDocumentTypeRecordPayload,
   DocumentTypeApproverCandidateRecord,
   DocumentTypeRecord,
+  resolveUserDisplayName,
   UpdateDocumentTypeRecordPayload,
 } from '@hms/shared-types';
 
 import { PrismaService } from '../../../common/prisma/prisma.service';
+import { USER_DISPLAY_NAME_SELECT } from '../../../common/prisma/user-display-name-select';
 import { Prisma } from '../../../generated/prisma/client';
 
 const PATIENT_ROLE_CODE = 'PATIENT';
@@ -15,7 +17,7 @@ const PATIENT_ROLE_CODE = 'PATIENT';
 const TYPE_INCLUDE = {
   defaultApprovers: {
     orderBy: { approver: { email: 'asc' as const } },
-    select: { approver: { select: { id: true, email: true } } },
+    select: { approver: { select: { id: true, ...USER_DISPLAY_NAME_SELECT } } },
   },
 } satisfies Prisma.DocumentTypeInclude;
 
@@ -203,7 +205,11 @@ function toRecord(row: TypeRow, documentCount: number): DocumentTypeRecord {
     isActive: row.isActive,
     sortOrder: row.sortOrder,
     documentCount,
-    defaultApprovers: row.defaultApprovers.map((entry) => entry.approver),
+    defaultApprovers: row.defaultApprovers.map((entry) => ({
+      id: entry.approver.id,
+      email: entry.approver.email,
+      name: resolveUserDisplayName(entry.approver),
+    })),
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
   };

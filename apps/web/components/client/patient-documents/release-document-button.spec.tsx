@@ -74,6 +74,8 @@ function buildDocument(overrides: Partial<PatientDocumentView> = {}): PatientDoc
     releasedById: null,
     uploadedById: 'user-1',
     uploadedByEmail: 'perawat@hms.test',
+
+    uploadedByName: 'Rani Putri',
     createdAt: '2026-09-01T08:00:00.000Z',
     updatedAt: '2026-09-01T08:00:00.000Z',
     ...overrides,

@@ -665,6 +665,7 @@ export class PatientDocumentService {
       releasedById: record.releasedById,
       uploadedById: record.uploadedById,
       uploadedByEmail: record.uploadedByEmail,
+      uploadedByName: record.uploadedByName,
       createdAt: record.createdAt.toISOString(),
       updatedAt: record.updatedAt.toISOString(),
     };
