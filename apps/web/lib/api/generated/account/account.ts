@@ -22,8 +22,10 @@ import type {
 
 import type {
   OwnAccountControllerGetOwnAccountV1200,
+  OwnAccountControllerUpdateOwnAccountNikV1200,
   OwnAccountControllerUpdateOwnAccountV1200,
-  UpdateOwnAccountDto
+  UpdateOwnAccountDto,
+  UpdateOwnAccountNikDto
 } from '../model';
 
 import { orvalAxiosMutator } from '../../http';
@@ -221,6 +223,100 @@ export function useOwnAccountControllerUpdateOwnAccountV1<TData = Awaited<Return
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getOwnAccountControllerUpdateOwnAccountV1QueryOptions(updateOwnAccountDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Add or replace the NIK on my account
+ */
+export const ownAccountControllerUpdateOwnAccountNikV1 = (
+    updateOwnAccountNikDto: UpdateOwnAccountNikDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<OwnAccountControllerUpdateOwnAccountNikV1200>(
+      {url: `/api/v1/me/account/nik`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: updateOwnAccountNikDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getOwnAccountControllerUpdateOwnAccountNikV1QueryKey = (updateOwnAccountNikDto?: UpdateOwnAccountNikDto,) => {
+    return [
+    'PUT', `/api/v1/me/account/nik`, updateOwnAccountNikDto
+    ] as const;
+    }
+
+
+export const getOwnAccountControllerUpdateOwnAccountNikV1QueryOptions = <TData = Awaited<ReturnType<typeof ownAccountControllerUpdateOwnAccountNikV1>>, TError = unknown>(updateOwnAccountNikDto: UpdateOwnAccountNikDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof ownAccountControllerUpdateOwnAccountNikV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getOwnAccountControllerUpdateOwnAccountNikV1QueryKey(updateOwnAccountNikDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof ownAccountControllerUpdateOwnAccountNikV1>>> = ({ signal }) => ownAccountControllerUpdateOwnAccountNikV1(updateOwnAccountNikDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof ownAccountControllerUpdateOwnAccountNikV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type OwnAccountControllerUpdateOwnAccountNikV1QueryResult = NonNullable<Awaited<ReturnType<typeof ownAccountControllerUpdateOwnAccountNikV1>>>
+export type OwnAccountControllerUpdateOwnAccountNikV1QueryError = unknown
+
+
+export function useOwnAccountControllerUpdateOwnAccountNikV1<TData = Awaited<ReturnType<typeof ownAccountControllerUpdateOwnAccountNikV1>>, TError = unknown>(
+ updateOwnAccountNikDto: UpdateOwnAccountNikDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof ownAccountControllerUpdateOwnAccountNikV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof ownAccountControllerUpdateOwnAccountNikV1>>,
+          TError,
+          Awaited<ReturnType<typeof ownAccountControllerUpdateOwnAccountNikV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useOwnAccountControllerUpdateOwnAccountNikV1<TData = Awaited<ReturnType<typeof ownAccountControllerUpdateOwnAccountNikV1>>, TError = unknown>(
+ updateOwnAccountNikDto: UpdateOwnAccountNikDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof ownAccountControllerUpdateOwnAccountNikV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof ownAccountControllerUpdateOwnAccountNikV1>>,
+          TError,
+          Awaited<ReturnType<typeof ownAccountControllerUpdateOwnAccountNikV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useOwnAccountControllerUpdateOwnAccountNikV1<TData = Awaited<ReturnType<typeof ownAccountControllerUpdateOwnAccountNikV1>>, TError = unknown>(
+ updateOwnAccountNikDto: UpdateOwnAccountNikDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof ownAccountControllerUpdateOwnAccountNikV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Add or replace the NIK on my account
+ */
+
+export function useOwnAccountControllerUpdateOwnAccountNikV1<TData = Awaited<ReturnType<typeof ownAccountControllerUpdateOwnAccountNikV1>>, TError = unknown>(
+ updateOwnAccountNikDto: UpdateOwnAccountNikDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof ownAccountControllerUpdateOwnAccountNikV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getOwnAccountControllerUpdateOwnAccountNikV1QueryOptions(updateOwnAccountNikDto,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

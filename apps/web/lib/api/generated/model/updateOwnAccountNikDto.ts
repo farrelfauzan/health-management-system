@@ -6,9 +6,6 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type OwnAccountControllerGetOwnAccountV1200Data = {
-  id: string;
-  email: string;
-  fullName: string;
-  nikLast4: string;
-};
+export interface UpdateOwnAccountNikDto {
+  nik: string;
+}

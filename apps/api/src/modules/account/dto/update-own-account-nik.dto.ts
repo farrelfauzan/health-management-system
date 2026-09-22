@@ -1,0 +1,4 @@
+import { updateOwnAccountNikSchema } from '@hms/shared-types';
+import { createZodDto } from 'nestjs-zod';
+
+export class UpdateOwnAccountNikDto extends createZodDto(updateOwnAccountNikSchema) {}
