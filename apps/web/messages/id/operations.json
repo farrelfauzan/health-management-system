@@ -1003,7 +1003,9 @@
           "licenseNumber": "Nomor izin operasional",
           "taxId": "NPWP",
           "latitude": "Lintang (latitude)",
-          "longitude": "Bujur (longitude)"
+          "longitude": "Bujur (longitude)",
+          "reportingPuskesmasName": "Puskesmas pelapor",
+          "reportingPuskesmasCode": "Kode puskesmas pelapor"
         },
         "logo": {
           "label": "Logo",
@@ -1027,7 +1029,8 @@
           "saveFailed": "Profil klinik gagal disimpan. Silakan coba lagi.",
           "coordinatesPair": "Isi lintang dan bujur sebagai angka, atau kosongkan keduanya."
         },
-        "coordinatesHint": "Derajat desimal, dipakai untuk mendaftarkan lokasi klinik ke SATUSEHAT. Di Indonesia lintang berada di antara -11 dan 6, bujur di antara 95 dan 141 — pastikan tidak tertukar."
+        "coordinatesHint": "Derajat desimal, dipakai untuk mendaftarkan lokasi klinik ke SATUSEHAT. Di Indonesia lintang berada di antara -11 dan 6, bujur di antara 95 dan 141 — pastikan tidak tertukar.",
+        "reportingPuskesmasHint": "Puskesmas tujuan laporan KIA bulanan (Laporan KIA). Nama dan kode Kemenkes dicetak pada kepala laporan."
       },
       "offboarding": {
         "offboard": "Offboarding",

@@ -31,6 +31,8 @@ export function toClinicProfileView(
     latitude: record.latitude,
     longitude: record.longitude,
     satusehatLocationId: record.satusehatLocationId,
+    reportingPuskesmasName: record.reportingPuskesmasName,
+    reportingPuskesmasCode: record.reportingPuskesmasCode,
     updatedAt: record.updatedAt.toISOString(),
   };
 }

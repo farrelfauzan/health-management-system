@@ -9,6 +9,7 @@ import {
   ClinicLogoUploadUrlView,
   ClinicProfileRecord,
   ClinicProfileView,
+  ClinicReportingIdentity,
   CreateClinicLogoUploadUrlInput,
   SaveClinicProfileData,
   UpdateClinicProfileInput,
@@ -118,6 +119,21 @@ export class ClinicProfileService {
       address: record.address,
       taxId: record.taxId,
       logoDataUri: await this.readLogoDataUri(record),
+    };
+  }
+
+  /**
+   * The clinic and its reporting puskesmas for a KIA report header (P25-T15).
+   * An unconfigured clinic prints under the product label with no puskesmas,
+   * so the register can still be printed on day one.
+   */
+  async getReportingIdentity(): Promise<ClinicReportingIdentity> {
+    const record = await this.clinicProfileRepository.findProfile();
+    const name = record?.name.trim() ?? '';
+    return {
+      clinicName: name === '' ? DEFAULT_CLINIC_LABEL : name,
+      puskesmasName: record?.reportingPuskesmasName ?? null,
+      puskesmasCode: record?.reportingPuskesmasCode ?? null,
     };
   }
 
@@ -346,6 +362,12 @@ export class ClinicProfileService {
       fields.licenseNumber = input.licenseNumber;
     }
     Object.assign(fields, this.resolveTaxIdField(input.taxId, existing?.taxId ?? null));
+    if (input.reportingPuskesmasName !== undefined) {
+      fields.reportingPuskesmasName = input.reportingPuskesmasName;
+    }
+    if (input.reportingPuskesmasCode !== undefined) {
+      fields.reportingPuskesmasCode = input.reportingPuskesmasCode;
+    }
     // The schema only lets the coordinates through as a pair (P24-T05).
     if (input.latitude !== undefined) {
       fields.latitude = input.latitude;

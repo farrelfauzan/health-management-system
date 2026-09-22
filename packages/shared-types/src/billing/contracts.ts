@@ -268,6 +268,9 @@ export type ClinicProfileView = {
   longitude: number | null;
   /** The registered root site Location (P24-T06); null until registered. */
   satusehatLocationId: string | null;
+  /** The puskesmas the monthly KIA report is addressed to (P25-T15); null until set. */
+  reportingPuskesmasName: string | null;
+  reportingPuskesmasCode: string | null;
   updatedAt: string;
 };
 

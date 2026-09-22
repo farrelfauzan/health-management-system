@@ -11541,6 +11541,8 @@ export const ClinicProfileScalarFieldEnum = {
   latitude: 'latitude',
   longitude: 'longitude',
   satusehatLocationId: 'satusehatLocationId',
+  reportingPuskesmasName: 'reportingPuskesmasName',
+  reportingPuskesmasCode: 'reportingPuskesmasCode',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

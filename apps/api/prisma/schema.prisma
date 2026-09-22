@@ -3061,6 +3061,12 @@ model ClinicProfile {
   /// The root site Location once registered (FR-LOC-02). While null, bundles
   /// keep using `SATUSEHAT_LOCATION_ID`, exactly as before this column existed.
   satusehatLocationId String? @map("satusehat_location_id")
+  /// The puskesmas the clinic reports its monthly KIA figures to (P25-T15,
+  /// D-040): the name and Kemenkes facility code printed in the report
+  /// header. Both nullable, because a klinik bidan that has not yet been
+  /// told its reporting puskesmas still needs to print the register.
+  reportingPuskesmasName String? @map("reporting_puskesmas_name")
+  reportingPuskesmasCode String? @map("reporting_puskesmas_code")
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @updatedAt @map("updated_at")
 

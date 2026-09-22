@@ -17,6 +17,8 @@ export const CLINIC_PROFILE_EXAMPLES = {
     taxId: '01.234.567.8-901.000',
     hasLogo: true,
     logoUrl: 'https://storage.example/clinic-profile/logo/stored/…?X-Amz-Signature=…',
+    reportingPuskesmasName: 'Puskesmas Cibeunying',
+    reportingPuskesmasCode: 'P3273110201',
     updatedAt: '2026-09-18T02:15:00.000Z',
   },
   updateRequest: {

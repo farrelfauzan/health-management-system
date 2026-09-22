@@ -158,6 +158,8 @@ describe('buildLabReportContext', () => {
         latitude: null,
         longitude: null,
         satusehatLocationId: null,
+        reportingPuskesmasName: null,
+        reportingPuskesmasCode: null,
         updatedAt: releasedAt.toISOString(),
       },
       clinicLogoDataUri: null,

@@ -32,6 +32,8 @@ describe('buildLabRequestContext', () => {
     latitude: null,
     longitude: null,
     satusehatLocationId: null,
+    reportingPuskesmasName: null,
+    reportingPuskesmasCode: null,
     updatedAt: timestamp.toISOString(),
   };
 
