@@ -444,6 +444,87 @@
       "cancel": "Cancel",
       "early": "taken early",
       "earlyHint": "Sample taken before 48 hours; the laboratory may not be able to read it."
+    },
+    "reports": {
+      "title": "KIA Reports",
+      "subtitle": "The mother, newborn and family planning cohort registers, and the monthly KIA and births-deaths reports for the puskesmas.",
+      "tabs": {
+        "kohortIbu": "Mother cohort",
+        "kohortBayi": "Newborn cohort",
+        "kohortKb": "KB cohort",
+        "monthlyKia": "Monthly KIA report",
+        "birthsDeaths": "Births & deaths"
+      },
+      "filters": {
+        "month": "Month",
+        "village": "Village",
+        "allVillages": "All villages",
+        "searchVillage": "Search villages...",
+        "noVillages": "No villages in this month."
+      },
+      "actions": {
+        "downloadCsv": "Download CSV",
+        "downloadPdf": "Download PDF",
+        "exportError": "The report could not be downloaded. Please try again."
+      },
+      "provisionalNotice": "Provisional layout (D-040): the column order has not been compared with the pilot puskesmas form yet and may change.",
+      "header": {
+        "puskesmas": "Reporting puskesmas",
+        "notSet": "not set (Clinic profile)"
+      },
+      "empty": "No data for this month.",
+      "loadError": "The report could not be loaded. Please try again.",
+      "register": {
+        "village": "Village",
+        "total": "{count} rows"
+      },
+      "indicators": {
+        "indicator": "Indicator",
+        "value": "Count",
+        "definition": "Definition",
+        "kiaBlock": "KIA indicators",
+        "labBlock": "Antenatal laboratory tests (LB3-KIA)"
+      },
+      "birthsDeaths": {
+        "summary": {
+          "liveBirths": "Live births",
+          "stillbirths": "Stillbirths",
+          "maternalDeaths": "Maternal deaths",
+          "newbornDeaths": "Newborn deaths",
+          "otherDeaths": "Other deaths"
+        },
+        "births": "Births",
+        "deaths": "Deaths",
+        "noBirths": "No births this month.",
+        "noDeaths": "No deaths recorded this month.",
+        "noVillage": "No village",
+        "columns": {
+          "birthAt": "Born at",
+          "outcome": "Outcome",
+          "sex": "Sex",
+          "weight": "Weight (g)",
+          "mother": "Mother",
+          "village": "Village",
+          "attendant": "Attendant",
+          "diedAt": "Died at",
+          "patientKind": "Group",
+          "name": "Name",
+          "age": "Age"
+        },
+        "outcome": {
+          "LIVE_BIRTH": "Live birth",
+          "STILLBIRTH": "Stillbirth"
+        },
+        "sex": {
+          "MALE": "Male",
+          "FEMALE": "Female"
+        },
+        "patientKind": {
+          "MOTHER": "Mother",
+          "NEWBORN": "Newborn",
+          "OTHER": "Other"
+        }
+      }
     }
   }
 }

@@ -15,6 +15,7 @@ export type ShellNavigationKey =
   | 'registration'
   | 'encounters'
   | 'shkScreening'
+  | 'maternalReports'
   | 'rooms'
   | 'admissions'
   | 'pharmacy'
@@ -118,6 +119,17 @@ export const ADMIN_NAV_SECTIONS: AdminNavSection[] = [
         labelKey: 'shkScreening',
         icon: 'child_care',
         ability: { action: 'read', subject: 'Encounter' },
+      },
+      {
+        // P25-T15. The kohort registers and monthly KIA reports, mirroring
+        // the clinician page. `maternal-report.read` is a clinician grant
+        // (D-033), so an administrator sees it only when also a clinician.
+        // Hidden with the `maternal-care` entitlement (catalog navHrefs).
+        href: '/admin/maternal-reports',
+        label: 'KIA Reports',
+        labelKey: 'maternalReports',
+        icon: 'summarize',
+        ability: { action: 'read', subject: 'MaternalReport' },
       },
       {
         // IMP-16. Inventory and the occupancy board. Any of the three

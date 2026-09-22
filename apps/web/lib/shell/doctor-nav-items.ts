@@ -50,6 +50,16 @@ export const DOCTOR_NAV_SECTIONS: AdminNavSection[] = [
         ability: { action: 'read', subject: 'Encounter' },
       },
       {
+        // P25-T15. The kohort registers and the monthly KIA and births/deaths
+        // reports the bidan hands the puskesmas. Hidden with the
+        // `maternal-care` entitlement (catalog navHrefs).
+        href: '/doctor/maternal-reports',
+        label: 'KIA Reports',
+        labelKey: 'maternalReports',
+        icon: 'summarize',
+        ability: { action: 'read', subject: 'MaternalReport' },
+      },
+      {
         // The assistant is an OWN-scoped grant every doctor holds, so it
         // belongs in this shell. It was previously reachable only through the
         // floating launcher, and that pointed at the admin route.
