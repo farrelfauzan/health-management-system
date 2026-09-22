@@ -40,16 +40,22 @@ const ANNUAL_ENTITY_RETURN_MONTH = 4;
  * - PPN is deposited and filed together by the end of the following month,
  *   and only by a PKP. A non-PKP clinic never charges PPN (D-038), so a PPN
  *   due date for one is noise.
- * - The monthly returns for PPh 21/26 and Unifikasi fall due on the 20th for
- *   every clinic that withholds. They are listed because the calendar is the
- *   calendar; nothing here reports on them, which is why they raise no
- *   draft-gated reminder.
+ * - Withheld PPh 21 on clinician fees is deposited by the 15th and its SPT
+ *   Masa PPh 21/26 filed by the 20th (P27-T07). Both are gated on the
+ *   `PPH21_NON_EMPLOYEE` draft, but only for a clinic that withheld in the
+ *   period (`hasWithholding`): one with no clinician fees that month has no
+ *   BP21 to issue, so its dates stay calendar information.
+ * - The monthly Unifikasi return falls due on the 20th for every clinic that
+ *   withholds. It is listed because the calendar is the calendar; nothing
+ *   here reports on it, which is why it raises no draft-gated reminder.
  */
 export function resolveTaxObligationDueDates(params: {
   /** `YYYY-MM`, the period being reported on. */
   period: string;
   incomeTaxRegime: 'PP55' | 'GENERAL';
   isPkp: boolean;
+  /** Whether the jasa medis ledger has entries in the period; false when unknown. */
+  hasWithholding?: boolean;
 }): TaxObligationDueDate[] {
   const { year, month } = parsePeriod(params.period);
   const dueDates: TaxObligationDueDate[] = [];
@@ -67,11 +73,20 @@ export function resolveTaxObligationDueDates(params: {
       reportKind: 'PPN_OUTPUT',
     });
   }
+  const pph21DueDates = resolveTaxReportDueDates(params.period, 'PPH21_NON_EMPLOYEE');
+  const pph21ReportKind = params.hasWithholding === true ? 'PPH21_NON_EMPLOYEE' : null;
+  if (params.hasWithholding === true) {
+    dueDates.push({
+      obligation: 'PPH21_WITHHOLDING_DEPOSIT',
+      dueDate: pph21DueDates.paymentDueDate,
+      reportKind: pph21ReportKind,
+    });
+  }
   dueDates.push(
     {
       obligation: 'WITHHOLDING_RETURN_PPH_21_26',
-      dueDate: buildDayOfNextMonth(year, month, MONTHLY_RETURN_FILING_DAY),
-      reportKind: null,
+      dueDate: pph21DueDates.reportingDueDate,
+      reportKind: pph21ReportKind,
     },
     {
       obligation: 'WITHHOLDING_RETURN_UNIFICATION',

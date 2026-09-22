@@ -11,7 +11,12 @@ import type {
   TaxReportStatusValue,
   TaxpayerTypeValue,
 } from '#taxes/schemas';
-import type { TaxReportDifference, TaxReportLine, TaxReportSummary } from '#taxes/types';
+import type {
+  ClinicianTaxIdentifier,
+  TaxReportDifference,
+  TaxReportLine,
+  TaxReportSummary,
+} from '#taxes/types';
 
 /**
  * The clinic's tax profile (P27-T02). `npwp` is read from the clinic profile,
@@ -155,6 +160,17 @@ export type TaxReportListItem = {
 export type TaxReportsListMeta = {
   year: number;
   applicableKinds: TaxReportKindValue[];
+};
+
+/**
+ * The full NPWP or NIK of every clinician on a PPh 21 report (P27-T07), for
+ * the BP21. A separate, audited read: the report itself carries only masked
+ * identities. A clinician with neither is absent here and flagged there.
+ */
+export type TaxReportIdentifiersView = {
+  reportId: string;
+  period: string;
+  clinicians: ClinicianTaxIdentifier[];
 };
 
 /** A signed link to a finalized report's stored PDF (P27-T12). */
