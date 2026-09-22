@@ -20,6 +20,10 @@ const NON_PRODUCTION_HOST_PATTERN = /^api-satusehat-[a-z0-9]+\.dto\.kemkes\.go\.
  * Calling an unknown proxy "sandbox" would be a guess presented as fact, and the
  * whole point of showing this is that nobody should mistake a sandbox success
  * for a real one — or the reverse.
+ *
+ * Also applied to `SATUSEHAT_KYC_BASE_URL` (P24-T14): the KYC client refuses
+ * to run when its URL and the FHIR URL resolve to different platforms, since
+ * the card above only ever reads the FHIR one and would not show the split.
  */
 export function resolveSatusehatEnvironment(fhirBaseUrl: string): SatusehatEnvironmentValue {
   let host: string;

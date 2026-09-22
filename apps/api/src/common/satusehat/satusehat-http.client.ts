@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 
 import { mapSatusehatTransportError } from './map-satusehat-transport-error';
 import { SatusehatCircuitBreaker } from './satusehat-circuit-breaker';
+import { NIK_PATTERN } from './satusehat-nik-pattern';
 import { SatusehatTokenClient } from './satusehat-token.client';
 import { SatusehatOperationOutcome } from './satusehat-fhir.types';
 import { SatusehatError } from './satusehat.error';
@@ -15,8 +16,6 @@ import { SatusehatConfig, SatusehatHttpMethod, SatusehatRequest } from './satuse
 // landed would duplicate it. Both surface the timeout to the caller instead.
 const IDEMPOTENT_METHODS: readonly SatusehatHttpMethod[] = ['GET', 'PUT', 'DELETE'];
 const RETRYABLE_ERROR_CODES: readonly string[] = ['SATUSEHAT_TIMEOUT', 'SATUSEHAT_UNAVAILABLE'];
-/** A NIK is sixteen digits; a lookup rejection can echo the one it was asked about. */
-const NIK_PATTERN = /\b\d{16}\b/g;
 
 /**
  * Authenticated HTTP client for the SATUSEHAT FHIR gateway. Owns the
