@@ -417,6 +417,20 @@ export const SatusehatServiceClass = {
 export type SatusehatServiceClass = (typeof SatusehatServiceClass)[keyof typeof SatusehatServiceClass]
 
 
+export const PtkpStatus = {
+  TK_0: 'TK_0',
+  TK_1: 'TK_1',
+  TK_2: 'TK_2',
+  TK_3: 'TK_3',
+  K_0: 'K_0',
+  K_1: 'K_1',
+  K_2: 'K_2',
+  K_3: 'K_3'
+} as const
+
+export type PtkpStatus = (typeof PtkpStatus)[keyof typeof PtkpStatus]
+
+
 export const ClinicianProfession = {
   DOCTOR: 'DOCTOR',
   MIDWIFE: 'MIDWIFE'

@@ -11,6 +11,7 @@ import { TaxCategoryDefaultController } from './controller/tax-category-default.
 import { TaxCodeController } from './controller/tax-code.controller';
 import { TaxPriceBreakdownController } from './controller/tax-price-breakdown.controller';
 import { TaxReportController } from './controller/tax-report.controller';
+import { TaxReportCoretaxController } from './controller/tax-report-coretax.controller';
 import { NotificationModule } from '../notification/notification.module';
 import { ClinicianTaxIdentityRepository } from './repository/clinician-tax-identity.repository';
 import { Pph21TaxBracketRepository } from './repository/pph21-tax-bracket.repository';
@@ -18,6 +19,7 @@ import { TaxReminderRepository } from './repository/tax-reminder.repository';
 import { TaxReportRepository } from './repository/tax-report.repository';
 import { TaxReportDocumentRepository } from './repository/tax-report-document.repository';
 import { TaxSettingsController } from './controller/tax-settings.controller';
+import { CoretaxBp21ExportService } from './service/coretax-bp21-export.service';
 import { TaxAssignmentService } from './service/tax-assignment.service';
 import { TaxPriceBreakdownService } from './service/tax-price-breakdown.service';
 import { TaxReportPdfService } from './service/tax-report-pdf.service';
@@ -35,7 +37,8 @@ import { TaxSettingsService } from './service/tax-settings.service';
  * tax itself lives in `TaxCoreModule`, which billing imports). T07 adds the
  * PPh 21 bukan pegawai draft, read from the jasa medis ledger through
  * `ClinicianFeeStatementService`. Reads the clinic's NPWP through
- * `ClinicProfileService`, which owns it.
+ * `ClinicProfileService`, which owns it. T08 turns a
+ * finalized PPh 21 month into DJP's BP21 v4 Coretax import file.
  */
 @Module({
   imports: [
@@ -54,6 +57,7 @@ import { TaxSettingsService } from './service/tax-settings.service';
     TaxAssignmentController,
     TaxPriceBreakdownController,
     TaxReportController,
+    TaxReportCoretaxController,
   ],
   providers: [
     TaxSettingsService,
@@ -65,6 +69,7 @@ import { TaxSettingsService } from './service/tax-settings.service';
     ClinicianTaxIdentityRepository,
     TaxReportPdfService,
     TaxReportDocumentRepository,
+    CoretaxBp21ExportService,
     TaxCalendarService,
     TaxCalendarWorker,
     TaxReminderRepository,

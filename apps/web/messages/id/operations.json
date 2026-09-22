@@ -2525,7 +2525,9 @@
           "TAX_REPORT_PERIOD_IN_FUTURE": "Bulan itu belum dimulai.",
           "TAX_REPORT_PDF_UNAVAILABLE": "Layanan PDF sedang tidak tersedia. Coba lagi sebentar lagi.",
           "TAX_REPORT_IDENTITY_INCOMPLETE": "Ada penerima dengan identitas pajak belum lengkap. Lengkapi NPWP atau NIK-nya, hitung ulang, lalu finalkan.",
-          "TAX_BRACKETS_UNAVAILABLE": "Tarif Pasal 17 belum tersedia untuk masa ini. Jalankan seed tarif PPh 21 terlebih dahulu."
+          "TAX_BRACKETS_UNAVAILABLE": "Tarif Pasal 17 belum tersedia untuk masa ini. Jalankan seed tarif PPh 21 terlebih dahulu.",
+          "TAX_REPORT_NOT_FINALIZED": "Finalisasi laporan terlebih dahulu.",
+          "CORETAX_EXPORT_INVALID": "File Coretax belum bisa dibuat. Perbaiki masalah yang tercantum di bagian Coretax, lalu coba lagi."
         },
         "pph21": {
           "grossFee": "Jumlah bruto jasa medis",
@@ -2559,6 +2561,30 @@
           "profession": {
             "DOCTOR": "Dokter",
             "MIDWIFE": "Bidan"
+          }
+        },
+        "coretax": {
+          "title": "File BP21 Coretax",
+          "description": "XML impor massal yang dihasilkan konverter resmi DJP ({template}, {publishedOn}). Klinik mengimpornya ke Coretax dan melapor di sana; produk ini tidak pernah melapor.",
+          "source": "Sumber template",
+          "checking": "Memeriksa laporan terhadap template…",
+          "loadError": "Laporan tidak dapat diperiksa terhadap template Coretax.",
+          "ready": "{count} bukti potong siap.",
+          "skipped": "{count} tenaga klinis dengan jasa nol pada bulan ini tidak disertakan.",
+          "blocked": "Perbaiki hal berikut sebelum mengunduh:",
+          "clinic": "Klinik",
+          "download": "Unduh XML Coretax",
+          "downloaded": "File BP21 Coretax diunduh.",
+          "downloadError": "File Coretax tidak dapat diunduh.",
+          "audit": "File memuat NPWP atau NIK lengkap setiap tenaga klinis. Unduhan dicatat di log audit.",
+          "issues": {
+            "CLINIC_NPWP_INVALID": "NPWP klinik harus 16 digit. Perbarui di Pengaturan › Profil klinik.",
+            "CLINIC_NITKU_INVALID": "NITKU klinik harus 22 digit diawali NPWP. Perbarui di Pengaturan › Pajak.",
+            "TAX_IDENTITY_MISSING": "Belum ada NPWP atau NIK. Tambahkan di profil tenaga klinis.",
+            "TAX_IDENTITY_NOT_16_DIGITS": "Coretax memerlukan NPWP atau NIK 16 digit; ganti NPWP 15 digit di profil tenaga klinis.",
+            "PTKP_STATUS_MISSING": "Status PTKP belum dicatat. Isi di profil tenaga klinis.",
+            "GROSS_NOT_POSITIVE": "Jasa bulan ini negatif (hanya pembatalan) sehingga tidak dapat dibuat bukti potong.",
+            "AMOUNT_PRECISION": "Ada nominal dengan lebih dari dua angka desimal."
           }
         }
       }

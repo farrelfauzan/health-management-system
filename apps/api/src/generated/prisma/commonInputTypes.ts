@@ -606,6 +606,13 @@ export type EnumClinicianProfessionFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumClinicianProfessionFilter<$PrismaModel> | $Enums.ClinicianProfession
 }
 
+export type EnumPtkpStatusNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.PtkpStatus | Prisma.EnumPtkpStatusFieldRefInput<$PrismaModel> | null
+  in?: $Enums.PtkpStatus[] | Prisma.ListEnumPtkpStatusFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.PtkpStatus[] | Prisma.ListEnumPtkpStatusFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumPtkpStatusNullableFilter<$PrismaModel> | $Enums.PtkpStatus | null
+}
+
 export type EnumClinicianProfessionWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.ClinicianProfession | Prisma.EnumClinicianProfessionFieldRefInput<$PrismaModel>
   in?: $Enums.ClinicianProfession[] | Prisma.ListEnumClinicianProfessionFieldRefInput<$PrismaModel>
@@ -614,6 +621,16 @@ export type EnumClinicianProfessionWithAggregatesFilter<$PrismaModel = never> = 
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumClinicianProfessionFilter<$PrismaModel>
   _max?: Prisma.NestedEnumClinicianProfessionFilter<$PrismaModel>
+}
+
+export type EnumPtkpStatusNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PtkpStatus | Prisma.EnumPtkpStatusFieldRefInput<$PrismaModel> | null
+  in?: $Enums.PtkpStatus[] | Prisma.ListEnumPtkpStatusFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.PtkpStatus[] | Prisma.ListEnumPtkpStatusFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumPtkpStatusNullableWithAggregatesFilter<$PrismaModel> | $Enums.PtkpStatus | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPtkpStatusNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPtkpStatusNullableFilter<$PrismaModel>
 }
 
 export type EnumDoctorLicenseTypeFilter<$PrismaModel = never> = {
@@ -3460,6 +3477,13 @@ export type NestedEnumClinicianProfessionFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumClinicianProfessionFilter<$PrismaModel> | $Enums.ClinicianProfession
 }
 
+export type NestedEnumPtkpStatusNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.PtkpStatus | Prisma.EnumPtkpStatusFieldRefInput<$PrismaModel> | null
+  in?: $Enums.PtkpStatus[] | Prisma.ListEnumPtkpStatusFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.PtkpStatus[] | Prisma.ListEnumPtkpStatusFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumPtkpStatusNullableFilter<$PrismaModel> | $Enums.PtkpStatus | null
+}
+
 export type NestedEnumClinicianProfessionWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.ClinicianProfession | Prisma.EnumClinicianProfessionFieldRefInput<$PrismaModel>
   in?: $Enums.ClinicianProfession[] | Prisma.ListEnumClinicianProfessionFieldRefInput<$PrismaModel>
@@ -3468,6 +3492,16 @@ export type NestedEnumClinicianProfessionWithAggregatesFilter<$PrismaModel = nev
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumClinicianProfessionFilter<$PrismaModel>
   _max?: Prisma.NestedEnumClinicianProfessionFilter<$PrismaModel>
+}
+
+export type NestedEnumPtkpStatusNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PtkpStatus | Prisma.EnumPtkpStatusFieldRefInput<$PrismaModel> | null
+  in?: $Enums.PtkpStatus[] | Prisma.ListEnumPtkpStatusFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.PtkpStatus[] | Prisma.ListEnumPtkpStatusFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumPtkpStatusNullableWithAggregatesFilter<$PrismaModel> | $Enums.PtkpStatus | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPtkpStatusNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPtkpStatusNullableFilter<$PrismaModel>
 }
 
 export type NestedEnumDoctorLicenseTypeFilter<$PrismaModel = never> = {

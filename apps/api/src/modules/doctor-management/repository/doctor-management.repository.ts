@@ -35,6 +35,7 @@ const DOCTOR_RECORD_SELECT = {
   degrees: true,
   nikLast4: true,
   npwp: true,
+  ptkpStatus: true,
   satusehatPractitionerId: true,
   ownerUserId: true,
   // The doctor's email lives on their account; selecting it here keeps the
@@ -444,6 +445,7 @@ export class DoctorManagementRepository {
             title: payload.title ?? null,
             degrees: payload.degrees ?? null,
             npwp: payload.npwp ?? null,
+            ptkpStatus: payload.ptkpStatus ?? null,
             ownerUserId: payload.ownerUserId ?? null,
             isActive: payload.isActive,
             ...this.buildNikColumns(payload.nik),
@@ -538,6 +540,7 @@ export class DoctorManagementRepository {
             ...(payload.title !== undefined ? { title: payload.title } : {}),
             ...(payload.degrees !== undefined ? { degrees: payload.degrees } : {}),
             ...(payload.npwp !== undefined ? { npwp: payload.npwp } : {}),
+            ...(payload.ptkpStatus !== undefined ? { ptkpStatus: payload.ptkpStatus } : {}),
             ...(payload.ownerUserId !== undefined ? { ownerUserId: payload.ownerUserId } : {}),
             ...(payload.isActive !== undefined ? { isActive: payload.isActive } : {}),
             ...nikColumns,

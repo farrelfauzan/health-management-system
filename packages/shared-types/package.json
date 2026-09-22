@@ -261,6 +261,8 @@
     "#taxes/compute-pph21-non-employee": "./src/taxes/compute-pph21-non-employee.ts",
     "#taxes/resolve-clinician-tax-identity": "./src/taxes/resolve-clinician-tax-identity.ts",
     "#taxes/summarize-pph21-withholding": "./src/taxes/summarize-pph21-withholding.ts",
+    "#taxes/coretax-bp21": "./src/taxes/coretax-bp21.ts",
+    "#taxes/build-coretax-bp21-document": "./src/taxes/build-coretax-bp21-document.ts",
     "#clinician-fee/schemas": "./src/clinician-fee/schemas.ts",
     "#clinician-fee/contracts": "./src/clinician-fee/contracts.ts",
     "#clinician-fee/types": "./src/clinician-fee/types.ts",

@@ -557,6 +557,7 @@ export const DoctorProfileScalarFieldEnum = {
   nikLast4: 'nikLast4',
   nikKeyVersion: 'nikKeyVersion',
   npwp: 'npwp',
+  ptkpStatus: 'ptkpStatus',
   satusehatPractitionerId: 'satusehatPractitionerId',
   bpjsDoctorCode: 'bpjsDoctorCode',
   title: 'title',

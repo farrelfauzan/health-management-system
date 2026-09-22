@@ -1,6 +1,7 @@
 import type { DoctorCredentialValue } from '#doctor-credential-option/contracts';
 import type {
   ClinicianProfessionValue,
+  ClinicianPtkpStatusValue,
   DoctorAuthorityGrantKindValue,
   DoctorAuthorityKindValue,
   DoctorInvitationStatusValue,
@@ -62,6 +63,8 @@ export type DoctorProfile = {
    * NIK is — it is printed on every bukti potong — so it rides along in full.
    */
   npwp?: string;
+  /** PTKP status the BP21 states (P27-T08); absent until the clinic records it. */
+  ptkpStatus?: ClinicianPtkpStatusValue;
   satusehatPractitionerId?: string;
   ownerUserId?: string;
   isActive: boolean;

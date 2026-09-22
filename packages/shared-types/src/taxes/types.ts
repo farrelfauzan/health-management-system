@@ -1,6 +1,10 @@
 import type { InvoiceItemTypeValue } from '#billing/schemas';
 import type { ClinicLetterhead } from '#billing/types';
-import type { ClinicianProfessionValue } from '#doctor-management/schemas';
+import type {
+  ClinicianProfessionValue,
+  ClinicianPtkpStatusValue,
+} from '#doctor-management/schemas';
+import type { CoretaxBp21IssueCodeValue } from '#taxes/coretax-bp21';
 import type {
   ClinicianTaxIdentityKindValue,
   ClinicianTaxIdentityStatusValue,
@@ -730,3 +734,92 @@ export type DueTaxReminder = {
   dueDate: string;
   leadDays: number;
 };
+
+/** A DJP bulk-import template a Coretax export follows, and where it was obtained (P27-T08). */
+export type CoretaxTemplateSource = {
+  format: 'BP21';
+  version: string;
+  title: string;
+  /** The date DJP's catalogue gives for this version, `YYYY-MM-DD`. */
+  publishedOn: string;
+  sourceUrl: string;
+  /** pajak.go.id node 112031, the converter catalogue. */
+  catalogueUrl: string;
+  sha256: string;
+};
+
+/**
+ * One `Bp21` element, in the order and units of the v4 schema (P27-T08).
+ * Amounts are rupiah; `deemedPercent` and `ratePercent` are percentages, as
+ * the template's `Deemed` and `Rate` columns are. Dates are `YYYY-MM-DD`.
+ */
+export type CoretaxBp21Line = {
+  doctorId: string;
+  taxPeriodMonth: number;
+  taxPeriodYear: number;
+  counterpartTin: string;
+  recipientPlaceOfBusinessId: string;
+  ptkpLabel: string;
+  taxCertificate: string;
+  taxObjectCode: string;
+  gross: number;
+  deemedPercent: number;
+  ratePercent: number;
+  documentType: string;
+  documentNumber: string;
+  documentDate: string;
+  withholderPlaceOfBusinessId: string;
+  withholdingDate: string;
+};
+
+/** What every line of one BP21 file shares: the period, its last day, the DPP share, the withholder. */
+export type CoretaxBp21LineContext = {
+  period: string;
+  lastDay: string;
+  deemedPercent: number;
+  withholderPlaceOfBusinessId: string;
+};
+
+/** The whole `Bp21Bulk` file: the withholder's NPWP and one line per clinician. */
+export type CoretaxBp21Document = {
+  withholderTin: string;
+  lines: CoretaxBp21Line[];
+};
+
+/** A clinician's BP21 identity and PTKP status, read from the profile for the export. */
+export type CoretaxBp21ClinicianSource = {
+  doctorId: string;
+  /** Full NPWP, else the NIK serving as NPWP; `null` when neither is on file. */
+  taxIdentityNumber: string | null;
+  ptkpStatus: ClinicianPtkpStatusValue | null;
+};
+
+export type BuildCoretaxBp21DocumentParams = {
+  report: TaxReportRecord;
+  clinicNpwp: string | null;
+  clinicNitku: string | null;
+  clinicians: readonly CoretaxBp21ClinicianSource[];
+};
+
+/** A file ready to serialize, or the problems that stop it; never both. */
+export type BuiltCoretaxBp21Document = {
+  document: CoretaxBp21Document | null;
+  issues: CoretaxExportIssue[];
+  /** Lines left out because the month's gross is exactly zero: no BP21 is due. */
+  skippedDoctorIds: string[];
+};
+
+/** One reason a Coretax file cannot be produced yet; `subjectId` is the clinician's, if any. */
+export type CoretaxExportIssue = {
+  code: CoretaxBp21IssueCodeValue;
+  field: string;
+  message: string;
+  subjectId?: string;
+  subjectLabel?: string;
+};
+
+/** A Coretax XML file ready to stream. */
+export type CoretaxXmlExport = { fileName: string; xml: string };
+
+/** Writes a BP21 document as one template version's XML, byte for byte as DJP's converter does. */
+export type CoretaxBp21XmlSerializer = (document: CoretaxBp21Document) => string;

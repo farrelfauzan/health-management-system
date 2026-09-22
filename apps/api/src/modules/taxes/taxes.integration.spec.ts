@@ -88,6 +88,7 @@ describe('Tax settings integration', () => {
   const clinicianTaxIdentityRepositoryMock = {
     findIdentities: jest.fn(),
     findIdentifiers: jest.fn(),
+    findCoretaxBp21Sources: jest.fn(),
   };
   const clinicianFeeStatementServiceMock = {
     getPeriodSummary: jest.fn(),
@@ -686,6 +687,122 @@ describe('Tax settings integration', () => {
       expect(finalized.status).toBe(409);
       expect(finalized.body.error.code).toBe('TAX_REPORT_IDENTITY_INCOMPLETE');
       expect(taxReportRepositoryMock.finalizeReport).not.toHaveBeenCalled();
+    });
+
+    describe('Coretax BP21 export (P27-T08)', () => {
+      /** Drafts August through the API, then stores it as finalized, as the finalize route would. */
+      async function storeFinalizedAugust(token: string): Promise<void> {
+        await request(app.getHttpServer())
+          .post(REPORTS_PATH)
+          .set('Authorization', `Bearer ${token}`)
+          .send({ period: '2026-08', kind: 'PPH21_NON_EMPLOYEE' });
+        const drafted = await taxReportRepositoryMock.createReport.mock.results[0]?.value;
+        taxReportRepositoryMock.findReportById.mockResolvedValue({
+          ...drafted,
+          status: 'FINALIZED',
+          finalizedAt: new Date('2026-09-02T00:00:00.000Z'),
+          finalizedById: 'actor-user',
+        });
+      }
+
+      beforeEach(() => {
+        taxSettingsRepositoryMock.findTaxSettings.mockResolvedValue({
+          taxpayerType: 'PT',
+          incomeTaxRegime: 'GENERAL',
+          pp55StartYear: null,
+          isPkp: false,
+          pkpSince: null,
+          nitku: '0012345678901000000000',
+          updatedById: null,
+          updatedAt: null,
+        });
+        clinicianTaxIdentityRepositoryMock.findCoretaxBp21Sources.mockResolvedValue([
+          { doctorId: DR_A_ID, taxIdentityNumber: DR_A_NIK, ptkpStatus: 'K_1' },
+        ]);
+      });
+
+      it('lists a missing PTKP status per clinician before download, without auditing', async () => {
+        const token = await buildToken('admin-user', 'admin@hms.local');
+        mockActorWithPermissions('ADMIN', REPORT_PERMISSIONS);
+        await storeFinalizedAugust(token);
+        clinicianTaxIdentityRepositoryMock.findCoretaxBp21Sources.mockResolvedValue([
+          { doctorId: DR_A_ID, taxIdentityNumber: DR_A_NIK, ptkpStatus: null },
+        ]);
+        auditServiceMock.record.mockClear();
+
+        const response = await request(app.getHttpServer())
+          .get(`${REPORTS_PATH}/${REPORT_ID}/coretax/bp21/validation`)
+          .set('Authorization', `Bearer ${token}`);
+
+        expect(response.status).toBe(200);
+        expect(response.body.data).toMatchObject({
+          isExportable: false,
+          template: { format: 'BP21', version: 'V4', publishedOn: '2025-04-17' },
+          issues: [{ code: 'PTKP_STATUS_MISSING', subjectId: DR_A_ID, subjectLabel: 'Andi' }],
+        });
+        expect(auditServiceMock.record).not.toHaveBeenCalled();
+      });
+
+      it('downloads the BP21 v4 XML and audits the export and the unmask without the NIK', async () => {
+        const token = await buildToken('admin-user', 'admin@hms.local');
+        mockActorWithPermissions('ADMIN', REPORT_PERMISSIONS);
+        await storeFinalizedAugust(token);
+        auditServiceMock.record.mockClear();
+
+        const response = await request(app.getHttpServer())
+          .get(`${REPORTS_PATH}/${REPORT_ID}/coretax/bp21`)
+          .set('Authorization', `Bearer ${token}`)
+          .buffer(true)
+          .parse((res, callback) => {
+            let body = '';
+            res.on('data', (chunk: Buffer) => (body += chunk.toString()));
+            res.on('end', () => callback(null, body));
+          });
+
+        expect(response.status).toBe(200);
+        expect(response.headers['content-type']).toContain('application/xml');
+        expect(response.headers['content-disposition']).toContain('coretax-bp21-2026-08-v4.xml');
+        expect(response.body).toContain('<TIN>0012345678901000</TIN>');
+        expect(response.body).toContain(`<CounterpartTin>${DR_A_NIK}</CounterpartTin>`);
+        expect(response.body).toContain('<Gross>20000000</Gross>');
+        expect(response.body).toContain('<TaxObjectCode>21-100-07</TaxObjectCode>');
+        const actions = auditServiceMock.record.mock.calls.map(([input]) => input.action);
+        expect(actions).toEqual(['EXPORT', 'DOCTOR_IDENTIFIER_UNMASKED']);
+        expect(JSON.stringify(auditServiceMock.record.mock.calls)).not.toContain(DR_A_NIK);
+      });
+
+      it('answers 409 TAX_REPORT_NOT_FINALIZED for a draft', async () => {
+        const token = await buildToken('admin-user', 'admin@hms.local');
+        mockActorWithPermissions('ADMIN', REPORT_PERMISSIONS);
+        mockStoredPph21Report([], { kind: 'PPH21_NON_EMPLOYEE', totals: {} });
+
+        const response = await request(app.getHttpServer())
+          .get(`${REPORTS_PATH}/${REPORT_ID}/coretax/bp21`)
+          .set('Authorization', `Bearer ${token}`);
+
+        expect(response.status).toBe(409);
+        expect(response.body.error.code).toBe('TAX_REPORT_NOT_FINALIZED');
+      });
+
+      it('refuses both routes without tax-report.read', async () => {
+        const token = await buildToken('doctor-user', 'doctor@hms.local');
+        mockActorWithPermissions('DOCTOR', [
+          { action: 'read', resource: 'ClinicianFee', scope: 'OWN' as const },
+        ]);
+
+        const [validation, file] = await Promise.all([
+          request(app.getHttpServer())
+            .get(`${REPORTS_PATH}/${REPORT_ID}/coretax/bp21/validation`)
+            .set('Authorization', `Bearer ${token}`),
+          request(app.getHttpServer())
+            .get(`${REPORTS_PATH}/${REPORT_ID}/coretax/bp21`)
+            .set('Authorization', `Bearer ${token}`),
+        ]);
+
+        expect(validation.status).toBe(403);
+        expect(file.status).toBe(403);
+        expect(clinicianTaxIdentityRepositoryMock.findCoretaxBp21Sources).not.toHaveBeenCalled();
+      });
     });
   });
 

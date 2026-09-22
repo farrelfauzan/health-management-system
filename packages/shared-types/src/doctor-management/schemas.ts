@@ -274,6 +274,26 @@ export const optionalClinicianNpwpSchema = z.union([
   clinicianNpwpSchema,
 ]);
 
+/**
+ * A clinician's PTKP status for the BP21 (P27-T08). DJP's BP21 v4 schema
+ * requires it on every line although the bukan pegawai tax never reads it.
+ * `TK_0` is Coretax's `TK/0`: tidak kawin, no dependants.
+ */
+export const clinicianPtkpStatusSchema = z.enum([
+  'TK_0',
+  'TK_1',
+  'TK_2',
+  'TK_3',
+  'K_0',
+  'K_1',
+  'K_2',
+  'K_3',
+]);
+
+export type ClinicianPtkpStatusValue = z.infer<typeof clinicianPtkpStatusSchema>;
+
+export const CLINICIAN_PTKP_STATUSES = clinicianPtkpStatusSchema.options;
+
 export const createDoctorSchema = z.object({
   licenseNumber: z.string().trim().min(3).max(64),
   fullName: z.string().trim().min(2).max(120),
@@ -305,6 +325,7 @@ export const createDoctorSchema = z.object({
   // hold null; `listDoctorsQuerySchema.missingNik` is how they are found.
   nik: nikSchema,
   npwp: clinicianNpwpSchema.optional(),
+  ptkpStatus: clinicianPtkpStatusSchema.optional(),
   licenses: doctorLicensesSchema.optional(),
   educations: doctorEducationsSchema.optional(),
   isActive: z.boolean().optional().default(true),
@@ -342,6 +363,8 @@ export const updateDoctorSchema = z
     nik: nikSchema.optional(),
     /** Clearable, unlike the NIK: `null` removes a wrongly entered NPWP (P27-T07). */
     npwp: clinicianNpwpSchema.nullable().optional(),
+    /** Clearable like the NPWP; only the Coretax BP21 export needs it (P27-T08). */
+    ptkpStatus: clinicianPtkpStatusSchema.nullable().optional(),
     // Replaces the whole list: the client always submits the complete set of
     // active licenses, and removed entries are soft-deleted rather than
     // dropped, so the credential history survives licensing audits.

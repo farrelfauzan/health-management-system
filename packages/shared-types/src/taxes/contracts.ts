@@ -13,6 +13,8 @@ import type {
 } from '#taxes/schemas';
 import type {
   ClinicianTaxIdentifier,
+  CoretaxExportIssue,
+  CoretaxTemplateSource,
   TaxReportDifference,
   TaxReportLine,
   TaxReportSummary,
@@ -178,4 +180,19 @@ export type TaxReportPdfDownloadView = {
   url: string;
   fileName: string;
   expiresAt: string;
+};
+
+/**
+ * Whether a finalized report can be exported as a Coretax XML file yet
+ * (P27-T08), checked before the download so every problem is listed at once,
+ * per clinician. `template` names the DJP template the file follows.
+ */
+export type CoretaxExportValidationView = {
+  reportId: string;
+  period: string;
+  template: CoretaxTemplateSource;
+  isExportable: boolean;
+  lineCount: number;
+  skippedCount: number;
+  issues: CoretaxExportIssue[];
 };
