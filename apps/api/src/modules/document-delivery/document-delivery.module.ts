@@ -8,6 +8,7 @@ import { BillingModule } from '../billing/billing.module';
 import { ChannelGatewayModule } from '../channel-gateway/channel-gateway.module';
 import { InboundOptOutHandler } from '../channel-gateway/service/inbound-opt-out-handler.service';
 import { PatientManagementModule } from '../patient-management/patient-management.module';
+import { VisitReminderConsentModule } from '../visit-reminder-consent/visit-reminder-consent.module';
 import { DeliveryActionController } from './controller/delivery-action.controller';
 import { DeliveryLinkPublicController } from './controller/delivery-link-public.controller';
 import { InvoiceDeliveryController } from './controller/invoice-delivery.controller';
@@ -60,6 +61,9 @@ import { PublicLinkRateLimiter } from './service/public-link-rate-limiter';
     PrivacyNoticeModule,
     PatientManagementModule,
     BillingModule,
+    // P25-T17: BERHENTI also revokes visit-reminder consent, through that
+    // module's service. One way only — it imports nothing from here.
+    VisitReminderConsentModule,
     forwardRef(() => ChannelGatewayModule),
   ],
   controllers: [

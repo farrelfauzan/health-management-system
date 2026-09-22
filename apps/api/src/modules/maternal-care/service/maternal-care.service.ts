@@ -1,5 +1,11 @@
 import {
   ActivePregnancyEpisodeResponse,
+  AntenatalDueEpisodeRecord,
+  doesDueWindowTouchRange,
+  MaternalDueRange,
+  MaternalDueReach,
+  MaternalDueRecord,
+  resolveTrimesterWindows,
   AntenatalVisitResponse,
   buildTrimesterSchedule,
   computeEstimatedDeliveryDate,
@@ -304,6 +310,57 @@ export class MaternalCareService {
       return;
     }
     await this.maternalCareRepository.freezeVisitCode({ encounterId, visitCode });
+  }
+
+  /**
+   * Trimesters that still owe visits and whose window opens or closes inside
+   * the range (P25-T17), for the due worklist and the reminder worker. The
+   * state is the schedule's own (`buildTrimesterSchedule`), so a trimester
+   * reads DUE here exactly when it does on the Kehamilan tab.
+   */
+  async listAntenatalDueRecords(
+    range: MaternalDueRange,
+    reach: MaternalDueReach,
+  ): Promise<MaternalDueRecord[]> {
+    const episodes = await this.maternalCareRepository.listActiveEpisodesForDue(reach);
+    const asOf = new Date();
+    return episodes.flatMap((entry) => this.toAntenatalDueRecords(entry, range, asOf));
+  }
+
+  private toAntenatalDueRecords(
+    entry: AntenatalDueEpisodeRecord,
+    range: MaternalDueRange,
+    asOf: Date,
+  ): MaternalDueRecord[] {
+    const schedule = buildTrimesterSchedule({
+      visits: this.numberVisits(entry.episode, entry.visits),
+      currentGestationalAge: this.gestationalAgeAt(entry.episode, asOf),
+      doctorVisits: [],
+    });
+    const windows = resolveTrimesterWindows(entry.episode);
+    return schedule.flatMap((line) => {
+      const window = windows.find((candidate) => candidate.trimester === line.trimester);
+      if (
+        line.state !== 'DUE' ||
+        window === undefined ||
+        !doesDueWindowTouchRange({ dueFrom: window.startsOn, dueUntil: window.endsOn, range })
+      ) {
+        return [];
+      }
+      return [
+        {
+          visitKey: `ANC:${entry.episode.id}:T${line.trimester}`,
+          source: 'ANTENATAL' as const,
+          code: `T${line.trimester}`,
+          subject: 'PATIENT' as const,
+          patientId: entry.episode.patientId,
+          patientName: entry.patientName,
+          medicalRecordNumber: entry.medicalRecordNumber,
+          dueFrom: window.startsOn,
+          dueUntil: window.endsOn,
+        },
+      ];
+    });
   }
 
   private async createEpisodeRecord(params: {

@@ -177,7 +177,10 @@ export const AuditAction = {
   TAX_SETTINGS_UPDATED: 'TAX_SETTINGS_UPDATED',
   TAX_CODE_CHANGED: 'TAX_CODE_CHANGED',
   TAX_ASSIGNMENT_CHANGED: 'TAX_ASSIGNMENT_CHANGED',
-  TAX_REPORT_FINALIZED: 'TAX_REPORT_FINALIZED'
+  TAX_REPORT_FINALIZED: 'TAX_REPORT_FINALIZED',
+  VISIT_REMINDER_CONSENT_GRANTED: 'VISIT_REMINDER_CONSENT_GRANTED',
+  VISIT_REMINDER_CONSENT_WITHDRAWN: 'VISIT_REMINDER_CONSENT_WITHDRAWN',
+  VISIT_REMINDER_CONSENT_OPTED_OUT: 'VISIT_REMINDER_CONSENT_OPTED_OUT'
 } as const
 
 export type AuditAction = (typeof AuditAction)[keyof typeof AuditAction]
@@ -1485,3 +1488,12 @@ export const BreastMilkProduction = {
 } as const
 
 export type BreastMilkProduction = (typeof BreastMilkProduction)[keyof typeof BreastMilkProduction]
+
+
+export const MaternalVisitReminderStatus = {
+  PENDING: 'PENDING',
+  SENT: 'SENT',
+  FAILED: 'FAILED'
+} as const
+
+export type MaternalVisitReminderStatus = (typeof MaternalVisitReminderStatus)[keyof typeof MaternalVisitReminderStatus]

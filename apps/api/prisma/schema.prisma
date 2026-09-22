@@ -394,6 +394,12 @@ enum AuditAction {
   /// A monthly tax report draft was finalized (P27-T05): the figures the
   /// clinic pays and files from are frozen from here on.
   TAX_REPORT_FINALIZED
+  /// Visit-reminder consent (P25-T17, D-042), the same three verbs as
+  /// delivery consent and for the same reason: OPTED_OUT is the patient's own
+  /// STOP / BERHENTI, never mistaken for a withdrawal a clerk made.
+  VISIT_REMINDER_CONSENT_GRANTED
+  VISIT_REMINDER_CONSENT_WITHDRAWN
+  VISIT_REMINDER_CONSENT_OPTED_OUT
 }
 
 enum BpjsSubmissionType {
@@ -1193,6 +1199,7 @@ model User {
   grantedVaultShares         VaultDocumentShare[]         @relation("VaultDocumentGrantor")
   offboardingNotices         UserOffboardingNotice[]
   grantedDeliveryConsents    PatientDeliveryConsent[]     @relation("DeliveryConsentGrantedBy")
+  grantedVisitReminderConsents PatientVisitReminderConsent[] @relation("VisitReminderConsentGrantedBy")
   requestedDeliveries        DocumentDelivery[]           @relation("DeliveryRequestedBy")
   defaultApproverForTypes    DocumentTypeApprover[]
   filedBugReports            BugReport[]                  @relation("BugReportReporter")
@@ -1636,6 +1643,8 @@ model PatientProfile {
   clinicalDocuments     Document[]
   deliveryConsents      PatientDeliveryConsent[]
   deliveries            DocumentDelivery[]
+  visitReminderConsent  PatientVisitReminderConsent?
+  maternalVisitReminders MaternalVisitReminder[]
 
   managedDocuments  ManagedDocument[]
   newbornCareRecord NewbornCareRecord? @relation("NewbornCarePatient")
@@ -1678,6 +1687,7 @@ model PrivacyNoticeVersion {
 
   records          PatientPrivacyNoticeRecord[]
   deliveryConsents PatientDeliveryConsent[]
+  visitReminderConsents PatientVisitReminderConsent[]
 
   @@map("privacy_notice_versions")
 }
@@ -7412,4 +7422,70 @@ model PostnatalExamination {
   @@index([vitaminAMedicationId])
   @@index([recordedById])
   @@map("postnatal_examinations")
+}
+
+/// Consent to WhatsApp reminders of due maternal visits (P25-T17, D-042).
+///
+/// A table of its own rather than a purpose column on
+/// `PatientDeliveryConsent`: that consent was given for document delivery,
+/// and UU PDP's purpose limitation means a reminder cannot ride on it. One
+/// row per patient — the current answer — rewritten on withdrawal so the row
+/// then says who withdrew it and when. `purpose` is fixed by a CHECK and
+/// exists so the row reads for what it is out of context.
+model PatientVisitReminderConsent {
+  id              String    @id @default(uuid()) @db.Uuid
+  patientId       String    @unique @map("patient_id") @db.Uuid
+  purpose         String    @default("VISIT_REMINDER") @db.VarChar(32)
+  isGranted       Boolean   @default(true) @map("is_granted")
+  noticeVersionId String?   @map("notice_version_id") @db.Uuid
+  grantedAt       DateTime? @map("granted_at")
+  grantedById     String?   @map("granted_by_id") @db.Uuid
+  revokedAt       DateTime? @map("revoked_at")
+  /// `PATIENT_KEYWORD` when the patient sent STOP/BERHENTI; `STAFF` when a
+  /// clerk withdrew it at the counter.
+  revokedReason   String?   @map("revoked_reason")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  patient       PatientProfile        @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  noticeVersion PrivacyNoticeVersion? @relation(fields: [noticeVersionId], references: [id], onDelete: SetNull)
+  grantedBy     User?                 @relation("VisitReminderConsentGrantedBy", fields: [grantedById], references: [id], onDelete: SetNull)
+
+  @@index([noticeVersionId])
+  @@index([grantedById])
+  @@map("patient_visit_reminder_consents")
+}
+
+/// Where one maternal visit reminder stands (P25-T17). `PENDING` is the
+/// worker's claim, written before it sends.
+enum MaternalVisitReminderStatus {
+  PENDING
+  SENT
+  FAILED
+}
+
+/// The one WhatsApp reminder a due maternal visit may ever get (P25-T17).
+///
+/// The unique `(patient_id, visit_key)` is the "at most once": the worker
+/// inserts the row before it sends, so a second sweep — or a second replica —
+/// racing it is refused by the index rather than by a read-then-write. No
+/// message body and no phone number are stored: the key already says which
+/// visit, and the number lives on the patient and her verified link.
+model MaternalVisitReminder {
+  id            String                      @id @default(uuid()) @db.Uuid
+  patientId     String                      @map("patient_id") @db.Uuid
+  visitKey      String                      @map("visit_key") @db.VarChar(160)
+  source        String                      @db.VarChar(32)
+  dueFrom       DateTime                    @map("due_from") @db.Date
+  status        MaternalVisitReminderStatus @default(PENDING)
+  attemptedAt   DateTime                    @map("attempted_at")
+  sentAt        DateTime?                   @map("sent_at")
+  failureReason String?                     @map("failure_reason") @db.VarChar(64)
+  createdAt     DateTime                    @default(now()) @map("created_at")
+  updatedAt     DateTime                    @updatedAt @map("updated_at")
+
+  patient PatientProfile @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@unique([patientId, visitKey])
+  @@map("maternal_visit_reminders")
 }

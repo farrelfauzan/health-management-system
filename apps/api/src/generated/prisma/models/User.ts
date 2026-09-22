@@ -341,6 +341,7 @@ export type UserWhereInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareListRelationFilter
   offboardingNotices?: Prisma.UserOffboardingNoticeListRelationFilter
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentListRelationFilter
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentListRelationFilter
   requestedDeliveries?: Prisma.DocumentDeliveryListRelationFilter
   defaultApproverForTypes?: Prisma.DocumentTypeApproverListRelationFilter
   filedBugReports?: Prisma.BugReportListRelationFilter
@@ -432,6 +433,7 @@ export type UserOrderByWithRelationInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareOrderByRelationAggregateInput
   offboardingNotices?: Prisma.UserOffboardingNoticeOrderByRelationAggregateInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentOrderByRelationAggregateInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentOrderByRelationAggregateInput
   requestedDeliveries?: Prisma.DocumentDeliveryOrderByRelationAggregateInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverOrderByRelationAggregateInput
   filedBugReports?: Prisma.BugReportOrderByRelationAggregateInput
@@ -526,6 +528,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   grantedVaultShares?: Prisma.VaultDocumentShareListRelationFilter
   offboardingNotices?: Prisma.UserOffboardingNoticeListRelationFilter
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentListRelationFilter
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentListRelationFilter
   requestedDeliveries?: Prisma.DocumentDeliveryListRelationFilter
   defaultApproverForTypes?: Prisma.DocumentTypeApproverListRelationFilter
   filedBugReports?: Prisma.BugReportListRelationFilter
@@ -660,6 +663,7 @@ export type UserCreateInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -750,6 +754,7 @@ export type UserUncheckedCreateInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -840,6 +845,7 @@ export type UserUpdateInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -930,6 +936,7 @@ export type UserUncheckedUpdateInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -2237,6 +2244,22 @@ export type UserUpdateOneRequiredWithoutRecordedPostnatalExaminationsNestedInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutRecordedPostnatalExaminationsInput, Prisma.UserUpdateWithoutRecordedPostnatalExaminationsInput>, Prisma.UserUncheckedUpdateWithoutRecordedPostnatalExaminationsInput>
 }
 
+export type UserCreateNestedOneWithoutGrantedVisitReminderConsentsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutGrantedVisitReminderConsentsInput, Prisma.UserUncheckedCreateWithoutGrantedVisitReminderConsentsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutGrantedVisitReminderConsentsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutGrantedVisitReminderConsentsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutGrantedVisitReminderConsentsInput, Prisma.UserUncheckedCreateWithoutGrantedVisitReminderConsentsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutGrantedVisitReminderConsentsInput
+  upsert?: Prisma.UserUpsertWithoutGrantedVisitReminderConsentsInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutGrantedVisitReminderConsentsInput, Prisma.UserUpdateWithoutGrantedVisitReminderConsentsInput>, Prisma.UserUncheckedUpdateWithoutGrantedVisitReminderConsentsInput>
+}
+
 export type UserCreateWithoutGrantedDoctorMandatesInput = {
   id?: string
   email: string
@@ -2297,6 +2320,7 @@ export type UserCreateWithoutGrantedDoctorMandatesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -2386,6 +2410,7 @@ export type UserUncheckedCreateWithoutGrantedDoctorMandatesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -2480,6 +2505,7 @@ export type UserCreateWithoutRevokedDoctorMandatesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -2569,6 +2595,7 @@ export type UserUncheckedCreateWithoutRevokedDoctorMandatesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -2674,6 +2701,7 @@ export type UserUpdateWithoutGrantedDoctorMandatesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -2763,6 +2791,7 @@ export type UserUncheckedUpdateWithoutGrantedDoctorMandatesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -2863,6 +2892,7 @@ export type UserUpdateWithoutRevokedDoctorMandatesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -2952,6 +2982,7 @@ export type UserUncheckedUpdateWithoutRevokedDoctorMandatesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -3040,6 +3071,7 @@ export type UserCreateWithoutRefreshTokensInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -3129,6 +3161,7 @@ export type UserUncheckedCreateWithoutRefreshTokensInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -3234,6 +3267,7 @@ export type UserUpdateWithoutRefreshTokensInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -3323,6 +3357,7 @@ export type UserUncheckedUpdateWithoutRefreshTokensInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -3412,6 +3447,7 @@ export type UserCreateWithoutSentInvitationsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -3501,6 +3537,7 @@ export type UserUncheckedCreateWithoutSentInvitationsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -3606,6 +3643,7 @@ export type UserUpdateWithoutSentInvitationsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -3695,6 +3733,7 @@ export type UserUncheckedUpdateWithoutSentInvitationsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -3784,6 +3823,7 @@ export type UserCreateWithoutMfaCredentialInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -3873,6 +3913,7 @@ export type UserUncheckedCreateWithoutMfaCredentialInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -3978,6 +4019,7 @@ export type UserUpdateWithoutMfaCredentialInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -4067,6 +4109,7 @@ export type UserUncheckedUpdateWithoutMfaCredentialInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -4156,6 +4199,7 @@ export type UserCreateWithoutMfaRecoveryCodesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -4245,6 +4289,7 @@ export type UserUncheckedCreateWithoutMfaRecoveryCodesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -4350,6 +4395,7 @@ export type UserUpdateWithoutMfaRecoveryCodesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -4439,6 +4485,7 @@ export type UserUncheckedUpdateWithoutMfaRecoveryCodesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -4528,6 +4575,7 @@ export type UserCreateWithoutUpdatedFeatureEntitlementsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -4617,6 +4665,7 @@ export type UserUncheckedCreateWithoutUpdatedFeatureEntitlementsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -4722,6 +4771,7 @@ export type UserUpdateWithoutUpdatedFeatureEntitlementsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -4811,6 +4861,7 @@ export type UserUncheckedUpdateWithoutUpdatedFeatureEntitlementsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -4900,6 +4951,7 @@ export type UserCreateWithoutPatientProfilesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -4989,6 +5041,7 @@ export type UserUncheckedCreateWithoutPatientProfilesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -5094,6 +5147,7 @@ export type UserUpdateWithoutPatientProfilesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -5183,6 +5237,7 @@ export type UserUncheckedUpdateWithoutPatientProfilesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -5272,6 +5327,7 @@ export type UserCreateWithoutPrivacyNoticeRecordsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -5361,6 +5417,7 @@ export type UserUncheckedCreateWithoutPrivacyNoticeRecordsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -5466,6 +5523,7 @@ export type UserUpdateWithoutPrivacyNoticeRecordsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -5555,6 +5613,7 @@ export type UserUncheckedUpdateWithoutPrivacyNoticeRecordsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -5644,6 +5703,7 @@ export type UserCreateWithoutGrantedDeliveryConsentsInput = {
   receivedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGranteeInput
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -5733,6 +5793,7 @@ export type UserUncheckedCreateWithoutGrantedDeliveryConsentsInput = {
   receivedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGranteeInput
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -5838,6 +5899,7 @@ export type UserUpdateWithoutGrantedDeliveryConsentsInput = {
   receivedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGranteeNestedInput
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -5927,6 +5989,7 @@ export type UserUncheckedUpdateWithoutGrantedDeliveryConsentsInput = {
   receivedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGranteeNestedInput
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -6017,6 +6080,7 @@ export type UserCreateWithoutRequestedDeliveriesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
   draftedManagedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutDraftedByInput
@@ -6106,6 +6170,7 @@ export type UserUncheckedCreateWithoutRequestedDeliveriesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
   draftedManagedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutDraftedByInput
@@ -6211,6 +6276,7 @@ export type UserUpdateWithoutRequestedDeliveriesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
   draftedManagedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutDraftedByNestedInput
@@ -6300,6 +6366,7 @@ export type UserUncheckedUpdateWithoutRequestedDeliveriesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
   draftedManagedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutDraftedByNestedInput
@@ -6388,6 +6455,7 @@ export type UserCreateWithoutDoctorProfileInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -6477,6 +6545,7 @@ export type UserUncheckedCreateWithoutDoctorProfileInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -6582,6 +6651,7 @@ export type UserUpdateWithoutDoctorProfileInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -6671,6 +6741,7 @@ export type UserUncheckedUpdateWithoutDoctorProfileInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -6761,6 +6832,7 @@ export type UserCreateWithoutGrantedDoctorAuthoritiesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -6850,6 +6922,7 @@ export type UserUncheckedCreateWithoutGrantedDoctorAuthoritiesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -6944,6 +7017,7 @@ export type UserCreateWithoutRevokedDoctorAuthoritiesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -7033,6 +7107,7 @@ export type UserUncheckedCreateWithoutRevokedDoctorAuthoritiesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -7138,6 +7213,7 @@ export type UserUpdateWithoutGrantedDoctorAuthoritiesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -7227,6 +7303,7 @@ export type UserUncheckedUpdateWithoutGrantedDoctorAuthoritiesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -7327,6 +7404,7 @@ export type UserUpdateWithoutRevokedDoctorAuthoritiesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -7416,6 +7494,7 @@ export type UserUncheckedUpdateWithoutRevokedDoctorAuthoritiesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -7504,6 +7583,7 @@ export type UserCreateWithoutAssignedDoctorPatientsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -7593,6 +7673,7 @@ export type UserUncheckedCreateWithoutAssignedDoctorPatientsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -7687,6 +7768,7 @@ export type UserCreateWithoutUnassignedDoctorPatientsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -7776,6 +7858,7 @@ export type UserUncheckedCreateWithoutUnassignedDoctorPatientsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -7881,6 +7964,7 @@ export type UserUpdateWithoutAssignedDoctorPatientsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -7970,6 +8054,7 @@ export type UserUncheckedUpdateWithoutAssignedDoctorPatientsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -8070,6 +8155,7 @@ export type UserUpdateWithoutUnassignedDoctorPatientsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -8159,6 +8245,7 @@ export type UserUncheckedUpdateWithoutUnassignedDoctorPatientsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -8248,6 +8335,7 @@ export type UserCreateWithoutDoctorPatientActivitiesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -8337,6 +8425,7 @@ export type UserUncheckedCreateWithoutDoctorPatientActivitiesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -8442,6 +8531,7 @@ export type UserUpdateWithoutDoctorPatientActivitiesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -8531,6 +8621,7 @@ export type UserUncheckedUpdateWithoutDoctorPatientActivitiesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -8620,6 +8711,7 @@ export type UserCreateWithoutCreatedAppointmentsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -8709,6 +8801,7 @@ export type UserUncheckedCreateWithoutCreatedAppointmentsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -8814,6 +8907,7 @@ export type UserUpdateWithoutCreatedAppointmentsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -8903,6 +8997,7 @@ export type UserUncheckedUpdateWithoutCreatedAppointmentsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -8992,6 +9087,7 @@ export type UserCreateWithoutCreatedRegistrationsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -9081,6 +9177,7 @@ export type UserUncheckedCreateWithoutCreatedRegistrationsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -9186,6 +9283,7 @@ export type UserUpdateWithoutCreatedRegistrationsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -9275,6 +9373,7 @@ export type UserUncheckedUpdateWithoutCreatedRegistrationsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -9364,6 +9463,7 @@ export type UserCreateWithoutCreatedEncountersInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -9453,6 +9553,7 @@ export type UserUncheckedCreateWithoutCreatedEncountersInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -9558,6 +9659,7 @@ export type UserUpdateWithoutCreatedEncountersInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -9647,6 +9749,7 @@ export type UserUncheckedUpdateWithoutCreatedEncountersInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -9736,6 +9839,7 @@ export type UserCreateWithoutRecordedVitalSignsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -9825,6 +9929,7 @@ export type UserUncheckedCreateWithoutRecordedVitalSignsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -9930,6 +10035,7 @@ export type UserUpdateWithoutRecordedVitalSignsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -10019,6 +10125,7 @@ export type UserUncheckedUpdateWithoutRecordedVitalSignsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -10108,6 +10215,7 @@ export type UserCreateWithoutRecordedDiagnosesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -10197,6 +10305,7 @@ export type UserUncheckedCreateWithoutRecordedDiagnosesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -10302,6 +10411,7 @@ export type UserUpdateWithoutRecordedDiagnosesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -10391,6 +10501,7 @@ export type UserUncheckedUpdateWithoutRecordedDiagnosesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -10480,6 +10591,7 @@ export type UserCreateWithoutRecordedProceduresInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -10569,6 +10681,7 @@ export type UserUncheckedCreateWithoutRecordedProceduresInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -10674,6 +10787,7 @@ export type UserUpdateWithoutRecordedProceduresInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -10763,6 +10877,7 @@ export type UserUncheckedUpdateWithoutRecordedProceduresInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -10852,6 +10967,7 @@ export type UserCreateWithoutDispensedByRecordsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -10941,6 +11057,7 @@ export type UserUncheckedCreateWithoutDispensedByRecordsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -11046,6 +11163,7 @@ export type UserUpdateWithoutDispensedByRecordsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -11135,6 +11253,7 @@ export type UserUncheckedUpdateWithoutDispensedByRecordsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -11224,6 +11343,7 @@ export type UserCreateWithoutMedicationStockReceiptsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -11313,6 +11433,7 @@ export type UserUncheckedCreateWithoutMedicationStockReceiptsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -11418,6 +11539,7 @@ export type UserUpdateWithoutMedicationStockReceiptsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -11507,6 +11629,7 @@ export type UserUncheckedUpdateWithoutMedicationStockReceiptsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -11597,6 +11720,7 @@ export type UserCreateWithoutUpdatedTaxSettingsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -11686,6 +11810,7 @@ export type UserUncheckedCreateWithoutUpdatedTaxSettingsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -11791,6 +11916,7 @@ export type UserUpdateWithoutUpdatedTaxSettingsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -11880,6 +12006,7 @@ export type UserUncheckedUpdateWithoutUpdatedTaxSettingsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -11969,6 +12096,7 @@ export type UserCreateWithoutCreatedTaxCodeRatesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -12058,6 +12186,7 @@ export type UserUncheckedCreateWithoutCreatedTaxCodeRatesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -12163,6 +12292,7 @@ export type UserUpdateWithoutCreatedTaxCodeRatesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -12252,6 +12382,7 @@ export type UserUncheckedUpdateWithoutCreatedTaxCodeRatesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -12341,6 +12472,7 @@ export type UserCreateWithoutUpdatedTaxCategoryDefaultsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -12430,6 +12562,7 @@ export type UserUncheckedCreateWithoutUpdatedTaxCategoryDefaultsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -12535,6 +12668,7 @@ export type UserUpdateWithoutUpdatedTaxCategoryDefaultsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -12624,6 +12758,7 @@ export type UserUncheckedUpdateWithoutUpdatedTaxCategoryDefaultsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -12713,6 +12848,7 @@ export type UserCreateWithoutGeneratedTaxReportsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -12802,6 +12938,7 @@ export type UserUncheckedCreateWithoutGeneratedTaxReportsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -12896,6 +13033,7 @@ export type UserCreateWithoutFinalizedTaxReportsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -12985,6 +13123,7 @@ export type UserUncheckedCreateWithoutFinalizedTaxReportsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -13090,6 +13229,7 @@ export type UserUpdateWithoutGeneratedTaxReportsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -13179,6 +13319,7 @@ export type UserUncheckedUpdateWithoutGeneratedTaxReportsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -13279,6 +13420,7 @@ export type UserUpdateWithoutFinalizedTaxReportsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -13368,6 +13510,7 @@ export type UserUncheckedUpdateWithoutFinalizedTaxReportsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -13456,6 +13599,7 @@ export type UserCreateWithoutVoidedInvoicesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -13545,6 +13689,7 @@ export type UserUncheckedCreateWithoutVoidedInvoicesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -13639,6 +13784,7 @@ export type UserCreateWithoutCreatedInvoicesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -13728,6 +13874,7 @@ export type UserUncheckedCreateWithoutCreatedInvoicesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -13833,6 +13980,7 @@ export type UserUpdateWithoutVoidedInvoicesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -13922,6 +14070,7 @@ export type UserUncheckedUpdateWithoutVoidedInvoicesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -14022,6 +14171,7 @@ export type UserUpdateWithoutCreatedInvoicesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -14111,6 +14261,7 @@ export type UserUncheckedUpdateWithoutCreatedInvoicesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -14200,6 +14351,7 @@ export type UserCreateWithoutReceivedPaymentsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -14289,6 +14441,7 @@ export type UserUncheckedCreateWithoutReceivedPaymentsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -14394,6 +14547,7 @@ export type UserUpdateWithoutReceivedPaymentsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -14483,6 +14637,7 @@ export type UserUncheckedUpdateWithoutReceivedPaymentsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -14572,6 +14727,7 @@ export type UserCreateWithoutCreatedDocumentTemplatesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -14661,6 +14817,7 @@ export type UserUncheckedCreateWithoutCreatedDocumentTemplatesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -14766,6 +14923,7 @@ export type UserUpdateWithoutCreatedDocumentTemplatesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -14855,6 +15013,7 @@ export type UserUncheckedUpdateWithoutCreatedDocumentTemplatesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -14944,6 +15103,7 @@ export type UserCreateWithoutPublishedTemplateVersionsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -15033,6 +15193,7 @@ export type UserUncheckedCreateWithoutPublishedTemplateVersionsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -15138,6 +15299,7 @@ export type UserUpdateWithoutPublishedTemplateVersionsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -15227,6 +15389,7 @@ export type UserUncheckedUpdateWithoutPublishedTemplateVersionsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -15316,6 +15479,7 @@ export type UserCreateWithoutRolesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -15405,6 +15569,7 @@ export type UserUncheckedCreateWithoutRolesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -15499,6 +15664,7 @@ export type UserCreateWithoutAssignedRolesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -15588,6 +15754,7 @@ export type UserUncheckedCreateWithoutAssignedRolesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -15682,6 +15849,7 @@ export type UserCreateWithoutUnassignedRolesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -15771,6 +15939,7 @@ export type UserUncheckedCreateWithoutUnassignedRolesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -15876,6 +16045,7 @@ export type UserUpdateWithoutRolesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -15965,6 +16135,7 @@ export type UserUncheckedUpdateWithoutRolesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -16065,6 +16236,7 @@ export type UserUpdateWithoutAssignedRolesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -16154,6 +16326,7 @@ export type UserUncheckedUpdateWithoutAssignedRolesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -16254,6 +16427,7 @@ export type UserUpdateWithoutUnassignedRolesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -16343,6 +16517,7 @@ export type UserUncheckedUpdateWithoutUnassignedRolesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -16432,6 +16607,7 @@ export type UserCreateWithoutRecordedBpjsReferralsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -16521,6 +16697,7 @@ export type UserUncheckedCreateWithoutRecordedBpjsReferralsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -16626,6 +16803,7 @@ export type UserUpdateWithoutRecordedBpjsReferralsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -16715,6 +16893,7 @@ export type UserUncheckedUpdateWithoutRecordedBpjsReferralsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -16804,6 +16983,7 @@ export type UserCreateWithoutCreatedAiProviderConfigsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -16893,6 +17073,7 @@ export type UserUncheckedCreateWithoutCreatedAiProviderConfigsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -16987,6 +17168,7 @@ export type UserCreateWithoutUpdatedAiProviderConfigsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -17076,6 +17258,7 @@ export type UserUncheckedCreateWithoutUpdatedAiProviderConfigsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -17181,6 +17364,7 @@ export type UserUpdateWithoutCreatedAiProviderConfigsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -17270,6 +17454,7 @@ export type UserUncheckedUpdateWithoutCreatedAiProviderConfigsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -17370,6 +17555,7 @@ export type UserUpdateWithoutUpdatedAiProviderConfigsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -17459,6 +17645,7 @@ export type UserUncheckedUpdateWithoutUpdatedAiProviderConfigsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -17548,6 +17735,7 @@ export type UserCreateWithoutChatSessionsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -17637,6 +17825,7 @@ export type UserUncheckedCreateWithoutChatSessionsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -17742,6 +17931,7 @@ export type UserUpdateWithoutChatSessionsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -17831,6 +18021,7 @@ export type UserUncheckedUpdateWithoutChatSessionsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -17920,6 +18111,7 @@ export type UserCreateWithoutChatMessagesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -18009,6 +18201,7 @@ export type UserUncheckedCreateWithoutChatMessagesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -18114,6 +18307,7 @@ export type UserUpdateWithoutChatMessagesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -18203,6 +18397,7 @@ export type UserUncheckedUpdateWithoutChatMessagesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -18292,6 +18487,7 @@ export type UserCreateWithoutUploadedDocumentsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -18381,6 +18577,7 @@ export type UserUncheckedCreateWithoutUploadedDocumentsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -18475,6 +18672,7 @@ export type UserCreateWithoutOwnedDocumentsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -18564,6 +18762,7 @@ export type UserUncheckedCreateWithoutOwnedDocumentsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -18658,6 +18857,7 @@ export type UserCreateWithoutReleasedDocumentsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -18747,6 +18947,7 @@ export type UserUncheckedCreateWithoutReleasedDocumentsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -18852,6 +19053,7 @@ export type UserUpdateWithoutUploadedDocumentsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -18941,6 +19143,7 @@ export type UserUncheckedUpdateWithoutUploadedDocumentsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -19041,6 +19244,7 @@ export type UserUpdateWithoutOwnedDocumentsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -19130,6 +19334,7 @@ export type UserUncheckedUpdateWithoutOwnedDocumentsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -19230,6 +19435,7 @@ export type UserUpdateWithoutReleasedDocumentsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -19319,6 +19525,7 @@ export type UserUncheckedUpdateWithoutReleasedDocumentsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -19408,6 +19615,7 @@ export type UserCreateWithoutReceivedVaultSharesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -19497,6 +19705,7 @@ export type UserUncheckedCreateWithoutReceivedVaultSharesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -19591,6 +19800,7 @@ export type UserCreateWithoutGrantedVaultSharesInput = {
   receivedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGranteeInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -19680,6 +19890,7 @@ export type UserUncheckedCreateWithoutGrantedVaultSharesInput = {
   receivedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGranteeInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -19785,6 +19996,7 @@ export type UserUpdateWithoutReceivedVaultSharesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -19874,6 +20086,7 @@ export type UserUncheckedUpdateWithoutReceivedVaultSharesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -19974,6 +20187,7 @@ export type UserUpdateWithoutGrantedVaultSharesInput = {
   receivedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGranteeNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -20063,6 +20277,7 @@ export type UserUncheckedUpdateWithoutGrantedVaultSharesInput = {
   receivedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGranteeNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -20152,6 +20367,7 @@ export type UserCreateWithoutOffboardingNoticesInput = {
   receivedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGranteeInput
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -20241,6 +20457,7 @@ export type UserUncheckedCreateWithoutOffboardingNoticesInput = {
   receivedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGranteeInput
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -20346,6 +20563,7 @@ export type UserUpdateWithoutOffboardingNoticesInput = {
   receivedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGranteeNestedInput
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -20435,6 +20653,7 @@ export type UserUncheckedUpdateWithoutOffboardingNoticesInput = {
   receivedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGranteeNestedInput
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -20524,6 +20743,7 @@ export type UserCreateWithoutBlockedConversationsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -20613,6 +20833,7 @@ export type UserUncheckedCreateWithoutBlockedConversationsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -20718,6 +20939,7 @@ export type UserUpdateWithoutBlockedConversationsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -20807,6 +21029,7 @@ export type UserUncheckedUpdateWithoutBlockedConversationsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -20896,6 +21119,7 @@ export type UserCreateWithoutConversationMessagesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -20985,6 +21209,7 @@ export type UserUncheckedCreateWithoutConversationMessagesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -21090,6 +21315,7 @@ export type UserUpdateWithoutConversationMessagesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -21179,6 +21405,7 @@ export type UserUncheckedUpdateWithoutConversationMessagesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -21268,6 +21495,7 @@ export type UserCreateWithoutCreatedAdmissionsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -21357,6 +21585,7 @@ export type UserUncheckedCreateWithoutCreatedAdmissionsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -21462,6 +21691,7 @@ export type UserUpdateWithoutCreatedAdmissionsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -21551,6 +21781,7 @@ export type UserUncheckedUpdateWithoutCreatedAdmissionsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -21640,6 +21871,7 @@ export type UserCreateWithoutCreatedBedAssignmentsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -21729,6 +21961,7 @@ export type UserUncheckedCreateWithoutCreatedBedAssignmentsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -21834,6 +22067,7 @@ export type UserUpdateWithoutCreatedBedAssignmentsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -21923,6 +22157,7 @@ export type UserUncheckedUpdateWithoutCreatedBedAssignmentsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -22012,6 +22247,7 @@ export type UserCreateWithoutNotificationsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -22101,6 +22337,7 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -22206,6 +22443,7 @@ export type UserUpdateWithoutNotificationsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -22295,6 +22533,7 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -22384,6 +22623,7 @@ export type UserCreateWithoutOrganizationUnitInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -22473,6 +22713,7 @@ export type UserUncheckedCreateWithoutOrganizationUnitInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -22610,6 +22851,7 @@ export type UserCreateWithoutDefaultApproverForTypesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
   draftedManagedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutDraftedByInput
@@ -22699,6 +22941,7 @@ export type UserUncheckedCreateWithoutDefaultApproverForTypesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
   draftedManagedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutDraftedByInput
@@ -22804,6 +23047,7 @@ export type UserUpdateWithoutDefaultApproverForTypesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
   draftedManagedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutDraftedByNestedInput
@@ -22893,6 +23137,7 @@ export type UserUncheckedUpdateWithoutDefaultApproverForTypesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
   draftedManagedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutDraftedByNestedInput
@@ -22982,6 +23227,7 @@ export type UserCreateWithoutDraftedManagedDocumentsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -23071,6 +23317,7 @@ export type UserUncheckedCreateWithoutDraftedManagedDocumentsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -23176,6 +23423,7 @@ export type UserUpdateWithoutDraftedManagedDocumentsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -23265,6 +23513,7 @@ export type UserUncheckedUpdateWithoutDraftedManagedDocumentsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -23354,6 +23603,7 @@ export type UserCreateWithoutSubmittedApprovalRequestsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -23443,6 +23693,7 @@ export type UserUncheckedCreateWithoutSubmittedApprovalRequestsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -23548,6 +23799,7 @@ export type UserUpdateWithoutSubmittedApprovalRequestsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -23637,6 +23889,7 @@ export type UserUncheckedUpdateWithoutSubmittedApprovalRequestsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -23726,6 +23979,7 @@ export type UserCreateWithoutNamedApprovalRoundsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -23815,6 +24069,7 @@ export type UserUncheckedCreateWithoutNamedApprovalRoundsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -23920,6 +24175,7 @@ export type UserUpdateWithoutNamedApprovalRoundsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -24009,6 +24265,7 @@ export type UserUncheckedUpdateWithoutNamedApprovalRoundsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -24098,6 +24355,7 @@ export type UserCreateWithoutApprovalDecisionsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -24187,6 +24445,7 @@ export type UserUncheckedCreateWithoutApprovalDecisionsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -24292,6 +24551,7 @@ export type UserUpdateWithoutApprovalDecisionsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -24381,6 +24641,7 @@ export type UserUncheckedUpdateWithoutApprovalDecisionsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -24470,6 +24731,7 @@ export type UserCreateWithoutCollectedLabSpecimensInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -24559,6 +24821,7 @@ export type UserUncheckedCreateWithoutCollectedLabSpecimensInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -24664,6 +24927,7 @@ export type UserUpdateWithoutCollectedLabSpecimensInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -24753,6 +25017,7 @@ export type UserUncheckedUpdateWithoutCollectedLabSpecimensInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -24842,6 +25107,7 @@ export type UserCreateWithoutEnteredLabResultsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -24931,6 +25197,7 @@ export type UserUncheckedCreateWithoutEnteredLabResultsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -25025,6 +25292,7 @@ export type UserCreateWithoutVerifiedLabResultsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -25114,6 +25382,7 @@ export type UserUncheckedCreateWithoutVerifiedLabResultsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -25219,6 +25488,7 @@ export type UserUpdateWithoutEnteredLabResultsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -25308,6 +25578,7 @@ export type UserUncheckedUpdateWithoutEnteredLabResultsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -25408,6 +25679,7 @@ export type UserUpdateWithoutVerifiedLabResultsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -25497,6 +25769,7 @@ export type UserUncheckedUpdateWithoutVerifiedLabResultsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -25586,6 +25859,7 @@ export type UserCreateWithoutUpdatedLaboratorySettingsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -25675,6 +25949,7 @@ export type UserUncheckedCreateWithoutUpdatedLaboratorySettingsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -25780,6 +26055,7 @@ export type UserUpdateWithoutUpdatedLaboratorySettingsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -25869,6 +26145,7 @@ export type UserUncheckedUpdateWithoutUpdatedLaboratorySettingsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -25958,6 +26235,7 @@ export type UserCreateWithoutRequestedLabReportsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -26047,6 +26325,7 @@ export type UserUncheckedCreateWithoutRequestedLabReportsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -26152,6 +26431,7 @@ export type UserUpdateWithoutRequestedLabReportsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -26241,6 +26521,7 @@ export type UserUncheckedUpdateWithoutRequestedLabReportsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -26330,6 +26611,7 @@ export type UserCreateWithoutFiledBugReportsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   draftedManagedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutDraftedByInput
@@ -26419,6 +26701,7 @@ export type UserUncheckedCreateWithoutFiledBugReportsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   draftedManagedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutDraftedByInput
@@ -26524,6 +26807,7 @@ export type UserUpdateWithoutFiledBugReportsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   draftedManagedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutDraftedByNestedInput
@@ -26613,6 +26897,7 @@ export type UserUncheckedUpdateWithoutFiledBugReportsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   draftedManagedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutDraftedByNestedInput
@@ -26702,6 +26987,7 @@ export type UserCreateWithoutCreatedPregnancyEpisodesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -26791,6 +27077,7 @@ export type UserUncheckedCreateWithoutCreatedPregnancyEpisodesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -26896,6 +27183,7 @@ export type UserUpdateWithoutCreatedPregnancyEpisodesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -26985,6 +27273,7 @@ export type UserUncheckedUpdateWithoutCreatedPregnancyEpisodesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -27074,6 +27363,7 @@ export type UserCreateWithoutRecordedExternalDoctorVisitsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -27163,6 +27453,7 @@ export type UserUncheckedCreateWithoutRecordedExternalDoctorVisitsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -27268,6 +27559,7 @@ export type UserUpdateWithoutRecordedExternalDoctorVisitsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -27357,6 +27649,7 @@ export type UserUncheckedUpdateWithoutRecordedExternalDoctorVisitsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -27446,6 +27739,7 @@ export type UserCreateWithoutRecordedDeliveriesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -27535,6 +27829,7 @@ export type UserUncheckedCreateWithoutRecordedDeliveriesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -27640,6 +27935,7 @@ export type UserUpdateWithoutRecordedDeliveriesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -27729,6 +28025,7 @@ export type UserUncheckedUpdateWithoutRecordedDeliveriesInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -27818,6 +28115,7 @@ export type UserCreateWithoutShkSamplesTakenInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -27907,6 +28205,7 @@ export type UserUncheckedCreateWithoutShkSamplesTakenInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -28012,6 +28311,7 @@ export type UserUpdateWithoutShkSamplesTakenInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -28101,6 +28401,7 @@ export type UserUncheckedUpdateWithoutShkSamplesTakenInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -28190,6 +28491,7 @@ export type UserCreateWithoutRecordedAntenatalExaminationsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -28279,6 +28581,7 @@ export type UserUncheckedCreateWithoutRecordedAntenatalExaminationsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -28384,6 +28687,7 @@ export type UserUpdateWithoutRecordedAntenatalExaminationsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -28473,6 +28777,7 @@ export type UserUncheckedUpdateWithoutRecordedAntenatalExaminationsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -28562,6 +28867,7 @@ export type UserCreateWithoutDismissedAntenatalReferralsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -28651,6 +28957,7 @@ export type UserUncheckedCreateWithoutDismissedAntenatalReferralsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -28756,6 +29063,7 @@ export type UserUpdateWithoutDismissedAntenatalReferralsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -28845,6 +29153,7 @@ export type UserUncheckedUpdateWithoutDismissedAntenatalReferralsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -28934,6 +29243,7 @@ export type UserCreateWithoutRecordedPostnatalExaminationsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
@@ -29023,6 +29333,7 @@ export type UserUncheckedCreateWithoutRecordedPostnatalExaminationsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutGrantedByInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
   filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
@@ -29128,6 +29439,7 @@ export type UserUpdateWithoutRecordedPostnatalExaminationsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -29217,6 +29529,7 @@ export type UserUncheckedUpdateWithoutRecordedPostnatalExaminationsInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -29240,6 +29553,382 @@ export type UserUncheckedUpdateWithoutRecordedPostnatalExaminationsInput = {
   createdPregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedUpdateManyWithoutCreatedByNestedInput
   recordedExternalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
+  dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
+  revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
+  shkSamplesTaken?: Prisma.ShkScreeningUncheckedUpdateManyWithoutSampleTakenByNestedInput
+}
+
+export type UserCreateWithoutGrantedVisitReminderConsentsInput = {
+  id?: string
+  email: string
+  fullName?: string | null
+  passwordHash: string
+  isActive?: boolean
+  isSystem?: boolean
+  offboardedAt?: Date | string | null
+  nikCiphertext?: string | null
+  nikIndex?: string | null
+  nikLast4?: string | null
+  nikKeyVersion?: number | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitCreateNestedOneWithoutMembersInput
+  roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
+  assignedRoles?: Prisma.UserRoleCreateNestedManyWithoutAssignedByInput
+  unassignedRoles?: Prisma.UserRoleCreateNestedManyWithoutUnassignedByInput
+  patientProfiles?: Prisma.PatientProfileCreateNestedManyWithoutOwnerUserInput
+  doctorProfile?: Prisma.DoctorProfileCreateNestedOneWithoutOwnerUserInput
+  assignedDoctorPatients?: Prisma.DoctorPatientCreateNestedManyWithoutAssignedByInput
+  unassignedDoctorPatients?: Prisma.DoctorPatientCreateNestedManyWithoutUnassignedByInput
+  doctorPatientActivities?: Prisma.DoctorPatientActivityCreateNestedManyWithoutActorInput
+  createdAppointments?: Prisma.AppointmentCreateNestedManyWithoutCreatedByInput
+  createdRegistrations?: Prisma.RegistrationCreateNestedManyWithoutCreatedByInput
+  createdEncounters?: Prisma.EncounterCreateNestedManyWithoutCreatedByInput
+  recordedVitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutRecordedByInput
+  recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
+  recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
+  recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
+  medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
+  createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
+  voidedInvoices?: Prisma.InvoiceCreateNestedManyWithoutVoidedByInput
+  receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
+  refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeCreateNestedManyWithoutUserInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
+  chatSessions?: Prisma.ChatSessionCreateNestedManyWithoutOwnerUserInput
+  chatMessages?: Prisma.ChatMessageCreateNestedManyWithoutAuthorUserInput
+  createdAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutCreatedByInput
+  updatedAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutUpdatedByInput
+  uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
+  ownedDocuments?: Prisma.DocumentCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentCreateNestedManyWithoutReleasedByInput
+  blockedConversations?: Prisma.ConversationCreateNestedManyWithoutBlockedByInput
+  conversationMessages?: Prisma.ConversationMessageCreateNestedManyWithoutAuthorInput
+  updatedFeatureEntitlements?: Prisma.FeatureEntitlementCreateNestedManyWithoutUpdatedByInput
+  createdAdmissions?: Prisma.AdmissionCreateNestedManyWithoutCreatedByInput
+  createdBedAssignments?: Prisma.BedAssignmentCreateNestedManyWithoutCreatedByInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
+  sentInvitations?: Prisma.UserInvitationCreateNestedManyWithoutInvitedByInput
+  createdDocumentTemplates?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  publishedTemplateVersions?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutPublishedByInput
+  receivedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGranteeInput
+  grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
+  offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
+  grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
+  defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
+  filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
+  draftedManagedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutDraftedByInput
+  submittedApprovalRequests?: Prisma.DocumentApprovalRequestCreateNestedManyWithoutSubmittedByInput
+  namedApprovalRounds?: Prisma.DocumentApprovalApproverCreateNestedManyWithoutApproverInput
+  approvalDecisions?: Prisma.DocumentApprovalDecisionCreateNestedManyWithoutApproverInput
+  collectedLabSpecimens?: Prisma.LabSpecimenCreateNestedManyWithoutCollectedByInput
+  enteredLabResults?: Prisma.LabResultCreateNestedManyWithoutEnteredByInput
+  verifiedLabResults?: Prisma.LabResultCreateNestedManyWithoutVerifiedByInput
+  requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
+  updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
+  updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
+  generatedTaxReports?: Prisma.TaxReportDraftCreateNestedManyWithoutGeneratedByInput
+  finalizedTaxReports?: Prisma.TaxReportDraftCreateNestedManyWithoutFinalizedByInput
+  grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
+  revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
+  grantedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutCreatedByInput
+  createdPregnancyEpisodes?: Prisma.PregnancyEpisodeCreateNestedManyWithoutCreatedByInput
+  recordedExternalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitCreateNestedManyWithoutRecordedByInput
+  recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
+  recordedPostnatalExaminations?: Prisma.PostnatalExaminationCreateNestedManyWithoutRecordedByInput
+  dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
+  revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
+  shkSamplesTaken?: Prisma.ShkScreeningCreateNestedManyWithoutSampleTakenByInput
+}
+
+export type UserUncheckedCreateWithoutGrantedVisitReminderConsentsInput = {
+  id?: string
+  email: string
+  fullName?: string | null
+  passwordHash: string
+  isActive?: boolean
+  isSystem?: boolean
+  offboardedAt?: Date | string | null
+  organizationUnitId?: string | null
+  nikCiphertext?: string | null
+  nikIndex?: string | null
+  nikLast4?: string | null
+  nikKeyVersion?: number | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  roles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUserInput
+  assignedRoles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutAssignedByInput
+  unassignedRoles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUnassignedByInput
+  patientProfiles?: Prisma.PatientProfileUncheckedCreateNestedManyWithoutOwnerUserInput
+  doctorProfile?: Prisma.DoctorProfileUncheckedCreateNestedOneWithoutOwnerUserInput
+  assignedDoctorPatients?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutAssignedByInput
+  unassignedDoctorPatients?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutUnassignedByInput
+  doctorPatientActivities?: Prisma.DoctorPatientActivityUncheckedCreateNestedManyWithoutActorInput
+  createdAppointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutCreatedByInput
+  createdRegistrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutCreatedByInput
+  createdEncounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutCreatedByInput
+  recordedVitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
+  medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
+  createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  voidedInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutVoidedByInput
+  receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
+  refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
+  chatSessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutOwnerUserInput
+  chatMessages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutAuthorUserInput
+  createdAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutUpdatedByInput
+  uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
+  ownedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutReleasedByInput
+  blockedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutBlockedByInput
+  conversationMessages?: Prisma.ConversationMessageUncheckedCreateNestedManyWithoutAuthorInput
+  updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdAdmissions?: Prisma.AdmissionUncheckedCreateNestedManyWithoutCreatedByInput
+  createdBedAssignments?: Prisma.BedAssignmentUncheckedCreateNestedManyWithoutCreatedByInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
+  sentInvitations?: Prisma.UserInvitationUncheckedCreateNestedManyWithoutInvitedByInput
+  createdDocumentTemplates?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  publishedTemplateVersions?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutPublishedByInput
+  receivedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGranteeInput
+  grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
+  offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
+  grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
+  defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
+  filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
+  draftedManagedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutDraftedByInput
+  submittedApprovalRequests?: Prisma.DocumentApprovalRequestUncheckedCreateNestedManyWithoutSubmittedByInput
+  namedApprovalRounds?: Prisma.DocumentApprovalApproverUncheckedCreateNestedManyWithoutApproverInput
+  approvalDecisions?: Prisma.DocumentApprovalDecisionUncheckedCreateNestedManyWithoutApproverInput
+  collectedLabSpecimens?: Prisma.LabSpecimenUncheckedCreateNestedManyWithoutCollectedByInput
+  enteredLabResults?: Prisma.LabResultUncheckedCreateNestedManyWithoutEnteredByInput
+  verifiedLabResults?: Prisma.LabResultUncheckedCreateNestedManyWithoutVerifiedByInput
+  requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
+  updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
+  generatedTaxReports?: Prisma.TaxReportDraftUncheckedCreateNestedManyWithoutGeneratedByInput
+  finalizedTaxReports?: Prisma.TaxReportDraftUncheckedCreateNestedManyWithoutFinalizedByInput
+  grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
+  revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
+  grantedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutCreatedByInput
+  createdPregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedCreateNestedManyWithoutCreatedByInput
+  recordedExternalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedPostnatalExaminations?: Prisma.PostnatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
+  dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
+  revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
+  shkSamplesTaken?: Prisma.ShkScreeningUncheckedCreateNestedManyWithoutSampleTakenByInput
+}
+
+export type UserCreateOrConnectWithoutGrantedVisitReminderConsentsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutGrantedVisitReminderConsentsInput, Prisma.UserUncheckedCreateWithoutGrantedVisitReminderConsentsInput>
+}
+
+export type UserUpsertWithoutGrantedVisitReminderConsentsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutGrantedVisitReminderConsentsInput, Prisma.UserUncheckedUpdateWithoutGrantedVisitReminderConsentsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutGrantedVisitReminderConsentsInput, Prisma.UserUncheckedCreateWithoutGrantedVisitReminderConsentsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutGrantedVisitReminderConsentsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutGrantedVisitReminderConsentsInput, Prisma.UserUncheckedUpdateWithoutGrantedVisitReminderConsentsInput>
+}
+
+export type UserUpdateWithoutGrantedVisitReminderConsentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  offboardedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nikCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikIndex?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitUpdateOneWithoutMembersNestedInput
+  roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
+  assignedRoles?: Prisma.UserRoleUpdateManyWithoutAssignedByNestedInput
+  unassignedRoles?: Prisma.UserRoleUpdateManyWithoutUnassignedByNestedInput
+  patientProfiles?: Prisma.PatientProfileUpdateManyWithoutOwnerUserNestedInput
+  doctorProfile?: Prisma.DoctorProfileUpdateOneWithoutOwnerUserNestedInput
+  assignedDoctorPatients?: Prisma.DoctorPatientUpdateManyWithoutAssignedByNestedInput
+  unassignedDoctorPatients?: Prisma.DoctorPatientUpdateManyWithoutUnassignedByNestedInput
+  doctorPatientActivities?: Prisma.DoctorPatientActivityUpdateManyWithoutActorNestedInput
+  createdAppointments?: Prisma.AppointmentUpdateManyWithoutCreatedByNestedInput
+  createdRegistrations?: Prisma.RegistrationUpdateManyWithoutCreatedByNestedInput
+  createdEncounters?: Prisma.EncounterUpdateManyWithoutCreatedByNestedInput
+  recordedVitalSigns?: Prisma.VitalSignsUpdateManyWithoutRecordedByNestedInput
+  recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
+  recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
+  recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
+  medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
+  createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
+  voidedInvoices?: Prisma.InvoiceUpdateManyWithoutVoidedByNestedInput
+  receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
+  refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUpdateManyWithoutUserNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
+  chatSessions?: Prisma.ChatSessionUpdateManyWithoutOwnerUserNestedInput
+  chatMessages?: Prisma.ChatMessageUpdateManyWithoutAuthorUserNestedInput
+  createdAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutCreatedByNestedInput
+  updatedAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutUpdatedByNestedInput
+  uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
+  ownedDocuments?: Prisma.DocumentUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUpdateManyWithoutReleasedByNestedInput
+  blockedConversations?: Prisma.ConversationUpdateManyWithoutBlockedByNestedInput
+  conversationMessages?: Prisma.ConversationMessageUpdateManyWithoutAuthorNestedInput
+  updatedFeatureEntitlements?: Prisma.FeatureEntitlementUpdateManyWithoutUpdatedByNestedInput
+  createdAdmissions?: Prisma.AdmissionUpdateManyWithoutCreatedByNestedInput
+  createdBedAssignments?: Prisma.BedAssignmentUpdateManyWithoutCreatedByNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
+  sentInvitations?: Prisma.UserInvitationUpdateManyWithoutInvitedByNestedInput
+  createdDocumentTemplates?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  publishedTemplateVersions?: Prisma.DocumentTemplateVersionUpdateManyWithoutPublishedByNestedInput
+  receivedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGranteeNestedInput
+  grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
+  offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
+  grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
+  defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
+  filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
+  draftedManagedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutDraftedByNestedInput
+  submittedApprovalRequests?: Prisma.DocumentApprovalRequestUpdateManyWithoutSubmittedByNestedInput
+  namedApprovalRounds?: Prisma.DocumentApprovalApproverUpdateManyWithoutApproverNestedInput
+  approvalDecisions?: Prisma.DocumentApprovalDecisionUpdateManyWithoutApproverNestedInput
+  collectedLabSpecimens?: Prisma.LabSpecimenUpdateManyWithoutCollectedByNestedInput
+  enteredLabResults?: Prisma.LabResultUpdateManyWithoutEnteredByNestedInput
+  verifiedLabResults?: Prisma.LabResultUpdateManyWithoutVerifiedByNestedInput
+  requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
+  updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
+  updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
+  generatedTaxReports?: Prisma.TaxReportDraftUpdateManyWithoutGeneratedByNestedInput
+  finalizedTaxReports?: Prisma.TaxReportDraftUpdateManyWithoutFinalizedByNestedInput
+  grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
+  revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
+  grantedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutCreatedByNestedInput
+  createdPregnancyEpisodes?: Prisma.PregnancyEpisodeUpdateManyWithoutCreatedByNestedInput
+  recordedExternalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitUpdateManyWithoutRecordedByNestedInput
+  recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
+  recordedPostnatalExaminations?: Prisma.PostnatalExaminationUpdateManyWithoutRecordedByNestedInput
+  dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
+  revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
+  shkSamplesTaken?: Prisma.ShkScreeningUpdateManyWithoutSampleTakenByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutGrantedVisitReminderConsentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  offboardedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organizationUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikIndex?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  roles?: Prisma.UserRoleUncheckedUpdateManyWithoutUserNestedInput
+  assignedRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutAssignedByNestedInput
+  unassignedRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutUnassignedByNestedInput
+  patientProfiles?: Prisma.PatientProfileUncheckedUpdateManyWithoutOwnerUserNestedInput
+  doctorProfile?: Prisma.DoctorProfileUncheckedUpdateOneWithoutOwnerUserNestedInput
+  assignedDoctorPatients?: Prisma.DoctorPatientUncheckedUpdateManyWithoutAssignedByNestedInput
+  unassignedDoctorPatients?: Prisma.DoctorPatientUncheckedUpdateManyWithoutUnassignedByNestedInput
+  doctorPatientActivities?: Prisma.DoctorPatientActivityUncheckedUpdateManyWithoutActorNestedInput
+  createdAppointments?: Prisma.AppointmentUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdRegistrations?: Prisma.RegistrationUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdEncounters?: Prisma.EncounterUncheckedUpdateManyWithoutCreatedByNestedInput
+  recordedVitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
+  medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
+  createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  voidedInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutVoidedByNestedInput
+  receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
+  refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
+  chatSessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutOwnerUserNestedInput
+  chatMessages?: Prisma.ChatMessageUncheckedUpdateManyWithoutAuthorUserNestedInput
+  createdAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutUpdatedByNestedInput
+  uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
+  ownedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutReleasedByNestedInput
+  blockedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutBlockedByNestedInput
+  conversationMessages?: Prisma.ConversationMessageUncheckedUpdateManyWithoutAuthorNestedInput
+  updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdAdmissions?: Prisma.AdmissionUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdBedAssignments?: Prisma.BedAssignmentUncheckedUpdateManyWithoutCreatedByNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
+  sentInvitations?: Prisma.UserInvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+  createdDocumentTemplates?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  publishedTemplateVersions?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutPublishedByNestedInput
+  receivedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGranteeNestedInput
+  grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
+  offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
+  grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
+  defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
+  filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
+  draftedManagedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutDraftedByNestedInput
+  submittedApprovalRequests?: Prisma.DocumentApprovalRequestUncheckedUpdateManyWithoutSubmittedByNestedInput
+  namedApprovalRounds?: Prisma.DocumentApprovalApproverUncheckedUpdateManyWithoutApproverNestedInput
+  approvalDecisions?: Prisma.DocumentApprovalDecisionUncheckedUpdateManyWithoutApproverNestedInput
+  collectedLabSpecimens?: Prisma.LabSpecimenUncheckedUpdateManyWithoutCollectedByNestedInput
+  enteredLabResults?: Prisma.LabResultUncheckedUpdateManyWithoutEnteredByNestedInput
+  verifiedLabResults?: Prisma.LabResultUncheckedUpdateManyWithoutVerifiedByNestedInput
+  requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
+  updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
+  generatedTaxReports?: Prisma.TaxReportDraftUncheckedUpdateManyWithoutGeneratedByNestedInput
+  finalizedTaxReports?: Prisma.TaxReportDraftUncheckedUpdateManyWithoutFinalizedByNestedInput
+  grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
+  revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
+  grantedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdPregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedUpdateManyWithoutCreatedByNestedInput
+  recordedExternalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedPostnatalExaminations?: Prisma.PostnatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
   dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
   revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
   recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
@@ -29322,6 +30011,7 @@ export type UserUpdateWithoutOrganizationUnitInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
@@ -29411,6 +30101,7 @@ export type UserUncheckedUpdateWithoutOrganizationUnitInput = {
   grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
   offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
   grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  grantedVisitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutGrantedByNestedInput
   requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
   defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
   filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
@@ -29506,6 +30197,7 @@ export type UserCountOutputType = {
   grantedVaultShares: number
   offboardingNotices: number
   grantedDeliveryConsents: number
+  grantedVisitReminderConsents: number
   requestedDeliveries: number
   defaultApproverForTypes: number
   filedBugReports: number
@@ -29579,6 +30271,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   grantedVaultShares?: boolean | UserCountOutputTypeCountGrantedVaultSharesArgs
   offboardingNotices?: boolean | UserCountOutputTypeCountOffboardingNoticesArgs
   grantedDeliveryConsents?: boolean | UserCountOutputTypeCountGrantedDeliveryConsentsArgs
+  grantedVisitReminderConsents?: boolean | UserCountOutputTypeCountGrantedVisitReminderConsentsArgs
   requestedDeliveries?: boolean | UserCountOutputTypeCountRequestedDeliveriesArgs
   defaultApproverForTypes?: boolean | UserCountOutputTypeCountDefaultApproverForTypesArgs
   filedBugReports?: boolean | UserCountOutputTypeCountFiledBugReportsArgs
@@ -29916,6 +30609,13 @@ export type UserCountOutputTypeCountGrantedDeliveryConsentsArgs<ExtArgs extends 
 /**
  * UserCountOutputType without action
  */
+export type UserCountOutputTypeCountGrantedVisitReminderConsentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PatientVisitReminderConsentWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
 export type UserCountOutputTypeCountRequestedDeliveriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.DocumentDeliveryWhereInput
 }
@@ -30171,6 +30871,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   grantedVaultShares?: boolean | Prisma.User$grantedVaultSharesArgs<ExtArgs>
   offboardingNotices?: boolean | Prisma.User$offboardingNoticesArgs<ExtArgs>
   grantedDeliveryConsents?: boolean | Prisma.User$grantedDeliveryConsentsArgs<ExtArgs>
+  grantedVisitReminderConsents?: boolean | Prisma.User$grantedVisitReminderConsentsArgs<ExtArgs>
   requestedDeliveries?: boolean | Prisma.User$requestedDeliveriesArgs<ExtArgs>
   defaultApproverForTypes?: boolean | Prisma.User$defaultApproverForTypesArgs<ExtArgs>
   filedBugReports?: boolean | Prisma.User$filedBugReportsArgs<ExtArgs>
@@ -30305,6 +31006,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   grantedVaultShares?: boolean | Prisma.User$grantedVaultSharesArgs<ExtArgs>
   offboardingNotices?: boolean | Prisma.User$offboardingNoticesArgs<ExtArgs>
   grantedDeliveryConsents?: boolean | Prisma.User$grantedDeliveryConsentsArgs<ExtArgs>
+  grantedVisitReminderConsents?: boolean | Prisma.User$grantedVisitReminderConsentsArgs<ExtArgs>
   requestedDeliveries?: boolean | Prisma.User$requestedDeliveriesArgs<ExtArgs>
   defaultApproverForTypes?: boolean | Prisma.User$defaultApproverForTypesArgs<ExtArgs>
   filedBugReports?: boolean | Prisma.User$filedBugReportsArgs<ExtArgs>
@@ -30390,6 +31092,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     grantedVaultShares: Prisma.$VaultDocumentSharePayload<ExtArgs>[]
     offboardingNotices: Prisma.$UserOffboardingNoticePayload<ExtArgs>[]
     grantedDeliveryConsents: Prisma.$PatientDeliveryConsentPayload<ExtArgs>[]
+    grantedVisitReminderConsents: Prisma.$PatientVisitReminderConsentPayload<ExtArgs>[]
     requestedDeliveries: Prisma.$DocumentDeliveryPayload<ExtArgs>[]
     defaultApproverForTypes: Prisma.$DocumentTypeApproverPayload<ExtArgs>[]
     filedBugReports: Prisma.$BugReportPayload<ExtArgs>[]
@@ -30915,6 +31618,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   grantedVaultShares<T extends Prisma.User$grantedVaultSharesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$grantedVaultSharesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$VaultDocumentSharePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   offboardingNotices<T extends Prisma.User$offboardingNoticesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$offboardingNoticesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserOffboardingNoticePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   grantedDeliveryConsents<T extends Prisma.User$grantedDeliveryConsentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$grantedDeliveryConsentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PatientDeliveryConsentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  grantedVisitReminderConsents<T extends Prisma.User$grantedVisitReminderConsentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$grantedVisitReminderConsentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PatientVisitReminderConsentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   requestedDeliveries<T extends Prisma.User$requestedDeliveriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$requestedDeliveriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DocumentDeliveryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   defaultApproverForTypes<T extends Prisma.User$defaultApproverForTypesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$defaultApproverForTypesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DocumentTypeApproverPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   filedBugReports<T extends Prisma.User$filedBugReportsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$filedBugReportsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BugReportPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -32450,6 +33154,30 @@ export type User$grantedDeliveryConsentsArgs<ExtArgs extends runtime.Types.Exten
   take?: number
   skip?: number
   distinct?: Prisma.PatientDeliveryConsentScalarFieldEnum | Prisma.PatientDeliveryConsentScalarFieldEnum[]
+}
+
+/**
+ * User.grantedVisitReminderConsents
+ */
+export type User$grantedVisitReminderConsentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PatientVisitReminderConsent
+   */
+  select?: Prisma.PatientVisitReminderConsentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PatientVisitReminderConsent
+   */
+  omit?: Prisma.PatientVisitReminderConsentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PatientVisitReminderConsentInclude<ExtArgs> | null
+  where?: Prisma.PatientVisitReminderConsentWhereInput
+  orderBy?: Prisma.PatientVisitReminderConsentOrderByWithRelationInput | Prisma.PatientVisitReminderConsentOrderByWithRelationInput[]
+  cursor?: Prisma.PatientVisitReminderConsentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PatientVisitReminderConsentScalarFieldEnum | Prisma.PatientVisitReminderConsentScalarFieldEnum[]
 }
 
 /**

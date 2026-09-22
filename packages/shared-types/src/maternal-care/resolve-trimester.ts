@@ -1,8 +1,8 @@
 import type { GestationalAge, PregnancyTrimester } from '#maternal-care/types';
 
 /** Permenkes 21/2021 Lampiran I, verified by P25-T01 answer 2. */
-const FIRST_TRIMESTER_LAST_WEEK = 12;
-const SECOND_TRIMESTER_LAST_WEEK = 24;
+export const FIRST_TRIMESTER_LAST_WEEK = 12;
+export const SECOND_TRIMESTER_LAST_WEEK = 24;
 
 /**
  * Which trimester a gestational age falls in (P25-T06).

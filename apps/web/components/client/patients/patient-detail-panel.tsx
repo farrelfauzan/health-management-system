@@ -27,6 +27,7 @@ import { PatientIdentifiersCard } from '#components/client/patients/patient-iden
 import { PatientImmunizationsCard } from '#components/client/patients/patient-immunizations-card';
 import { PatientKycVerifyButton } from '#components/client/patients/patient-kyc-verify-button';
 import { PatientPrivacyHistoryCard } from '#components/client/patients/patient-privacy-history-card';
+import { PatientVisitReminderConsentCard } from '#components/client/patients/patient-visit-reminder-consent-card';
 import { PatientDoctorsCard } from '#components/client/patients/patient-doctors-card';
 import { PatientFormDialog } from '#components/client/patients/patient-form-dialog';
 import { RegisterNewbornDialog } from '#components/client/patients/register-newborn-dialog';
@@ -207,6 +208,9 @@ export function PatientDetailPanel({
               <PatientAllergiesCard allergies={patient.allergies} />
               <PatientPrivacyHistoryCard patientId={patient.id} />
               <PatientDeliveryConsentCard patientId={patient.id} />
+              {isMaternalCareEnabled ? (
+                <PatientVisitReminderConsentCard patientId={patient.id} />
+              ) : null}
               <PatientDoctorsCard
                 patient={patient}
                 onAssignDoctor={() => setIsAssignDialogOpen(true)}

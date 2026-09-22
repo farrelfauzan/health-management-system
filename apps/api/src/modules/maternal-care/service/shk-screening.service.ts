@@ -1,5 +1,6 @@
 import {
   ListShkScreeningsQuery,
+  MaternalDueReach,
   RecordShkResultInput,
   RecordShkSampleInput,
   RecordShkSentInput,
@@ -62,6 +63,28 @@ export class ShkScreeningService {
       reachDoctorId,
     });
     return records.map((record) => toShkScreeningView(record, now));
+  }
+
+  /**
+   * Every sample not yet taken — upcoming, due or overdue — under an
+   * already-resolved reach (P25-T17). A caller under OWN scope with no
+   * clinician profile reaches no baby, which is the refusal `listWorklist`
+   * makes, answered here as an empty list because the due worklist gathers
+   * several sources and one of them having nothing is not an error.
+   */
+  async listUntakenSamplesWithinReach(reach: MaternalDueReach): Promise<ShkScreeningView[]> {
+    if (!reach.hasAny && reach.doctorId === null) {
+      return [];
+    }
+    const now = new Date();
+    const records = await this.shkScreeningRepository.listWorklist({
+      filter: null,
+      now,
+      reachDoctorId: reach.hasAny ? null : reach.doctorId,
+    });
+    return records
+      .filter((record) => record.sampleTakenAt === null)
+      .map((record) => toShkScreeningView(record, now));
   }
 
   async recordSample(

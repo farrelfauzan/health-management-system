@@ -5,6 +5,7 @@ import { useFormatter, useTranslations } from 'next-intl';
 
 import { EncountersTable } from '#components/client/encounters/encounters-table';
 import { FamilyPlanningDueCard } from '#components/client/maternal-care/family-planning-due-card';
+import { MaternalVisitsDueCard } from '#components/client/maternal-care/maternal-visits-due-card';
 import { PageHeader } from '#components/shared/page-header';
 import { INVOICES_PAGE_SIZE } from '#lib/billing/search-params';
 import { useEncountersList } from '#lib/encounters/use-encounters-list';
@@ -61,6 +62,8 @@ export function DoctorTodayPanel({ today, isMaternalCareEnabled = false }: Docto
           </CardContent>
         </Card>
       </section>
+
+      {isMaternalCareEnabled ? <MaternalVisitsDueCard patientBasePath="/doctor/patients" /> : null}
 
       {isMaternalCareEnabled ? <FamilyPlanningDueCard patientBasePath="/doctor/patients" /> : null}
 
