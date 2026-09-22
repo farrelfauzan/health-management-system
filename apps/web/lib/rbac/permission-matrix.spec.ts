@@ -105,22 +105,49 @@ describe('filterPermissionMatrix', () => {
     expect(actualMatrix[0]?.rows.map((row) => row.action)).toEqual(['merge']);
   });
 
-  it('does not match on the description', () => {
+  it('matches on the description', () => {
     const inputMatrix = buildPermissionMatrix([buildCatalogGroup()]);
 
-    expect(filterPermissionMatrix(inputMatrix, 'duplicate')).toEqual([]);
+    const actualMatrix = filterPermissionMatrix(inputMatrix, 'duplicate');
+
+    expect(actualMatrix[0]?.rows.map((row) => row.action)).toEqual(['merge']);
   });
 
-  it('does not match on the permission key', () => {
+  it('matches on the permission key', () => {
     const inputMatrix = buildPermissionMatrix([buildCatalogGroup()]);
 
-    expect(filterPermissionMatrix(inputMatrix, 'read:own')).toEqual([]);
+    const actualMatrix = filterPermissionMatrix(inputMatrix, 'patient.read:own');
+
+    expect(actualMatrix[0]?.rows.map((row) => row.action)).toEqual(['read']);
   });
 
-  it('does not match on the resource name', () => {
+  it('keeps every row of a group whose resource name matches', () => {
     const inputMatrix = buildPermissionMatrix([buildCatalogGroup()]);
 
-    expect(filterPermissionMatrix(inputMatrix, 'patient')).toEqual([]);
+    const actualMatrix = filterPermissionMatrix(inputMatrix, 'patient');
+
+    expect(actualMatrix[0]?.rows.map((row) => row.action)).toEqual(['read', 'merge']);
+  });
+
+  it('ignores spaces and punctuation between words', () => {
+    const inputMatrix = buildPermissionMatrix([
+      {
+        resource: 'LabOrder',
+        permissions: [
+          {
+            id: 'l1',
+            permissionKey: 'lab-order.read:any',
+            resource: 'LabOrder',
+            action: 'read',
+            scope: 'ANY',
+            description: 'Read every laboratory order',
+          },
+        ],
+      },
+    ]);
+
+    expect(filterPermissionMatrix(inputMatrix, 'lab order')).toHaveLength(1);
+    expect(filterPermissionMatrix(inputMatrix, 'lab-order.read')).toHaveLength(1);
   });
 
   it('drops groups that have no matching row', () => {
