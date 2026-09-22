@@ -2859,6 +2859,23 @@ export type EnumBreastMilkProductionNullableWithAggregatesFilter<$PrismaModel = 
   _max?: Prisma.NestedEnumBreastMilkProductionNullableFilter<$PrismaModel>
 }
 
+export type EnumMaternalVisitReminderStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.MaternalVisitReminderStatus | Prisma.EnumMaternalVisitReminderStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.MaternalVisitReminderStatus[] | Prisma.ListEnumMaternalVisitReminderStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.MaternalVisitReminderStatus[] | Prisma.ListEnumMaternalVisitReminderStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumMaternalVisitReminderStatusFilter<$PrismaModel> | $Enums.MaternalVisitReminderStatus
+}
+
+export type EnumMaternalVisitReminderStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.MaternalVisitReminderStatus | Prisma.EnumMaternalVisitReminderStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.MaternalVisitReminderStatus[] | Prisma.ListEnumMaternalVisitReminderStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.MaternalVisitReminderStatus[] | Prisma.ListEnumMaternalVisitReminderStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumMaternalVisitReminderStatusWithAggregatesFilter<$PrismaModel> | $Enums.MaternalVisitReminderStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumMaternalVisitReminderStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumMaternalVisitReminderStatusFilter<$PrismaModel>
+}
+
 export type NestedUuidFilter<$PrismaModel = never> = {
   equals?: string | Prisma.StringFieldRefInput<$PrismaModel>
   in?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
@@ -5657,6 +5674,23 @@ export type NestedEnumBreastMilkProductionNullableWithAggregatesFilter<$PrismaMo
   _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
   _min?: Prisma.NestedEnumBreastMilkProductionNullableFilter<$PrismaModel>
   _max?: Prisma.NestedEnumBreastMilkProductionNullableFilter<$PrismaModel>
+}
+
+export type NestedEnumMaternalVisitReminderStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.MaternalVisitReminderStatus | Prisma.EnumMaternalVisitReminderStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.MaternalVisitReminderStatus[] | Prisma.ListEnumMaternalVisitReminderStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.MaternalVisitReminderStatus[] | Prisma.ListEnumMaternalVisitReminderStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumMaternalVisitReminderStatusFilter<$PrismaModel> | $Enums.MaternalVisitReminderStatus
+}
+
+export type NestedEnumMaternalVisitReminderStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.MaternalVisitReminderStatus | Prisma.EnumMaternalVisitReminderStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.MaternalVisitReminderStatus[] | Prisma.ListEnumMaternalVisitReminderStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.MaternalVisitReminderStatus[] | Prisma.ListEnumMaternalVisitReminderStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumMaternalVisitReminderStatusWithAggregatesFilter<$PrismaModel> | $Enums.MaternalVisitReminderStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumMaternalVisitReminderStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumMaternalVisitReminderStatusFilter<$PrismaModel>
 }
 
 

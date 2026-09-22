@@ -6,10 +6,13 @@ import {
   PostnatalNewbornRecord,
   PostnatalVisitCodeValue,
   PostnatalVisitRecord,
+  MaternalDueReach,
+  PostnatalDueBirthRecord,
 } from '@hms/shared-types';
 import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from '../../../common/prisma/prisma.service';
+import { buildPatientReachFilter } from './build-patient-reach-filter';
 
 const UNIQUE_CONSTRAINT_ERROR_CODE = 'P2002';
 const MILLISECONDS_PER_DAY = 86_400_000;
@@ -97,6 +100,36 @@ export class PostnatalVisitRepository {
       patientId: delivery.pregnancyEpisode.patientId,
       birthAt: delivery.birthAt,
     };
+  }
+
+  /**
+   * Births at or after `bornOnOrAfter` whose mother is within the reach
+   * (P25-T17) — the ones whose KF/KN windows can still be open.
+   */
+  async listBirthsForDue(params: {
+    bornOnOrAfter: Date;
+    reach: MaternalDueReach;
+  }): Promise<PostnatalDueBirthRecord[]> {
+    const deliveries = await this.prisma.deliveryRecord.findMany({
+      where: {
+        birthAt: { gte: params.bornOnOrAfter },
+        pregnancyEpisode: { deletedAt: null, patient: buildPatientReachFilter(params.reach) },
+      },
+      orderBy: { birthAt: 'asc' },
+      select: {
+        birthAt: true,
+        pregnancyEpisode: {
+          select: { id: true, patientId: true, patient: { select: { fullName: true, mrn: true } } },
+        },
+      },
+    });
+    return deliveries.map((delivery) => ({
+      pregnancyEpisodeId: delivery.pregnancyEpisode.id,
+      patientId: delivery.pregnancyEpisode.patientId,
+      birthAt: delivery.birthAt,
+      patientName: delivery.pregnancyEpisode.patient.fullName,
+      medicalRecordNumber: delivery.pregnancyEpisode.patient.mrn,
+    }));
   }
 
   async findBirthByPregnancyEpisodeId(pregnancyEpisodeId: string): Promise<PostnatalBirthRecord | null> {

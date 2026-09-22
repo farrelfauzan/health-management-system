@@ -28,6 +28,13 @@ export type GestationalAge = {
  */
 export type PregnancyTrimester = 1 | 2 | 3;
 
+/** One trimester as calendar dates, both inclusive, `YYYY-MM-DD` (P25-T17). */
+export type TrimesterWindow = {
+  trimester: PregnancyTrimester;
+  startsOn: string;
+  endsOn: string;
+};
+
 /** Where a trimester stands against the visits Permenkes 21/2021 requires. */
 export type TrimesterScheduleState = 'DONE' | 'DUE' | 'MISSED';
 
@@ -435,4 +442,21 @@ export type PostnatalExaminationRecord = {
 export type PostnatalEpisodeCloseCandidate = {
   pregnancyEpisodeId: string;
   birthAt: Date;
+};
+
+/**
+ * An active pregnancy with what the due worklist needs to evaluate its
+ * trimester schedule (P25-T17): the episode, who she is, and every visit.
+ */
+export type AntenatalDueEpisodeRecord = {
+  episode: PregnancyEpisodeRecord;
+  patientName: string;
+  medicalRecordNumber: string;
+  visits: PregnancyEpisodeVisitRow[];
+};
+
+/** A recent birth whose KF/KN windows may still be open (P25-T17). */
+export type PostnatalDueBirthRecord = PostnatalBirthRecord & {
+  patientName: string;
+  medicalRecordNumber: string;
 };

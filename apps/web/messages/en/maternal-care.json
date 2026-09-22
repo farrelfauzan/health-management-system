@@ -525,6 +525,46 @@
           "OTHER": "Other"
         }
       }
+    },
+    "dueThisWeek": {
+      "title": "Due this week",
+      "subtitle": "Trimester visits, nifas and neonatal windows, KB and SHK samples due today and the next six days.",
+      "empty": "Nothing is due in the next 7 days.",
+      "loadError": "The due list could not be loaded.",
+      "sources": {
+        "ANTENATAL": "Pregnancy",
+        "POSTNATAL": "Postnatal",
+        "FAMILY_PLANNING": "KB",
+        "SHK": "SHK"
+      },
+      "trimester": "Trimester {number}",
+      "shkSample": "Sample {number}",
+      "newborn": "Baby",
+      "window": "{from} – {until}",
+      "reminder": {
+        "SENT": "Reminder sent",
+        "FAILED": "Reminder failed",
+        "pending": "Reminder not sent yet",
+        "noConsent": "No reminder consent"
+      }
+    },
+    "visitReminderConsent": {
+      "title": "WhatsApp visit reminders",
+      "description": "Permission to send a short WhatsApp reminder when a maternal visit is due. Separate from document delivery. Sent only to a verified WhatsApp number; the patient can reply BERHENTI to stop.",
+      "loadError": "Reminder consent could not be loaded.",
+      "updateError": "Reminder consent could not be updated.",
+      "state": {
+        "granted": "Consented",
+        "withdrawn": "Withdrawn",
+        "optedOut": "Opted out by patient",
+        "notAsked": "Not asked"
+      },
+      "capture": "Capture consent",
+      "recapture": "Re-capture consent",
+      "withdraw": "Withdraw",
+      "grantedBy": "Captured by {name} on {date}",
+      "noticeVersion": "Privacy notice v{version}",
+      "revokedAt": "Withdrawn on {date}"
     }
   }
 }

@@ -7,9 +7,9 @@ import {
   FamilyPlanningCourseRecord,
   FamilyPlanningCourseView,
   FamilyPlanningDueItem,
-  FamilyPlanningDueScope,
   getCalendarDateInTimeZone,
   ListFamilyPlanningDueQueryInput,
+  MaternalDueReach,
   PatientFamilyPlanningResponse,
   RecordFamilyPlanningServiceInput,
   resolveFamilyPlanningNextDueDate,
@@ -185,13 +185,28 @@ export class FamilyPlanningService {
     query: ListFamilyPlanningDueQueryInput,
     currentUser: CurrentUser,
   ): Promise<FamilyPlanningDueItem[]> {
-    const scope = await this.resolveDueScope(currentUser);
+    const reach = await this.resolveDueReach(currentUser);
+    const today = this.resolveClinicToday();
+    return this.listDueWithinReach({
+      dueOnOrBefore: toDateOnly(this.addDays(today, query.withinDays)),
+      reach,
+    });
+  }
+
+  /**
+   * The same due list under an already-resolved reach, up to a date
+   * (P25-T17): the due-this-week worklist asks with the caller's reach, and
+   * the reminder worker with the clinic-wide one it runs under.
+   */
+  async listDueWithinReach(params: {
+    dueOnOrBefore: string;
+    reach: MaternalDueReach;
+  }): Promise<FamilyPlanningDueItem[]> {
     const today = this.resolveClinicToday();
     const rows = await this.familyPlanningRepository.listDue({
-      dueOnOrBefore: this.addDays(today, query.withinDays),
-      scope,
+      dueOnOrBefore: toMaternalDate(params.dueOnOrBefore) as Date,
+      scope: params.reach,
     });
-
     return rows.map((row) => ({
       familyPlanningRecordId: row.id,
       patientId: row.patientId,
@@ -201,6 +216,24 @@ export class FamilyPlanningService {
       nextDueOn: toDateOnly(row.nextDueOn),
       daysUntilDue: Math.round((row.nextDueOn.getTime() - today.getTime()) / ONE_DAY_IN_MILLISECONDS),
     }));
+  }
+
+  /**
+   * Whose due rows the caller may see: ANY scope reaches every patient; OWN
+   * the patient herself, the courses the caller provides and the patients
+   * assigned to her. Shared by the maternal due worklist (P25-T17) so every
+   * source there is filtered by one reach rule.
+   */
+  async resolveDueReach(currentUser: CurrentUser): Promise<MaternalDueReach> {
+    const scope = await this.encounterAccessService.resolveScopeOrThrow(currentUser, 'read');
+    if (scope.hasAny) {
+      return { hasAny: true };
+    }
+    return {
+      hasAny: false,
+      ownerUserId: currentUser.sub,
+      doctorId: await this.familyPlanningRepository.findActiveDoctorIdByOwnerUserId(currentUser.sub),
+    };
   }
 
   private async createCourseOrConflict(params: {
@@ -278,18 +311,6 @@ export class FamilyPlanningService {
     if (assignment === null) {
       throw new ForbiddenException(`You are not allowed to ${action} this family planning record`);
     }
-  }
-
-  private async resolveDueScope(currentUser: CurrentUser): Promise<FamilyPlanningDueScope> {
-    const scope = await this.encounterAccessService.resolveScopeOrThrow(currentUser, 'read');
-    if (scope.hasAny) {
-      return { hasAny: true };
-    }
-    return {
-      hasAny: false,
-      ownerUserId: currentUser.sub,
-      doctorId: await this.familyPlanningRepository.findActiveDoctorIdByOwnerUserId(currentUser.sub),
-    };
   }
 
   private async assertEncounterBelongsToPatient(

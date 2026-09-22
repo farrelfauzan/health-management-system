@@ -5,6 +5,7 @@ import { InboundChannelMessage } from '@hms/shared-types';
 import { AuditService } from '../../../common/audit/audit.service';
 import { WhatsappGatewayService } from '../../channel-gateway/infrastructure/whatsapp-gateway.service';
 import { DeliveryGateRepository } from '../repository/delivery-gate.repository';
+import { VisitReminderConsentService } from '../../visit-reminder-consent/service/visit-reminder-consent.service';
 import { PatientDeliveryConsentRepository } from '../repository/patient-delivery-consent.repository';
 import { DeliveryOptOutService } from './delivery-opt-out.service';
 
@@ -31,6 +32,9 @@ describe('DeliveryOptOutService', () => {
   >;
   let mockGateway: jest.Mocked<Pick<WhatsappGatewayService, 'sendText'>>;
   let mockAuditService: jest.Mocked<Pick<AuditService, 'record'>>;
+  let mockVisitReminderConsentService: jest.Mocked<
+    Pick<VisitReminderConsentService, 'revokeByPatientKeyword'>
+  >;
   let service: DeliveryOptOutService;
 
   beforeEach(() => {
@@ -40,12 +44,16 @@ describe('DeliveryOptOutService', () => {
     };
     mockGateway = { sendText: jest.fn().mockResolvedValue(undefined) };
     mockAuditService = { record: jest.fn().mockResolvedValue(undefined) };
+    mockVisitReminderConsentService = {
+      revokeByPatientKeyword: jest.fn().mockResolvedValue(undefined),
+    };
     jest.spyOn(Logger.prototype, 'error').mockImplementation(() => undefined);
     service = new DeliveryOptOutService(
       mockConsentRepository as unknown as PatientDeliveryConsentRepository,
       mockGateRepository as unknown as DeliveryGateRepository,
       mockGateway as unknown as WhatsappGatewayService,
       mockAuditService as unknown as AuditService,
+      mockVisitReminderConsentService as unknown as VisitReminderConsentService,
     );
   });
 
@@ -80,6 +88,30 @@ describe('DeliveryOptOutService', () => {
       revokedReason: 'PATIENT_KEYWORD',
       revokedAt: expect.any(Date),
     });
+  });
+
+  it('revokes visit-reminder consent through the same keyword, before confirming (P25-T17)', async () => {
+    const callOrder: string[] = [];
+    mockVisitReminderConsentService.revokeByPatientKeyword.mockImplementation(async () => {
+      callOrder.push('revoke-reminders');
+    });
+    mockGateway.sendText.mockImplementation(async () => {
+      callOrder.push('confirm');
+    });
+
+    await service.handleOptOut(buildMessage({ text: 'STOP' }));
+
+    expect(mockVisitReminderConsentService.revokeByPatientKeyword).toHaveBeenCalledWith(
+      [PATIENT_ID],
+      expect.any(Date),
+    );
+    expect(callOrder).toEqual(['revoke-reminders', 'confirm']);
+  });
+
+  it('leaves visit-reminder consent alone for an ordinary message', async () => {
+    await service.handleOptOut(buildMessage({ text: 'Jadwal kontrol kapan?' }));
+
+    expect(mockVisitReminderConsentService.revokeByPatientKeyword).not.toHaveBeenCalled();
   });
 
   it('audits the opt-out against the patient with no actor and no chat id', async () => {

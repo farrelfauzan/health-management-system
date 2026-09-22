@@ -44,6 +44,8 @@ import type {
   FamilyPlanningControllerStartCourseV1200,
   IssueAntenatalReferralLetterDto,
   LinkPostnatalVisitDto,
+  MaternalVisitDueControllerListDueV1200,
+  MaternalVisitDueControllerListDueV1Params,
   PostnatalVisitControllerGetEncounterVisitV1200,
   PostnatalVisitControllerGetScheduleV1200,
   PostnatalVisitControllerLinkVisitV1200,
@@ -3202,6 +3204,99 @@ export function useShkScreeningControllerRecordResultV1<TData = Awaited<ReturnTy
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getShkScreeningControllerRecordResultV1QueryOptions(id,recordShkResultDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary List maternal visits due in a date range
+ */
+export const maternalVisitDueControllerListDueV1 = (
+    params?: MaternalVisitDueControllerListDueV1Params,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<MaternalVisitDueControllerListDueV1200>(
+      {url: `/api/v1/maternal-visits/due`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+
+
+
+
+export const getMaternalVisitDueControllerListDueV1QueryKey = (params?: MaternalVisitDueControllerListDueV1Params,) => {
+    return [
+    `/api/v1/maternal-visits/due`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getMaternalVisitDueControllerListDueV1QueryOptions = <TData = Awaited<ReturnType<typeof maternalVisitDueControllerListDueV1>>, TError = unknown>(params?: MaternalVisitDueControllerListDueV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof maternalVisitDueControllerListDueV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getMaternalVisitDueControllerListDueV1QueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof maternalVisitDueControllerListDueV1>>> = ({ signal }) => maternalVisitDueControllerListDueV1(params, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof maternalVisitDueControllerListDueV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type MaternalVisitDueControllerListDueV1QueryResult = NonNullable<Awaited<ReturnType<typeof maternalVisitDueControllerListDueV1>>>
+export type MaternalVisitDueControllerListDueV1QueryError = unknown
+
+
+export function useMaternalVisitDueControllerListDueV1<TData = Awaited<ReturnType<typeof maternalVisitDueControllerListDueV1>>, TError = unknown>(
+ params: undefined |  MaternalVisitDueControllerListDueV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof maternalVisitDueControllerListDueV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof maternalVisitDueControllerListDueV1>>,
+          TError,
+          Awaited<ReturnType<typeof maternalVisitDueControllerListDueV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useMaternalVisitDueControllerListDueV1<TData = Awaited<ReturnType<typeof maternalVisitDueControllerListDueV1>>, TError = unknown>(
+ params?: MaternalVisitDueControllerListDueV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof maternalVisitDueControllerListDueV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof maternalVisitDueControllerListDueV1>>,
+          TError,
+          Awaited<ReturnType<typeof maternalVisitDueControllerListDueV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useMaternalVisitDueControllerListDueV1<TData = Awaited<ReturnType<typeof maternalVisitDueControllerListDueV1>>, TError = unknown>(
+ params?: MaternalVisitDueControllerListDueV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof maternalVisitDueControllerListDueV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List maternal visits due in a date range
+ */
+
+export function useMaternalVisitDueControllerListDueV1<TData = Awaited<ReturnType<typeof maternalVisitDueControllerListDueV1>>, TError = unknown>(
+ params?: MaternalVisitDueControllerListDueV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof maternalVisitDueControllerListDueV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getMaternalVisitDueControllerListDueV1QueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

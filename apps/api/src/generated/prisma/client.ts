@@ -1783,3 +1783,26 @@ export type PostnatalVisit = Prisma.PostnatalVisitModel
  * and respiration are **absent** — they are the encounter's `VitalSigns`.
  */
 export type PostnatalExamination = Prisma.PostnatalExaminationModel
+/**
+ * Model PatientVisitReminderConsent
+ * Consent to WhatsApp reminders of due maternal visits (P25-T17, D-042).
+ * 
+ * A table of its own rather than a purpose column on
+ * `PatientDeliveryConsent`: that consent was given for document delivery,
+ * and UU PDP's purpose limitation means a reminder cannot ride on it. One
+ * row per patient — the current answer — rewritten on withdrawal so the row
+ * then says who withdrew it and when. `purpose` is fixed by a CHECK and
+ * exists so the row reads for what it is out of context.
+ */
+export type PatientVisitReminderConsent = Prisma.PatientVisitReminderConsentModel
+/**
+ * Model MaternalVisitReminder
+ * The one WhatsApp reminder a due maternal visit may ever get (P25-T17).
+ * 
+ * The unique `(patient_id, visit_key)` is the "at most once": the worker
+ * inserts the row before it sends, so a second sweep — or a second replica —
+ * racing it is refused by the index rather than by a read-then-write. No
+ * message body and no phone number are stored: the key already says which
+ * visit, and the number lives on the patient and her verified link.
+ */
+export type MaternalVisitReminder = Prisma.MaternalVisitReminderModel
