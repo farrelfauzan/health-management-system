@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<TaxInvoiceBulk xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="TaxInvoice.xsd">
+	<TIN>0012345678901000</TIN>
+	<ListOfTaxInvoice>
+		<TaxInvoice>
+			<TaxInvoiceDate>2026-10-05</TaxInvoiceDate>
+			<TaxInvoiceOpt>Normal</TaxInvoiceOpt>
+			<TrxCode>04</TrxCode>
+			<AddInfo/>
+			<CustomDoc/>
+			<CustomDocMonthYear/>
+			<RefDesc>INV-202610-0001</RefDesc>
+			<FacilityStamp/>
+			<SellerIDTKU>0012345678901000000000</SellerIDTKU>
+			<BuyerTin>0000000000000000</BuyerTin>
+			<BuyerDocument>National ID</BuyerDocument>
+			<BuyerCountry>IDN</BuyerCountry>
+			<BuyerDocumentNumber>3171000000000001</BuyerDocumentNumber>
+			<BuyerName>Budi Santoso</BuyerName>
+			<BuyerAdress>Jl. Merdeka No. 1, Jakarta</BuyerAdress>
+			<BuyerEmail/>
+			<BuyerIDTKU>000000</BuyerIDTKU>
+			<ListOfGoodService>
+				<GoodService>
+					<Opt>A</Opt>
+					<Code>000000</Code>
+					<Name>Amoxicillin 500 mg</Name>
+					<Unit>UM.0021</Unit>
+					<Price>5000</Price>
+					<Qty>10</Qty>
+					<TotalDiscount>0</TotalDiscount>
+					<TaxBase>50000</TaxBase>
+					<OtherTaxBase>45833</OtherTaxBase>
+					<VATRate>12</VATRate>
+					<VAT>5500</VAT>
+					<STLGRate>0</STLGRate>
+					<STLG>0</STLG>
+				</GoodService>
+			</ListOfGoodService>
+		</TaxInvoice>
+		<TaxInvoice>
+			<TaxInvoiceDate>2026-10-05</TaxInvoiceDate>
+			<TaxInvoiceOpt>Normal</TaxInvoiceOpt>
+			<TrxCode>08</TrxCode>
+			<AddInfo>TD.00510</AddInfo>
+			<CustomDoc/>
+			<CustomDocMonthYear/>
+			<RefDesc>INV-202610-0001</RefDesc>
+			<FacilityStamp>TD.01110</FacilityStamp>
+			<SellerIDTKU>0012345678901000000000</SellerIDTKU>
+			<BuyerTin>0000000000000000</BuyerTin>
+			<BuyerDocument>National ID</BuyerDocument>
+			<BuyerCountry>IDN</BuyerCountry>
+			<BuyerDocumentNumber>3171000000000001</BuyerDocumentNumber>
+			<BuyerName>Budi Santoso</BuyerName>
+			<BuyerAdress>Jl. Merdeka No. 1, Jakarta</BuyerAdress>
+			<BuyerEmail/>
+			<BuyerIDTKU>000000</BuyerIDTKU>
+			<ListOfGoodService>
+				<GoodService>
+					<Opt>B</Opt>
+					<Code>000000</Code>
+					<Name>Konsultasi dokter umum</Name>
+					<Unit>UM.0030</Unit>
+					<Price>150000</Price>
+					<Qty>1</Qty>
+					<TotalDiscount>0</TotalDiscount>
+					<TaxBase>150000</TaxBase>
+					<OtherTaxBase>150000</OtherTaxBase>
+					<VATRate>12</VATRate>
+					<VAT>18000</VAT>
+					<STLGRate>0</STLGRate>
+					<STLG>0</STLG>
+				</GoodService>
+			</ListOfGoodService>
+		</TaxInvoice>
+		<TaxInvoice>
+			<TaxInvoiceDate>2026-10-20</TaxInvoiceDate>
+			<TaxInvoiceOpt>Normal</TaxInvoiceOpt>
+			<TrxCode>04</TrxCode>
+			<AddInfo/>
+			<CustomDoc/>
+			<CustomDocMonthYear/>
+			<RefDesc>INV-202610-0002</RefDesc>
+			<FacilityStamp/>
+			<SellerIDTKU>0012345678901000000000</SellerIDTKU>
+			<BuyerTin>0000000000000000</BuyerTin>
+			<BuyerDocument>National ID</BuyerDocument>
+			<BuyerCountry>IDN</BuyerCountry>
+			<BuyerDocumentNumber>3171000000000002</BuyerDocumentNumber>
+			<BuyerName>Siti Aminah</BuyerName>
+			<BuyerAdress>Jl. Sudirman No. 2, Jakarta</BuyerAdress>
+			<BuyerEmail/>
+			<BuyerIDTKU>000000</BuyerIDTKU>
+			<ListOfGoodService>
+				<GoodService>
+					<Opt>A</Opt>
+					<Code>000000</Code>
+					<Name>Paracetamol 500 mg</Name>
+					<Unit>UM.0021</Unit>
+					<Price>1544.43</Price>
+					<Qty>7</Qty>
+					<TotalDiscount>0.01</TotalDiscount>
+					<TaxBase>10811</TaxBase>
+					<OtherTaxBase>9910</OtherTaxBase>
+					<VATRate>12</VATRate>
+					<VAT>1189</VAT>
+					<STLGRate>0</STLGRate>
+					<STLG>0</STLG>
+				</GoodService>
+			</ListOfGoodService>
+		</TaxInvoice>
+	</ListOfTaxInvoice>
+</TaxInvoiceBulk>

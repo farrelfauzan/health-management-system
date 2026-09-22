@@ -1,4 +1,5 @@
 import {
+  BulkAssignCoretaxCodesInput,
   BulkAssignTaxCodeInput,
   BulkAssignTaxCodeResult,
   ListTaxAssignmentsQuery,
@@ -88,7 +89,33 @@ export class TaxAssignmentService {
     return { updatedCount };
   }
 
-  private async assertTargetsExist(input: BulkAssignTaxCodeInput): Promise<void> {
+  /**
+   * Sets the Coretax item code and unit on many items (P27-T09), overriding
+   * their tax code's, or clears them. Every target must exist, as for codes.
+   */
+  async bulkAssignCoretaxCodes(
+    input: BulkAssignCoretaxCodesInput,
+    actor: CurrentUser,
+  ): Promise<BulkAssignTaxCodeResult> {
+    await this.assertTargetsExist(input);
+    const updatedCount = await this.taxAssignmentRepository.assignCoretaxCodes(input);
+    await this.auditService.record({
+      action: 'TAX_ASSIGNMENT_CHANGED',
+      resource: TAX_ASSIGNMENT_AUDIT_RESOURCE,
+      actorUserId: actor.sub,
+      metadata: {
+        coretaxItemCode: input.coretaxItemCode,
+        coretaxUnitCode: input.coretaxUnitCode,
+        targets: input.targets,
+        updatedCount,
+      },
+    });
+    return { updatedCount };
+  }
+
+  private async assertTargetsExist(input: {
+    targets: BulkAssignTaxCodeInput['targets'];
+  }): Promise<void> {
     const missing = await Promise.all(
       ASSIGNMENT_KINDS.map(async (kind) => {
         const requested = input.targets.filter((target) => target.kind === kind).map((t) => t.id);
@@ -156,6 +183,9 @@ export class TaxAssignmentService {
       effectiveTaxCode: code
         ? { id: code.id, code: code.code, name: code.name, ppnTreatment: code.ppnTreatment }
         : undefined,
+      coretaxItemCode: target.coretaxItemCode ?? code?.coretaxItemCode ?? undefined,
+      coretaxUnitCode: target.coretaxUnitCode ?? code?.coretaxUnitCode ?? undefined,
+      hasCoretaxOverride: target.coretaxItemCode !== null || target.coretaxUnitCode !== null,
     };
   }
 }

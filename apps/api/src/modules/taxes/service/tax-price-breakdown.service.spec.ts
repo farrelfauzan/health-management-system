@@ -13,6 +13,10 @@ const BARANG_PPN: TaxCodeRecord = {
   ppnTreatment: 'STANDARD',
   fakturTransactionCode: '04',
   invoiceNote: null,
+  coretaxItemCode: null,
+  coretaxUnitCode: null,
+  coretaxAdditionalInfo: null,
+  coretaxFacilityStamp: null,
   isSystem: true,
   isActive: true,
   rates: [

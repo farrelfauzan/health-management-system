@@ -20,5 +20,16 @@ export interface UpdateTaxCodeDto {
      * @nullable
      */
   invoiceNote?: string | null;
+  /**
+     * @nullable
+     * @pattern ^\d{6}$
+     */
+  coretaxItemCode?: string | null;
+  /** @nullable */
+  coretaxUnitCode?: string | null;
+  /** @nullable */
+  coretaxAdditionalInfo?: string | null;
+  /** @nullable */
+  coretaxFacilityStamp?: string | null;
   isActive?: boolean;
 }

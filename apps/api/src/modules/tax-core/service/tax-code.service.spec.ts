@@ -37,6 +37,10 @@ describe('TaxCodeService', () => {
       ppnTreatment: 'STANDARD',
       fakturTransactionCode: '04',
       invoiceNote: null,
+      coretaxItemCode: null,
+      coretaxUnitCode: null,
+      coretaxAdditionalInfo: null,
+      coretaxFacilityStamp: null,
       isSystem: true,
       isActive: true,
       rates: [
@@ -111,6 +115,30 @@ describe('TaxCodeService', () => {
         metadata: expect.objectContaining({ operation: 'UPDATE', fields: ['name'] }),
       }),
     );
+  });
+
+  it('lets a system code set its Coretax item code and unit (P27-T09)', async () => {
+    taxCodeRepositoryMock.findTaxCodeById.mockResolvedValue(buildCode());
+    taxCodeRepositoryMock.updateTaxCode.mockResolvedValue(
+      buildCode({ coretaxItemCode: '000000', coretaxUnitCode: 'UM.0021' }),
+    );
+
+    const actual = await service.updateTaxCode(
+      'code-barang',
+      { coretaxItemCode: '000000', coretaxUnitCode: 'UM.0021' },
+      actor,
+    );
+
+    expect(actual).toMatchObject({ coretaxItemCode: '000000', coretaxUnitCode: 'UM.0021' });
+  });
+
+  it('refuses a Coretax exemption facility on a code that is not kode 08 (P27-T09)', async () => {
+    taxCodeRepositoryMock.findTaxCodeById.mockResolvedValue(buildCode());
+
+    await expect(
+      service.updateTaxCode('code-barang', { coretaxFacilityStamp: 'TD.01110' }, actor),
+    ).rejects.toMatchObject({ response: { code: 'TAX_CODE_FAKTUR_MISMATCH' } });
+    expect(taxCodeRepositoryMock.updateTaxCode).not.toHaveBeenCalled();
   });
 
   it('only appends a rate later than the latest one, and only on a taxed code', async () => {

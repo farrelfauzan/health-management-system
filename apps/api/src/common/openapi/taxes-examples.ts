@@ -38,6 +38,8 @@ export const TAXES_EXAMPLES = {
       name: 'Barang kena pajak (obat, alat kesehatan)',
       ppnTreatment: 'STANDARD',
       fakturTransactionCode: '04',
+      coretaxItemCode: '000000',
+      coretaxUnitCode: 'UM.0021',
       isSystem: true,
       isActive: true,
       currentRate: barangRate,
@@ -57,7 +59,11 @@ export const TAXES_EXAMPLES = {
         effectiveFrom: '2025-01-01',
       },
     },
-    updateRequest: { name: 'Barang kena pajak', isActive: true },
+    updateRequest: {
+      name: 'Barang kena pajak',
+      coretaxItemCode: '000000',
+      coretaxUnitCode: 'UM.0021',
+    },
     rateRequest: {
       ratePercent: 12,
       dppNumerator: 11,
@@ -87,6 +93,9 @@ export const TAXES_EXAMPLES = {
         name: 'Barang kena pajak (obat, alat kesehatan)',
         ppnTreatment: 'STANDARD',
       },
+      coretaxItemCode: '000000',
+      coretaxUnitCode: 'UM.0021',
+      hasCoretaxOverride: false,
     },
     meta: { page: 1, limit: 20, total: 1, unresolvedCount: 0 },
     bulkRequest: {
@@ -94,6 +103,11 @@ export const TAXES_EXAMPLES = {
       taxCodeId: '1e8b7a6f-5c4d-4b3a-8f1e-d0c9b8a7f6e5',
     },
     bulkResult: { updatedCount: 1 },
+    coretaxBulkRequest: {
+      targets: [{ kind: 'MEDICATION', id: '8c6f5e4d-3a2b-4f1e-8d9c-b8a7f6e5d4c3' }],
+      coretaxItemCode: '000000',
+      coretaxUnitCode: 'UM.0022',
+    },
   },
   taxReports: {
     listItem: {
@@ -106,6 +120,32 @@ export const TAXES_EXAMPLES = {
     },
     listMeta: { year: 2026, applicableKinds: ['PP55_OMZET', 'PPH21_NON_EMPLOYEE'] },
     createRequest: { period: '2026-08', kind: 'PP55_OMZET' },
+    coretaxFakturValidation: {
+      reportId: '5d4c3b2a-1f0e-4d9c-8b7a-6f5e4d3c2b1a',
+      period: '2026-10',
+      template: {
+        format: 'FAKTUR_KELUARAN',
+        version: 'V1_6',
+        title: 'Converter Excel to XML Coretax v1.6 (Faktur PK template v.1.6.1, sample XML v.1.4)',
+        publishedOn: '2026-01-23',
+        sourceUrl:
+          'https://pajak.go.id/sites/default/files/2026-01/ConverterEfakturCoretax__v1.6.zip',
+        catalogueUrl: 'https://www.pajak.go.id/id/node/112031',
+        sha256: 'ef5957af98ed06d7aee3c0fed6a67b56fe6f515bf776788194b2acd9a005b791',
+      },
+      isExportable: false,
+      fakturCount: 0,
+      digunggungCount: 2,
+      issues: [
+        {
+          code: 'ITEM_CODE_MISSING',
+          field: 'coretaxItemCode',
+          message: '"Amoxicillin 500 mg" has no Coretax item code',
+          subjectId: '3c2b1a0f-9e8d-4c7b-a6f5-e4d3c2b1a0f9',
+          subjectLabel: 'INV-202610-0001',
+        },
+      ],
+    },
     identifiers: {
       reportId: '7c6b5a4f-3e2d-4c1b-8a09-f8e7d6c5b4a3',
       period: '2026-10',

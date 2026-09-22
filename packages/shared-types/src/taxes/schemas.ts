@@ -1,5 +1,12 @@
 import { z } from 'zod';
 
+import {
+  coretaxAdditionalInfoSchema,
+  coretaxFacilityStampSchema,
+  coretaxItemCodeSchema,
+  coretaxUnitCodeSchema,
+} from '#taxes/coretax-faktur';
+
 /**
  * Who the clinic is as a taxpayer (P27-T02, D-038 in `docs/post-mvp/decisions.md`).
  * The legal form decides which income-tax regime it may use under PP 55/2022 as
@@ -192,6 +199,22 @@ const FAKTUR_CODE_MESSAGE =
   'Faktur code does not match the treatment: 08 for exempt, 01 or 04 for standard, none for not an object';
 
 /**
+ * The Coretax faktur fields of a tax code (P27-T09), all clearable: the item
+ * code and unit every faktur line carries, and — for a kode-08 code only —
+ * the exemption facility. Unlike the treatment they are descriptive, so a
+ * system code may change them too.
+ */
+const CORETAX_TAX_CODE_FIELDS = {
+  coretaxItemCode: coretaxItemCodeSchema.nullable().optional(),
+  coretaxUnitCode: coretaxUnitCodeSchema.nullable().optional(),
+  coretaxAdditionalInfo: coretaxAdditionalInfoSchema.nullable().optional(),
+  coretaxFacilityStamp: coretaxFacilityStampSchema.nullable().optional(),
+};
+
+const CORETAX_FACILITY_MESSAGE =
+  'Only a kode-08 (exempt) tax code carries a keterangan tambahan and cap fasilitas';
+
+/**
  * A clinic-defined tax code. A `STANDARD` code must arrive with its first rate:
  * a taxed code without one would resolve to nothing on the next invoice.
  */
@@ -202,9 +225,16 @@ export const createTaxCodeSchema = z
     ppnTreatment: ppnTreatmentSchema,
     fakturTransactionCode: fakturTransactionCodeSchema.nullable(),
     invoiceNote: z.string().trim().max(200).nullable().optional(),
+    ...CORETAX_TAX_CODE_FIELDS,
     initialRate: createTaxCodeRateSchema.optional(),
   })
   .refine(isFakturCodeAllowed, { message: FAKTUR_CODE_MESSAGE, path: ['fakturTransactionCode'] })
+  .refine(
+    (input) =>
+      input.fakturTransactionCode === '08' ||
+      (!input.coretaxAdditionalInfo && !input.coretaxFacilityStamp),
+    { message: CORETAX_FACILITY_MESSAGE, path: ['coretaxFacilityStamp'] },
+  )
   .refine((input) => (input.ppnTreatment === 'STANDARD') === (input.initialRate !== undefined), {
     message: 'A standard code needs its first rate, and only a standard code has one',
     path: ['initialRate'],
@@ -222,6 +252,7 @@ export const updateTaxCodeSchema = z
     name: z.string().trim().min(1).max(120).optional(),
     fakturTransactionCode: fakturTransactionCodeSchema.nullable().optional(),
     invoiceNote: z.string().trim().max(200).nullable().optional(),
+    ...CORETAX_TAX_CODE_FIELDS,
     isActive: z.boolean().optional(),
   })
   .refine((input) => Object.values(input).some((value) => value !== undefined), {
@@ -249,6 +280,20 @@ export const bulkAssignTaxCodeSchema = z.object({
     .min(1)
     .max(MAX_TAX_ASSIGNMENT_BATCH_SIZE),
   taxCodeId: z.string().uuid().nullable(),
+});
+
+/**
+ * Sets the Coretax item code and unit on many tariffs and medications at
+ * once (P27-T09), overriding their tax code's; `null` clears the override so
+ * the item follows its tax code again.
+ */
+export const bulkAssignCoretaxCodesSchema = z.object({
+  targets: z
+    .array(z.object({ kind: taxAssignmentKindSchema, id: z.string().uuid() }))
+    .min(1)
+    .max(MAX_TAX_ASSIGNMENT_BATCH_SIZE),
+  coretaxItemCode: coretaxItemCodeSchema.nullable(),
+  coretaxUnitCode: coretaxUnitCodeSchema.nullable(),
 });
 
 export const listTaxAssignmentsQuerySchema = z.object({
@@ -381,5 +426,6 @@ export type ClinicianTaxIdentityKindValue = z.infer<typeof clinicianTaxIdentityK
 export type ClinicianTaxIdentityStatusValue = z.infer<typeof clinicianTaxIdentityStatusSchema>;
 export type TaxReportStatusValue = z.infer<typeof taxReportStatusSchema>;
 export type TaxReportDocumentStatusValue = z.infer<typeof taxReportDocumentStatusSchema>;
+export type BulkAssignCoretaxCodesInput = z.infer<typeof bulkAssignCoretaxCodesSchema>;
 export type CreateTaxReportInput = z.infer<typeof createTaxReportSchema>;
 export type ListTaxReportsQuery = z.infer<typeof listTaxReportsQuerySchema>;

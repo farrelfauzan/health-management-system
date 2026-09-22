@@ -11,13 +11,16 @@ import { TaxCategoryDefaultController } from './controller/tax-category-default.
 import { TaxCodeController } from './controller/tax-code.controller';
 import { TaxPriceBreakdownController } from './controller/tax-price-breakdown.controller';
 import { TaxReportController } from './controller/tax-report.controller';
+import { TaxReportCoretaxFakturController } from './controller/tax-report-coretax-faktur.controller';
 import { NotificationModule } from '../notification/notification.module';
 import { ClinicianTaxIdentityRepository } from './repository/clinician-tax-identity.repository';
+import { CoretaxFakturSourceRepository } from './repository/coretax-faktur-source.repository';
 import { Pph21TaxBracketRepository } from './repository/pph21-tax-bracket.repository';
 import { TaxReminderRepository } from './repository/tax-reminder.repository';
 import { TaxReportRepository } from './repository/tax-report.repository';
 import { TaxReportDocumentRepository } from './repository/tax-report-document.repository';
 import { TaxSettingsController } from './controller/tax-settings.controller';
+import { CoretaxFakturExportService } from './service/coretax-faktur-export.service';
 import { TaxAssignmentService } from './service/tax-assignment.service';
 import { TaxPriceBreakdownService } from './service/tax-price-breakdown.service';
 import { TaxReportPdfService } from './service/tax-report-pdf.service';
@@ -35,7 +38,8 @@ import { TaxSettingsService } from './service/tax-settings.service';
  * tax itself lives in `TaxCoreModule`, which billing imports). T07 adds the
  * PPh 21 bukan pegawai draft, read from the jasa medis ledger through
  * `ClinicianFeeStatementService`. Reads the clinic's NPWP through
- * `ClinicProfileService`, which owns it.
+ * `ClinicProfileService`, which owns it. T09 turns a
+ * finalized PPN keluaran month into DJP's Faktur Keluaran Coretax import file.
  */
 @Module({
   imports: [
@@ -54,6 +58,7 @@ import { TaxSettingsService } from './service/tax-settings.service';
     TaxAssignmentController,
     TaxPriceBreakdownController,
     TaxReportController,
+    TaxReportCoretaxFakturController,
   ],
   providers: [
     TaxSettingsService,
@@ -65,6 +70,8 @@ import { TaxSettingsService } from './service/tax-settings.service';
     ClinicianTaxIdentityRepository,
     TaxReportPdfService,
     TaxReportDocumentRepository,
+    CoretaxFakturExportService,
+    CoretaxFakturSourceRepository,
     TaxCalendarService,
     TaxCalendarWorker,
     TaxReminderRepository,

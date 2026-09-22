@@ -21,8 +21,16 @@ const ROWS: TaxAssignmentRowView[] = [
     code: 'FACIAL',
     name: 'Facial',
     source: 'CATEGORY_DEFAULT',
+    hasCoretaxOverride: false,
   },
-  { kind: 'MEDICATION', id: 'med-1', code: 'AMOX', name: 'Amoxicillin', source: 'OVERRIDE' },
+  {
+    kind: 'MEDICATION',
+    id: 'med-1',
+    code: 'AMOX',
+    name: 'Amoxicillin',
+    source: 'OVERRIDE',
+    hasCoretaxOverride: false,
+  },
 ];
 
 function renderBar(selectedKeys: string[], onApplied = vi.fn()): void {

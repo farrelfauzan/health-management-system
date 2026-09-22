@@ -15,5 +15,11 @@ export function toTaxCodeFormValues(taxCode?: TaxCodeView): TaxCodeFormValues {
     invoiceNote: taxCode?.invoiceNote ?? '',
     isActive: taxCode?.isActive ?? true,
     initialRate: { ratePercent: '12', dppNumerator: '11', dppDenominator: '12', effectiveFrom: '' },
+    coretax: {
+      coretaxItemCode: taxCode?.coretaxItemCode ?? '',
+      coretaxUnitCode: taxCode?.coretaxUnitCode ?? '',
+      coretaxAdditionalInfo: taxCode?.coretaxAdditionalInfo ?? '',
+      coretaxFacilityStamp: taxCode?.coretaxFacilityStamp ?? '',
+    },
   };
 }

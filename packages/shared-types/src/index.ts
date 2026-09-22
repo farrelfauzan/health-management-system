@@ -186,6 +186,8 @@ export * from '#taxes/resolve-pph21-bracket-set';
 export * from '#taxes/compute-pph21-non-employee';
 export * from '#taxes/resolve-clinician-tax-identity';
 export * from '#taxes/summarize-pph21-withholding';
+export * from '#taxes/coretax-faktur';
+export * from '#taxes/build-coretax-faktur-document';
 export * from '#clinician-fee/schemas';
 export * from '#clinician-fee/contracts';
 export * from '#clinician-fee/types';

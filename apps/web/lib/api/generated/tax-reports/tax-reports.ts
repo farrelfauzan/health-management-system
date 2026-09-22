@@ -29,7 +29,9 @@ import type {
   TaxReportControllerListReportsV1200,
   TaxReportControllerListReportsV1Params,
   TaxReportControllerRecomputeReportV1200,
-  TaxReportControllerRevealIdentifiersV1200
+  TaxReportControllerRevealIdentifiersV1200,
+  TaxReportCoretaxFakturControllerExportFakturV1Params,
+  TaxReportCoretaxFakturControllerValidateFakturV1200
 } from '../model';
 
 import { orvalAxiosMutator } from '../../http';
@@ -874,6 +876,200 @@ export function useTaxReportControllerCreatePdfDownloadUrlV1<TData = Awaited<Ret
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getTaxReportControllerCreatePdfDownloadUrlV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Check a PPN keluaran report against the Coretax Faktur Keluaran template
+ */
+export const taxReportCoretaxFakturControllerValidateFakturV1 = (
+    id: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<TaxReportCoretaxFakturControllerValidateFakturV1200>(
+      {url: `/api/v1/tax/reports/${id}/coretax/faktur-keluaran/validation`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getTaxReportCoretaxFakturControllerValidateFakturV1QueryKey = (id: string,) => {
+    return [
+    `/api/v1/tax/reports/${id}/coretax/faktur-keluaran/validation`
+    ] as const;
+    }
+
+
+export const getTaxReportCoretaxFakturControllerValidateFakturV1QueryOptions = <TData = Awaited<ReturnType<typeof taxReportCoretaxFakturControllerValidateFakturV1>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taxReportCoretaxFakturControllerValidateFakturV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getTaxReportCoretaxFakturControllerValidateFakturV1QueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof taxReportCoretaxFakturControllerValidateFakturV1>>> = ({ signal }) => taxReportCoretaxFakturControllerValidateFakturV1(id, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof taxReportCoretaxFakturControllerValidateFakturV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type TaxReportCoretaxFakturControllerValidateFakturV1QueryResult = NonNullable<Awaited<ReturnType<typeof taxReportCoretaxFakturControllerValidateFakturV1>>>
+export type TaxReportCoretaxFakturControllerValidateFakturV1QueryError = unknown
+
+
+export function useTaxReportCoretaxFakturControllerValidateFakturV1<TData = Awaited<ReturnType<typeof taxReportCoretaxFakturControllerValidateFakturV1>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof taxReportCoretaxFakturControllerValidateFakturV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof taxReportCoretaxFakturControllerValidateFakturV1>>,
+          TError,
+          Awaited<ReturnType<typeof taxReportCoretaxFakturControllerValidateFakturV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useTaxReportCoretaxFakturControllerValidateFakturV1<TData = Awaited<ReturnType<typeof taxReportCoretaxFakturControllerValidateFakturV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taxReportCoretaxFakturControllerValidateFakturV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof taxReportCoretaxFakturControllerValidateFakturV1>>,
+          TError,
+          Awaited<ReturnType<typeof taxReportCoretaxFakturControllerValidateFakturV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useTaxReportCoretaxFakturControllerValidateFakturV1<TData = Awaited<ReturnType<typeof taxReportCoretaxFakturControllerValidateFakturV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taxReportCoretaxFakturControllerValidateFakturV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Check a PPN keluaran report against the Coretax Faktur Keluaran template
+ */
+
+export function useTaxReportCoretaxFakturControllerValidateFakturV1<TData = Awaited<ReturnType<typeof taxReportCoretaxFakturControllerValidateFakturV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taxReportCoretaxFakturControllerValidateFakturV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getTaxReportCoretaxFakturControllerValidateFakturV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * P27-T09. The `TaxInvoiceBulk` file DJP's converter v1.6 produces (pajak.go.id node 112031): one `TaxInvoice` per invoice and faktur code (04 goods at DPP nilai lain, 08 exempt services with their facility), the patient as buyer by NIK. 422 `CORETAX_EXPORT_INVALID` with `details` listing every problem; 409 `TAX_REPORT_NOT_FINALIZED` for a draft. Audited as an export and as `PATIENT_IDENTIFIER_UNMASKED`, without the values.
+ * @summary Export a finalized PPN keluaran report as a Coretax Faktur Keluaran XML file
+ */
+export const taxReportCoretaxFakturControllerExportFakturV1 = (
+    id: string,
+    params?: TaxReportCoretaxFakturControllerExportFakturV1Params,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<Blob>(
+      {url: `/api/v1/tax/reports/${id}/coretax/faktur-keluaran`, method: 'GET',
+        params,
+        responseType: 'blob', signal
+    },
+      );
+    }
+
+
+
+
+export const getTaxReportCoretaxFakturControllerExportFakturV1QueryKey = (id: string,
+    params?: TaxReportCoretaxFakturControllerExportFakturV1Params,) => {
+    return [
+    `/api/v1/tax/reports/${id}/coretax/faktur-keluaran`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getTaxReportCoretaxFakturControllerExportFakturV1QueryOptions = <TData = Awaited<ReturnType<typeof taxReportCoretaxFakturControllerExportFakturV1>>, TError = unknown>(id: string,
+    params?: TaxReportCoretaxFakturControllerExportFakturV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taxReportCoretaxFakturControllerExportFakturV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getTaxReportCoretaxFakturControllerExportFakturV1QueryKey(id,params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof taxReportCoretaxFakturControllerExportFakturV1>>> = ({ signal }) => taxReportCoretaxFakturControllerExportFakturV1(id,params, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof taxReportCoretaxFakturControllerExportFakturV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type TaxReportCoretaxFakturControllerExportFakturV1QueryResult = NonNullable<Awaited<ReturnType<typeof taxReportCoretaxFakturControllerExportFakturV1>>>
+export type TaxReportCoretaxFakturControllerExportFakturV1QueryError = unknown
+
+
+export function useTaxReportCoretaxFakturControllerExportFakturV1<TData = Awaited<ReturnType<typeof taxReportCoretaxFakturControllerExportFakturV1>>, TError = unknown>(
+ id: string,
+    params: undefined |  TaxReportCoretaxFakturControllerExportFakturV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof taxReportCoretaxFakturControllerExportFakturV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof taxReportCoretaxFakturControllerExportFakturV1>>,
+          TError,
+          Awaited<ReturnType<typeof taxReportCoretaxFakturControllerExportFakturV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useTaxReportCoretaxFakturControllerExportFakturV1<TData = Awaited<ReturnType<typeof taxReportCoretaxFakturControllerExportFakturV1>>, TError = unknown>(
+ id: string,
+    params?: TaxReportCoretaxFakturControllerExportFakturV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taxReportCoretaxFakturControllerExportFakturV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof taxReportCoretaxFakturControllerExportFakturV1>>,
+          TError,
+          Awaited<ReturnType<typeof taxReportCoretaxFakturControllerExportFakturV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useTaxReportCoretaxFakturControllerExportFakturV1<TData = Awaited<ReturnType<typeof taxReportCoretaxFakturControllerExportFakturV1>>, TError = unknown>(
+ id: string,
+    params?: TaxReportCoretaxFakturControllerExportFakturV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taxReportCoretaxFakturControllerExportFakturV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Export a finalized PPN keluaran report as a Coretax Faktur Keluaran XML file
+ */
+
+export function useTaxReportCoretaxFakturControllerExportFakturV1<TData = Awaited<ReturnType<typeof taxReportCoretaxFakturControllerExportFakturV1>>, TError = unknown>(
+ id: string,
+    params?: TaxReportCoretaxFakturControllerExportFakturV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taxReportCoretaxFakturControllerExportFakturV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getTaxReportCoretaxFakturControllerExportFakturV1QueryOptions(id,params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

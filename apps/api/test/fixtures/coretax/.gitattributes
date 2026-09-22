@@ -1,0 +1,3 @@
+# DJP samples and golden files must stay byte-exact (line ends, no final newline).
+*.xml -text
+*.xsd -text

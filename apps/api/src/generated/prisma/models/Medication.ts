@@ -52,6 +52,8 @@ export type MedicationMinAggregateOutputType = {
   isMidwifePrescribable: boolean | null
   midwifeAuthorityKind: $Enums.DoctorAuthorityKind | null
   taxCodeId: string | null
+  coretaxItemCode: string | null
+  coretaxUnitCode: string | null
   createdAt: Date | null
   updatedAt: Date | null
   deletedAt: Date | null
@@ -73,6 +75,8 @@ export type MedicationMaxAggregateOutputType = {
   isMidwifePrescribable: boolean | null
   midwifeAuthorityKind: $Enums.DoctorAuthorityKind | null
   taxCodeId: string | null
+  coretaxItemCode: string | null
+  coretaxUnitCode: string | null
   createdAt: Date | null
   updatedAt: Date | null
   deletedAt: Date | null
@@ -94,6 +98,8 @@ export type MedicationCountAggregateOutputType = {
   isMidwifePrescribable: number
   midwifeAuthorityKind: number
   taxCodeId: number
+  coretaxItemCode: number
+  coretaxUnitCode: number
   createdAt: number
   updatedAt: number
   deletedAt: number
@@ -127,6 +133,8 @@ export type MedicationMinAggregateInputType = {
   isMidwifePrescribable?: true
   midwifeAuthorityKind?: true
   taxCodeId?: true
+  coretaxItemCode?: true
+  coretaxUnitCode?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -148,6 +156,8 @@ export type MedicationMaxAggregateInputType = {
   isMidwifePrescribable?: true
   midwifeAuthorityKind?: true
   taxCodeId?: true
+  coretaxItemCode?: true
+  coretaxUnitCode?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -169,6 +179,8 @@ export type MedicationCountAggregateInputType = {
   isMidwifePrescribable?: true
   midwifeAuthorityKind?: true
   taxCodeId?: true
+  coretaxItemCode?: true
+  coretaxUnitCode?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -277,6 +289,8 @@ export type MedicationGroupByOutputType = {
   isMidwifePrescribable: boolean
   midwifeAuthorityKind: $Enums.DoctorAuthorityKind | null
   taxCodeId: string | null
+  coretaxItemCode: string | null
+  coretaxUnitCode: string | null
   createdAt: Date
   updatedAt: Date
   deletedAt: Date | null
@@ -321,6 +335,8 @@ export type MedicationWhereInput = {
   isMidwifePrescribable?: Prisma.BoolFilter<"Medication"> | boolean
   midwifeAuthorityKind?: Prisma.EnumDoctorAuthorityKindNullableFilter<"Medication"> | $Enums.DoctorAuthorityKind | null
   taxCodeId?: Prisma.UuidNullableFilter<"Medication"> | string | null
+  coretaxItemCode?: Prisma.StringNullableFilter<"Medication"> | string | null
+  coretaxUnitCode?: Prisma.StringNullableFilter<"Medication"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Medication"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Medication"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"Medication"> | Date | string | null
@@ -353,6 +369,8 @@ export type MedicationOrderByWithRelationInput = {
   isMidwifePrescribable?: Prisma.SortOrder
   midwifeAuthorityKind?: Prisma.SortOrderInput | Prisma.SortOrder
   taxCodeId?: Prisma.SortOrderInput | Prisma.SortOrder
+  coretaxItemCode?: Prisma.SortOrderInput | Prisma.SortOrder
+  coretaxUnitCode?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -388,6 +406,8 @@ export type MedicationWhereUniqueInput = Prisma.AtLeast<{
   isMidwifePrescribable?: Prisma.BoolFilter<"Medication"> | boolean
   midwifeAuthorityKind?: Prisma.EnumDoctorAuthorityKindNullableFilter<"Medication"> | $Enums.DoctorAuthorityKind | null
   taxCodeId?: Prisma.UuidNullableFilter<"Medication"> | string | null
+  coretaxItemCode?: Prisma.StringNullableFilter<"Medication"> | string | null
+  coretaxUnitCode?: Prisma.StringNullableFilter<"Medication"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Medication"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Medication"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"Medication"> | Date | string | null
@@ -420,6 +440,8 @@ export type MedicationOrderByWithAggregationInput = {
   isMidwifePrescribable?: Prisma.SortOrder
   midwifeAuthorityKind?: Prisma.SortOrderInput | Prisma.SortOrder
   taxCodeId?: Prisma.SortOrderInput | Prisma.SortOrder
+  coretaxItemCode?: Prisma.SortOrderInput | Prisma.SortOrder
+  coretaxUnitCode?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -449,6 +471,8 @@ export type MedicationScalarWhereWithAggregatesInput = {
   isMidwifePrescribable?: Prisma.BoolWithAggregatesFilter<"Medication"> | boolean
   midwifeAuthorityKind?: Prisma.EnumDoctorAuthorityKindNullableWithAggregatesFilter<"Medication"> | $Enums.DoctorAuthorityKind | null
   taxCodeId?: Prisma.UuidNullableWithAggregatesFilter<"Medication"> | string | null
+  coretaxItemCode?: Prisma.StringNullableWithAggregatesFilter<"Medication"> | string | null
+  coretaxUnitCode?: Prisma.StringNullableWithAggregatesFilter<"Medication"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Medication"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Medication"> | Date | string
   deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Medication"> | Date | string | null
@@ -469,6 +493,8 @@ export type MedicationCreateInput = {
   isVaccine?: boolean
   isMidwifePrescribable?: boolean
   midwifeAuthorityKind?: $Enums.DoctorAuthorityKind | null
+  coretaxItemCode?: string | null
+  coretaxUnitCode?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -501,6 +527,8 @@ export type MedicationUncheckedCreateInput = {
   isMidwifePrescribable?: boolean
   midwifeAuthorityKind?: $Enums.DoctorAuthorityKind | null
   taxCodeId?: string | null
+  coretaxItemCode?: string | null
+  coretaxUnitCode?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -531,6 +559,8 @@ export type MedicationUpdateInput = {
   isVaccine?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   midwifeAuthorityKind?: Prisma.NullableEnumDoctorAuthorityKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityKind | null
+  coretaxItemCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxUnitCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -563,6 +593,8 @@ export type MedicationUncheckedUpdateInput = {
   isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   midwifeAuthorityKind?: Prisma.NullableEnumDoctorAuthorityKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityKind | null
   taxCodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxItemCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxUnitCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -594,6 +626,8 @@ export type MedicationCreateManyInput = {
   isMidwifePrescribable?: boolean
   midwifeAuthorityKind?: $Enums.DoctorAuthorityKind | null
   taxCodeId?: string | null
+  coretaxItemCode?: string | null
+  coretaxUnitCode?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -614,6 +648,8 @@ export type MedicationUpdateManyMutationInput = {
   isVaccine?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   midwifeAuthorityKind?: Prisma.NullableEnumDoctorAuthorityKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityKind | null
+  coretaxItemCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxUnitCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -635,6 +671,8 @@ export type MedicationUncheckedUpdateManyInput = {
   isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   midwifeAuthorityKind?: Prisma.NullableEnumDoctorAuthorityKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityKind | null
   taxCodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxItemCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxUnitCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -656,6 +694,8 @@ export type MedicationCountOrderByAggregateInput = {
   isMidwifePrescribable?: Prisma.SortOrder
   midwifeAuthorityKind?: Prisma.SortOrder
   taxCodeId?: Prisma.SortOrder
+  coretaxItemCode?: Prisma.SortOrder
+  coretaxUnitCode?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -682,6 +722,8 @@ export type MedicationMaxOrderByAggregateInput = {
   isMidwifePrescribable?: Prisma.SortOrder
   midwifeAuthorityKind?: Prisma.SortOrder
   taxCodeId?: Prisma.SortOrder
+  coretaxItemCode?: Prisma.SortOrder
+  coretaxUnitCode?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -703,6 +745,8 @@ export type MedicationMinOrderByAggregateInput = {
   isMidwifePrescribable?: Prisma.SortOrder
   midwifeAuthorityKind?: Prisma.SortOrder
   taxCodeId?: Prisma.SortOrder
+  coretaxItemCode?: Prisma.SortOrder
+  coretaxUnitCode?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -956,6 +1000,8 @@ export type MedicationCreateWithoutPrescriptionItemsInput = {
   isVaccine?: boolean
   isMidwifePrescribable?: boolean
   midwifeAuthorityKind?: $Enums.DoctorAuthorityKind | null
+  coretaxItemCode?: string | null
+  coretaxUnitCode?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -987,6 +1033,8 @@ export type MedicationUncheckedCreateWithoutPrescriptionItemsInput = {
   isMidwifePrescribable?: boolean
   midwifeAuthorityKind?: $Enums.DoctorAuthorityKind | null
   taxCodeId?: string | null
+  coretaxItemCode?: string | null
+  coretaxUnitCode?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1032,6 +1080,8 @@ export type MedicationUpdateWithoutPrescriptionItemsInput = {
   isVaccine?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   midwifeAuthorityKind?: Prisma.NullableEnumDoctorAuthorityKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityKind | null
+  coretaxItemCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxUnitCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1063,6 +1113,8 @@ export type MedicationUncheckedUpdateWithoutPrescriptionItemsInput = {
   isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   midwifeAuthorityKind?: Prisma.NullableEnumDoctorAuthorityKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityKind | null
   taxCodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxItemCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxUnitCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1092,6 +1144,8 @@ export type MedicationCreateWithoutCompoundComponentsInput = {
   isVaccine?: boolean
   isMidwifePrescribable?: boolean
   midwifeAuthorityKind?: $Enums.DoctorAuthorityKind | null
+  coretaxItemCode?: string | null
+  coretaxUnitCode?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1123,6 +1177,8 @@ export type MedicationUncheckedCreateWithoutCompoundComponentsInput = {
   isMidwifePrescribable?: boolean
   midwifeAuthorityKind?: $Enums.DoctorAuthorityKind | null
   taxCodeId?: string | null
+  coretaxItemCode?: string | null
+  coretaxUnitCode?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1168,6 +1224,8 @@ export type MedicationUpdateWithoutCompoundComponentsInput = {
   isVaccine?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   midwifeAuthorityKind?: Prisma.NullableEnumDoctorAuthorityKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityKind | null
+  coretaxItemCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxUnitCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1199,6 +1257,8 @@ export type MedicationUncheckedUpdateWithoutCompoundComponentsInput = {
   isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   midwifeAuthorityKind?: Prisma.NullableEnumDoctorAuthorityKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityKind | null
   taxCodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxItemCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxUnitCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1228,6 +1288,8 @@ export type MedicationCreateWithoutDispenseItemsInput = {
   isVaccine?: boolean
   isMidwifePrescribable?: boolean
   midwifeAuthorityKind?: $Enums.DoctorAuthorityKind | null
+  coretaxItemCode?: string | null
+  coretaxUnitCode?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1259,6 +1321,8 @@ export type MedicationUncheckedCreateWithoutDispenseItemsInput = {
   isMidwifePrescribable?: boolean
   midwifeAuthorityKind?: $Enums.DoctorAuthorityKind | null
   taxCodeId?: string | null
+  coretaxItemCode?: string | null
+  coretaxUnitCode?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1304,6 +1368,8 @@ export type MedicationUpdateWithoutDispenseItemsInput = {
   isVaccine?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   midwifeAuthorityKind?: Prisma.NullableEnumDoctorAuthorityKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityKind | null
+  coretaxItemCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxUnitCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1335,6 +1401,8 @@ export type MedicationUncheckedUpdateWithoutDispenseItemsInput = {
   isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   midwifeAuthorityKind?: Prisma.NullableEnumDoctorAuthorityKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityKind | null
   taxCodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxItemCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxUnitCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1364,6 +1432,8 @@ export type MedicationCreateWithoutStockReceiptsInput = {
   isVaccine?: boolean
   isMidwifePrescribable?: boolean
   midwifeAuthorityKind?: $Enums.DoctorAuthorityKind | null
+  coretaxItemCode?: string | null
+  coretaxUnitCode?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1395,6 +1465,8 @@ export type MedicationUncheckedCreateWithoutStockReceiptsInput = {
   isMidwifePrescribable?: boolean
   midwifeAuthorityKind?: $Enums.DoctorAuthorityKind | null
   taxCodeId?: string | null
+  coretaxItemCode?: string | null
+  coretaxUnitCode?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1440,6 +1512,8 @@ export type MedicationUpdateWithoutStockReceiptsInput = {
   isVaccine?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   midwifeAuthorityKind?: Prisma.NullableEnumDoctorAuthorityKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityKind | null
+  coretaxItemCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxUnitCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1471,6 +1545,8 @@ export type MedicationUncheckedUpdateWithoutStockReceiptsInput = {
   isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   midwifeAuthorityKind?: Prisma.NullableEnumDoctorAuthorityKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityKind | null
   taxCodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxItemCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxUnitCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1500,6 +1576,8 @@ export type MedicationCreateWithoutTaxCodeInput = {
   isVaccine?: boolean
   isMidwifePrescribable?: boolean
   midwifeAuthorityKind?: $Enums.DoctorAuthorityKind | null
+  coretaxItemCode?: string | null
+  coretaxUnitCode?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1530,6 +1608,8 @@ export type MedicationUncheckedCreateWithoutTaxCodeInput = {
   isVaccine?: boolean
   isMidwifePrescribable?: boolean
   midwifeAuthorityKind?: $Enums.DoctorAuthorityKind | null
+  coretaxItemCode?: string | null
+  coretaxUnitCode?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1590,6 +1670,8 @@ export type MedicationScalarWhereInput = {
   isMidwifePrescribable?: Prisma.BoolFilter<"Medication"> | boolean
   midwifeAuthorityKind?: Prisma.EnumDoctorAuthorityKindNullableFilter<"Medication"> | $Enums.DoctorAuthorityKind | null
   taxCodeId?: Prisma.UuidNullableFilter<"Medication"> | string | null
+  coretaxItemCode?: Prisma.StringNullableFilter<"Medication"> | string | null
+  coretaxUnitCode?: Prisma.StringNullableFilter<"Medication"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Medication"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Medication"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"Medication"> | Date | string | null
@@ -1610,6 +1692,8 @@ export type MedicationCreateWithoutInvoiceItemsInput = {
   isVaccine?: boolean
   isMidwifePrescribable?: boolean
   midwifeAuthorityKind?: $Enums.DoctorAuthorityKind | null
+  coretaxItemCode?: string | null
+  coretaxUnitCode?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1641,6 +1725,8 @@ export type MedicationUncheckedCreateWithoutInvoiceItemsInput = {
   isMidwifePrescribable?: boolean
   midwifeAuthorityKind?: $Enums.DoctorAuthorityKind | null
   taxCodeId?: string | null
+  coretaxItemCode?: string | null
+  coretaxUnitCode?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1686,6 +1772,8 @@ export type MedicationUpdateWithoutInvoiceItemsInput = {
   isVaccine?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   midwifeAuthorityKind?: Prisma.NullableEnumDoctorAuthorityKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityKind | null
+  coretaxItemCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxUnitCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1717,6 +1805,8 @@ export type MedicationUncheckedUpdateWithoutInvoiceItemsInput = {
   isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   midwifeAuthorityKind?: Prisma.NullableEnumDoctorAuthorityKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityKind | null
   taxCodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxItemCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxUnitCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1746,6 +1836,8 @@ export type MedicationCreateWithoutImmunizationsInput = {
   isVaccine?: boolean
   isMidwifePrescribable?: boolean
   midwifeAuthorityKind?: $Enums.DoctorAuthorityKind | null
+  coretaxItemCode?: string | null
+  coretaxUnitCode?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1777,6 +1869,8 @@ export type MedicationUncheckedCreateWithoutImmunizationsInput = {
   isMidwifePrescribable?: boolean
   midwifeAuthorityKind?: $Enums.DoctorAuthorityKind | null
   taxCodeId?: string | null
+  coretaxItemCode?: string | null
+  coretaxUnitCode?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1822,6 +1916,8 @@ export type MedicationUpdateWithoutImmunizationsInput = {
   isVaccine?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   midwifeAuthorityKind?: Prisma.NullableEnumDoctorAuthorityKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityKind | null
+  coretaxItemCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxUnitCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1853,6 +1949,8 @@ export type MedicationUncheckedUpdateWithoutImmunizationsInput = {
   isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   midwifeAuthorityKind?: Prisma.NullableEnumDoctorAuthorityKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityKind | null
   taxCodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxItemCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxUnitCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1882,6 +1980,8 @@ export type MedicationCreateWithoutDeliveryUterotonicsInput = {
   isVaccine?: boolean
   isMidwifePrescribable?: boolean
   midwifeAuthorityKind?: $Enums.DoctorAuthorityKind | null
+  coretaxItemCode?: string | null
+  coretaxUnitCode?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1913,6 +2013,8 @@ export type MedicationUncheckedCreateWithoutDeliveryUterotonicsInput = {
   isMidwifePrescribable?: boolean
   midwifeAuthorityKind?: $Enums.DoctorAuthorityKind | null
   taxCodeId?: string | null
+  coretaxItemCode?: string | null
+  coretaxUnitCode?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1958,6 +2060,8 @@ export type MedicationUpdateWithoutDeliveryUterotonicsInput = {
   isVaccine?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   midwifeAuthorityKind?: Prisma.NullableEnumDoctorAuthorityKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityKind | null
+  coretaxItemCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxUnitCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1989,6 +2093,8 @@ export type MedicationUncheckedUpdateWithoutDeliveryUterotonicsInput = {
   isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   midwifeAuthorityKind?: Prisma.NullableEnumDoctorAuthorityKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityKind | null
   taxCodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxItemCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxUnitCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2018,6 +2124,8 @@ export type MedicationCreateWithoutNewbornVitaminK1DosesInput = {
   isVaccine?: boolean
   isMidwifePrescribable?: boolean
   midwifeAuthorityKind?: $Enums.DoctorAuthorityKind | null
+  coretaxItemCode?: string | null
+  coretaxUnitCode?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -2049,6 +2157,8 @@ export type MedicationUncheckedCreateWithoutNewbornVitaminK1DosesInput = {
   isMidwifePrescribable?: boolean
   midwifeAuthorityKind?: $Enums.DoctorAuthorityKind | null
   taxCodeId?: string | null
+  coretaxItemCode?: string | null
+  coretaxUnitCode?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -2083,6 +2193,8 @@ export type MedicationCreateWithoutNewbornEyeProphylaxisInput = {
   isVaccine?: boolean
   isMidwifePrescribable?: boolean
   midwifeAuthorityKind?: $Enums.DoctorAuthorityKind | null
+  coretaxItemCode?: string | null
+  coretaxUnitCode?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -2114,6 +2226,8 @@ export type MedicationUncheckedCreateWithoutNewbornEyeProphylaxisInput = {
   isMidwifePrescribable?: boolean
   midwifeAuthorityKind?: $Enums.DoctorAuthorityKind | null
   taxCodeId?: string | null
+  coretaxItemCode?: string | null
+  coretaxUnitCode?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -2159,6 +2273,8 @@ export type MedicationUpdateWithoutNewbornVitaminK1DosesInput = {
   isVaccine?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   midwifeAuthorityKind?: Prisma.NullableEnumDoctorAuthorityKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityKind | null
+  coretaxItemCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxUnitCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2190,6 +2306,8 @@ export type MedicationUncheckedUpdateWithoutNewbornVitaminK1DosesInput = {
   isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   midwifeAuthorityKind?: Prisma.NullableEnumDoctorAuthorityKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityKind | null
   taxCodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxItemCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxUnitCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2230,6 +2348,8 @@ export type MedicationUpdateWithoutNewbornEyeProphylaxisInput = {
   isVaccine?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   midwifeAuthorityKind?: Prisma.NullableEnumDoctorAuthorityKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityKind | null
+  coretaxItemCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxUnitCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2261,6 +2381,8 @@ export type MedicationUncheckedUpdateWithoutNewbornEyeProphylaxisInput = {
   isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   midwifeAuthorityKind?: Prisma.NullableEnumDoctorAuthorityKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityKind | null
   taxCodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxItemCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxUnitCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2290,6 +2412,8 @@ export type MedicationCreateWithoutPostnatalVitaminADosesInput = {
   isVaccine?: boolean
   isMidwifePrescribable?: boolean
   midwifeAuthorityKind?: $Enums.DoctorAuthorityKind | null
+  coretaxItemCode?: string | null
+  coretaxUnitCode?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -2321,6 +2445,8 @@ export type MedicationUncheckedCreateWithoutPostnatalVitaminADosesInput = {
   isMidwifePrescribable?: boolean
   midwifeAuthorityKind?: $Enums.DoctorAuthorityKind | null
   taxCodeId?: string | null
+  coretaxItemCode?: string | null
+  coretaxUnitCode?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -2366,6 +2492,8 @@ export type MedicationUpdateWithoutPostnatalVitaminADosesInput = {
   isVaccine?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   midwifeAuthorityKind?: Prisma.NullableEnumDoctorAuthorityKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityKind | null
+  coretaxItemCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxUnitCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2397,6 +2525,8 @@ export type MedicationUncheckedUpdateWithoutPostnatalVitaminADosesInput = {
   isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   midwifeAuthorityKind?: Prisma.NullableEnumDoctorAuthorityKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityKind | null
   taxCodeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxItemCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxUnitCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2426,6 +2556,8 @@ export type MedicationCreateManyTaxCodeInput = {
   isVaccine?: boolean
   isMidwifePrescribable?: boolean
   midwifeAuthorityKind?: $Enums.DoctorAuthorityKind | null
+  coretaxItemCode?: string | null
+  coretaxUnitCode?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -2446,6 +2578,8 @@ export type MedicationUpdateWithoutTaxCodeInput = {
   isVaccine?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   midwifeAuthorityKind?: Prisma.NullableEnumDoctorAuthorityKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityKind | null
+  coretaxItemCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxUnitCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2476,6 +2610,8 @@ export type MedicationUncheckedUpdateWithoutTaxCodeInput = {
   isVaccine?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   midwifeAuthorityKind?: Prisma.NullableEnumDoctorAuthorityKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityKind | null
+  coretaxItemCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxUnitCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2506,6 +2642,8 @@ export type MedicationUncheckedUpdateManyWithoutTaxCodeInput = {
   isVaccine?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isMidwifePrescribable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   midwifeAuthorityKind?: Prisma.NullableEnumDoctorAuthorityKindFieldUpdateOperationsInput | $Enums.DoctorAuthorityKind | null
+  coretaxItemCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxUnitCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2639,6 +2777,8 @@ export type MedicationSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   isMidwifePrescribable?: boolean
   midwifeAuthorityKind?: boolean
   taxCodeId?: boolean
+  coretaxItemCode?: boolean
+  coretaxUnitCode?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
@@ -2672,6 +2812,8 @@ export type MedicationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   isMidwifePrescribable?: boolean
   midwifeAuthorityKind?: boolean
   taxCodeId?: boolean
+  coretaxItemCode?: boolean
+  coretaxUnitCode?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
@@ -2694,6 +2836,8 @@ export type MedicationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   isMidwifePrescribable?: boolean
   midwifeAuthorityKind?: boolean
   taxCodeId?: boolean
+  coretaxItemCode?: boolean
+  coretaxUnitCode?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
@@ -2716,12 +2860,14 @@ export type MedicationSelectScalar = {
   isMidwifePrescribable?: boolean
   midwifeAuthorityKind?: boolean
   taxCodeId?: boolean
+  coretaxItemCode?: boolean
+  coretaxUnitCode?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
 }
 
-export type MedicationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "kfaCode" | "dphoCode" | "name" | "form" | "strength" | "unit" | "category" | "reorderLevel" | "unitPrice" | "isVaccine" | "isMidwifePrescribable" | "midwifeAuthorityKind" | "taxCodeId" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["medication"]>
+export type MedicationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "kfaCode" | "dphoCode" | "name" | "form" | "strength" | "unit" | "category" | "reorderLevel" | "unitPrice" | "isVaccine" | "isMidwifePrescribable" | "midwifeAuthorityKind" | "taxCodeId" | "coretaxItemCode" | "coretaxUnitCode" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["medication"]>
 export type MedicationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   prescriptionItems?: boolean | Prisma.Medication$prescriptionItemsArgs<ExtArgs>
   compoundComponents?: boolean | Prisma.Medication$compoundComponentsArgs<ExtArgs>
@@ -2807,6 +2953,12 @@ export type $MedicationPayload<ExtArgs extends runtime.Types.Extensions.Internal
      * medication default in `tax_category_defaults`.
      */
     taxCodeId: string | null
+    /**
+     * Coretax goods/services code and unit of measure for this medication's
+     * faktur lines (P27-T09). Null means it follows its tax code's.
+     */
+    coretaxItemCode: string | null
+    coretaxUnitCode: string | null
     createdAt: Date
     updatedAt: Date
     deletedAt: Date | null
@@ -3259,6 +3411,8 @@ export interface MedicationFieldRefs {
   readonly isMidwifePrescribable: Prisma.FieldRef<"Medication", 'Boolean'>
   readonly midwifeAuthorityKind: Prisma.FieldRef<"Medication", 'DoctorAuthorityKind'>
   readonly taxCodeId: Prisma.FieldRef<"Medication", 'String'>
+  readonly coretaxItemCode: Prisma.FieldRef<"Medication", 'String'>
+  readonly coretaxUnitCode: Prisma.FieldRef<"Medication", 'String'>
   readonly createdAt: Prisma.FieldRef<"Medication", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Medication", 'DateTime'>
   readonly deletedAt: Prisma.FieldRef<"Medication", 'DateTime'>

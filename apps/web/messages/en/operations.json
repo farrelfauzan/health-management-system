@@ -2267,7 +2267,16 @@
           "initialRate": "First rate",
           "isActive": "Active",
           "save": "Save",
-          "invalid": "Check the code (2–40 letters, digits or dashes), the name and the rate."
+          "invalid": "Check the code (2–40 letters, digits or dashes), the name and the rate.",
+          "coretaxTitle": "Coretax faktur",
+          "coretaxDescription": "What every faktur line of this code carries in the Coretax file. Tariffs and medicines may override the item code and unit.",
+          "coretaxItemCode": "Coretax item code",
+          "coretaxItemCodeHelp": "Six digits from the Coretax goods/services code list.",
+          "coretaxUnitCode": "Unit of measure",
+          "coretaxAdditionalInfo": "Keterangan tambahan (kode 08)",
+          "coretaxFacilityStamp": "Cap fasilitas (kode 08)",
+          "coretaxNone": "Not set",
+          "coretaxInvalid": "The Coretax item code must be six digits."
         },
         "errors": {
           "TAX_CODE_SYSTEM_LOCKED": "This is a system code: only its name, note and active flag can change.",
@@ -2335,6 +2344,17 @@
           "price": "Price",
           "taxCode": "Tax code",
           "source": "Source"
+        },
+        "coretax": "Coretax: {code} · {unit}",
+        "coretaxMissing": "Coretax code not set",
+        "coretaxOverride": "own",
+        "setCoretaxCodes": "Set Coretax codes",
+        "coretaxDialog": {
+          "title": "Coretax codes for {count, plural, one {# item} other {# items}}",
+          "description": "Overrides the item code and unit of their tax code on the Coretax faktur. Leave both blank to follow the tax code again.",
+          "save": "Save",
+          "applied": "Coretax codes set on {count, plural, one {# item} other {# items}}.",
+          "invalid": "Enter a six-digit item code and choose a unit, or leave both blank."
         }
       },
       "reports": {
@@ -2425,7 +2445,9 @@
           "TAX_REPORT_PERIOD_IN_FUTURE": "That month has not started yet.",
           "TAX_REPORT_PDF_UNAVAILABLE": "The PDF service is unavailable right now. Try again shortly.",
           "TAX_REPORT_IDENTITY_INCOMPLETE": "A recipient has an incomplete tax identity. Add their NPWP or NIK, recompute, then finalize.",
-          "TAX_BRACKETS_UNAVAILABLE": "No Article 17 brackets are in force for this period. Seed the PPh 21 brackets first."
+          "TAX_BRACKETS_UNAVAILABLE": "No Article 17 brackets are in force for this period. Seed the PPh 21 brackets first.",
+          "TAX_REPORT_NOT_FINALIZED": "Finalize the report first.",
+          "CORETAX_EXPORT_INVALID": "The Coretax file cannot be made yet. Fix the problems listed under Coretax and try again."
         },
         "pph21": {
           "grossFee": "Gross clinician fees",
@@ -2459,6 +2481,30 @@
           "profession": {
             "DOCTOR": "Doctor",
             "MIDWIFE": "Midwife"
+          }
+        },
+        "coretaxFaktur": {
+          "title": "Coretax Faktur Keluaran file",
+          "description": "The bulk-import XML DJP’s own converter produces ({template}, {publishedOn}): one faktur per invoice and faktur code, the patient named by NIK. The clinic imports it into Coretax and files there; this product never files.",
+          "source": "Template source",
+          "checking": "Checking the report against the template…",
+          "loadError": "The report could not be checked against the Coretax template.",
+          "ready": "{count, plural, one {# faktur is ready.} other {# fakturs are ready.}}",
+          "digunggung": "{count, plural, one {# invoice has a patient without NIK and is left out (digunggung).} other {# invoices have a patient without NIK and are left out (digunggung).}}",
+          "blocked": "Fix these before downloading:",
+          "clinic": "Clinic",
+          "download": "Download Coretax XML",
+          "downloaded": "Coretax Faktur Keluaran file downloaded.",
+          "downloadError": "The Coretax file could not be downloaded.",
+          "audit": "The file contains each patient’s NIK. The download is recorded in the audit log.",
+          "issues": {
+            "CLINIC_NPWP_INVALID": "The clinic NPWP must be 16 digits. Update it in Settings › Clinic profile.",
+            "CLINIC_NITKU_INVALID": "The clinic NITKU must be 22 digits starting with the NPWP. Update it in Settings › Taxes.",
+            "ITEM_CODE_MISSING": "A line has no Coretax item code. Set it on the tax code or on the tariff or medicine.",
+            "UNIT_CODE_MISSING": "A line has no Coretax unit. Set it on the tax code or on the tariff or medicine.",
+            "FACILITY_MISSING": "The kode-08 tax code has no keterangan tambahan or cap fasilitas. Set both on the tax code.",
+            "BUYER_NAME_MISSING": "The patient has no name on file.",
+            "BUYER_ADDRESS_MISSING": "The patient has no address on file."
           }
         }
       }

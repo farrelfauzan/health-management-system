@@ -16,4 +16,7 @@ export type TaxAssignmentControllerListAssignmentsV1200DataItem = {
   price: number;
   source: string;
   effectiveTaxCode: TaxAssignmentControllerListAssignmentsV1200DataItemEffectiveTaxCode;
+  coretaxItemCode: string;
+  coretaxUnitCode: string;
+  hasCoretaxOverride: boolean;
 };

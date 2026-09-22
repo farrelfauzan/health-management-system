@@ -19,6 +19,7 @@ import {
 } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { TaxCoretaxCodesDialog } from '#components/client/taxes/tax-coretax-codes-dialog';
 import { taxAssignmentControllerBulkAssignV1 } from '#lib/api/generated/tax-codes/tax-codes';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { notifyStatement } from '#lib/api/notify-statement';
@@ -36,7 +37,8 @@ type TaxAssignmentBulkBarProps = {
 
 /**
  * "Terapkan kode pajak" for the selected rows (P27-T03): one code on all of
- * them in one transaction, or back to their category default.
+ * them in one transaction, or back to their category default. Also opens the
+ * Coretax item code and unit override for them (P27-T09).
  */
 export function TaxAssignmentBulkBar({
   rows,
@@ -48,6 +50,7 @@ export function TaxAssignmentBulkBar({
   const tCodes = useTranslations('operations.taxes.codes');
   const queryClient = useQueryClient();
   const [taxCodeId, setTaxCodeId] = useState<string>('');
+  const [isCoretaxDialogOpen, setIsCoretaxDialogOpen] = useState<boolean>(false);
   const selectedRows = rows.filter((row) => selectedKeys.has(toTaxAssignmentKey(row)));
   const applyMutation = useMutation({
     mutationFn: (payload: BulkAssignTaxCodeInput) => taxAssignmentControllerBulkAssignV1(payload),
@@ -108,6 +111,21 @@ export function TaxAssignmentBulkBar({
       >
         {t('resetToDefault')}
       </Button>
+      <Button
+        type="button"
+        variant="outline"
+        disabled={selectedRows.length === 0}
+        onClick={() => setIsCoretaxDialogOpen(true)}
+      >
+        {t('setCoretaxCodes')}
+      </Button>
+      {isCoretaxDialogOpen ? (
+        <TaxCoretaxCodesDialog
+          rows={selectedRows}
+          onClose={() => setIsCoretaxDialogOpen(false)}
+          onApplied={onApplied}
+        />
+      ) : null}
     </div>
   );
 }

@@ -14,6 +14,8 @@ export type TaxCodeControllerUpdateTaxCodeV1200Data = {
   name: string;
   ppnTreatment: string;
   fakturTransactionCode: string;
+  coretaxItemCode: string;
+  coretaxUnitCode: string;
   isSystem: boolean;
   isActive: boolean;
   currentRate: TaxCodeControllerUpdateTaxCodeV1200DataCurrentRate;

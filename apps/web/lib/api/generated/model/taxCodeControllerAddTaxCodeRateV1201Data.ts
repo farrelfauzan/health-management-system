@@ -14,6 +14,8 @@ export type TaxCodeControllerAddTaxCodeRateV1201Data = {
   name: string;
   ppnTreatment: string;
   fakturTransactionCode: string;
+  coretaxItemCode: string;
+  coretaxUnitCode: string;
   isSystem: boolean;
   isActive: boolean;
   currentRate: TaxCodeControllerAddTaxCodeRateV1201DataCurrentRate;
